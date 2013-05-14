@@ -94,7 +94,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                ClearControls();
+                ShowDetails(null);
                 ((TFrmRecurringGiftBatch) this.ParentForm).DisableTransactionsTab();
             }
 
@@ -199,43 +199,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
+            if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
             {
-                this.CreateNewARecurringGiftBatch();
-                txtDetailBatchDescription.Focus();
-
-                //Save the new record
-                ((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges();
+                return;
             }
-        }
 
-        /// <summary>
-        /// Performs checks to determine whether a deletion of the current
-        ///  row is permissable
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
-        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
-        /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(ARecurringGiftBatchRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
-            {
-                MessageBox.Show(Catalog.GetString("No recurring gift batch is selected to delete."),
-                    Catalog.GetString("Deleting Recurring Gift Batch"));
-                return false;
-            }
-            else
-            {
-                // ask if the user really wants to cancel the batch
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Recurring Gift Batch no: {0} ?"),
-                    ARowToDelete.BatchNumber);
-                return true;
-            }
-        }
-
-        private void DeleteRow(System.Object sender, EventArgs e)
-        {
-            this.DeleteARecurringGiftBatch();
+            this.CreateNewARecurringGiftBatch();
+            txtDetailBatchDescription.Focus();
         }
 
         /// <summary>
@@ -244,7 +214,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ARowToDelete">the currently selected row to delete</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(ARecurringGiftBatchRow ARowToDelete, out string ACompletionMessage)
+        private bool DeleteRowManual(ARecurringGiftBatchRow ARowToDelete, ref string ACompletionMessage)
         {
             bool deletionSuccessful = false;
 
@@ -337,7 +307,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
                 {
-                    ClearControls();
+                    ShowDetails(null);
                 }
             }
             else if (!AAllowDeletion)
@@ -357,23 +327,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                 ((TFrmRecurringGiftBatch)ParentForm).DisableTransactionsTab();
-            }
-        }
-
-        private void ClearControls()
-        {
-            try
-            {
-                FPetraUtilsObject.DisableDataChangedEvent();
-                txtDetailBatchDescription.Clear();
-                txtDetailHashTotal.NumberValueDecimal = 0;
-                cmbDetailBankCostCentre.SelectedIndex = -1;
-                cmbDetailBankAccountCode.SelectedIndex = -1;
-                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
-            }
-            finally
-            {
-                FPetraUtilsObject.EnableDataChangedEvent();
             }
         }
 

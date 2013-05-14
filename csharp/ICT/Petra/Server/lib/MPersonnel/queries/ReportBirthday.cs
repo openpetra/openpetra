@@ -180,15 +180,33 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
                 if (AParameters.Get("param_chkUseDate").ToBool() == true)
                 {
-                    Defines.Add("WITHDATERANGE", string.Empty);
-                    SqlParameterList.Add(new OdbcParameter("startdate", OdbcType.Date)
-                        {
-                            Value = AParameters.Get("param_dtpFromDate").ToDate()
-                        });
-                    SqlParameterList.Add(new OdbcParameter("enddate", OdbcType.Date)
-                        {
-                            Value = AParameters.Get("param_dtpToDate").ToDate()
-                        });
+                    DateTime FromDate = AParameters.Get("param_dtpFromDate").ToDate();
+                    DateTime ToDate = AParameters.Get("param_dtpToDate").ToDate();
+
+                    if (FromDate.DayOfYear < ToDate.DayOfYear)
+                    {
+                        Defines.Add("WITHDATERANGE", string.Empty);
+                        SqlParameterList.Add(new OdbcParameter("startdate", OdbcType.Date)
+                            {
+                                Value = FromDate
+                            });
+                        SqlParameterList.Add(new OdbcParameter("enddate", OdbcType.Date)
+                            {
+                                Value = ToDate
+                            });
+                    }
+                    else
+                    {
+                        Defines.Add("WITHOUTDATERANGE", string.Empty);
+                        SqlParameterList.Add(new OdbcParameter("startdate", OdbcType.Date)
+                            {
+                                Value = FromDate
+                            });
+                        SqlParameterList.Add(new OdbcParameter("enddate", OdbcType.Date)
+                            {
+                                Value = ToDate
+                            });
+                    }
                 }
             }
             catch (Exception e)
@@ -214,27 +232,29 @@ namespace Ict.Petra.Server.MPersonnel.queries
                     return null;
                 }
 
-                // if end date is set, calculate the age, in new column
-                if (AParameters.Get("param_chkUseDate").ToBool() == true)
+                // if end date is not set, use today
+                if (AParameters.Get("param_chkUseDate").ToBool() != true)
                 {
-                    resultTable.Columns.Add(new DataColumn("age", typeof(Int32)));
-
-                    foreach (DataRow r in resultTable.Rows)
-                    {
-                        // what if birthday in DEC 1978, and toDate is Nov 2012? we must show the age for the previous birthday
-                        int age = 0;
-                        DateTime BDay = Convert.ToDateTime(r["DOB"]);
-
-                        while (BDay.AddYears(age) <= AParameters.Get("param_dtpToDate").ToDate())
-                        {
-                            age++;
-                        }
-
-                        r["Age"] = age;
-                    }
+                    AParameters.Add("param_dtpToDate", DateTime.Now);
                 }
 
-                // filter by anniversaries
+                // Calculate the age, in new column
+                resultTable.Columns.Add(new DataColumn("age", typeof(Int32)));
+
+                foreach (DataRow r in resultTable.Rows)
+                {
+                    int age = 0;
+                    DateTime BDay = Convert.ToDateTime(r["DOB"]);
+
+                    while (BDay.AddYears(age) <= AParameters.Get("param_dtpToDate").ToDate())
+                    {
+                        age++;
+                    }
+
+                    r["Age"] = age;
+                }
+
+                // filter by anniversaries?
                 if ((AParameters.Get("param_chkAnniversaries").ToBool() == true)
                     && !AParameters.Get("param_txtAnniversaries").IsZeroOrNull())
                 {

@@ -487,7 +487,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            int newCurrentRowPos = grdDetails.SelectedRowIndex();
+            int newCurrentRowPos = GetSelectedRowIndex();
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 ||
@@ -625,7 +625,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //get index position of row to post
-            int newCurrentRowPos = grdDetails.SelectedRowIndex();
+            int newCurrentRowPos = GetSelectedRowIndex();
 
             //TODO: Correct this if needed
             DateTime StartDateCurrentPeriod;

@@ -98,7 +98,7 @@
                     returns="automatic"
                     returnsFormat="row">
                 <query>
-                    <queryDetail><value>Ict.Petra.Server.MFinance.queries.QueryHOSAReport.CalculateGifts</value></queryDetail>
+                    <queryDetail><value>Ict.Petra.Server.MFinance.queries.QueryFinanceReport.HosaCalculateGifts</value></queryDetail>
                 </query>
             </calculation> <!-- Select Transactions -->
 

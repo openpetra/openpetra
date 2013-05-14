@@ -35,19 +35,13 @@ RootNode:
             Label: Date
             Dock: Top
             Controls: [chkUseDate]
-        chkAnniversaries:
-            Label: Only print anniversaries
-            CheckBoxAttachedLabel: right
-            Controls: [txtAnniversaries]
-        txtAnniversaries:
-            Help: "Please enter comma separated list of anniversaries, eg. 40,50,75"
         grpOptions:
             Label: Options
             Dock: Fill
-            Controls: [chkIncludeFamily, chkSelectTypes, grdTypes]           
+            Controls: [chkAnniversaries, chkIncludeFamily, chkSelectTypes, grdTypes]           
         chkUseDate:
             Label: Use date range
-            Controls: [dtpFromDate, dtpToDate, chkAnniversaries]
+            Controls: [dtpFromDate, dtpToDate]
             CheckBoxAttachedLabel: right
         dtpFromDate:
             Label: From
@@ -60,6 +54,12 @@ RootNode:
             Label: Include only persons of selected type(s)
             CheckBoxAttachedLabel: right
             OnChange: SelectTypesChanged            
+        chkAnniversaries:
+            Label: Only these anniversaries :
+            CheckBoxAttachedLabel: right
+            Controls: [txtAnniversaries]
+        txtAnniversaries:
+            Help: "Please enter comma separated list of anniversaries, eg. 40,50,75"
         grdTypes:
             Height: 200
             Width: 320

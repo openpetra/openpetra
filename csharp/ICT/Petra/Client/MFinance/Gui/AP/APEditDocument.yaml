@@ -13,7 +13,7 @@ RootNode:
     Actions:
         cndDiscountEnabled: {InitialValue=false}
         actNewDetail: {Label=Add De&tail, ActionClick=NewDetail}
-        actRemoveDetail:  {Label=&Remove Detail, ActionClick=RemoveDetail}
+        actDelete:  {Label=&Remove Detail, ActionClick=DeleteRecord}
         actAnalyse: {ActionClick=Analyse}
         actPostDocument: {Label=Post, ActionClick=PostDocument}
         actPayDocument: {Label=Pay, ActionClick=PayDocument}
@@ -73,7 +73,7 @@ RootNode:
             Controls: [grdDetails, pnlDetailButtons]
         pnlDetailButtons:
             Dock: Right
-            Controls: [btnAddDetail, btnRemoveDetail]
+            Controls: [btnAddDetail, btnDelete]
         grdDetails:
             Dock: Fill
             TableName:AApDocumentDetail
@@ -121,11 +121,11 @@ RootNode:
         btnAddDetail:
             Width: 100
             Action: actNewDetail
-        btnRemoveDetail:
+        btnDelete:
             Enabled: false
             Label: &Remove Detail
             Width: 100
-            Action: actRemoveDetail
+            Action: actDelete
 # TODO: Approval completely disabled for the moment
 #        btnApproveDetail:
 #            Label: A&pprove Detail

@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
                 {
-                    if (grdDetails.SelectedRowIndex() > 0)
+                    if (GetSelectedRowIndex() > 0)
                     {
                         GetDetailsFromControls(GetSelectedDetailRow());
                     }
@@ -128,7 +128,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (grdDetails.Rows.Count < 2)
             {
-                ClearControls();
+                ShowDetails(null);
             }
 
             txtBatchNumber.Text = FBatchNumber.ToString();
@@ -444,7 +444,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            int currentRowIndex = grdDetails.SelectedRowIndex();
+            int currentRowIndex = GetSelectedRowIndex();
 
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
                 || (MessageBox.Show(String.Format(Catalog.GetString(
@@ -479,18 +479,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (grdDetails.Rows.Count < 2)
                 {
-                    ClearControls();
+                    ShowDetails(null);
                 }
             }
-        }
-
-        private void ClearControls()
-        {
-            FPetraUtilsObject.DisableDataChangedEvent();
-            txtDetailJournalDescription.Clear();
-            cmbDetailTransactionTypeCode.SelectedIndex = -1;
-            cmbDetailTransactionCurrency.SelectedIndex = -1;
-            FPetraUtilsObject.EnableDataChangedEvent();
         }
 
         private decimal GetActualExchangeRateForeign()

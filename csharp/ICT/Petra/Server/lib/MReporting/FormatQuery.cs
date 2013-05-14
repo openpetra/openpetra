@@ -129,18 +129,10 @@ namespace Ict.Petra.Server.MReporting
             String newClose,
             TConvertProc convert)
         {
-            TVariant ReturnValue;
-            int position;
-            int bracket;
-            String parameter;
-            TVariant newvalue;
-            Boolean ParameterDoesExist;
-            String resultString;
-
-            position = 0;
-            resultString = orig.ToString();
-            ReturnValue = null;
-            bracket = resultString.ToString().IndexOf(searchOpen, position);
+            int position = 0;
+            String resultString = orig.ToString();
+            TVariant ReturnValue = null;
+            int bracket = resultString.IndexOf(searchOpen, position);
 
             if (bracket == -1)
             {
@@ -150,7 +142,10 @@ namespace Ict.Petra.Server.MReporting
 
             while (bracket != -1)
             {
-                if (resultString.IndexOf(searchClose, bracket + searchOpen.Length) - bracket - searchOpen.Length <= 0)
+                int firstRealChar = bracket + searchOpen.Length;
+                int paramEndIdx = resultString.IndexOf(searchClose, firstRealChar);
+
+                if (paramEndIdx <= 0)
                 {
                     // missing closing bracket; can happen with e.g. #testdate; should be #testdate#
                     if (resultString.Length > bracket + 20)
@@ -163,35 +158,33 @@ namespace Ict.Petra.Server.MReporting
                     }
                 }
 
-                parameter = resultString.Substring(bracket + searchOpen.Length, resultString.IndexOf(searchClose,
-                        bracket + searchOpen.Length) - bracket - searchOpen.Length);
-                ParameterDoesExist = false;
+                String parameter = resultString.Substring(firstRealChar, paramEndIdx - firstRealChar);
+                bool ParameterExists = false;
+                TVariant newvalue;
 
                 if (parameters != null)
                 {
                     if (parameter.IndexOf("GLOBAL:") == 0)
                     {
-                        ParameterDoesExist = parameters.Exists(parameter.Substring(7, parameter.Length - 7), -1, -1, eParameterFit.eExact);
-                        newvalue = parameters.Get(parameter.Substring(7, parameter.Length - 7), -1, -1, eParameterFit.eExact);
+                        newvalue = parameters.Get(parameter.Substring(7), -1, -1, eParameterFit.eExact);
                     }
                     else if (parameter.IndexOf("ALLLEVELS:") == 0)
                     {
-                        ParameterDoesExist = parameters.Exists(parameter.Substring(10,
-                                parameter.Length - 10), -1, depth, eParameterFit.eBestFitEvenLowerLevel);
-                        newvalue = parameters.Get(parameter.Substring(10, parameter.Length - 10), -1, depth, eParameterFit.eBestFitEvenLowerLevel);
+                        newvalue = parameters.Get(parameter.Substring(10), -1, depth, eParameterFit.eBestFitEvenLowerLevel);
                     }
                     else
                     {
-                        ParameterDoesExist = parameters.Exists(parameter, column, depth, eParameterFit.eBestFitEvenLowerLevel);
                         newvalue = parameters.Get(parameter, column, depth, eParameterFit.eBestFitEvenLowerLevel);
                     }
+
+                    ParameterExists = (newvalue.TypeVariant != eVariantTypes.eEmpty);
                 }
                 else
                 {
                     newvalue = new TVariant();
                 }
 
-                if ((newvalue.TypeVariant == eVariantTypes.eEmpty) && (ParameterDoesExist == false))
+                if (!ParameterExists)
                 {
                     // if date is given, use the parameter itself
                     if ((parameter[0] >= '0') && (parameter[0] <= '9'))
@@ -217,10 +210,8 @@ namespace Ict.Petra.Server.MReporting
                         {
                             // this can be alright, for empty values; for example method of giving can be empty; for report GiftTransactions
                             TLogging.Log(
-                                "Variable " + parameter + " could not be found (column: " + column.ToString() + "; level: " + depth.ToString() +
-                                ")." +
-                                ' ' +
-                                resultString);
+                                "Variable " + parameter + " could not be found (column: " + column.ToString() +
+                                "; level: " + depth.ToString() + "). " + resultString);
                         }
                         else if (CountWarning % 20 == 0)
                         {
@@ -245,7 +236,7 @@ namespace Ict.Petra.Server.MReporting
                         "While trying to format parameter " + parameter + ", there was a problem with formatting." + Environment.NewLine + e.Message);
                 }
                 bracket = resultString.IndexOf(searchOpen, position);
-            }
+            } // while
 
             if (ReturnValue == null)
             {

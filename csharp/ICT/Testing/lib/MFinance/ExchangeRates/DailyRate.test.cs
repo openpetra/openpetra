@@ -241,7 +241,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Hide other To currencies again - now the selected row will have jumped higher
             chkHideOthers.Checked = true;
             Assert.AreEqual(FHiddenRowCount,
-                grdDetails.SelectedRowIndex(), "When the checkbox is checked the selected row should be {0}", FHiddenRowCount);
+                mainScreen.GetSelectedRowIndex(), "When the checkbox is checked the selected row should be {0}", FHiddenRowCount);
 
             // But the details should again be the same as before the checkbox check
             Assert.AreEqual(EffectiveCurrency(FFromCurrencyId),
@@ -392,7 +392,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(EffectiveRate(), txtExchangeRate.NumberValueDecimal.Value);
 
             // The row number of the new row should be at row 7
-            Assert.AreEqual(FAllRowCount - 1, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(FAllRowCount - 1, mainScreen.GetSelectedRowIndex());
 
             // Change the rate to a new value - more than 10% different
             decimal newRate = 0.667m;
@@ -414,7 +414,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date);
             Assert.AreEqual(expectedTime, txtTimeEffective.Text);
             Assert.AreEqual(newRate, txtExchangeRate.NumberValueDecimal.Value);
-            Assert.AreEqual(FAllRowCount - 1, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(FAllRowCount - 1, mainScreen.GetSelectedRowIndex());
 
             // Save the changes and check the number of rows now (we will get our rate alert warning dialog again)
             ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
@@ -579,7 +579,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date);
             Assert.AreEqual(expectedT3, txtTimeEffective.Text);
             Assert.AreEqual(EffectiveRate(), txtExchangeRate.NumberValueDecimal.Value);
-            Assert.AreEqual(3, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(3, mainScreen.GetSelectedRowIndex());
 
             // Focus on the from currency, then change it to 'BEF'
             cmbFromCurrency.Focus();
@@ -590,7 +590,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date.Value);
             Assert.AreEqual(expectedT1, txtTimeEffective.Text);
             Assert.AreEqual(0.0m, txtExchangeRate.NumberValueDecimal);
-            Assert.AreEqual(1, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(1, mainScreen.GetSelectedRowIndex());
 
             // Reset the currency and confirm we go back to where we were
             cmbFromCurrency.Focus();
@@ -600,7 +600,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date.Value);
             Assert.AreEqual(expectedT3, txtTimeEffective.Text);
             Assert.AreEqual(EffectiveRate(), txtExchangeRate.NumberValueDecimal);
-            Assert.AreEqual(3, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(3, mainScreen.GetSelectedRowIndex());
 
             // Repeat for the To currency
             cmbToCurrency.Focus();
@@ -611,7 +611,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date.Value);
             Assert.AreEqual(expectedT1, txtTimeEffective.Text);
             Assert.AreEqual(0.0m, txtExchangeRate.NumberValueDecimal);
-            Assert.AreEqual(1, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(1, mainScreen.GetSelectedRowIndex());
 
             // Reset the currency and confirm we go back to where we were
             cmbToCurrency.Focus();
@@ -621,7 +621,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date.Value);
             Assert.AreEqual(expectedT3, txtTimeEffective.Text);
             Assert.AreEqual(EffectiveRate(), txtExchangeRate.NumberValueDecimal);
-            Assert.AreEqual(3, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(3, mainScreen.GetSelectedRowIndex());
 
             // Finally check what happens when editing the date
             SelectRowInGrid(5);
@@ -685,7 +685,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             btnNewTester.Click();
 
             Assert.AreEqual(12, grdDetails.Rows.Count);
-            Assert.AreEqual(3, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(3, mainScreen.GetSelectedRowIndex());
 
             // New rows should be deletable
             Assert.IsTrue(btnDeleteTester.Properties.Enabled);
@@ -710,7 +710,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             };
             btnDeleteTester.Click();
 
-            Assert.AreEqual(3, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(3, mainScreen.GetSelectedRowIndex());
 
             // Now we should be back to not being able to delete a saved row
             Assert.IsFalse(btnDeleteTester.Properties.Enabled);
@@ -723,9 +723,9 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.IsTrue(btnDeleteTester.Properties.Enabled);
 
             // Change to the first row
-            Assert.AreEqual(3, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(3, mainScreen.GetSelectedRowIndex());
             SelectRowInGrid(1);
-            Assert.AreEqual(1, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(1, mainScreen.GetSelectedRowIndex());
 
             // So now we should have our 2 rows far in the future at the top which are not used anywhere
             ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
@@ -742,7 +742,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             btnDeleteTester.Click();
 
             // Should still be on row 1 with 7 grid rows now that 2 have gone
-            Assert.AreEqual(1, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(1, mainScreen.GetSelectedRowIndex());
             Assert.IsTrue(btnDeleteTester.Properties.Enabled);
             Assert.AreEqual(7, grdDetails.Rows.Count);
 
@@ -761,7 +761,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             };
             btnDeleteTester.Click();
 
-            Assert.AreEqual(4, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(4, mainScreen.GetSelectedRowIndex());
             Assert.IsTrue(btnDeleteTester.Properties.Enabled);
             Assert.AreEqual(5, grdDetails.Rows.Count);
 

@@ -123,49 +123,37 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             txtDetailContactAttributeCode.Focus();
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
+        private bool PreDeleteManual(PContactAttributeRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                return;
-            }
+            ADeletionQuestion += String.Format(Catalog.GetString(
+                    "{0}{0}If you choose 'Yes', all the detail attributes for this Contact Attribute will be deleted as well."), Environment.NewLine);
+            return true;
+        }
 
-            if (MessageBox.Show(Catalog.GetString(
-                        "Are you sure that you want to delete the current Contact Attribute?  If you choose 'Yes', all the detail attributes for this Contact Attribute will be deleted as well."),
-                    Catalog.GetString("Delete Row"),
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question) == DialogResult.No)
-            {
-                return;
-            }
+        private bool DeleteRowManual(PContactAttributeRow ARowToDelete, ref String ACompletionMessage)
+        {
+            ACompletionMessage = String.Empty;
 
             // Now we need to remove all the detail attributes associated with this contact attribute.
             // (If we can delete the current row, it must also be the case that we can delete all the detail attributes for this row)
             // Then we can delete the contact attribute itself...
             ucoContactDetail.DeleteAll();
 
-            // Get the selected grid row
-            int nSelectedRow = grdDetails.SelectedRowIndex();
-            FPreviouslySelectedDetailRow.Delete();
-            FPetraUtilsObject.SetChangedFlag();
+            // Now delete this row
+            ARowToDelete.Delete();
 
-            // Select the next row to show
-            SelectRowInGrid(nSelectedRow);
+            return true;
         }
 
         private void ShowDetailsManual(PContactAttributeRow ARow)
         {
             if (ARow == null)
             {
-                pnlDetails.Enabled = false;
                 ucoContactDetail.Enabled = false;
-                btnDelete.Enabled = false;
             }
             else
             {
-                pnlDetails.Enabled = true;
                 ucoContactDetail.Enabled = true;
-                btnDelete.Enabled = grdDetails.Rows.Count > 1 && !txtDetailContactAttributeCode.ReadOnly;
 
                 // Pass the contact attribute to the user control - it will then update itself
                 ucoContactDetail.SetContactAttribute(ARow.ContactAttributeCode);
@@ -218,37 +206,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             // something has changed in our user control (add/delete rows)
             FPreviouslySelectedDetailRow[NumDetailCodesColumnOrdinal] = e.NewCount;
-        }
-
-        private void ValidateDataDetailsManual(PContactAttributeRow ARow)
-        {
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-            DataColumn ValidationColumn;
-            TVerificationResult VerificationResult = null;
-
-            // The added column at the end of the table, which is the number of detail codes for this attribute, must not be zero
-            // Our problem is that the control that is really the correct one to verify is the details grid of the user control.
-            // This control is not one that can be verified.
-            // We can do the verification here - either by using the Active checkbox as a proxy (the nearest control) in which case we get a tooltip
-            // but when we tab away from the checkbox, which is not quite right...
-            // or we can just use this code without the Validation=true in the YAML - in which case we just get the validation dialog
-            ValidationColumn = ARow.Table.Columns[PContactAttributeTable.ColumnActiveId];
-
-            if (ARow[NumDetailCodesColumnOrdinal] != System.DBNull.Value)
-            {
-                VerificationResult = TNumericalChecks.IsPositiveInteger(Convert.ToInt32(ARow[NumDetailCodesColumnOrdinal]),
-                    "Contact Detail",
-                    this, ValidationColumn, null);
-
-                if (VerificationResult != null)
-                {
-                    VerificationResult.OverrideResultText(Catalog.GetString(
-                            "You must create at least one 'Attribute Detail Code' for each 'Contact Attribute'."));
-                }
-
-                // Handle addition to/removal from TVerificationResultCollection.
-                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, false);
-            }
         }
     }
 }

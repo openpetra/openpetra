@@ -114,7 +114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void EnableControls()
         {
-            btnRemoveDetail.Enabled = (GetSelectedDetailRow() != null);
+            btnDelete.Enabled = (GetSelectedDetailRow() != null);
 
             // I need to make everything read-only if this document was already posted.
             if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0)
@@ -133,7 +133,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 txtExchangeRateToBase.Enabled = false;
 
                 btnAddDetail.Enabled = false;
-                btnRemoveDetail.Enabled = false;
+                btnDelete.Enabled = false;
                 btnLookupExchangeRate.Enabled = false;
                 btnAnalysisAttributes.Enabled = false;
 
@@ -367,34 +367,29 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-        private void RemoveDetail(Object sender, EventArgs e)
+        /// <summary>
+        /// Performs checks to determine whether a deletion of the current
+        ///  row is permissable
+        /// </summary>
+        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
+        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
+        /// <returns>true if user is permitted and able to delete the current row</returns>
+        private bool PreDeleteManual(AApDocumentDetailRow ARowToDelete, ref string ADeletionQuestion)
         {
-            AApDocumentDetailRow Row = GetSelectedDetailRow();
-
-            if (Row == null)
-            {
-                return;
-            }
-
+            ADeletionQuestion = String.Empty;
             GetDataFromControls(FMainDS.AApDocument[0]);
-            int rowIndex = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
-//          MessageBox.Show("Deleting "+ Row.Narrative, "Remove Row");
+            return true;
+        }
 
-            Row.Delete();          // This row is not removed, but marked for deletion.
-
-            // I have to prevent the auto-generated code from attempting to access this deleted row.
-            grdDetails.Selection.SelectRow(rowIndex, true);
-            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-
-            if (FPreviouslySelectedDetailRow != null)
+        private void PostDeleteManual(AApDocumentDetailRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
+        {
+            if (ADeletionPerformed)
             {
-                ShowDetails(FPreviouslySelectedDetailRow);
+                EnableControls();
             }
-
-            // Then I need to re-draw the grid, and enable controls as appropriate.
-            grdDetails.Refresh();
-            FPetraUtilsObject.SetChangedFlag();
-            EnableControls();
         }
 
         /// <summary>
