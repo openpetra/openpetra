@@ -516,6 +516,7 @@ namespace Ict.Common.DB
                 TLogging.Log("    Connecting to database " + ADataBaseType + ": " + CurrentConnectionInstance.GetConnectionString());
 
                 FSqlConnection.Open();
+                FDataBaseRDBMS.InitConnection(FSqlConnection);
 
                 FLastDBAction = DateTime.Now;
             }
