@@ -122,6 +122,19 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
+        /// enforce foreign key constraints
+        /// </summary>
+        public void InitConnection(IDbConnection AConnection)
+        {
+            string enforceForeignKeyConstraints = "PRAGMA foreign_keys = ON;";
+
+            using (SqliteCommand cmd = new SqliteCommand(enforceForeignKeyConstraints, (SqliteConnection)AConnection))
+            {
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        /// <summary>
         /// format an error message for exception of type SQLiteException
         /// </summary>
         /// <param name="AException"></param>

@@ -89,6 +89,56 @@ namespace Ict.Common.DB.Testing
         }
 
         /// <summary>
+        /// this method will try to create a gift for a non existing gift batch
+        /// </summary>
+        private void EnforceForeignKeyConstraint()
+        {
+            TDBTransaction t;
+            string sql;
+
+            try
+            {
+                t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                sql = "INSERT INTO a_gift(a_ledger_number_i, a_batch_number_i, a_gift_transaction_number_i) " +
+                      "VALUES(43, 99999999, 1)";
+                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw;
+            }
+
+            // UNDO the test
+            t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            sql = "DELETE FROM a_gift" +
+                  " WHERE a_ledger_number_i = 43 AND a_batch_number_i = 99999999 AND a_gift_transaction_number_i = 1";
+            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+            DBAccess.GDBAccessObj.CommitTransaction();
+        }
+
+        /// test the order of statements in a transaction
+        [Test]
+        public void TestForeignKeyConstraints()
+        {
+            // see http://nunit.net/blogs/?p=63, we expect an exception to be thrown
+            // also http://nunit.org/index.php?p=exceptionAsserts&r=2.5
+            if (TAppSettingsManager.GetValue("Server.RDBMSType").ToLower() == "postgresql")
+            {
+                Assert.Throws <Npgsql.NpgsqlException>(new TestDelegate(EnforceForeignKeyConstraint));
+            }
+            else if (TAppSettingsManager.GetValue("Server.RDBMSType").ToLower() == "sqlite")
+            {
+                Assert.Throws <SqliteException>(new TestDelegate(EnforceForeignKeyConstraint));
+            }
+            else
+            {
+                throw new Exception("this test does not support RDBMSType " + TAppSettingsManager.GetValue("Server.RDBMSType"));
+            }
+        }
+
+        /// <summary>
         /// this method will try to create a gift for a new gift batch before creating the gift batch.
         /// if the constraints would be checked only when committing the transaction, everything would be fine.
         /// but usually you get a violation of foreign key constraint a_gift_fk1
@@ -106,9 +156,9 @@ namespace Ict.Common.DB.Testing
                       "VALUES(43, 99999999, 1)";
                 DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
                 sql =
-                    "INSERT INTO a_gift_batch(a_ledger_number_i, a_batch_number_i, a_bank_account_code_c, a_batch_year_i, a_currency_code_c, a_bank_cost_centre_c) "
+                    "INSERT INTO a_gift_batch(a_ledger_number_i, a_batch_number_i, a_batch_description_c, a_bank_account_code_c, a_batch_year_i, a_currency_code_c, a_bank_cost_centre_c) "
                     +
-                    "VALUES(43, 99999999, '6000', 1, 'EUR', '4300')";
+                    "VALUES(43, 99999999, 'Test', '6000', 1, 'EUR', '4300')";
                 DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
@@ -135,8 +185,6 @@ namespace Ict.Common.DB.Testing
         {
             // see http://nunit.net/blogs/?p=63, we expect an exception to be thrown
             // also http://nunit.org/index.php?p=exceptionAsserts&r=2.5
-            Assert.Throws(Is.InstanceOf(typeof(Exception)), new TestDelegate(WrongOrderSqlStatements));
-
             if (TAppSettingsManager.GetValue("Server.RDBMSType").ToLower() == "postgresql")
             {
                 Assert.Throws <Npgsql.NpgsqlException>(new TestDelegate(WrongOrderSqlStatements));
@@ -144,6 +192,10 @@ namespace Ict.Common.DB.Testing
             else if (TAppSettingsManager.GetValue("Server.RDBMSType").ToLower() == "sqlite")
             {
                 Assert.Throws <SqliteException>(new TestDelegate(WrongOrderSqlStatements));
+            }
+            else
+            {
+                throw new Exception("this test does not support RDBMSType " + TAppSettingsManager.GetValue("Server.RDBMSType"));
             }
         }
 

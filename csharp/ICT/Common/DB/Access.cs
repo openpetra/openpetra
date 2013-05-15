@@ -154,6 +154,9 @@ namespace Ict.Common.DB
             ref String AConnectionString,
             StateChangeEventHandler AStateChangeEventHandler);
 
+        /// init the connection after it was opened
+        void InitConnection(IDbConnection AConnection);
+
         /// <summary>
         /// this is for special Exceptions that are specific to the database
         /// they are converted to a string message for logging
