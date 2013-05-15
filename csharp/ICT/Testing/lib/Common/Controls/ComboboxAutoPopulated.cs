@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -79,6 +79,8 @@ namespace Tests.Common.Controls
             TCmbAutoPopulated cmb = new TCmbAutoPopulated();
 
             DataTable detailTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationList, FLedgerNumber);
+
+            Assert.AreNotEqual(0, detailTable.Rows.Count, "There should be a motivation detail in the cached table");
 
             cmb.Name = "TestCombobox";
             cmb.InitialiseUserControl(detailTable,
