@@ -82,6 +82,11 @@ namespace Ict.Common.DB
             return TheConnection;
         }
 
+        /// init the connection after it was opened
+        public void InitConnection(IDbConnection AConnection)
+        {
+        }
+
         /// <summary>
         /// format an error message if the exception is of type MySqlException
         /// </summary>
