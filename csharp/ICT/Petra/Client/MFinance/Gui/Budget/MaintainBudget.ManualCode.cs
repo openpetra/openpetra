@@ -1064,9 +1064,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             {
             	ARow.BeginEdit();
 
-            	//Test purposes
-            	MessageBox.Show(FPetraUtilsObject.HasChanges.ToString());
-            	
             	if (rbtAdHoc.Checked)
                 {
                     if (FPetraUtilsObject.HasChanges)
