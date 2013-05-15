@@ -95,9 +95,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             //FPassportTypeDT = (PtPassportTypeTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.PassportTypeList);
 
-            // enable grid to react to insert and delete keyboard keys
-            grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
-
             if (grdDetails.Rows.Count <= 1)
             {
                 pnlDetails.Visible = false;
@@ -191,69 +188,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.PassportNumber = newName;
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
-        {
-            this.DeletePmPassportDetails();
-        }
-
-        /// <summary>
-        /// Performs checks to determine whether a deletion of the current
-        ///  row is permissable
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
-        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
-        /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(PmPassportDetailsRow ARowToDelete, ref string ADeletionQuestion)
-        {
-// TODO: perform a check if the value is already referenced somewhere (similar to what the commented-out code does)
-// Table referenced from: pm_document_file
-//            int num = TRemote.MFinance.Setup.WebConnectors.CheckDeleteAFreeformAnalysis(FLedgerNumber,
-//                FPreviouslySelectedDetailRow.AnalysisTypeCode,
-//                FPreviouslySelectedDetailRow.AnalysisValue);
-//
-//            if (num > 0)
-//            {
-//                MessageBox.Show(Catalog.GetString(
-//                        "This value is already referenced and cannot be deleted."));
-//                return false;
-//            }
-
-            /*Code to execute before the delete can take place*/
-            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Passport record: '{0}'?"),
-                ARowToDelete.PassportNumber);
-            return true;
-        }
-
-        /// <summary>
-        /// Deletes the current row and optionally populates a completion message
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to delete</param>
-        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(PmPassportDetailsRow ARowToDelete, out string ACompletionMessage)
-        {
-            bool deletionSuccessful = false;
-
-            // no message to be shown after deletion
-            ACompletionMessage = "";
-
-            try
-            {
-                ARowToDelete.Delete();
-                deletionSuccessful = true;
-            }
-            catch (Exception ex)
-            {
-                ACompletionMessage = ex.Message;
-                MessageBox.Show(ex.Message,
-                    "Deletion Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-
-            return deletionSuccessful;
-        }
-
         /// <summary>
         /// Code to be run after the deletion process
         /// </summary>
@@ -266,13 +200,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool ADeletionPerformed,
             string ACompletionMessage)
         {
-            DoRecalculateScreenParts();
-
-            if (grdDetails.Rows.Count <= 1)
+            if (ADeletionPerformed)
             {
-                // hide details part and disable buttons if no record in grid (first row for headings)
-                btnDelete.Enabled = false;
-                pnlDetails.Visible = false;
+                DoRecalculateScreenParts();
             }
         }
 
@@ -432,15 +362,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             Scd.Dispose();
-        }
-
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        /// <returns>void</returns>
-        private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
-        {
-            NewRecord(this, null);
         }
 
         private void ValidateDataDetailsManual(PmPassportDetailsRow ARow)

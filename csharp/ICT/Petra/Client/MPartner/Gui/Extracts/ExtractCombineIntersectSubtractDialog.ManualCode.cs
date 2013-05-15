@@ -183,7 +183,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             MExtractMasterRow RowToDelete;
 
-            if (grdExtracts.SelectedRowIndex() < 0)
+            if (grdExtracts.GetFirstHighlightedRowIndex() < 0)
             {
                 MessageBox.Show(Catalog.GetString("You need to select an Extract to be removed from the list"),
                     Catalog.GetString("Remove from List"),
@@ -197,7 +197,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
             {
-                int nSelectedRow = grdExtracts.SelectedRowIndex();
+                int nSelectedRow = grdExtracts.GetFirstHighlightedRowIndex();
                 RowToDelete = (MExtractMasterRow)((DataRowView)grdExtracts.SelectedDataRows[0]).Row;
                 RowToDelete.Delete();
                 grdExtracts.SelectRowInGrid(nSelectedRow, true);

@@ -8,9 +8,9 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actNew: {Label=&Add, ActionClick=NewRow}
-        actDelete: {Label=&Delete, ActionClick=DeleteRow}
-        actSubmit: {Label=&Submit, ActionClick=Submit}
+        actNew: {Label=&Add Batch, ActionClick=NewRow}
+        actDelete: {Label=&Delete Batch, ActionClick=DeleteRecord}
+        actSubmit: {Label=&Submit Batch, ActionClick=Submit}
     Controls:
         pnlContent:
             Dock: Fill
@@ -27,9 +27,9 @@ RootNode:
         pnlDetailButtons:
             Dock: Right
             Controls: [btnNew, btnDelete, btnSubmit]
-        btnNew: {Action=actNew}
-        btnDelete: {Action=actDelete}
-        btnSubmit: {Action=actSubmit}
+        btnNew: {Action=actNew, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
+        btnSubmit: {Action=actSubmit, Stretch=horizontally}
         grdDetails:
             Dock: Fill
             TableName: ARecurringGiftBatch

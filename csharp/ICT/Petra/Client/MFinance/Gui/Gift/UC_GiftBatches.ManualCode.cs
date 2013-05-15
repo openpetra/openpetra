@@ -374,7 +374,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (grdDetails.Rows.Count < 2)
             {
-                ClearControls();
+                ShowDetails(null);
                 ((TFrmGiftBatch) this.ParentForm).DisableTransactions();
             }
             else if (FBatchLoaded == true)
@@ -530,6 +530,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (ARow == null)
             {
+                dtpDetailGlEffectiveDate.Date = FDefaultDate;
                 return;
             }
 
@@ -626,46 +627,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// cancel a batch (there is no deletion of batches)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CancelRow(System.Object sender, EventArgs e)
-        {
-            this.DeleteAGiftBatch();
-        }
-
-        /// <summary>
-        /// Performs checks to determine whether a deletion of the current
-        ///  row is permissable
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
-        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
-        /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(AGiftBatchRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
-            {
-                MessageBox.Show(Catalog.GetString("No Gift Batch is selected to delete."),
-                    Catalog.GetString("Cancelling of Gift Batch"));
-                return false;
-            }
-            else
-            {
-                // ask if the user really wants to cancel the batch
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to cancel Gift Batch no: {0} ?"),
-                    ARowToDelete.BatchNumber);
-                return true;
-            }
-        }
-
-        /// <summary>
         /// Deletes the current row and optionally populates a completion message
         /// </summary>
         /// <param name="ARowToDelete">the currently selected row to delete</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(AGiftBatchRow ARowToDelete, out string ACompletionMessage)
+        private bool DeleteRowManual(AGiftBatchRow ARowToDelete, ref string ACompletionMessage)
         {
             bool deletionSuccessful = false;
 
@@ -739,25 +706,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 ((TFrmGiftBatch)ParentForm).DisableTransactions();
-                ClearControls();
-            }
-        }
-
-        private void ClearControls()
-        {
-            try
-            {
-                FPetraUtilsObject.DisableDataChangedEvent();
-                txtDetailBatchDescription.Clear();
-                txtDetailHashTotal.NumberValueDecimal = 0;
-                dtpDetailGlEffectiveDate.Date = FDefaultDate;
-                cmbDetailBankCostCentre.SelectedIndex = -1;
-                cmbDetailBankAccountCode.SelectedIndex = -1;
-                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
-            }
-            finally
-            {
-                FPetraUtilsObject.EnableDataChangedEvent();
+                ShowDetails(null);
             }
         }
 
@@ -917,7 +866,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //Read current rows position ready to reposition after removal of posted row from grid
-            int newCurrentRowPos = grdDetails.SelectedRowIndex();
+            int newCurrentRowPos = GetSelectedRowIndex();
 
             if (newCurrentRowPos < 0)
             {

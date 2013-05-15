@@ -18317,60 +18317,6 @@
                 thisFields="pt_assignment_type_code_c"/>
     <!-- Explicit Indexes on table pt_assignment_type  -->
   </table>
-  <table name="pt_leaving_code"
-         descr="This describes the reason a person left a particular position."
-         area="Petra Data"
-         label="Leaving Code"
-         dumpname="pt_le_cd"
-         group="units">
-    <tablefield name="pt_leaving_code_ind_c"
-                type="varchar"
-                descr="This is the one letter code that indicates why a person left
-&lt;br/&gt;a particular position."
-                format="X(2)"
-                label="Leaving Code"
-                columnlabel="Leaving Code"
-                help="Enter the appropriate one letter code."
-                notnull="yes">
-    </tablefield>
-    <tablefield name="pt_leaving_code_descr_c"
-                type="varchar"
-                descr="This describes the one letter leaving code."
-                format="X(35)"
-                label="Leaving Code Description"
-                columnlabel="Leaving Code Description"
-                help="Enter the appropriate description of the leaving code."
-                notnull="yes"/>
-    <tablefield name="pt_unassignable_flag_l"
-                type="bit"
-                descr="Can this qualification level be assigned?"
-                format="Yes/No"
-                label="Unassignable?"
-                columnlabel="Unassignable?"
-                help="Check box if qualification level is no longer assignable."
-                notnull="yes"
-                initial="no"/>
-    <tablefield name="pt_unassignable_date_d"
-                type="date"
-                descr="This is the date the record was last updated."
-                format="99/99/9999"
-                label="Date"
-                columnlabel="Date"
-                help="Date from which the qualification level is unassignable."/>
-    <tablefield name="pt_deletable_flag_l"
-                type="bit"
-                descr="Indicates if a record can be deleted."
-                format="Yes/No"
-                label="Deletable"
-                columnlabel="Deletable"
-                help="Indicates if a record can be deleted."
-                initial="yes"/>
-    <!-- Constraints on table pt_leaving_code -->
-    <primarykey name="pt_leaving_code_pk"
-                descr=""
-                thisFields="pt_leaving_code_ind_c"/>
-    <!-- Explicit Indexes on table pt_leaving_code  -->
-  </table>
   <table name="pm_job_assignment"
          descr="This defines the position one fills."
          area="Petra Data"
@@ -18458,20 +18404,6 @@
                 label="To Date"
                 columnlabel="To Date"
                 help="Expected end date for this job (blank if indefinite)"/>
-    <tablefield name="pm_leaving_code_c"
-                type="varchar"
-                descr="This is a one character field indicating the leaving code."
-                format="XX"
-                label="Leaving Code"
-                columnlabel="Leaving Code"
-                help="Select the correct leaving code.."/>
-    <tablefield name="pm_leaving_code_updated_date_d"
-                type="date"
-                descr="This date field indicating the date the leaving code was updated. "
-                format="99/99/9999"
-                label="Updated Date"
-                columnlabel="Updated Date"
-                help="Enter the current date upon changing the leaving code.status."/>
     <tablefield name="pm_hrd_cpy_detail_change_flag_l"
                 type="bit"
                 descr="This field indicates if the hard copy details have been changed."
@@ -18512,11 +18444,6 @@
                 thisFields="pt_assignment_type_code_c"
                 otherTable="pt_assignment_type"
                 otherFields="pt_assignment_type_code_c"/>
-    <foreignkey name="pm_job_assignment_fk4"
-                descr=""
-                thisFields="pm_leaving_code_c"
-                otherTable="pt_leaving_code"
-                otherFields="pt_leaving_code_ind_c"/>
     <!-- Explicit Indexes on table pm_job_assignment  -->
   </table>
   <table name="um_unit_ability"

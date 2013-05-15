@@ -11,7 +11,7 @@ RootNode:
     WindowHeight: 700
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
-        actDelete: {Label=&Delete, ActionClick=DeleteRow}      
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlValues, pnlDetails]
@@ -22,11 +22,11 @@ RootNode:
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnNewType, btnDeleteType]
+            Controls: [btnNewType, btnDelete]
         btnNewType:
             Action: actNew
             Stretch: horizontally
-        btnDeleteType:
+        btnDelete:
             Action: actDelete
             Stretch: horizontally
         grdDetails:

@@ -8,8 +8,8 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actNew: {Label=&Add, ActionClick=NewRow}
-        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+        actNew: {Label=&Add Journal, ActionClick=NewRow}
+        actDelete: {Label=&Delete Journal, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
