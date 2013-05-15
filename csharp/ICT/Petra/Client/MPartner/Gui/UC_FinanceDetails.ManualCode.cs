@@ -75,10 +75,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             LoadDataOnDemand();
 
-            // enable grid to react to insert and delete keyboard keys
-            grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
-            grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
-
             if (grdDetails.Rows.Count <= 1)
             {
                 btnDelete.Enabled = false;
@@ -114,43 +110,36 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS.PPartnerBankingDetails.Rows.Add(partnerBankingDetails);
         }
 
-        private void DeleteRow(System.Object sender, EventArgs e)
+        private bool PreDeleteManual(PartnerEditTDSPBankingDetailsRow ARowToDelete, ref String ADeletionQuestion)
         {
-            if (FPreviouslySelectedDetailRow == null)
+            ADeletionQuestion = String.Format(
+                Catalog.GetString("You have choosen to delete the bank account {0}.{1}{1}Do you really want to delete it?"),
+                FPreviouslySelectedDetailRow.AccountName,
+                Environment.NewLine);
+            return true;
+        }
+
+        private bool DeleteRowManual(PartnerEditTDSPBankingDetailsRow ARowToDelete, ref String ACompletionMessage)
+        {
+            ACompletionMessage = String.Empty;
+
+            // TODO what if several people are using the same bank account?
+            FMainDS.PPartnerBankingDetails.DefaultView.Sort = PPartnerBankingDetailsTable.GetBankingDetailsKeyDBName();
+            FMainDS.PPartnerBankingDetails.DefaultView.FindRows(FPreviouslySelectedDetailRow.BankingDetailsKey)[0].Row.Delete();
+
+            ARowToDelete.Delete();
+
+            return true;
+        }
+
+        private void PostDeleteManual(PartnerEditTDSPBankingDetailsRow ARowToDelete,
+            Boolean AAllowDeletion,
+            Boolean ADeletionPerformed,
+            String ACompletionMessage)
+        {
+            if (ADeletionPerformed)
             {
-                return;
-            }
-
-            if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete the bank account {0}.\n\nDo you really want to delete it?"),
-                        FPreviouslySelectedDetailRow.AccountName), Catalog.GetString("Confirm Delete"),
-                    MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-            {
-                int rowIndex = grdDetails.SelectedRowIndex();
-
-                // TODO what if several people are using the same bank account?
-                FMainDS.PPartnerBankingDetails.DefaultView.Sort = PPartnerBankingDetailsTable.GetBankingDetailsKeyDBName();
-                FMainDS.PPartnerBankingDetails.DefaultView.FindRows(FPreviouslySelectedDetailRow.BankingDetailsKey)[0].Row.Delete();
-
-                FPreviouslySelectedDetailRow.Delete();
-                FPetraUtilsObject.SetChangedFlag();
-
-                // temporarily reset selected row to avoid interference with validation
-                FPreviouslySelectedDetailRow = null;
-                grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                grdDetails.SelectRowInGrid(rowIndex, true);
-                grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-
                 DoRecalculateScreenParts();
-
-                if (grdDetails.Rows.Count <= 1)
-                {
-                    // hide details part and disable buttons if no record in grid (first row for headings)
-                    btnDelete.Enabled = false;
-                    pnlDetails.Visible = false;
-                }
             }
         }
 
@@ -233,25 +222,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (RecalculateScreenParts != null)
             {
                 RecalculateScreenParts(this, e);
-            }
-        }
-
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
-        {
-            NewRow(this, null);
-        }
-
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        private void grdDetails_DeleteKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
-        {
-            if (e.Row != -1)
-            {
-                this.DeleteRow(this, null);
             }
         }
 

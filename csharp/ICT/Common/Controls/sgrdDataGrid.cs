@@ -1371,10 +1371,10 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// Returns the index of the currently selected row or -1 if no row is selected
+        /// Returns the index of the first (topmost) highlighted row or -1 if no row is highlighted
         /// </summary>
         /// <returns>int</returns>
-        public int SelectedRowIndex()
+        public int GetFirstHighlightedRowIndex()
         {
             int rowIndex = -1;
 
@@ -1469,13 +1469,6 @@ namespace Ict.Common.Controls
             //  the call to list all rows in the viewport and INCLUDE partial!!  Having got this list, the decision is made whether to scroll.
             //  So we pass false so as not to include partial rows in this decision.
             return this.ShowCell(new SourceGrid.Position(rowToShow, 0), false);
-        }
-
-        /// make sure the grid scrolls to the selected row to have it in the visible area
-        public void ViewSelectedRow()
-        {
-            // scroll to the row
-            ShowCell(this.SelectedRowIndex());
         }
 
         /// <summary>
@@ -1686,12 +1679,12 @@ namespace Ict.Common.Controls
 
                 this.OnInsertKeyPressed(new RowEventArgs(SelectedDataRow));
 
-                //TODO: check if this will work for tabbed forms that contain subforms
                 //If a New button exists call its code.
-                if (this.FindForm().Controls.Find("btnNew", true).Length > 0)
+                Control insertButton = this.FindNearestControl("btnNew");
+
+                if (insertButton != null)
                 {
-                    System.Windows.Forms.Button insertButton = (System.Windows.Forms.Button) this.FindForm().Controls.Find("btnNew", true)[0];
-                    insertButton.PerformClick();
+                    ((System.Windows.Forms.Button)insertButton).PerformClick();
                 }
             }
             // Key for firing OnDeleteKeyPressed event
@@ -1710,12 +1703,12 @@ namespace Ict.Common.Controls
 
                 this.OnDeleteKeyPressed(new RowEventArgs(SelectedDataRow));
 
-                //TODO: check if this will work for tabbed forms that contain subforms
                 //If a Delete button exists call its code.
-                if (this.FindForm().Controls.Find("btnDelete", true).Length > 0)
+                Control deleteButton = this.FindNearestControl("btnDelete");
+
+                if (deleteButton != null)
                 {
-                    System.Windows.Forms.Button deleteButton = (System.Windows.Forms.Button) this.FindForm().Controls.Find("btnDelete", true)[0];
-                    deleteButton.PerformClick();
+                    ((System.Windows.Forms.Button)deleteButton).PerformClick();
                 }
             }
             // Keys that can trigger AutoFind
@@ -1733,6 +1726,25 @@ namespace Ict.Common.Controls
             }
 
             FLastKeyCode = AKeyEventArgs.KeyCode;
+        }
+
+        private Control FindNearestControl(String AControlName)
+        {
+            Control TryParent = this.Parent;
+
+            while (TryParent != null)
+            {
+                Control[] TryButtons = TryParent.Controls.Find(AControlName, true);
+
+                if (TryButtons.Length > 0)
+                {
+                    return TryButtons[0];
+                }
+
+                TryParent = TryParent.Parent;
+            }
+
+            return null;
         }
 
         #endregion

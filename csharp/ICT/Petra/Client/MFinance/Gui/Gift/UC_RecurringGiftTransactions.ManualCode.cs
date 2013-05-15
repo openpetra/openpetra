@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //Enable buttons accordingly
-            btnDeleteDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            btnDelete.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             btnNewDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             btnNewGift.Enabled = !FPetraUtilsObject.DetailProtectedMode;
 
@@ -82,7 +82,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber))
             {
                 //Same as previously selected
-                if (grdDetails.SelectedRowIndex() > 0)
+                if (GetSelectedRowIndex() > 0)
                 {
                     GetDetailsFromControls(GetSelectedDetailRow());
 
@@ -582,16 +582,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                                                                                               AGiftDetailNumber });
         }
 
-        /// <summary>
-        /// delete a gift detail, and if it is the last detail, delete the whole gift
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DeleteDetail(System.Object sender, EventArgs e)
-        {
-            DeleteARecurringGiftDetail();
-        }
-
         ARecurringGiftRow FGift = null;
         string FFilterAllDetailsOfGift = string.Empty;
         DataView FGiftDetailView = null;
@@ -651,7 +641,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return allowDeletion;
         }
 
-        private bool DeleteRowManual(GiftBatchTDSARecurringGiftDetailRow ARowToDelete, out string ACompletionMessage)
+        private bool DeleteRowManual(GiftBatchTDSARecurringGiftDetailRow ARowToDelete, ref string ACompletionMessage)
         {
             bool deletionSuccessful = false;
 

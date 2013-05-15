@@ -101,7 +101,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //Enable buttons accordingly
-            btnDeleteDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
+            btnDelete.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
             btnNewDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
             btnNewGift.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
 
@@ -109,7 +109,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus))
             {
                 //Same as previously selected
-                if ((ABatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (grdDetails.SelectedRowIndex() > 0))
+                if ((ABatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (GetSelectedRowIndex() > 0))
                 {
                     if (FGLEffectivePeriodChanged)
                     {
@@ -621,16 +621,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                                                                             AGiftDetailNumber });
         }
 
-        /// <summary>
-        /// delete a gift detail, and if it is the last detail, delete the whole gift
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void DeleteDetail(System.Object sender, EventArgs e)
-        {
-            DeleteAGiftDetail();
-        }
-
         private bool PreDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ADeletionQuestion)
         {
             bool allowDeletion = true;
@@ -686,7 +676,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return allowDeletion;
         }
 
-        private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, out string ACompletionMessage)
+        private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)
         {
             bool deletionSuccessful = false;
             string originatingDetailRef = string.Empty;
