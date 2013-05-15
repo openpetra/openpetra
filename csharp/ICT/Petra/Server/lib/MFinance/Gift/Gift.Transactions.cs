@@ -1411,8 +1411,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     new TVerificationResult(
                         "Posting Gift Batch",
                         String.Format("The gift batch total ({0}) does not equal the hash total ({1}).",
-                            MainDS.AGiftBatch[0].BatchTotal.ToString("C"),
-                            MainDS.AGiftBatch[0].HashTotal.ToString("C")),
+                            StringHelper.FormatUsingCurrencyCode(MainDS.AGiftBatch[0].BatchTotal, MainDS.AGiftBatch[0].CurrencyCode),
+                            StringHelper.FormatUsingCurrencyCode(MainDS.AGiftBatch[0].HashTotal, MainDS.AGiftBatch[0].CurrencyCode)),
                         TResultSeverity.Resv_Critical));
                 return null;
             }

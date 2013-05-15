@@ -60,6 +60,7 @@ using Ict.Petra.Client.MSysMan.Gui;
 using SplashScreen;
 using PetraClientShutdown;
 using Ict.Common.Remoting.Shared;
+using System.Data;
 
 namespace Ict.Petra.Client.App.PetraClient
 {
@@ -517,6 +518,10 @@ namespace Ict.Petra.Client.App.PetraClient
                     {
                         ProcessReminders.StartStandaloneRemindersProcessing();
                     }
+
+                    DataTable CurrencyFormatTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CurrencyCodeList);
+
+                    StringHelper.CurrencyFormatTable = CurrencyFormatTable;
 
                     // This loads the Main Window of Petra
                     Form MainWindow;

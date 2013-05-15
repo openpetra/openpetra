@@ -36,6 +36,8 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using System.Threading;
 
+using Ict.Petra.Server.MCommon.Data.Access;
+
 namespace Ict.Common.Remoting.Server
 {
     /// <summary>
@@ -1620,6 +1622,8 @@ namespace Ict.Common.Remoting.Server
 
             ((TRunningAppDomain)UClientObjects[(object)AClientID]).AppDomainStatus = TAppDomainStatus.adsActive;
             ((TRunningAppDomain)UClientObjects[(object)AClientID]).FClientConnectionFinishedTime = DateTime.Now;
+
+
             #region Logging
 
             //
@@ -1630,10 +1634,7 @@ namespace Ict.Common.Remoting.Server
                 TLogging.Log(
                     "Client '" + AUserName + "' successfully connected (took " +
                     ((TRunningAppDomain)UClientObjects[(object)AClientID]).FClientConnectionFinishedTime.Subtract(
-                        ((TRunningAppDomain)UClientObjects[(
-                                                               object)
-                                                           AClientID
-                         ]).FClientConnectionStartTime).
+                        ((TRunningAppDomain)UClientObjects[(object) AClientID]).FClientConnectionStartTime).
                     TotalSeconds.ToString() + " sec). ClientID: " + AClientID.ToString(),
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
             }

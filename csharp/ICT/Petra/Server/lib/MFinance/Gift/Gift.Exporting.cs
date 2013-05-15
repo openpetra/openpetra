@@ -67,6 +67,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         DateTime FDateForSummary;
         bool FUseBaseCurrency;
         Int32 FLedgerNumber;
+        String FCurrencyCode = "";
 
         TVerificationResultCollection FMessages = new TVerificationResultCollection();
 
@@ -178,6 +179,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             string BaseCurrency = MainDS.ALedger[0].BaseCurrency;
+            FCurrencyCode = BaseCurrency; // Depending on FUseBaseCurrency, this will be overwritten for each gift.
 
             SortedDictionary <String, AGiftSummaryRow>sdSummary = new SortedDictionary <String, AGiftSummaryRow>();
 
@@ -208,7 +210,6 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                 foreach (AGiftRow gift in MainDS.AGift.Rows)
                 {
-                    String mapCurrency;
 
                     if (gift.BatchNumber.Equals(giftBatch.BatchNumber) && gift.LedgerNumber.Equals(giftBatch.LedgerNumber))
                     {
@@ -227,12 +228,12 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             if (Summary)
                             {
-                                mapCurrency = FUseBaseCurrency ? BaseCurrency : giftBatch.CurrencyCode;
+                                FCurrencyCode = FUseBaseCurrency ? BaseCurrency : giftBatch.CurrencyCode;
                                 decimal mapExchangeRateToBase = FUseBaseCurrency ? 1 : giftBatch.ExchangeRateToBase;
 
 
                                 counter++;
-                                String DictionaryKey = mapCurrency + ";" + giftBatch.BankCostCentre + ";" + giftBatch.BankAccountCode + ";" +
+                                String DictionaryKey = FCurrencyCode + ";" + giftBatch.BankCostCentre + ";" + giftBatch.BankAccountCode + ";" +
                                                        giftDetail.RecipientKey + ";" + giftDetail.MotivationGroupCode + ";" +
                                                        giftDetail.MotivationGroupCode;
 
@@ -254,7 +255,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                      * summary_data.a_motivation_detail_code_c = a_gift_detail.a_motivation_detail_code_c
                                      * summary_data.a_exchange_rate_to_base_n = lv_exchange_rate_n
                                      * summary_data.a_gift_type_c = a_gift_batch.a_gift_type_c */
-                                    giftSummary.CurrencyCode = mapCurrency;
+                                    giftSummary.CurrencyCode = FCurrencyCode;
                                     giftSummary.BankCostCentre = giftBatch.BankCostCentre;
                                     giftSummary.BankAccountCode = giftBatch.BankAccountCode;
                                     giftSummary.GiftTransactionAmount = giftDetail.GiftTransactionAmount;
@@ -503,7 +504,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
             else
             {
-                FStringWriter.Write(String.Format(FCultureInfo, "{0:###########0.00}", currencyField));
+                FStringWriter.Write(StringHelper.FormatUsingCurrencyCode(currencyField, FCurrencyCode));
             }
 
             WriteDelimiter(bLineEnd);

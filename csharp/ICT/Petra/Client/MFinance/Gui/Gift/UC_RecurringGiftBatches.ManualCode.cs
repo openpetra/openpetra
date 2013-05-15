@@ -402,9 +402,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 MessageBox.Show(String.Format(Catalog.GetString(
                             "The recurring gift batch total ({0}) for batch {1} does not equal the hash total ({2})."),
-                        FPreviouslySelectedDetailRow.BatchTotal.ToString("C"),
+                        StringHelper.FormatUsingCurrencyCode(FPreviouslySelectedDetailRow.BatchTotal, FPreviouslySelectedDetailRow.CurrencyCode),
                         FPreviouslySelectedDetailRow.BatchNumber,
-                        FPreviouslySelectedDetailRow.HashTotal.ToString("C")), "Submit Recurring Gift Batch");
+                        StringHelper.FormatUsingCurrencyCode(FPreviouslySelectedDetailRow.HashTotal, FPreviouslySelectedDetailRow.CurrencyCode)),
+                        "Submit Recurring Gift Batch");
 
                 txtDetailHashTotal.Focus();
                 txtDetailHashTotal.SelectAll();

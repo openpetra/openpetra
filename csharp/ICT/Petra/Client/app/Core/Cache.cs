@@ -717,22 +717,12 @@ namespace Ict.Petra.Client.App.Core
             out System.Type ACacheableTableSystemType)
         {
             ACacheableTableSystemType = null;
-            DataTable ReturnValue;
-            TCacheableCommonTablesEnum CacheableMCommonTable;
-            TCacheableSubscriptionsTablesEnum CacheableMPartnerSubscriptionsTable;
-            TCacheableMailingTablesEnum CacheableMPartnerMailingTable;
-            TCacheablePartnerTablesEnum CacheableMPartnerPartnerTable;
-            TCacheableFinanceTablesEnum CacheableMFinanceTable;
-            TCacheableSysManTablesEnum CacheableMSysManTable;
-            TCacheablePersonTablesEnum CacheableMPersonnelPersonTable;
-            TCacheableUnitTablesEnum CacheableMPersonnelUnitsTable;
-            TCacheableConferenceTablesEnum CacheableMConferenceTable;
-            ReturnValue = null;
+            DataTable ReturnValue = null;
 
             if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableCommonTablesEnum)), ACacheableTableName) != -1)
             {
                 // MCommon Namespace
-                CacheableMCommonTable = (TCacheableCommonTablesEnum)Enum.Parse(typeof(TCacheableCommonTablesEnum), ACacheableTableName);
+                TCacheableCommonTablesEnum CacheableMCommonTable = (TCacheableCommonTablesEnum)Enum.Parse(typeof(TCacheableCommonTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
                 ReturnValue = TRemote.MCommon.Cacheable.WebConnectors.GetCacheableTable(CacheableMCommonTable,
@@ -742,7 +732,7 @@ namespace Ict.Petra.Client.App.Core
             else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableConferenceTablesEnum)), ACacheableTableName) != -1)
             {
                 // MConference Namespace
-                CacheableMConferenceTable = (TCacheableConferenceTablesEnum)Enum.Parse(typeof(TCacheableConferenceTablesEnum),
+                TCacheableConferenceTablesEnum CacheableMConferenceTable = (TCacheableConferenceTablesEnum)Enum.Parse(typeof(TCacheableConferenceTablesEnum),
                     ACacheableTableName);
 
                 // PetraServer method call
@@ -753,7 +743,7 @@ namespace Ict.Petra.Client.App.Core
             else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePartnerTablesEnum)), ACacheableTableName) != -1)
             {
                 // MPartner.Partner Namespace
-                CacheableMPartnerPartnerTable = (TCacheablePartnerTablesEnum)Enum.Parse(typeof(TCacheablePartnerTablesEnum), ACacheableTableName);
+                TCacheablePartnerTablesEnum CacheableMPartnerPartnerTable = (TCacheablePartnerTablesEnum)Enum.Parse(typeof(TCacheablePartnerTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
                 ReturnValue = TRemote.MPartner.Partner.Cacheable.WebConnectors.GetCacheableTable(CacheableMPartnerPartnerTable,
@@ -763,7 +753,7 @@ namespace Ict.Petra.Client.App.Core
             else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableSubscriptionsTablesEnum)), ACacheableTableName) != -1)
             {
                 // MPartner.Subscriptions Namespace
-                CacheableMPartnerSubscriptionsTable = (TCacheableSubscriptionsTablesEnum)Enum.Parse(typeof(TCacheableSubscriptionsTablesEnum),
+                TCacheableSubscriptionsTablesEnum CacheableMPartnerSubscriptionsTable = (TCacheableSubscriptionsTablesEnum)Enum.Parse(typeof(TCacheableSubscriptionsTablesEnum),
                     ACacheableTableName);
 
                 // PetraServer method call
@@ -774,7 +764,7 @@ namespace Ict.Petra.Client.App.Core
             else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableMailingTablesEnum)), ACacheableTableName) != -1)
             {
                 // MPartner.Mailing Namespace
-                CacheableMPartnerMailingTable = (TCacheableMailingTablesEnum)Enum.Parse(typeof(TCacheableMailingTablesEnum), ACacheableTableName);
+                TCacheableMailingTablesEnum CacheableMPartnerMailingTable = (TCacheableMailingTablesEnum)Enum.Parse(typeof(TCacheableMailingTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
                 ReturnValue = TRemote.MPartner.Mailing.Cacheable.WebConnectors.GetCacheableTable(CacheableMPartnerMailingTable,
@@ -784,7 +774,7 @@ namespace Ict.Petra.Client.App.Core
             else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableFinanceTablesEnum)), ACacheableTableName) != -1)
             {
                 // MFinance Namespace
-                CacheableMFinanceTable = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum), ACacheableTableName);
+                TCacheableFinanceTablesEnum CacheableMFinanceTable = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
                 ReturnValue = TRemote.MFinance.Cacheable.WebConnectors.GetCacheableTable(CacheableMFinanceTable,
@@ -794,7 +784,7 @@ namespace Ict.Petra.Client.App.Core
             else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableSysManTablesEnum)), ACacheableTableName) != -1)
             {
                 // MSysMan Namespace
-                CacheableMSysManTable = (TCacheableSysManTablesEnum)Enum.Parse(typeof(TCacheableSysManTablesEnum), ACacheableTableName);
+                TCacheableSysManTablesEnum CacheableMSysManTable = (TCacheableSysManTablesEnum)Enum.Parse(typeof(TCacheableSysManTablesEnum), ACacheableTableName);
 
                 // PetraServer method call
                 ReturnValue = TRemote.MSysMan.Cacheable.WebConnectors.GetCacheableTable(CacheableMSysManTable,
@@ -804,7 +794,7 @@ namespace Ict.Petra.Client.App.Core
             else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheablePersonTablesEnum)), ACacheableTableName) != -1)
             {
                 // MSysMan Namespace
-                CacheableMPersonnelPersonTable = (TCacheablePersonTablesEnum)Enum.Parse(typeof(TCacheablePersonTablesEnum),
+                TCacheablePersonTablesEnum CacheableMPersonnelPersonTable = (TCacheablePersonTablesEnum)Enum.Parse(typeof(TCacheablePersonTablesEnum),
                     ACacheableTableName);
 
                 // PetraServer method call
@@ -815,7 +805,7 @@ namespace Ict.Petra.Client.App.Core
             else if (System.Array.IndexOf(Enum.GetNames(typeof(TCacheableUnitTablesEnum)), ACacheableTableName) != -1)
             {
                 // MSysMan Namespace
-                CacheableMPersonnelUnitsTable = (TCacheableUnitTablesEnum)Enum.Parse(typeof(TCacheableUnitTablesEnum),
+                TCacheableUnitTablesEnum CacheableMPersonnelUnitsTable = (TCacheableUnitTablesEnum)Enum.Parse(typeof(TCacheableUnitTablesEnum),
                     ACacheableTableName);
 
                 // PetraServer method call

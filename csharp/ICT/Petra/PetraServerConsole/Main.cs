@@ -42,6 +42,8 @@ using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 
+using System.Reflection;
+
 namespace PetraServerConsole
 {
 #region TServer
@@ -72,13 +74,13 @@ public class TServer
             //
             // Uncomment the following lines to see which DLL's are loaded into the Default AppDomain at application start.
             // It can help in identifying which DLL's are loaded later in addition to those that were loaded at application start.
-
-            // Console.WriteLine('Loaded Assemblies in AppDomain ' + Thread.GetDomain.FriendlyName + ' (at Server start):');
-            // foreach (Assembly tmpAssembly in Thread.GetDomain.GetAssemblies())
-            // {
-            // Console.WriteLine(tmpAssembly.FullName);
-            // }
-
+/*
+            Console.WriteLine("Loaded Assemblies in AppDomain " + Thread.GetDomain().FriendlyName + " (at Server start):");
+            foreach (Assembly tmpAssembly in Thread.GetDomain().GetAssemblies())
+            {
+                Console.WriteLine(tmpAssembly.FullName);
+            }
+*/
             new TAppSettingsManager();
 
             TLanguageCulture.Init();

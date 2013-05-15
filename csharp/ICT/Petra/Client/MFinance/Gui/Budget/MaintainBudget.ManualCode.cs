@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private bool RejectYearChange = false;
 
         private TDlgSelectCSVSeparator FdlgSeparator;
-
+        private String FCurrencyCode = "";
 
         /// <summary>
         /// AP is opened in this ledger
@@ -99,6 +99,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
 
                 ClearBudgetTextboxCurrencyFormat();
+                FCurrencyCode = FMainDS.ALedger[0].BaseCurrency;
 
 //                EnableBudgetEntry(false);
 //
@@ -671,7 +672,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 BudgetPeriodRow = null;
             }
 
-            lblInflateNTotalAmount.Text = "    Total: " + TotalAmount.ToString("C");
+            lblInflateNTotalAmount.Text = "    Total: " + StringHelper.FormatUsingCurrencyCode(TotalAmount, FCurrencyCode);
             grdDetails.Refresh();
         }
 
@@ -718,7 +719,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 BudgetPeriodRow = null;
             }
 
-            lblInflateBaseTotalAmount.Text = "    Total: " + TotalAmount.ToString("C");
+            lblInflateBaseTotalAmount.Text = "    Total: " + StringHelper.FormatUsingCurrencyCode(TotalAmount, FCurrencyCode);
         }
 
         private void DisplayBudgetTypeAdhoc()
@@ -760,7 +761,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 txt = null;
             }
 
-            this.lblAdhocTotalAmount.Text = "Total Amount: " + totalAmount.ToString("C");
+            this.lblAdhocTotalAmount.Text = "Total Amount: " + StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode); 
         }
 
         private void DisplayBudgetTypeSame()
@@ -780,7 +781,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
 
             txtAmount.NumberValueDecimal = FirstPeriodAmount;
-            lblSameTotalAmount.Text = "    Total: " + totalAmount.ToString("C");
+            lblSameTotalAmount.Text = "    Total: " + StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
         }
 
         private void DisplayBudgetTypeSplit()
@@ -861,7 +862,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             txtFirstPeriodAmount.NumberValueDecimal = FirstPeriodAmount;
             txtInflateAfterPeriod.NumberValueInt = InflateAfterPeriod;
             txtInflationRate.NumberValueDecimal = InflationRate;
-            lblInflateNTotalAmount.Text = "    Total: " + TotalAmount.ToString("C");
+            lblInflateNTotalAmount.Text = "    Total: " + StringHelper.FormatUsingCurrencyCode(TotalAmount, FCurrencyCode);
         }
 
         private void DisplayBudgetTypeInflateBase()
@@ -911,7 +912,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             txtPeriod11Index.NumberValueDecimal = PeriodValues[10];
             txtPeriod12Index.NumberValueDecimal = PeriodValues[11];
 
-            lblInflateBaseTotalAmount.Text = "    Total: " + totalAmount.ToString("C");
+            lblInflateBaseTotalAmount.Text = "    Total: " + StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
         }
 
         private void ClearBudgetPeriodTextboxes()

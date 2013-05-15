@@ -61,5 +61,6 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         {
             DeleteACurrency();
         }
+
     }
 }

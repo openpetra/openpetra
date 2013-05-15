@@ -671,6 +671,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FGiftDetailView = new DataView(FMainDS.AGiftDetail);
             FGiftDetailView.RowFilter = FFilterAllDetailsOfGift;
+            String formattedDetailAmount = StringHelper.FormatUsingCurrencyCode(ARowToDelete.GiftTransactionAmount, GetBatchRow().CurrencyCode);
 
             if (FGiftDetailView.Count == 1)
             {
@@ -683,7 +684,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ARowToDelete.BatchNumber,
                     ARowToDelete.DonorName,
                     ARowToDelete.RecipientDescription,
-                    ARowToDelete.GiftTransactionAmount.ToString("C"));
+                    formattedDetailAmount);
             }
             else if (FGiftDetailView.Count > 1)
             {
@@ -697,7 +698,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         ARowToDelete.BatchNumber,
                         ARowToDelete.DonorName,
                         ARowToDelete.RecipientDescription,
-                        ARowToDelete.GiftTransactionAmount.ToString("C"));
+                        formattedDetailAmount);
             }
             else //this should never happen
             {

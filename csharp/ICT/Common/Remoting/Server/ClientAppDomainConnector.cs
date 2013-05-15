@@ -207,6 +207,9 @@ namespace Ict.Common.Remoting.Server
             Convert.ToString(FRemoteClientDomainManagerClass.InvokeMember("EstablishDBConnection",
                     (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod), null, FRemoteClientDomainManagerObject, null, null));
 
+            // Perform any other initialisation required by the AppDomain
+            FRemoteClientDomainManagerClass.InvokeMember("PostAppDomainSetupInitialisation",
+                    (BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod), null, FRemoteClientDomainManagerObject, null, null);
             //  LoadClientDomainManager.ClientTaskAdd('USERMESSAGE','This is just for testing purposes!', 'blabla_1', 'blabla_2', 'blabla_3', 'blabla_4', 1);
         }
 
