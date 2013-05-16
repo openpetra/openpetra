@@ -271,6 +271,22 @@ namespace Ict.Petra.Client.CommonControls
         private String FNotSetDisplay;
 
         /// <summary>
+        /// Gets or sets the text associated with this Control (in this case: the text in the editable part of the ComboBox)
+        /// </summary>
+        public new string Text
+        {
+            get
+            {
+                return cmbCombobox.Text;   
+            }
+            
+            set
+            {
+                cmbCombobox.Text = value;
+            }
+        }
+        
+        /// <summary>
         /// Exposes the DataTable that defines the items that are shown as drop-down items.
         /// <para>
         /// Use this Property only to access the underlying DataTable of the items that
@@ -332,6 +348,7 @@ namespace Ict.Petra.Client.CommonControls
             }
         }
 
+        
         /**
          * This Event is thrown when the internal ComboBox throws the SelectedValueChanged Event.
          */
@@ -381,6 +398,7 @@ namespace Ict.Petra.Client.CommonControls
         public void InitialiseUserControl()
         {
             Ict.Common.Data.TTypedDataTable TypedTable;
+            DataTable SortedCacheableDataTable;
 
             if (DesignMode)
             {
@@ -751,18 +769,22 @@ namespace Ict.Petra.Client.CommonControls
                     break;
 
                 case TListTableEnum.PartnerAttributeCategoryList:
-
-                    InitialiseUserControl(
-                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.PartnerAttributeCategoryList),
+                    SortedCacheableDataTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.ContactCategoryList);
+                        
+                    SortedCacheableDataTable.DefaultView.Sort = PPartnerAttributeCategoryTable.GetIndexDBName() + " ASC";
+                    
+                    InitialiseUserControl(SortedCacheableDataTable,
                     "p_category_code_c",
                     "p_category_desc_c",
                     null);
                     break;
                     
-                case TListTableEnum.PartnerAttributeTypeList:
-
-                    InitialiseUserControl(
-                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.PartnerAttributeTypeList),
+                case TListTableEnum.PartnerAttributeTypeList:                   
+                    SortedCacheableDataTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.ContactTypeList);
+                        
+                    SortedCacheableDataTable.DefaultView.Sort = PPartnerAttributeCategoryTable.GetIndexDBName() + " ASC";
+                    
+                    InitialiseUserControl(SortedCacheableDataTable,
                     "p_code_c",
                     "p_description_c",
                     null);
@@ -1335,12 +1357,12 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.PartnerAttributeCategoryList:
                     this.ColumnWidthCol1 = 200;
-                    this.ColumnWidthCol2 = 250;
+                    this.ColumnWidthCol2 = 305;
                     break;
 
                 case TListTableEnum.PartnerAttributeTypeList:
                     this.ColumnWidthCol1 = 200;
-                    this.ColumnWidthCol2 = 250;
+                    this.ColumnWidthCol2 = 295;
                     break;
 
                 case TListTableEnum.PartnerClassList:
@@ -1508,5 +1530,21 @@ namespace Ict.Petra.Client.CommonControls
                 cmbCombobox.DataBindings[0].BindingManagerBase.EndCurrentEdit();
             }
         }
+        
+        /// <summary>
+        /// Returns the DataRow that underlies the currently selected ComboBox Item.
+        /// </summary>
+        public DataRow GetSelectedItemsDataRow()
+        {
+            DataRow ReturnValue = null;
+            
+            if (cmbCombobox.SelectedItem != null) 
+            {
+                DataRowView Drv = (DataRowView)cmbCombobox.SelectedItem;
+                ReturnValue = Drv.Row;                
+            }
+            
+            return ReturnValue;
+        }        
     }
 }

@@ -73,6 +73,15 @@ namespace Ict.Common.Controls
 
         #endregion
 
+        #region Delegates
+        
+        /// <summary>
+        /// Delegate for building a Link where the Text of this Control is part of a hyperlink rather than it being the full hyperlink.
+        /// </summary>
+        public Func<string, string> BuildLinkWithValue;
+        
+        #endregion
+        
         #region Constructor
 
         /// <summary>
@@ -231,12 +240,25 @@ namespace Ict.Common.Controls
                 if (FLinkLabel.Links.Count > 0)
                 {
                     TheLink = FLinkLabel.Links[0].LinkData.ToString();
+                    
+                    if (FLinkType == TLinkTypes.Http_With_Value_Replacement)
+                    {
+                        if (BuildLinkWithValue != null) 
+                        {
+                            TheLink = BuildLinkWithValue(TheLink);
+                        }
+                        else
+                        {
+                            throw new EProblemLaunchingHyperlinkException("LinkType is set to TLinkTypes.Http_With_Value_Replacement, but the Delegate 'BuildLinkWithValue' has not been set up");
+                        }
+                    }
+                    
                     System.Diagnostics.Process.Start(TheLink);
                 }
             }
             catch (Exception ex)
             {
-                throw new ArgumentException("Hyperlink cannot be launched!", ex);
+                throw new EProblemLaunchingHyperlinkException("Hyperlink cannot be launched!", ex);
             }
         }
 
@@ -324,6 +346,11 @@ namespace Ict.Common.Controls
         Http,
 
         /// <summary>
+        /// Act as a http:// or https:// hyperlink where a part of the URL is replaced with a custom value.
+        /// </summary>
+        Http_With_Value_Replacement,
+        
+        /// <summary>
         /// Act as a ftp:// hyperlink
         /// </summary>
         Ftp,
@@ -340,4 +367,29 @@ namespace Ict.Common.Controls
     }
 
     #endregion
-}
+    
+    /// <summary>
+    /// Thrown if the Control encounters a problem when trying to launch a Hyperlink.
+    /// </summary>
+    public class EProblemLaunchingHyperlinkException : Exception
+    {
+        /// <summary>
+        /// Constructor with inner Exception
+        /// </summary>
+        /// <param name="innerException"></param>
+        /// <param name="message"></param>
+        public EProblemLaunchingHyperlinkException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
+        /// <summary>
+        /// Constructor without inner Exception
+        /// </summary>
+        /// <param name="message"></param>
+        public EProblemLaunchingHyperlinkException(string message)
+            : base(message)
+        {
+        }
+    }
+ }

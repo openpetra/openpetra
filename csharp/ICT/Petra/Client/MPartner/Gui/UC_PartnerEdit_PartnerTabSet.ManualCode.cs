@@ -702,6 +702,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             FUcoAddresses.CleanupRecordsBeforeMerge();
+            
+            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucContactDetails))
+            {
+                // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucContactDetails);'
+                SetupUserControlContactDetails();
+            }
+
+            FUcoContactDetails.CleanupRecordsBeforeMerge();
         }
 
         /// <summary>

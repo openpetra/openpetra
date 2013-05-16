@@ -394,6 +394,8 @@ namespace Ict.Petra.Shared
             list.Add("seq_match_number");
             list.Add("seq_statement_number");
             list.Add("seq_login_process_id");
+            list.Add("seq_partner_attribute_category_index");
+            list.Add("seq_partner_attribute_type_index");
 
             #endregion
             return list;

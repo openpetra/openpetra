@@ -277,6 +277,7 @@ DELETE FROM p_occupation;
 DELETE FROM pt_marital_status;
 DELETE FROM u_unit_type;
 DELETE FROM p_partner_attribute_type;
+DELETE FROM p_partner_attribute_category;
 DELETE FROM p_location_type;
 DELETE FROM p_location;
 DELETE FROM p_partner_classes;

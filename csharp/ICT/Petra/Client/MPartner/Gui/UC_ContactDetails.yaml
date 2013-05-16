@@ -100,8 +100,8 @@ RootNode:
                 Row2: [pnlCurrentGrouping, chkConfidential]
             Height: 87
 
-        cmbContactCategory: {List=PartnerAttributeCategoryList, ComboBoxWidth=290, Width=290, Validation=true}
-        cmbContactType: {List=PartnerAttributeTypeList, ComboBoxWidth=150, Width=150, DataField=PPartnerAttribute.AttributeType, Validation=true}
+        cmbContactCategory: {List=PartnerAttributeCategoryList, ComboBoxWidth=290, Width=290, Validation=true, OnChange=FilterContactTypeCombo}
+        cmbContactType: {List=PartnerAttributeTypeList, ComboBoxWidth=150, Width=150, DataField=PPartnerAttribute.AttributeType, Validation=true, OnChange=OnContactTypeChanged}
         chkSpecialised: 
            Label: Business
            Validation: true   # only to cause data to be updated on-the-fly...

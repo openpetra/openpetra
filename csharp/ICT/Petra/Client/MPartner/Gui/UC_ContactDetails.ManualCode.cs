@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
@@ -40,10 +41,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_ContactDetails
     {
+        private readonly string StrDefaultContactType = Catalog.GetString("Phone");
+            
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
         private Boolean FPartnerAttributesExist;
+        
+        private string FDefaultContactType = String.Empty;
         
         #region Public Methods
 
@@ -109,6 +114,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public void PostInitUserControl(PartnerEditTDS AMainDS)
         {
+            DataRow[] DefaultContactTypes;
+            
             FMainDS = AMainDS;
             
             // disable change event while controls are being initialized as otherwise save button might get enabled
@@ -128,14 +135,48 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPartnerAttributesExist = LoadDataOnDemand();
             }
 
+            //
+            // Ensure we have instances of PPartnerAttributeCategoryTable and PPartnerAttributeTypeTable in FMainDS. They are needed because 
+            // the Grid's underlying DataTable has got custom DataColumns with Expressions that reference those DataTables in the DataSet!
+            //
+            // Note 1: When an existing Partner gets opened, FMainDS does not contain instances of PPartnerAttributeCategoryTable or PPartnerAttributeTypeTable
+            // hence we add them throught he following code
+            // Note 2: When a new Partner gets created, FMainDS contains instances of PPartnerAttributeCategoryTable and PPartnerAttributeTypeTable hence they will
+            // not be created by the following code            
             if (!FMainDS.Tables.Contains(PPartnerAttributeCategoryTable.GetTableName()) 
                 && (!FMainDS.Tables.Contains(PPartnerAttributeTypeTable.GetTableName())))
             {
                 FMainDS.Tables.Add(new PPartnerAttributeCategoryTable(PPartnerAttributeCategoryTable.GetTableName()));
                 FMainDS.Tables.Add(new PPartnerAttributeTypeTable(PPartnerAttributeTypeTable.GetTableName()));
                 FMainDS.InitVars();
-                FMainDS.Merge((PPartnerAttributeCategoryTable) TDataCache.TMPartner.GetCacheablePartnerTable2(TCacheablePartnerTablesEnum.PartnerAttributeCategoryList, PPartnerAttributeCategoryTable.GetTableName()));
-                FMainDS.Merge((PPartnerAttributeTypeTable) TDataCache.TMPartner.GetCacheablePartnerTable2(TCacheablePartnerTablesEnum.PartnerAttributeTypeList, PPartnerAttributeTypeTable.GetTableName()));                
+            }
+            
+            if (FMainDS.PPartnerAttributeCategory.Count == 0)
+            {
+                // Note: If FMainDS contains an instance of the PPartnerAttributeCategoryTable, but it hasn't got any rows
+                // we add them here from the corresponding Cacheable DataTable (that is also the case when a new Partner gets created)
+                FMainDS.Merge((PPartnerAttributeCategoryTable) TDataCache.TMPartner.GetCacheablePartnerTable2(TCacheablePartnerTablesEnum.ContactCategoryList, PPartnerAttributeCategoryTable.GetTableName()));
+
+                if (FMainDS.PPartnerAttributeCategory.Count == 0)
+                {
+                    MessageBox.Show(Catalog.GetString("There are no Partner Contact Categories available. Due to this, this Tab will not work correctly!\r\n\r\nPlease set up at least one Partner Contact Category!"),
+                                    Catalog.GetString("Partner Contact Details Tab: Not Functional"),
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);                                    
+                }                
+            }
+
+            if (FMainDS.PPartnerAttributeType.Count == 0)
+            {
+                // Note: If FMainDS contains an instance of the PPartnerAttributeTypeTable, but it hasn't got any rows
+                // we add them here from the corresponding Cacheable DataTable (that is also the case when a new Partner gets created)
+                FMainDS.Merge((PPartnerAttributeTypeTable) TDataCache.TMPartner.GetCacheablePartnerTable2(TCacheablePartnerTablesEnum.ContactTypeList, PPartnerAttributeTypeTable.GetTableName()));                
+                
+                if (FMainDS.PPartnerAttributeType.Count == 0) 
+                {
+                    MessageBox.Show(Catalog.GetString("There are no Partner Contact Types available. Due to this, this Tab will not work correctly!\r\n\r\nPlease set up at least one Partner Contact Type!"),
+                                    Catalog.GetString("Partner Contact Details Tab: Not Functional"),
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
             
             FPartnerAttributesExist = FMainDS.PPartnerAttribute.Rows.Count > 0;
@@ -160,6 +201,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             /* Hook up event that fires when a different Row is selected */
 //            grdDetails.Selection.FocusRowEntered += new RowEventHandler(this.DataGrid_FocusRowEntered);
+            
+            // Set up special sort order of Rows in Grid:
+            // PPartnerAttributeCategory.Index followed by PPartnerAttributeType.Index followed by PPartnerAttribute.Index!
+            DataView gridView = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
+            gridView.Sort = "Parent_Parent_CategoryIndex ASC, Parent_AttributeIndex ASC, " +
+                PPartnerAttributeTable.GetIndexDBName() + " ASC";
             
             OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpFamilyMembers));
 
@@ -190,9 +237,59 @@ namespace Ict.Petra.Client.MPartner.Gui
             // now changes to controls can trigger enabling of save button again
             FPetraUtilsObject.EnableDataChangedEvent();
 
+            
+            // Try to find a Contact Type that matches the default; if found, new Records are defaulting to that Contact Type.
+            DefaultContactTypes = FMainDS.PPartnerAttributeType.Select(PPartnerAttributeTypeTable.GetCodeDBName() + " = '" + StrDefaultContactType + "'");
+            
+            if (DefaultContactTypes.Length > 0) 
+            {
+                FDefaultContactType = StrDefaultContactType;
+            }
+            else
+            {
+                if (FMainDS.PPartnerAttributeType.Count > 0) 
+                {
+                    // The Contact Type that should be Default wasn't found, therefore use the first Contact Type of the first Contact Category
+                    DataView SortedPartnerAttr = new DataView(FMainDS.PPartnerAttributeType, String.Empty,
+                        "CategoryIndex ASC, " + PPartnerAttributeTypeTable.GetIndexDBName() + " ASC", DataViewRowState.CurrentRows);
+                    FDefaultContactType = ((PPartnerAttributeTypeRow)SortedPartnerAttr[0].Row).Code;
+                }
+            }
+            
 //            ApplySecurity();            // TODO
         }
 
+        /// <summary>
+        /// Performs necessary actions to make the Merging of rows that were changed on
+        /// the Server side into the Client-side DataSet possible.
+        /// </summary>
+        /// <returns>void</returns>
+        public void CleanupRecordsBeforeMerge()
+        {
+            DataView NewPartnerAttributesDV;
+            List<DataRow> PPartnerAttributeDeleteRows = new List<DataRow>();
+
+            /*
+             * Check if PartnerAttributes have been added
+             * -> remove them on the Client side, otherwise we will end up with these rows
+             *   (having Sequence values below 0) plus the rows coming from the Server
+             *   (having Sequence values that were determined by a Sequence) after merging
+             */
+            NewPartnerAttributesDV = new DataView(FMainDS.PPartnerAttribute, "", "", DataViewRowState.Added);
+
+            // First check and remember affected DataRows
+            for (int Counter = 0; Counter <= NewPartnerAttributesDV.Count - 1; Counter += 1)
+            {
+                PPartnerAttributeDeleteRows.Add(NewPartnerAttributesDV[Counter].Row);
+            }
+
+            // Now remove affected DataRows
+            foreach (DataRow DeleteRow in PPartnerAttributeDeleteRows)
+            {
+                NewPartnerAttributesDV.Table.Rows.Remove(DeleteRow);
+            }
+        }
+        
         /// <summary>
         /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
         /// Since we don't have controls on this UserControl that need adjusting after resizing
@@ -255,6 +352,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             
             // By default only valid Contact Details should be shown
 //            chkValidContactDetailsOnly.Checked = true;  // TODO - work on Action, then uncomment this line
+
+            txtValue.BuildLinkWithValue = BuildLinkWithValue;
         }
 
         /// <summary>
@@ -321,6 +420,34 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 btnDelete.Enabled = true;
             }
+
+            OnContactTypeChanged(null, null);
+        }
+        
+        private void BeforeShowDetailsManual(PPartnerAttributeRow ARow)
+        {
+            if (ARow != null)
+            {
+                btnDelete.Enabled = true;
+                
+                if (FMainDS.PPartnerAttributeType != null) 
+                {
+                    DataRow[] ParnterAttributeRow = FMainDS.PPartnerAttributeType.Select(PPartnerAttributeTypeTable.GetCodeDBName() + " = " + "'" + ARow.AttributeType + "'");
+                                                                          
+                    if (ParnterAttributeRow.Length > 0) 
+                    {
+                        SelectCorrespondingCategory((PPartnerAttributeTypeRow)ParnterAttributeRow[0]);                        
+                    }                                        
+                    
+//                    cmbContactType.SetSelectedString(ARow.AttributeType, -1);
+                }
+            }
+            else
+            {
+                cmbContactCategory.SelectedIndex = 0;
+            }        
+
+            cmbContactCategory.Enabled = (ARow.RowState == DataRowState.Added);             
         }
 
         private void GetDetailDataFromControlsManual(PPartnerAttributeRow ARow)
@@ -378,14 +505,25 @@ namespace Ict.Petra.Client.MPartner.Gui
             int HighestIndex = 0;
             int ThisRow_Sequence = 0;
             int ThisRow_Index = 0;
+            System.Data.DataRowVersion ThisRow_RowVersion;
             PPartnerAttributeTable ThisDT = (PPartnerAttributeTable)ARow.Table;
             
             ARow.PartnerKey = FMainDS.PPartner[0].PartnerKey;
-            ARow.AttributeType = "Phone";
+            ARow.AttributeType = FDefaultContactType;
             
             for (int Counter = 0; Counter < ThisDT.Rows.Count; Counter++) 
             {
-                ThisRow_Sequence = Convert.ToInt32(ThisDT.Rows[Counter][PPartnerAttributeTable.GetSequenceDBName(), DataRowVersion.Original]);
+                if (ThisDT.Rows[Counter].RowState == DataRowState.Deleted) 
+                {
+                    ThisRow_RowVersion = DataRowVersion.Original;
+                }
+                else
+                {
+                    ThisRow_RowVersion = DataRowVersion.Current;
+                }
+                
+                ThisRow_Sequence = Convert.ToInt32(ThisDT.Rows[Counter][PPartnerAttributeTable.GetSequenceDBName(), ThisRow_RowVersion]);
+                
                 if (ThisRow_Sequence < LeastSequence)
                 {
                     LeastSequence = ThisRow_Sequence;
@@ -396,7 +534,16 @@ namespace Ict.Petra.Client.MPartner.Gui
          
             for (int Counter = 0; Counter < ThisDT.Rows.Count; Counter++) 
             {
-                ThisRow_Index = Convert.ToInt32(ThisDT.Rows[Counter][PPartnerAttributeTable.GetIndexDBName(), DataRowVersion.Original]);
+                if (ThisDT.Rows[Counter].RowState == DataRowState.Deleted) 
+                {
+                    ThisRow_RowVersion = DataRowVersion.Original;
+                }
+                else
+                {
+                    ThisRow_RowVersion = DataRowVersion.Current;
+                }
+                                
+                ThisRow_Index = Convert.ToInt32(ThisDT.Rows[Counter][PPartnerAttributeTable.GetIndexDBName(), ThisRow_RowVersion]);
                 
                 if (ThisRow_Index > HighestIndex) 
                 {
@@ -419,6 +566,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Before the auto-generated Method for deletion can be called we need to set the Expressions that refer to 'Parent.*' to "", 
             // otherwise we get a 'System.IndexOutOfRangeException: Cannot find relation 0.' Exception when the DataTable gets deserialised 
             // on the server side in the call to Method 'GetNonCacheableRecordReferenceCount'!
+            // Confer http://bytes.com/topic/asp-net/answers/323437-cannot-file-relation-0-a            
             foreach (DataColumn RemoveExpressionsColumn in FMainDS.PPartnerAttribute.Columns)
             {
                 if (RemoveExpressionsColumn.Expression.Length != 0)
@@ -531,12 +679,33 @@ namespace Ict.Petra.Client.MPartner.Gui
             ForeignTableColumn.ColumnName = "Parent_" + PPartnerAttributeTypeTable.GetCodeDBName();
             ForeignTableColumn.Expression = "";  // The real expression will be set in Method 'SetColumnExpressions'!
             FMainDS.PPartnerAttribute.Columns.Add(ForeignTableColumn);
+
+            ForeignTableColumn = new DataColumn();
+            ForeignTableColumn.DataType = System.Type.GetType("System.Int32");
+            ForeignTableColumn.ColumnName = "Parent_AttributeIndex";
+            ForeignTableColumn.Expression = "";  // The real expression will be set in Method 'SetColumnExpressions'!
+            FMainDS.PPartnerAttribute.Columns.Add(ForeignTableColumn);
+
+            ForeignTableColumn = new DataColumn();
+            ForeignTableColumn.DataType = System.Type.GetType("System.Int32");
+            ForeignTableColumn.ColumnName = "Parent_Parent_CategoryIndex";
+            ForeignTableColumn.Expression = "";  // The real expression will be set in Method 'SetColumnExpressions'!
+            FMainDS.PPartnerAttribute.Columns.Add(ForeignTableColumn);
             
             ForeignTableColumn = new DataColumn();
             ForeignTableColumn.DataType = System.Type.GetType("System.String");
             ForeignTableColumn.ColumnName = "ContactType";
             ForeignTableColumn.Expression = "";  // The real expression will be set in Method 'SetColumnExpressions'!
             FMainDS.PPartnerAttribute.Columns.Add(ForeignTableColumn);
+            
+            if (!FMainDS.PPartnerAttributeType.Columns.Contains("CategoryIndex")) 
+            {
+                ForeignTableColumn = new DataColumn();
+                ForeignTableColumn.DataType = System.Type.GetType("System.Int32");
+                ForeignTableColumn.ColumnName = "CategoryIndex";
+                ForeignTableColumn.Expression = "Parent." + PPartnerAttributeCategoryTable.GetIndexDBName();
+                FMainDS.PPartnerAttributeType.Columns.Add(ForeignTableColumn);                
+            }
             
             SetColumnExpressions();
         }
@@ -548,9 +717,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             FMainDS.PPartnerAttribute.Columns["Parent_" + PPartnerAttributeTypeTable.GetCodeDBName()].Expression =
                 "Parent." + PPartnerAttributeTypeTable.GetCodeDBName();
+
+            FMainDS.PPartnerAttribute.Columns["Parent_AttributeIndex"].Expression =
+                "Parent."  + PPartnerAttributeTypeTable.GetIndexDBName();
+            
+            FMainDS.PPartnerAttribute.Columns["Parent_Parent_CategoryIndex"].Expression =
+                "Parent.CategoryIndex";
             
             FMainDS.PPartnerAttribute.Columns["ContactType"].Expression =
-                "IIF(" + PPartnerAttributeTable.GetSpecialisedDBName() + " = true, Parent." + PPartnerAttributeTypeTable.GetSpecialLabelDBName() + ", Parent." + PPartnerAttributeTypeTable.GetCodeDBName() + ")";            
+                "IIF(" + PPartnerAttributeTable.GetSpecialisedDBName() + " = true, ISNULL(Parent." + PPartnerAttributeTypeTable.GetSpecialLabelDBName() + ", Parent." + PPartnerAttributeTypeTable.GetCodeDBName() + "), Parent." + PPartnerAttributeTypeTable.GetCodeDBName() + ")";
         }
         
         /// <summary>
@@ -565,10 +740,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             //
             // Contact Type
-            grdDetails.AddTextColumn("Type Code", FMainDS.PPartnerAttribute.Columns["Parent_" + PPartnerAttributeTypeTable.GetCodeDBName()]);
+//            grdDetails.AddTextColumn("Type Code", FMainDS.PPartnerAttribute.Columns["Parent_" + PPartnerAttributeTypeTable.GetCodeDBName()]);
 
             //
-            // Contact Type
+            // Contact Type (Calculated Expression!)
             grdDetails.AddTextColumn("Contact Type", FMainDS.PPartnerAttribute.Columns["ContactType"]);
             
             // Value
@@ -582,6 +757,18 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // Confidential
             grdDetails.AddCheckBoxColumn("Confidential", FMainDS.PPartnerAttribute.ColumnConfidential);
+
+            // Sequence (for testing purposes only...)
+            grdDetails.AddTextColumn("Sequence", FMainDS.PPartnerAttribute.ColumnSequence);
+
+            // Index (for testing purposes only...)
+            grdDetails.AddTextColumn("Index", FMainDS.PPartnerAttribute.ColumnIndex);
+
+            // Primary (for testing purposes only...)
+            grdDetails.AddCheckBoxColumn("Primary", FMainDS.PPartnerAttribute.ColumnPrimary);
+
+            // Within Organsiation (for testing purposes only...)
+            grdDetails.AddCheckBoxColumn("Within Organsiation", FMainDS.PPartnerAttribute.ColumnWithinOrgansiation);
             
             // Modification TimeStamp (for testing purposes only...)
             // grdDetails.AddTextColumn("Modification TimeStamp", FMainDS.PPartnerAttribute.ColumnModificationId);
@@ -641,6 +828,153 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
         
+        private void FilterContactTypeCombo(Object sender, EventArgs e)
+        {
+            if (cmbContactCategory.Text != String.Empty) 
+            {
+                cmbContactType.Filter = PPartnerAttributeTypeTable.GetAttributeCategoryDBName() + " = '" + cmbContactCategory.Text + "'";    
+
+                // Select the first item in the ComboBox                
+                if (cmbContactType.Count > 0) 
+                {
+                    cmbContactType.SelectedIndex = 0;    
+                }
+                
+                OnContactTypeChanged(null, null);
+            }
+        }
+ 
+        private void OnContactTypeChanged(Object sender, EventArgs e)
+        {
+            PPartnerAttributeTypeRow ContactTypeDR;
+            TPartnerAttributeTypeValueKind ValueKind;
+            
+            if (cmbContactType.Text != String.Empty) 
+            {
+                ContactTypeDR = (PPartnerAttributeTypeRow)cmbContactType.GetSelectedItemsDataRow();
+                
+                SelectCorrespondingCategory(ContactTypeDR);
+                
+                if(Enum.TryParse<TPartnerAttributeTypeValueKind>(ContactTypeDR.AttributeTypeValueKind, out ValueKind))
+                {
+                    switch (ValueKind) 
+                    {
+                        case TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL:
+                            txtValue.LinkType = TLinkTypes.None;
+                            break;
+                            
+                        case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK:
+                            txtValue.LinkType = TLinkTypes.Http;
+                            break;
+                            
+                        case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK_WITHVALUE:
+                            txtValue.LinkType = TLinkTypes.Http_With_Value_Replacement;
+                            
+                            break;
+                        case TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS:
+                            txtValue.LinkType = TLinkTypes.Email;
+                            break;
+                            
+                        case TPartnerAttributeTypeValueKind.CONTACTDETAIL_SKYPEID:
+                            txtValue.LinkType = TLinkTypes.Skype;
+                            break;
+                            
+                        default:
+                            throw new Exception("Invalid value for TPartnerAttributeTypeValueKind");
+                    }
+                }
+                else
+                {
+                    // Fallback!
+                    txtValue.LinkType = TLinkTypes.None;
+                }
+            }
+        }
+        
+        private void SelectCorrespondingCategory(PPartnerAttributeTypeRow ARow)
+        {
+            int SelectionCounter = 0;
+            
+            foreach(DataRowView Drv in cmbContactCategory.Table.DefaultView)
+            {
+                if (((PPartnerAttributeCategoryRow)(Drv.Row)).CategoryCode == ARow.AttributeCategory)
+                {
+                    break;
+                }
+                
+                SelectionCounter++;
+            }
+            
+            cmbContactCategory.SelectedIndex = SelectionCounter;
+        }
+ 
+        /// <summary>
+        /// Constructs a valid URL string from a Value that is of a Contact Type that has got a Hyperlink Format set up.
+        /// </summary>
+        /// <param name="AValue">Value that should replace '{VALUE}' in the Hyperlink Format strin</param>
+        /// <returns>URL with the Value replacing '{VALUE}'.</returns>
+        private string BuildLinkWithValue(string AValue)
+        {
+            string HyperlinkFormat;
+            string ReturnValue = String.Empty;
+            
+            if (txtValue.LinkType == TLinkTypes.Http_With_Value_Replacement) 
+            {
+                HyperlinkFormat = ((PPartnerAttributeTypeRow)cmbContactType.GetSelectedItemsDataRow()).HyperlinkFormat;
+                
+                if ((HyperlinkFormat != null) 
+                    && (HyperlinkFormat != String.Empty))
+                {
+                    if ((HyperlinkFormat.Contains("{"))
+                       && HyperlinkFormat.Contains("}")) 
+                    {
+                        ReturnValue = HyperlinkFormat.Substring(0, HyperlinkFormat.IndexOf('{')) + 
+                            txtValue.Text;
+                        ReturnValue += HyperlinkFormat.Substring(HyperlinkFormat.LastIndexOf('}') + 1);    
+                    }
+                    else
+                    {
+                        throw new EProblemConstructingHyperlinkException("The Value should be used to construct a hyperlink-with-value-replacement but the HyperlinkFormat is not correct (it needs to contain both the '{' and '}' characters)");
+                    }
+                }
+                else
+                {
+                    throw new Exception("The Value should be used to construct a hyperlink-with-value-replacement but the HyperlinkFormat of the Contact Type is not specified");    
+                }
+            }
+            else
+            {
+                throw new Exception("The Value should be used to construct a hyperlink-with-value-replacement but the LinkType of the Value Control is not 'TLinkTypes.Http_With_Value_Replacement'");
+            }
+            
+            return ReturnValue;
+        }
+        
         #endregion
     }
+    
+    /// <summary>
+    /// Thrown if the the attempt to construct a Hyperlink from a Value and a Hyperlink Format fails.
+    /// </summary>
+    public class EProblemConstructingHyperlinkException : Exception
+    {
+        /// <summary>
+        /// Constructor with inner Exception
+        /// </summary>
+        /// <param name="innerException"></param>
+        /// <param name="message"></param>
+        public EProblemConstructingHyperlinkException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
+        /// <summary>
+        /// Constructor without inner Exception
+        /// </summary>
+        /// <param name="message"></param>
+        public EProblemConstructingHyperlinkException(string message)
+            : base(message)
+        {
+        }
+    }    
 }
