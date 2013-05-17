@@ -10,8 +10,8 @@ RootNode:
     WindowWidth: 790
     WindowHeight: 700
     Actions:
-        actNewCategory: {Label=&New, ActionClick=NewRecord}
-        actDeleteCategory: {Label=&Delete, ActionClick=DeleteRecord}      
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
         actPromoteCategory: {ActionClick=ContactCategoryPromote, Image: MoveDownArrow.ico}
         actDemoteCategory: {ActionClick=ContactCategoryDemote, Image: MoveUpArrow.ico}        
     Controls:
@@ -24,10 +24,10 @@ RootNode:
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
-            Controls: [btnNewCategory, btnDeleteCategory, pnlPromoteDemoteCategory]
-        btnNewCategory:
+            Controls: [btnNew, btnDelete, pnlPromoteDemoteCategory]
+        btnNew:
             Stretch: horizontally
-        btnDeleteCategory:
+        btnDelete:
             Stretch: horizontally
         pnlPromoteDemoteCategory:
             Controls: [btnDemoteCategory, btnPromoteCategory]
