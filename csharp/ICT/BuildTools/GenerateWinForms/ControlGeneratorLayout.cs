@@ -906,7 +906,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FCurrentColumn += ctrl.colSpan;
             }
         }
-        
+
         /// <summary>
         /// Call this Method to reset the TabIndex counter for each YAML file.
         /// </summary>

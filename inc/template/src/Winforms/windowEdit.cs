@@ -180,7 +180,7 @@ namespace {#NAMESPACE}
                 Control keyControl = null;
                 foreach (Control detailsCtrl in pnl[0].Controls)
                 {
-                    if (keyControl == null && (detailsCtrl is TextBox || detailsCtrl is ComboBox))
+                    if (keyControl == null && (detailsCtrl is TextBox || detailsCtrl is ComboBox || detailsCtrl is TCmbAutoPopulated))
                     {
                         keyControl = detailsCtrl;
                     }
@@ -738,7 +738,8 @@ namespace {#NAMESPACE}
                     string s1 = Catalog.GetPluralString("record", "records", listExceptions.Count);
                     results += String.Format(Catalog.GetString("{0}{1} {2} could not be deleted because the delete action failed unexpectedly."),
                         Environment.NewLine,
-                        listExceptions.Count);
+                        listExceptions.Count,
+                        s1);
                 }
                 
                 if (showCancel)

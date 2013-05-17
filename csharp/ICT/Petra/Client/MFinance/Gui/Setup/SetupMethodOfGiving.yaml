@@ -11,7 +11,7 @@ RootNode:
     WindowHeight: 500
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
-        actDelete: {Label=&Delete, ActionClick=DeleteRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]

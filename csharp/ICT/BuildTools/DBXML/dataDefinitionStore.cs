@@ -528,10 +528,14 @@ namespace Ict.Tools.DBXML
                 {
                     constr.strThisTable = strName;
                     OtherTable = db.GetTable(constr.strOtherTable);
-                    if (OtherTable == null) 
+
+                    if (OtherTable == null)
                     {
-                        Console.WriteLine("*** Foreign Key relationship: otherTable '" + constr.strOtherTable + "' is not a valid table name (Foreing Key of table '" + strName + "')");
-                        Environment.Exit(1);                       
+                        Console.WriteLine(
+                            "*** Foreign Key relationship: otherTable '" + constr.strOtherTable +
+                            "' is not a valid table name (Foreing Key of table '" +
+                            strName + "')");
+                        Environment.Exit(1);
                     }
                     else
                     {

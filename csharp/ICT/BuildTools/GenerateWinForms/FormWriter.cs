@@ -1270,7 +1270,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     || (FCodeStorage.FControlList.ContainsKey("btnRemoveDetail") && (FCodeStorage.GetAttribute("FormType") != "report"))))
             {
                 // We always auto-generate code to calculate the record reference count when a delete button exists unless specified in YAML
-                if (FCodeStorage.GetAttribute("ReferenceCheckOnDelete").ToLower() != "false")
+                if (TYml2Xml.GetAttribute((XmlNode)FCodeStorage.FXmlNodes["actDelete"], "SkipReferenceCheck").ToLower() != "true")
                 {
                     AddDeleteReferenceCountImplementation();
                 }
@@ -1300,7 +1300,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ProcessTemplate snippet = FTemplate.GetSnippet("SNIPMULTIDELETEDELETABLE");
 
                     // Write the one-line codelet that handles enable/disable of the delete button
-                    string enableDelete = "FPetraUtilsObject.EnableAction(\"actDelete\", ";
+                    string enableDelete = "btnDelete.Enabled = ";
                     string enableDeleteExtra = "((grdDetails.SelectedDataRowsAsDataRowView.Length > 1)";
 
                     if (FCodeStorage.FControlList.ContainsKey("chkDetailDeletable")
@@ -1327,7 +1327,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         FTemplate.InsertSnippet("MULTIDELETEDELETABLE", snippet);
                     }
 
-                    enableDelete += "pnlDetails.Enabled);" + Environment.NewLine;
+                    enableDelete += "pnlDetails.Enabled;" + Environment.NewLine;
 
                     FTemplate.AddToCodelet("ENABLEDELETEBUTTON", enableDelete);
                 }

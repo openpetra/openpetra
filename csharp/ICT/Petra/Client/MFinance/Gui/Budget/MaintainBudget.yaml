@@ -12,7 +12,7 @@ RootNode:
     #WindowHeight: 900
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
-        actDelete: {Label=&Delete, ActionClick=DeleteRow}      
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
         actImport: {Label=&Import, ActionClick=ImportBudget}      
     Controls:
         pnlContent:
@@ -39,10 +39,13 @@ RootNode:
             OnChange: NewBudgetType
         btnNew:
             Action: actNew
+            Stretch: horizontally
         btnDelete:
             Action: actDelete
+            Stretch: horizontally
         btnImport:
             Action: actImport
+            Stretch: horizontally
         grdDetails:
             Dock: Fill
             Columns: [DetailCostCentreCode, DetailAccountCode, DetailBudgetTypeCode]

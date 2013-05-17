@@ -154,28 +154,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         }
 
         /// <summary>
-        /// Performs checks to determine whether a deletion of the current
-        ///  row is permissable
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
-        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
-        /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(PContactAttributeDetailRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            if (grdDetails.Rows.Count <= 2)
-            {
-                MessageBox.Show(
-                    Catalog.GetString("You cannot delete the final row in this table.  Every Contact Attribute must have at least one Detail Attribute.  You can delete the Contact Attribute itself.  Then all the corresponding detail attributes will also be deleted."),
-                    Catalog.GetString("Deletion Error"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
         /// Code to be run after the deletion process
         /// </summary>
         /// <param name="ARowToDelete">the row that was/was to be deleted</param>
@@ -190,23 +168,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             if (ADeletionPerformed)
             {
                 OnCountChanged(new CountEventArgs(grdDetails.Rows.Count - 1));
-            }
-        }
-
-        private void ShowDetailsManual(PContactAttributeDetailRow ARow)
-        {
-            if (ARow == null)
-            {
-                pnlDetails.Enabled = false;
-                btnDelete.Enabled = false;
-                txtDetailContactAttrDetailCode.Text = String.Empty;
-                txtDetailContactAttrDetailDescr.Text = String.Empty;
-            }
-            else
-            {
-                pnlDetails.Enabled = true;
-                // We must not delete the only row in the grid, nor if the row is read-only
-                btnDelete.Enabled = grdDetails.Rows.Count > 2 && !txtDetailContactAttrDetailCode.ReadOnly;
             }
         }
 

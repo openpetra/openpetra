@@ -226,7 +226,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Hide other To currencies again - now the selected row will have jumped higher
             chkHideOthers.Checked = true;
             Assert.AreEqual(FHiddenRowCount,
-                grdDetails.SelectedRowIndex(), "When the checkbox is checked the selected row should be {0}", FHiddenRowCount);
+                mainScreen.GetSelectedRowIndex(), "When the checkbox is checked the selected row should be {0}", FHiddenRowCount);
 
             // But the details should again be the same as before the checkbox check
             Assert.AreEqual(EffectiveCurrency(FFromCurrencyId),
@@ -376,7 +376,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(EffectiveRate(), txtExchangeRate.NumberValueDecimal.Value);
 
             // The row number of the new row should be at row 7
-            Assert.AreEqual(FAllRowCount - 1, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(FAllRowCount - 1, mainScreen.GetSelectedRowIndex());
 
             // Change the rate to a new value
             decimal newRate = 0.667m;
@@ -391,7 +391,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(EffectiveCurrency(FToCurrencyId), cmbToCurrency.GetSelectedString());
             Assert.AreEqual(expectedDate, dtpEffectiveDate.Date);
             Assert.AreEqual(newRate, txtExchangeRate.NumberValueDecimal.Value);
-            Assert.AreEqual(FAllRowCount - 1, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(FAllRowCount - 1, mainScreen.GetSelectedRowIndex());
 
             // Save the changes and check the number of rows now
             mainScreen.SaveChanges();
@@ -450,7 +450,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(EffectiveCurrency(FToCurrencyId), cmbToCurrency.GetSelectedString());
             Assert.AreEqual(dt3, dtpEffectiveDate.Date);
             Assert.AreEqual(EffectiveRate(), txtExchangeRate.NumberValueDecimal.Value);
-            Assert.AreEqual(3, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(3, mainScreen.GetSelectedRowIndex());
 
             // Focus on the from currency, then change it to 'BEF'
             cmbFromCurrency.Focus();
@@ -460,7 +460,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Now check the date and rate.  Date should be back to this month and rate should be 0.00 because this currency has never been used
             Assert.AreEqual(dt1, dtpEffectiveDate.Date.Value);
             Assert.AreEqual(0.0m, txtExchangeRate.NumberValueDecimal);
-            Assert.AreEqual(1, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(1, mainScreen.GetSelectedRowIndex());
 
             // Reset the currency and confirm we go back to where we were
             cmbFromCurrency.Focus();
@@ -469,7 +469,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             Assert.AreEqual(dt3, dtpEffectiveDate.Date.Value);
             Assert.AreEqual(EffectiveRate(), txtExchangeRate.NumberValueDecimal);
-            Assert.AreEqual(3, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(3, mainScreen.GetSelectedRowIndex());
 
             // Repeat for the To currency
             cmbToCurrency.Focus();
@@ -479,7 +479,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Now check the date and rate.  Date should be back to this month and rate should be 0.00 because this currency has never been used
             Assert.AreEqual(dt1, dtpEffectiveDate.Date.Value);
             Assert.AreEqual(0.0m, txtExchangeRate.NumberValueDecimal);
-            Assert.AreEqual(1, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(1, mainScreen.GetSelectedRowIndex());
 
             // Reset the currency and confirm we go back to where we were
             cmbToCurrency.Focus();
@@ -488,7 +488,7 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             Assert.AreEqual(dt3, dtpEffectiveDate.Date.Value);
             Assert.AreEqual(EffectiveRate(), txtExchangeRate.NumberValueDecimal);
-            Assert.AreEqual(3, grdDetails.SelectedRowIndex());
+            Assert.AreEqual(3, mainScreen.GetSelectedRowIndex());
 
             // Finally check what happens when editing the date
             SelectRowInGrid(5);

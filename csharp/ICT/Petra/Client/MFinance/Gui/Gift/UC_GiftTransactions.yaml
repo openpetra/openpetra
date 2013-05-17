@@ -10,7 +10,7 @@ RootNode:
     Actions:
         actNewGift: {Label=&Add Gift, ActionClick=NewGift}
         actNewDetail: {Label=Add Detai&l, ActionClick=NewGiftDetail}
-        actDeleteDetail: {Label=&Delete Detail, ActionClick=DeleteDetail}
+        actDelete: {Label=&Delete Detail, ActionClick=DeleteRecord}
         actAdjustGift: {Label=&Adjust Gift, ActionClick=AdjustGift}
         actReverseGift: {Label=Reverse &Gift, ActionClick=ReverseGift}
         actReverseGiftDetail: {Label=&Reverse Gift Detail, ActionClick=ReverseGiftDetail}
@@ -46,10 +46,10 @@ RootNode:
             Controls: [grdDetails, pnlDetailButtons]
         pnlDetailButtons:
             Dock: Right
-            Controls: [btnNewGift, btnNewDetail, btnDeleteDetail]
-        btnNewGift: {Action=actNewGift}
-        btnNewDetail: {Action=actNewDetail}
-        btnDeleteDetail:
+            Controls: [btnNewGift, btnNewDetail, btnDelete]
+        btnNewGift: {Action=actNewGift, Stretch=horizontally}
+        btnNewDetail: {Action=actNewDetail, Stretch=horizontally}
+        btnDelete: {Action=actDelete, Stretch=horizontally}
         grdDetails:
             TableName: AGiftDetail
             Dock: Fill

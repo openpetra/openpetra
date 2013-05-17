@@ -84,4 +84,4 @@ RootNode:
             Height: 37
             Margin: 89,0,0,0
             Enabled: false
-            Visible: false
+            Visible: true

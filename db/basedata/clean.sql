@@ -181,7 +181,6 @@ DELETE FROM pc_room_attribute_type;
 DELETE FROM pc_discount_criteria;
 DELETE FROM pc_conference_option_type;
 DELETE FROM pc_cost_type;
-DELETE FROM pt_leaving_code;
 DELETE FROM pt_assignment_type;
 DELETE FROM pt_position;
 DELETE FROM pm_commitment_status;

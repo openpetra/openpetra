@@ -640,13 +640,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             //
             // I need to remove any AnalysisAttribute records that are still set to "Unassigned"
             //
-            for (int Idx = ASubmitDS.AAnalysisAttribute.Rows.Count - 1; Idx >= 0; Idx--)
+            if ((ASubmitDS.AAnalysisAttribute != null) && (ASubmitDS.AAnalysisAttribute.Rows.Count > 0))
             {
-                AAnalysisAttributeRow Row = ASubmitDS.AAnalysisAttribute[Idx];
-
-                if ((Row.RowState != DataRowState.Deleted) && (Row.AnalysisTypeCode.IndexOf("Unassigned") == 0))
+                for (int Idx = ASubmitDS.AAnalysisAttribute.Rows.Count - 1; Idx >= 0; Idx--)
                 {
-                    Row.Delete();
+                    AAnalysisAttributeRow Row = ASubmitDS.AAnalysisAttribute[Idx];
+
+                    if ((Row.RowState != DataRowState.Deleted) && (Row.AnalysisTypeCode.IndexOf("Unassigned") == 0))
+                    {
+                        Row.Delete();
+                    }
                 }
             }
 
@@ -767,6 +770,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         ///
         /// But if the user invokes an other event - i.e. FileSave the FileSave-Event runs first.
         /// </summary>
+        /// <returns>True if the change is allowed</returns>
 
         public bool ChangeAccountCodeValue()
         {
@@ -844,6 +848,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                             strOldDetailAccountCode = strNewDetailAccountCode;
                             FPetraUtilsObject.HasChanges = true;
+                            ucoAccountAnalysisAttributes.AccountCode = strNewDetailAccountCode;
                         }
                         else
                         {

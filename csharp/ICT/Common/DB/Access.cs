@@ -154,6 +154,9 @@ namespace Ict.Common.DB
             ref String AConnectionString,
             StateChangeEventHandler AStateChangeEventHandler);
 
+        /// init the connection after it was opened
+        void InitConnection(IDbConnection AConnection);
+
         /// <summary>
         /// this is for special Exceptions that are specific to the database
         /// they are converted to a string message for logging
@@ -513,6 +516,7 @@ namespace Ict.Common.DB
                 TLogging.Log("    Connecting to database " + ADataBaseType + ": " + CurrentConnectionInstance.GetConnectionString());
 
                 FSqlConnection.Open();
+                FDataBaseRDBMS.InitConnection(FSqlConnection);
 
                 FLastDBAction = DateTime.Now;
             }

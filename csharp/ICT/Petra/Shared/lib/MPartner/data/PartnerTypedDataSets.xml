@@ -436,6 +436,8 @@
       <CustomField name="Category" type="string"/>
     </Table>
 
+    <Table sqltable="um_job"/>
+      
     <Table sqltable="pm_personal_data"/>
     <Table sqltable="pt_passport_type"/>
     <Table sqltable="pm_passport_details"/>
@@ -454,6 +456,7 @@
     <Table sqltable="pm_person_ability"/>
     <Table sqltable="pm_commitment_status"/>
     <Table sqltable="pm_staff_data"/>
+    <Table sqltable="pm_job_assignment"/>
     <Table sqltable="pm_person_evaluation"/>
     <Table sqltable="pt_arrival_point"/>
     <Table sqltable="pt_travel_type"/>
@@ -472,7 +475,6 @@
     <Table sqltable="um_unit_ability"/>
     <Table sqltable="um_unit_language"/>
     <Table sqltable="um_unit_cost"/>
-    <Table sqltable="um_job"/>
     <Table sqltable="um_job_requirement"/>
     <Table sqltable="um_job_language"/>
     <Table sqltable="um_job_qualification"/>

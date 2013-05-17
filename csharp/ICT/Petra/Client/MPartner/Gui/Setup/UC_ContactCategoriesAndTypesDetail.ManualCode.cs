@@ -48,7 +48,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 FAttributeCategory = value;
                 
                 //save the position of the actual row
-                int rowIndex = grdDetails.SelectedRowIndex();
+                int rowIndex = grdDetails.GetFirstHighlightedRowIndex();
                 
                 FMainDS.PPartnerAttributeType.DefaultView.RowFilter = String.Format("{0} = '{1}'",
                     PPartnerAttributeTypeTable.GetAttributeCategoryDBName(),

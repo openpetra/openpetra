@@ -10,7 +10,7 @@ RootNode:
     Actions:
         actNewShortTerm: {ActionClick=NewRowShortTermApp}
         actNewLongTerm: {ActionClick=NewRowLongTermApp}
-        actDelete: {Label=&Delete, ActionClick=DeleteRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Dock: Fill
