@@ -298,6 +298,11 @@ public class TAdminConsole
         }
     }
 
+    private static void RefreshAllCachedTables(IServerAdminInterface TRemote)
+    {
+        TRemote.RefreshAllCachedTables();
+    }
+    
     private static void AddUser(IServerAdminInterface TRemote, string AUserId)
     {
         TRemote.AddUser(AUserId);
@@ -362,7 +367,9 @@ public class TAdminConsole
 
                         Console.WriteLine("     e: export the database to yml.gz");
                         Console.WriteLine("     i: import a yml.gz, which will overwrite the database");
-
+#if DEBUG
+                        Console.WriteLine("     r: Mark all Cached Tables for Refreshing");
+#endif                        
                         Console.WriteLine("     o: controlled Server shutdown (gets all connected clients to disconnect)");
                         Console.WriteLine("     u: unconditional Server shutdown (forces 'hard' disconnection of all Clients!)");
 
@@ -423,6 +430,16 @@ public class TAdminConsole
                         Console.Write(ServerAdminPrompt);
 
                         // queue a Client Task for a certain Client
+                        break;
+
+                    case 'r':
+                    case 'R':
+                        Console.WriteLine(Environment.NewLine + "-> Marking all Cached Tables for Refreshing... <-");
+
+                        RefreshAllCachedTables(TRemote);
+
+                        Console.Write(ServerAdminPrompt);
+
                         break;
 
                     case 'p':
