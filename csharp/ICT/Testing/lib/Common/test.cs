@@ -308,6 +308,31 @@ namespace Ict.Common.Testing
             }
         }
 
+        /// test formatting currency using currency code
+        [Test]
+        public void TestStringHelperCurrencyFromCode()
+        {
+            DataTable Tbl = new DataTable();
+            Tbl.Columns.Add("a_display_format_c", typeof(String));
+            Tbl.Columns.Add("a_currency_code_c", typeof(String));
+
+            DataRow Row = Tbl.NewRow();
+            Row["a_currency_code_c"] = "TRL";
+            Row["a_display_format_c"] = "->>,>>>,>>>,>>>,>>9";
+            Tbl.Rows.Add(Row);
+
+            Row = Tbl.NewRow();
+            Row["a_currency_code_c"] = "EUR";
+            Row["a_display_format_c"] = "->>>,>>>,>>>,>>9.99";
+            Tbl.Rows.Add(Row);
+
+            StringHelper.CurrencyFormatTable = Tbl;
+            String TrlRes = StringHelper.FormatUsingCurrencyCode(1234.56M, "TRL");
+            String EurRes = StringHelper.FormatUsingCurrencyCode(1234.56M, "EUR");
+            Assert.AreEqual("1,235", TrlRes);
+            Assert.AreEqual("1,234.56", EurRes);
+        }
+
         /// test csv operations (comma separated value lists)
         [Test]
         public void TestStringHelperCSVList()
