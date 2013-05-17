@@ -401,7 +401,10 @@ public class TSQLiteWriter
                 {
                     ProcessLine(cmd, line, table, ColumnNames);
 
-                    cmd.ExecuteNonQuery();
+                    if (cmd.ExecuteNonQuery() != 1)
+                    {
+                        throw new Exception("failed to import line for table " + ATablename);
+                    }
                 }
             }
 
