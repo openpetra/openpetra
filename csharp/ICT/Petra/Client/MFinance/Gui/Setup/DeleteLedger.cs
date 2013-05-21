@@ -80,7 +80,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// delete ledger
         public static void DeleteLedger(Form AMainWindow, Int32 ALedgerNumber)
         {
-            MethodInfo method;
 
             string LedgerNameAndNumber = TFinanceControls.GetLedgerNumberAndName(ALedgerNumber);
 
@@ -114,7 +113,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
 
                     // reload navigation
-                    method = AMainWindow.GetType().GetMethod("LoadNavigationUI");
 
                     // Setting the "CurrentLedger" to -1 isn't strictly needed, but it eradicates the Ledger
                     // we have presently deleted to make sure the Main Menu isn't working any further with a
@@ -122,9 +120,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     PropertyInfo CurrentLedgerProperty = AMainWindow.GetType().GetProperty("CurrentLedger");
                     CurrentLedgerProperty.SetValue(AMainWindow, -1, null);
 
+                    MethodInfo method = AMainWindow.GetType().GetMethod("LoadNavigationUI");
                     if (method != null)
                     {
                         method.Invoke(AMainWindow, new object[] { false });
+                        method = AMainWindow.GetType().GetMethod("SelectFinanceFolder");
+                        method.Invoke(AMainWindow, new object[] { });
+
                     }
                 }
             }
