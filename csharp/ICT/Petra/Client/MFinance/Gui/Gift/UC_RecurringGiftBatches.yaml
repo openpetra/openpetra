@@ -38,6 +38,7 @@ RootNode:
             ActionDoubleClick: ShowTransactionTab
             ActionEnterKeyPressed: ShowTransactionTab
             SortOrder: BatchNumber DESC
+            EnableMultiSelection: false
         pnlDetails:
             Dock: Bottom
             Controls:

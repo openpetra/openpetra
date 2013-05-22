@@ -131,6 +131,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 grdAnalAttributes.Columns[0].Width = 100;
             }
 
+            SetTransactionDefaultView();
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransaction.DefaultView);
+
+            SetTransAnalAttributeDefaultView();
+            FMainDS.ATransAnalAttrib.DefaultView.AllowNew = false;
+            grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
+
             // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
 
@@ -152,13 +159,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             btnNew.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
             btnDelete.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
 
-            SetTransactionDefaultView();
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransaction.DefaultView);
-
-            SetTransAnalAttributeDefaultView();
-            FMainDS.ATransAnalAttrib.DefaultView.AllowNew = false;
-            grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
-
             //This will update Batch and journal totals
             UpdateTotals();
 
@@ -168,10 +168,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-                SelectRowInGrid(1);
+            	SelectRowInGrid(1);
             }
 
             UpdateChangeableStatus();
+            
+            grdDetails.Focus();
         }
 
         /// <summary>
@@ -388,10 +390,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if (FLedgerNumber != -1)
             {
-                txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
-                txtBatchNumber.Text = FBatchNumber.ToString();
-                txtJournalNumber.Text = FJournalNumber.ToString();
-
                 string TransactionCurrency = FJournalRow.TransactionCurrency;
                 string BaseCurrency = FMainDS.ALedger[0].BaseCurrency;
 
@@ -431,7 +429,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(ATransactionRow ARow)
         {
-            txtJournalNumber.Text = FJournalNumber.ToString();
+            if (txtJournalNumber.Text == string.Empty)
+            {
+        	txtJournalNumber.Text = FJournalNumber.ToString();
+            txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+            txtBatchNumber.Text = FBatchNumber.ToString();
+            }
 
             if (ARow == null)
             {

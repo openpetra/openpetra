@@ -110,7 +110,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 AJournalTable.GetBatchNumberDBName(),
                 FBatchNumber);
 
-            FMainDS.AJournal.DefaultView.Sort = String.Format("{0} ASC",
+            FMainDS.AJournal.DefaultView.Sort = String.Format("{0} DESC",
                 AJournalTable.GetJournalNumberDBName()
                 );
 
@@ -122,18 +122,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             ShowData();
-            ShowDetails();
-
-            txtDetailExchangeRateToBase.Enabled = false;
 
             if (grdDetails.Rows.Count < 2)
             {
                 ShowDetails(null);
             }
 
+            txtDetailExchangeRateToBase.Enabled = false;
             txtBatchNumber.Text = FBatchNumber.ToString();
-
-            grdDetails.Focus();
         }
 
         /// <summary>
@@ -319,7 +315,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(AJournalRow ARow)
         {
-            if (ARow == null)
+            if (ARow == null || ARow.JournalStatus == MFinanceConstants.BATCH_CANCELLED)
             {
                 ((TFrmGLBatch)ParentForm).DisableTransactions();
             }
@@ -444,43 +440,76 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            int currentRowIndex = GetSelectedRowIndex();
-
             if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
-                || (MessageBox.Show(String.Format(Catalog.GetString(
+                ||
+                (MessageBox.Show(String.Format(Catalog.GetString(
                                 "You have chosen to cancel this journal ({0}).\n\nDo you really want to cancel it?"),
                             FPreviouslySelectedDetailRow.JournalNumber),
                         Catalog.GetString("Confirm Cancel"),
                         MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
             {
-                FPreviouslySelectedDetailRow.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
-                ABatchRow batchrow = ((TFrmGLBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
-                batchrow.BatchCreditTotal -= FPreviouslySelectedDetailRow.JournalCreditTotal;
-                batchrow.BatchDebitTotal -= FPreviouslySelectedDetailRow.JournalDebitTotal;
+            	try
+            	{
+					//clear any transactions currently being editied in the Transaction Tab
+	                ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
-                if (batchrow.BatchControlTotal != 0)
-                {
-                    batchrow.BatchControlTotal -= FPreviouslySelectedDetailRow.JournalCreditTotal;
-                }
+                    //Clear transactions etc for current Journal
+                    FMainDS.ATransAnalAttrib.Clear();
+                    FMainDS.ATransaction.Clear();
+                    
+					//Load tables afresh
+					FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber, FBatchNumber, FPreviouslySelectedDetailRow.JournalNumber));
 
-                FPreviouslySelectedDetailRow.JournalCreditTotal = 0;
-                FPreviouslySelectedDetailRow.JournalDebitTotal = 0;
+					//Delete transactions
+	                for (int i = FMainDS.ATransAnalAttrib.Count - 1; i >= 0; i--)
+	                {
+	                	FMainDS.ATransAnalAttrib[i].Delete();
+	                }
 
-                foreach (ATransactionRow transaction in FMainDS.ATransaction.Rows)     //alle? ist das richtig?
-                {
-                    transaction.Delete();
-                }
+	                for (int i = FMainDS.ATransaction.Count - 1; i >= 0; i--)
+	                {
+	                	FMainDS.ATransaction[i].Delete();
+	                }
 
-                SelectRowInGrid(currentRowIndex);
+					FPreviouslySelectedDetailRow.BeginEdit();
+	                FPreviouslySelectedDetailRow.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
+	                ABatchRow batchrow = ((TFrmGLBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
+	                batchrow.BatchCreditTotal -= FPreviouslySelectedDetailRow.JournalCreditTotal;
+	                batchrow.BatchDebitTotal -= FPreviouslySelectedDetailRow.JournalDebitTotal;
+	
+	                if (batchrow.BatchControlTotal != 0)
+	                {
+	                    batchrow.BatchControlTotal -= FPreviouslySelectedDetailRow.JournalCreditTotal;
+	                }
+	
+	                FPreviouslySelectedDetailRow.JournalCreditTotal = 0;
+	                FPreviouslySelectedDetailRow.JournalDebitTotal = 0;
+					FPreviouslySelectedDetailRow.EndEdit();
 
-                ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
-                FPetraUtilsObject.SetChangedFlag();
-                UpdateChangeableStatus();
+                    FPetraUtilsObject.SetChangedFlag();
 
-                if (grdDetails.Rows.Count < 2)
-                {
-                    ShowDetails(null);
-                }
+                    //Need to call save
+                    if (((TFrmGLBatch)ParentForm).SaveChanges())
+                    {
+	                    MessageBox.Show(Catalog.GetString("The journal has been cancelled successfully!"),
+                            Catalog.GetString("Success"),
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    	
+						((TFrmGLBatch)ParentForm).DisableTransactions();
+                    }
+                    else
+                    {
+                        // saving failed, therefore do not try to post
+                        MessageBox.Show(Catalog.GetString(
+                                "The journal has been cancelled but there were problems during saving; ") + Environment.NewLine +
+                            Catalog.GetString("Please try and save the cancellation immediately."),
+                            Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+				}
+				catch (Exception ex)
+				{
+					MessageBox.Show(ex.Message);
+				}
             }
         }
 

@@ -228,7 +228,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoBatches.GetSelectedDetailRow().BatchNumber,
                         ucoBatches.GetSelectedDetailRow().BatchStatus);
 
-                    this.tpgTransactions.Enabled = (ucoJournals.GetSelectedDetailRow() != null);
+                    this.tpgTransactions.Enabled = (ucoJournals.GetSelectedDetailRow() != null && ucoJournals.GetSelectedDetailRow().JournalStatus != MFinanceConstants.BATCH_CANCELLED);
 
                     if (this.tpgTransactions.Enabled && (FPreviousTab == eGLTabs.Transactions))
                     {

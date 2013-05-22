@@ -53,7 +53,6 @@ RootNode:
         grdDetails:
             TableName: AGiftDetail
             Dock: Fill
-            #TODO: support split gifts, and deal with gift details properly
             Columns: [GiftTransactionNumber, DetailNumber, DonorName, DonorClass, ConfidentialGiftFlag, GiftTransactionAmount, RecipientDescription, RecipientField, MotivationGroupCode, MotivationDetailCode, ReceiptNumber, ReceiptPrinted, MethodOfGivingCode, MethodOfPaymentCode, MailingCode, GiftAmount]
             CustomColumns:
                 GiftTransactionNumber: {Label=Gift No., Type=Int32}
@@ -76,10 +75,10 @@ RootNode:
             SortOrder: GiftTransactionNumber ASC
             RowFilter: AGiftDetail.BatchNumber
             SortableHeaders: false
+            EnableMultiSelection: false
         pnlDetails:
             Dock: Fill
             Scrollbars: true
-            # TODO: split gifts
             Controls:
                 Row0: [txtDetailDonorKey]
                 Row1: [cmbDetailMethodOfGivingCode, cmbDetailMethodOfPaymentCode]

@@ -51,7 +51,7 @@ RootNode:
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: ShowTransactionTab
             ActionEnterKeyPressed: ShowTransactionTab
-            SortOrder: AJournal.JournalNumber ASC
+            SortOrder: AJournal.JournalNumber DESC
             RowFilter: AJournal.BatchNumber
         pnlDetails:
             Dock: Bottom

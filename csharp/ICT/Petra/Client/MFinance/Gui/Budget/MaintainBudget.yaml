@@ -41,8 +41,6 @@ RootNode:
         btnNew: {Action=actNew, Stretch=horizontally}
         btnDelete: {Action=actDelete, Stretch=horizontally}
         btnImport: {Action=actImport, Stretch=horizontally}
-            Stretch: horizontally
-            Stretch: horizontally
         grdDetails:
             Dock: Fill
             Columns: [DetailCostCentreCode, DetailAccountCode, DetailBudgetTypeCode]

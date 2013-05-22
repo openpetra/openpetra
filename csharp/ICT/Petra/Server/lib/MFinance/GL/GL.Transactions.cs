@@ -1020,52 +1020,55 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 AInspectDS.ATransaction.AcceptChanges();
 
-                ATransactionRow tranR = (ATransactionRow)AInspectDS.ATransaction.Rows[0];
-
-                Int32 currentLedger = tranR.LedgerNumber;
-                Int32 currentBatch = tranR.BatchNumber;
-                Int32 currentJournal = tranR.JournalNumber;
-                Int32 transToDelete = 0;
-
-                try
+                if (AInspectDS.ATransaction.Count > 0)
                 {
-                    //Check if any records have been marked for deletion
-                    DataRow[] foundTransactionForDeletion = AInspectDS.ATransaction.Select(String.Format("{0} = '{1}'",
-                            ATransactionTable.GetSubTypeDBName(),
-                            MFinanceConstants.MARKED_FOR_DELETION));
-
-                    if (foundTransactionForDeletion.Length > 0)
-                    {
-                        ATransactionRow transRowClient = null;
-
-                        for (int i = 0; i < foundTransactionForDeletion.Length; i++)
-                        {
-                            transRowClient = (ATransactionRow)foundTransactionForDeletion[i];
-
-                            transToDelete = transRowClient.TransactionNumber;
-                            TLogging.Log(String.Format("Transaction to Delete: {0} from Journal: {1} in Batch: {2}",
-                                    transToDelete,
-                                    currentJournal,
-                                    currentBatch));
-
-                            transRowClient.Delete();
-                        }
-
-                        //Submit all changes
-                        SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    TLogging.Log("Saving DataSet: " + ex.Message);
-
-                    TLogging.Log(String.Format("Error trying to save transaction: {0} in Journal: {1}, Batch: {2}",
-                            transToDelete,
-                            currentJournal,
-                            currentBatch
-                            ));
-
-                    SubmissionResult = TSubmitChangesResult.scrError;
+	                ATransactionRow tranR = (ATransactionRow)AInspectDS.ATransaction.Rows[0];
+	
+	                Int32 currentLedger = tranR.LedgerNumber;
+	                Int32 currentBatch = tranR.BatchNumber;
+	                Int32 currentJournal = tranR.JournalNumber;
+	                Int32 transToDelete = 0;
+	
+	                try
+	                {
+	                    //Check if any records have been marked for deletion
+	                    DataRow[] foundTransactionForDeletion = AInspectDS.ATransaction.Select(String.Format("{0} = '{1}'",
+	                            ATransactionTable.GetSubTypeDBName(),
+	                            MFinanceConstants.MARKED_FOR_DELETION));
+	
+	                    if (foundTransactionForDeletion.Length > 0)
+	                    {
+	                        ATransactionRow transRowClient = null;
+	
+	                        for (int i = 0; i < foundTransactionForDeletion.Length; i++)
+	                        {
+	                            transRowClient = (ATransactionRow)foundTransactionForDeletion[i];
+	
+	                            transToDelete = transRowClient.TransactionNumber;
+	                            TLogging.Log(String.Format("Transaction to Delete: {0} from Journal: {1} in Batch: {2}",
+	                                    transToDelete,
+	                                    currentJournal,
+	                                    currentBatch));
+	
+	                            transRowClient.Delete();
+	                        }
+	
+	                        //Submit all changes
+	                        SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+	                    }
+	                }
+	                catch (Exception ex)
+	                {
+	                    TLogging.Log("Saving DataSet: " + ex.Message);
+	
+	                    TLogging.Log(String.Format("Error trying to save transaction: {0} in Journal: {1}, Batch: {2}",
+	                            transToDelete,
+	                            currentJournal,
+	                            currentBatch
+	                            ));
+	
+	                    SubmissionResult = TSubmitChangesResult.scrError;
+	                }
                 }
             }
 

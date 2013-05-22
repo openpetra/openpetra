@@ -18,9 +18,6 @@ RootNode:
             Controls:
                 Row0: [txtLedgerNumber, txtBatchNumber, txtJournalNumber]
             Dock: Top
-        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
-        txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
-        txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]
@@ -68,7 +65,7 @@ RootNode:
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
             ActionFocusRow: FocusedRowChanged
-            SortOrder: ATransaction.TransactionNumber ASC
+            SortOrder: ATransaction.TransactionNumber DESC
             RowFilter: ATransaction.BatchNumber, ATransaction.JournalNumber
         pnlDetails:
             Dock: Left
@@ -93,6 +90,9 @@ RootNode:
                 Row4: [txtCreditTotalAmount, txtCreditTotalAmountBase]
         lblTransactionCurrency: {Label=TODOTransactionCurrency}
         lblBaseCurrency: {Label=TODOBase Currency}
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
+        txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
+        txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
         txtDebitAmount: {Label=Dr Amount, Verification=PositiveCurrency, Format=Currency, NullValueAllowed=false}
         txtCreditAmount: {Label=Cr Amount, Verification=PositiveCurrency, Format=Currency, NullValueAllowed=false}
         txtDebitAmountBase: {Label=Dr Amount, ReadOnly=true, Format=Currency}

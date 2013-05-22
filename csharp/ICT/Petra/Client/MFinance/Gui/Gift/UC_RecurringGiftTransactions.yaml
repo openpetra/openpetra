@@ -38,7 +38,6 @@ RootNode:
         grdDetails:
             TableName: ARecurringGiftDetail
             Dock: Fill
-            #TODO: support split gifts, and deal with gift details properly
             Columns: [GiftTransactionNumber, DetailNumber, DonorName, DonorClass, ConfidentialGiftFlag, GiftAmount, RecipientDescription, RecipientField, MotivationGroupCode, MotivationDetailCode, MethodOfGivingCode, MethodOfPaymentCode, MailingCode]
             CustomColumns:
                 GiftTransactionNumber: {Label=Gift No., Type=Int32}
@@ -55,9 +54,10 @@ RootNode:
             ActionFocusRow: FocusedRowChanged
             SortOrder: GiftTransactionNumber ASC
             RowFilter: AGiftDetail.BatchNumber
+            EnableMultiSelection: false
         pnlDetails:
             Dock: Bottom
-            # TODO: split gifts
+            Scrollbars: true
             Controls:
                 Row0: [lblReceipt, chkDetailActive]
                 Row1: [txtDetailDonorKey]

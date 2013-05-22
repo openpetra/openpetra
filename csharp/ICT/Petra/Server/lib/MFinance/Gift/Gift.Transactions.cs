@@ -707,7 +707,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (giftBatchTableInDataSet)
             {
-                ValidateGiftBatch(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftBatch);
+            	ValidateGiftBatch(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftBatch);
                 ValidateGiftBatchManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftBatch);
 
                 if (AVerificationResult.HasCriticalErrors)
