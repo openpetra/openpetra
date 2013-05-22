@@ -775,6 +775,10 @@ public class TAdminConsole
                 {
                     RestoreDatabase(TRemote, TAppSettingsManager.GetValue("YmlGzFile"));
                 }
+                else if (TAppSettingsManager.GetValue("Command") == "RefreshAllCachedTables")
+                {
+                    RefreshAllCachedTables(TRemote);
+                }                
                 else if (TAppSettingsManager.GetValue("Command") == "AddUser")
                 {
                     AddUser(TRemote, TAppSettingsManager.GetValue("UserId"));
