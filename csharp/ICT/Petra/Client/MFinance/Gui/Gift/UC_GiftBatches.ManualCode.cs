@@ -526,8 +526,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (ARow == null)
             {
+                ((TFrmGiftBatch)ParentForm).DisableTransactions();
                 dtpDetailGlEffectiveDate.Date = FDefaultDate;
                 return;
+            }
+
+            if (ARow.BatchStatus == MFinanceConstants.BATCH_CANCELLED)
+            {
+                ((TFrmGiftBatch)ParentForm).DisableTransactions();
+            }
+            else
+            {
+                ((TFrmGiftBatch)ParentForm).EnableTransactions();
             }
 
             FLedgerNumber = ARow.LedgerNumber;
@@ -535,8 +545,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FPetraUtilsObject.DetailProtectedMode =
                 (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
-
-            ((TFrmGiftBatch)ParentForm).EnableTransactions();
 
             dtpDetailGlEffectiveDate.Date = ARow.GlEffectiveDate;
 
@@ -627,6 +635,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string completionMessage = string.Empty;
 			int currentlySelectedRow = 0;
 			string existingBatchStatus = string.Empty;
+			decimal existingBatchTotal = 0;
             
             if (FPreviouslySelectedDetailRow == null || FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
             {
@@ -641,20 +650,46 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 completionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
                     FPreviouslySelectedDetailRow.BatchNumber);
 
+                existingBatchTotal = FPreviouslySelectedDetailRow.BatchTotal;
                 existingBatchStatus = FPreviouslySelectedDetailRow.BatchStatus;
 				
+				//Load all journals for current Batch
+				//clear any transactions currently being editied in the Transaction Tab
+                ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+
+                //Clear gifts and details etc for current Batch
+                FMainDS.AGiftDetail.Clear();
+                FMainDS.AGift.Clear();
+                
+				//Load tables afresh
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber));
+
+				//Delete gift details
+                for (int i = FMainDS.AGiftDetail.Count - 1; i >= 0; i--)
+                {
+                	FMainDS.AGiftDetail[i].Delete();
+                }
+
+				//Delete gifts
+                for (int i = FMainDS.AGift.Count - 1; i >= 0; i--)
+                {
+                	FMainDS.AGift[i].Delete();
+                }
+
                 //Batch is only cancelled and never deleted
 				FPreviouslySelectedDetailRow.BeginEdit();
+				FPreviouslySelectedDetailRow.BatchTotal = 0;
 				FPreviouslySelectedDetailRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
 				FPreviouslySelectedDetailRow.EndEdit();
 				
-				FPetraUtilsObject.HasChanges = true;
+                FPetraUtilsObject.HasChanges = true;
                 
                 // save first, then post
                 if (!((TFrmGiftBatch)ParentForm).SaveChanges())
                 {
 					FPreviouslySelectedDetailRow.BeginEdit();
 					//Should normally be Unposted, but allow for other status values in future
+					FPreviouslySelectedDetailRow.BatchTotal = existingBatchTotal;
 					FPreviouslySelectedDetailRow.BatchStatus = existingBatchStatus;
 					FPreviouslySelectedDetailRow.EndEdit();
                 	
