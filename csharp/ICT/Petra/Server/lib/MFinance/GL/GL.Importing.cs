@@ -114,6 +114,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 ABatchRow NewBatch = null;
                 AJournalRow NewJournal = null;
+                int BatchPeriodNumber = -1;
+                int BatchYearNr = -1;
 
                 //AGiftRow gift = null;
                 FImportMessage = Catalog.GetString("Parsing first line");
@@ -161,16 +163,14 @@ namespace Ict.Petra.Server.MFinance.GL
                                 string.Format(Catalog.GetString("Batch {0}"), NewBatch.BatchNumber),
                                 10);
 
-                            int PeriodNumber, YearNr;
-
                             if (TFinancialYear.IsValidPostingPeriod(LedgerNumber,
                                     NewBatch.DateEffective,
-                                    out PeriodNumber,
-                                    out YearNr,
+                                    out BatchPeriodNumber,
+                                    out BatchYearNr,
                                     Transaction))
                             {
-                                NewBatch.BatchYear = YearNr;
-                                NewBatch.BatchPeriod = PeriodNumber;
+                                NewBatch.BatchYear = BatchYearNr;
+                                NewBatch.BatchPeriod = BatchPeriodNumber;
                             }
                             else
                             {
@@ -239,6 +239,24 @@ namespace Ict.Petra.Server.MFinance.GL
                                 ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("transaction currency"));
                             NewJournal.ExchangeRateToBase = ImportDecimal(Catalog.GetString("journal") + " - " + Catalog.GetString("exchange rate"));
                             NewJournal.DateEffective = ImportDate(Catalog.GetString("journal") + " - " + Catalog.GetString("effective date"));
+
+                            //
+                            // The DateEffective might be different to that of the Batch,
+                            // but it must be in the same accounting period.
+                            Int32 journalYear;
+                            Int32 journalPeriod;
+                            DateTime journalDate = NewJournal.DateEffective;
+
+                            TFinancialYear.GetLedgerDatePostingPeriod(LedgerNumber, ref journalDate,
+                                out journalYear, out journalPeriod, Transaction, false);
+
+                            if ((journalYear != BatchYearNr) || (journalPeriod != BatchPeriodNumber))
+                            {
+                                FImportMessage = String.Format(
+                                    Catalog.GetString("The journal effective date {0} is not in the same period as the batch date {1}."),
+                                        journalDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString());
+                                throw new Exception();
+                            }
 
                             FImportMessage = Catalog.GetString("Saving the journal:");
 
