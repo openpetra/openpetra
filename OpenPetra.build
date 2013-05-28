@@ -336,5 +336,14 @@ useful parameters
   <nant inheritall="false" target="test-without-display" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
 </target>
 
+<target name="enable-sqlite-config-for-jenkins">
+    <echo file="OpenPetra.build.config">&lt;?xml version="1.0"?>
+&lt;project name="OpenPetra-userconfig">
+    &lt;property name="DBMS.Type" value="sqlite"/>
+    &lt;property name="DBMS.Password" value=""/>
+&lt;/project>
+    </echo>
+</target>
+
 </project>
 

@@ -48,7 +48,8 @@ public class {#DATASETNAME} : TTypedDataSet
     {
         {#DATASETNAME} result = ({#DATASETNAME})(base.GetChangesTyped(removeEmptyTables));
 
-        if (removeEmptyTables)
+        if (removeEmptyTables 
+            && (result != null))
         {
             result.InitVars();
         }

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -94,6 +94,7 @@ namespace Ict.Common.Controls
                 return;
             }
 
+            AFileName = Path.GetFullPath(AFileName.Replace('\\', '/'));
             Icon icon = new Icon(AFileName, GetIconSize(AIconSize));
 
             this.AddOrUpdate(AFileName + AIconSize.ToString(), icon, (AKey, AExistingValue) =>
@@ -114,6 +115,8 @@ namespace Ict.Common.Controls
         public Bitmap AddOrGetExistingIcon(string AFileName, TIconSize AIconSize)
         {
             Bitmap ReturnValue = null;
+
+            AFileName = Path.GetFullPath(AFileName.Replace('\\', '/'));
 
             if (!ContainsIcon(AFileName, AIconSize))
             {
@@ -147,6 +150,8 @@ namespace Ict.Common.Controls
             }
             else
             {
+                AFileName = Path.GetFullPath(AFileName.Replace('\\', '/'));
+
                 try
                 {
                     TheItem = (Icon) this[AFileName + AIconSize.ToString()];
@@ -179,6 +184,8 @@ namespace Ict.Common.Controls
             }
             else
             {
+                AFileName = Path.GetFullPath(AFileName.Replace('\\', '/'));
+
                 return ContainsKey(AFileName + AIconSize.ToString());
             }
         }

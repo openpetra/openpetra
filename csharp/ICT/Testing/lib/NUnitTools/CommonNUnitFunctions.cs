@@ -163,6 +163,12 @@ namespace Ict.Testing.NUnitTools
                 NantProcess.StartInfo.Arguments = argument.Replace("\\", "/") + " -logfile:nant.txt";
             }
 
+            // this is needed for running the NUnit tests with sqlite on Jenkins
+            if (TAppSettingsManager.GetValue("Server.RDBMSType").ToLower() == "sqlite")
+            {
+                NantProcess.StartInfo.Arguments += " -D:DBMS.Type=sqlite -D:DBMS.Password=";
+            }
+
             NantProcess.StartInfo.WorkingDirectory = rootPath;
             NantProcess.StartInfo.UseShellExecute = true;
             NantProcess.EnableRaisingEvents = true;
