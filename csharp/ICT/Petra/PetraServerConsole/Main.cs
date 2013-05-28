@@ -314,7 +314,9 @@ public class TServer
 
                         Console.WriteLine("     e: export the database to yml.gz");
                         Console.WriteLine("     i: import a yml.gz, which will overwrite the database");
-
+#if DEBUG
+                        Console.WriteLine("     r: Mark all Cached Tables for Refreshing");
+#endif                        
                         Console.WriteLine("     o: controlled Server shutdown (gets all connected clients to disconnect)");
                         Console.WriteLine("     u: unconditional Server shutdown (forces 'hard' disconnection of all Clients!)");
                         WriteServerPrompt();
@@ -450,6 +452,16 @@ public class TServer
 
                         break;
 
+                    case 'r':
+                    case 'R':
+                        Console.WriteLine(Environment.NewLine + "-> Marking all Cached Tables for Refreshing... <-");
+
+                        TheServerManager.RefreshAllCachedTables();
+
+                        WriteServerPrompt();
+
+                        break;
+                        
                     case 'p':
                     case 'P':
                         string resp = "";
