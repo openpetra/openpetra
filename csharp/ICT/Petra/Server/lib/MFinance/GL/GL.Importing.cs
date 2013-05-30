@@ -147,13 +147,15 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewJournal = null;
 
                             ImportedString = ImportString(Catalog.GetString("batch description"));
-                            if (ImportedString != null && ImportedString.Length > ABatchTable.GetBatchDescriptionLength())
+
+                            if ((ImportedString != null) && (ImportedString.Length > ABatchTable.GetBatchDescriptionLength()))
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Batch"),
                                         String.Format(Catalog.GetString("Description is longer than {0} chars."),
                                             ABatchTable.GetBatchDescriptionLength()),
                                         TResultSeverity.Resv_Critical));
                             }
+
                             NewBatch.BatchDescription = ImportedString;
 
                             if ((NewBatch.BatchDescription == null)
@@ -232,7 +234,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             MainDS.AJournal.Rows.Add(NewJournal);
 
                             ImportedString = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("description"));
-                            if (ImportedString != null && ImportedString.Length > AJournalTable.GetJournalDescriptionLength())
+
+                            if ((ImportedString != null) && (ImportedString.Length > AJournalTable.GetJournalDescriptionLength()))
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Journal"),
                                         String.Format(Catalog.GetString("Description is longer than {0} chars."),
@@ -266,6 +269,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 FImportMessage = Catalog.GetString("Journal in base currency must have exchange rate 1.0");
                                 throw new Exception();
                             }
+
                             //
                             // The DateEffective might be different to that of the Batch,
                             // but it must be in the same accounting period.
@@ -280,7 +284,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             {
                                 FImportMessage = String.Format(
                                     Catalog.GetString("The journal effective date {0} is not in the same period as the batch date {1}."),
-                                        journalDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString());
+                                    journalDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString());
                                 throw new Exception();
                             }
 
@@ -318,7 +322,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewTransaction.CostCentreCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("cost centre"));
 
                             ACostCentreRow costcentre = (ACostCentreRow)SetupDS.ACostCentre.Rows.Find(new object[] { LedgerNumber,
-                                NewTransaction.CostCentreCode });
+                                                                                                                     NewTransaction.CostCentreCode });
 
                             // check if cost centre exists, and is a posting costcentre.
                             // check if cost centre is active.
@@ -365,7 +369,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             }
 
                             ImportedString = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("narrative"));
-                            if (ImportedString != null && ImportedString.Length > ATransactionTable.GetNarrativeLength())
+
+                            if ((ImportedString != null) && (ImportedString.Length > ATransactionTable.GetNarrativeLength()))
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
                                         String.Format(Catalog.GetString("Narrative is longer than {0} chars."),
@@ -375,13 +380,15 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             NewTransaction.Narrative = ImportedString;
                             ImportedString = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("reference"));
-                            if (ImportedString != null && ImportedString.Length > ATransactionTable.GetReferenceLength())
+
+                            if ((ImportedString != null) && (ImportedString.Length > ATransactionTable.GetReferenceLength()))
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
                                         String.Format(Catalog.GetString("Reference is longer than {0} chars."),
                                             ATransactionTable.GetReferenceLength()),
                                         TResultSeverity.Resv_Critical));
                             }
+
                             NewTransaction.Reference = ImportedString;
 
                             DateTime TransactionDate = ImportDate(Catalog.GetString("transaction") + " - " + Catalog.GetString("date"));
@@ -398,9 +405,10 @@ namespace Ict.Petra.Server.MFinance.GL
                             {
                                 FImportMessage = String.Format(
                                     Catalog.GetString("The Transaction date {0} is not in the same period as the batch date {1}."),
-                                        TransactionDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString());
+                                    TransactionDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString());
                                 throw new Exception();
                             }
+
                             NewTransaction.TransactionDate = TransactionDate;
 
 
@@ -410,22 +418,22 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((DebitAmount == 0) && (CreditAmount == 0))
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                    Catalog.GetString("Either the debit amount or the credit amount must be greater than 0."),
-                                    TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("Either the debit amount or the credit amount must be greater than 0."),
+                                        TResultSeverity.Resv_Critical));
                             }
 
                             if ((DebitAmount < 0) || (CreditAmount < 0))
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                    Catalog.GetString("Negative amount specified - debits and credits must be positive."),
-                                    TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("Negative amount specified - debits and credits must be positive."),
+                                        TResultSeverity.Resv_Critical));
                             }
 
                             if ((DebitAmount != 0) && (CreditAmount != 0))
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                    Catalog.GetString("Transactions cannot have values for both debit and credit amounts."),
-                                    TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("Transactions cannot have values for both debit and credit amounts."),
+                                        TResultSeverity.Resv_Critical));
                             }
 
                             if (DebitAmount != 0)

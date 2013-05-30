@@ -313,6 +313,7 @@ namespace Ict.Common.Testing
         public void TestStringHelperCurrencyFromCode()
         {
             DataTable Tbl = new DataTable();
+
             Tbl.Columns.Add("a_display_format_c", typeof(String));
             Tbl.Columns.Add("a_currency_code_c", typeof(String));
 

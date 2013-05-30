@@ -302,7 +302,7 @@ public class TAdminConsole
     {
         TRemote.RefreshAllCachedTables();
     }
-    
+
     private static void AddUser(IServerAdminInterface TRemote, string AUserId)
     {
         TRemote.AddUser(AUserId);
@@ -369,7 +369,7 @@ public class TAdminConsole
                         Console.WriteLine("     i: import a yml.gz, which will overwrite the database");
 #if DEBUG
                         Console.WriteLine("     r: Mark all Cached Tables for Refreshing");
-#endif                        
+#endif
                         Console.WriteLine("     o: controlled Server shutdown (gets all connected clients to disconnect)");
                         Console.WriteLine("     u: unconditional Server shutdown (forces 'hard' disconnection of all Clients!)");
 
@@ -778,7 +778,7 @@ public class TAdminConsole
                 else if (TAppSettingsManager.GetValue("Command") == "RefreshAllCachedTables")
                 {
                     RefreshAllCachedTables(TRemote);
-                }                
+                }
                 else if (TAppSettingsManager.GetValue("Command") == "AddUser")
                 {
                     AddUser(TRemote, TAppSettingsManager.GetValue("UserId"));

@@ -1941,9 +1941,11 @@ namespace Ict.Common
         public static String FormatUsingCurrencyCode(decimal AValue, String ACurrencyCode)
         {
             String format = "->>>,>>>,>>>,>>9.99";
+
             if (CurrencyFormats != null)
             {
                 CurrencyFormats.DefaultView.RowFilter = String.Format("a_currency_code_c='{0}'", ACurrencyCode);
+
                 if (CurrencyFormats.DefaultView.Count > 0)
                 {
                     format = CurrencyFormats.DefaultView[0].Row["a_display_format_c"].ToString();
@@ -2054,22 +2056,22 @@ namespace Ict.Common
         }
 
 /*
-        private static ArrayList months = new ArrayList();
-        /// <summary>
-        /// initialize the localized month names
-        /// not used at the moment; using .net localisation instead
-        /// </summary>
-        /// <param name="monthNames">an array of the month names</param>
-        public static void SetLocalizedMonthNames(ArrayList monthNames)
-        {
-            months = new ArrayList();
-
-            foreach (string s in monthNames)
-            {
-                months.Add(s);
-            }
-        }
-*/
+ *      private static ArrayList months = new ArrayList();
+ *      /// <summary>
+ *      /// initialize the localized month names
+ *      /// not used at the moment; using .net localisation instead
+ *      /// </summary>
+ *      /// <param name="monthNames">an array of the month names</param>
+ *      public static void SetLocalizedMonthNames(ArrayList monthNames)
+ *      {
+ *          months = new ArrayList();
+ *
+ *          foreach (string s in monthNames)
+ *          {
+ *              months.Add(s);
+ *          }
+ *      }
+ */
         /// <summary>
         /// Finds a matching closing bracket in a String.
         /// </summary>

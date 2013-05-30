@@ -80,7 +80,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// delete ledger
         public static void DeleteLedger(Form AMainWindow, Int32 ALedgerNumber)
         {
-
             string LedgerNameAndNumber = TFinanceControls.GetLedgerNumberAndName(ALedgerNumber);
 
             if (MessageBox.Show(Catalog.GetString("Please save a backup of your database first!!!") + Environment.NewLine +
@@ -121,12 +120,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     CurrentLedgerProperty.SetValue(AMainWindow, -1, null);
 
                     MethodInfo method = AMainWindow.GetType().GetMethod("LoadNavigationUI");
+
                     if (method != null)
                     {
                         method.Invoke(AMainWindow, new object[] { false });
                         method = AMainWindow.GetType().GetMethod("SelectFinanceFolder");
                         method.Invoke(AMainWindow, new object[] { });
-
                     }
                 }
             }

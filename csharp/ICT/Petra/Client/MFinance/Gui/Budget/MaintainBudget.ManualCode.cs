@@ -750,7 +750,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 txt = null;
             }
 
-            this.lblAdhocTotalAmount.Text = "Total Amount: " + StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode); 
+            this.lblAdhocTotalAmount.Text = "Total Amount: " + StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
         }
 
         private void DisplayBudgetTypeSame()

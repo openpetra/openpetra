@@ -248,8 +248,8 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 else if (mRow["LabelDataType"].ToString() == "currency")
                 {
                     LabelValue = new TVariant(StringHelper.FormatUsingCurrencyCode(
-                        Convert.ToDecimal(mRow["LabelValueCurrency"]), mRow["CurrencyCode"].ToString()) 
-                        + ' ' + mRow["CurrencyCode"].ToString());
+                            Convert.ToDecimal(mRow["LabelValueCurrency"]), mRow["CurrencyCode"].ToString()) +
+                        ' ' + mRow["CurrencyCode"].ToString());
                 }
                 else if (mRow["LabelDataType"].ToString() == "boolean")
                 {

@@ -484,8 +484,8 @@ CheckAllClientsDisconnected:
         public virtual void RefreshAllCachedTables()
         {
             // implemented in derived class
-        }        
-        
+        }
+
         /// <summary>
         /// AddUser
         /// </summary>

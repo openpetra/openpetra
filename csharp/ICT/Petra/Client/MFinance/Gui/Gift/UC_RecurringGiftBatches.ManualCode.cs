@@ -358,7 +358,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         StringHelper.FormatUsingCurrencyCode(FPreviouslySelectedDetailRow.BatchTotal, FPreviouslySelectedDetailRow.CurrencyCode),
                         FPreviouslySelectedDetailRow.BatchNumber,
                         StringHelper.FormatUsingCurrencyCode(FPreviouslySelectedDetailRow.HashTotal, FPreviouslySelectedDetailRow.CurrencyCode)),
-                        "Submit Recurring Gift Batch");
+                    "Submit Recurring Gift Batch");
 
                 txtDetailHashTotal.Focus();
                 txtDetailHashTotal.SelectAll();

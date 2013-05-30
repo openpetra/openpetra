@@ -210,7 +210,6 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                 foreach (AGiftRow gift in MainDS.AGift.Rows)
                 {
-
                     if (gift.BatchNumber.Equals(giftBatch.BatchNumber) && gift.LedgerNumber.Equals(giftBatch.LedgerNumber))
                     {
                         // Update progress tracker every 25 records

@@ -387,7 +387,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         "grdDetails.Selection.EnableMultiSelection = true;" + Environment.NewLine);
                 }
             }
-            
+
             return writer.FTemplate;
         }
     }

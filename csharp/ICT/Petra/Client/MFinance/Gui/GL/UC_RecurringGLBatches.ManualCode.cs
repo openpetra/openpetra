@@ -532,21 +532,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 MessageBox.Show(Catalog.GetString("Please select a Batch before submitting."));
                 return;
             }
-/*  Apparently this can't be done because we don't have a hash total?
 
-            if ((FPreviouslySelectedDetailRow.HashTotal != 0) && (FPreviouslySelectedDetailRow.BatchTotal != FPreviouslySelectedDetailRow.HashTotal))
-            {
-                MessageBox.Show(String.Format(Catalog.GetString(
-                            "The total ({0}) for batch {1} does not equal the hash total ({2})."),
-                        FPreviouslySelectedDetailRow.BatchTotal.ToString("C"),
-                        FPreviouslySelectedDetailRow.BatchNumber,
-                        FPreviouslySelectedDetailRow.HashTotal.ToString("C")), Catalog.GetString("Submit Recurring Batch"));
-            
-                txtDetailHashTotal.Focus();
-                txtDetailHashTotal.SelectAll();
-                return;
-            }
-*/
+/*  Apparently this can't be done because we don't have a hash total?
+ *
+ *          if ((FPreviouslySelectedDetailRow.HashTotal != 0) && (FPreviouslySelectedDetailRow.BatchTotal != FPreviouslySelectedDetailRow.HashTotal))
+ *          {
+ *              MessageBox.Show(String.Format(Catalog.GetString(
+ *                          "The total ({0}) for batch {1} does not equal the hash total ({2})."),
+ *                      FPreviouslySelectedDetailRow.BatchTotal.ToString("C"),
+ *                      FPreviouslySelectedDetailRow.BatchNumber,
+ *                      FPreviouslySelectedDetailRow.HashTotal.ToString("C")), Catalog.GetString("Submit Recurring Batch"));
+ *
+ *              txtDetailHashTotal.Focus();
+ *              txtDetailHashTotal.SelectAll();
+ *              return;
+ *          }
+ */
             // now load journals for this batch so we know if exchange rate needs to be set in case of different currency
             GLBatchTDS TempDS = TRemote.MFinance.GL.WebConnectors.LoadARecurringJournal(FLedgerNumber, FSelectedBatchNumber);
             FMainDS.Merge(TempDS);

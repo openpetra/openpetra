@@ -259,7 +259,8 @@ namespace Ict.Common.Controls
                                 Ret = Convert.ToDecimal(CleanedfromNonNumeralChars, FCurrentCulture);
                             }
                             catch (Exception)
-                            {}
+                            {
+                            }
                             return Ret;
                         }
                         else
@@ -632,7 +633,7 @@ namespace Ict.Common.Controls
 
             // handle PASTE
             if (((e.KeyCode == Keys.V) && (e.Modifiers == Keys.Control))
-            || ((e.KeyCode == Keys.Insert) && (e.Shift)))
+                || ((e.KeyCode == Keys.Insert) && (e.Shift)))
             {
                 HandlePaste();
                 e.Handled = true;
@@ -1048,7 +1049,7 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="m"></param>
         protected override void WndProc(ref Message m)
@@ -1058,7 +1059,9 @@ namespace Ict.Common.Controls
                 HandlePaste();
             }
             else
+            {
                 base.WndProc(ref m);
+            }
         }
 
         private void FormatValue(string AValue)
