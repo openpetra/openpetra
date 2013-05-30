@@ -375,7 +375,24 @@ namespace Ict.Petra.Server.MFinance.GL
                             }
                             NewTransaction.Reference = ImportedString;
 
-                            NewTransaction.TransactionDate = ImportDate(Catalog.GetString("transaction") + " - " + Catalog.GetString("date"));
+                            DateTime TransactionDate = ImportDate(Catalog.GetString("transaction") + " - " + Catalog.GetString("date"));
+                            //
+                            // The DateEffective might be different to that of the Batch,
+                            // but it must be in the same accounting period.
+                            Int32 TransactionYear;
+                            Int32 TransactionPeriod;
+
+                            TFinancialYear.GetLedgerDatePostingPeriod(LedgerNumber, ref TransactionDate,
+                                out TransactionYear, out TransactionPeriod, Transaction, false);
+
+                            if ((TransactionYear != BatchYearNr) || (TransactionPeriod != BatchPeriodNumber))
+                            {
+                                FImportMessage = String.Format(
+                                    Catalog.GetString("The Transaction date {0} is not in the same period as the batch date {1}."),
+                                        TransactionDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString());
+                                throw new Exception();
+                            }
+                            NewTransaction.TransactionDate = TransactionDate;
 
 
                             decimal DebitAmount = ImportDecimal(Catalog.GetString("transaction") + " - " + Catalog.GetString("debit amount"));
