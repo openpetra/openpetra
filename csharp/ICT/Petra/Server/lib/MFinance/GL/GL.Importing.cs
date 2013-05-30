@@ -258,6 +258,15 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewJournal.DateEffective = ImportDate(Catalog.GetString("journal") + " - " + Catalog.GetString("effective date"));
 
                             //
+                            // If this batch is in my base currency,
+                            // the ExchangeRateToBase must be 1:
+                            if ((NewJournal.TransactionCurrency == LedgerTable[0].BaseCurrency)
+                                && (NewJournal.ExchangeRateToBase != 1.0m))
+                            {
+                                FImportMessage = Catalog.GetString("Journal in base currency must have exchange rate 1.0");
+                                throw new Exception();
+                            }
+                            //
                             // The DateEffective might be different to that of the Batch,
                             // but it must be in the same accounting period.
                             Int32 journalYear;
