@@ -116,7 +116,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 AJournalRow NewJournal = null;
                 int BatchPeriodNumber = -1;
                 int BatchYearNr = -1;
-
+                String ImportedString = "";
                 //AGiftRow gift = null;
                 FImportMessage = Catalog.GetString("Parsing first line");
                 bool ok = false;
@@ -146,7 +146,15 @@ namespace Ict.Petra.Server.MFinance.GL
                             MainDS.ABatch.Rows.Add(NewBatch);
                             NewJournal = null;
 
-                            NewBatch.BatchDescription = ImportString(Catalog.GetString("batch description"));
+                            ImportedString = ImportString(Catalog.GetString("batch description"));
+                            if (ImportedString != null && ImportedString.Length > ABatchTable.GetBatchDescriptionLength())
+                            {
+                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Batch"),
+                                        String.Format(Catalog.GetString("Description is longer than {0} chars."),
+                                            ABatchTable.GetBatchDescriptionLength()),
+                                        TResultSeverity.Resv_Critical));
+                            }
+                            NewBatch.BatchDescription = ImportedString;
 
                             if ((NewBatch.BatchDescription == null)
                                 || (NewBatch.BatchDescription == ""))
@@ -223,7 +231,16 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             MainDS.AJournal.Rows.Add(NewJournal);
 
-                            NewJournal.JournalDescription = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("description"));
+                            ImportedString = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("description"));
+                            if (ImportedString != null && ImportedString.Length > AJournalTable.GetJournalDescriptionLength())
+                            {
+                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Journal"),
+                                        String.Format(Catalog.GetString("Description is longer than {0} chars."),
+                                            AJournalTable.GetJournalDescriptionLength()),
+                                        TResultSeverity.Resv_Critical));
+                            }
+
+                            NewJournal.JournalDescription = ImportedString;
 
                             if ((NewJournal.JournalDescription == null)
                                 || (NewJournal.JournalDescription == ""))
@@ -338,9 +355,25 @@ namespace Ict.Petra.Server.MFinance.GL
                                         TResultSeverity.Resv_Critical));
                             }
 
-                            NewTransaction.Narrative = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("narrative"));
+                            ImportedString = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("narrative"));
+                            if (ImportedString != null && ImportedString.Length > ATransactionTable.GetNarrativeLength())
+                            {
+                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
+                                        String.Format(Catalog.GetString("Narrative is longer than {0} chars."),
+                                            ATransactionTable.GetNarrativeLength()),
+                                        TResultSeverity.Resv_Critical));
+                            }
 
-                            NewTransaction.Reference = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("reference"));
+                            NewTransaction.Narrative = ImportedString;
+                            ImportedString = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("reference"));
+                            if (ImportedString != null && ImportedString.Length > ATransactionTable.GetReferenceLength())
+                            {
+                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
+                                        String.Format(Catalog.GetString("Reference is longer than {0} chars."),
+                                            ATransactionTable.GetReferenceLength()),
+                                        TResultSeverity.Resv_Critical));
+                            }
+                            NewTransaction.Reference = ImportedString;
 
                             NewTransaction.TransactionDate = ImportDate(Catalog.GetString("transaction") + " - " + Catalog.GetString("date"));
 
