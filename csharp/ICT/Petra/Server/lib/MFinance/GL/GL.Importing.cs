@@ -292,7 +292,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewTransaction.CostCentreCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("cost centre"));
 
                             ACostCentreRow costcentre = (ACostCentreRow)SetupDS.ACostCentre.Rows.Find(new object[] { LedgerNumber,
-                                                                                                                     NewTransaction.CostCentreCode });
+                                NewTransaction.CostCentreCode });
 
                             // check if cost centre exists, and is a posting costcentre.
                             // check if cost centre is active.
@@ -350,12 +350,16 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             if ((DebitAmount == 0) && (CreditAmount == 0))
                             {
-                                FImportMessage = Catalog.GetString("Either the debit amount or the debit amount must be greater than 0.");
+                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
+                                    Catalog.GetString("Either the debit amount or the credit amount must be greater than 0."),
+                                    TResultSeverity.Resv_Critical));
                             }
 
                             if ((DebitAmount != 0) && (CreditAmount != 0))
                             {
-                                FImportMessage = Catalog.GetString("You can not have a value for both debit and credit amount");
+                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
+                                    Catalog.GetString("Transactions cannot have values for both debit and credit amounts."),
+                                    TResultSeverity.Resv_Critical));
                             }
 
                             if (DebitAmount != 0)
