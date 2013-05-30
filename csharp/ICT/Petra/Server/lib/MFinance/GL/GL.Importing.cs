@@ -355,6 +355,13 @@ namespace Ict.Petra.Server.MFinance.GL
                                     TResultSeverity.Resv_Critical));
                             }
 
+                            if ((DebitAmount < 0) || (CreditAmount < 0))
+                            {
+                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
+                                    Catalog.GetString("Negative amount specified - debits and credits must be positive."),
+                                    TResultSeverity.Resv_Critical));
+                            }
+
                             if ((DebitAmount != 0) && (CreditAmount != 0))
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
