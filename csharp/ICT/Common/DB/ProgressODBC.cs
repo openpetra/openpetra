@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -92,6 +92,11 @@ namespace Ict.Common.DB
             }
 
             return TheConnection;
+        }
+
+        /// init the connection after it was opened
+        public void InitConnection(IDbConnection AConnection)
+        {
         }
 
         /// <summary>

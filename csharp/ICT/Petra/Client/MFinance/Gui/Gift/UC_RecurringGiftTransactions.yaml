@@ -10,7 +10,7 @@ RootNode:
     Actions:
         actNewGift: {Label=&Add Gift, ActionClick=NewGift}
         actNewDetail: {Label=Add Detai&l, ActionClick=NewGiftDetail}
-        actDelete: {Label=&Delete Detail, ActionClick=DeleteRecord}
+        actDelete: {Label=&Delete Detail, SkipReferenceCheck=true, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetails]

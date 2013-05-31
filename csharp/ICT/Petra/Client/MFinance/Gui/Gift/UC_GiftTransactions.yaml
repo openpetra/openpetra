@@ -74,10 +74,10 @@ RootNode:
                 ReceiptNumber: {Label=Receipt, Type=Int32}
                 ReceiptPrinted: {Label=Receipt Printed,Type=Boolean} 
             ActionFocusRow: FocusedRowChanged
+            EnableMultiSelection: false
             SortOrder: GiftTransactionNumber ASC
             RowFilter: AGiftDetail.BatchNumber
             SortableHeaders: false
-            EnableMultiSelection: false
         pnlDetails:
             Dock: Fill
             Scrollbars: true

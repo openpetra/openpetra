@@ -70,6 +70,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
             DateTime batchDateEffective;
+            bool batchChanged = (FBatchNumber != ABatchNumber);
 
             //Make sure the current effective date for the Batch is correct
             batchDateEffective = GetBatchRow().DateEffective;
@@ -83,7 +84,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //Check if same Journals as previously selected
-            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus)
+            if ((FLedgerNumber == ALedgerNumber) && !batchChanged && (FBatchStatus == ABatchStatus)
                 && (FMainDS.AJournal.DefaultView.Count > 0))
             {
                 if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
@@ -103,6 +104,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FPreviouslySelectedDetailRow = null;
 
+            if (batchChanged)
+			{
+				//Clear all previous data.
+				FMainDS.ATransAnalAttrib.Clear();
+				FMainDS.ATransaction.Clear();
+				FMainDS.AJournal.Clear();
+			}
+            
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AJournal.DefaultView);
 
@@ -118,7 +127,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // otherwise we would overwrite journals that have already been modified
             if (FMainDS.AJournal.DefaultView.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(ALedgerNumber, ABatchNumber));
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndContent(ALedgerNumber, ABatchNumber));
             }
 
             ShowData();
@@ -193,7 +202,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
 
             // recalculate the base currency amounts for the transactions
-            ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTotals();
+            ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals();
 
             btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
 
@@ -292,7 +301,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// update the journal header fields from a batch
         /// </summary>
         /// <param name="ABatch"></param>
-        public void UpdateTotals(ABatchRow ABatch)
+        public void UpdateHeaderTotals(ABatchRow ABatch)
         {
             decimal sumDebits = 0.0M;
             decimal sumCredits = 0.0M;
@@ -440,9 +449,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
-                ||
-                (MessageBox.Show(String.Format(Catalog.GetString(
+            if ((MessageBox.Show(String.Format(Catalog.GetString(
                                 "You have chosen to cancel this journal ({0}).\n\nDo you really want to cancel it?"),
                             FPreviouslySelectedDetailRow.JournalNumber),
                         Catalog.GetString("Confirm Cancel"),
