@@ -633,17 +633,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void CancelRecord(System.Object sender, EventArgs e)
         {
             string completionMessage = string.Empty;
-			int currentlySelectedRow = 0;
-			string existingBatchStatus = string.Empty;
-			decimal existingBatchTotal = 0;
-            
-            if (FPreviouslySelectedDetailRow == null || FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            int currentlySelectedRow = 0;
+            string existingBatchStatus = string.Empty;
+            decimal existingBatchTotal = 0;
+
+            if ((FPreviouslySelectedDetailRow == null) || (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
-            	return;
+                return;
             }
-            
+
             currentlySelectedRow = grdDetails.GetFirstHighlightedRowIndex();
-            
+
             try
             {
                 //Normally need to set the message parameters before the delete is performed if requiring any of the row values
@@ -652,63 +652,63 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 existingBatchTotal = FPreviouslySelectedDetailRow.BatchTotal;
                 existingBatchStatus = FPreviouslySelectedDetailRow.BatchStatus;
-				
-				//Load all journals for current Batch
-				//clear any transactions currently being editied in the Transaction Tab
+
+                //Load all journals for current Batch
+                //clear any transactions currently being editied in the Transaction Tab
                 ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
                 //Clear gifts and details etc for current Batch
                 FMainDS.AGiftDetail.Clear();
                 FMainDS.AGift.Clear();
-                
-				//Load tables afresh
+
+                //Load tables afresh
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber));
 
-				//Delete gift details
+                //Delete gift details
                 for (int i = FMainDS.AGiftDetail.Count - 1; i >= 0; i--)
                 {
-                	FMainDS.AGiftDetail[i].Delete();
+                    FMainDS.AGiftDetail[i].Delete();
                 }
 
-				//Delete gifts
+                //Delete gifts
                 for (int i = FMainDS.AGift.Count - 1; i >= 0; i--)
                 {
-                	FMainDS.AGift[i].Delete();
+                    FMainDS.AGift[i].Delete();
                 }
 
                 //Batch is only cancelled and never deleted
-				FPreviouslySelectedDetailRow.BeginEdit();
-				FPreviouslySelectedDetailRow.BatchTotal = 0;
-				FPreviouslySelectedDetailRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
-				FPreviouslySelectedDetailRow.EndEdit();
-				
+                FPreviouslySelectedDetailRow.BeginEdit();
+                FPreviouslySelectedDetailRow.BatchTotal = 0;
+                FPreviouslySelectedDetailRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+                FPreviouslySelectedDetailRow.EndEdit();
+
                 FPetraUtilsObject.HasChanges = true;
-                
+
                 // save first, then post
                 if (!((TFrmGiftBatch)ParentForm).SaveChanges())
                 {
-					FPreviouslySelectedDetailRow.BeginEdit();
-					//Should normally be Unposted, but allow for other status values in future
-					FPreviouslySelectedDetailRow.BatchTotal = existingBatchTotal;
-					FPreviouslySelectedDetailRow.BatchStatus = existingBatchStatus;
-					FPreviouslySelectedDetailRow.EndEdit();
-                	
-					SelectRowInGrid(currentlySelectedRow);
+                    FPreviouslySelectedDetailRow.BeginEdit();
+                    //Should normally be Unposted, but allow for other status values in future
+                    FPreviouslySelectedDetailRow.BatchTotal = existingBatchTotal;
+                    FPreviouslySelectedDetailRow.BatchStatus = existingBatchStatus;
+                    FPreviouslySelectedDetailRow.EndEdit();
+
+                    SelectRowInGrid(currentlySelectedRow);
 
                     // saving failed, therefore do not try to cancel
                     MessageBox.Show(Catalog.GetString("The cancelled batch failed to save!"));
                 }
                 else
                 {
-                	SelectRowInGrid(currentlySelectedRow);
-                	
-	                MessageBox.Show(completionMessage,
-	                    "Batch Cancelled",
-	                    MessageBoxButtons.OK,
-	                    MessageBoxIcon.Information);
-	
-                	UpdateChangeableStatus();
-	            }
+                    SelectRowInGrid(currentlySelectedRow);
+
+                    MessageBox.Show(completionMessage,
+                        "Batch Cancelled",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    UpdateChangeableStatus();
+                }
             }
             catch (Exception ex)
             {

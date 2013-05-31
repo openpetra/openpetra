@@ -185,7 +185,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         //Might need this later
         //private eGLTabs FPreviousTab = eGLTabs.Batches;
-        
+
         /// <summary>
         /// Switch to the given tab
         /// </summary>
@@ -217,7 +217,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoBatches.GetSelectedDetailRow().BatchNumber,
                         ucoBatches.GetSelectedDetailRow().BatchStatus);
 
-                    this.tpgTransactions.Enabled = (ucoJournals.GetSelectedDetailRow() != null && ucoJournals.GetSelectedDetailRow().JournalStatus != MFinanceConstants.BATCH_CANCELLED);
+                    this.tpgTransactions.Enabled =
+                        (ucoJournals.GetSelectedDetailRow() != null && ucoJournals.GetSelectedDetailRow().JournalStatus !=
+                         MFinanceConstants.BATCH_CANCELLED);
 
                     this.ucoJournals.UpdateHeaderTotals(ucoBatches.GetSelectedDetailRow());
 

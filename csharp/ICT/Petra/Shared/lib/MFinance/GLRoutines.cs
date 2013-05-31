@@ -63,13 +63,13 @@ namespace Ict.Petra.Shared.MFinance
             ACurrentJournal.JournalCreditTotalBase = 0.0M;
 
             DataView trnsDataView = new DataView(AMainDS.ATransaction);
-            
+
             trnsDataView.RowFilter = String.Format("{0}={1} And {2}={3}",
-                                                   ATransactionTable.GetBatchNumberDBName(),
-                                                   ACurrentJournal.BatchNumber,
-                                                   ATransactionTable.GetJournalNumberDBName(),
-                                                   ACurrentJournal.JournalNumber);
-            
+                ATransactionTable.GetBatchNumberDBName(),
+                ACurrentJournal.BatchNumber,
+                ATransactionTable.GetJournalNumberDBName(),
+                ACurrentJournal.JournalNumber);
+
             // transactions are filtered for this journal; add up the total amounts
             foreach (DataRowView v in trnsDataView)
             {
@@ -153,8 +153,8 @@ namespace Ict.Petra.Shared.MFinance
 
             DataView jnlDataView = new DataView(AMainDS.AJournal);
             jnlDataView.RowFilter = String.Format("{0}={1}",
-                                                  AJournalTable.GetBatchNumberDBName(),
-                                                  ACurrentBatch.BatchNumber);
+                AJournalTable.GetBatchNumberDBName(),
+                ACurrentBatch.BatchNumber);
 
             foreach (DataRowView journalview in jnlDataView)
             {
@@ -178,7 +178,7 @@ namespace Ict.Petra.Shared.MFinance
             ABatchRow ACurrentBatch, GLBatchTDSAJournalRow ACurrentJournal)
         {
             //Subtract existing journal totals amounts
-        	ACurrentBatch.BatchDebitTotal -= ACurrentJournal.JournalDebitTotal;
+            ACurrentBatch.BatchDebitTotal -= ACurrentJournal.JournalDebitTotal;
             ACurrentBatch.BatchCreditTotal -= ACurrentJournal.JournalCreditTotal;
 
             UpdateTotalsOfJournal(ref AMainDS, ACurrentJournal);

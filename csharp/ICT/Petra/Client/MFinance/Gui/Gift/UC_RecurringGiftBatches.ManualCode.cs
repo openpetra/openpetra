@@ -100,7 +100,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ShowData();
             FBatchLoaded = true;
-            
+
             UpdateChangeableStatus();
         }
 

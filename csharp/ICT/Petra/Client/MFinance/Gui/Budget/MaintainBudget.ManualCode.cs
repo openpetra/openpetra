@@ -660,7 +660,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 BudgetPeriodRow = null;
             }
 
-			txtInflateNTotalAmount.NumberValueDecimal = TotalAmount;
+            txtInflateNTotalAmount.NumberValueDecimal = TotalAmount;
             //grdDetails.Refresh();
         }
 
@@ -707,7 +707,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 BudgetPeriodRow = null;
             }
 
-			txtInflateBaseTotalAmount.NumberValueDecimal = TotalAmount;
+            txtInflateBaseTotalAmount.NumberValueDecimal = TotalAmount;
         }
 
         private void DisplayBudgetTypeAdhoc()
@@ -727,7 +727,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 foreach (Control ctrl in pnlBudgetTypeAdhoc.Controls)
                 {
-                	if (ctrl is TTxtCurrencyTextBox && (ctrl.Name == textboxName))
+                    if (ctrl is TTxtCurrencyTextBox && (ctrl.Name == textboxName))
                     {
                         txt = (TTxtCurrencyTextBox)ctrl;
                         break;
@@ -907,62 +907,62 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             if (AExcludeType != MFinanceConstants.BUDGET_ADHOC)
             {
-	        	//Adhoc controls
-	            txtPeriod01Amount.NumberValueDecimal = 0;
-	            txtPeriod02Amount.NumberValueDecimal = 0;
-	            txtPeriod03Amount.NumberValueDecimal = 0;
-	            txtPeriod04Amount.NumberValueDecimal = 0;
-	            txtPeriod05Amount.NumberValueDecimal = 0;
-	            txtPeriod06Amount.NumberValueDecimal = 0;
-	            txtPeriod07Amount.NumberValueDecimal = 0;
-	            txtPeriod08Amount.NumberValueDecimal = 0;
-	            txtPeriod09Amount.NumberValueDecimal = 0;
-	            txtPeriod10Amount.NumberValueDecimal = 0;
-	            txtPeriod11Amount.NumberValueDecimal = 0;
-	            txtPeriod12Amount.NumberValueDecimal = 0;
-	            txtTotalAdhocAmount.NumberValueDecimal = 0;
+                //Adhoc controls
+                txtPeriod01Amount.NumberValueDecimal = 0;
+                txtPeriod02Amount.NumberValueDecimal = 0;
+                txtPeriod03Amount.NumberValueDecimal = 0;
+                txtPeriod04Amount.NumberValueDecimal = 0;
+                txtPeriod05Amount.NumberValueDecimal = 0;
+                txtPeriod06Amount.NumberValueDecimal = 0;
+                txtPeriod07Amount.NumberValueDecimal = 0;
+                txtPeriod08Amount.NumberValueDecimal = 0;
+                txtPeriod09Amount.NumberValueDecimal = 0;
+                txtPeriod10Amount.NumberValueDecimal = 0;
+                txtPeriod11Amount.NumberValueDecimal = 0;
+                txtPeriod12Amount.NumberValueDecimal = 0;
+                txtTotalAdhocAmount.NumberValueDecimal = 0;
             }
 
             if (AExcludeType != MFinanceConstants.BUDGET_SAME)
             {
-	            //Same controls
-	            txtAmount.NumberValueDecimal = 0;
-	            txtSameTotalAmount.NumberValueDecimal = 0;
+                //Same controls
+                txtAmount.NumberValueDecimal = 0;
+                txtSameTotalAmount.NumberValueDecimal = 0;
             }
 
             if (AExcludeType != MFinanceConstants.BUDGET_SPLIT)
             {
-	            //Split controls
-	            txtTotalSplitAmount.NumberValueDecimal = 0;
-	            txtPerPeriodAmount.NumberValueDecimal = 0;
-	            txtPeriod12AmountPlus.NumberValueDecimal = 0;
+                //Split controls
+                txtTotalSplitAmount.NumberValueDecimal = 0;
+                txtPerPeriodAmount.NumberValueDecimal = 0;
+                txtPeriod12AmountPlus.NumberValueDecimal = 0;
             }
 
             if (AExcludeType != MFinanceConstants.BUDGET_INFLATE_N)
             {
-	            //Inflate N controls
-	            txtFirstPeriodAmount.NumberValueDecimal = 0;
-	            txtInflateAfterPeriod.NumberValueInt = 0;
-	            txtInflationRate.NumberValueDecimal = 0;
-	            txtInflateNTotalAmount.NumberValueDecimal = 0;
+                //Inflate N controls
+                txtFirstPeriodAmount.NumberValueDecimal = 0;
+                txtInflateAfterPeriod.NumberValueInt = 0;
+                txtInflationRate.NumberValueDecimal = 0;
+                txtInflateNTotalAmount.NumberValueDecimal = 0;
             }
 
             if (AExcludeType != MFinanceConstants.BUDGET_INFLATE_BASE)
             {
-	            //Inflate Base controls
-	            txtPeriod1Amount.NumberValueDecimal = 0;
-	            txtPeriod02Index.NumberValueDecimal = 0;
-	            txtPeriod03Index.NumberValueDecimal = 0;
-	            txtPeriod04Index.NumberValueDecimal = 0;
-	            txtPeriod05Index.NumberValueDecimal = 0;
-	            txtPeriod06Index.NumberValueDecimal = 0;
-	            txtPeriod07Index.NumberValueDecimal = 0;
-	            txtPeriod08Index.NumberValueDecimal = 0;
-	            txtPeriod09Index.NumberValueDecimal = 0;
-	            txtPeriod10Index.NumberValueDecimal = 0;
-	            txtPeriod11Index.NumberValueDecimal = 0;
-	            txtPeriod12Index.NumberValueDecimal = 0;
-	            txtInflateBaseTotalAmount.NumberValueDecimal = 0;
+                //Inflate Base controls
+                txtPeriod1Amount.NumberValueDecimal = 0;
+                txtPeriod02Index.NumberValueDecimal = 0;
+                txtPeriod03Index.NumberValueDecimal = 0;
+                txtPeriod04Index.NumberValueDecimal = 0;
+                txtPeriod05Index.NumberValueDecimal = 0;
+                txtPeriod06Index.NumberValueDecimal = 0;
+                txtPeriod07Index.NumberValueDecimal = 0;
+                txtPeriod08Index.NumberValueDecimal = 0;
+                txtPeriod09Index.NumberValueDecimal = 0;
+                txtPeriod10Index.NumberValueDecimal = 0;
+                txtPeriod11Index.NumberValueDecimal = 0;
+                txtPeriod12Index.NumberValueDecimal = 0;
+                txtInflateBaseTotalAmount.NumberValueDecimal = 0;
             }
         }
 
@@ -1051,54 +1051,59 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             if (ARow != null)
             {
-            	ARow.BeginEdit();
+                ARow.BeginEdit();
 
-            	if (rbtAdHoc.Checked)
+                if (rbtAdHoc.Checked)
                 {
                     if (FPetraUtilsObject.HasChanges)
                     {
-	            		ProcessBudgetTypeAdhoc(null, null);
-	                    ClearBudgetPeriodTextboxes(MFinanceConstants.BUDGET_ADHOC);
+                        ProcessBudgetTypeAdhoc(null, null);
+                        ClearBudgetPeriodTextboxes(MFinanceConstants.BUDGET_ADHOC);
                     }
+
                     ARow.BudgetTypeCode = MFinanceConstants.BUDGET_ADHOC;
                 }
                 else if (rbtSame.Checked)
                 {
                     if (FPetraUtilsObject.HasChanges)
                     {
-	            		ProcessBudgetTypeSame(null, null);
-	                    ClearBudgetPeriodTextboxes(MFinanceConstants.BUDGET_SAME);
+                        ProcessBudgetTypeSame(null, null);
+                        ClearBudgetPeriodTextboxes(MFinanceConstants.BUDGET_SAME);
                     }
+
                     ARow.BudgetTypeCode = MFinanceConstants.BUDGET_SAME;
                 }
                 else if (rbtSplit.Checked)
                 {
                     if (FPetraUtilsObject.HasChanges)
                     {
-	            		ProcessBudgetTypeSplit(null, null);
-	                    ClearBudgetPeriodTextboxes(MFinanceConstants.BUDGET_SPLIT);
+                        ProcessBudgetTypeSplit(null, null);
+                        ClearBudgetPeriodTextboxes(MFinanceConstants.BUDGET_SPLIT);
                     }
+
                     ARow.BudgetTypeCode = MFinanceConstants.BUDGET_SPLIT;
                 }
                 else if (rbtInflateN.Checked)
                 {
                     if (FPetraUtilsObject.HasChanges)
                     {
-	            		ProcessBudgetTypeInflateN(null, null);
-	                    ClearBudgetPeriodTextboxes(MFinanceConstants.BUDGET_INFLATE_N);
+                        ProcessBudgetTypeInflateN(null, null);
+                        ClearBudgetPeriodTextboxes(MFinanceConstants.BUDGET_INFLATE_N);
                     }
+
                     ARow.BudgetTypeCode = MFinanceConstants.BUDGET_INFLATE_N;
                 }
                 else      //rbtInflateBase.Checked
                 {
                     if (FPetraUtilsObject.HasChanges)
                     {
-	            		ProcessBudgetTypeInflateBase(null, null);
-	                    ClearBudgetPeriodTextboxes(MFinanceConstants.BUDGET_INFLATE_BASE);
+                        ProcessBudgetTypeInflateBase(null, null);
+                        ClearBudgetPeriodTextboxes(MFinanceConstants.BUDGET_INFLATE_BASE);
                     }
+
                     ARow.BudgetTypeCode = MFinanceConstants.BUDGET_INFLATE_BASE;
                 }
-            	
+
                 //TODO switch to using Ledger financial year
                 ARow.Year = Convert.ToInt16(cmbSelectBudgetYear.GetSelectedString());
                 ARow.Revision = CreateBudgetRevisionRow(FLedgerNumber, ARow.Year);

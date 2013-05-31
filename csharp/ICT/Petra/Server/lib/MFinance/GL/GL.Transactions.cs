@@ -1042,53 +1042,53 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 if (AInspectDS.ATransaction.Count > 0)
                 {
-	                ATransactionRow tranR = (ATransactionRow)AInspectDS.ATransaction.Rows[0];
-	
-	                Int32 currentLedger = tranR.LedgerNumber;
-	                Int32 currentBatch = tranR.BatchNumber;
-	                Int32 currentJournal = tranR.JournalNumber;
-	                Int32 transToDelete = 0;
-	
-	                try
-	                {
-	                    //Check if any records have been marked for deletion
-	                    DataRow[] foundTransactionForDeletion = AInspectDS.ATransaction.Select(String.Format("{0} = '{1}'",
-	                            ATransactionTable.GetSubTypeDBName(),
-	                            MFinanceConstants.MARKED_FOR_DELETION));
-	
-	                    if (foundTransactionForDeletion.Length > 0)
-	                    {
-	                        ATransactionRow transRowClient = null;
-	
-	                        for (int i = 0; i < foundTransactionForDeletion.Length; i++)
-	                        {
-	                            transRowClient = (ATransactionRow)foundTransactionForDeletion[i];
-	
-	                            transToDelete = transRowClient.TransactionNumber;
-	                            TLogging.Log(String.Format("Transaction to Delete: {0} from Journal: {1} in Batch: {2}",
-	                                    transToDelete,
-	                                    currentJournal,
-	                                    currentBatch));
-	
-	                            transRowClient.Delete();
-	                        }
-	
-	                        //Submit all changes
-	                        SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-	                    }
-	                }
-	                catch (Exception ex)
-	                {
-	                    TLogging.Log("Saving DataSet: " + ex.Message);
-	
-	                    TLogging.Log(String.Format("Error trying to save transaction: {0} in Journal: {1}, Batch: {2}",
-	                            transToDelete,
-	                            currentJournal,
-	                            currentBatch
-	                            ));
-	
-	                    SubmissionResult = TSubmitChangesResult.scrError;
-	                }
+                    ATransactionRow tranR = (ATransactionRow)AInspectDS.ATransaction.Rows[0];
+
+                    Int32 currentLedger = tranR.LedgerNumber;
+                    Int32 currentBatch = tranR.BatchNumber;
+                    Int32 currentJournal = tranR.JournalNumber;
+                    Int32 transToDelete = 0;
+
+                    try
+                    {
+                        //Check if any records have been marked for deletion
+                        DataRow[] foundTransactionForDeletion = AInspectDS.ATransaction.Select(String.Format("{0} = '{1}'",
+                                ATransactionTable.GetSubTypeDBName(),
+                                MFinanceConstants.MARKED_FOR_DELETION));
+
+                        if (foundTransactionForDeletion.Length > 0)
+                        {
+                            ATransactionRow transRowClient = null;
+
+                            for (int i = 0; i < foundTransactionForDeletion.Length; i++)
+                            {
+                                transRowClient = (ATransactionRow)foundTransactionForDeletion[i];
+
+                                transToDelete = transRowClient.TransactionNumber;
+                                TLogging.Log(String.Format("Transaction to Delete: {0} from Journal: {1} in Batch: {2}",
+                                        transToDelete,
+                                        currentJournal,
+                                        currentBatch));
+
+                                transRowClient.Delete();
+                            }
+
+                            //Submit all changes
+                            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        TLogging.Log("Saving DataSet: " + ex.Message);
+
+                        TLogging.Log(String.Format("Error trying to save transaction: {0} in Journal: {1}, Batch: {2}",
+                                transToDelete,
+                                currentJournal,
+                                currentBatch
+                                ));
+
+                        SubmissionResult = TSubmitChangesResult.scrError;
+                    }
                 }
             }
 
@@ -2047,8 +2047,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             DataView jnlDataView = new DataView(AMainDS.AJournal);
 
             jnlDataView.RowFilter = String.Format("{0}={1}",
-                                                  AJournalTable.GetBatchNumberDBName(),
-                                                  ACurrentBatch.BatchNumber);
+                AJournalTable.GetBatchNumberDBName(),
+                ACurrentBatch.BatchNumber);
 
             foreach (DataRowView journalview in jnlDataView)
             {
@@ -2076,44 +2076,44 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static void UpdateTotalsOfBatchFromJournals(ref GLBatchTDS AMainDS,
             int ACurrentBatchNo, int ACurrentJournalNo = 0)
         {
-            if (AMainDS.ABatch == null || AMainDS.ABatch.Count == 0)
+            if ((AMainDS.ABatch == null) || (AMainDS.ABatch.Count == 0))
             {
-            	return;
+                return;
             }
-            
+
             int currentLedger = ((ABatchRow)AMainDS.ABatch.Rows[0]).LedgerNumber;
-        	
-        	decimal sumDebits = 0.0M;
+
+            decimal sumDebits = 0.0M;
             decimal sumCredits = 0.0M;
 
             //Locate the current Batch
-            
+
             ABatchRow batchRow = (ABatchRow)AMainDS.ABatch.Rows.Find(new object[] { currentLedger, ACurrentBatchNo });
-                                                          	
-			if (batchRow == null)
-			{
-				return;
-			}
-            
 
-			//If journal number is given, then update the specified journal according to the transaction values in the dataset
-			if (ACurrentJournalNo > 0)
-			{
-				GLBatchTDSAJournalRow journalRow = (GLBatchTDSAJournalRow)AMainDS.AJournal.Rows.Find(new object[] { currentLedger, ACurrentBatchNo, ACurrentJournalNo });
-				
-				if(journalRow != null)
-				{
-					//Update the totals of the current journal from the transactions.
-		            UpdateTotalsOfJournal(ref AMainDS, journalRow);
-				}
-			}
+            if (batchRow == null)
+            {
+                return;
+            }
 
-			//Iterate through all journals in the current Batch
-			DataView jnlDataView = new DataView(AMainDS.AJournal);
+            //If journal number is given, then update the specified journal according to the transaction values in the dataset
+            if (ACurrentJournalNo > 0)
+            {
+                GLBatchTDSAJournalRow journalRow = (GLBatchTDSAJournalRow)AMainDS.AJournal.Rows.Find(new object[] { currentLedger, ACurrentBatchNo,
+                                                                                                                    ACurrentJournalNo });
+
+                if (journalRow != null)
+                {
+                    //Update the totals of the current journal from the transactions.
+                    UpdateTotalsOfJournal(ref AMainDS, journalRow);
+                }
+            }
+
+            //Iterate through all journals in the current Batch
+            DataView jnlDataView = new DataView(AMainDS.AJournal);
 
             jnlDataView.RowFilter = String.Format("{0}={1}",
-                                                  AJournalTable.GetBatchNumberDBName(),
-                                                  ACurrentBatchNo);
+                AJournalTable.GetBatchNumberDBName(),
+                ACurrentBatchNo);
 
             //Recalculate the Batch totals
             foreach (DataRowView journalview in jnlDataView)
@@ -2146,38 +2146,38 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             //Load all Batch, Journal and Transaction records
             glDS.Merge(LoadABatchAJournalATransaction(ALedgerNumber, ABatchNumber));
 
-            if (glDS.ABatch == null || glDS.ABatch.Count == 0)
+            if ((glDS.ABatch == null) || (glDS.ABatch.Count == 0))
             {
-            	return;
+                return;
             }
 
             try
-			{
-	            ABatchRow currentBatch = (ABatchRow)glDS.ABatch.Rows[0];
-	
-	            glDS.AJournal.DefaultView.RowFilter = string.Empty;
-	
-	            foreach (DataRowView journalview in glDS.AJournal.DefaultView)
-	            {
-	                GLBatchTDSAJournalRow journalrow = (GLBatchTDSAJournalRow)journalview.Row;
-	
-	                UpdateTotalsOfJournal(ref glDS, journalrow);
-	
-	                sumDebits += journalrow.JournalDebitTotal;
-	                sumCredits += journalrow.JournalCreditTotal;
-	            }
-	
-	            currentBatch.BatchDebitTotal = sumDebits;
-	            currentBatch.BatchCreditTotal = sumCredits;
-	            currentBatch.BatchRunningTotal = Math.Round(sumDebits - sumCredits, 2);
+            {
+                ABatchRow currentBatch = (ABatchRow)glDS.ABatch.Rows[0];
 
-	            glDS.AcceptChanges();
-			}
-			catch (Exception)
-			{
-				glDS.RejectChanges();
-				throw;
-			}           
+                glDS.AJournal.DefaultView.RowFilter = string.Empty;
+
+                foreach (DataRowView journalview in glDS.AJournal.DefaultView)
+                {
+                    GLBatchTDSAJournalRow journalrow = (GLBatchTDSAJournalRow)journalview.Row;
+
+                    UpdateTotalsOfJournal(ref glDS, journalrow);
+
+                    sumDebits += journalrow.JournalDebitTotal;
+                    sumCredits += journalrow.JournalCreditTotal;
+                }
+
+                currentBatch.BatchDebitTotal = sumDebits;
+                currentBatch.BatchCreditTotal = sumCredits;
+                currentBatch.BatchRunningTotal = Math.Round(sumDebits - sumCredits, 2);
+
+                glDS.AcceptChanges();
+            }
+            catch (Exception)
+            {
+                glDS.RejectChanges();
+                throw;
+            }
         }
 
         /// <summary>
@@ -2210,7 +2210,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             ACurrentJournal.JournalCreditTotalBase = 0.0M;
 
             DataView trnsDataView = new DataView(AMainDS.ATransaction);
-            
+
             trnsDataView.RowFilter = String.Format("{0} = {1} And {2} = {3}",
                 ATransactionTable.GetBatchNumberDBName(),
                 ACurrentJournal.BatchNumber,
