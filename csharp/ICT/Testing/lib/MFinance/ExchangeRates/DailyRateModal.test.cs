@@ -1116,17 +1116,12 @@ namespace Tests.MFinance.Client.ExchangeRates
             }
 
             Assert.AreEqual(DialogResult.OK, dlgResult);
+            Assert.AreEqual(0.5444m, selectedRate, "Expected the selected rate from the dialog to be 0.5444");
+            Assert.AreEqual(7200, selectedTime, "Expected the selected time from the dialog to be 7200");
+            Assert.AreEqual(FStandardEffectiveDate, selectedDate, "Expected the selected date from the dialog to be " + FStandardEffectiveDate.ToShortDateString());
 
             // So did we actually save things all the way??
-            FMainDS.LoadAll();
-            FJournalDS.LoadAll();
-            FGiftBatchDS.LoadAll();
-
-            DataView dvJournal = new DataView(FJournalDS.AJournal, "a_exchange_rate_to_base_n=0.5335", null, DataViewRowState.CurrentRows);
-            Assert.AreEqual(3, dvJournal.Count, "Expected to find 3 modified journal rows");
-
-            DataView dvGift = new DataView(FGiftBatchDS.AGiftBatch, "a_exchange_rate_to_base_n=0.5335", null, DataViewRowState.CurrentRows);
-            Assert.AreEqual(2, dvGift.Count, "Expected to find 2 modified gift rows");
+            // Since May 2013 the modal dialog does not make a change to the Journal/Gift tables - it is up to theses screens to save the returned values
         }
 
         /// <summary>
@@ -1206,7 +1201,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                 Assert.IsFalse(btnDelete.Enabled, "This row has been used and cannot be deleted");
                 Assert.IsFalse(txtRateOfExchange.Enabled, "This row cannot be edited because the rate has been posted");
 
-                // Create a new rate for today
+                // Create a new rate for the latest date possible
                 btnNewTester.Click();
                 txtRateOfExchange.NumberValueDecimal = 0.5444m;
                 Assert.IsTrue(tbbSaveTester.Properties.Enabled);
