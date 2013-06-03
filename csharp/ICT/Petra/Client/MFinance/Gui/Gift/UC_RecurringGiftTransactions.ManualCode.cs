@@ -358,8 +358,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             RetrieveMotivationDetailAccountCode();
 
-            if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
+            if ((txtDetailRecipientKey.Text == string.Empty) || (Convert.ToInt64(txtDetailRecipientKey.Text) == 0))
             {
+                txtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
                 RetrieveMotivationDetailCostCentreCode();
             }
         }
