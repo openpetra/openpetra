@@ -750,7 +750,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 txt = null;
             }
 
-            this.lblAdhocTotalAmount.Text = "Total Amount: " + StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
+            txtTotalAdhocAmount.Text = StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
         }
 
         private void DisplayBudgetTypeSame()
@@ -851,8 +851,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             txtFirstPeriodAmount.NumberValueDecimal = FirstPeriodAmount;
             txtInflateAfterPeriod.NumberValueInt = InflateAfterPeriod;
             txtInflationRate.NumberValueDecimal = InflationRate;
-            lblInflateNTotalAmount.Text = "    Total: " +
-                                          StringHelper.FormatUsingCurrencyCode(TotalAmount, FCurrencyCode);
+            lblInflateNTotalAmount.Text = "    Total: " + StringHelper.FormatUsingCurrencyCode(TotalAmount, FCurrencyCode);
         }
 
         private void DisplayBudgetTypeInflateBase()
