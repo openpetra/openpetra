@@ -9,7 +9,7 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add Batch, ActionClick=NewRow}
-        actDelete: {Label=&Delete Batch, ActionClick=DeleteRecord}
+        actDelete: {Label=&Delete Batch, SkipReferenceCheck=true, ActionClick=DeleteRecord}
         actSubmit: {Label=&Submit Batch, ActionClick=Submit}
     Controls:
         pnlContent:
@@ -38,6 +38,7 @@ RootNode:
             ActionDoubleClick: ShowTransactionTab
             ActionEnterKeyPressed: ShowTransactionTab
             SortOrder: BatchNumber DESC
+            EnableMultiSelection: false
         pnlDetails:
             Dock: Bottom
             Controls:

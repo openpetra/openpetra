@@ -99,10 +99,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             ShowData();
-
             FBatchLoaded = true;
 
-            ShowDetails(GetCurrentRecurringBatchRow());
+            UpdateChangeableStatus();
         }
 
         /// <summary>
@@ -168,23 +167,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FLedgerNumber = ARow.LedgerNumber;
-//            FSelectedBatchNumber = ARow.BatchNumber;
 
             FPetraUtilsObject.DetailProtectedMode = false;
 
             ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab();
 
             UpdateChangeableStatus();
-
-//            FPetraUtilsObject.DetailProtectedMode = false;
-//            ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab();
-//            UpdateChangeableStatus();
-//            FPetraUtilsObject.DetailProtectedMode = false;
-//            ((TFrmRecurringGiftBatch)ParentForm).LoadTransactions(
-//                ARow.LedgerNumber,
-//                ARow.BatchNumber);
-
-            // FSelectedBatchNumber = ARow.BatchNumber;
         }
 
         private void ShowTransactionTab(Object sender, EventArgs e)
@@ -387,6 +375,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Boolean changeable = (FPreviouslySelectedDetailRow != null);
 
             this.btnDelete.Enabled = changeable;
+            this.btnSubmit.Enabled = changeable;
             pnlDetails.Enabled = changeable;
         }
 
