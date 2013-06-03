@@ -29,6 +29,7 @@ using System.Xml;
 using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Gui;
@@ -286,6 +287,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
             // We need to capture the 'DataSaved' event, so we can save our Extra DataSet
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
+            FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
         }
 
         // Simple helper that adds a string item as a row in our UsedBy list
@@ -321,23 +323,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
             grdDetails.Refresh();
 
-            if (contextView.Count > 0)
-            {
-                grdDetails.Selection.SelectRow(1, true);
-            }
-
-            // The details panel will likely be showing data from the wrong context now that we have applied a rowfilter
-            // So we have to make sure the panel is displaying data from the first row
-            FPreviouslySelectedDetailRow = null;
-
-            if (GetSelectedDetailRow() == null)
-            {
-                ShowDetails(null);
-            }
-            else
-            {
-                FocusedRowChanged(this, new SourceGrid.RowEventArgs(0));
-            }
+            SelectRowInGrid(1);
         }
 
         private void NewRowManual(ref PDataLabelRow ARow)
@@ -473,7 +459,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 FPetraUtilsObject.SetChangedFlag();
 
                 DataView contextView = new DataView(FMainDS.PDataLabel,
-                    "Context=" + ((int)CurrentContext).ToString(), "", DataViewRowState.CurrentRows);
+                    "Context=" + ((int)CurrentContext).ToString(), "p_group_c, p_text_c", DataViewRowState.CurrentRows);
                 contextView.AllowNew = false;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
                 grdDetails.Refresh();
@@ -483,6 +469,47 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 txtDetailText.SelectAll();
                 txtDetailText.Focus();
             }
+        }
+
+        private bool PreDeleteManual(PDataLabelRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            string question = ADeletionQuestion;
+            question += (Environment.NewLine + Environment.NewLine + "(");
+
+            if (txtDetailGroup.Text.Length > 0)
+            {
+                question += String.Format("{0}: {1},  ", Catalog.GetString("Group"), txtDetailGroup.Text);
+            }
+
+            question += String.Format("{0} {1})", lblDetailText.Text, txtDetailText.Text);
+
+            int classesCount = ARowToDelete[UsedByColumnOrdinal].ToString().Split(new char[] {','}).Length;
+            string s = Catalog.GetPluralString("{0}{0}This {1} is used in {2} Partner Class", "{0}{0}This {1} is used in {2} Partner Classes", classesCount);
+            question += String.Format(s, Environment.NewLine, lblDetailText.Text.Substring(0, lblDetailText.Text.Length - 1), classesCount);
+            
+            ADeletionQuestion = question;
+
+            return true;
+        }
+
+        private bool DeleteRowManual(PDataLabelRow ARowToDelete, ref string ACompletionMessage)
+        {
+            bool ReturnValue = false;
+
+            // We need to delete the rows in PDataLabelUse that reference the current row
+            int key = ARowToDelete.Key;
+            DataRow[] MatchingRows = FExtraDS.PDataLabelUse.Select("p_data_label_key_i=" + key.ToString());
+
+            foreach (DataRow row in MatchingRows)
+            {
+                row.Delete();
+            }
+
+            // Now we can delete the row in the main table
+            ARowToDelete.Delete();
+            ReturnValue = true;
+
+            return ReturnValue;
         }
 
         private void ShowDetailsManual(PDataLabelRow ARow)
@@ -628,6 +655,22 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             ARow[UsedByColumnOrdinal] = clbUsedBy.GetCheckedStringList();
         }
 
+        void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
+        {
+            // We need to delete the rows in the extra data set first so that we will be able to save the deleted rows in the main data set
+            DataTable DeletedDT = FExtraDS.PDataLabelUse.GetChanges(DataRowState.Deleted);
+            
+            if (DeletedDT == null)
+            {
+                return;
+            }
+
+            TTypedDataTable SubmitDT = (TTypedDataTable)DeletedDT;
+            SubmitDT.InitVars();
+
+            SaveDataLabelUseChanges(SubmitDT);
+        }
+
         void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
         {
             // Do not save anything if the main table did not save correctly
@@ -639,15 +682,14 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             // Ensure we get the current row's information
             if (FPreviouslySelectedDetailRow != null)
             {
-                string stringList = clbUsedBy.GetCheckedStringList();
-                FPreviouslySelectedDetailRow[UsedByColumnOrdinal] = stringList;
+                FPreviouslySelectedDetailRow[UsedByColumnOrdinal] = clbUsedBy.GetCheckedStringList();
             }
 
             // Now we need to save the PDataLabelUse table info using our data from our UsedBy column
             // Go round all the rows, seeing which rows have a new UsedBy value
             foreach (PDataLabelRow labelRow in FMainDS.PDataLabel.Rows)
             {
-                if (labelRow[UsedByColumnOrdinal].ToString() != labelRow[UsedByColumnOrdinal - 1].ToString())
+                if ((labelRow.RowState != DataRowState.Deleted) && (labelRow[UsedByColumnOrdinal].ToString() != labelRow[UsedByColumnOrdinal - 1].ToString()))
                 {
                     // This row's UsedBy column has been edited
                     // Get the key and the list of usedBy's for this row
@@ -705,7 +747,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                         if (!bUseStillExists)
                         {
                             // We no longer need this row for this usedBy/LabelKey
-                            ((PDataLabelUseRow)r).Delete();
+                            r.Delete();
                         }
                     }
                 }
@@ -718,6 +760,12 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 return;                                 // nothing to save
             }
 
+            SaveDataLabelUseChanges(SubmitDT);
+
+        }
+
+        private void SaveDataLabelUseChanges(TTypedDataTable ASubmitChanges)
+        {
             // Submit changes to the PETRAServer for the DataLabelUse table
             // This code is basically lifted from a typical auto-generated equivalent
             // TODO: If the standard code changes because TODO's get done, we will need to change this manual code
@@ -725,7 +773,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             TVerificationResultCollection VerificationResult;
             try
             {
-                SubmissionResult = TDataCache.SaveChangedCacheableDataTableToPetraServer("DataLabelUseList", ref SubmitDT, out VerificationResult);
+                SubmissionResult = TDataCache.SaveChangedCacheableDataTableToPetraServer("DataLabelUseList", ref ASubmitChanges, out VerificationResult);
             }
             catch (ESecurityDBTableAccessDeniedException Exp)
             {
@@ -768,8 +816,8 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                     FExtraDS.PDataLabelUse.AcceptChanges();
 
                     // Merge back with data from the Server (eg. for getting Sequence values)
-                    SubmitDT.AcceptChanges();
-                    FExtraDS.PDataLabelUse.Merge(SubmitDT, false);
+                    ASubmitChanges.AcceptChanges();
+                    FExtraDS.PDataLabelUse.Merge(ASubmitChanges, false);
 
                     // need to accept the new modification ID
                     FExtraDS.PDataLabelUse.AcceptChanges();
