@@ -549,9 +549,12 @@ namespace Ict.Petra.Server.MReporting.MConference
                 FOutreachCosts = 0;
             }
 
-            AFinanceDetails = (FOutreachCosts + FCongressCosts + FExtraCost + FSupportCost + FPreConferenceCosts + FPostConferenceCosts).ToString(
-                "#0.00");
-            AAccommodation = (FAccommodationCosts + FPreAccommodationCosts + FPostAccommodationCosts).ToString("#0.00") + " ";
+            AFinanceDetails = StringHelper.FormatUsingCurrencyCode(
+                (decimal)(FOutreachCosts + FCongressCosts + FExtraCost + FSupportCost + FPreConferenceCosts + FPostConferenceCosts),
+                FConferenceCurrency);
+            AAccommodation = StringHelper.FormatUsingCurrencyCode(
+                (decimal)(FAccommodationCosts + FPreAccommodationCosts + FPostAccommodationCosts),
+                FConferenceCurrency);
 
             AFinanceDetails = AFinanceDetails + FConferenceFlags;
             FUsedConferenceFlags = FUsedConferenceFlags + FConferenceFlags;
@@ -2119,7 +2122,7 @@ namespace Ict.Petra.Server.MReporting.MConference
 
             Columns[0] = new TVariant("I agree that the above attendances are accurate. Any differences over the amount");
             Columns[4] = new TVariant("Total amount due from Field:");
-            Columns[5] = new TVariant(FConferenceCurrency + "....." + TotalFees.ToString("#0.00"));
+            Columns[5] = new TVariant(FConferenceCurrency + "....." + StringHelper.FormatUsingCurrencyCode(TotalFees, FConferenceCurrency));
 
 
             ASituation.GetResults().AddRow(AMasterRow, AChildRow, true, ALevel, "", "", false,
@@ -2538,7 +2541,7 @@ namespace Ict.Petra.Server.MReporting.MConference
 
                 Columns[1] = new TVariant(ExtraCostRow.CostTypeCode);
                 // we need one space after the amount. Otherwise it's not correctly printed in the report
-                Columns[2] = new TVariant(ExtraCostRow.CostAmount.ToString("#0.00") + " ");
+                Columns[2] = new TVariant(StringHelper.FormatUsingCurrencyCode(ExtraCostRow.CostAmount, FConferenceCurrency));
                 Columns[3] = new TVariant(ExtraCostRow.Comment);
 
                 ASituation.GetResults().AddRow(AMasterRow, AChildRow, true, ALevel, "", "", false,

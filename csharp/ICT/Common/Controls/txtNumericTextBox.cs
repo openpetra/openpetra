@@ -253,7 +253,15 @@ namespace Ict.Common.Controls
                             && (CleanedfromNonNumeralChars != ".")
                             && (CleanedfromNonNumeralChars != String.Empty))
                         {
-                            return Convert.ToDecimal(CleanedfromNonNumeralChars, FCurrentCulture);
+                            decimal? Ret = null;
+                            try
+                            {
+                                Ret = Convert.ToDecimal(CleanedfromNonNumeralChars, FCurrentCulture);
+                            }
+                            catch (Exception)
+                            {
+                            }
+                            return Ret;
                         }
                         else
                         {
@@ -624,7 +632,8 @@ namespace Ict.Common.Controls
             }
 
             // handle PASTE
-            if ((e.KeyCode == Keys.V) && (e.Modifiers == Keys.Control))
+            if (((e.KeyCode == Keys.V) && (e.Modifiers == Keys.Control))
+                || ((e.KeyCode == Keys.Insert) && (e.Shift)))
             {
                 HandlePaste();
                 e.Handled = true;
@@ -960,7 +969,6 @@ namespace Ict.Common.Controls
 
         private void HandlePaste()
         {
-            String str;
             IDataObject clip;
 
             if (!this.ReadOnly)
@@ -974,20 +982,30 @@ namespace Ict.Common.Controls
                     // try and paste the contents
                     try
                     {
-                        str = (String)(clip.GetData(DataFormats.Text));
+                        String str = (String)(clip.GetData(DataFormats.Text));
+                        String NumberPattern = "0123456789-+%" + FNumberDecimalSeparator + FCurrencyDecimalSeparator;
+                        String OkStr = "";
+
+                        for (int i = 0; i < str.Length; i++)
+                        {
+                            if (NumberPattern.IndexOf(str[i]) >= 0)
+                            {
+                                OkStr += str[i];
+                            }
+                        }
 
                         if (this.SelectionLength > 0)
                         {
-                            this.SelectedText = str;
+                            this.SelectedText = OkStr;
 //                              ProcessChangedText(this.Text);
                         }
                         else if (this.SelectionStart > 0)
                         {
-                            base.Text = this.Text.Substring(0, this.SelectionStart) + str + this.Text.Substring(this.SelectionStart);
+                            base.Text = this.Text.Substring(0, this.SelectionStart) + OkStr + this.Text.Substring(this.SelectionStart);
                         }
                         else
                         {
-                            base.Text = str;
+                            base.Text = OkStr;
                         }
                     }
                     catch (Exception Exp)
@@ -1027,6 +1045,22 @@ namespace Ict.Common.Controls
                 MessageBox.Show("Exception in Exception in TTxtNumericTextBox.HandleCut: " + Exp.ToString());
 
                 // never mind
+            }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="m"></param>
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_PASTE)
+            {
+                HandlePaste();
+            }
+            else
+            {
+                base.WndProc(ref m);
             }
         }
 

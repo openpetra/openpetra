@@ -1,4 +1,4 @@
-// auto generated with nant generateORM
+// auto generated with nant generateORM using DataSets.cs
 // Do not modify this file manually!
 //
 {#GPLFILEHEADER}

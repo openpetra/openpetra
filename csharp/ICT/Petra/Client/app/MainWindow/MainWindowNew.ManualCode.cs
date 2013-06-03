@@ -453,6 +453,15 @@ namespace Ict.Petra.Client.App.PetraClient
         }
 
         /// <summary>
+        /// This was added for use after "DeleteLedger".
+        /// IT ONLY WORKS IF THE USER HAS FINANCE ACCESS!
+        /// </summary>
+        public void SelectFinanceFolder()
+        {
+            lstFolders.SelectFolder(1);
+        }
+
+        /// <summary>
         /// Shows the current Ledger in the StatusBar.
         /// </summary>
         public void ShowCurrentLedgerInfoInStatusBar()
