@@ -64,13 +64,6 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
                                   Path.DirectorySeparatorChar + moduleName +
                                   Path.DirectorySeparatorChar + "web";
 
-            if (!Directory.Exists(OutputFolder))
-            {
-                // The -outputserver command line parameter must be wrong, or the directory does not exist yet
-                Console.WriteLine("Error: directory does not exist: " + OutputFolder);
-                return false;
-            }
-
             String OutputFile = OutputFolder + Path.DirectorySeparatorChar + "ReferenceCount-generated.cs";
             Console.WriteLine("working on " + OutputFile);
 
@@ -207,6 +200,14 @@ namespace Ict.Tools.CodeGeneration.ReferenceCountConnectors
 
             if ((cacheableCount > 0) || (nonCacheableCount > 0))
             {
+                if (!Directory.Exists(OutputFolder))
+                {
+                    // The -outputserver command line parameter must be wrong, or the directory does not exist yet
+                    // Directories must be manually created and added to source code control
+                    Console.WriteLine("Error: directory does not exist: " + OutputFolder);
+                    return false;
+                }
+
                 Console.WriteLine("Finishing connector for " + className + Environment.NewLine + Environment.NewLine);
                 Template.FinishWriting(OutputFile, ".cs", true);
 
