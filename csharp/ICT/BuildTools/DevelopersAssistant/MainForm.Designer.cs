@@ -71,6 +71,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.txtSequence = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.grpSingle = new System.Windows.Forms.GroupBox();
+            this.btnPreviewWinform = new System.Windows.Forms.Button();
             this.chkStartClientAfterGenerateWinform = new System.Windows.Forms.CheckBox();
             this.chkCompileWinform = new System.Windows.Forms.CheckBox();
             this.btnCompilation = new System.Windows.Forms.Button();
@@ -115,6 +116,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.txtOutput = new System.Windows.Forms.TextBox();
             this.OptionsPage = new System.Windows.Forms.TabPage();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.btnAdvancedOptions = new System.Windows.Forms.Button();
             this.btnBrowseBazaar = new System.Windows.Forms.Button();
             this.txtBazaarPath = new System.Windows.Forms.TextBox();
             this.label17 = new System.Windows.Forms.Label();
@@ -138,8 +140,12 @@ namespace Ict.Tools.DevelopersAssistant
             this.chkAutoStartServer = new System.Windows.Forms.CheckBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.ShutdownTimer = new System.Windows.Forms.Timer(this.components);
-            this.btnPreviewWinform = new System.Windows.Forms.Button();
-            this.btnAdvancedOptions = new System.Windows.Forms.Button();
+            this.ExternalPage = new System.Windows.Forms.TabPage();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.lstExternalWebLinks = new System.Windows.Forms.ListBox();
+            this.lblWebLinkInfo = new System.Windows.Forms.Label();
+            this.btnBrowseWeb = new System.Windows.Forms.Button();
+            this.lblExternalWebLink = new System.Windows.Forms.Label();
             this.tabControl.SuspendLayout();
             this.TaskPage.SuspendLayout();
             this.grpMultiple.SuspendLayout();
@@ -151,6 +157,8 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.ExternalPage.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             //
             // tabControl
@@ -158,6 +166,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.tabControl.Controls.Add(this.TaskPage);
             this.tabControl.Controls.Add(this.DatabasePage);
             this.tabControl.Controls.Add(this.OutputPage);
+            this.tabControl.Controls.Add(this.ExternalPage);
             this.tabControl.Controls.Add(this.OptionsPage);
             this.tabControl.Location = new System.Drawing.Point(12, 12);
             this.tabControl.Name = "tabControl";
@@ -383,6 +392,17 @@ namespace Ict.Tools.DevelopersAssistant
             this.grpSingle.TabIndex = 3;
             this.grpSingle.TabStop = false;
             this.grpSingle.Text = "Individual Tasks";
+            //
+            // btnPreviewWinform
+            //
+            this.btnPreviewWinform.Location = new System.Drawing.Point(9, 142);
+            this.btnPreviewWinform.Name = "btnPreviewWinform";
+            this.btnPreviewWinform.Size = new System.Drawing.Size(58, 23);
+            this.btnPreviewWinform.TabIndex = 22;
+            this.btnPreviewWinform.Text = "Preview";
+            this.toolTip.SetToolTip(this.btnPreviewWinform, "Preview the Windows Form");
+            this.btnPreviewWinform.UseVisualStyleBackColor = true;
+            this.btnPreviewWinform.Click += new System.EventHandler(this.btnPreviewWinform_Click);
             //
             // chkStartClientAfterGenerateWinform
             //
@@ -883,6 +903,17 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Miscellaneous Options";
             //
+            // btnAdvancedOptions
+            //
+            this.btnAdvancedOptions.Location = new System.Drawing.Point(29, 95);
+            this.btnAdvancedOptions.Name = "btnAdvancedOptions";
+            this.btnAdvancedOptions.Size = new System.Drawing.Size(75, 23);
+            this.btnAdvancedOptions.TabIndex = 6;
+            this.btnAdvancedOptions.Text = "Advanced";
+            this.toolTip.SetToolTip(this.btnAdvancedOptions, "Click to set more advanced options.");
+            this.btnAdvancedOptions.UseVisualStyleBackColor = true;
+            this.btnAdvancedOptions.Click += new System.EventHandler(this.btnAdvancedOptions_Click);
+            //
             // btnBrowseBazaar
             //
             this.btnBrowseBazaar.Location = new System.Drawing.Point(659, 54);
@@ -1104,27 +1135,66 @@ namespace Ict.Tools.DevelopersAssistant
             this.ShutdownTimer.Interval = 200;
             this.ShutdownTimer.Tick += new System.EventHandler(this.ShutdownTimer_Tick);
             //
-            // btnPreviewWinform
+            // ExternalPage
             //
-            this.btnPreviewWinform.Location = new System.Drawing.Point(9, 142);
-            this.btnPreviewWinform.Name = "btnPreviewWinform";
-            this.btnPreviewWinform.Size = new System.Drawing.Size(58, 23);
-            this.btnPreviewWinform.TabIndex = 22;
-            this.btnPreviewWinform.Text = "Preview";
-            this.toolTip.SetToolTip(this.btnPreviewWinform, "Preview the Windows Form");
-            this.btnPreviewWinform.UseVisualStyleBackColor = true;
-            this.btnPreviewWinform.Click += new System.EventHandler(this.btnPreviewWinform_Click);
+            this.ExternalPage.Controls.Add(this.groupBox5);
+            this.ExternalPage.Location = new System.Drawing.Point(4, 22);
+            this.ExternalPage.Name = "ExternalPage";
+            this.ExternalPage.Padding = new System.Windows.Forms.Padding(3);
+            this.ExternalPage.Size = new System.Drawing.Size(733, 456);
+            this.ExternalPage.TabIndex = 4;
+            this.ExternalPage.Text = "External";
+            this.ExternalPage.UseVisualStyleBackColor = true;
             //
-            // btnAdvancedOptions
+            // groupBox5
             //
-            this.btnAdvancedOptions.Location = new System.Drawing.Point(29, 95);
-            this.btnAdvancedOptions.Name = "btnAdvancedOptions";
-            this.btnAdvancedOptions.Size = new System.Drawing.Size(75, 23);
-            this.btnAdvancedOptions.TabIndex = 6;
-            this.btnAdvancedOptions.Text = "Advanced";
-            this.toolTip.SetToolTip(this.btnAdvancedOptions, "Click to set more advanced options.");
-            this.btnAdvancedOptions.UseVisualStyleBackColor = true;
-            this.btnAdvancedOptions.Click += new System.EventHandler(this.btnAdvancedOptions_Click);
+            this.groupBox5.Controls.Add(this.lblExternalWebLink);
+            this.groupBox5.Controls.Add(this.btnBrowseWeb);
+            this.groupBox5.Controls.Add(this.lblWebLinkInfo);
+            this.groupBox5.Controls.Add(this.lstExternalWebLinks);
+            this.groupBox5.Location = new System.Drawing.Point(27, 21);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(670, 219);
+            this.groupBox5.TabIndex = 0;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Useful Web Links";
+            //
+            // lstExternalWebLinks
+            //
+            this.lstExternalWebLinks.FormattingEnabled = true;
+            this.lstExternalWebLinks.Location = new System.Drawing.Point(6, 28);
+            this.lstExternalWebLinks.Name = "lstExternalWebLinks";
+            this.lstExternalWebLinks.Size = new System.Drawing.Size(239, 160);
+            this.lstExternalWebLinks.TabIndex = 0;
+            this.lstExternalWebLinks.SelectedIndexChanged += new System.EventHandler(this.lstExternalWebLinks_SelectedIndexChanged);
+            this.lstExternalWebLinks.DoubleClick += new System.EventHandler(this.lstExternalWebLinks_DoubleClick);
+            //
+            // lblWebLinkInfo
+            //
+            this.lblWebLinkInfo.Location = new System.Drawing.Point(251, 38);
+            this.lblWebLinkInfo.Name = "lblWebLinkInfo";
+            this.lblWebLinkInfo.Size = new System.Drawing.Size(413, 87);
+            this.lblWebLinkInfo.TabIndex = 1;
+            this.lblWebLinkInfo.Text = "More Info";
+            //
+            // btnBrowseWeb
+            //
+            this.btnBrowseWeb.Location = new System.Drawing.Point(589, 165);
+            this.btnBrowseWeb.Name = "btnBrowseWeb";
+            this.btnBrowseWeb.Size = new System.Drawing.Size(75, 23);
+            this.btnBrowseWeb.TabIndex = 2;
+            this.btnBrowseWeb.Text = "Browse";
+            this.btnBrowseWeb.UseVisualStyleBackColor = true;
+            this.btnBrowseWeb.Click += new System.EventHandler(this.btnBrowseWeb_Click);
+            //
+            // lblExternalWebLink
+            //
+            this.lblExternalWebLink.AutoSize = true;
+            this.lblExternalWebLink.Location = new System.Drawing.Point(251, 137);
+            this.lblExternalWebLink.Name = "lblExternalWebLink";
+            this.lblExternalWebLink.Size = new System.Drawing.Size(38, 13);
+            this.lblExternalWebLink.TabIndex = 3;
+            this.lblExternalWebLink.Text = "http://";
             //
             // MainForm
             //
@@ -1159,6 +1229,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox3.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.ExternalPage.ResumeLayout(false);
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.ResumeLayout(false);
         }
 
@@ -1250,5 +1323,11 @@ namespace Ict.Tools.DevelopersAssistant
         private System.Windows.Forms.Timer ShutdownTimer;
         private System.Windows.Forms.Button btnPreviewWinform;
         private System.Windows.Forms.Button btnAdvancedOptions;
+        private System.Windows.Forms.TabPage ExternalPage;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Label lblExternalWebLink;
+        private System.Windows.Forms.Button btnBrowseWeb;
+        private System.Windows.Forms.Label lblWebLinkInfo;
+        private System.Windows.Forms.ListBox lstExternalWebLinks;
     }
 }

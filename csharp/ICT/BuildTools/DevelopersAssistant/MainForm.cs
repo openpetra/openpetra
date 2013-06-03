@@ -44,6 +44,7 @@ namespace Ict.Tools.DevelopersAssistant
     public partial class MainForm : Form
     {
         private SettingsDictionary _localSettings = null;                                   // Our settings persisted locally between sessions
+        private ExternalLinksDictionary _externalLinks = null;                              // Our external links to the web
         private bool _serverIsRunning = false;                                              // Local variable holds server state
         private List <NantTask.TaskItem>_sequence = new List <NantTask.TaskItem>();         // List of tasks in the standard sequence
         private List <NantTask.TaskItem>_altSequence = new List <NantTask.TaskItem>();      // List of tasks in the alternate sequence
@@ -63,11 +64,16 @@ namespace Ict.Tools.DevelopersAssistant
         {
             InitializeComponent();
 
-            string path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            path = Path.Combine(path, @"OM_International\DevelopersAssistant.ini");
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            string path = Path.Combine(appDataPath, @"OM_International\DevelopersAssistant.ini");
             string appVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo(Application.ExecutablePath).FileVersion;
             _localSettings = new SettingsDictionary(path, appVersion);
             _localSettings.Load();
+
+            path = Path.Combine(appDataPath, @"OM_International\OPDAExternalLinks.ini");
+            _externalLinks = new ExternalLinksDictionary(path);
+            _externalLinks.Load();
+            _externalLinks.PopulateListBox(lstExternalWebLinks);
 
             PopulateCombos();
 
@@ -1299,6 +1305,14 @@ namespace Ict.Tools.DevelopersAssistant
                     bOk = NantExecutor.StopServer(WorkingFolder);
                     break;
 
+                case NantTask.TaskItem.runAdminConsole:
+                    bOk = NantExecutor.RunServerAdminConsole(WorkingFolder, String.Empty);
+                    break;
+
+                case NantTask.TaskItem.refreshCachedTables:
+                    bOk = NantExecutor.RunServerAdminConsole(WorkingFolder, "-Command:RefreshAllCachedTables");
+                    break;
+
                 default:
                     bOk = NantExecutor.RunGenericNantTarget(WorkingFolder, Task.TargetName);
                     break;
@@ -1587,6 +1601,33 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 base.WndProc(ref message);
             }
+        }
+
+        private void lstExternalWebLinks_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string url;
+            string info;
+
+            _externalLinks.GetDetails(lstExternalWebLinks.SelectedItem.ToString(), out url, out info);
+            lblExternalWebLink.Text = url;
+            lblWebLinkInfo.Text = info;
+        }
+
+        private void btnBrowseWeb_Click(object sender, EventArgs e)
+        {
+            if (lblExternalWebLink.Text != String.Empty)
+            {
+                //System.Diagnostics.ProcessStartInfo si = new System.Diagnostics.ProcessStartInfo();
+                //si.UseShellExecute = true;
+                //si.Verb = "open";
+
+                System.Diagnostics.Process.Start(lblExternalWebLink.Text);
+            }
+        }
+
+        private void lstExternalWebLinks_DoubleClick(object sender, EventArgs e)
+        {
+            btnBrowseWeb_Click(sender, e);
         }
     }
 }
