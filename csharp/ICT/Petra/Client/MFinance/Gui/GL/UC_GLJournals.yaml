@@ -53,6 +53,7 @@ RootNode:
             ActionEnterKeyPressed: ShowTransactionTab
             SortOrder: AJournal.JournalNumber DESC
             RowFilter: AJournal.BatchNumber
+            EnableMultiSelection: false
         pnlDetails:
             Dock: Bottom
             Controls: 

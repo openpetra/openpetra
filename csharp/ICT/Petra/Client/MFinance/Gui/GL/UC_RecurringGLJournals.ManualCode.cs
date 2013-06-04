@@ -50,6 +50,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private string FBatchStatus = string.Empty;
 
         /// <summary>
+        /// Returns FMainDS
+        /// </summary>
+        /// <returns></returns>
+        public GLBatchTDS RecurringJournalFMainDS()
+        {
+            return FMainDS;
+        }
+
+        /// <summary>
         /// load the journals into the grid
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -57,8 +66,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ABatchStatus"></param>
         public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
+            bool batchChanged = (FBatchNumber != ABatchNumber);
+            
             //Check if same Journals as previously selected
-            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus)
+            if ((FLedgerNumber == ALedgerNumber) && !batchChanged && (FBatchStatus == ABatchStatus)
                 && (FMainDS.ARecurringJournal.DefaultView.Count > 0))
             {
                 if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
@@ -79,6 +90,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FPreviouslySelectedDetailRow = null;
 
+            if (batchChanged)
+            {
+                //Clear all previous data.
+                FMainDS.ARecurringTransAnalAttrib.Clear();
+                FMainDS.ARecurringTransaction.Clear();
+                FMainDS.ARecurringJournal.Clear();
+            }
+
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringJournal.DefaultView);
 
@@ -94,36 +113,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // otherwise we would overwrite journals that have already been modified
             if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournal(ALedgerNumber, ABatchNumber));
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndContent(ALedgerNumber, ABatchNumber));
             }
 
             ShowData();
-            ShowDetails();
 
             if (grdDetails.Rows.Count < 2)
             {
-                ClearControls();
+                ShowDetails(null);
             }
 
             txtBatchNumber.Text = FBatchNumber.ToString();
-
-            //This will update Batch totals
-            UpdateTotals(GetBatchRow());
-
-            grdDetails.Focus();
-        }
-
-        /// <summary>
-        /// Load the journals for the current batch in the background
-        /// </summary>
-        public void UnloadJournals()
-        {
-            if (FMainDS.ARecurringJournal.DefaultView.Count > 0)
-            {
-                FPreviouslySelectedDetailRow = null;
-                FMainDS.ARecurringJournal.Clear();
-                //ClearControls();
-            }
         }
 
         /// <summary>
@@ -135,6 +135,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((GetSelectedDetailRow() != null) && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
                 GetSelectedDetailRow().DateEffective = AEffectiveDate;
+                GetDetailsFromControls(GetSelectedDetailRow());
             }
         }
 
@@ -192,7 +193,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// update the journal header fields from a batch
         /// </summary>
         /// <param name="ABatch"></param>
-        public void UpdateTotals(ARecurringBatchRow ABatch)
+        public void UpdateHeaderTotals(ARecurringBatchRow ABatch)
         {
             decimal sumDebits = 0.0M;
             decimal sumCredits = 0.0M;
@@ -248,10 +249,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         public void NewRow(System.Object sender, EventArgs e)
         {
-            //TODO if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
-            //TODO {
-            //TODO     return;
-            //TODO }
+            if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
+            {
+                return;
+            }
 
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
@@ -261,7 +262,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ((TFrmRecurringGLBatch) this.ParentForm).EnableTransactions();
 
-                txtDetailJournalDescription.Text = "Please enter a journal description";
+                txtDetailJournalDescription.Text = Catalog.GetString("Please enter a journal description");
                 txtDetailJournalDescription.SelectAll();
             }
         }
@@ -326,6 +327,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.btnAdd.Enabled = changeable;
             pnlDetails.Enabled = changeable && journalUpdatable;
             pnlDetailsProtected = !changeable;
+        }
+
+        private bool PreDeleteManual(ARecurringJournalRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            bool allowDeletion = true;
+
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete journal no. {0} from recurring Batch {1}?"),
+                    ARowToDelete.JournalNumber,
+                    ARowToDelete.BatchNumber);
+            }
+
+            return allowDeletion;
         }
 
         /// <summary>

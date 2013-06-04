@@ -99,6 +99,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// Returns FMainDS
+        /// </summary>
+        /// <returns></returns>
+        public GLBatchTDS RecurringBatchFMainDS()
+        {
+            return FMainDS;
+        }
+
+        /// <summary>
         /// show ledger number
         /// </summary>
         private void ShowDataManual()
@@ -243,25 +252,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            //TODO Int32 yearNumber = 0;
-            //TODO Int32 periodNumber = 0;
+            Int32 yearNumber = 0;
+            Int32 periodNumber = 0;
 
-            //TODO if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
-            //TODO {
-            //TODO     return;
-            //TODO }
-
-            //FPreviouslySelectedDetailRow = null;
+            if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
+            {
+            	return;
+            }
 
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
             pnlDetails.Enabled = true;
 
-            //ClearDetailControls();
-
             EnableButtonControl(true);
-
-            //grdDetails.DataSource = null;
 
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateARecurringBatch(FLedgerNumber));
 
@@ -269,22 +272,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             newBatchRow.DateEffective = FDefaultDate;
 
-            //TODO if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out yearNumber, out periodNumber))
-            //TODO {
-            //TODO     newBatchRow.BatchPeriod = periodNumber;
-            //TODO }
+            if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out yearNumber, out periodNumber))
+            {
+            	newBatchRow.BatchPeriod = periodNumber;
+            }
 
             SelectDetailRowByDataTableIndex(FMainDS.ARecurringBatch.Rows.Count - 1);
 
             FPreviouslySelectedDetailRow.DateEffective = FDefaultDate;
+            
 
             FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
 
-            FPreviouslySelectedDetailRow.BatchDescription = "Please enter a batch description";
-            txtDetailBatchDescription.Text = "Please enter a batch description";
+            string enterMsg = Catalog.GetString("Please enter a batch description");
+            FPreviouslySelectedDetailRow.BatchDescription = enterMsg;
+            txtDetailBatchDescription.Text = enterMsg;
             txtDetailBatchDescription.Focus();
 
-            //TODO ((TFrmRecurringGLBatch)ParentForm).SaveChanges();
+            //Not needed as recurring batches can be deleted
+            //((TFrmRecurringGLBatch)ParentForm).SaveChanges();
 
             //Enable the Journals if not already enabled
             ((TFrmRecurringGLBatch)ParentForm).EnableJournals();
@@ -367,9 +373,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPetraUtilsObject.HasChanges = true;
         }
 
-        private bool GetAccountingsYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)
+        private bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)
         {
             return TRemote.MFinance.GL.WebConnectors.GetAccountingYearPeriodByDate(ALedgerNumber, ADate, out AYear, out APeriod);
+        }
+
+        private bool PreDeleteManual(ARecurringBatchRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            bool allowDeletion = true;
+
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete recurring Batch {0}?"),
+                    ARowToDelete.BatchNumber);
+            }
+
+            return allowDeletion;
         }
 
         /// <summary>
@@ -533,21 +552,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-/*  Apparently this can't be done because we don't have a hash total?
- *
- *          if ((FPreviouslySelectedDetailRow.HashTotal != 0) && (FPreviouslySelectedDetailRow.BatchTotal != FPreviouslySelectedDetailRow.HashTotal))
- *          {
- *              MessageBox.Show(String.Format(Catalog.GetString(
- *                          "The total ({0}) for batch {1} does not equal the hash total ({2})."),
- *                      FPreviouslySelectedDetailRow.BatchTotal.ToString("C"),
- *                      FPreviouslySelectedDetailRow.BatchNumber,
- *                      FPreviouslySelectedDetailRow.HashTotal.ToString("C")), Catalog.GetString("Submit Recurring Batch"));
- *
- *              txtDetailHashTotal.Focus();
- *              txtDetailHashTotal.SelectAll();
- *              return;
- *          }
- */
             // now load journals for this batch so we know if exchange rate needs to be set in case of different currency
             GLBatchTDS TempDS = TRemote.MFinance.GL.WebConnectors.LoadARecurringJournal(FLedgerNumber, FSelectedBatchNumber);
             FMainDS.Merge(TempDS);

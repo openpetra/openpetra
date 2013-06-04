@@ -83,6 +83,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
+            	ClearControls();
                 ((TFrmGLBatch) this.ParentForm).DisableJournals();
             }
 
@@ -105,12 +106,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 );
 
             grdDetails.Focus();
-        }
-
-        void RefreshPeriods(Object sender, EventArgs e)
-        {
-            TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref cmbPeriodFilter, FLedgerNumber, cmbYearFilter.GetSelectedInt32());
-            cmbPeriodFilter.SelectedIndex = 0;
         }
 
         /// reset the control
@@ -305,15 +300,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 cmbPeriodFilter.SelectedIndex = 0;
             }
 
-            //FPreviouslySelectedDetailRow = null;
+            FPetraUtilsObject.VerificationResultCollection.Clear();
 
             pnlDetails.Enabled = true;
 
-            //ClearDetailControls();
-
             EnableButtonControl(true);
-
-            //grdDetails.DataSource = null;
 
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
 
@@ -333,10 +324,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
 
-            FPreviouslySelectedDetailRow.BatchDescription = "Please enter a batch description";
-            txtDetailBatchDescription.Text = "Please enter a batch description";
+            string enterMsg = Catalog.GetString("Please enter a batch description");
+            FPreviouslySelectedDetailRow.BatchDescription = enterMsg;
+            txtDetailBatchDescription.Text = enterMsg;
             txtDetailBatchDescription.Focus();
 
+            //Needed as GL batches can not be deleted
             ((TFrmGLBatch)ParentForm).SaveChanges();
 
             //Enable the Journals if not already enabled
@@ -420,6 +413,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPetraUtilsObject.HasChanges = true;
         }
 
+        private bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)
+        {
+            return TRemote.MFinance.GL.WebConnectors.GetAccountingYearPeriodByDate(ALedgerNumber, ADate, out AYear, out APeriod);
+        }
+
         private void UpdateBatchPeriod(object sender, EventArgs e)
         {
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
@@ -468,11 +466,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 MessageBox.Show(ex.Message);
             }
-        }
-
-        private bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)
-        {
-            return TRemote.MFinance.GL.WebConnectors.GetAccountingYearPeriodByDate(ALedgerNumber, ADate, out AYear, out APeriod);
         }
 
         /// <summary>
@@ -581,6 +574,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ((TFrmGLBatch)ParentForm).DisableJournals();
                     ((TFrmGLBatch)ParentForm).DisableTransactions();
                 }
+            }
+        }
+
+        private void ClearControls()
+        {
+            try
+            {
+                FPetraUtilsObject.DisableDataChangedEvent();
+                txtDetailBatchDescription.Clear();
+                txtDetailBatchControlTotal.NumberValueDecimal = 0;
+            }
+            finally
+            {
+                FPetraUtilsObject.EnableDataChangedEvent();
             }
         }
 
@@ -808,53 +815,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return rowIndex;
         }
 
-        /// <summary>
-        /// SelectByIndex
-        /// </summary>
-        /// <param name="rowIndex"></param>
-        public void SelectByIndex(int rowIndex)
-        {
-            // TODO: Alan noted on upgrade that this method could be replaced by SelectRowInGrid(rowIndex, true)
-            // This method actually never seems to be called
-            if (rowIndex >= grdDetails.Rows.Count)
-            {
-                rowIndex = grdDetails.Rows.Count - 1;
-            }
-
-            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
-            {
-                rowIndex = 1;
-            }
-
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                grdDetails.Selection.ResetSelection(false);
-                FPreviouslySelectedDetailRow = null;
-            }
-        }
-
-        private void ToggleOptionButtonCheckedEvent(bool AToggleOn)
-        {
-            if (AToggleOn)
-            {
-                rbtEditing.CheckedChanged += new System.EventHandler(this.RefreshFilter);
-                rbtAll.CheckedChanged += new System.EventHandler(this.RefreshFilter);
-                rbtPosting.CheckedChanged += new System.EventHandler(this.RefreshFilter);
-            }
-            else
-            {
-                rbtEditing.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
-                rbtAll.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
-                rbtPosting.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
-            }
-        }
-
         void RefreshFilter(Object sender, EventArgs e)
         {
             int batchNumber = 0;
@@ -1038,6 +998,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return rowPos + 1;
         }
 
+        /// <summary>
+        /// Set focus to the gid controltab
+        /// </summary>
+        public void FocusGrid()
+        {
+            if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
+            {
+                grdDetails.Focus();
+            }
+        }
+        
         private void ImportFromSpreadSheet(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
@@ -1304,15 +1275,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             gl.Show();
         }
 
-        /// <summary>
-        /// Set focus to the gid controltab
-        /// </summary>
-        public void FocusGrid()
+        private void RefreshPeriods(Object sender, EventArgs e)
         {
-            if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
+            TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref cmbPeriodFilter, FLedgerNumber, cmbYearFilter.GetSelectedInt32());
+            cmbPeriodFilter.SelectedIndex = 0;
+        }
+
+        private void ToggleOptionButtonCheckedEvent(bool AToggleOn)
+        {
+            if (AToggleOn)
             {
-                grdDetails.Focus();
+                rbtEditing.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+                rbtAll.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+                rbtPosting.CheckedChanged += new System.EventHandler(this.RefreshFilter);
+            }
+            else
+            {
+                rbtEditing.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+                rbtAll.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
+                rbtPosting.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
             }
         }
+
+       
     }
 }

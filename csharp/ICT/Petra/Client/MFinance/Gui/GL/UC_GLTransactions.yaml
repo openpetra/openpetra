@@ -9,7 +9,7 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add, ActionClick=NewRow}
-        actDelete: {Label=&Delete, SkipReferenceCheck=true, ActionClick=DeleteRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}
         actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllTrans}
     Controls:
         pnlContent:
