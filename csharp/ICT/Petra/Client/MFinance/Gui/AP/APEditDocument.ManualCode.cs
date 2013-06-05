@@ -376,7 +376,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <returns>true if user is permitted and able to delete the current row</returns>
         private bool PreDeleteManual(AApDocumentDetailRow ARowToDelete, ref string ADeletionQuestion)
         {
-            ADeletionQuestion = String.Empty;
             GetDataFromControls(FMainDS.AApDocument[0]);
             return true;
         }
@@ -494,6 +493,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// initialise some comboboxes
         private void BeforeShowDetailsManual(AApDocumentDetailRow ARow)
         {
+            if (ARow == null)
+            {
+                return;
+            }
             grdDetails.Columns[1].Width = pnlDetailGrid.Width - 380;   // It doesn't really work having these here -
             grdDetails.Columns[0].Width = 90;                          // there's something else that overrides these settings.
             grdDetails.Columns[2].Width = 200;

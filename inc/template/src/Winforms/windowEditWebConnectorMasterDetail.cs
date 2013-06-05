@@ -475,11 +475,18 @@ namespace {#NAMESPACE}
     private void ShowDetails({#DETAILTABLETYPE}Row ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
-        
-        pnlDetails.Enabled = (ARow != null);
-        
-        {#SHOWDETAILS}
-        
+
+        if (ARow == null)
+        {
+            pnlDetails.Enabled = false;
+            {#CLEARDETAILS}
+        }
+        else
+        {
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            {#SHOWDETAILS}
+        }
+
         {#ENABLEDELETEBUTTON}FPetraUtilsObject.EnableDataChangedEvent();
     }
 

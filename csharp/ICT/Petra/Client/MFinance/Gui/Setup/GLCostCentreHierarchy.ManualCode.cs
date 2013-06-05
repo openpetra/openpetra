@@ -38,6 +38,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using System.Drawing;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -718,6 +719,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                             if (Success)
                             {
+                                DataTable NewTable;
+                                TRemote.MFinance.Cacheable.WebConnectors.RefreshCacheableTable(TCacheableFinanceTablesEnum.CostCentreList,FLedgerNumber,out NewTable);
                                 FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
                                 strOldDetailCostCentreCode = "";
                                 txtDetailCostCentreCode.Text = "";
