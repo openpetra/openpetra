@@ -108,13 +108,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.DataSource = null;
             grdAnalAttributes.DataSource = null;
 
-            //Load from server
+            SetTransactionDefaultView();
+
+            //Load from server if necessary
             if (FMainDS.ATransaction.DefaultView.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber));
             }
 
-            SetTransactionDefaultView();
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransaction.DefaultView);
 
             FJournalRow = GetJournalRow();
@@ -1091,8 +1092,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         throw new Exception("Unable to save after deleting a transaction!");
                     }
                 }
-
-                SetTransactionDefaultView();
 
                 ACompletionMessage = String.Format(Catalog.GetString("Transaction no.: {0} deleted successfully."),
                     transactionNumberToDelete);

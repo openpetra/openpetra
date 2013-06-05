@@ -476,6 +476,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ClearControls();
             }
 
+            UpdateBatchHeaderTotals();
+            
             if (grdDetails.Rows.Count > 1)
             {
                 ((TFrmRecurringGLBatch)ParentForm).EnableJournals();
@@ -504,7 +506,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// UpdateTotals
         /// </summary>
-        public void UpdateTotals()
+        public void UpdateBatchHeaderTotals()
         {
             //Below not needed as yet
             if (FPreviouslySelectedDetailRow != null)
