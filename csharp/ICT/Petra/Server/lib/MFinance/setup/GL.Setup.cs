@@ -1758,6 +1758,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             newCostCentre.CostCentreCode = CostCentreCode;
             newCostCentre.CostCentreName = TYml2Xml.GetAttribute(ACurrentNode, "descr");
             newCostCentre.CostCentreActiveFlag = TYml2Xml.GetAttributeRecursive(ACurrentNode, "active").ToLower() == "true";
+            newCostCentre.SystemCostCentreFlag = true;
             newCostCentre.CostCentreType = TYml2Xml.GetAttributeRecursive(ACurrentNode, "type");
             newCostCentre.PostingCostCentreFlag = (ACurrentNode.ChildNodes.Count == 0);
 
@@ -3174,11 +3175,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     return false;
                 }
 
+                ACostCentreRow PrevRow = TempTbl[0];
+                if (PrevRow.SystemCostCentreFlag)
+                {
+                    VerificationResults.Add(new TVerificationResult(VerificationContext, String.Format("Cannot rename System Cost Centre {0}.", AOldCode),
+                            TResultSeverity.Resv_Critical));
+                    return false;
+                }
+
                 // I can't just rename this,
                 // because lots of tables rely on this entry and I'll break their foreign constraints.
                 // I need to create a new row, point everyone to that, then delete the current row.
                 //
-                ACostCentreRow PrevRow = TempTbl[0];
                 ACostCentreRow NewRow = TempTbl.NewRowTyped();
                 DataUtilities.CopyAllColumnValues(PrevRow, NewRow);
                 NewRow.CostCentreCode = ANewCode;
