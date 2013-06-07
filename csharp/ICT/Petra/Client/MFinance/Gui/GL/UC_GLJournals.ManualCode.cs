@@ -467,8 +467,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 grdDetails.Focus();
             }
         }
-        
-        
+
         private void RefreshCurrencyAndExchangeRate(bool AFromUserAction = false)
         {
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
@@ -546,13 +545,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             RefreshCurrencyAndExchangeRate();
         }
 
-         private decimal GetActualExchangeRateForeign()
+        private decimal GetActualExchangeRateForeign()
         {
             return txtDetailExchangeRateToBase.NumberValueDecimal.Value;
         }
-
-       
-        
-        
     }
 }

@@ -118,7 +118,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Load from server if necessary
             if (FMainDS.ATransaction.DefaultView.Count == 0)
             {
-	            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionWithAttributes(ALedgerNumber, ABatchNumber, AJournalNumber));
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionWithAttributes(ALedgerNumber, ABatchNumber, AJournalNumber));
             }
 
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringTransaction.DefaultView);
@@ -174,7 +174,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             UpdateChangeableStatus();
-            
+
             grdDetails.Focus();
         }
 

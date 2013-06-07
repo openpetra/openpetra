@@ -184,7 +184,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         //Might need this later
         //private eGLTabs FPreviousTab = eGLTabs.RecurringBatches;
-        
+
         /// <summary>
         /// Switch to the given tab
         /// </summary>
@@ -216,8 +216,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoRecurringBatches.GetSelectedDetailRow().BatchNumber,
                         ucoRecurringBatches.GetSelectedDetailRow().BatchStatus);
 
-                    this.tpgTransactions.Enabled = 
-                    	(ucoRecurringJournals.GetSelectedDetailRow() != null);
+                    this.tpgTransactions.Enabled =
+                        (ucoRecurringJournals.GetSelectedDetailRow() != null);
 
                     this.ucoRecurringJournals.UpdateHeaderTotals(ucoRecurringBatches.GetSelectedDetailRow());
 

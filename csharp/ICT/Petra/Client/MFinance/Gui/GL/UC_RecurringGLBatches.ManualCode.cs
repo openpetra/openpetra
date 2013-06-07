@@ -257,7 +257,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
             {
-            	return;
+                return;
             }
 
             FPetraUtilsObject.VerificationResultCollection.Clear();
@@ -274,13 +274,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out yearNumber, out periodNumber))
             {
-            	newBatchRow.BatchPeriod = periodNumber;
+                newBatchRow.BatchPeriod = periodNumber;
             }
 
             SelectDetailRowByDataTableIndex(FMainDS.ARecurringBatch.Rows.Count - 1);
 
             FPreviouslySelectedDetailRow.DateEffective = FDefaultDate;
-            
+
 
             FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
 
@@ -477,7 +477,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             UpdateBatchHeaderTotals();
-            
+
             if (grdDetails.Rows.Count > 1)
             {
                 ((TFrmRecurringGLBatch)ParentForm).EnableJournals();

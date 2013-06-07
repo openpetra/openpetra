@@ -222,7 +222,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoBatches.GetSelectedDetailRow().BatchStatus);
 
                     this.tpgTransactions.Enabled =
-                        (ucoJournals.GetSelectedDetailRow() != null && ucoJournals.GetSelectedDetailRow().JournalStatus != MFinanceConstants.BATCH_CANCELLED);
+                        (ucoJournals.GetSelectedDetailRow() != null && ucoJournals.GetSelectedDetailRow().JournalStatus !=
+                         MFinanceConstants.BATCH_CANCELLED);
 
                     this.ucoJournals.UpdateHeaderTotals(ucoBatches.GetSelectedDetailRow());
 

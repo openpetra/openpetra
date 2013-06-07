@@ -83,7 +83,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-            	ClearControls();
+                ClearControls();
                 ((TFrmGLBatch) this.ParentForm).DisableJournals();
             }
 
@@ -1008,7 +1008,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 grdDetails.Focus();
             }
         }
-        
+
         private void ImportFromSpreadSheet(object sender, EventArgs e)
         {
             OpenFileDialog dialog = new OpenFileDialog();
@@ -1296,7 +1296,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 rbtPosting.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
             }
         }
-
-       
     }
 }
