@@ -943,12 +943,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             bool newRecord = (ARowToDelete.RowState == DataRowState.Added);
 
-//            if (!newRecord && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
-//            {
-//                MessageBox.Show("Error in trying to save prior to deleting current transaction!");
-//                return deletionSuccessful;
-//            }
-//
+            if (!newRecord && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
+            {
+                MessageBox.Show("Error in trying to save prior to deleting current transaction!");
+                return deletionSuccessful;
+            }
+
             //Backup the Dataset for reversion purposes
             GLBatchTDS FTempDS = (GLBatchTDS)FMainDS.Copy();
 
@@ -1037,7 +1037,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             transRowToReceive[j] = transRowToCopyDown[j];
                         }
                     }
-                    
+
                     if (currentTransNo == transView.Count)                         //Last row which is the row to be deleted
                     {
                         //Mark last record for deletion
@@ -1052,7 +1052,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     transRowCurrent.Delete();
                 }
-                    
+
                 FPreviouslySelectedDetailRow = null;
 
                 FPetraUtilsObject.SetChangedFlag();
@@ -1060,11 +1060,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Try to save changes
                 if (!newRecord)
                 {
-                    if (!((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
+                    if (((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
+                    {
+                        //Reload from server
+                        FMainDS.ARecurringTransAnalAttrib.Clear();
+                        FMainDS.ARecurringTransaction.Clear();
+
+                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionWithAttributes(FLedgerNumber, FBatchNumber,
+                                FJournalNumber));
+                    }
+                    else
                     {
                         throw new Exception("Unable to save after deleting a recurring transaction!");
                     }
                 }
+
+                SetTransactionDefaultView();
 
                 ACompletionMessage = String.Format(Catalog.GetString("Recurring transaction no.: {0} deleted successfully."),
                     transactionNumberToDelete);
