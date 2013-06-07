@@ -110,8 +110,8 @@ namespace Ict.Petra.Server.MFinance.GL
             if (carryForward.GetPeriodType != TCarryForwardENum.Year)
             {
                 TVerificationResult tvt =
-                    new TVerificationResult(Catalog.GetString("Year End is expected ..."),
-                        Catalog.GetString("In this situation you cannot run a month end routine"), "",
+                    new TVerificationResult(Catalog.GetString("Month End is required!"),
+                        Catalog.GetString("In this situation you cannot run Year End."), "",
                         TPeriodEndErrorAndStatusCodes.PEEC_04.ToString(),
                         TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvt);
@@ -224,6 +224,10 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 accountList.Add(accountInfo.AccountCode);
             }
+/*
+ * Until any evidence shows otherwise, I'm going to assume that it's OK to operate OpenPetra 
+ * WITHOUT an ICH Account.
+ * 
             else
             {
                 TVerificationResult tvt =
@@ -234,7 +238,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 verificationResults.Add(tvt);
                 FHasCriticalErrors = true;
             }
-
+*/
             costCentres = ACostCentreAccess.LoadViaALedger(ledgerInfo.LedgerNumber, null);
         }
 
