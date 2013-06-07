@@ -48,8 +48,9 @@ RootNode:
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: ShowTransactionTab
             ActionEnterKeyPressed: ShowTransactionTab
-            SortOrder: ARecurringJournal.JournalNumber ASC
+            SortOrder: ARecurringJournal.JournalNumber DESC
             RowFilter: ARecurringJournal.BatchNumber
+            EnableMultiSelection: false
         pnlDetails:
             Dock: Bottom
             Controls: 
