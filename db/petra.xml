@@ -11928,7 +11928,7 @@
     <tablefield name="a_narrative_c"
                 type="varchar"
                 descr=""
-                format="X(100)"
+                format="X(250)"
                 label="Narrative"
                 columnlabel="Narrative"
                 help="Enter a description of the transaction."/>
@@ -19787,8 +19787,7 @@
                 initial="0"/>
     <tablefield name="ph_gender_c"
                 type="varchar"
-                descr="possible values: couple, family, male, female"
-                notnull="yes"                
+                descr="possible values: couple, family, male, female"             
                 format="X(20)"/>
     <tablefield name="pc_in_d"
                 type="date"

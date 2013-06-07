@@ -169,16 +169,43 @@ namespace Ict.Tools.DataDumpPetra2
                 Stream gzoStream = new GZipOutputStream(outStream);
                 StreamWriter MyWriter = new StreamWriter(gzoStream, Encoding.UTF8);
 
+                FileStream outStreamTest = File.Create(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
+                    newTable.strName + "_test.sql.gz");
+                Stream gzoStreamTest = new GZipOutputStream(outStreamTest);
+                StreamWriter MyWriterTest = new StreamWriter(gzoStreamTest, Encoding.UTF8);
+
+                string rowCountDir = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
+                                     Path.DirectorySeparatorChar + "_row_count.txt";
+                StreamWriter MyWriterCount;
+
+                if (File.Exists(rowCountDir))
+                {
+                    MyWriterCount = File.AppendText(rowCountDir);
+                }
+                else
+                {
+                    FileStream outStreamCount = File.Create(rowCountDir);
+                    MyWriterCount = new StreamWriter(outStreamCount);
+                }
+
                 MyWriter.WriteLine("COPY " + newTable.strName + " FROM stdin;");
 
-                int ProcessedRows = TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+                int ProcessedRows = TFixData.MigrateData(Parser, MyWriter, MyWriterTest, oldTable, newTable);
 
-                ProcessedRows += MoveTables(newTable.strName, dumpFile, MyWriter, newTable);
+                ProcessedRows += MoveTables(newTable.strName, dumpFile, MyWriter, MyWriterTest, newTable);
 
                 MyWriter.WriteLine("\\.");
                 MyWriter.WriteLine();
 
+                MyWriterTest.WriteLine();
+
+                MyWriterCount.WriteLine(newTable.strName);
+                MyWriterCount.WriteLine(ProcessedRows);
+
                 MyWriter.Close();
+                MyWriterTest.Close();
+                MyWriterCount.Close();
 
                 TLogging.Log(" after processing file, rows: " + ProcessedRows.ToString());
             }
@@ -194,7 +221,7 @@ namespace Ict.Tools.DataDumpPetra2
             }
         }
 
-        private int MoveTables(string ANewTableName, string dumpFile, StreamWriter MyWriter, TTable newTable)
+        private int MoveTables(string ANewTableName, string dumpFile, StreamWriter MyWriter, StreamWriter MyWriterTest, TTable newTable)
         {
             int ProcessedRows = 0;
 
@@ -205,14 +232,14 @@ namespace Ict.Tools.DataDumpPetra2
                 TParseProgressCSV Parser = new TParseProgressCSV(
                     dumpFile.Replace(ANewTableName, "a_this_year_old_batch") + ".d.gz",
                     oldTable.grpTableField.Count);
-                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, MyWriterTest, oldTable, newTable);
 
                 TLogging.Log("a_previous_year_batch");
                 oldTable = storeOld.GetTable("a_previous_year_batch");
                 Parser = new TParseProgressCSV(
                     dumpFile.Replace(ANewTableName, "a_previous_year_batch") + ".d.gz",
                     oldTable.grpTableField.Count);
-                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, MyWriterTest, oldTable, newTable);
             }
             else if (ANewTableName == "a_journal")
             {
@@ -221,14 +248,14 @@ namespace Ict.Tools.DataDumpPetra2
                 TParseProgressCSV Parser = new TParseProgressCSV(
                     dumpFile.Replace(ANewTableName, "a_this_year_old_journal") + ".d.gz",
                     oldTable.grpTableField.Count);
-                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, MyWriterTest, oldTable, newTable);
 
                 TLogging.Log("a_previous_year_journal");
                 oldTable = storeOld.GetTable("a_previous_year_journal");
                 Parser = new TParseProgressCSV(
                     dumpFile.Replace(ANewTableName, "a_previous_year_journal") + ".d.gz",
                     oldTable.grpTableField.Count);
-                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, MyWriterTest, oldTable, newTable);
             }
             else if (ANewTableName == "a_transaction")
             {
@@ -237,14 +264,14 @@ namespace Ict.Tools.DataDumpPetra2
                 TParseProgressCSV Parser = new TParseProgressCSV(
                     dumpFile.Replace(ANewTableName, "a_this_year_old_transaction") + ".d.gz",
                     oldTable.grpTableField.Count);
-                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, MyWriterTest, oldTable, newTable);
 
                 TLogging.Log("a_previous_year_transaction");
                 oldTable = storeOld.GetTable("a_previous_year_transaction");
                 Parser = new TParseProgressCSV(
                     dumpFile.Replace(ANewTableName, "a_previous_year_transaction") + ".d.gz",
                     oldTable.grpTableField.Count);
-                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, MyWriterTest, oldTable, newTable);
             }
             else if (ANewTableName == "a_trans_anal_attrib")
             {
@@ -253,14 +280,14 @@ namespace Ict.Tools.DataDumpPetra2
                 TParseProgressCSV Parser = new TParseProgressCSV(
                     dumpFile.Replace(ANewTableName, "a_thisyearold_trans_anal_attrib") + ".d.gz",
                     oldTable.grpTableField.Count);
-                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, MyWriterTest, oldTable, newTable);
 
                 TLogging.Log("a_prev_year_trans_anal_attrib");
                 oldTable = storeOld.GetTable("a_prev_year_trans_anal_attrib");
                 Parser = new TParseProgressCSV(
                     dumpFile.Replace(ANewTableName, "a_prev_year_trans_anal_attrib") + ".d.gz",
                     oldTable.grpTableField.Count);
-                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, MyWriterTest, oldTable, newTable);
             }
             else if (ANewTableName == "a_corporate_exchange_rate")
             {
@@ -269,7 +296,7 @@ namespace Ict.Tools.DataDumpPetra2
                 TParseProgressCSV Parser = new TParseProgressCSV(
                     dumpFile.Replace(ANewTableName, "a_prev_year_corp_ex_rate") + ".d.gz",
                     oldTable.grpTableField.Count);
-                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, oldTable, newTable);
+                ProcessedRows += TFixData.MigrateData(Parser, MyWriter, MyWriterTest, oldTable, newTable);
             }
 
             return ProcessedRows;
@@ -339,6 +366,84 @@ namespace Ict.Tools.DataDumpPetra2
         {
             GetStoreNew();
 
+            //create test file
+            TLogging.Log("creating _loadTest.sql.gz file...");
+
+            using (FileStream outStream = File.Create(
+                       TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
+                       Path.DirectorySeparatorChar + "_loadTest.sql.gz"))
+            {
+                using (Stream gzoStream = new GZipOutputStream(outStream))
+                {
+                    StreamWriter sw = new StreamWriter(gzoStream);
+
+                    WritePSQLHeader(sw);
+
+                    if (ATableName.Length > 0)
+                    {
+                        string fileName = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
+                                          Path.DirectorySeparatorChar + ATableName + "_test.sql.gz";
+
+                        if (File.Exists(fileName))
+                        {
+                            System.IO.Stream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                            GZipInputStream gzipStream = new GZipInputStream(fs);
+                            StreamReader sr = new StreamReader(gzipStream);
+
+                            sw.Write(sr.ReadToEnd());
+
+                            sr.Close();
+                        }
+                    }
+                    else
+                    {
+                        // Load Sequences
+                        string fileNameSequences = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
+                                                   Path.DirectorySeparatorChar + "_Sequences.sql.gz";
+
+                        if (File.Exists(fileNameSequences))
+                        {
+                            System.IO.Stream fs = new FileStream(fileNameSequences, FileMode.Open, FileAccess.Read);
+                            GZipInputStream gzipStream = new GZipInputStream(fs);
+                            StreamReader sr = new StreamReader(gzipStream);
+
+                            sw.Write(sr.ReadToEnd());
+
+                            sr.Close();
+                        }
+
+                        // Load Tables
+                        List <TTable>newTables = storeNew.GetTables();
+
+                        foreach (TTable newTable in newTables)
+                        {
+                            string fileName = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
+                                              Path.DirectorySeparatorChar + newTable.strName + "_test.sql.gz";
+
+                            if (File.Exists(fileName))
+                            {
+                                System.IO.Stream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+                                GZipInputStream gzipStream = new GZipInputStream(fs);
+                                StreamReader sr = new StreamReader(gzipStream);
+
+                                char[] block = new char[100000];
+                                int count = 0;
+
+                                while ((count = sr.ReadBlock(block, 0, block.Length)) != 0)
+                                {
+                                    sw.Write(block, 0, count);
+                                }
+
+                                sr.Close();
+                            }
+                        }
+                    }
+
+                    sw.Close();
+                }
+            }
+
+            TLogging.Log("Success: finished writing the file _loadTest.sql.gz");
             TLogging.Log("creating _load.sql.gz file...");
 
             using (FileStream outStream = File.Create(
@@ -384,7 +489,8 @@ namespace Ict.Tools.DataDumpPetra2
                             sr.Close();
                         }
 
-                        // Load Tables
+                        // Load Tables inside a single transaction
+                        sw.WriteLine("BEGIN;");
                         List <TTable>newTables = storeNew.GetTables();
 
                         foreach (TTable newTable in newTables)
@@ -409,6 +515,8 @@ namespace Ict.Tools.DataDumpPetra2
                                 sr.Close();
                             }
                         }
+
+                        sw.WriteLine("COMMIT;");
                     }
 
                     sw.Close();

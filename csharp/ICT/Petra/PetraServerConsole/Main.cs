@@ -314,7 +314,7 @@ public class TServer
                         Console.WriteLine("     i: import a yml.gz, which will overwrite the database");
 #if DEBUG
                         Console.WriteLine("     r: Mark all Cached Tables for Refreshing");
-#endif                        
+#endif
                         Console.WriteLine("     o: controlled Server shutdown (gets all connected clients to disconnect)");
                         Console.WriteLine("     u: unconditional Server shutdown (forces 'hard' disconnection of all Clients!)");
                         WriteServerPrompt();
@@ -459,7 +459,7 @@ public class TServer
                         WriteServerPrompt();
 
                         break;
-                        
+
                     case 'p':
                     case 'P':
                         string resp = "";

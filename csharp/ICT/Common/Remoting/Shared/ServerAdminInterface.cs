@@ -154,7 +154,7 @@ namespace Ict.Common.Remoting.Shared
         /// with the data that was originally placed in the DataTable).
         /// </summary>
         void RefreshAllCachedTables();
-        
+
         /// <summary>
         /// add a new user
         /// </summary>
