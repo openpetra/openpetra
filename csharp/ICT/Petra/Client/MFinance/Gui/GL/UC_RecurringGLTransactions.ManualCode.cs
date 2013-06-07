@@ -1037,7 +1037,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             transRowToReceive[j] = transRowToCopyDown[j];
                         }
                     }
-
+                    
                     if (currentTransNo == transView.Count)                         //Last row which is the row to be deleted
                     {
                         //Mark last record for deletion
@@ -1052,7 +1052,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     transRowCurrent.Delete();
                 }
-
+                    
                 FPreviouslySelectedDetailRow = null;
 
                 FPetraUtilsObject.SetChangedFlag();

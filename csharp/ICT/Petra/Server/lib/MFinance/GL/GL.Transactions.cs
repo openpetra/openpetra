@@ -1657,8 +1657,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             // now submit the changes
             SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
-            if ((SubmissionResult == TSubmitChangesResult.scrOK)
-                && ((recurrTransactionTableInDataSet) && (AInspectDS.ARecurringTransaction.Rows.Count > 0) || (recurrJournalTableInDataSet) && (AInspectDS.ARecurringJournal.Rows.Count > 0)))
+			if (recurrTransactionTableInDataSet && AInspectDS.ARecurringTransaction.Count > 0 && SubmissionResult != TSubmitChangesResult.scrError)
             {
                 //Accept deletion of Attributes to allow deletion of transactions
                 if (recurrTransAnalTableInDataSet)
@@ -1671,113 +1670,55 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 	                AInspectDS.ARecurringTransaction.AcceptChanges();
                 }
                 
-                if (recurrJournalTableInDataSet)
+				ARecurringTransactionRow tranR = (ARecurringTransactionRow)AInspectDS.ARecurringTransaction.Rows[0];
+
+                Int32 currentLedger = tranR.LedgerNumber;
+                Int32 currentBatch = tranR.BatchNumber;
+                Int32 currentJournal = tranR.JournalNumber;
+                Int32 transToDelete = 0;
+
+                try
                 {
-					AInspectDS.ARecurringJournal.AcceptChanges();
+                    //Check if any records have been marked for deletion
+                    DataRow[] foundTransactionForDeletion = AInspectDS.ARecurringTransaction.Select(String.Format("{0} = '{1}'",
+                            ARecurringTransactionTable.GetSubTypeDBName(),
+                            MFinanceConstants.MARKED_FOR_DELETION));
+
+                    if (foundTransactionForDeletion.Length > 0)
+                    {
+                        ARecurringTransactionRow transRowClient = null;
+
+                        for (int i = 0; i < foundTransactionForDeletion.Length; i++)
+                        {
+                            transRowClient = (ARecurringTransactionRow)foundTransactionForDeletion[i];
+
+                            transToDelete = transRowClient.TransactionNumber;
+                            TLogging.Log(String.Format("Recurring transaction to Delete: {0} from Journal: {1} in Batch: {2}",
+                                    transToDelete,
+                                    currentJournal,
+                                    currentBatch));
+
+                            transRowClient.Delete();
+                        }
+
+                        //save changes
+                        SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                    }
                 }
-
-				if (AInspectDS.ARecurringJournal.Count > 0)
+                catch (Exception ex)
                 {
-					ARecurringJournalRow jrnlR = (ARecurringJournalRow)AInspectDS.ARecurringJournal.Rows[0];
-	
-	                Int32 currentLedger = jrnlR.LedgerNumber;
-	                Int32 currentBatch = jrnlR.BatchNumber;
-	                Int32 currentJournal = jrnlR.JournalNumber;
-	                Int32 jrnlToDelete = 0;
-	
-	                try
-	                {
-	                    //Check if any records have been marked for deletion
-	                    DataRow[] foundJournalForDeletion = AInspectDS.ARecurringJournal.Select(String.Format("{0} = '{1}'",
-	                            ARecurringJournalTable.GetSubSystemCodeDBName(),
-	                            MFinanceConstants.MARKED_FOR_DELETION));
-	
-	                    if (foundJournalForDeletion.Length > 0)
-	                    {
-	                        ARecurringJournalRow jrnlRowClient = null;
-	
-	                        for (int i = 0; i < foundJournalForDeletion.Length; i++)
-	                        {
-	                            jrnlRowClient = (ARecurringJournalRow)foundJournalForDeletion[i];
-	
-	                            jrnlToDelete = jrnlRowClient.JournalNumber;
-	                            TLogging.Log(String.Format("Recurring journal to Delete: {0} from Batch: {1}",
-	                                    jrnlToDelete,
-	                                    currentBatch));
-	
-	                            jrnlRowClient.Delete();
-	                        }
-	
-	                        //save changes
-	                        SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-	                    }
-	                }
-	                catch (Exception ex)
-	                {
-	                    TLogging.Log("Saving DataSet: " + ex.Message);
-	
-	                    TLogging.Log(String.Format("Error trying to save Journal: {0} in Batch: {1}",
-	                            jrnlToDelete,
-	                            currentBatch));
-	
-	                    SubmissionResult = TSubmitChangesResult.scrError;
-	                }
-				}
-				
-				
-				if (recurrTransactionTableInDataSet && AInspectDS.ARecurringTransaction.Count > 0 && SubmissionResult != TSubmitChangesResult.scrError)
-                {
-					ARecurringTransactionRow tranR = (ARecurringTransactionRow)AInspectDS.ARecurringTransaction.Rows[0];
-	
-	                Int32 currentLedger = tranR.LedgerNumber;
-	                Int32 currentBatch = tranR.BatchNumber;
-	                Int32 currentJournal = tranR.JournalNumber;
-	                Int32 transToDelete = 0;
-	
-	                try
-	                {
-	                    //Check if any records have been marked for deletion
-	                    DataRow[] foundTransactionForDeletion = AInspectDS.ARecurringTransaction.Select(String.Format("{0} = '{1}'",
-	                            ARecurringTransactionTable.GetSubTypeDBName(),
-	                            MFinanceConstants.MARKED_FOR_DELETION));
-	
-	                    if (foundTransactionForDeletion.Length > 0)
-	                    {
-	                        ARecurringTransactionRow transRowClient = null;
-	
-	                        for (int i = 0; i < foundTransactionForDeletion.Length; i++)
-	                        {
-	                            transRowClient = (ARecurringTransactionRow)foundTransactionForDeletion[i];
-	
-	                            transToDelete = transRowClient.TransactionNumber;
-	                            TLogging.Log(String.Format("Recurring transaction to Delete: {0} from Journal: {1} in Batch: {2}",
-	                                    transToDelete,
-	                                    currentJournal,
-	                                    currentBatch));
-	
-	                            transRowClient.Delete();
-	                        }
-	
-	                        //save changes
-	                        SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-	                    }
-	                }
-	                catch (Exception ex)
-	                {
-	                    TLogging.Log("Saving DataSet: " + ex.Message);
-	
-	                    TLogging.Log(String.Format("Error trying to save transaction: {0} in Journal: {1}, Batch: {2}",
-	                            transToDelete,
-	                            currentJournal,
-	                            currentBatch
-	                            ));
-	
-	                    SubmissionResult = TSubmitChangesResult.scrError;
-	                }
-				}
-				
-            }
+                    TLogging.Log("Saving DataSet: " + ex.Message);
 
+                    TLogging.Log(String.Format("Error trying to save transaction: {0} in Journal: {1}, Batch: {2}",
+                            transToDelete,
+                            currentJournal,
+                            currentBatch
+                            ));
+
+                    SubmissionResult = TSubmitChangesResult.scrError;
+                }
+			}
+				
             return SubmissionResult;
         }
 

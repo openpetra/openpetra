@@ -540,8 +540,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 	                        newAttrRow.JournalNumber--;
 	                        
 	                        FMainDS.ARecurringTransAnalAttrib.Rows.Add(newAttrRow);
+	                        
+	                        attrRowCurrent.Delete();
 	                    }
 	                }
+	                
+	                transRowCurrent.Delete();
                 }
                 
                 jrnlRowCurrent.Delete();
