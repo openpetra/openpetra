@@ -115,17 +115,18 @@ namespace Ict.Petra.Shared.MFinance
             ACurrentJournal.JournalCreditTotal = 0.0M;
             ACurrentJournal.JournalCreditTotalBase = 0.0M;
 
+            DataView trnsDataView = new DataView(AMainDS.ARecurringTransaction);
+
+            trnsDataView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                ARecurringTransactionTable.GetBatchNumberDBName(),
+                ACurrentJournal.BatchNumber,
+                ARecurringTransactionTable.GetJournalNumberDBName(),
+                ACurrentJournal.JournalNumber);
+
             // transactions are filtered for this journal; add up the total amounts
-            foreach (DataRowView v in AMainDS.ARecurringTransaction.DefaultView)
+            foreach (DataRowView v in trnsDataView)
             {
                 ARecurringTransactionRow r = (ARecurringTransactionRow)v.Row;
-
-                // recalculate the amount in base currency
-
-//                if (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
-//                {
-//                    r.AmountInBaseCurrency = Divide(r.TransactionAmount, ACurrentJournal.ExchangeRateToBase);
-//                }
 
                 if (r.DebitCreditIndicator)
                 {
@@ -196,31 +197,23 @@ namespace Ict.Petra.Shared.MFinance
         public static void UpdateTotalsOfRecurringBatch(ref GLBatchTDS AMainDS,
             ARecurringBatchRow ACurrentBatch)
         {
-            string origTransactionFilter = AMainDS.ARecurringTransaction.DefaultView.RowFilter;
-            string origJournalFilter = AMainDS.ARecurringJournal.DefaultView.RowFilter;
-
             ACurrentBatch.BatchDebitTotal = 0.0m;
             ACurrentBatch.BatchCreditTotal = 0.0m;
 
-            AMainDS.ARecurringJournal.DefaultView.RowFilter =
-                ARecurringJournalTable.GetBatchNumberDBName() + " = " + ACurrentBatch.BatchNumber.ToString();
+            DataView jnlDataView = new DataView(AMainDS.ARecurringJournal);
+            jnlDataView.RowFilter = String.Format("{0}={1}",
+                ARecurringJournalTable.GetBatchNumberDBName(),
+                ACurrentBatch.BatchNumber);
 
-            foreach (DataRowView journalview in AMainDS.ARecurringJournal.DefaultView)
+            foreach (DataRowView journalview in jnlDataView)
             {
                 GLBatchTDSARecurringJournalRow journalrow = (GLBatchTDSARecurringJournalRow)journalview.Row;
-
-                AMainDS.ARecurringTransaction.DefaultView.RowFilter =
-                    ARecurringTransactionTable.GetBatchNumberDBName() + " = " + journalrow.BatchNumber.ToString() + " and " +
-                    ARecurringTransactionTable.GetJournalNumberDBName() + " = " + journalrow.JournalNumber.ToString();
 
                 UpdateTotalsOfRecurringJournal(ref AMainDS, journalrow);
 
                 ACurrentBatch.BatchDebitTotal += journalrow.JournalDebitTotal;
                 ACurrentBatch.BatchCreditTotal += journalrow.JournalCreditTotal;
             }
-
-            AMainDS.ARecurringTransaction.DefaultView.RowFilter = origTransactionFilter;
-            AMainDS.ARecurringJournal.DefaultView.RowFilter = origJournalFilter;
         }
 
         private static int DECIMALS = 10;

@@ -78,6 +78,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// Load the journals for the current batch in the background
+        /// </summary>
+        public void LoadJournals()
+        {
+            int batchNumber = ucoRecurringBatches.GetSelectedDetailRow().BatchNumber;
+
+            FMainDS.ARecurringJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
+                ARecurringJournalTable.GetBatchNumberDBName(),
+                batchNumber);
+
+            // only load from server if there are no journals loaded yet for this batch
+            // otherwise we would overwrite journals that have already been modified
+            if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournal(FLedgerNumber, batchNumber));
+            }
+        }
+
+        /// <summary>
         /// activate the journal tab and load the journals of the batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -130,33 +149,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Load the journals for the current batch in the background
-        /// </summary>
-        public void LoadJournals()
-        {
-            int batchNumber = ucoRecurringBatches.GetSelectedDetailRow().BatchNumber;
-
-            FMainDS.ARecurringJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
-                ARecurringJournalTable.GetBatchNumberDBName(),
-                batchNumber);
-
-            // only load from server if there are no journals loaded yet for this batch
-            // otherwise we would overwrite journals that have already been modified
-            if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
-            {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournal(FLedgerNumber, batchNumber));
-            }
-        }
-
-        /// <summary>
-        /// Unload transactions from the form
-        /// </summary>
-        public void UnloadJournals()
-        {
-            this.ucoRecurringJournals.UnloadJournals();
-        }
-
-        /// <summary>
         /// disable the journal tab if we have no active batch
         /// </summary>
         public void DisableJournals()
@@ -190,7 +182,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             RecurringTransactions,
         };
 
-        private eGLTabs FPreviousTab = eGLTabs.RecurringBatches;
+        //Might need this later
+        //private eGLTabs FPreviousTab = eGLTabs.RecurringBatches;
+
         /// <summary>
         /// Switch to the given tab
         /// </summary>
@@ -206,12 +200,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     this.ucoRecurringTransactions.CancelChangesToFixedBatches();
                     this.ucoRecurringJournals.CancelChangesToFixedBatches();
-                    SaveChanges();
                     this.tpgTransactions.Enabled = false;
                 }
 
                 this.ucoRecurringBatches.FocusGrid();
-                FPreviousTab = eGLTabs.RecurringBatches;
+                //FPreviousTab = eGLTabs.RecurringBatches;
             }
             else if (ATab == eGLTabs.RecurringJournals)
             {
@@ -223,17 +216,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoRecurringBatches.GetSelectedDetailRow().BatchNumber,
                         ucoRecurringBatches.GetSelectedDetailRow().BatchStatus);
 
-                    this.tpgTransactions.Enabled = (ucoRecurringJournals.GetSelectedDetailRow() != null);
+                    this.tpgTransactions.Enabled =
+                        (ucoRecurringJournals.GetSelectedDetailRow() != null);
 
-                    if (this.tpgTransactions.Enabled && (FPreviousTab == eGLTabs.RecurringTransactions))
-                    {
-                        //Reconcile dataset tables
-                        this.ucoRecurringJournals.UpdateTotals(ucoRecurringBatches.GetSelectedDetailRow());
-                    }
+                    this.ucoRecurringJournals.UpdateHeaderTotals(ucoRecurringBatches.GetSelectedDetailRow());
 
                     this.ucoRecurringJournals.FocusGrid();
-
-                    FPreviousTab = eGLTabs.RecurringJournals;
+                    //FPreviousTab = eGLTabs.RecurringJournals;
                 }
             }
             else if (ATab == eGLTabs.RecurringTransactions)
@@ -250,7 +239,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoRecurringBatches.GetSelectedDetailRow().BatchStatus,
                         ucoRecurringJournals.GetSelectedDetailRow().JournalStatus);
 
-                    FPreviousTab = eGLTabs.RecurringTransactions;
+                    //FPreviousTab = eGLTabs.RecurringTransactions;
                 }
             }
 
@@ -261,7 +250,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!SaveChanges())
+            if (!ValidateAllData(true, true))
             {
                 e.Cancel = true;
 

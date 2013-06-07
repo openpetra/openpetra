@@ -10,6 +10,7 @@ RootNode:
     Actions:
         actNew: {Label=&Add, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}
+        actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllTrans}        
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetailsSection]
@@ -32,9 +33,10 @@ RootNode:
             Height: 320
         pnlDetailButtons:
             Dock: Right
-            Controls: [btnNew, btnDelete]
+            Controls: [btnNew, btnDelete, btnDeleteAll]
         btnNew: {Action=actNew, Stretch=horizontally}
         btnDelete: {Action=actDelete, Stretch=horizontally}
+        btnDeleteAll: {Action=actDeleteAll, Stretch=horizontally}
 
         pnlTransAnalysisAttributes:
             Dock: Right
@@ -67,8 +69,9 @@ RootNode:
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
             ActionFocusRow: FocusedRowChanged
-            SortOrder: ARecurringTransaction.TransactionNumber ASC
+            SortOrder: ARecurringTransaction.TransactionNumber DESC
             RowFilter: ARecurringTransaction.BatchNumber, ARecurringTransaction.JournalNumber
+            EnableMultiSelection: false
         pnlDetails:
             Dock: Left
             Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, cmbDetailKeyMinistryKey, pnlDetailAmounts]

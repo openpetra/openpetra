@@ -82,6 +82,37 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// Load the journals for the current batch in the background
+        /// </summary>
+        public void LoadJournals()
+        {
+            int batchNumber = ucoBatches.GetSelectedDetailRow().BatchNumber;
+
+            FMainDS.AJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
+                AJournalTable.GetBatchNumberDBName(),
+                batchNumber);
+
+            // only load from server if there are no journals loaded yet for this batch
+            // otherwise we would overwrite journals that have already been modified
+            if (FMainDS.AJournal.DefaultView.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, batchNumber));
+            }
+        }
+
+        /// <summary>
+        /// activate the journal tab and load the journals of the batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            this.tpgJournals.Enabled = true;
+            DisableTransactions();
+            this.ucoJournals.LoadJournals(ALedgerNumber, ABatchNumber);
+        }
+
+        /// <summary>
         /// activate the transaction tab and load the transactions of the batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -119,33 +150,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             this.tpgTransactions.Enabled = true;
             this.Refresh();
-        }
-
-        /// <summary>
-        /// Load the journals for the current batch in the background
-        /// </summary>
-        public void LoadJournals()
-        {
-            int batchNumber = ucoBatches.GetSelectedDetailRow().BatchNumber;
-
-            FMainDS.AJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
-                AJournalTable.GetBatchNumberDBName(),
-                batchNumber);
-
-            // only load from server if there are no journals loaded yet for this batch
-            // otherwise we would overwrite journals that have already been modified
-            if (FMainDS.AJournal.DefaultView.Count == 0)
-            {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, batchNumber));
-            }
-        }
-
-        /// <summary>
-        /// Unload transactions from the form
-        /// </summary>
-        public void UnloadJournals()
-        {
-            this.ucoJournals.UnloadJournals();
         }
 
         /// <summary>
