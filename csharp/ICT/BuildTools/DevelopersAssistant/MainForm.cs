@@ -1651,9 +1651,11 @@ namespace Ict.Tools.DevelopersAssistant
                 case TPaths.Settings:
                     path = Path.Combine(appDataPath, @"OM_International\DevelopersAssistant.ini");
                     break;
+
                 case TPaths.ExternalLinks:
                     path = Path.Combine(appDataPath, @"OM_International\OPDAExternalLinks.ini");
                     break;
+
                 default:
                     throw new InvalidEnumArgumentException("");
             }

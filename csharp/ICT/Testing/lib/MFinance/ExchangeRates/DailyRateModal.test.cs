@@ -1118,7 +1118,9 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(DialogResult.OK, dlgResult);
             Assert.AreEqual(0.5444m, selectedRate, "Expected the selected rate from the dialog to be 0.5444");
             Assert.AreEqual(7200, selectedTime, "Expected the selected time from the dialog to be 7200");
-            Assert.AreEqual(FStandardEffectiveDate, selectedDate, "Expected the selected date from the dialog to be " + FStandardEffectiveDate.ToShortDateString());
+            Assert.AreEqual(FStandardEffectiveDate,
+                selectedDate,
+                "Expected the selected date from the dialog to be " + FStandardEffectiveDate.ToShortDateString());
 
             // So did we actually save things all the way??
             // Since May 2013 the modal dialog does not make a change to the Journal/Gift tables - it is up to theses screens to save the returned values
