@@ -99,10 +99,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             ShowData();
-
             FBatchLoaded = true;
 
-            ShowDetails(GetCurrentRecurringBatchRow());
+            UpdateChangeableStatus();
         }
 
         /// <summary>
@@ -168,23 +167,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FLedgerNumber = ARow.LedgerNumber;
-//            FSelectedBatchNumber = ARow.BatchNumber;
 
             FPetraUtilsObject.DetailProtectedMode = false;
 
             ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab();
 
             UpdateChangeableStatus();
-
-//            FPetraUtilsObject.DetailProtectedMode = false;
-//            ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab();
-//            UpdateChangeableStatus();
-//            FPetraUtilsObject.DetailProtectedMode = false;
-//            ((TFrmRecurringGiftBatch)ParentForm).LoadTransactions(
-//                ARow.LedgerNumber,
-//                ARow.BatchNumber);
-
-            // FSelectedBatchNumber = ARow.BatchNumber;
         }
 
         private void ShowTransactionTab(Object sender, EventArgs e)
@@ -355,9 +343,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 MessageBox.Show(String.Format(Catalog.GetString(
                             "The recurring gift batch total ({0}) for batch {1} does not equal the hash total ({2})."),
-                        FPreviouslySelectedDetailRow.BatchTotal.ToString("C"),
+                        StringHelper.FormatUsingCurrencyCode(FPreviouslySelectedDetailRow.BatchTotal, FPreviouslySelectedDetailRow.CurrencyCode),
                         FPreviouslySelectedDetailRow.BatchNumber,
-                        FPreviouslySelectedDetailRow.HashTotal.ToString("C")), "Submit Recurring Gift Batch");
+                        StringHelper.FormatUsingCurrencyCode(FPreviouslySelectedDetailRow.HashTotal, FPreviouslySelectedDetailRow.CurrencyCode)),
+                    "Submit Recurring Gift Batch");
 
                 txtDetailHashTotal.Focus();
                 txtDetailHashTotal.SelectAll();
@@ -387,6 +376,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Boolean changeable = (FPreviouslySelectedDetailRow != null);
 
             this.btnDelete.Enabled = changeable;
+            this.btnSubmit.Enabled = changeable;
             pnlDetails.Enabled = changeable;
         }
 

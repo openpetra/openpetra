@@ -9,7 +9,7 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add Batch, ActionClick=NewRow}
-        actDelete: {Label=&Cancel Batch, ActionClick=DeleteRecord}
+        actCancel: {Label=&Cancel Batch, ActionClick=CancelRecord}
         actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
         actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
@@ -39,9 +39,9 @@ RootNode:
             Controls: [grdDetails, pnlDetailButtons]
         pnlDetailButtons:
             Dock: Right
-            Controls: [btnNew, btnDelete, btnPostBatch]
+            Controls: [btnNew, btnCancel, btnPostBatch]
         btnNew: {Action=actNew, Stretch=horizontally}
-        btnDelete: {Action=actDelete, Stretch=horizontally}
+        btnCancel: {Action=actCancel, Stretch=horizontally}
         btnPostBatch: {Action=actPostBatch, Stretch=horizontally}
         grdDetails:
             Dock: Fill
@@ -51,6 +51,7 @@ RootNode:
             ActionDoubleClick: ShowTransactionTab
             ActionEnterKeyPressed: ShowTransactionTab
             SortOrder: BatchNumber DESC
+            EnableMultiSelection: false
         pnlDetails:
             Dock: Bottom
             Controls:

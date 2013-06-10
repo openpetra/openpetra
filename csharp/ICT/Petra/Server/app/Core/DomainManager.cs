@@ -30,6 +30,7 @@ using Ict.Common.DB;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MCommon.Data.Access;
 
 namespace Ict.Petra.Server.App.Core
 {
@@ -224,6 +225,14 @@ namespace Ict.Petra.Server.App.Core
                 AMessageLine3,
                 UserInfo.GUserInfo.UserID,
                 UserInfo.GUserInfo.ProcessID);
+        }
+
+        /// <summary>
+        /// Called after the ClientDomain is up and running - add any initialisation in here.
+        /// </summary>
+        public void PostAppDomainSetupInitialisation()
+        {
+            StringHelper.CurrencyFormatTable = ACurrencyAccess.LoadAll(null);
         }
     }
 }

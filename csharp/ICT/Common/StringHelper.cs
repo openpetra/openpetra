@@ -28,6 +28,8 @@ using System.Collections.Specialized;
 using Ict.Common;
 using System.Globalization;
 using System.Security.Cryptography;
+using System.Data;
+using System.Threading;
 
 namespace Ict.Common
 {
@@ -1928,6 +1930,42 @@ namespace Ict.Common
             return FormatCurrency(new TVariant(value), format);
         }
 
+        private static DataTable CurrencyFormats = null;
+
+        /// <summary>
+        /// Use this for displaying currency-sensitive amounts.
+        /// </summary>
+        /// <param name="AValue"></param>
+        /// <param name="ACurrencyCode"></param>
+        /// <returns></returns>
+        public static String FormatUsingCurrencyCode(decimal AValue, String ACurrencyCode)
+        {
+            String format = "->>>,>>>,>>>,>>9.99";
+
+            if (CurrencyFormats != null)
+            {
+                CurrencyFormats.DefaultView.RowFilter = String.Format("a_currency_code_c='{0}'", ACurrencyCode);
+
+                if (CurrencyFormats.DefaultView.Count > 0)
+                {
+                    format = CurrencyFormats.DefaultView[0].Row["a_display_format_c"].ToString();
+                }
+            }
+
+            return StringHelper.FormatCurrency(new TVariant(AValue), format);
+        }
+
+        /// <summary>
+        /// If this is not given (during initialisation), a default format will be used.
+        /// </summary>
+        public static DataTable CurrencyFormatTable
+        {
+            set
+            {
+                CurrencyFormats = value;
+            }
+        }
+
         /// <summary>
         /// returns the full name of the month, using .net localised information
         /// </summary>
@@ -2017,23 +2055,23 @@ namespace Ict.Common
             return ReturnValue;
         }
 
-        private static ArrayList months = new ArrayList();
-
-        /// <summary>
-        /// initialize the localized month names
-        /// not used at the moment; using .net localisation instead
-        /// </summary>
-        /// <param name="monthNames">an array of the month names</param>
-        public static void SetLocalizedMonthNames(ArrayList monthNames)
-        {
-            months = new ArrayList();
-
-            foreach (string s in monthNames)
-            {
-                months.Add(s);
-            }
-        }
-
+/*
+ *      private static ArrayList months = new ArrayList();
+ *      /// <summary>
+ *      /// initialize the localized month names
+ *      /// not used at the moment; using .net localisation instead
+ *      /// </summary>
+ *      /// <param name="monthNames">an array of the month names</param>
+ *      public static void SetLocalizedMonthNames(ArrayList monthNames)
+ *      {
+ *          months = new ArrayList();
+ *
+ *          foreach (string s in monthNames)
+ *          {
+ *              months.Add(s);
+ *          }
+ *      }
+ */
         /// <summary>
         /// Finds a matching closing bracket in a String.
         /// </summary>

@@ -9,7 +9,8 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add, ActionClick=NewRow}
-        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}
+        actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllTrans}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetailsSection]
@@ -18,9 +19,6 @@ RootNode:
             Controls:
                 Row0: [txtLedgerNumber, txtBatchNumber, txtJournalNumber]
             Dock: Top
-        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
-        txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
-        txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
         pnlDetailGrid:
             Dock: Fill
             Controls: [grdDetails, pnlDetailButtons]
@@ -32,9 +30,10 @@ RootNode:
             Height: 320
         pnlDetailButtons:
             Dock: Right
-            Controls: [btnNew, btnDelete]
+            Controls: [btnNew, btnDelete, btnDeleteAll]
         btnNew: {Action=actNew, Stretch=horizontally}
         btnDelete: {Action=actDelete, Stretch=horizontally}
+        btnDeleteAll: {Action=actDeleteAll, Stretch=horizontally}
 
         pnlTransAnalysisAttributes:
             Dock: Right
@@ -68,8 +67,9 @@ RootNode:
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
             ActionFocusRow: FocusedRowChanged
-            SortOrder: ATransaction.TransactionNumber ASC
+            SortOrder: ATransaction.TransactionNumber DESC
             RowFilter: ATransaction.BatchNumber, ATransaction.JournalNumber
+            EnableMultiSelection: false
         pnlDetails:
             Dock: Left
             Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, dtpDetailTransactionDate, cmbDetailKeyMinistryKey, pnlDetailAmounts]
@@ -93,6 +93,9 @@ RootNode:
                 Row4: [txtCreditTotalAmount, txtCreditTotalAmountBase]
         lblTransactionCurrency: {Label=TODOTransactionCurrency}
         lblBaseCurrency: {Label=TODOBase Currency}
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
+        txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
+        txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
         txtDebitAmount: {Label=Dr Amount, Verification=PositiveCurrency, Format=Currency, NullValueAllowed=false}
         txtCreditAmount: {Label=Cr Amount, Verification=PositiveCurrency, Format=Currency, NullValueAllowed=false}
         txtDebitAmountBase: {Label=Dr Amount, ReadOnly=true, Format=Currency}
