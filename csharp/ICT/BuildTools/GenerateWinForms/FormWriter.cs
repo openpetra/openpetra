@@ -917,9 +917,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             try
             {
-                string fullNamespace = TTable.GetNamespace(TDataBinding.FPetraXMLStore.GetTable(FCodeStorage.GetAttribute("DetailTable")).strGroup);
-                int pos = fullNamespace.IndexOf('.');
-                string rootNamespace = (pos > 0) ? fullNamespace.Substring(0, pos) : fullNamespace;
+                // We need the module namespace in the server that contains the reference count code (eg MPartner)
+                // This is not necessarily the module where the table comes in the Data Store
+                // The generateORMReferenceCount code uses the Client yaml file location to choose the module namespace
+                // It can do this because all the calls are static
+                string[] dirItems = FCodeStorage.FManualCodeFilename.Split(new char[] { Path.DirectorySeparatorChar });
+                string rootNamespace = String.Empty;
+
+                // Find the last time Client is a folder name
+                for (int i = 0; i < dirItems.Length - 1; i++)
+                {
+                    if (dirItems[i] == "Client")
+                    {
+                        rootNamespace = dirItems[i + 1];
+                    }
+                }
 
                 ProcessTemplate singleSnippet = FTemplate.GetSnippet("SNIPDELETEREFERENCECOUNT");
                 ProcessTemplate multiSnippet = FTemplate.GetSnippet("SNIPMULTIDELETEREFERENCECOUNT");
