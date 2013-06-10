@@ -327,6 +327,7 @@ namespace Ict.Tools.DevelopersAssistant
             _contentHeader += (Environment.NewLine + "; You can modify this file.  The format for each line is ...");
             _contentHeader += (Environment.NewLine + ";   <Title> = <url> [++ <More_Info>]");
             _contentHeader += (Environment.NewLine + "; The URL can contain an = but must not contain a 'double-plus'");
+            _contentHeader += (Environment.NewLine + "# Blank lines and lines that start with ; or # are ignored");
         }
 
         /// <summary>
@@ -342,20 +343,22 @@ namespace Ict.Tools.DevelopersAssistant
                     sw.WriteLine(_contentHeader);
                     sw.WriteLine();
                     sw.WriteLine(
-                        "Mantis Bug Tracker = https://tracker.openpetra.org/main_page.php ++ This links to the main project work item database known as 'Mantis'");
-                    sw.WriteLine("OpenPetra Wiki = http://sourceforge.net/apps/mediawiki/openpetraorg/ ++ This links to the main project wiki");
+                        "Database Schema = http://openpetraorg.sourceforge.net/dbdoc/ ++ The complete architecture of the Open Petra database");
                     sw.WriteLine(
                         "Developer's Forum = http://sourceforge.net/apps/phpbb/openpetraorg/ ++ This links to the main developer forum where you can join in discussion of developer topics or ask a question.");
                     sw.WriteLine(
                         "Documentation for Developers = http://www.openpetra.org/en/developers-documentation ++ Useful links from the main public site for Open Petra");
                     sw.WriteLine(
-                        "Database Schema = http://openpetraorg.sourceforge.net/dbdoc/ ++ The complete architecture of the Open Petra database");
-                    sw.WriteLine(
-                        "Launchpad = https://code.launchpad.net/openpetraorg/ ++ A web interface to the code on the main Launchpad repository");
+                        "Jenkins Build Server = https://ci.openpetra.org/ ++ A link to the main Continuous Integration server that runs on Linux.");
                     sw.WriteLine(
                         "Jenkins Server on Windows = http://ci-win.openpetra.org:8080/ ++ A link to the dashboard of the Continuous Integration server that runs on Windows.");
                     sw.WriteLine(
-                        "Jenkins Build server = https://ci.openpetra.org/ ++ A link to the main Continuous Integration server that runs on Linux.");
+                        "Launchpad = https://code.launchpad.net/openpetraorg/ ++ A web interface to the code on the main Launchpad repository");
+                    sw.WriteLine(
+                        "Mantis Bug Tracker = https://tracker.openpetra.org/main_page.php ++ This links to the main project work item database known as 'Mantis'");
+                    sw.WriteLine(
+                        "Mantis Bug Tracker (My View) = https://tracker.openpetra.org/my_view_page.php ++ This links to the 'My View' page in the main project work item database known as 'Mantis'");
+                    sw.WriteLine("OpenPetra Wiki = http://sourceforge.net/apps/mediawiki/openpetraorg/ ++ This links to the main project wiki");
 
                     sw.Close();
                 }
@@ -487,7 +490,7 @@ namespace Ict.Tools.DevelopersAssistant
                             string s1 = s.Substring(0, pos - 1).Trim();
                             string s2 = s.Substring(pos + 1).Trim();
 
-                            if ((s1.Length > 0) && (s2.Length > 0) && !s1.StartsWith(";"))
+                            if ((s1.Length > 0) && (s2.Length > 0) && !s1.StartsWith(";") && !s1.StartsWith("#"))
                             {
                                 if (this.ContainsKey(s1))
                                 {

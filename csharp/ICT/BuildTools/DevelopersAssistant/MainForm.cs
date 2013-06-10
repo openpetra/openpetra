@@ -51,6 +51,12 @@ namespace Ict.Tools.DevelopersAssistant
         private List <OutputText.ErrorItem>_warnings = new List <OutputText.ErrorItem>();   // List of positions/severities in verbose text where warnings/errors appear
         private int _currentWarning = -1;                                                   // 'Current' warning ID in _warnings list
 
+        private enum TPaths
+        {
+            Settings,               // User settings file
+            ExternalLinks           // User links file
+        };
+
         /**************************************************************************************************************************************
          *
          * Initialisation and GUI state routines
@@ -64,14 +70,11 @@ namespace Ict.Tools.DevelopersAssistant
         {
             InitializeComponent();
 
-            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            string path = Path.Combine(appDataPath, @"OM_International\DevelopersAssistant.ini");
             string appVersion = System.Diagnostics.FileVersionInfo.GetVersionInfo(Application.ExecutablePath).FileVersion;
-            _localSettings = new SettingsDictionary(path, appVersion);
+            _localSettings = new SettingsDictionary(GetDataFilePath(TPaths.Settings), appVersion);
             _localSettings.Load();
 
-            path = Path.Combine(appDataPath, @"OM_International\OPDAExternalLinks.ini");
-            _externalLinks = new ExternalLinksDictionary(path);
+            _externalLinks = new ExternalLinksDictionary(GetDataFilePath(TPaths.ExternalLinks));
             _externalLinks.Load();
             _externalLinks.PopulateListBox(lstExternalWebLinks);
 
@@ -681,6 +684,41 @@ namespace Ict.Tools.DevelopersAssistant
                 msg += "This will mean that the Open Petra Client may not rspond correctly to your changes.";
                 MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
+        }
+
+        private void lstExternalWebLinks_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string url;
+            string info;
+
+            _externalLinks.GetDetails(lstExternalWebLinks.SelectedItem.ToString(), out url, out info);
+            lblExternalWebLink.Text = url;
+            lblWebLinkInfo.Text = info;
+        }
+
+        private void btnBrowseWeb_Click(object sender, EventArgs e)
+        {
+            if (lblExternalWebLink.Text != String.Empty)
+            {
+                System.Diagnostics.Process.Start(lblExternalWebLink.Text);
+            }
+        }
+
+        private void lstExternalWebLinks_DoubleClick(object sender, EventArgs e)
+        {
+            btnBrowseWeb_Click(sender, e);
+        }
+
+        private void linkEditLinks_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(GetDataFilePath(TPaths.ExternalLinks));
+        }
+
+        private void linkRefreshLinks_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            _externalLinks = new ExternalLinksDictionary(GetDataFilePath(TPaths.ExternalLinks));
+            _externalLinks.Load();
+            _externalLinks.PopulateListBox(lstExternalWebLinks);
         }
 
         private bool bHaveAlertedFlashSetting = false;
@@ -1603,31 +1641,24 @@ namespace Ict.Tools.DevelopersAssistant
             }
         }
 
-        private void lstExternalWebLinks_SelectedIndexChanged(object sender, EventArgs e)
+        private string GetDataFilePath(TPaths PathItem)
         {
-            string url;
-            string info;
+            string path = String.Empty;
+            string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
-            _externalLinks.GetDetails(lstExternalWebLinks.SelectedItem.ToString(), out url, out info);
-            lblExternalWebLink.Text = url;
-            lblWebLinkInfo.Text = info;
-        }
-
-        private void btnBrowseWeb_Click(object sender, EventArgs e)
-        {
-            if (lblExternalWebLink.Text != String.Empty)
+            switch (PathItem)
             {
-                //System.Diagnostics.ProcessStartInfo si = new System.Diagnostics.ProcessStartInfo();
-                //si.UseShellExecute = true;
-                //si.Verb = "open";
-
-                System.Diagnostics.Process.Start(lblExternalWebLink.Text);
+                case TPaths.Settings:
+                    path = Path.Combine(appDataPath, @"OM_International\DevelopersAssistant.ini");
+                    break;
+                case TPaths.ExternalLinks:
+                    path = Path.Combine(appDataPath, @"OM_International\OPDAExternalLinks.ini");
+                    break;
+                default:
+                    throw new InvalidEnumArgumentException("");
             }
-        }
 
-        private void lstExternalWebLinks_DoubleClick(object sender, EventArgs e)
-        {
-            btnBrowseWeb_Click(sender, e);
+            return path;
         }
     }
 }
