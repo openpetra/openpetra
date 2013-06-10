@@ -1053,9 +1053,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     // change all the relevant entries
                     DataView dvJournal = FJournalDS.JournalTable.DefaultView;
-                    dvJournal.RowFilter = String.Format(CultureInfo.InvariantCulture, JournalRowFilterRange, ARow.FromCurrencyCode, ARow.ToCurrencyCode,
-                        ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d",
-                            CultureInfo.InvariantCulture), FJournalDS.MatchingRate, "Unposted");
+                    dvJournal.RowFilter = String.Format(CultureInfo.InvariantCulture,
+                        JournalRowFilterRange,
+                        ARow.FromCurrencyCode,
+                        ARow.ToCurrencyCode,
+                        ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture),
+                        ToDate.ToString("d",
+                            CultureInfo.InvariantCulture),
+                        FJournalDS.MatchingRate,
+                        "Unposted");
 
                     for (int i = dvJournal.Count - 1; i >= 0; i--)
                     {
