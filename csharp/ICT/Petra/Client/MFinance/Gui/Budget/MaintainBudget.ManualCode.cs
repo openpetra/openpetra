@@ -56,10 +56,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
     {
         private Int32 FLedgerNumber;
 
-        private Int32 CurrentBudgetYear;
+        private Int32 FCurrentBudgetYear;
+        
+        //This may be 13 so allow for it
+        private Int32 FNumberOfPeriods;
+        private bool FHas13Periods;
 
-        private bool LoadCompleted = false;
-        private bool RejectYearChange = false;
+        private bool FLoadCompleted = false;
+        private bool FRejectYearChange = false;
 
         private TDlgSelectCSVSeparator FdlgSeparator;
         private String FCurrencyCode = "";
@@ -71,10 +75,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             set
             {
-                FLedgerNumber = value;
+            	FLedgerNumber = value;
 
                 FMainDS = TRemote.MFinance.Budget.WebConnectors.LoadBudget(FLedgerNumber);
+                
+                //Prepare form for correct number of periods
+                FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadLedgerInfo(FLedgerNumber));
+                
+                ALedgerRow ledgerRow = (ALedgerRow)FMainDS.ALedger.Rows[0];
+                FNumberOfPeriods = ledgerRow.NumberOfAccountingPeriods;
+                
+                FHas13Periods = (FNumberOfPeriods == 13);
+                txtPeriod13Amount.Visible = FHas13Periods;
+                lblPeriod13Amount.Visible = FHas13Periods;
+                txtPeriod13Index.Visible = FHas13Periods;
+                lblPeriod13Index.Visible = FHas13Periods;
+                
+                lblPerPeriodAmount.Text = "Amount for periods 1 to " + (FNumberOfPeriods - 1).ToString() + ":";
+                lblLastPeriodAmount.Text = "Amount for period " + FNumberOfPeriods.ToString() + ":";
 
+                
                 // to get an empty ABudgetFee table, instead of null reference
                 FMainDS.Merge(new BudgetTDS());
 
@@ -85,14 +105,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
                 TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true);
 
-                if (!int.TryParse(cmbSelectBudgetYear.GetSelectedString(), out CurrentBudgetYear))
+                if (!int.TryParse(cmbSelectBudgetYear.GetSelectedString(), out FCurrentBudgetYear))
                 {
-                    CurrentBudgetYear = TFinanceControls.GetLedgerCurrentFinancialYear(FLedgerNumber);
+                    FCurrentBudgetYear = TFinanceControls.GetLedgerCurrentFinancialYear(FLedgerNumber);
                 }
 
                 DataView myDataView = FMainDS.ABudget.DefaultView;
                 myDataView.AllowNew = false;
-                myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
+                myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), FCurrentBudgetYear);
+                myDataView.Sort = String.Format("{0} ASC, {1} ASC", ABudgetTable.GetCostCentreCodeDBName(), ABudgetTable.GetAccountCodeDBName());
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
                 grdDetails.AutoSizeCells();
 
@@ -101,14 +122,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 ClearBudgetTextboxCurrencyFormat();
                 FCurrencyCode = FMainDS.ALedger[0].BaseCurrency;
 
-//                EnableBudgetEntry(false);
-//
-//                if (grdDetails.Rows.Count > 0)
-//                {
-//                    EnableBudgetEntry(true);
-//                }
-
-                LoadCompleted = true;
+                FLoadCompleted = true;
             }
         }
 
@@ -121,18 +135,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             ARow.BudgetSequence = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_budget));;
             ARow.LedgerNumber = FLedgerNumber;
-            ARow.Revision = CreateBudgetRevisionRow(FLedgerNumber, CurrentBudgetYear);
-            ARow.Year = CurrentBudgetYear;
+            ARow.Revision = CreateBudgetRevisionRow(FLedgerNumber, FCurrentBudgetYear);
+            ARow.Year = FCurrentBudgetYear;
 
             //Add the budget period values
-            for (int i = 1; i <= 12; i++)
+            for (int i = 1; i <= FNumberOfPeriods; i++)
             {
-                ABudgetPeriodRow BudgetPeriodRow = FMainDS.ABudgetPeriod.NewRowTyped();
-                BudgetPeriodRow.BudgetSequence = ARow.BudgetSequence;
-                BudgetPeriodRow.PeriodNumber = i;
-                BudgetPeriodRow.BudgetBase = 0;
-                FMainDS.ABudgetPeriod.Rows.Add(BudgetPeriodRow);
-                BudgetPeriodRow = null;
+                ABudgetPeriodRow budgetPeriodRow = FMainDS.ABudgetPeriod.NewRowTyped();
+                budgetPeriodRow.BudgetSequence = ARow.BudgetSequence;
+                budgetPeriodRow.PeriodNumber = i;
+                budgetPeriodRow.BudgetBase = 0;
+                FMainDS.ABudgetPeriod.Rows.Add(budgetPeriodRow);
+                budgetPeriodRow = null;
             }
         }
 
@@ -162,10 +176,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void SelectBudgetYear(Object sender, EventArgs e)
         {
-            if (LoadCompleted)
+            if (FLoadCompleted)
             {
                 //MessageBox.Show(RejectYearChange.ToString());
-                if (RejectYearChange)
+                if (FRejectYearChange)
                 {
                     return;
                 }
@@ -173,18 +187,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 //MessageBox.Show(FMainDS.ABudget.Rows.Count.ToString());
                 if (FPetraUtilsObject.HasChanges)
                 {
-                    RejectYearChange = true;
+                    FRejectYearChange = true;
                     MessageBox.Show("Please save changes before attempting to change year.");
-                    cmbSelectBudgetYear.SetSelectedInt32(CurrentBudgetYear);
+                    cmbSelectBudgetYear.SetSelectedInt32(FCurrentBudgetYear);
                     return;
                 }
 
-                if (int.TryParse(cmbSelectBudgetYear.GetSelectedString(), out CurrentBudgetYear))
+                if (int.TryParse(cmbSelectBudgetYear.GetSelectedString(), out FCurrentBudgetYear))
                 {
                     //MessageBox.Show(cmbSelectBudgetYear.GetSelectedString() + " - " + CurrentBudgetYear.ToString());
                     DataView myDataView = FMainDS.ABudget.DefaultView;
                     myDataView.AllowNew = false;
-                    myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
+                    myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), FCurrentBudgetYear);
                     grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
                     if (grdDetails.Rows.Count > 0)
@@ -192,11 +206,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                         SelectByIndex(0);
                     }
 
-//                      FMainDS.ABudget.DefaultView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
-//                    //grdDetails.Refresh();
-//                    SelectByIndex(0);
-
-                    //FPreviouslySelectedDetailRow = GetSelectedDetailRow();
                     if (FMainDS.ABudget.DefaultView.Count == 0)
                     {
                         EnableBudgetEntry(false);
@@ -220,7 +229,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private TSubmitChangesResult StoreManualCode(ref BudgetTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
             //Reset this flag
-            RejectYearChange = false;
+            FRejectYearChange = false;
 
             TSubmitChangesResult TSCR = TRemote.MFinance.Budget.WebConnectors.SaveBudget(ref ASubmitChanges, out AVerificationResult);
 
@@ -261,8 +270,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             ACompletionMessage = String.Empty;
 
-            int BudgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
-            DeleteBudgetPeriodData(BudgetSequence);
+            int budgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
+            DeleteBudgetPeriodData(budgetSequence);
             ARowToDelete.Delete();
 
             return true;
@@ -282,7 +291,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void ImportBudget(System.Object sender, EventArgs e)
         {
-            int NumRecsImported = 0;
+            int numRecsImported = 0;
 
             if (FPetraUtilsObject.HasChanges)
             {
@@ -324,35 +333,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                         FdlgSeparator.SelectedSeparator, FdlgSeparator.DateFormat, FdlgSeparator.NumberFormat
                     };
 
-                    //MessageBox.Show(FMainDS.ABudget.Rows.Count.ToString());
-                    //MessageBox.Show(importString);
                     //TODO return the budget from the year, and -99 for fail
-                    NumRecsImported = TRemote.MFinance.Budget.WebConnectors.ImportBudgets(FLedgerNumber,
-                        CurrentBudgetYear,
+                    numRecsImported = TRemote.MFinance.Budget.WebConnectors.ImportBudgets(FLedgerNumber,
+                        FCurrentBudgetYear,
                         dialog.FileName,
                         FdlgSeparatorVal,
                         ref FMainDS,
                         out AMessages);
-                    //ShowMessages(AMessages);
-                    //MessageBox.Show(FMainDS.ABudget.Rows.Count.ToString());
                 }
 
-                if (NumRecsImported > 0)
+                if (numRecsImported > 0)
                 {
-                    MessageBox.Show(String.Format(Catalog.GetString("{0} budget records imported successfully!"), NumRecsImported),
+                    MessageBox.Show(String.Format(Catalog.GetString("{0} budget records imported successfully!"), numRecsImported),
                         Catalog.GetString("Success"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
 
-                    //DataView myView = FMainDS.ABudget.DefaultView;
-                    //myView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
-
-                    //FMainDS.ABudget.DefaultView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
-                    ////grdDetails.Refresh();
-                    //MessageBox.Show(String.Format("Current Year is {0}", CurrentBudgetYear));
                     DataView myDataView = FMainDS.ABudget.DefaultView;
                     myDataView.AllowNew = false;
-                    myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), CurrentBudgetYear);
+                    myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), FCurrentBudgetYear);
                     grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
                     if (grdDetails.Rows.Count > 0)
@@ -360,17 +359,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                         SelectByIndex(0);
                     }
 
-                    //SelectDetailRowByDataTableIndex(FMainDS.ABudget.Rows.Count - 1);
-                    //SaveUserDefaults(dialog, impOptions);
-                    //FLoadedData = TFinanceBatchFilterEnum.fbfNone;
-                    //LoadBatches(FLedgerNumber);
                     FPetraUtilsObject.SetChangedFlag();
                 }
-                else if (NumRecsImported == -1)
+                else if (numRecsImported == -1)
                 {
                     MessageBox.Show("The year contained in the import file is different to the current selected year.");
 
-                    ////grdDetails.Refresh();
                     if (grdDetails.Rows.Count > 0)
                     {
                         SelectByIndex(0);
@@ -403,18 +397,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void DeleteBudgetPeriodData(int ABudgetSequence)
         {
-            ABudgetPeriodRow BudgetPeriodRow = null;
+            ABudgetPeriodRow budgetPeriodRow = null;
 
-            for (int i = 1; i <= 12; i++)
+            for (int i = 1; i <= FNumberOfPeriods; i++)
             {
-                BudgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { ABudgetSequence, i });
+                budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { ABudgetSequence, i });
 
-                if (BudgetPeriodRow != null)
+                if (budgetPeriodRow != null)
                 {
-                    BudgetPeriodRow.Delete();
+                    budgetPeriodRow.Delete();
                 }
 
-                BudgetPeriodRow = null;
+                budgetPeriodRow = null;
             }
         }
 
@@ -458,17 +452,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void NewBudgetType(System.Object sender, EventArgs e)
         {
-            //ClearBudgetPeriodTextboxes();
+			ClearBudgetTypeTextboxes();
 
-            pnlBudgetTypeAdhoc.Visible = rbtAdHoc.Checked;
+			pnlBudgetTypeAdhoc.Visible = rbtAdHoc.Checked;
             pnlBudgetTypeSame.Visible = rbtSame.Checked;
             pnlBudgetTypeSplit.Visible = rbtSplit.Checked;
             pnlBudgetTypeInflateN.Visible = rbtInflateN.Checked;
             pnlBudgetTypeInflateBase.Visible = rbtInflateBase.Checked;
 
-            if (LoadCompleted && !FPetraUtilsObject.HasChanges)
+            if (FLoadCompleted && !FPetraUtilsObject.HasChanges)
             {
-                if (rbtAdHoc.Checked)
+        		if (rbtAdHoc.Checked)
                 {
                     DisplayBudgetTypeAdhoc();
                 }
@@ -488,44 +482,46 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 {
                     DisplayBudgetTypeInflateBase();
                 }
-            }
-
-            //grdDetails.Refresh();
+           	}
         }
 
         private void ProcessBudgetTypeAdhoc(System.Object sender, EventArgs e)
         {
-            decimal TotalAmount = 0;
+            decimal totalAmount = 0;
 
-            decimal[] PeriodAmounts = new decimal[12];
-            PeriodAmounts[0] = Convert.ToDecimal(txtPeriod01Amount.NumberValueDecimal);
-            PeriodAmounts[1] = Convert.ToDecimal(txtPeriod02Amount.NumberValueDecimal);
-            PeriodAmounts[2] = Convert.ToDecimal(txtPeriod03Amount.NumberValueDecimal);
-            PeriodAmounts[3] = Convert.ToDecimal(txtPeriod04Amount.NumberValueDecimal);
-            PeriodAmounts[4] = Convert.ToDecimal(txtPeriod05Amount.NumberValueDecimal);
-            PeriodAmounts[5] = Convert.ToDecimal(txtPeriod06Amount.NumberValueDecimal);
-            PeriodAmounts[6] = Convert.ToDecimal(txtPeriod07Amount.NumberValueDecimal);
-            PeriodAmounts[7] = Convert.ToDecimal(txtPeriod08Amount.NumberValueDecimal);
-            PeriodAmounts[8] = Convert.ToDecimal(txtPeriod09Amount.NumberValueDecimal);
-            PeriodAmounts[9] = Convert.ToDecimal(txtPeriod10Amount.NumberValueDecimal);
-            PeriodAmounts[10] = Convert.ToDecimal(txtPeriod11Amount.NumberValueDecimal);
-            PeriodAmounts[11] = Convert.ToDecimal(txtPeriod12Amount.NumberValueDecimal);
+            decimal[] periodAmounts = new decimal[FNumberOfPeriods];
+            periodAmounts[0] = Convert.ToDecimal(txtPeriod01Amount.NumberValueDecimal);
+            periodAmounts[1] = Convert.ToDecimal(txtPeriod02Amount.NumberValueDecimal);
+            periodAmounts[2] = Convert.ToDecimal(txtPeriod03Amount.NumberValueDecimal);
+            periodAmounts[3] = Convert.ToDecimal(txtPeriod04Amount.NumberValueDecimal);
+            periodAmounts[4] = Convert.ToDecimal(txtPeriod05Amount.NumberValueDecimal);
+            periodAmounts[5] = Convert.ToDecimal(txtPeriod06Amount.NumberValueDecimal);
+            periodAmounts[6] = Convert.ToDecimal(txtPeriod07Amount.NumberValueDecimal);
+            periodAmounts[7] = Convert.ToDecimal(txtPeriod08Amount.NumberValueDecimal);
+            periodAmounts[8] = Convert.ToDecimal(txtPeriod09Amount.NumberValueDecimal);
+            periodAmounts[9] = Convert.ToDecimal(txtPeriod10Amount.NumberValueDecimal);
+            periodAmounts[10] = Convert.ToDecimal(txtPeriod11Amount.NumberValueDecimal);
+            periodAmounts[11] = Convert.ToDecimal(txtPeriod12Amount.NumberValueDecimal);
+			if (FHas13Periods)
+			{
+				periodAmounts[12] = Convert.ToDecimal(txtPeriod13Amount.NumberValueDecimal);
+			}
 
-            int BudgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
-            ABudgetPeriodRow BudgetPeriodRow = null;
+            int budgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
+            ABudgetPeriodRow budgetPeriodRow = null;
 
             //Write to Budget rows
-            for (int i = 1; i <= 12; i++)
+            for (int i = 1; i <= FNumberOfPeriods; i++)
             {
-                TotalAmount += PeriodAmounts[i - 1];
+                totalAmount += periodAmounts[i - 1];
 
-                BudgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { BudgetSequence, i });
+                budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { budgetSequence, i });
 
-                if (BudgetPeriodRow != null)
+                if (budgetPeriodRow != null)
                 {
-                    BudgetPeriodRow.BeginEdit();
-                    BudgetPeriodRow.BudgetBase = PeriodAmounts[i - 1];
-                    BudgetPeriodRow.EndEdit();
+                    budgetPeriodRow.BeginEdit();
+                    budgetPeriodRow.BudgetBase = periodAmounts[i - 1];
+                    budgetPeriodRow.EndEdit();
                 }
                 else
                 {
@@ -533,31 +529,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     MessageBox.Show("Error trying to write BudgetPeriod values");
                 }
 
-                BudgetPeriodRow = null;
+                budgetPeriodRow = null;
             }
 
-            txtTotalAdhocAmount.NumberValueDecimal = TotalAmount;
-            //grdDetails.Refresh();
+            txtTotalAdhocAmount.NumberValueDecimal = totalAmount;
         }
 
         private void ProcessBudgetTypeSame(System.Object sender, EventArgs e)
         {
-            decimal PeriodAmount = Convert.ToDecimal(txtAmount.NumberValueDecimal);
-            decimal AnnualAmount = PeriodAmount * 12;
+            decimal periodAmount = Convert.ToDecimal(txtAmount.NumberValueDecimal);
+            decimal annualAmount = periodAmount * FNumberOfPeriods;
 
-            int BudgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
-            ABudgetPeriodRow BudgetPeriodRow = null;
+            int budgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
+            ABudgetPeriodRow budgetPeriodRow = null;
 
             //Write to Budget rows
-            for (int i = 1; i <= 12; i++)
+            for (int i = 1; i <= FNumberOfPeriods; i++)
             {
-                BudgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { BudgetSequence, i });
+                budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { budgetSequence, i });
 
-                if (BudgetPeriodRow != null)
+                if (budgetPeriodRow != null)
                 {
-                    BudgetPeriodRow.BeginEdit();
-                    BudgetPeriodRow.BudgetBase = PeriodAmount;
-                    BudgetPeriodRow.EndEdit();
+                    budgetPeriodRow.BeginEdit();
+                    budgetPeriodRow.BudgetBase = periodAmount;
+                    budgetPeriodRow.EndEdit();
                 }
                 else
                 {
@@ -565,45 +560,44 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     MessageBox.Show("Error trying to write BudgetPeriod values");
                 }
 
-                BudgetPeriodRow = null;
+                budgetPeriodRow = null;
             }
 
-            txtSameTotalAmount.NumberValueDecimal = AnnualAmount;
-            //grdDetails.Refresh();
+            txtSameTotalAmount.NumberValueDecimal = annualAmount;
         }
 
         private void ProcessBudgetTypeSplit(System.Object sender, EventArgs e)
         {
-            decimal AnnualAmount = 0;
-            decimal PerPeriodAmount = 0;
-            decimal Period12Amount = 0;
+            decimal annualAmount = 0;
+            decimal perPeriodAmount = 0;
+            decimal lastPeriodAmount = 0;
 
-            AnnualAmount = Convert.ToDecimal(txtTotalSplitAmount.NumberValueDecimal);
-            PerPeriodAmount = Math.Truncate(AnnualAmount / 12);
-            Period12Amount = AnnualAmount - PerPeriodAmount * 11;
+            annualAmount = Convert.ToDecimal(txtTotalSplitAmount.NumberValueDecimal);
+            perPeriodAmount = Math.Truncate(annualAmount / FNumberOfPeriods);
+            lastPeriodAmount = annualAmount - perPeriodAmount * (FNumberOfPeriods - 1);
 
-            int BudgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
-            ABudgetPeriodRow BudgetPeriodRow = null;
+            int budgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
+            ABudgetPeriodRow budgetPeriodRow = null;
 
             //Write to Budget rows
-            for (int i = 1; i <= 12; i++)
+            for (int i = 1; i <= FNumberOfPeriods; i++)
             {
-                BudgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { BudgetSequence, i });
+                budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { budgetSequence, i });
 
-                if (BudgetPeriodRow != null)
+                if (budgetPeriodRow != null)
                 {
-                    BudgetPeriodRow.BeginEdit();
+                    budgetPeriodRow.BeginEdit();
 
-                    if (i < 12)
+                    if (i < FNumberOfPeriods)
                     {
-                        BudgetPeriodRow.BudgetBase = PerPeriodAmount;
+                        budgetPeriodRow.BudgetBase = perPeriodAmount;
                     }
                     else
                     {
-                        BudgetPeriodRow.BudgetBase = Period12Amount;
+                        budgetPeriodRow.BudgetBase = lastPeriodAmount;
                     }
 
-                    BudgetPeriodRow.EndEdit();
+                    budgetPeriodRow.EndEdit();
                 }
                 else
                 {
@@ -611,46 +605,57 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     MessageBox.Show("Error trying to write BudgetPeriod values");
                 }
 
-                BudgetPeriodRow = null;
+                budgetPeriodRow = null;
             }
 
-            txtPerPeriodAmount.NumberValueDecimal = PerPeriodAmount;
-            txtPeriod12AmountPlus.NumberValueDecimal = Period12Amount;
-            //grdDetails.Refresh();
+            txtPerPeriodAmount.NumberValueDecimal = perPeriodAmount;
+            txtLastPeriodAmount.NumberValueDecimal = lastPeriodAmount;
         }
 
         private void ProcessBudgetTypeInflateN(System.Object sender, EventArgs e)
         {
-            decimal TotalAmount = 0;
-            decimal FirstPeriodAmount = Convert.ToDecimal(txtFirstPeriodAmount.NumberValueDecimal);
-            int InflateAfterPeriod = Convert.ToInt16(txtInflateAfterPeriod.NumberValueInt);
-            decimal InflationRate = Convert.ToDecimal(txtInflationRate.NumberValueDecimal) / 100;
-            decimal SubsequentPeriodsAmount = FirstPeriodAmount * (1 + InflationRate);
+            decimal totalAmount = 0;
+            decimal firstPeriodAmount = Convert.ToDecimal(txtFirstPeriodAmount.NumberValueDecimal);
+            int inflateAfterPeriod = Convert.ToInt16(txtInflateAfterPeriod.NumberValueInt);
+            decimal inflationRate = Convert.ToDecimal(txtInflationRate.NumberValueDecimal) / 100;
+            decimal subsequentPeriodsAmount = firstPeriodAmount * (1 + inflationRate);
 
-            int BudgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
-            ABudgetPeriodRow BudgetPeriodRow = null;
+            int budgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
+            ABudgetPeriodRow budgetPeriodRow = null;
 
-            TotalAmount = FirstPeriodAmount * InflateAfterPeriod + SubsequentPeriodsAmount * (12 - InflateAfterPeriod);
+            //Control the inflate after period number
+            if (inflateAfterPeriod < 0)
+            {
+            	txtInflateAfterPeriod.NumberValueInt = 0;
+            	inflateAfterPeriod = 0;
+            }
+            else if (inflateAfterPeriod >= FNumberOfPeriods)
+            {
+            	txtInflateAfterPeriod.NumberValueInt = (FNumberOfPeriods - 1);
+            	inflateAfterPeriod = (FNumberOfPeriods - 1);
+            }
+            
+            totalAmount = firstPeriodAmount * inflateAfterPeriod + subsequentPeriodsAmount * (FNumberOfPeriods - inflateAfterPeriod);
 
             //Write to Budget rows
-            for (int i = 1; i <= 12; i++)
+            for (int i = 1; i <= FNumberOfPeriods; i++)
             {
-                BudgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { BudgetSequence, i });
+                budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { budgetSequence, i });
 
-                if (BudgetPeriodRow != null)
+                if (budgetPeriodRow != null)
                 {
-                    BudgetPeriodRow.BeginEdit();
+                    budgetPeriodRow.BeginEdit();
 
-                    if (i <= InflateAfterPeriod)
+                    if (i <= inflateAfterPeriod)
                     {
-                        BudgetPeriodRow.BudgetBase = FirstPeriodAmount;
+                        budgetPeriodRow.BudgetBase = firstPeriodAmount;
                     }
                     else
                     {
-                        BudgetPeriodRow.BudgetBase = SubsequentPeriodsAmount;
+                        budgetPeriodRow.BudgetBase = subsequentPeriodsAmount;
                     }
 
-                    BudgetPeriodRow.EndEdit();
+                    budgetPeriodRow.EndEdit();
                 }
                 else
                 {
@@ -658,46 +663,50 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     MessageBox.Show("Error trying to write BudgetPeriod values");
                 }
 
-                BudgetPeriodRow = null;
+                budgetPeriodRow = null;
             }
 
-            lblInflateNTotalAmount.Text = "    Total: " + StringHelper.FormatUsingCurrencyCode(TotalAmount, FCurrencyCode);
-            grdDetails.Refresh();
+            txtInflateNTotalAmount.NumberValueDecimal = totalAmount; //.Text = StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
         }
 
         private void ProcessBudgetTypeInflateBase(System.Object sender, EventArgs e)
         {
-            decimal TotalAmount = 0;
+            decimal totalAmount = 0;
 
-            decimal[] PeriodAmounts = new decimal[12];
-            PeriodAmounts[0] = Convert.ToDecimal(txtPeriod1Amount.NumberValueDecimal);
-            PeriodAmounts[1] = PeriodAmounts[0] * (1 + (Convert.ToDecimal(txtPeriod02Index.NumberValueDecimal) / 100));
-            PeriodAmounts[2] = PeriodAmounts[1] * (1 + (Convert.ToDecimal(txtPeriod03Index.NumberValueDecimal) / 100));
-            PeriodAmounts[3] = PeriodAmounts[2] * (1 + (Convert.ToDecimal(txtPeriod04Index.NumberValueDecimal) / 100));
-            PeriodAmounts[4] = PeriodAmounts[3] * (1 + (Convert.ToDecimal(txtPeriod05Index.NumberValueDecimal) / 100));
-            PeriodAmounts[5] = PeriodAmounts[4] * (1 + (Convert.ToDecimal(txtPeriod06Index.NumberValueDecimal) / 100));
-            PeriodAmounts[6] = PeriodAmounts[5] * (1 + (Convert.ToDecimal(txtPeriod07Index.NumberValueDecimal) / 100));
-            PeriodAmounts[7] = PeriodAmounts[6] * (1 + (Convert.ToDecimal(txtPeriod08Index.NumberValueDecimal) / 100));
-            PeriodAmounts[8] = PeriodAmounts[7] * (1 + (Convert.ToDecimal(txtPeriod09Index.NumberValueDecimal) / 100));
-            PeriodAmounts[9] = PeriodAmounts[8] * (1 + (Convert.ToDecimal(txtPeriod10Index.NumberValueDecimal) / 100));
-            PeriodAmounts[10] = PeriodAmounts[9] * (1 + (Convert.ToDecimal(txtPeriod11Index.NumberValueDecimal) / 100));
-            PeriodAmounts[11] = PeriodAmounts[10] * (1 + (Convert.ToDecimal(txtPeriod12Index.NumberValueDecimal) / 100));
-
-            int BudgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
-            ABudgetPeriodRow BudgetPeriodRow = null;
+            decimal[] periodAmounts = new decimal[FNumberOfPeriods];
+            periodAmounts[0] = Convert.ToDecimal(txtPeriod1Amount.NumberValueDecimal);
+            periodAmounts[1] = periodAmounts[0] * (1 + (Convert.ToDecimal(txtPeriod02Index.NumberValueDecimal) / 100));
+            periodAmounts[2] = periodAmounts[1] * (1 + (Convert.ToDecimal(txtPeriod03Index.NumberValueDecimal) / 100));
+            periodAmounts[3] = periodAmounts[2] * (1 + (Convert.ToDecimal(txtPeriod04Index.NumberValueDecimal) / 100));
+            periodAmounts[4] = periodAmounts[3] * (1 + (Convert.ToDecimal(txtPeriod05Index.NumberValueDecimal) / 100));
+            periodAmounts[5] = periodAmounts[4] * (1 + (Convert.ToDecimal(txtPeriod06Index.NumberValueDecimal) / 100));
+            periodAmounts[6] = periodAmounts[5] * (1 + (Convert.ToDecimal(txtPeriod07Index.NumberValueDecimal) / 100));
+            periodAmounts[7] = periodAmounts[6] * (1 + (Convert.ToDecimal(txtPeriod08Index.NumberValueDecimal) / 100));
+            periodAmounts[8] = periodAmounts[7] * (1 + (Convert.ToDecimal(txtPeriod09Index.NumberValueDecimal) / 100));
+            periodAmounts[9] = periodAmounts[8] * (1 + (Convert.ToDecimal(txtPeriod10Index.NumberValueDecimal) / 100));
+            periodAmounts[10] = periodAmounts[9] * (1 + (Convert.ToDecimal(txtPeriod11Index.NumberValueDecimal) / 100));
+            periodAmounts[11] = periodAmounts[10] * (1 + (Convert.ToDecimal(txtPeriod12Index.NumberValueDecimal) / 100));
+			if (FHas13Periods)
+			{
+				periodAmounts[12] = periodAmounts[11] * (1 + (Convert.ToDecimal(txtPeriod13Index.NumberValueDecimal) / 100));
+			}
+            
+            
+            int budgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
+            ABudgetPeriodRow budgetPeriodRow = null;
 
             //Write to Budget rows
-            for (int i = 1; i <= 12; i++)
+            for (int i = 1; i <= FNumberOfPeriods; i++)
             {
-                TotalAmount += PeriodAmounts[i - 1];
+                totalAmount += periodAmounts[i - 1];
 
-                BudgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { BudgetSequence, i });
+                budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { budgetSequence, i });
 
-                if (BudgetPeriodRow != null)
+                if (budgetPeriodRow != null)
                 {
-                    BudgetPeriodRow.BeginEdit();
-                    BudgetPeriodRow.BudgetBase = PeriodAmounts[i - 1];
-                    BudgetPeriodRow.EndEdit();
+                    budgetPeriodRow.BeginEdit();
+                    budgetPeriodRow.BudgetBase = periodAmounts[i - 1];
+                    budgetPeriodRow.EndEdit();
                 }
                 else
                 {
@@ -705,24 +714,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     MessageBox.Show("Error trying to write BudgetPeriod values");
                 }
 
-                BudgetPeriodRow = null;
+                budgetPeriodRow = null;
             }
 
-            lblInflateBaseTotalAmount.Text = "    Total: " + StringHelper.FormatUsingCurrencyCode(TotalAmount, FCurrencyCode);
+            txtInflateBaseTotalAmount.NumberValueDecimal = totalAmount; //.Text = StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
         }
 
         private void DisplayBudgetTypeAdhoc()
         {
             decimal totalAmount = 0;
-            decimal CurrentPeriodAmount = 0;
+            decimal currentPeriodAmount = 0;
             string textboxName;
 
-            ABudgetPeriodRow BudgetPeriodRow;
+            ABudgetPeriodRow budgetPeriodRow;
             TTxtCurrencyTextBox txt = null;
 
-            for (int i = 1; i <= 12; i++)
+            for (int i = 1; i <= FNumberOfPeriods; i++)
             {
-                BudgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { FPreviouslySelectedDetailRow.BudgetSequence, i });
+                budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { FPreviouslySelectedDetailRow.BudgetSequence, i });
 
                 textboxName = "txtPeriod" + i.ToString("00") + "Amount";
 
@@ -735,176 +744,180 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     }
                 }
 
-                if (BudgetPeriodRow != null)
+                if (budgetPeriodRow != null)
                 {
-                    CurrentPeriodAmount = BudgetPeriodRow.BudgetBase;
-                    txt.NumberValueDecimal = CurrentPeriodAmount;
-                    totalAmount += CurrentPeriodAmount;
+                    currentPeriodAmount = budgetPeriodRow.BudgetBase;
+                    txt.NumberValueDecimal = currentPeriodAmount;
+                    totalAmount += currentPeriodAmount;
                 }
                 else
                 {
                     txt.NumberValueDecimal = 0;
                 }
 
-                BudgetPeriodRow = null;
+                budgetPeriodRow = null;
                 txt = null;
             }
 
-            txtTotalAdhocAmount.Text = StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
+            txtTotalAdhocAmount.NumberValueDecimal = totalAmount; //.Text = StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
         }
 
         private void DisplayBudgetTypeSame()
         {
             decimal totalAmount = 0;
-            decimal FirstPeriodAmount = 0;
+            decimal firstPeriodAmount = 0;
 
-            ABudgetPeriodRow BudgetPeriodRow;
+            ABudgetPeriodRow budgetPeriodRow;
 
             //Get the first period amount
-            BudgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { FPreviouslySelectedDetailRow.BudgetSequence, 1 });
+            budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { FPreviouslySelectedDetailRow.BudgetSequence, 1 });
 
-            if (BudgetPeriodRow != null)
+            if (budgetPeriodRow != null)
             {
-                FirstPeriodAmount = BudgetPeriodRow.BudgetBase;
-                totalAmount = FirstPeriodAmount * 12;
+                firstPeriodAmount = budgetPeriodRow.BudgetBase;
+                totalAmount = firstPeriodAmount * FNumberOfPeriods;
             }
 
-            txtAmount.NumberValueDecimal = FirstPeriodAmount;
-            lblSameTotalAmount.Text = "    Total: " + StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
+            txtAmount.NumberValueDecimal = firstPeriodAmount;
+            txtSameTotalAmount.NumberValueDecimal = totalAmount; //StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
         }
 
         private void DisplayBudgetTypeSplit()
         {
-            decimal PerPeriodAmount = 0;
-            decimal EndPeriodAmount = 0;
+            decimal perPeriodAmount = 0;
+            decimal endPeriodAmount = 0;
 
-            ABudgetPeriodRow BudgetPeriodRow;
+            ABudgetPeriodRow budgetPeriodRow;
 
-            //Find periods 1-11 amount
-            BudgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { FPreviouslySelectedDetailRow.BudgetSequence, 1 });
+            //Find periods 1-(total periods-1) amount
+            budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { FPreviouslySelectedDetailRow.BudgetSequence, 1 });
 
-            if (BudgetPeriodRow != null)
+            if (budgetPeriodRow != null)
             {
-                PerPeriodAmount = BudgetPeriodRow.BudgetBase;
-                BudgetPeriodRow = null;
+                perPeriodAmount = budgetPeriodRow.BudgetBase;
+                budgetPeriodRow = null;
 
-                //Find period 12 amount
-                BudgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { FPreviouslySelectedDetailRow.BudgetSequence, 12 });
+                //Find period FNumberOfPeriods amount
+                budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { FPreviouslySelectedDetailRow.BudgetSequence, FNumberOfPeriods });
 
-                if (BudgetPeriodRow != null)
+                if (budgetPeriodRow != null)
                 {
-                    EndPeriodAmount = BudgetPeriodRow.BudgetBase;
+                    endPeriodAmount = budgetPeriodRow.BudgetBase;
                 }
             }
 
             //Calculate the total amount
-            txtPerPeriodAmount.NumberValueDecimal = PerPeriodAmount;
-            txtPeriod12AmountPlus.NumberValueDecimal = EndPeriodAmount;
-            txtTotalSplitAmount.NumberValueDecimal = PerPeriodAmount * 11 + EndPeriodAmount;
+            txtPerPeriodAmount.NumberValueDecimal = perPeriodAmount;
+            txtLastPeriodAmount.NumberValueDecimal = endPeriodAmount;
+            txtTotalSplitAmount.NumberValueDecimal = perPeriodAmount * (FNumberOfPeriods - 1) + endPeriodAmount;
         }
 
         private void DisplayBudgetTypeInflateN()
         {
-            decimal FirstPeriodAmount = 0;
-            int InflateAfterPeriod = 0;
-            decimal InflationRate = 0;
-            decimal CurrentPeriodAmount;
-            decimal TotalAmount = 0;
+            decimal firstPeriodAmount = 0;
+            int inflateAfterPeriod = 0;
+            decimal inflationRate = 0;
+            decimal currentPeriodAmount;
+            decimal totalAmount = 0;
 
-            ABudgetPeriodRow BudgetPeriodRow;
+            ABudgetPeriodRow budgetPeriodRow;
 
-            for (int i = 1; i <= 12; i++)
+            for (int i = 1; i <= FNumberOfPeriods; i++)
             {
-                BudgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { FPreviouslySelectedDetailRow.BudgetSequence, i });
+                budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { FPreviouslySelectedDetailRow.BudgetSequence, i });
 
-                if (BudgetPeriodRow != null)
+                if (budgetPeriodRow != null)
                 {
-                    CurrentPeriodAmount = BudgetPeriodRow.BudgetBase;
+                    currentPeriodAmount = budgetPeriodRow.BudgetBase;
 
                     if (i == 1)
                     {
-                        FirstPeriodAmount = CurrentPeriodAmount;
+                        firstPeriodAmount = currentPeriodAmount;
                     }
                     else
                     {
-                        if (CurrentPeriodAmount != FirstPeriodAmount)
+                        if (currentPeriodAmount != firstPeriodAmount)
                         {
-                            InflateAfterPeriod = i - 1;
-                            InflationRate = (CurrentPeriodAmount - FirstPeriodAmount) / FirstPeriodAmount * 100;
-                            TotalAmount = FirstPeriodAmount * InflateAfterPeriod + CurrentPeriodAmount * (12 - InflateAfterPeriod);
+                            inflateAfterPeriod = i - 1;
+                            inflationRate = (currentPeriodAmount - firstPeriodAmount) / firstPeriodAmount * 100;
+                            totalAmount = firstPeriodAmount * inflateAfterPeriod + currentPeriodAmount * (FNumberOfPeriods - inflateAfterPeriod);
                             break;
                         }
-                        else if (i == 12) // and by implication CurrentPeriodAmount == FirstPeriodAmount
+                        else if (i == FNumberOfPeriods) // and by implication CurrentPeriodAmount == FirstPeriodAmount
                         {
                             //This is an odd case that the user should never implement, but still needs to be covered.
                             //  It is equivalent to using BUDGET TYPE: SAME
-                            InflateAfterPeriod = 0;
-                            InflationRate = 0;
-                            TotalAmount = CurrentPeriodAmount * 12;
+                            inflateAfterPeriod = 0;
+                            inflationRate = 0;
+                            totalAmount = currentPeriodAmount * FNumberOfPeriods;
                         }
                     }
                 }
 
-                BudgetPeriodRow = null;
+                budgetPeriodRow = null;
             }
 
-            txtFirstPeriodAmount.NumberValueDecimal = FirstPeriodAmount;
-            txtInflateAfterPeriod.NumberValueInt = InflateAfterPeriod;
-            txtInflationRate.NumberValueDecimal = InflationRate;
-            lblInflateNTotalAmount.Text = "    Total: " + StringHelper.FormatUsingCurrencyCode(TotalAmount, FCurrencyCode);
+            txtFirstPeriodAmount.NumberValueDecimal = firstPeriodAmount;
+            txtInflateAfterPeriod.NumberValueInt = inflateAfterPeriod;
+            txtInflationRate.NumberValueDecimal = inflationRate;
+            txtInflateNTotalAmount.NumberValueDecimal = totalAmount; //.Text = StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
         }
 
         private void DisplayBudgetTypeInflateBase()
         {
             decimal totalAmount = 0;
 
-            decimal[] PeriodValues = new decimal[12];
-            decimal PriorPeriodAmount = 0;
-            decimal CurrentPeriodAmount = 0;
+            decimal[] periodValues = new decimal[FNumberOfPeriods];
+            decimal priorPeriodAmount = 0;
+            decimal currentPeriodAmount = 0;
 
-            ABudgetPeriodRow BudgetPeriodRow;
+            ABudgetPeriodRow budgetPeriodRow;
 
-            for (int i = 1; i <= 12; i++)
+            for (int i = 1; i <= FNumberOfPeriods; i++)
             {
-                BudgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { FPreviouslySelectedDetailRow.BudgetSequence, i });
+                budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { FPreviouslySelectedDetailRow.BudgetSequence, i });
 
-                if (BudgetPeriodRow != null)
+                if (budgetPeriodRow != null)
                 {
-                    CurrentPeriodAmount = BudgetPeriodRow.BudgetBase;
+                    currentPeriodAmount = budgetPeriodRow.BudgetBase;
 
                     if (i == 1)
                     {
-                        PeriodValues[0] = CurrentPeriodAmount;
+                        periodValues[0] = currentPeriodAmount;
                     }
                     else
                     {
-                        PeriodValues[i - 1] = (CurrentPeriodAmount - PriorPeriodAmount) / PriorPeriodAmount * 100;
+                        periodValues[i - 1] = (currentPeriodAmount - priorPeriodAmount) / priorPeriodAmount * 100;
                     }
 
-                    PriorPeriodAmount = CurrentPeriodAmount;
-                    totalAmount += CurrentPeriodAmount;
+                    priorPeriodAmount = currentPeriodAmount;
+                    totalAmount += currentPeriodAmount;
                 }
 
-                BudgetPeriodRow = null;
+                budgetPeriodRow = null;
             }
 
-            txtPeriod1Amount.NumberValueDecimal = PeriodValues[0];
-            txtPeriod02Index.NumberValueDecimal = PeriodValues[1];
-            txtPeriod03Index.NumberValueDecimal = PeriodValues[2];
-            txtPeriod04Index.NumberValueDecimal = PeriodValues[3];
-            txtPeriod05Index.NumberValueDecimal = PeriodValues[4];
-            txtPeriod06Index.NumberValueDecimal = PeriodValues[5];
-            txtPeriod07Index.NumberValueDecimal = PeriodValues[6];
-            txtPeriod08Index.NumberValueDecimal = PeriodValues[7];
-            txtPeriod09Index.NumberValueDecimal = PeriodValues[8];
-            txtPeriod10Index.NumberValueDecimal = PeriodValues[9];
-            txtPeriod11Index.NumberValueDecimal = PeriodValues[10];
-            txtPeriod12Index.NumberValueDecimal = PeriodValues[11];
+            txtPeriod1Amount.NumberValueDecimal = periodValues[0];
+            txtPeriod02Index.NumberValueDecimal = periodValues[1];
+            txtPeriod03Index.NumberValueDecimal = periodValues[2];
+            txtPeriod04Index.NumberValueDecimal = periodValues[3];
+            txtPeriod05Index.NumberValueDecimal = periodValues[4];
+            txtPeriod06Index.NumberValueDecimal = periodValues[5];
+            txtPeriod07Index.NumberValueDecimal = periodValues[6];
+            txtPeriod08Index.NumberValueDecimal = periodValues[7];
+            txtPeriod09Index.NumberValueDecimal = periodValues[8];
+            txtPeriod10Index.NumberValueDecimal = periodValues[9];
+            txtPeriod11Index.NumberValueDecimal = periodValues[10];
+            txtPeriod12Index.NumberValueDecimal = periodValues[11];
+            if (FHas13Periods)
+            {
+            	txtPeriod13Index.NumberValueDecimal = periodValues[12];
+            }
 
-            lblInflateBaseTotalAmount.Text = "    Total: " + StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
+            txtInflateBaseTotalAmount.NumberValueDecimal = totalAmount; //.Text = StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
         }
 
-        private void ClearBudgetPeriodTextboxes(string AExcludeType)
+        private void ClearBudgetTypeTextboxes(string AExcludeType = "")
         {
             if (AExcludeType != MFinanceConstants.BUDGET_ADHOC)
             {
@@ -921,6 +934,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 txtPeriod10Amount.NumberValueDecimal = 0;
                 txtPeriod11Amount.NumberValueDecimal = 0;
                 txtPeriod12Amount.NumberValueDecimal = 0;
+                txtPeriod13Amount.NumberValueDecimal = 0;
                 txtTotalAdhocAmount.NumberValueDecimal = 0;
             }
 
@@ -936,7 +950,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 //Split controls
                 txtTotalSplitAmount.NumberValueDecimal = 0;
                 txtPerPeriodAmount.NumberValueDecimal = 0;
-                txtPeriod12AmountPlus.NumberValueDecimal = 0;
+                txtLastPeriodAmount.NumberValueDecimal = 0;
             }
 
             if (AExcludeType != MFinanceConstants.BUDGET_INFLATE_N)
@@ -963,6 +977,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 txtPeriod10Index.NumberValueDecimal = 0;
                 txtPeriod11Index.NumberValueDecimal = 0;
                 txtPeriod12Index.NumberValueDecimal = 0;
+                txtPeriod13Index.NumberValueDecimal = 0;
                 txtInflateBaseTotalAmount.NumberValueDecimal = 0;
             }
         }
@@ -982,12 +997,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             txtPeriod10Amount.CurrencySymbol = String.Empty;
             txtPeriod11Amount.CurrencySymbol = String.Empty;
             txtPeriod12Amount.CurrencySymbol = String.Empty;
+            txtPeriod13Amount.CurrencySymbol = String.Empty;
             //Same controls
             txtAmount.CurrencySymbol = String.Empty;
             //Split controls
             txtTotalSplitAmount.CurrencySymbol = String.Empty;
             txtPerPeriodAmount.CurrencySymbol = String.Empty;
-            txtPeriod12AmountPlus.CurrencySymbol = String.Empty;
+            txtLastPeriodAmount.CurrencySymbol = String.Empty;
             //Inflate N controls
             txtFirstPeriodAmount.CurrencySymbol = String.Empty;
             //Inflate Base controls
@@ -996,7 +1012,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void ShowDetailsManual(ABudgetRow ARow)
         {
-            ClearBudgetPeriodTextboxes("All");
+            ClearBudgetTypeTextboxes("All");
 
             if ((grdDetails.Rows.Count == 0) && rgrSelectBudgetType.Enabled)
             {
@@ -1008,7 +1024,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 EnableBudgetEntry(true);
             }
 
-            //
             // ARow can be null...
             if (ARow != null)
             {
@@ -1045,7 +1060,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             pnlBudgetTypeInflateN.Visible = rbtInflateN.Checked;
             pnlBudgetTypeInflateBase.Visible = rbtInflateBase.Checked;
 
-            LoadCompleted = true;
+            FLoadCompleted = true;
         }
 
         private bool GetDetailDataFromControlsManual(ABudgetRow ARow)
@@ -1059,7 +1074,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     if (FPetraUtilsObject.HasChanges)
                     {
                         ProcessBudgetTypeAdhoc(null, null);
-                        ClearBudgetPeriodTextboxes(MFinanceConstants.BUDGET_ADHOC);
+                        ClearBudgetTypeTextboxes(MFinanceConstants.BUDGET_ADHOC);
                     }
 
                     ARow.BudgetTypeCode = MFinanceConstants.BUDGET_ADHOC;
@@ -1069,7 +1084,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     if (FPetraUtilsObject.HasChanges)
                     {
                         ProcessBudgetTypeSame(null, null);
-                        ClearBudgetPeriodTextboxes(MFinanceConstants.BUDGET_SAME);
+                        ClearBudgetTypeTextboxes(MFinanceConstants.BUDGET_SAME);
                     }
 
                     ARow.BudgetTypeCode = MFinanceConstants.BUDGET_SAME;
@@ -1079,7 +1094,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     if (FPetraUtilsObject.HasChanges)
                     {
                         ProcessBudgetTypeSplit(null, null);
-                        ClearBudgetPeriodTextboxes(MFinanceConstants.BUDGET_SPLIT);
+                        ClearBudgetTypeTextboxes(MFinanceConstants.BUDGET_SPLIT);
                     }
 
                     ARow.BudgetTypeCode = MFinanceConstants.BUDGET_SPLIT;
@@ -1089,7 +1104,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     if (FPetraUtilsObject.HasChanges)
                     {
                         ProcessBudgetTypeInflateN(null, null);
-                        ClearBudgetPeriodTextboxes(MFinanceConstants.BUDGET_INFLATE_N);
+                        ClearBudgetTypeTextboxes(MFinanceConstants.BUDGET_INFLATE_N);
                     }
 
                     ARow.BudgetTypeCode = MFinanceConstants.BUDGET_INFLATE_N;
@@ -1099,7 +1114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     if (FPetraUtilsObject.HasChanges)
                     {
                         ProcessBudgetTypeInflateBase(null, null);
-                        ClearBudgetPeriodTextboxes(MFinanceConstants.BUDGET_INFLATE_BASE);
+                        ClearBudgetTypeTextboxes(MFinanceConstants.BUDGET_INFLATE_BASE);
                     }
 
                     ARow.BudgetTypeCode = MFinanceConstants.BUDGET_INFLATE_BASE;
@@ -1111,7 +1126,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 ARow.EndEdit();
             }
 
-            //grdDetails.Refresh();
             return true;
         }
 
@@ -1138,5 +1152,60 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             return newRevision;
         }
+        
+        private void CostCentreCodeDetailChanged(object sender, EventArgs e)
+        {
+        	if (FLoadCompleted == false || FPreviouslySelectedDetailRow == null || cmbDetailCostCentreCode.GetSelectedString() == String.Empty || cmbDetailCostCentreCode.SelectedIndex == -1 || cmbDetailAccountCode.SelectedIndex == -1)
+            {
+                return;
+            }
+            
+            if (!CostCentreAccountCombinationIsUnique())
+            {
+            	MessageBox.Show(String.Format(Catalog.GetString("The Cost Centre ({0})/Account Code ({1}) combination is already used in this budget."),
+            	                              cmbDetailCostCentreCode.GetSelectedString(),
+            	                              cmbDetailAccountCode.GetSelectedString()));
+            	cmbDetailCostCentreCode.SelectedIndex = -1;
+            }
+        }
+
+        /// <summary>
+        /// if the account code changes, analysis types/attributes  have to be updated
+        /// </summary>
+        private void AccountCodeDetailChanged(object sender, EventArgs e)
+        {
+        	if (FLoadCompleted == false || FPreviouslySelectedDetailRow == null || cmbDetailAccountCode.GetSelectedString() == String.Empty || cmbDetailAccountCode.SelectedIndex == -1 || cmbDetailCostCentreCode.SelectedIndex == -1)
+            {
+                return;
+            }
+            
+            if (!CostCentreAccountCombinationIsUnique())
+            {
+            	MessageBox.Show(String.Format(Catalog.GetString("The Cost Centre ({0})/Account Code ({1}) combination is already used in this budget."),
+            	                              cmbDetailCostCentreCode.GetSelectedString(),
+            	                              cmbDetailAccountCode.GetSelectedString()));
+            	cmbDetailAccountCode.SelectedIndex = -1;
+            }
+        }
+        
+        private bool CostCentreAccountCombinationIsUnique()
+        {
+        	DataRow[] foundRows;
+ 			foundRows = FMainDS.ABudget.Select(String.Format("{0}={1} And {2}={3} And {4}=0 And {5}='{6}' And {7}='{8}' And {9}<>{10}",
+ 			                                                 ABudgetTable.GetLedgerNumberDBName(),
+ 			                                                 FLedgerNumber,
+ 			                                                 ABudgetTable.GetYearDBName(),
+ 			                                                 cmbSelectBudgetYear.GetSelectedString(),
+ 			                                                 ABudgetTable.GetRevisionDBName(),
+ 			                                                 ABudgetTable.GetCostCentreCodeDBName(),
+ 			                                                 cmbDetailCostCentreCode.GetSelectedString(),
+ 			                                                 ABudgetTable.GetAccountCodeDBName(),
+ 			                                                 cmbDetailAccountCode.GetSelectedString(),
+ 			                                                 ABudgetTable.GetBudgetSequenceDBName(),
+ 			                                                 FPreviouslySelectedDetailRow.BudgetSequence));
+
+        	return (foundRows.Length == 0);
+        }
+
     }
 }
