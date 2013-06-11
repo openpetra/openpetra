@@ -38,7 +38,11 @@ RootNode:
                 Row2: [cmbEMailWithinTheOrganisation, btnLaunchHyperlinkEMailWithinOrg]
             Margin: 0,16,0,0
             Height: 70
-        cmbPrimaryWayOfContacting: {Label=Primary Contact Method, OptionalValues=Phone, E-Mail, Letter, Skype, SocialNetwork, Width=147, Validation=true}
+        cmbPrimaryWayOfContacting:
+            Label: Primary Contact Method
+            Width: 147
+            OptionalValues: [=,Phone, E-Mail, Letter, Skype, Instant Messaging, Social Network]
+            Validation: true
         cmbPrimaryPhoneForContacting: {Label=Primary Phone, List=UserDefinedList, ComboBoxWidth=182, Width=182, ColSpan=2, Validation=true}
         cmbPhoneWithinTheOrganisation: {Label=Office Phone, List=UserDefinedList, ComboBoxWidth=182, Width=182, ColSpan=2, Validation=true}
         cmbPrimaryEMail: {Label=Primary E-Mail, List=UserDefinedList, ComboBoxWidth=147, Width=147, Validation=true}
