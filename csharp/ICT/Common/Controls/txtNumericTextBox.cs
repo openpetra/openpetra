@@ -66,6 +66,10 @@ namespace Ict.Common.Controls
         private TNumericTextBoxMode FControlMode = TNumericTextBoxMode.Decimal;
         private TNumberPrecision FNumberPrecision = TNumberPrecision.Decimal;
         private int FDecimalPlaces = 2;
+
+        /// <summary>
+        /// Is it OK to show {null} in this control?
+        /// </summary>
         public bool FNullValueAllowed = false;
 
         private string FNumberDecimalSeparator = ".";
