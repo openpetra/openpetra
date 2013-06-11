@@ -400,14 +400,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 lblBaseCurrency.Text = String.Format(Catalog.GetString("{0} (Base Currency)"), BaseCurrency);
                 lblTransactionCurrency.Text = String.Format(Catalog.GetString("{0} (Transaction Currency)"), TransactionCurrency);
-                txtDebitAmountBase.CurrencySymbol = BaseCurrency;
-                txtCreditAmountBase.CurrencySymbol = BaseCurrency;
-                txtDebitAmount.CurrencySymbol = TransactionCurrency;
-                txtCreditAmount.CurrencySymbol = TransactionCurrency;
-                txtCreditTotalAmountBase.CurrencySymbol = BaseCurrency;
-                txtDebitTotalAmountBase.CurrencySymbol = BaseCurrency;
-                txtCreditTotalAmount.CurrencySymbol = TransactionCurrency;
-                txtDebitTotalAmount.CurrencySymbol = TransactionCurrency;
+                txtDebitAmountBase.CurrencyCode = BaseCurrency;
+                txtCreditAmountBase.CurrencyCode = BaseCurrency;
+                txtDebitAmount.CurrencyCode = TransactionCurrency;
+                txtCreditAmount.CurrencyCode = TransactionCurrency;
+                txtCreditTotalAmountBase.CurrencyCode = BaseCurrency;
+                txtDebitTotalAmountBase.CurrencyCode = BaseCurrency;
+                txtCreditTotalAmount.CurrencyCode = TransactionCurrency;
+                txtDebitTotalAmount.CurrencyCode = TransactionCurrency;
 
                 // foreign currency accounts only get transactions in that currency
                 if (FTransactionCurrency != TransactionCurrency)

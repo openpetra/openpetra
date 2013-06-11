@@ -66,7 +66,7 @@ namespace Ict.Common.Controls
         private TNumericTextBoxMode FControlMode = TNumericTextBoxMode.Decimal;
         private TNumberPrecision FNumberPrecision = TNumberPrecision.Decimal;
         private int FDecimalPlaces = 2;
-        private bool FNullValueAllowed = false;
+        public bool FNullValueAllowed = false;
 
         private string FNumberDecimalSeparator = ".";
         private string FCurrencyDecimalSeparator = ".";
@@ -96,6 +96,10 @@ namespace Ict.Common.Controls
             /// todoComment
             /// </summary>
             Decimal,
+            /// <summary>
+            /// todoComment
+            /// </summary>
+            Currency
         }
 
         #region Properties
@@ -115,10 +119,22 @@ namespace Ict.Common.Controls
 
             set
             {
-                if (FControlMode == TNumericTextBoxMode.NormalTextBox)
+                if ((FControlMode == TNumericTextBoxMode.NormalTextBox)
+                    || (FControlMode == TNumericTextBoxMode.Currency))
                 {
                     base.Text = value;
                 }
+            }
+        }
+
+        /// <summary>
+        /// This Culture came originally from the thread (ie from the user's locale setup)
+        /// </summary>
+        public CultureInfo Culture
+        {
+            get
+            {
+                return FCurrentCulture;
             }
         }
 
@@ -712,13 +728,19 @@ namespace Ict.Common.Controls
                 {
                     case TNumericTextBoxMode.Integer :
                     case TNumericTextBoxMode.LongInteger :
-                    case TNumericTextBoxMode.Decimal :
+                    case TNumericTextBoxMode.Decimal:
+                    case TNumericTextBoxMode.Currency:
                         {
                             #region Numeric Validation Rule
 
                             if (FControlMode == TNumericTextBoxMode.Decimal)
                             {
                                 intActDecPlace = this.Text.IndexOf(FNumberDecimalSeparator);
+                            }
+
+                            if (FControlMode == TNumericTextBoxMode.Currency)
+                            {
+                                intActDecPlace = this.Text.IndexOf(FCurrencyDecimalSeparator);
                             }
 
                             // Check & Reset boolean if the decimal place does not exist

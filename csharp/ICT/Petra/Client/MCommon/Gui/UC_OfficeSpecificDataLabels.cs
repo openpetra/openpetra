@@ -529,7 +529,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             {
                 TextBoxCurrencyEditor = new TTxtCurrencyTextBox();
                 TextBoxCurrencyEditor.DecimalPlaces = 2;
-                TextBoxCurrencyEditor.CurrencySymbol = ADataLabelRow.CurrencyCode;
+                TextBoxCurrencyEditor.CurrencyCode = ADataLabelRow.CurrencyCode;
                 TextBoxCurrencyEditor.NullValueAllowed = true;
                 cellControl = TextBoxCurrencyEditor;
 

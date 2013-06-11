@@ -208,7 +208,7 @@ partial class MainForm
         //
         // txtCurrency
         //
-        this.txtCurrency.CurrencySymbol = "WWW";
+        this.txtCurrency.CurrencyCode = "WWW";
         this.txtCurrency.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.txtCurrency.Location = new System.Drawing.Point(102, 46);
         this.txtCurrency.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);

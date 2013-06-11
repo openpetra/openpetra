@@ -510,7 +510,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber,
                                 Catalog.GetString("ICH Monthly Clearing"),
                                 MFinanceConstants.ICH_ACCT_SETTLEMENT, CostCentre, SettlementAmount, PeriodEndDate, DrCrIndicator,
-                                Catalog.GetString("ICH"), true, 0,
+                                Catalog.GetString("ICH"), true, SettlementAmount,
                                 out GLTransactionNumber))
                         {
                             ErrorContext = Catalog.GetString("Generating the ICH batch");
@@ -596,7 +596,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     if (!TGLPosting.CreateATransaction(MainDS, ALedgerNumber, GLBatchNumber, GLJournalNumber,
                             Catalog.GetString("ICH Monthly Clearing"),
                             MFinanceConstants.ICH_ACCT_ICH, StandardCostCentre, ICHTotal, PeriodEndDate, DrCrIndicator, Catalog.GetString("ICH"),
-                            true, 0,
+                            true, ICHTotal,
                             out GLTransactionNumber))
                     {
                         ErrorContext = Catalog.GetString("Generating the ICH batch");
@@ -1024,7 +1024,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                                     DrCrIndicator,
                                                     "AG",
                                                     true,
-                                                    0,
+                                                    DrFeeTotal,
                                                     out GLTransactionNumber))
                                             {
                                                 ErrorContext = Catalog.GetString("Generating the Admin Fee batch");
@@ -1106,7 +1106,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                 DrCrIndicator,
                                 "AG",
                                 true,
-                                0,
+                                TransactionAmount,
                                 out GLTransactionNumber);
                         }
                     }

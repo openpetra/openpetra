@@ -286,14 +286,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 btnLookupExchangeRate.Enabled = false;
             }
 
-            txtTotalAmount.CurrencySymbol = DocumentRow.CurrencyCode;
-            txtDetailAmount.CurrencySymbol = DocumentRow.CurrencyCode;
+            txtTotalAmount.CurrencyCode = DocumentRow.CurrencyCode;
+            txtDetailAmount.CurrencyCode = DocumentRow.CurrencyCode;
 
             this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FDocumentLedgerNumber);
 
             ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FDocumentLedgerNumber);
             FLedgerRow = Tbl[0];
-            txtDetailBaseAmount.CurrencySymbol = FLedgerRow.BaseCurrency;
+            txtDetailBaseAmount.CurrencyCode = FLedgerRow.BaseCurrency;
             dtpDateDue.Date = DocumentRow.DateIssued.AddDays(Convert.ToDouble(nudCreditTerms.Value));
 
             if (FMainDS.AApDocumentDetail != null) // When the form is new, this can be null.
