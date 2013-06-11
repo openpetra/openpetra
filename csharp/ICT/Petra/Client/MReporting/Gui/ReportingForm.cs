@@ -561,6 +561,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     TMyUpdateDelegate myDelegate = @ReportCalculationSuccess;
                     ACallerForm.Invoke((System.Delegate) new TMyUpdateDelegate(
                             myDelegate), new object[] { ACalculator, ACallerForm, AReportName, AWrapColumn });
+                    TLogging.Log("", TLoggingType.ToStatusBar);
                 }
             }
             catch (Exception e)
