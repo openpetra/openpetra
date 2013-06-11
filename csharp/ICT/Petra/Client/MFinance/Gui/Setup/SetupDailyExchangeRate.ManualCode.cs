@@ -1012,72 +1012,88 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            // We need not only the current row info from the exchange rate table, but also the next row later in time, if it exists
-            // Create a special view because we don't know how the grid is sorted
-            string filter =
-                ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + ARow.FromCurrencyCode + "' and " +
-                ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + ARow.Table + "'";
-            DataView dvDailyRate = new DataView(FMainDS.ADailyExchangeRate, filter, SortByDateDescending, DataViewRowState.CurrentRows);
-
-            // Find our current row and hence the previous one
-            DateTime ToDate = DateTime.MaxValue;
-            int nThis = FindRowInDataView(dvDailyRate, ARow.FromCurrencyCode, ARow.ToCurrencyCode, ARow.DateEffectiveFrom, ARow.TimeEffectiveFrom);
-
-            while (nThis > 0)
+            // This is a bit of a fudge --
+            // If we are in modal mode we don't make any changes to the journal/gift data sets because we can't save any changes
+            // because it is up to the modal caller to take our result and save the change.
+            // If we are in modeless mode we will save the changes to the other data sets.
+            // This makes things inconsistent - but is a consequence of trying to make the daily exchange rate table look like it is linked to the other two
+            // when, in fact, it isn't.  Sometimes we update the other tables via this screen and sometimes we don't.
+            // It would be sligtly better if we knew in modal mode which journal row we were providing a rate for - but we don't know that either.
+            if (!blnIsInModalMode)
             {
-                DateTime tryDate = ((ADailyExchangeRateRow)dvDailyRate[nThis - 1].Row).DateEffectiveFrom;
+                // We need not only the current row info from the exchange rate table, but also the next row later in time, if it exists
+                // Create a special view because we don't know how the grid is sorted
+                string filter =
+                    ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + ARow.FromCurrencyCode + "' and " +
+                    ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + ARow.Table + "'";
+                DataView dvDailyRate = new DataView(FMainDS.ADailyExchangeRate, filter, SortByDateDescending, DataViewRowState.CurrentRows);
 
-                if (tryDate == ARow.DateEffectiveFrom)
-                {
-                    // keep going till we find a different date because different times on the same date don't count
-                    nThis--;
-                }
-                else
-                {
-                    ToDate = tryDate;
-                    break;
-                }
-            }
+                // Find our current row and hence the previous one
+                DateTime ToDate = DateTime.MaxValue;
+                int nThis = FindRowInDataView(dvDailyRate, ARow.FromCurrencyCode, ARow.ToCurrencyCode, ARow.DateEffectiveFrom, ARow.TimeEffectiveFrom);
 
-            // OK, so we might have changed the rate
-            if (FJournalDS.HasMatchingUnpostedRate && (FJournalDS.MatchingRate != ARow.RateOfExchange))
-            {
-                // change all the relevant entries
-                DataView dvJournal = FJournalDS.JournalTable.DefaultView;
-                dvJournal.RowFilter = String.Format(CultureInfo.InvariantCulture, JournalRowFilterRange, ARow.FromCurrencyCode, ARow.ToCurrencyCode,
-                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d",
-                        CultureInfo.InvariantCulture), FJournalDS.MatchingRate, "Unposted");
-
-                for (int i = dvJournal.Count - 1; i >= 0; i--)
+                while (nThis > 0)
                 {
-                    AJournalRow row = ((AJournalRow)dvJournal[i].Row);
-                    row.BeginEdit();
-                    row.ExchangeRateToBase = ARow.RateOfExchange;
-                    row.EndEdit();
+                    DateTime tryDate = ((ADailyExchangeRateRow)dvDailyRate[nThis - 1].Row).DateEffectiveFrom;
+
+                    if (tryDate == ARow.DateEffectiveFrom)
+                    {
+                        // keep going till we find a different date because different times on the same date don't count
+                        nThis--;
+                    }
+                    else
+                    {
+                        ToDate = tryDate;
+                        break;
+                    }
                 }
 
-                FJournalDS.MatchingRate = ARow.RateOfExchange;
-                FJournalDS.NeedsSave = true;
-            }
-
-            if (FGiftBatchDS.HasMatchingUnpostedRate && (FGiftBatchDS.MatchingRate != ARow.RateOfExchange))
-            {
-                // change all the relevant entries
-                DataView dvGift = FGiftBatchDS.GiftBatchTable.DefaultView;
-                dvGift.RowFilter = String.Format(CultureInfo.InvariantCulture, GiftBatchRowFilter, ARow.FromCurrencyCode, ARow.ToCurrencyCode,
-                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d",
-                        CultureInfo.InvariantCulture), FGiftBatchDS.MatchingRate);
-
-                for (int i = dvGift.Count - 1; i >= 0; i--)
+                // OK, so we might have changed the rate
+                if (FJournalDS.HasMatchingUnpostedRate && (FJournalDS.MatchingRate != ARow.RateOfExchange))
                 {
-                    AGiftBatchRow row = ((AGiftBatchRow)dvGift[i].Row);
-                    row.BeginEdit();
-                    row.ExchangeRateToBase = ARow.RateOfExchange;
-                    row.EndEdit();
+                    // change all the relevant entries
+                    DataView dvJournal = FJournalDS.JournalTable.DefaultView;
+                    dvJournal.RowFilter = String.Format(CultureInfo.InvariantCulture,
+                        JournalRowFilterRange,
+                        ARow.FromCurrencyCode,
+                        ARow.ToCurrencyCode,
+                        ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture),
+                        ToDate.ToString("d",
+                            CultureInfo.InvariantCulture),
+                        FJournalDS.MatchingRate,
+                        "Unposted");
+
+                    for (int i = dvJournal.Count - 1; i >= 0; i--)
+                    {
+                        AJournalRow row = ((AJournalRow)dvJournal[i].Row);
+                        row.BeginEdit();
+                        row.ExchangeRateToBase = ARow.RateOfExchange;
+                        row.EndEdit();
+                    }
+
+                    FJournalDS.MatchingRate = ARow.RateOfExchange;
+                    FJournalDS.NeedsSave = true;
                 }
 
-                FGiftBatchDS.MatchingRate = ARow.RateOfExchange;
-                FGiftBatchDS.NeedsSave = true;
+                if (FGiftBatchDS.HasMatchingUnpostedRate && (FGiftBatchDS.MatchingRate != ARow.RateOfExchange))
+                {
+                    // change all the relevant entries
+                    DataView dvGift = FGiftBatchDS.GiftBatchTable.DefaultView;
+                    dvGift.RowFilter = String.Format(CultureInfo.InvariantCulture, GiftBatchRowFilter, ARow.FromCurrencyCode, ARow.ToCurrencyCode,
+                        ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d",
+                            CultureInfo.InvariantCulture), FGiftBatchDS.MatchingRate);
+
+                    for (int i = dvGift.Count - 1; i >= 0; i--)
+                    {
+                        AGiftBatchRow row = ((AGiftBatchRow)dvGift[i].Row);
+                        row.BeginEdit();
+                        row.ExchangeRateToBase = ARow.RateOfExchange;
+                        row.EndEdit();
+                    }
+
+                    FGiftBatchDS.MatchingRate = ARow.RateOfExchange;
+                    FGiftBatchDS.NeedsSave = true;
+                }
             }
 
             // Finally check if we have an inverse rate for this date/time and currency pair
