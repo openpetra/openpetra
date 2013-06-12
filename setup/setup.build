@@ -146,7 +146,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         <copy file="${Config.file}" tofile="${tempdir}/PetraClientRemote_temp.config" overwrite="true"/>
     </if>
     <copy file="${tempdir}/PetraClientRemote_temp.config"
-              tofile="${tempdir}/PetraClientRemote.config">
+              tofile="${tempdir}/PetraClientRemote.config" overwrite="true">
         <filterchain>
             <expandproperties />
         </filterchain>
