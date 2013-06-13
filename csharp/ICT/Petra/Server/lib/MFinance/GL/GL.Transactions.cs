@@ -1928,7 +1928,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                         TransactionRow.AccountCode = recTransaction.AccountCode;
                                         TransactionRow.CostCentreCode = recTransaction.CostCentreCode;
                                         TransactionRow.TransactionAmount = recTransaction.TransactionAmount;
-                                        TransactionRow.AmountInBaseCurrency = recTransaction.TransactionAmount * AExchangeRateToBase;
+                                        TransactionRow.AmountInBaseCurrency = GLRoutines.Multiply(recTransaction.TransactionAmount, AExchangeRateToBase);
                                         TransactionRow.TransactionDate = AEffectiveDate;
                                         TransactionRow.DebitCreditIndicator = recTransaction.DebitCreditIndicator;
                                         TransactionRow.HeaderNumber = recTransaction.HeaderNumber;
@@ -2267,7 +2267,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 if (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
                 {
-                    r.AmountInBaseCurrency = r.TransactionAmount / ACurrentJournal.ExchangeRateToBase;
+                    r.AmountInBaseCurrency = GLRoutines.Multiply(r.TransactionAmount, ACurrentJournal.ExchangeRateToBase);
                 }
 
                 if (r.DebitCreditIndicator)
