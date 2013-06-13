@@ -327,6 +327,7 @@ namespace Ict.Common.Testing
             Row["a_display_format_c"] = "->>>,>>>,>>>,>>9.99";
             Tbl.Rows.Add(Row);
 
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
             StringHelper.CurrencyFormatTable = Tbl;
             String TrlRes = StringHelper.FormatUsingCurrencyCode(1234.56M, "TRL");
             String EurRes = StringHelper.FormatUsingCurrencyCode(1234.56M, "EUR");
