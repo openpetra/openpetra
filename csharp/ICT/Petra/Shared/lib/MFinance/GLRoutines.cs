@@ -235,6 +235,11 @@ namespace Ict.Petra.Shared.MFinance
         /// </summary>
         public static decimal Divide(decimal AAmount, decimal AExchangeRate)
         {
+            if (AExchangeRate == 0.0m)
+            {
+                return 0.0m;
+            }
+
             decimal Result = AAmount / AExchangeRate;
 
             return Math.Round(Result, DECIMALS);
