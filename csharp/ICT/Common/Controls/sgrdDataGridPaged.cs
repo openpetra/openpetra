@@ -443,15 +443,11 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         private void LoadSingleDataPage(Int32 ANeededPage)
         {
-            DataTable PagedTable;
-            TDataPageLoadEventArgs CustomEventArgs;
-            Int16 Counter;
-
             // Sanity check  just in case someone made the Grid so small that no Rows would be displayed...
             if (ANeededPage > 0)
             {
                 // Fire OnDataPageLoading event.
-                CustomEventArgs = new TDataPageLoadEventArgs();
+                TDataPageLoadEventArgs CustomEventArgs = new TDataPageLoadEventArgs();
                 CustomEventArgs.DataPage = ANeededPage;
                 this.OnDataPageLoading(CustomEventArgs);
 
@@ -459,16 +455,26 @@ namespace Ict.Common.Controls
 
                 Int32 CurrentTotalRecords;  // These two values should be the same as FTotalRecords
                 Int16 CurrentTotalPages;    // and FTotalPages, which were set when the first page was loaded.
-                PagedTable = FGetDataPagedResult((short)ANeededPage, FPageSize, out CurrentTotalRecords, out CurrentTotalPages);
+                DataTable PagedTable = FGetDataPagedResult((short)ANeededPage, FPageSize, out CurrentTotalRecords, out CurrentTotalPages);
 
                 if (PagedTable != null)
                 {
                     FTransferredDataPages.Add(ANeededPage);
-
+                    Int32 IdxBase = ANeededPage * FPageSize;
                     // MessageBox.Show('Inserting Page ' + ANeededPage.ToString + ' (PageSize: ' + FPageSize.ToString + '; Records returned: ' +  PagedTable.Rows.Count.ToString + ')...');
-                    for (Counter = 0; Counter <= PagedTable.Rows.Count - 1; Counter += 1)
+                    for (Int32 Counter = 0; Counter < PagedTable.Rows.Count; Counter++)
                     {
-                        FPagedDataTable.Rows[(ANeededPage * FPageSize) + Counter].ItemArray = PagedTable.Rows[Counter].ItemArray;
+                        DataRow TargetRow;
+
+                        if (FPagedDataTable.Rows.Count <= IdxBase + Counter) // I need to create a new row?
+                        {
+                            TargetRow = FPagedDataTable.NewRow();
+                        }
+                        else
+                        {
+                            TargetRow = FPagedDataTable.Rows[IdxBase + Counter]; // Otherwise overwrite the existing one
+                        }
+                        TargetRow.ItemArray = PagedTable.Rows[Counter].ItemArray;
                     }
                 }
 
