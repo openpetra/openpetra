@@ -148,16 +148,18 @@
         </exec>
 
         <!-- create png files from diagrams -->
-        <foreach item="File" property="filename">
-            <in>
-                <items>
-                    <include name="${OpenPetraRoot.dir}/db/doc/*.dia" />
-                </items>
-            </in>
-            <do>
-                <exec program="${Dia.exe}" workingdir="${DBDoc.Output.dir}" commandline="--export=img/${path::get-file-name-without-extension(filename)}.png --filter=pixbuf-png &quot;${filename}&quot;"/>
-            </do>
-        </foreach>
+        <if test="${file::exists(Dia.exe)}">
+            <foreach item="File" property="filename">
+                <in>
+                    <items>
+                        <include name="${OpenPetraRoot.dir}/db/doc/*.dia" />
+                    </items>
+                </in>
+                <do>
+                    <exec program="${Dia.exe}" workingdir="${DBDoc.Output.dir}" commandline="--export=img/${path::get-file-name-without-extension(filename)}.png --filter=pixbuf-png &quot;${filename}&quot;"/>
+                </do>
+            </foreach>
+        </if>
     </target>
 
     <target name="createDatabaseUser" depends="init">
