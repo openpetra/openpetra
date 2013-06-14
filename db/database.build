@@ -131,18 +131,18 @@
             </fileset>
         </copy>        
 
-        <!-- create project files -->
-        <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}" output="${OpenPetraRoot.dir}/db/doc/master_alltables.prj">
-            <arg value="/C" />
-            <arg value="&quot;&quot;${ThirdParty.dir}/sql2dia/sql2dia.exe&quot; -d &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot;&quot;"/>
-        </exec>
-        <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}" output="${OpenPetraRoot.dir}/db/doc/master_alltables_bygroup.prj">
-            <arg value="/C" />
-            <arg value="&quot;&quot;${ThirdParty.dir}/sql2dia/sql2dia.exe&quot; -g -f &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot;&quot;"/>
-        </exec>
-        
-        <!-- create or update diagrams -->
         <if test="${platform::is-windows()}">
+            <!-- create project files -->
+            <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}" output="${OpenPetraRoot.dir}/db/doc/master_alltables.prj">
+                <arg value="/C" />
+                <arg value="&quot;&quot;${ThirdParty.dir}/sql2dia/sql2dia.exe&quot; -d &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot;&quot;"/>
+            </exec>
+            <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}" output="${OpenPetraRoot.dir}/db/doc/master_alltables_bygroup.prj">
+                <arg value="/C" />
+                <arg value="&quot;&quot;${ThirdParty.dir}/sql2dia/sql2dia.exe&quot; -g -f &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot;&quot;"/>
+            </exec>
+        
+            <!-- create or update diagrams -->
             <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}">
                 <arg value="/C" />
                 <arg value="&quot;&quot;${ThirdParty.dir}/sql2dia/sql2dia.exe&quot; -f &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot; -p &quot;${OpenPetraRoot.dir}/db/doc/themed.prj&quot; --diaoutputpath &quot;${OpenPetraRoot.dir}/db/doc&quot;&quot;"/>
