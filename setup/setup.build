@@ -146,7 +146,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         <copy file="${Config.file}" tofile="${tempdir}/PetraClientRemote_temp.config" overwrite="true"/>
     </if>
     <copy file="${tempdir}/PetraClientRemote_temp.config"
-              tofile="${tempdir}/PetraClientRemote.config">
+              tofile="${tempdir}/PetraClientRemote.config" overwrite="true">
         <filterchain>
             <expandproperties />
         </filterchain>
@@ -284,6 +284,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 
 <target name="createRemoteClientPatch" depends="init">
     <property name="OutputZipFilename" value="Patch-win_${OldVersion}_${NewVersion}.zip" overwrite="false"/>
+    <if test="${platform::is-unix()}">
+        <exec program="sh" commandline="-c &quot;chmod a+x ${dir.root}/csharp/ThirdParty/bsdiff/bsdiff&quot;"/>
+    </if>
     <ExecDotNet program="${dir.bin}/Ict.Tools.PatchTool.Console.exe" commandline="-action:create -OpenPetra.PathTemp:${tempdir} -deliverypath:${dir.delivery} -appname:openpetranow-${GUILocalisation} -zipname:openpetraorg-client-backup-${OrgNameWithoutSpace} -oldversion:${OldVersion} -newversion:${NewVersion} -OutputZipFilename:${OutputZipFilename}"/>
 </target>
 
