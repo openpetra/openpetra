@@ -147,20 +147,20 @@
                 <arg value="/C" />
                 <arg value="&quot;&quot;${ThirdParty.dir}/sql2dia/sql2dia.exe&quot; -f &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot; -p &quot;${OpenPetraRoot.dir}/db/doc/themed.prj&quot; --diaoutputpath &quot;${OpenPetraRoot.dir}/db/doc&quot;&quot;"/>
             </exec>
-        </if>
 
-        <!-- create png files from diagrams -->
-        <if test="${file::exists(Dia.exe)}">
-            <foreach item="File" property="filename">
-                <in>
-                    <items>
-                        <include name="${OpenPetraRoot.dir}/db/doc/*.dia" />
-                    </items>
-                </in>
-                <do>
-                    <exec program="${Dia.exe}" workingdir="${DBDoc.Output.dir}" commandline="--export=img/${path::get-file-name-without-extension(filename)}.png --filter=pixbuf-png &quot;${filename}&quot;"/>
-                </do>
-            </foreach>
+            <!-- create png files from diagrams -->
+            <if test="${file::exists(Dia.exe)}">
+                <foreach item="File" property="filename">
+                    <in>
+                        <items>
+                            <include name="${OpenPetraRoot.dir}/db/doc/*.dia" />
+                        </items>
+                    </in>
+                    <do>
+                        <exec program="${Dia.exe}" workingdir="${DBDoc.Output.dir}" commandline="--export=img/${path::get-file-name-without-extension(filename)}.png --filter=pixbuf-png &quot;${filename}&quot;"/>
+                    </do>
+                </foreach>
+            </if>
         </if>
     </target>
 
