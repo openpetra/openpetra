@@ -24,10 +24,10 @@ namespace ICT.Tools.DataMigrateStatistics
         {
             new TLogging("delivery/bin/Ict.Tools.DataMigrateStatistics.log");
             new TAppSettingsManager(false);
-            
+
             string row_count_location = TAppSettingsManager.GetValue("fulldumpPath", "delivery/bin/fulldump") +
-                Path.DirectorySeparatorChar + "_row_count.txt";
-            
+                                        Path.DirectorySeparatorChar + "_row_count.txt";
+
             if (File.Exists(row_count_location))
             {
                 DBAccess.GDBAccessObj = new TDataBase();
@@ -36,7 +36,8 @@ namespace ICT.Tools.DataMigrateStatistics
                 string xmlfile = cmdLine.GetOptValue("petraxml");
 
                 DBAccess.GDBAccessObj.EstablishDBConnection(CommonTypes.ParseDBType(cmdLine.GetOptValue("type")), cmdLine.GetOptValue("host"),
-                    cmdLine.GetOptValue("port"), cmdLine.GetOptValue("database"), cmdLine.GetOptValue("username"), cmdLine.GetOptValue("password"), "");
+                    cmdLine.GetOptValue("port"), cmdLine.GetOptValue("database"), cmdLine.GetOptValue("username"), cmdLine.GetOptValue(
+                        "password"), "");
 
                 TDataDefinitionParser parserNew = new TDataDefinitionParser(xmlfile, false);
                 TDataDefinitionStore storeNew = new TDataDefinitionStore();
@@ -60,7 +61,7 @@ namespace ICT.Tools.DataMigrateStatistics
                         int i = 0;
                         int rowCount; // number of rows actually in table
                         int rowCountCheck = 0; // number of rows there should be in table
-                    
+
                         // count rows in table
                         string sql = "SELECT count(*) from " + newTable.strName + ";";
                         rowCount = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(sql, IsolationLevel.ReadUncommitted));

@@ -38,7 +38,7 @@ namespace Ict.Tools.DataDumpPetra2
     public class TFixData
     {
         private static int FormSequence = 1;
-        
+
         /// <summary>
         /// set a value of a row, position given by AColumnNames
         /// </summary>
@@ -281,12 +281,6 @@ namespace Ict.Tools.DataDumpPetra2
                     {
                         SetValue(NewColumnNames, ref NewRow, newField.strName, DefaultValues[fieldCounter]);
                     }
-
-                    //Temporary fix. Delete once a_form_element has been fixed in Petra.
-                    /*if (ANewTable.strName == "a_form_element")
-                    {
-                        SetValue(NewColumnNames, ref NewRow, "a_form_sequence_i", RowCounter.ToString());
-                    }*/
 
                     fieldCounter++;
                 }
@@ -585,12 +579,13 @@ namespace Ict.Tools.DataDumpPetra2
                 SetValue(AColumnNames, ref ANewRow, "p_believer_since_comment_c", believerInfo[0]);
                 SetValue(AColumnNames, ref ANewRow, "p_believer_since_year_i", believerInfo[1]);
             }
-            
+
+            // new sequence for pc_room_alloc
             if (ATableName == "pc_room_alloc")
             {
                 SetValue(AColumnNames, ref ANewRow, "pc_key_i", TSequenceWriter.GetNextSequenceValue("seq_room_alloc").ToString());
             }
-            
+
             if (ATableName == "a_form_element")
             {
                 if (GetValue(AColumnNames, ANewRow, "a_form_sequence_i") == "0")
