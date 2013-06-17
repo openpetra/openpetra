@@ -131,36 +131,37 @@
             </fileset>
         </copy>        
 
-        <if test="${platform::is-windows()}">
-            <!-- create project files -->
-            <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}" output="${OpenPetraRoot.dir}/db/doc/master_alltables.prj">
-                <arg value="/C" />
-                <arg value="&quot;&quot;${ThirdParty.dir}/sql2dia/sql2dia.exe&quot; -d &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot;&quot;"/>
-            </exec>
-            <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}" output="${OpenPetraRoot.dir}/db/doc/master_alltables_bygroup.prj">
-                <arg value="/C" />
-                <arg value="&quot;&quot;${ThirdParty.dir}/sql2dia/sql2dia.exe&quot; -g -f &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot;&quot;"/>
-            </exec>
-        
-            <!-- create or update diagrams -->
-            <exec program="cmd.exe" workingdir="${DBDoc.Output.dir}">
-                <arg value="/C" />
-                <arg value="&quot;&quot;${ThirdParty.dir}/sql2dia/sql2dia.exe&quot; -f &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot; -p &quot;${OpenPetraRoot.dir}/db/doc/themed.prj&quot; --diaoutputpath &quot;${OpenPetraRoot.dir}/db/doc&quot;&quot;"/>
-            </exec>
+        <if test="${platform::is-unix()}">
+            <exec program="sh" commandline="-c &quot;chmod a+x ${sql2dia}&quot;"/>
+        </if>
 
-            <!-- create png files from diagrams -->
-            <if test="${file::exists(Dia.exe)}">
-                <foreach item="File" property="filename">
-                    <in>
-                        <items>
-                            <include name="${OpenPetraRoot.dir}/db/doc/*.dia" />
-                        </items>
-                    </in>
-                    <do>
-                        <exec program="${Dia.exe}" workingdir="${DBDoc.Output.dir}" commandline="--export=img/${path::get-file-name-without-extension(filename)}.png --filter=pixbuf-png &quot;${filename}&quot;"/>
-                    </do>
-                </foreach>
-            </if>
+        <!-- create project files -->
+        <exec program="${sql2dia}" workingdir="${DBDoc.Output.dir}" 
+            output="${OpenPetraRoot.dir}/db/doc/master_alltables.prj">
+            <arg value="-d &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot;"/>
+        </exec>
+        <exec program="${sql2dia}" workingdir="${DBDoc.Output.dir}" 
+            output="${OpenPetraRoot.dir}/db/doc/master_alltables_bygroup.prj">
+            <arg value="-g -f &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot;"/>
+        </exec>
+    
+        <!-- create or update diagrams -->
+        <exec program="${sql2dia}" workingdir="${DBDoc.Output.dir}">
+            <arg value="-f &quot;${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql&quot; -p &quot;${OpenPetraRoot.dir}/db/doc/themed.prj&quot; --diaoutputpath &quot;${OpenPetraRoot.dir}/db/doc&quot;"/>
+        </exec>
+
+        <!-- create png files from diagrams -->
+        <if test="${file::exists(Dia.exe)}">
+            <foreach item="File" property="filename">
+                <in>
+                    <items>
+                        <include name="${OpenPetraRoot.dir}/db/doc/*.dia" />
+                    </items>
+                </in>
+                <do>
+                    <exec program="${Dia.exe}" workingdir="${DBDoc.Output.dir}" commandline="--export=img/${path::get-file-name-without-extension(filename)}.png --filter=pixbuf-png &quot;${filename}&quot;"/>
+                </do>
+            </foreach>
         </if>
     </target>
 
