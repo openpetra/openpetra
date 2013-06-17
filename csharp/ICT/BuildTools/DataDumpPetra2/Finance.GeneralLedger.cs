@@ -130,7 +130,7 @@ namespace Ict.Tools.DataDumpPetra2
         }
 
         /// <summary>
-        /// Supply the new a_report_coumn_c field
+        /// Supply the new a_report_column_c field
         /// </summary>
         /// <param name="AColumnNames"></param>
         /// <param name="ANewRow"></param>
