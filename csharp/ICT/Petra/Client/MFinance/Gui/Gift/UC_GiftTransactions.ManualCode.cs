@@ -102,6 +102,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Enable buttons accordingly
             btnDelete.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
+            btnDeleteAll.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
             btnNewDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
             btnNewGift.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
 
@@ -397,8 +398,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             RetrieveMotivationDetailAccountCode();
 
-            if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
+            if ((txtDetailRecipientKey.Text == string.Empty) || (Convert.ToInt64(txtDetailRecipientKey.Text) == 0))
             {
+                txtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
                 RetrieveMotivationDetailCostCentreCode();
             }
         }
@@ -635,6 +637,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FGiftDetailView = new DataView(FMainDS.AGiftDetail);
             FGiftDetailView.RowFilter = FFilterAllDetailsOfGift;
             FGiftDetailView.Sort = AGiftDetailTable.GetDetailNumberDBName() + " ASC";
+            String formattedDetailAmount = StringHelper.FormatUsingCurrencyCode(ARowToDelete.GiftTransactionAmount, GetBatchRow().CurrencyCode);
 
             if (FGiftDetailView.Count == 1)
             {
@@ -647,7 +650,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ARowToDelete.BatchNumber,
                     ARowToDelete.DonorName,
                     ARowToDelete.RecipientDescription,
-                    ARowToDelete.GiftTransactionAmount.ToString("C"));
+                    formattedDetailAmount);
             }
             else if (FGiftDetailView.Count > 1)
             {
@@ -661,7 +664,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         ARowToDelete.BatchNumber,
                         ARowToDelete.DonorName,
                         ARowToDelete.RecipientDescription,
-                        ARowToDelete.GiftTransactionAmount.ToString("C"));
+                        formattedDetailAmount);
             }
             else //this should never happen
             {
@@ -674,6 +677,93 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             return allowDeletion;
+        }
+
+        private void DeleteAllGifts(System.Object sender, EventArgs e)
+        {
+            string completionMessage = string.Empty;
+
+            if ((FPreviouslySelectedDetailRow == null) || (FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return;
+            }
+
+            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
+                ||
+                (MessageBox.Show(String.Format(Catalog.GetString(
+                             "You have chosen to delete all gifts from batch ({0}).\n\nDo you really want to delete all?"),
+                         FBatchNumber),
+                     Catalog.GetString("Confirm Delete All"),
+                     MessageBoxButtons.YesNo,
+                     MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
+            {
+                try
+                {
+                    //Normally need to set the message parameters before the delete is performed if requiring any of the row values
+                    completionMessage = String.Format(Catalog.GetString("All gifts and details cancelled successfully."),
+                        FPreviouslySelectedDetailRow.BatchNumber);
+
+                    //Load all journals for current Batch
+                    //clear any transactions currently being editied in the Transaction Tab
+                    ClearCurrentSelection();
+
+                    //Clear gifts and details etc for current Batch
+                    FMainDS.AGiftDetail.Clear();
+                    FMainDS.AGift.Clear();
+
+                    //Load tables afresh
+                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(FLedgerNumber, FBatchNumber));
+
+                    //Delete gift details
+                    for (int i = FMainDS.AGiftDetail.Count - 1; i >= 0; i--)
+                    {
+                        FMainDS.AGiftDetail[i].Delete();
+                    }
+
+                    //Delete gifts
+                    for (int i = FMainDS.AGift.Count - 1; i >= 0; i--)
+                    {
+                        FMainDS.AGift[i].Delete();
+                    }
+
+                    FBatchRow.BatchTotal = 0;
+
+                    FPetraUtilsObject.HasChanges = true;
+
+                    // save first, then post
+                    if (!((TFrmGiftBatch)ParentForm).SaveChanges())
+                    {
+                        SelectRowInGrid(1);
+
+                        // saving failed, therefore do not try to cancel
+                        MessageBox.Show(Catalog.GetString("The emptied batch failed to save!"));
+                    }
+                    else
+                    {
+                        MessageBox.Show(completionMessage,
+                            "All Gifts Deleted.",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    completionMessage = ex.Message;
+                    MessageBox.Show(ex.Message,
+                        "Deletion Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+
+                    //Return FMainDS to original state
+                    FMainDS.RejectChanges();
+                }
+            }
+
+            if (grdDetails.Rows.Count < 2)
+            {
+                ShowDetails(null);
+                UpdateControlsProtection();
+            }
         }
 
         private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)
@@ -1354,6 +1444,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             pnlDetails.Enabled = !(PnlDetailsProtected);
+
+            btnDelete.Enabled = (grdDetails.Rows.Count > 1);
+            btnDeleteAll.Enabled = (grdDetails.Rows.Count > 1);
         }
 
         private Boolean BatchHasMethodOfPayment()

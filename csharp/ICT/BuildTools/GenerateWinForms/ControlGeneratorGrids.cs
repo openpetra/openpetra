@@ -373,16 +373,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            if (ctrl.HasAttribute("EnableMultiSelection"))
+            if (ctrl.controlName == "grdDetails")
             {
-                writer.Template.SetCodelet("GRIDMULTISELECTION",
-                    String.Format("grdDetails.Selection.EnableMultiSelection = {0};{1}", ctrl.GetAttribute("EnableMultiSelection"),
-                        Environment.NewLine));
-            }
-            else if (FCodeStorage.FControlList.ContainsKey("btnDelete"))
-            {
-                writer.Template.SetCodelet("GRIDMULTISELECTION",
-                    "grdDetails.Selection.EnableMultiSelection = true;" + Environment.NewLine);
+                if (ctrl.HasAttribute("EnableMultiSelection"))
+                {
+                    writer.Template.SetCodelet("GRIDMULTISELECTION",
+                        String.Format("grdDetails.Selection.EnableMultiSelection = {0};{1}", ctrl.GetAttribute("EnableMultiSelection"),
+                            Environment.NewLine));
+                }
+                else if (FCodeStorage.FControlList.ContainsKey("btnDelete"))
+                {
+                    writer.Template.SetCodelet("GRIDMULTISELECTION",
+                        "grdDetails.Selection.EnableMultiSelection = true;" + Environment.NewLine);
+                }
             }
 
             return writer.FTemplate;

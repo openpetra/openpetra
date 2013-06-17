@@ -247,15 +247,9 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 }
                 else if (mRow["LabelDataType"].ToString() == "currency")
                 {
-                    // todo p_currency_code_c; using correct formatting
-                    // TLogging.Log(TVariant.Create(mRow['LabelValueCurrency']).ToString());
-                    // LabelValue := new TVariant(
-                    // FormatCurrency(
-                    // TVariant.Create(mRow['LabelValueCurrency']),
-                    // '#,##0.00;#,##0.00;0.00;0'));
-                    // if string comes in, TVariant converts it to a double, but leaves 0;
-                    // adding the string of the currency code helps for the moment
-                    LabelValue = new TVariant(new TVariant(mRow["LabelValueCurrency"]).ToString() + ' ' + mRow["CurrencyCode"].ToString());
+                    LabelValue = new TVariant(StringHelper.FormatUsingCurrencyCode(
+                            Convert.ToDecimal(mRow["LabelValueCurrency"]), mRow["CurrencyCode"].ToString()) +
+                        ' ' + mRow["CurrencyCode"].ToString());
                 }
                 else if (mRow["LabelDataType"].ToString() == "boolean")
                 {

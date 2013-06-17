@@ -246,7 +246,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     rowTexts += RowTemplate.
                                 Replace("#DONATIONDATE", dateEntered.ToString("dd.MM.yyyy")).
-                                Replace("#AMOUNT", String.Format("{0:0.00}", amount)).
+                                Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(amount, currency)).
                                 Replace("#AMOUNTCURRENCY", currency).
                                 Replace("#COMMENTONE", commentOne).
                                 Replace("#ACCOUNTDESC", accountDesc).
@@ -267,7 +267,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         rowTexts += RowTemplate.
                                     Replace("#DONATIONDATE", prevDateEntered.ToString("dd.MM.yyyy")).
-                                    Replace("#AMOUNT", String.Format("{0:0.00}", prevAmount)).
+                                    Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmount, prevCurrency)).
                                     Replace("#AMOUNTCURRENCY", prevCurrency).
                                     Replace("#COMMENTONE", prevCommentOne).
                                     Replace("#ACCOUNTDESC", prevAccountDesc).
@@ -301,7 +301,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 rowTexts += RowTemplate.
                             Replace("#DONATIONDATE", prevDateEntered.ToString("dd.MM.yyyy")).
-                            Replace("#AMOUNT", String.Format("{0:0.00}", prevAmount)).
+                            Replace("#AMOUNT", StringHelper.FormatUsingCurrencyCode(prevAmount, prevCurrency)).
                             Replace("#AMOUNTCURRENCY", prevCurrency).
                             Replace("#COMMENTONE", prevCommentOne).
                             Replace("#ACCOUNTDESC", prevAccountDesc).
@@ -309,7 +309,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 prevAmount = 0.0M;
             }
 
-            msg = msg.Replace("#OVERALLAMOUNT", String.Format("{0:0.00}", sum)).
+            msg = msg.Replace("#OVERALLAMOUNT", StringHelper.FormatUsingCurrencyCode(sum, ABaseCurrency)).
                   Replace("#OVERALLAMOUNTCURRENCY", ABaseCurrency);
 
             if ((ADonations.Rows.Count == 1) && msg.Contains("#DONATIONDATE"))
@@ -498,7 +498,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     DateEntered = "";                           // so if this gift has several details, I'll blank the subsequent lines.
 
                     string DonorComment = "";
-                    FormValues["GiftAmount"].Add(DetailRow.GiftAmount.ToString("0.00"));
+                    FormValues["GiftAmount"].Add(StringHelper.FormatUsingCurrencyCode(DetailRow.GiftAmount, AGiftCurrency));
                     FormValues["GiftCurrency"].Add(AGiftCurrency);
                     FormValues["MotivationDetail"].Add(DetailRow.MotivationDetailCode);
                     GiftTotal += DetailRow.GiftAmount;
@@ -558,10 +558,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             } // foreach Gift
 
-            FormValues["GiftTotalAmount"].Add(GiftTotal.ToString("0.00"));
+            FormValues["GiftTotalAmount"].Add(StringHelper.FormatUsingCurrencyCode(GiftTotal, AGiftCurrency));
             FormValues["GiftTotalCurrency"].Add(AGiftCurrency);
-            FormValues["TxdTotal"].Add(TxdTotal.ToString("0.00"));
-            FormValues["NonTxdTotal"].Add(NonTxdTotal.ToString("0.00"));
+            FormValues["TxdTotal"].Add(StringHelper.FormatUsingCurrencyCode(TxdTotal, AGiftCurrency));
+            FormValues["NonTxdTotal"].Add(StringHelper.FormatUsingCurrencyCode(NonTxdTotal, AGiftCurrency));
 
             string PageHtml = TFormLettersTools.PrintSimpleHTMLLetter(
                 TAppSettingsManager.GetValue("Formletters.Path") + "\\GiftReceipt.html", FormValues);

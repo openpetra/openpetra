@@ -600,10 +600,10 @@ namespace Ict.Petra.Server.MReporting.MFinDev
 
         /// <summary>
         /// This report considers gifts given between the two specified dates, and can include all gifts or, if
-        ///	selected, those to a particular motivation, motivation detail or recipient. For the defined set of gifts
-        ///	and its total value, the donors are sorted into a list, starting with those who gave most, and showing
-        ///	the percentage that their gifts contributed to the total received (for this motivation or recipient, if
-        ///	specified) and the cumulative percentage, moving down the list starting with the top donor.
+        /// selected, those to a particular motivation, motivation detail or recipient. For the defined set of gifts
+        /// and its total value, the donors are sorted into a list, starting with those who gave most, and showing
+        /// the percentage that their gifts contributed to the total received (for this motivation or recipient, if
+        /// specified) and the cumulative percentage, moving down the list starting with the top donor.
         /// </summary>
         /// <param name="ATotalAmount">Pre calculated value of the total gifts given with these parameters</param>
         /// <param name="ATopXPercent">Upper limit of the percentage to show in the report</param>
