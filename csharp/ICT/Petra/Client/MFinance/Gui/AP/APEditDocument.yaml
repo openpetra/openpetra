@@ -38,7 +38,7 @@ RootNode:
                 Row3: [nudDiscountDays, txtDiscountPercentage]
                 Row4: [txtTotalAmount, txtExchangeRateToBase, btnLookupExchangeRate]
             Dock: Top
-        txtDocumentCode: {Label=Invoice &Number, Validation=true}
+        txtDocumentCode: {Label=Invoice &Number}
         cmbDocumentType:
             OptionalValues: [=Invoice, Credit Note]
             Label: T&ype

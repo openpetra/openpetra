@@ -1202,7 +1202,7 @@ namespace {#NAMESPACE}
     public bool SaveChanges()
     {
         bool ReturnValue = false;
-        
+
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
         // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
@@ -1227,7 +1227,7 @@ namespace {#NAMESPACE}
                 TVerificationResultCollection VerificationResult;
 
                 {#DATASETTYPE} SubmitDS = FMainDS.GetChangesTyped(true);
-                
+
                 if (SubmitDS == null)
                 {
                     // There is nothing to be saved.
@@ -1252,7 +1252,7 @@ namespace {#NAMESPACE}
                     this.Cursor = Cursors.Default;
 
                     TMessages.MsgSecurityException(Exp, this.GetType());
-                    
+
                     ReturnValue = false;
                     FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                     return ReturnValue;
@@ -1356,7 +1356,7 @@ namespace {#NAMESPACE}
 
                 ReturnValue = true;
                 FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-            }                
+            }
         }
 
         return ReturnValue;
