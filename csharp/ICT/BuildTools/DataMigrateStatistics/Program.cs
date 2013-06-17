@@ -11,10 +11,9 @@ using System.IO;
 using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
-using Ict.Testing.NUnitPetraServer;
+using Ict.Common.IO;
 using Ict.Tools.DBXML;
 using System.Collections.Generic;
-using Ict.Petra.Server.App.Core;
 
 namespace ICT.Tools.DataMigrateStatistics
 {
