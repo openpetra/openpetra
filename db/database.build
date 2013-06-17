@@ -131,6 +131,10 @@
             </fileset>
         </copy>        
 
+        <if test="${platform::is-unix()}">
+            <exec program="sh" commandline="-c &quot;chmod a+x ${sql2dia}&quot;"/>
+        </if>
+
         <!-- create project files -->
         <exec program="${sql2dia}" workingdir="${DBDoc.Output.dir}" 
             output="${OpenPetraRoot.dir}/db/doc/master_alltables.prj">
