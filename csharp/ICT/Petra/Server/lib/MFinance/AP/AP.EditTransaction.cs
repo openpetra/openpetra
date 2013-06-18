@@ -1432,9 +1432,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             supplierPaymentsRow.CurrencyCode = apDocumentRow.CurrencyCode;
                             supplierPaymentsRow.ExchangeRateToBase = apDocumentRow.ExchangeRateToBase; // The client may change this.
 
-                            // TODO: leave empty
-                            supplierPaymentsRow.Reference = "TODO";
-
                             TPartnerClass partnerClass;
                             string partnerShortName;
                             TPartnerServerLookups.GetPartnerShortName(

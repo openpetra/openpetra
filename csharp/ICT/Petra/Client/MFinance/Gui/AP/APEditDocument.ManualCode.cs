@@ -296,7 +296,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             txtDetailBaseAmount.CurrencyCode = FLedgerRow.BaseCurrency;
             dtpDateDue.Date = DocumentRow.DateIssued.AddDays(Convert.ToDouble(nudCreditTerms.Value));
 
-            if (FMainDS.AApDocumentDetail != null) // When the document is new, I need to create the first detail line.
+            if ((FMainDS.AApDocumentDetail == null) || (FMainDS.AApDocumentDetail.Rows.Count == 0)) // When the document is new, I need to create the first detail line.
             {
                 NewDetail(null, null);
             }
