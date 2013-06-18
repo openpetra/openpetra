@@ -61,6 +61,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         //This may be 13 so allow for it
         private Int32 FNumberOfPeriods;
         private bool FHas13Periods;
+        private bool FHas14Periods;
 
         private bool FLoadCompleted = false;
         private bool FRejectYearChange = false;
@@ -86,14 +87,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 FNumberOfPeriods = ledgerRow.NumberOfAccountingPeriods;
                 
                 FHas13Periods = (FNumberOfPeriods == 13);
-                txtPeriod13Amount.Visible = FHas13Periods;
-                lblPeriod13Amount.Visible = FHas13Periods;
-                txtPeriod13Index.Visible = FHas13Periods;
-                lblPeriod13Index.Visible = FHas13Periods;
+                FHas14Periods = (FNumberOfPeriods == 14);
+
+                ArrangeTextboxesForPeriodNumber();
                 
                 lblPerPeriodAmount.Text = "Amount for periods 1 to " + (FNumberOfPeriods - 1).ToString() + ":";
                 lblLastPeriodAmount.Text = "Amount for period " + FNumberOfPeriods.ToString() + ":";
-
                 
                 // to get an empty ABudgetFee table, instead of null reference
                 FMainDS.Merge(new BudgetTDS());
@@ -126,6 +125,85 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
         }
 
+        private void ArrangeTextboxesForPeriodNumber()
+        {
+				if (FNumberOfPeriods == 12)
+				{
+					txtPeriod07Amount.Top = txtPeriod08Amount.Top;
+					txtPeriod07Amount.Left = txtPeriod08Amount.Left;
+					txtPeriod08Amount.Top = txtPeriod09Amount.Top;
+					txtPeriod08Amount.Left = txtPeriod09Amount.Left;
+					txtPeriod09Amount.Top = txtPeriod10Amount.Top;
+					txtPeriod09Amount.Left = txtPeriod10Amount.Left;
+					txtPeriod10Amount.Top = txtPeriod11Amount.Top;
+					txtPeriod10Amount.Left = txtPeriod11Amount.Left;
+					txtPeriod11Amount.Top = txtPeriod12Amount.Top;
+					txtPeriod11Amount.Left = txtPeriod12Amount.Left;
+					txtPeriod12Amount.Top = txtPeriod13Amount.Top;
+					txtPeriod12Amount.Left = txtPeriod13Amount.Left;
+					txtTotalAdhocAmount.Top = txtPeriod14Amount.Top;
+					txtTotalAdhocAmount.Left = txtPeriod14Amount.Left;
+					lblPeriod14Amount.Text = lblTotalAdhocAmount.Text;
+					lblPeriod13Amount.Text = lblPeriod12Amount.Text;
+					lblPeriod12Amount.Text = lblPeriod11Amount.Text;
+					lblPeriod11Amount.Text = lblPeriod10Amount.Text;
+					lblPeriod10Amount.Text = lblPeriod09Amount.Text;
+					lblPeriod09Amount.Text = lblPeriod08Amount.Text;
+					lblPeriod08Amount.Text = lblPeriod07Amount.Text;
+					lblPeriod07Amount.Visible = false;
+	                txtPeriod14Amount.Visible = false;
+					lblPeriod14Amount.Visible = true;
+					lblTotalAdhocAmount.Visible = false;
+
+					txtPeriod07Index.Top = txtPeriod08Index.Top;
+					txtPeriod07Index.Left = txtPeriod08Index.Left;
+					txtPeriod08Index.Top = txtPeriod09Index.Top;
+					txtPeriod08Index.Left = txtPeriod09Index.Left;
+					txtPeriod09Index.Top = txtPeriod10Index.Top;
+					txtPeriod09Index.Left = txtPeriod10Index.Left;
+					txtPeriod10Index.Top = txtPeriod11Index.Top;
+					txtPeriod10Index.Left = txtPeriod11Index.Left;
+					txtPeriod11Index.Top = txtPeriod12Index.Top;
+					txtPeriod11Index.Left = txtPeriod12Index.Left;
+					txtPeriod12Index.Top = txtPeriod13Index.Top;
+					txtPeriod12Index.Left = txtPeriod13Index.Left;
+					txtInflateBaseTotalAmount.Top = txtPeriod14Index.Top;
+					txtInflateBaseTotalAmount.Left = txtPeriod14Index.Left;
+					lblPeriod14Index.Text = lblInflateBaseTotalAmount.Text;
+					lblPeriod13Index.Text = lblPeriod12Index.Text;
+					lblPeriod12Index.Text = lblPeriod11Index.Text;
+					lblPeriod11Index.Text = lblPeriod10Index.Text;
+					lblPeriod10Index.Text = lblPeriod09Index.Text;
+					lblPeriod09Index.Text = lblPeriod08Index.Text;
+					lblPeriod08Index.Text = lblPeriod07Index.Text;
+					lblPeriod07Index.Visible = false;
+	                txtPeriod14Index.Visible = false;
+					lblPeriod14Index.Visible = true;
+					lblInflateBaseTotalAmount.Visible = false;
+				}
+				else if (FNumberOfPeriods == 13)
+				{
+	                txtPeriod14Amount.Visible = false;
+	                lblPeriod14Amount.Visible = false;
+
+	                txtPeriod14Index.Visible = false;
+	                lblPeriod14Index.Visible = false;
+				}
+				else if (FNumberOfPeriods == 14)
+				{
+	                txtPeriod13Amount.Visible = true;
+	                lblPeriod13Amount.Visible = true;
+	                txtPeriod14Amount.Visible = true;
+	                lblPeriod14Amount.Visible = true;
+
+	                txtPeriod13Index.Visible = true;
+	                lblPeriod13Index.Visible = true;
+	                txtPeriod14Index.Visible = true;
+	                lblPeriod14Index.Visible = true;
+				}
+                
+        }
+        
         private void NewRowManual(ref ABudgetRow ARow)
         {
             if (!cmbDetailAccountCode.Enabled)
@@ -502,9 +580,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             periodAmounts[9] = Convert.ToDecimal(txtPeriod10Amount.NumberValueDecimal);
             periodAmounts[10] = Convert.ToDecimal(txtPeriod11Amount.NumberValueDecimal);
             periodAmounts[11] = Convert.ToDecimal(txtPeriod12Amount.NumberValueDecimal);
-			if (FHas13Periods)
+			if (FHas13Periods || FHas14Periods)
 			{
 				periodAmounts[12] = Convert.ToDecimal(txtPeriod13Amount.NumberValueDecimal);
+			}
+			
+			if (FHas14Periods)
+			{
+				periodAmounts[13] = Convert.ToDecimal(txtPeriod14Amount.NumberValueDecimal);
 			}
 
             int budgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
@@ -686,9 +769,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             periodAmounts[9] = periodAmounts[8] * (1 + (Convert.ToDecimal(txtPeriod10Index.NumberValueDecimal) / 100));
             periodAmounts[10] = periodAmounts[9] * (1 + (Convert.ToDecimal(txtPeriod11Index.NumberValueDecimal) / 100));
             periodAmounts[11] = periodAmounts[10] * (1 + (Convert.ToDecimal(txtPeriod12Index.NumberValueDecimal) / 100));
-			if (FHas13Periods)
+			if (FHas13Periods || FHas14Periods)
 			{
 				periodAmounts[12] = periodAmounts[11] * (1 + (Convert.ToDecimal(txtPeriod13Index.NumberValueDecimal) / 100));
+			}
+			if (FHas14Periods)
+			{
+				periodAmounts[13] = periodAmounts[12] * (1 + (Convert.ToDecimal(txtPeriod14Index.NumberValueDecimal) / 100));
 			}
             
             
@@ -909,9 +996,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             txtPeriod10Index.NumberValueDecimal = periodValues[9];
             txtPeriod11Index.NumberValueDecimal = periodValues[10];
             txtPeriod12Index.NumberValueDecimal = periodValues[11];
-            if (FHas13Periods)
+            if (FHas13Periods || FHas14Periods)
             {
             	txtPeriod13Index.NumberValueDecimal = periodValues[12];
+            }
+
+            if (FHas14Periods)
+            {
+            	txtPeriod14Index.NumberValueDecimal = periodValues[13];
             }
 
             txtInflateBaseTotalAmount.NumberValueDecimal = totalAmount; //.Text = StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
@@ -935,6 +1027,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 txtPeriod11Amount.NumberValueDecimal = 0;
                 txtPeriod12Amount.NumberValueDecimal = 0;
                 txtPeriod13Amount.NumberValueDecimal = 0;
+                txtPeriod14Amount.NumberValueDecimal = 0;
                 txtTotalAdhocAmount.NumberValueDecimal = 0;
             }
 
@@ -978,6 +1071,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 txtPeriod11Index.NumberValueDecimal = 0;
                 txtPeriod12Index.NumberValueDecimal = 0;
                 txtPeriod13Index.NumberValueDecimal = 0;
+                txtPeriod14Index.NumberValueDecimal = 0;
                 txtInflateBaseTotalAmount.NumberValueDecimal = 0;
             }
         }
@@ -998,6 +1092,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             txtPeriod11Amount.CurrencySymbol = String.Empty;
             txtPeriod12Amount.CurrencySymbol = String.Empty;
             txtPeriod13Amount.CurrencySymbol = String.Empty;
+            txtPeriod14Amount.CurrencySymbol = String.Empty;
             //Same controls
             txtAmount.CurrencySymbol = String.Empty;
             //Split controls

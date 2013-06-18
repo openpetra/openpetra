@@ -7,9 +7,8 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: edit
     Template: windowEdit
-    #Template: windowEditUIConnector
+    WindowHeight: 575
     WindowWidth: 575
-    #WindowHeight: 900
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
@@ -61,7 +60,8 @@ RootNode:
                 Row3: [txtPeriod04Amount, txtPeriod11Amount]
                 Row4: [txtPeriod05Amount, txtPeriod12Amount]
                 Row5: [txtPeriod06Amount, txtPeriod13Amount]
-                Row6: [txtPeriod07Amount, txtTotalAdhocAmount]
+                Row6: [txtPeriod07Amount, txtPeriod14Amount]
+                Row7: [txtEmptyColumn1, txtTotalAdhocAmount]
         pnlBudgetTypeSame:
             Dock: Fill
             Visible: false
@@ -94,8 +94,9 @@ RootNode:
                 Row3: [txtPeriod04Index, txtPeriod11Index]
                 Row4: [txtPeriod05Index, txtPeriod12Index]
                 Row5: [txtPeriod06Index, txtPeriod13Index]
-                Row6: [txtPeriod07Index, txtInflateBaseTotalAmount]
-        grpBudgetDetails: {ColSpan=1, Width:535, Height: 210}
+                Row6: [txtPeriod07Index, txtPeriod14Index]
+                Row7: [txtEmptyColumn2, txtInflateBaseTotalAmount]
+        grpBudgetDetails: {ColSpan=1, Width:535, Height: 230}
             Align: top-left
             Controls: 
                 Row0: [pnlBudgetTypeAdhoc]
@@ -120,6 +121,8 @@ RootNode:
         txtPeriod11Amount: {Label=Period 11, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
         txtPeriod12Amount: {Label=Period 12, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
         txtPeriod13Amount: {Label=Period 13, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod14Amount: {Label=Period 14, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtEmptyColumn1: {NoLabel=true, Visible=false}
         txtTotalAdhocAmount: {Label=Total, Format=Decimal, ReadOnly=true, Width=150}
         #Same controls
         txtAmount: {Label = Amount, Format=Currency, OnLeave=ProcessBudgetTypeSame}
@@ -147,6 +150,8 @@ RootNode:
         txtPeriod11Index: {Label=Period 11 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
         txtPeriod12Index: {Label=Period 12 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
         txtPeriod13Index: {Label=Period 13 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod14Index: {Label=Period 14 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtEmptyColumn2: {NoLabel=true, Visible=false}
         txtInflateBaseTotalAmount: {Label=Total, Format=Decimal, ReadOnly=true, Width=140}
     Menu:
     Toolbar:
