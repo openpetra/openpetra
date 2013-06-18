@@ -78,6 +78,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             {
             	FLedgerNumber = value;
 
+            	LoadBudgets();
+            }
+        }
+
+        private void LoadBudgets()
+        {
                 FMainDS = TRemote.MFinance.Budget.WebConnectors.LoadBudget(FLedgerNumber);
                 
                 //Prepare form for correct number of periods
@@ -89,10 +95,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 FHas13Periods = (FNumberOfPeriods == 13);
                 FHas14Periods = (FNumberOfPeriods == 14);
 
-                ArrangeTextboxesForPeriodNumber();
-                
-                lblPerPeriodAmount.Text = "Amount for periods 1 to " + (FNumberOfPeriods - 1).ToString() + ":";
-                lblLastPeriodAmount.Text = "Amount for period " + FNumberOfPeriods.ToString() + ":";
+				//Setup form and controls
+                this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
+                ClearBudgetTextboxCurrencyFormat();
+                ArrangeControlsForPeriodNumber();
                 
                 // to get an empty ABudgetFee table, instead of null reference
                 FMainDS.Merge(new BudgetTDS());
@@ -109,23 +115,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     FCurrentBudgetYear = TFinanceControls.GetLedgerCurrentFinancialYear(FLedgerNumber);
                 }
 
-                DataView myDataView = FMainDS.ABudget.DefaultView;
-                myDataView.AllowNew = false;
-                myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), FCurrentBudgetYear);
-                myDataView.Sort = String.Format("{0} ASC, {1} ASC", ABudgetTable.GetCostCentreCodeDBName(), ABudgetTable.GetAccountCodeDBName());
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+                SetBudgetDefaultView();
                 grdDetails.AutoSizeCells();
 
-                this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
-
-                ClearBudgetTextboxCurrencyFormat();
+                SelectRowInGrid(0);
+                
                 FCurrencyCode = FMainDS.ALedger[0].BaseCurrency;
-
                 FLoadCompleted = true;
-            }
         }
 
-        private void ArrangeTextboxesForPeriodNumber()
+        private void SetBudgetDefaultView()
+        {
+            DataView myDataView = FMainDS.ABudget.DefaultView;
+            myDataView.AllowNew = false;
+            myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), FCurrentBudgetYear);
+            myDataView.Sort = String.Format("{0} ASC, {1} ASC", ABudgetTable.GetCostCentreCodeDBName(), ABudgetTable.GetAccountCodeDBName());
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+        }
+        
+        private void ArrangeControlsForPeriodNumber()
         {
 				if (FNumberOfPeriods == 12)
 				{
@@ -201,7 +209,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 	                txtPeriod14Index.Visible = true;
 	                lblPeriod14Index.Visible = true;
 				}
-                
+
+                lblPerPeriodAmount.Text = "Amount for periods 1 to " + (FNumberOfPeriods - 1).ToString() + ":";
+                lblLastPeriodAmount.Text = "Amount for period " + FNumberOfPeriods.ToString() + ":";
         }
         
         private void NewRowManual(ref ABudgetRow ARow)
@@ -211,7 +221,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 EnableBudgetEntry(true);
             }
 
-            ARow.BudgetSequence = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_budget));;
+            ARow.BudgetSequence = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_budget));
             ARow.LedgerNumber = FLedgerNumber;
             ARow.Revision = CreateBudgetRevisionRow(FLedgerNumber, FCurrentBudgetYear);
             ARow.Year = FCurrentBudgetYear;
@@ -230,19 +240,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void EnableBudgetEntry(bool AAllowEntry)
         {
-            rgrSelectBudgetType.Enabled = AAllowEntry;
+            pnlDetails.Enabled = AAllowEntry;
+        	rgrSelectBudgetType.Enabled = AAllowEntry;
             cmbDetailCostCentreCode.Enabled = AAllowEntry;
             cmbDetailAccountCode.Enabled = AAllowEntry;
 
-            if (!AAllowEntry)
-            {
-                pnlBudgetTypeAdhoc.Visible = false;
-                pnlBudgetTypeSame.Visible = false;
-                pnlBudgetTypeSplit.Visible = false;
-                pnlBudgetTypeInflateN.Visible = false;
-                pnlBudgetTypeInflateBase.Visible = false;
-            }
-            else
+            if (AAllowEntry)
             {
                 pnlBudgetTypeAdhoc.Visible = rbtAdHoc.Checked;
                 pnlBudgetTypeSame.Visible = rbtSame.Checked;
@@ -250,19 +253,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 pnlBudgetTypeInflateN.Visible = rbtInflateN.Checked;
                 pnlBudgetTypeInflateBase.Visible = rbtInflateBase.Checked;
             }
+            else
+            {
+                pnlBudgetTypeAdhoc.Visible = false;
+                pnlBudgetTypeSame.Visible = false;
+                pnlBudgetTypeSplit.Visible = false;
+                pnlBudgetTypeInflateN.Visible = false;
+                pnlBudgetTypeInflateBase.Visible = false;
+            }
         }
 
         private void SelectBudgetYear(Object sender, EventArgs e)
         {
             if (FLoadCompleted)
             {
-                //MessageBox.Show(RejectYearChange.ToString());
                 if (FRejectYearChange)
                 {
                     return;
                 }
 
-                //MessageBox.Show(FMainDS.ABudget.Rows.Count.ToString());
                 if (FPetraUtilsObject.HasChanges)
                 {
                     FRejectYearChange = true;
@@ -273,33 +282,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 if (int.TryParse(cmbSelectBudgetYear.GetSelectedString(), out FCurrentBudgetYear))
                 {
-                    //MessageBox.Show(cmbSelectBudgetYear.GetSelectedString() + " - " + CurrentBudgetYear.ToString());
-                    DataView myDataView = FMainDS.ABudget.DefaultView;
-                    myDataView.AllowNew = false;
-                    myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), FCurrentBudgetYear);
-                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-
-                    if (grdDetails.Rows.Count > 0)
-                    {
-                        SelectByIndex(0);
-                    }
-
-                    if (FMainDS.ABudget.DefaultView.Count == 0)
-                    {
-                        EnableBudgetEntry(false);
-                    }
-                    else
-                    {
-                        EnableBudgetEntry(true);
-
-                        // display the details of the currently selected row
-                        if (FPreviouslySelectedDetailRow != null)
-                        {
-                            ShowDetails(FPreviouslySelectedDetailRow);
-                        }
-
-                        pnlDetails.Enabled = true;
-                    }
+            		SetBudgetDefaultView();
+            			
+            		EnableBudgetEntry((grdDetails.Rows.Count > 1));
+            		
+            		SelectRowInGrid(1);
                 }
             }
         }
@@ -432,9 +419,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), FCurrentBudgetYear);
                     grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
-                    if (grdDetails.Rows.Count > 0)
+                    if (grdDetails.Rows.Count > 1)
                     {
-                        SelectByIndex(0);
+                    	SelectRowInGrid(1);
                     }
 
                     FPetraUtilsObject.SetChangedFlag();
@@ -443,9 +430,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 {
                     MessageBox.Show("The year contained in the import file is different to the current selected year.");
 
-                    if (grdDetails.Rows.Count > 0)
+                    if (grdDetails.Rows.Count > 1)
                     {
-                        SelectByIndex(0);
+                    	SelectRowInGrid(1);
                     }
                 }
                 else
@@ -502,30 +489,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
 
             return rowIndex;
-        }
-
-        private void SelectByIndex(int rowIndex)
-        {
-            if (rowIndex >= grdDetails.Rows.Count)
-            {
-                rowIndex = grdDetails.Rows.Count - 1;
-            }
-
-            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
-            {
-                rowIndex = 1;
-            }
-
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
-            }
         }
 
         private void NewBudgetType(System.Object sender, EventArgs e)
@@ -909,45 +872,52 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             ABudgetPeriodRow budgetPeriodRow;
 
-            for (int i = 1; i <= FNumberOfPeriods; i++)
+            try
             {
-                budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { FPreviouslySelectedDetailRow.BudgetSequence, i });
-
-                if (budgetPeriodRow != null)
-                {
-                    currentPeriodAmount = budgetPeriodRow.BudgetBase;
-
-                    if (i == 1)
-                    {
-                        firstPeriodAmount = currentPeriodAmount;
-                    }
-                    else
-                    {
-                        if (currentPeriodAmount != firstPeriodAmount)
-                        {
-                            inflateAfterPeriod = i - 1;
-                            inflationRate = (currentPeriodAmount - firstPeriodAmount) / firstPeriodAmount * 100;
-                            totalAmount = firstPeriodAmount * inflateAfterPeriod + currentPeriodAmount * (FNumberOfPeriods - inflateAfterPeriod);
-                            break;
-                        }
-                        else if (i == FNumberOfPeriods) // and by implication CurrentPeriodAmount == FirstPeriodAmount
-                        {
-                            //This is an odd case that the user should never implement, but still needs to be covered.
-                            //  It is equivalent to using BUDGET TYPE: SAME
-                            inflateAfterPeriod = 0;
-                            inflationRate = 0;
-                            totalAmount = currentPeriodAmount * FNumberOfPeriods;
-                        }
-                    }
-                }
-
-                budgetPeriodRow = null;
+	            for (int i = 1; i <= FNumberOfPeriods; i++)
+	            {
+	                budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { FPreviouslySelectedDetailRow.BudgetSequence, i });
+	
+	                if (budgetPeriodRow != null)
+	                {
+	                    currentPeriodAmount = budgetPeriodRow.BudgetBase;
+	
+	                    if (i == 1)
+	                    {
+	                        firstPeriodAmount = currentPeriodAmount;
+	                    }
+	                    else
+	                    {
+	                        if (currentPeriodAmount != firstPeriodAmount)
+	                        {
+	                            inflateAfterPeriod = i - 1;
+	                            inflationRate = (currentPeriodAmount - firstPeriodAmount) / firstPeriodAmount * 100;
+	                            totalAmount = firstPeriodAmount * inflateAfterPeriod + currentPeriodAmount * (FNumberOfPeriods - inflateAfterPeriod);
+	                            break;
+	                        }
+	                        else if (i == FNumberOfPeriods) // and by implication CurrentPeriodAmount == FirstPeriodAmount
+	                        {
+	                            //This is an odd case that the user should never implement, but still needs to be covered.
+	                            //  It is equivalent to using BUDGET TYPE: SAME
+	                            inflateAfterPeriod = 0;
+	                            inflationRate = 0;
+	                            totalAmount = currentPeriodAmount * FNumberOfPeriods;
+	                        }
+	                    }
+	                }
+	
+	                budgetPeriodRow = null;
+	            }
+	
+	            txtFirstPeriodAmount.NumberValueDecimal = firstPeriodAmount;
+	            txtInflateAfterPeriod.NumberValueInt = inflateAfterPeriod;
+	            txtInflationRate.NumberValueDecimal = inflationRate;
+	            txtInflateNTotalAmount.NumberValueDecimal = totalAmount; //.Text = StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
             }
-
-            txtFirstPeriodAmount.NumberValueDecimal = firstPeriodAmount;
-            txtInflateAfterPeriod.NumberValueInt = inflateAfterPeriod;
-            txtInflationRate.NumberValueDecimal = inflationRate;
-            txtInflateNTotalAmount.NumberValueDecimal = totalAmount; //.Text = StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
+            catch (Exception ex)
+            {
+            	MessageBox.Show(Catalog.GetString("Error in displaying budget type: InflateN: " + ex.Message));
+            }
         }
 
         private void DisplayBudgetTypeInflateBase()
@@ -1109,7 +1079,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             ClearBudgetTypeTextboxes("All");
 
-            if ((grdDetails.Rows.Count == 0) && rgrSelectBudgetType.Enabled)
+            if ((grdDetails.Rows.Count < 2) && rgrSelectBudgetType.Enabled)
             {
                 EnableBudgetEntry(false);
                 return;
@@ -1226,7 +1196,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private int CreateBudgetRevisionRow(int ALedgerNumber, int AYear)
         {
-            int newRevision = 0;
+            //Always to be zero
+        	int newRevision = 0;
 
             if (FMainDS.ABudgetRevision.Rows.Find(new object[] { ALedgerNumber, AYear, newRevision }) == null)
             {
@@ -1237,12 +1208,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 BudgetRevisionRow.Revision = newRevision;
                 FMainDS.ABudgetRevision.Rows.Add(BudgetRevisionRow);
-
-                //TODO check with Rob about budget versioning
-                //              while (FMainDS.ABudgetRevision.Rows.Find(new object[] { ALedgerNumber, AYear, newRevision }) != null)
-                //                {
-                //                    newRevision++;
-                //                }
             }
 
             return newRevision;
