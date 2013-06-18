@@ -11,7 +11,7 @@ RootNode:
     WindowWidth: 575
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
-        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}      
         actImport: {Label=&Import, ActionClick=ImportBudget}      
     Controls:
         pnlContent:
@@ -36,7 +36,7 @@ RootNode:
             Align: left
             NoLabel: true
             Enabled: false
-            OnChange: NewBudgetType
+            OnChange: BudgetTypeChanged
         btnNew: {Action=actNew, Stretch=horizontally}
         btnDelete: {Action=actDelete, Stretch=horizontally}
         btnImport: {Action=actImport, Stretch=horizontally}

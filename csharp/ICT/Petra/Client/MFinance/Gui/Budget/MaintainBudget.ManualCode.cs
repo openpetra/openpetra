@@ -240,7 +240,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void EnableBudgetEntry(bool AAllowEntry)
         {
-            pnlDetails.Enabled = AAllowEntry;
+        	pnlDetails.Enabled = AAllowEntry;
         	rgrSelectBudgetType.Enabled = AAllowEntry;
             cmbDetailCostCentreCode.Enabled = AAllowEntry;
             cmbDetailAccountCode.Enabled = AAllowEntry;
@@ -265,7 +265,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void SelectBudgetYear(Object sender, EventArgs e)
         {
-            if (FLoadCompleted)
+        	if (FLoadCompleted)
             {
                 if (FRejectYearChange)
                 {
@@ -275,7 +275,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 if (FPetraUtilsObject.HasChanges)
                 {
                     FRejectYearChange = true;
-                    MessageBox.Show("Please save changes before attempting to change year.");
+                    MessageBox.Show(Catalog.GetString("Please save changes before attempting to change year."));
                     cmbSelectBudgetYear.SetSelectedInt32(FCurrentBudgetYear);
                     return;
                 }
@@ -284,20 +284,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 {
             		SetBudgetDefaultView();
             			
-            		EnableBudgetEntry((grdDetails.Rows.Count > 1));
-            		
             		SelectRowInGrid(1);
+            		
+            		if (FPetraUtilsObject.HasChanges)
+            		{
+            			//Change of year clears boxes in some circumstances so need to save
+            			SaveChanges();
+            		}
                 }
             }
+        	
+        	
         }
 
         private TSubmitChangesResult StoreManualCode(ref BudgetTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
-            //Reset this flag
-            FRejectYearChange = false;
-
             TSubmitChangesResult TSCR = TRemote.MFinance.Budget.WebConnectors.SaveBudget(ref ASubmitChanges, out AVerificationResult);
 
+            //Reset this flag if the save was successful
+            FRejectYearChange = !(TSCR == TSubmitChangesResult.scrOK);
+            
             return TSCR;
         }
 
@@ -414,30 +420,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
 
-                    DataView myDataView = FMainDS.ABudget.DefaultView;
-                    myDataView.AllowNew = false;
-                    myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), FCurrentBudgetYear);
-                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-
-                    if (grdDetails.Rows.Count > 1)
-                    {
-                    	SelectRowInGrid(1);
-                    }
+                	SetBudgetDefaultView();
+                	
+                   	SelectRowInGrid(1);
 
                     FPetraUtilsObject.SetChangedFlag();
                 }
                 else if (numRecsImported == -1)
                 {
-                    MessageBox.Show("The year contained in the import file is different to the current selected year.");
+                	MessageBox.Show(Catalog.GetString("The year contained in the import file is different to the current selected year."));
 
-                    if (grdDetails.Rows.Count > 1)
-                    {
-                    	SelectRowInGrid(1);
-                    }
+                   	SelectRowInGrid(1);
                 }
                 else
                 {
-                    MessageBox.Show("No records found to import");
+                	MessageBox.Show(Catalog.GetString("No records found to import"));
                 }
             }
         }
@@ -454,7 +451,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
 
             //TODO: Complete the budget export code
-            MessageBox.Show("Not yet implemented.");
+            MessageBox.Show(Catalog.GetString("Not yet implemented."));
             //exportForm = new TFrmGiftBatchExport(FPetraUtilsObject.GetForm());
             //exportForm.LedgerNumber = FLedgerNumber;
             //exportForm.Show();
@@ -477,23 +474,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
         }
 
-        private int CurrentRowIndex()
+        private void BudgetTypeChanged(System.Object sender, EventArgs e)
         {
-            int rowIndex = -1;
-
-            SourceGrid.RangeRegion selectedRegion = grdDetails.Selection.GetSelectionRegion();
-
-            if ((selectedRegion != null) && (selectedRegion.GetRowsIndex().Length > 0))
-            {
-                rowIndex = selectedRegion.GetRowsIndex()[0];
-            }
-
-            return rowIndex;
-        }
-
-        private void NewBudgetType(System.Object sender, EventArgs e)
-        {
-			ClearBudgetTypeTextboxes();
+			ClearBudgetTypeTextboxesExcept("None");
 
 			pnlBudgetTypeAdhoc.Visible = rbtAdHoc.Checked;
             pnlBudgetTypeSame.Visible = rbtSame.Checked;
@@ -572,7 +555,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 else
                 {
                     //TODO: add error handling
-                    MessageBox.Show("Error trying to write BudgetPeriod values");
+                    MessageBox.Show(Catalog.GetString("Error trying to write BudgetPeriod values"));
                 }
 
                 budgetPeriodRow = null;
@@ -603,7 +586,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 else
                 {
                     //TODO: add error handling
-                    MessageBox.Show("Error trying to write BudgetPeriod values");
+                    MessageBox.Show(Catalog.GetString("Error trying to write BudgetPeriod values"));
                 }
 
                 budgetPeriodRow = null;
@@ -648,7 +631,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 else
                 {
                     //TODO: add error handling
-                    MessageBox.Show("Error trying to write BudgetPeriod values");
+                    MessageBox.Show(Catalog.GetString("Error trying to write BudgetPeriod values"));
                 }
 
                 budgetPeriodRow = null;
@@ -706,7 +689,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 else
                 {
                     //TODO: add error handling
-                    MessageBox.Show("Error trying to write BudgetPeriod values");
+                    MessageBox.Show(Catalog.GetString("Error trying to write BudgetPeriod values"));
                 }
 
                 budgetPeriodRow = null;
@@ -761,7 +744,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 else
                 {
                     //TODO: add error handling
-                    MessageBox.Show("Error trying to write BudgetPeriod values");
+                    MessageBox.Show(Catalog.GetString("Error trying to write BudgetPeriod values"));
                 }
 
                 budgetPeriodRow = null;
@@ -979,7 +962,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             txtInflateBaseTotalAmount.NumberValueDecimal = totalAmount; //.Text = StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
         }
 
-        private void ClearBudgetTypeTextboxes(string AExcludeType = "")
+        private void ClearBudgetTypeTextboxesExcept(string AExcludeType = "")
         {
             if (AExcludeType != MFinanceConstants.BUDGET_ADHOC)
             {
@@ -1077,7 +1060,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void ShowDetailsManual(ABudgetRow ARow)
         {
-            ClearBudgetTypeTextboxes("All");
+            ClearBudgetTypeTextboxesExcept("None");
 
             if ((grdDetails.Rows.Count < 2) && rgrSelectBudgetType.Enabled)
             {
@@ -1139,7 +1122,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     if (FPetraUtilsObject.HasChanges)
                     {
                         ProcessBudgetTypeAdhoc(null, null);
-                        ClearBudgetTypeTextboxes(MFinanceConstants.BUDGET_ADHOC);
+                        ClearBudgetTypeTextboxesExcept(MFinanceConstants.BUDGET_ADHOC);
                     }
 
                     ARow.BudgetTypeCode = MFinanceConstants.BUDGET_ADHOC;
@@ -1149,7 +1132,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     if (FPetraUtilsObject.HasChanges)
                     {
                         ProcessBudgetTypeSame(null, null);
-                        ClearBudgetTypeTextboxes(MFinanceConstants.BUDGET_SAME);
+                        ClearBudgetTypeTextboxesExcept(MFinanceConstants.BUDGET_SAME);
                     }
 
                     ARow.BudgetTypeCode = MFinanceConstants.BUDGET_SAME;
@@ -1159,7 +1142,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     if (FPetraUtilsObject.HasChanges)
                     {
                         ProcessBudgetTypeSplit(null, null);
-                        ClearBudgetTypeTextboxes(MFinanceConstants.BUDGET_SPLIT);
+                        ClearBudgetTypeTextboxesExcept(MFinanceConstants.BUDGET_SPLIT);
                     }
 
                     ARow.BudgetTypeCode = MFinanceConstants.BUDGET_SPLIT;
@@ -1169,7 +1152,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     if (FPetraUtilsObject.HasChanges)
                     {
                         ProcessBudgetTypeInflateN(null, null);
-                        ClearBudgetTypeTextboxes(MFinanceConstants.BUDGET_INFLATE_N);
+                        ClearBudgetTypeTextboxesExcept(MFinanceConstants.BUDGET_INFLATE_N);
                     }
 
                     ARow.BudgetTypeCode = MFinanceConstants.BUDGET_INFLATE_N;
@@ -1179,7 +1162,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     if (FPetraUtilsObject.HasChanges)
                     {
                         ProcessBudgetTypeInflateBase(null, null);
-                        ClearBudgetTypeTextboxes(MFinanceConstants.BUDGET_INFLATE_BASE);
+                        ClearBudgetTypeTextboxesExcept(MFinanceConstants.BUDGET_INFLATE_BASE);
                     }
 
                     ARow.BudgetTypeCode = MFinanceConstants.BUDGET_INFLATE_BASE;
