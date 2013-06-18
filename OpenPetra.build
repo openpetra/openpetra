@@ -28,6 +28,7 @@ list of available commands:
   deleteBakFiles: delete all backup files
   initConfigFiles: write and overwrite the config files for client, server and testing, and the version.txt
   test: will run the NUnit tests
+  devzip: build a zip file for developers for easy start
 
 compat:
   createSQLStatements: generates the sql create table statements etc from the petra.xml
@@ -345,5 +346,31 @@ useful parameters
     </echo>
 </target>
 
+<target name="devzip">
+    <!-- todo write OpenPetra.build.config with sqlite -->
+    <call target="quickClean"/>
+    <call target="generateSolution"/>
+    <call target="recreateDatabase"/>
+    <call target="resetDatabase"/>
+    <copy file="${dir.delivery}/bin/Ict.Tools.DevelopersAssistant.exe" todir="${dir.root}"/>
+    <script prefix="utils" language="C#">
+         <code>
+             <![CDATA[
+                 [Function("GetFormattedDate")]
+                 public static string GetFormattedDate() {
+                    return System.DateTime.Now.ToString("yyyy-MM-dd");
+                 }
+             ]]>
+         </code>
+   </script> 
+    <zip zipfile="${dir.root}/../openpetra_development_${utils::GetFormattedDate()}.zip">
+       <fileset basedir="${dir.root}" prefix="openpetra">
+         <include name="**/*" />
+         <exclude name="**/.bzr/**"/>
+         <exclude name="**/.git/**"/>
+       </fileset>
+    </zip>
+    <!-- todo upload the zip file to sourceforge? -->
+</target>
 </project>
 
