@@ -67,12 +67,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AForeignCurrencyName"></param>
         /// <param name="ABatchStatus"></param>
         /// <param name="AJournalStatus"></param>
+        /// <param name="AFromBatchTab"></param>
         public void LoadTransactions(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             Int32 AJournalNumber,
             string AForeignCurrencyName,
             string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED,
-            string AJournalStatus = MFinanceConstants.BATCH_UNPOSTED)
+            string AJournalStatus = MFinanceConstants.BATCH_UNPOSTED,
+            bool AFromBatchTab = false)
         {
             FBatchRow = GetBatchRow();
 
@@ -86,7 +88,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Same as previously selected
                 if ((FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (GetSelectedRowIndex() > 0))
                 {
-                    GetDetailsFromControls(GetSelectedDetailRow());
+                    if (AFromBatchTab)
+                    {
+                        SelectRowInGrid(GetSelectedRowIndex());
+                    }
+                    else
+                    {
+                        GetDetailsFromControls(GetSelectedDetailRow());
+                    }
                 }
 
                 return;
@@ -150,11 +159,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     true, false, ActiveOnly, false, AForeignCurrencyName);
                 TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
             }
-
-            ShowDataManual();
-
-            btnNew.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
-            btnDelete.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
 
             //This will update transaction headers
             UpdateTransactionTotals(false);
@@ -336,6 +340,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 pnlTransAnalysisAttributes.Enabled = true;
             }
 
+            if (!btnDeleteAll.Enabled)
+            {
+                btnDeleteAll.Enabled = true;
+            }
+
             cmbDetailCostCentreCode.Focus();
 
             //Needs to be called at end of addition process to process Analysis Attributes
@@ -398,6 +407,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 string TransactionCurrency = FJournalRow.TransactionCurrency;
                 string BaseCurrency = FMainDS.ALedger[0].BaseCurrency;
 
+                txtJournalNumber.Text = FJournalNumber.ToString();
+                txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+                txtBatchNumber.Text = FBatchNumber.ToString();
+
                 lblBaseCurrency.Text = String.Format(Catalog.GetString("{0} (Base Currency)"), BaseCurrency);
                 lblTransactionCurrency.Text = String.Format(Catalog.GetString("{0} (Transaction Currency)"), TransactionCurrency);
                 txtDebitAmountBase.CurrencySymbol = BaseCurrency;
@@ -434,13 +447,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(ATransactionRow ARow)
         {
-            if (txtJournalNumber.Text == string.Empty)
-            {
-                txtJournalNumber.Text = FJournalNumber.ToString();
-                txtLedgerNumber.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
-                txtBatchNumber.Text = FBatchNumber.ToString();
-            }
-
             if (ARow == null)
             {
                 FTransactionNumber = -1;
@@ -815,6 +821,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             pnlDetails.Enabled = (changeable && grdDetails.Rows.Count > 1);
             pnlTransAnalysisAttributes.Enabled = changeable;
             lblAnalAttributes.Enabled = (changeable && grdDetails.Rows.Count > 1);
+            btnNew.Enabled = changeable;
+            btnDelete.Enabled = (changeable && grdDetails.Rows.Count > 1);
+            btnDeleteAll.Enabled = (changeable && grdDetails.Rows.Count > 1);
         }
 
         private void DeleteAllTrans(System.Object sender, EventArgs e)

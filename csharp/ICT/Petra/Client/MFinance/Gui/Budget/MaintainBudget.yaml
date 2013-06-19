@@ -7,12 +7,11 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: edit
     Template: windowEdit
-    #Template: windowEditUIConnector
+    WindowHeight: 575
     WindowWidth: 575
-    #WindowHeight: 900
     Actions:
         actNew: {Label=New, ActionClick=NewRecord}
-        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}      
         actImport: {Label=&Import, ActionClick=ImportBudget}      
     Controls:
         pnlContent:
@@ -37,7 +36,7 @@ RootNode:
             Align: left
             NoLabel: true
             Enabled: false
-            OnChange: NewBudgetType
+            OnChange: BudgetTypeChanged
         btnNew: {Action=actNew, Stretch=horizontally}
         btnDelete: {Action=actDelete, Stretch=horizontally}
         btnImport: {Action=actImport, Stretch=horizontally}
@@ -45,6 +44,7 @@ RootNode:
             Dock: Fill
             Columns: [DetailCostCentreCode, DetailAccountCode, DetailBudgetTypeCode]
             ActionFocusRow: FocusedRowChanged
+            EnableMultiSelection: false
         pnlDetails:
             Controls:
                 Row0: [cmbDetailCostCentreCode]
@@ -55,13 +55,14 @@ RootNode:
             Visible: false
             Controls:
                 TabOrder: Horizontal
-                Row0: [txtPeriod01Amount, txtPeriod07Amount]
-                Row1: [txtPeriod02Amount, txtPeriod08Amount]
-                Row2: [txtPeriod03Amount, txtPeriod09Amount]
-                Row3: [txtPeriod04Amount, txtPeriod10Amount]
-                Row4: [txtPeriod05Amount, txtPeriod11Amount]
-                Row5: [txtPeriod06Amount, txtPeriod12Amount]
-                Row6: [txtEmptyColumn, txtTotalAdhocAmount]
+                Row0: [txtPeriod01Amount, txtPeriod08Amount]
+                Row1: [txtPeriod02Amount, txtPeriod09Amount]
+                Row2: [txtPeriod03Amount, txtPeriod10Amount]
+                Row3: [txtPeriod04Amount, txtPeriod11Amount]
+                Row4: [txtPeriod05Amount, txtPeriod12Amount]
+                Row5: [txtPeriod06Amount, txtPeriod13Amount]
+                Row6: [txtPeriod07Amount, txtPeriod14Amount]
+                Row7: [txtEmptyColumn1, txtTotalAdhocAmount]
         pnlBudgetTypeSame:
             Dock: Fill
             Visible: false
@@ -74,7 +75,7 @@ RootNode:
             Controls:
                 Row0: [txtTotalSplitAmount]
                 Row1: [txtPerPeriodAmount]
-                Row2: [txtPeriod12AmountPlus]
+                Row2: [txtLastPeriodAmount]
         pnlBudgetTypeInflateN:
             Dock: Fill
             Visible: false
@@ -88,14 +89,15 @@ RootNode:
             Visible: false
             Controls:
                 TabOrder: Horizontal
-                Row0: [txtPeriod1Amount, txtPeriod07Index]
-                Row1: [txtPeriod02Index, txtPeriod08Index]
-                Row2: [txtPeriod03Index, txtPeriod09Index]
-                Row3: [txtPeriod04Index, txtPeriod10Index]
-                Row4: [txtPeriod05Index, txtPeriod11Index]
-                Row5: [txtPeriod06Index, txtPeriod12Index]
-                Row6: [txtEmptyColumn3, txtInflateBaseTotalAmount]
-        grpBudgetDetails: {ColSpan=1, Width:535, Height: 210}
+                Row0: [txtPeriod1Amount, txtPeriod08Index]
+                Row1: [txtPeriod02Index, txtPeriod09Index]
+                Row2: [txtPeriod03Index, txtPeriod10Index]
+                Row3: [txtPeriod04Index, txtPeriod11Index]
+                Row4: [txtPeriod05Index, txtPeriod12Index]
+                Row5: [txtPeriod06Index, txtPeriod13Index]
+                Row6: [txtPeriod07Index, txtPeriod14Index]
+                Row7: [txtEmptyColumn2, txtInflateBaseTotalAmount]
+        grpBudgetDetails: {ColSpan=1, Width:535, Height: 230}
             Align: top-left
             Controls: 
                 Row0: [pnlBudgetTypeAdhoc]
@@ -104,8 +106,8 @@ RootNode:
                 Row3: [pnlBudgetTypeInflateN]
                 Row4: [pnlBudgetTypeInflateBase]
         #cmbDetailYear: {Label=Year, List=UserDefinedList, OnChange=BudgetYearChanged}
-        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, Enabled=false}
-        cmbDetailAccountCode: {Label=Account, List=UserDefinedList, Enabled=false}
+        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, Enabled=false, OnChange=CostCentreCodeDetailChanged}
+        cmbDetailAccountCode: {Label=Account, List=UserDefinedList, Enabled=false, OnChange=AccountCodeDetailChanged}
         #Adhoc controls
         txtPeriod01Amount: {Label=Period 1, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
         txtPeriod02Amount: {Label=Period 2, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
@@ -119,15 +121,17 @@ RootNode:
         txtPeriod10Amount: {Label=Period 10, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
         txtPeriod11Amount: {Label=Period 11, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
         txtPeriod12Amount: {Label=Period 12, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod13Amount: {Label=Period 13, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtPeriod14Amount: {Label=Period 14, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
+        txtEmptyColumn1: {NoLabel=true, Visible=false}
         txtTotalAdhocAmount: {Label=Total, Format=Decimal, ReadOnly=true, Width=150}
-        txtEmptyColumn: {NoLabel=true, Visible=false}
         #Same controls
         txtAmount: {Label = Amount, Format=Currency, OnLeave=ProcessBudgetTypeSame}
         txtSameTotalAmount: {Label=Total, Format=Decimal, ReadOnly=true, Width=150}
         #Split controls
         txtTotalSplitAmount: {Label = Total Amount, Format=Currency, OnLeave=ProcessBudgetTypeSplit}
         txtPerPeriodAmount: {Label = Amount for periods 1 to 11, Format=Currency, ReadOnly=true}
-        txtPeriod12AmountPlus: {Label = Amount for period 12, Format=Currency, ReadOnly=true}
+        txtLastPeriodAmount: {Label = Amount for period 12, Format=Currency, ReadOnly=true}
         #Inflate N controls
         txtFirstPeriodAmount: {Label = First Period Amount, Format=Currency, OnLeave=ProcessBudgetTypeInflateN}
         txtInflateAfterPeriod: {Label = Inflate after period, Format=Integer, OnLeave=ProcessBudgetTypeInflateN}
@@ -146,7 +150,9 @@ RootNode:
         txtPeriod10Index: {Label=Period 10 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
         txtPeriod11Index: {Label=Period 11 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
         txtPeriod12Index: {Label=Period 12 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
-        txtEmptyColumn3: {NoLabel=true, Visible=false}
+        txtPeriod13Index: {Label=Period 13 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtPeriod14Index: {Label=Period 14 Index, Format=PercentDecimal, OnLeave=ProcessBudgetTypeInflateBase}
+        txtEmptyColumn2: {NoLabel=true, Visible=false}
         txtInflateBaseTotalAmount: {Label=Total, Format=Decimal, ReadOnly=true, Width=140}
     Menu:
     Toolbar:
