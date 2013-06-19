@@ -44,6 +44,7 @@ RootNode:
             Dock: Fill
             Columns: [DetailCostCentreCode, DetailAccountCode, DetailBudgetTypeCode]
             ActionFocusRow: FocusedRowChanged
+            EnableMultiSelection: false
         pnlDetails:
             Controls:
                 Row0: [cmbDetailCostCentreCode]

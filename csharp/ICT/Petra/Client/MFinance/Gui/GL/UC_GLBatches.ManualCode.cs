@@ -80,14 +80,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (grdDetails.Rows.Count > 1)
             {
                 ((TFrmGLBatch) this.ParentForm).EnableJournals();
+                EnableTransactionTabForBatch();
             }
             else
             {
                 ClearControls();
                 ((TFrmGLBatch) this.ParentForm).DisableJournals();
+	            ((TFrmGLBatch) this.ParentForm).DisableTransactions();
             }
 
-            ((TFrmGLBatch) this.ParentForm).DisableTransactions();
 
             ShowData();
 
@@ -125,6 +126,34 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return FMainDS;
         }
 
+        /// <summary>
+        /// Enable the transaction tab
+        /// </summary>
+        public void EnableTransactionTabForBatch()
+        {
+        	bool enable = false;
+        	
+        	//If a single journal exists and it is not status=Cancelled then enable transactions tab
+        	if (FPreviouslySelectedDetailRow != null && FPreviouslySelectedDetailRow.LastJournal == 1)
+        	{
+        		LoadJournalsForCurrentBatch();
+        		
+        		AJournalRow rJ = (AJournalRow)FMainDS.AJournal.DefaultView[0].Row;
+        		
+        		enable = (rJ.JournalStatus != MFinanceConstants.BATCH_CANCELLED);
+        	}
+        	
+        	if (enable)
+        	{
+        		((TFrmGLBatch) this.ParentForm).EnableTransactions();
+        	}
+        	else
+        	{
+        		((TFrmGLBatch) this.ParentForm).DisableTransactions();
+        	}
+        }
+        
+        
         /// <summary>
         /// show ledger number
         /// </summary>
@@ -213,6 +242,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(ABatchRow ARow)
         {
+            EnableTransactionTabForBatch();
+
             if (ARow == null)
             {
                 return;
@@ -336,6 +367,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch)ParentForm).EnableJournals();
         }
 
+        private void LoadJournalsForCurrentBatch()
+        {
+            //Current Batch number
+            Int32 batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+
+            FMainDS.AJournal.DefaultView.RowFilter = String.Format("{0}={1}",
+                ATransactionTable.GetBatchNumberDBName(),
+                batchNumber);
+
+            if (FMainDS.AJournal.DefaultView.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, batchNumber));
+            }
+        }
+        
         private void UpdateJournalTransEffectiveDate(bool ASetJournalDateOnly)
         {
             DateTime batchEffectiveDate = dtpDetailDateEffective.Date.Value;
@@ -349,14 +395,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Current Batch number
             Int32 batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
 
-            FMainDS.AJournal.DefaultView.RowFilter = String.Format("{0}={1}",
-                ATransactionTable.GetBatchNumberDBName(),
-                batchNumber);
-
-            if (FMainDS.AJournal.DefaultView.Count == 0)
-            {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, batchNumber));
-            }
+            LoadJournalsForCurrentBatch();
 
             activeJournalNumber = ((TFrmGLBatch) this.ParentForm).GetJournalsControl().ActiveJournalNumber(FLedgerNumber, batchNumber);
             activeTransNumber = ((TFrmGLBatch) this.ParentForm).GetTransactionsControl().ActiveTransactionNumber(FLedgerNumber,
