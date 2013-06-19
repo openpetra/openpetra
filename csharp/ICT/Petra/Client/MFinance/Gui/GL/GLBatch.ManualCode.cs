@@ -235,9 +235,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (this.tpgTransactions.Enabled)
                 {
-                    if (FPreviousTab == eGLTabs.Batches)
+                    bool fromBatchTab = false;
+                    
+                	if (FPreviousTab == eGLTabs.Batches)
                     {
-                    	//This only happens when the user clicks from Batch to Transactions,
+                    	fromBatchTab = true;
+                		//This only happens when the user clicks from Batch to Transactions,
                     	//  which is only allowed when one journal exists
                     	
                     	//Need to make sure that the Journal is loaded
@@ -254,7 +257,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoJournals.GetSelectedDetailRow().JournalNumber,
                         ucoJournals.GetSelectedDetailRow().TransactionCurrency,
                         ucoBatches.GetSelectedDetailRow().BatchStatus,
-                        ucoJournals.GetSelectedDetailRow().JournalStatus);
+                        ucoJournals.GetSelectedDetailRow().JournalStatus,
+                        fromBatchTab);
 
                     FPreviousTab = eGLTabs.Transactions;
                 }

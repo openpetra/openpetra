@@ -67,12 +67,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AForeignCurrencyName"></param>
         /// <param name="ABatchStatus"></param>
         /// <param name="AJournalStatus"></param>
+        /// <param name="AFromBatchTab"></param>
         public void LoadTransactions(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             Int32 AJournalNumber,
             string AForeignCurrencyName,
             string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED,
-            string AJournalStatus = MFinanceConstants.BATCH_UNPOSTED)
+            string AJournalStatus = MFinanceConstants.BATCH_UNPOSTED,
+            bool AFromBatchTab = false)
         {
             FBatchRow = GetBatchRow();
 
@@ -86,7 +88,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Same as previously selected
                 if ((FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (GetSelectedRowIndex() > 0))
                 {
-                    GetDetailsFromControls(GetSelectedDetailRow());
+                	if (AFromBatchTab)
+                	{
+                		SelectRowInGrid(GetSelectedRowIndex());
+                	}
+                	else
+                	{                	
+                		GetDetailsFromControls(GetSelectedDetailRow());
+                	}
                 }
 
                 return;
