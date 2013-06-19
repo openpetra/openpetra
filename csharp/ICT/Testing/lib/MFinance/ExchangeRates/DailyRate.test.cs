@@ -97,6 +97,8 @@ namespace Tests.MFinance.Client.ExchangeRates
                 return;
             }
 
+            // We need to re-load the data set because since we had it open the modal form may have changed things
+            FMainDS.LoadAll();
             FMainDS.DeleteAllRows();
             FMainDS.SaveChanges();
 
@@ -668,16 +670,20 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Toolstrip
             ToolStripButtonTester btnSaveTester = new ToolStripButtonTester("tbbSave", mainScreen);
-            ButtonTester btnNewTester = new ButtonTester("btnNew", mainScreen);
-            ButtonTester btnDeleteTester = new ButtonTester("btnDelete", mainScreen);
-            ButtonTester btnEnableEdit = new ButtonTester("btnEnableEdit", mainScreen);
+            ButtonWithFocusTester btnNewTester = new ButtonWithFocusTester("btnNew", mainScreen);
+            ButtonWithFocusTester btnDeleteTester = new ButtonWithFocusTester("btnDelete", mainScreen);
+            ButtonWithFocusTester btnEnableEdit = new ButtonWithFocusTester("btnEnableEdit", mainScreen);
             TSgrdDataGridPagedTester grdTester = new TSgrdDataGridPagedTester("grdDetails", mainScreen);
             TSgrdDataGrid grdDetails = (TSgrdDataGrid)grdTester.Properties;
             TTxtNumericTextBox txtExchangeRate = (new TTxtNumericTextBoxTester("txtDetailRateOfExchange", mainScreen)).Properties;
+            TtxtPetraDate txtDateEffective = (new TTxtPetraDateTester("dtpDetailDateEffectiveFrom", mainScreen)).Properties;
+            TCmbAutoPopulated cmbFromCurrency = (new TCmbAutoPopulatedTester("cmbDetailFromCurrencyCode", mainScreen)).Properties;
+            TCmbAutoPopulated cmbToCurrency = (new TCmbAutoPopulatedTester("cmbDetailToCurrencyCode", mainScreen)).Properties;
 
             // All rows in grid should be non-deletable because they are saved
             Assert.AreEqual(9, grdDetails.Rows.Count);
             Assert.IsFalse(btnDeleteTester.Properties.Enabled);
+            Assert.IsTrue(txtDateEffective.Date.Value.Year < 1910 || txtDateEffective.Date.Value.Year > 2980);
 
             // Create 3 new rows
             btnNewTester.Click();
@@ -710,21 +716,30 @@ namespace Tests.MFinance.Client.ExchangeRates
             };
             btnDeleteTester.Click();
 
+            Assert.IsFalse(cmbFromCurrency.Enabled);
+            Assert.IsFalse(cmbToCurrency.Enabled);
+            Assert.IsFalse(txtDateEffective.Enabled);
+            Assert.IsTrue(txtDateEffective.Date.Value.Year < 1910 || txtDateEffective.Date.Value.Year > 2980);
+
             Assert.AreEqual(3, mainScreen.GetSelectedRowIndex());
 
             // Now we should be back to not being able to delete a saved row
             Assert.IsFalse(btnDeleteTester.Properties.Enabled);
             Assert.AreEqual(9, grdDetails.Rows.Count);
+            Assert.IsTrue(txtDateEffective.Date.Value.Year < 1910 || txtDateEffective.Date.Value.Year > 2980);
 
             // Activate deletion of saved rows
             btnEnableEdit.Click();
+            Assert.IsTrue(txtDateEffective.Date.Value.Year < 1910 || txtDateEffective.Date.Value.Year > 2980);
 
             // Now we should be able to delete the row we could not delete before
             Assert.IsTrue(btnDeleteTester.Properties.Enabled);
 
             // Change to the first row
             Assert.AreEqual(3, mainScreen.GetSelectedRowIndex());
+            Assert.IsTrue(txtDateEffective.Date.Value.Year < 1910 || txtDateEffective.Date.Value.Year > 2980);
             SelectRowInGrid(1);
+            Assert.IsTrue(txtDateEffective.Date.Value.Year < 1910 || txtDateEffective.Date.Value.Year > 2980);
             Assert.AreEqual(1, mainScreen.GetSelectedRowIndex());
 
             // So now we should have our 2 rows far in the future at the top which are not used anywhere
@@ -734,12 +749,14 @@ namespace Tests.MFinance.Client.ExchangeRates
                 tester.SendCommand(MessageBoxTester.Command.Yes);
             };
             btnDeleteTester.Click();
+            Assert.IsTrue(txtDateEffective.Date.Value.Year < 1910 || txtDateEffective.Date.Value.Year > 2980);
             ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
             {
                 MessageBoxTester tester = new MessageBoxTester(hWnd);
                 tester.SendCommand(MessageBoxTester.Command.Yes);
             };
             btnDeleteTester.Click();
+            Assert.IsTrue(txtDateEffective.Date.Value.Year < 1910 || txtDateEffective.Date.Value.Year > 2980);
 
             // Should still be on row 1 with 7 grid rows now that 2 have gone
             Assert.AreEqual(1, mainScreen.GetSelectedRowIndex());

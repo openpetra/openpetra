@@ -236,20 +236,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (this.tpgTransactions.Enabled)
                 {
                     bool fromBatchTab = false;
-                    
-                	if (FPreviousTab == eGLTabs.Batches)
+
+                    if (FPreviousTab == eGLTabs.Batches)
                     {
-                    	fromBatchTab = true;
-                		//This only happens when the user clicks from Batch to Transactions,
-                    	//  which is only allowed when one journal exists
-                    	
-                    	//Need to make sure that the Journal is loaded
-	                    this.ucoJournals.LoadJournals(FLedgerNumber,
-	                        ucoBatches.GetSelectedDetailRow().BatchNumber,
-	                        ucoBatches.GetSelectedDetailRow().BatchStatus);
+                        fromBatchTab = true;
+                        //This only happens when the user clicks from Batch to Transactions,
+                        //  which is only allowed when one journal exists
+
+                        //Need to make sure that the Journal is loaded
+                        this.ucoJournals.LoadJournals(FLedgerNumber,
+                            ucoBatches.GetSelectedDetailRow().BatchNumber,
+                            ucoBatches.GetSelectedDetailRow().BatchStatus);
                     }
-                	
-                	this.tabGLBatch.SelectedTab = this.tpgTransactions;
+
+                    this.tabGLBatch.SelectedTab = this.tpgTransactions;
 
                     this.ucoTransactions.LoadTransactions(
                         FLedgerNumber,

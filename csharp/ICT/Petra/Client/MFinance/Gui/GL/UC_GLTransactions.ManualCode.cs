@@ -88,14 +88,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Same as previously selected
                 if ((FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (GetSelectedRowIndex() > 0))
                 {
-                	if (AFromBatchTab)
-                	{
-                		SelectRowInGrid(GetSelectedRowIndex());
-                	}
-                	else
-                	{                	
-                		GetDetailsFromControls(GetSelectedDetailRow());
-                	}
+                    if (AFromBatchTab)
+                    {
+                        SelectRowInGrid(GetSelectedRowIndex());
+                    }
+                    else
+                    {
+                        GetDetailsFromControls(GetSelectedDetailRow());
+                    }
                 }
 
                 return;
@@ -342,9 +342,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (!btnDeleteAll.Enabled)
             {
-            	btnDeleteAll.Enabled = true;
+                btnDeleteAll.Enabled = true;
             }
-            
+
             cmbDetailCostCentreCode.Focus();
 
             //Needs to be called at end of addition process to process Analysis Attributes

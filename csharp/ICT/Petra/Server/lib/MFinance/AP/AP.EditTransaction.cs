@@ -805,10 +805,10 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             transaction.TransactionAmount *= -1;
                         }
 
-                        transaction.AmountInBaseCurrency = GLRoutines.Multiply(transaction.TransactionAmount,
+                        transaction.AmountInBaseCurrency = GLRoutines.Divide(transaction.TransactionAmount,
                             journal.ExchangeRateToBase);
 
-                        transaction.AmountInIntlCurrency = GLRoutines.Multiply(transaction.AmountInBaseCurrency,
+                        transaction.AmountInIntlCurrency = GLRoutines.Divide(transaction.AmountInBaseCurrency,
                             TExchangeRateTools.GetDailyExchangeRate(
                                 GLDataset.ALedger[0].BaseCurrency,
                                 GLDataset.ALedger[0].IntlCurrency,
@@ -858,13 +858,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transaction.TransactionAmount *= -1;
                     }
 
-                    transaction.AmountInIntlCurrency = GLRoutines.Multiply(transaction.TransactionAmount,
+                    transaction.AmountInIntlCurrency = GLRoutines.Divide(transaction.TransactionAmount,
                         TExchangeRateTools.GetDailyExchangeRate(
                             journal.TransactionCurrency,
                             GLDataset.ALedger[0].IntlCurrency,
                             transaction.TransactionDate));
 
-                    transaction.AmountInBaseCurrency = GLRoutines.Multiply(transaction.TransactionAmount,
+                    transaction.AmountInBaseCurrency = GLRoutines.Divide(transaction.TransactionAmount,
                         journal.ExchangeRateToBase);
 
                     transaction.AccountCode = document.ApAccount;
@@ -1221,9 +1221,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             transaction.TransactionAmount *= -1;
                         }
 
-                        transaction.AmountInBaseCurrency = GLRoutines.Multiply(transaction.TransactionAmount, journal.ExchangeRateToBase);
+                        transaction.AmountInBaseCurrency = GLRoutines.Divide(transaction.TransactionAmount, journal.ExchangeRateToBase);
 
-                        transaction.AmountInIntlCurrency = GLRoutines.Multiply(transaction.AmountInBaseCurrency,
+                        transaction.AmountInIntlCurrency = GLRoutines.Divide(transaction.AmountInBaseCurrency,
                             TExchangeRateTools.GetDailyExchangeRate(
                                 GLDataset.ALedger[0].BaseCurrency,
                                 GLDataset.ALedger[0].IntlCurrency,

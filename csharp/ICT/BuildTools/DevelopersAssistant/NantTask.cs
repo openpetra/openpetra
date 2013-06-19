@@ -118,13 +118,9 @@ namespace Ict.Tools.DevelopersAssistant
             generateWinforms,
             // Compilation ----------------------------------------------------
             /// <summary>
-            /// Clean the folders prior to new build
-            /// </summary>
-            clean = 21,
-            /// <summary>
             /// Perform a 'quick' clean
             /// </summary>
-            quickClean,
+            quickClean = 21,
             /// <summary>
             /// Comile the complete solution
             /// </summary>
@@ -162,6 +158,22 @@ namespace Ict.Tools.DevelopersAssistant
             /// Uncrustify the source files
             /// </summary>
             uncrustify,
+            /// <summary>
+            /// Run the admin server console
+            /// </summary>
+            runAdminConsole,
+            /// <summary>
+            /// Refresh tables using the admin server console
+            /// </summary>
+            refreshCachedTables,
+            /// <summary>
+            /// Run all tests
+            /// </summary>
+            test,
+            /// <summary>
+            /// Run common/tools/server tests
+            /// </summary>
+            testWithoutDisplay,
             // Database ---------------------------------------------------------
             /// <summary>
             /// Recreate the database
@@ -231,7 +243,7 @@ namespace Ict.Tools.DevelopersAssistant
         public static TaskItem FirstCompileItem {
             get
             {
-                return TaskItem.clean;
+                return TaskItem.quickClean;
             }
         }
         /// <summary>
@@ -258,7 +270,7 @@ namespace Ict.Tools.DevelopersAssistant
         public static TaskItem LastMiscItem {
             get
             {
-                return TaskItem.uncrustify;
+                return TaskItem.testWithoutDisplay;
             }
         }
         /// <summary>
@@ -316,13 +328,25 @@ namespace Ict.Tools.DevelopersAssistant
             }
             else
             {
-                if (TaskName.IndexOf("clean", StringComparison.InvariantCultureIgnoreCase) >= 0)
-                {
-                    _taskItem = TaskItem.clean;
-                }
-                else if (TaskName.IndexOf("uncrustify", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                if (TaskName.IndexOf("uncrustify", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
                     _taskItem = TaskItem.uncrustify;
+                }
+                else if (TaskName.IndexOf(" cached ", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    _taskItem = TaskItem.refreshCachedTables;
+                }
+                else if (TaskName.IndexOf("n Console", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    _taskItem = TaskItem.runAdminConsole;
+                }
+                else if (TaskName.IndexOf("all tests", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    _taskItem = TaskItem.test;
+                }
+                else if (TaskName.IndexOf("basic tests", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    _taskItem = TaskItem.testWithoutDisplay;
                 }
                 else if (TaskName.IndexOf("preview", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
@@ -436,8 +460,6 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 switch (_taskItem)
                 {
-                    case TaskItem.clean: return "Performing full clean.  Please be patient ...";
-
                     case TaskItem.compile: return "Performing full compile.  This could take several minutes ...";
 
                     case TaskItem.deleteBakFiles: return "Deleting backup files.  Please wait ...";
@@ -485,13 +507,21 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.recreateDatabase: return "Recreating database ... Please wait ...";
 
+                    case TaskItem.refreshCachedTables: return "Requesting the server to refresh cached tables ...";
+
                     case TaskItem.resetDatabase: return "Resetting database ... Please wait ...";
+
+                    case TaskItem.runAdminConsole: return "Launching the Petra Server Admin Console ...";
 
                     case TaskItem.startPetraClient: return "Starting OpenPetra Client ...";
 
                     case TaskItem.startPetraServer: return "Starting OpenPetra Server ... Please wait ...";
 
                     case TaskItem.stopPetraServer: return "Stopping OpenPetra Server ... Please wait ...";
+
+                    case TaskItem.test: return "Running all the OpenPetra tests. This could take a minute or two ...";
+
+                    case TaskItem.testWithoutDisplay: return "Running the common and server tests ... Please wait ...";
 
                     case TaskItem.uncrustify: return "Uncrustifying the source code ... Please wait ...";
 
@@ -517,6 +547,8 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.quickCompileTools: return "quickCompile -D:solution=Tools";
 
+                    case TaskItem.testWithoutDisplay: return "test-without-display";
+
                     default: return _taskItem.ToString();
                 }
             }
@@ -531,8 +563,6 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 switch (_taskItem)
                 {
-                    case TaskItem.clean: return "Starting full clean";
-
                     case TaskItem.compile: return "Starting full compile";
 
                     case TaskItem.deleteBakFiles: return "Starting deleteBakFiles";
@@ -579,13 +609,21 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.recreateDatabase: return "Starting Re-create database";
 
+                    case TaskItem.refreshCachedTables: return "Requesting a refresh of cached tables using the Admin Console";
+
                     case TaskItem.resetDatabase: return "Starting Re-set database";
+
+                    case TaskItem.runAdminConsole: return "Running the server Admin Console and displaying its menu";
 
                     case TaskItem.startPetraClient: return "Starting OpenPetra client";
 
                     case TaskItem.startPetraServer: return "Starting OpenPetra server";
 
                     case TaskItem.stopPetraServer: return "Stopping OpenPetra server";
+
+                    case TaskItem.test: return "Running all tests";
+
+                    case TaskItem.testWithoutDisplay: return "Running all the common and server tests";
 
                     case TaskItem.uncrustify: return "Uncrustifying source code";
 
@@ -603,8 +641,6 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 switch (_taskItem)
                 {
-                    case TaskItem.clean: return "Perform a full clean";
-
                     case TaskItem.compile: return "Perform a full compile";
 
                     case TaskItem.deleteBakFiles: return "Delete all backup files";
@@ -651,13 +687,21 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.recreateDatabase: return "Re-create the complete database";
 
+                    case TaskItem.refreshCachedTables: return "Refresh cached tables using the Admin Console";
+
                     case TaskItem.resetDatabase: return "Reset the database content";
+
+                    case TaskItem.runAdminConsole: return "Run the Admin Console and display its menu";
 
                     case TaskItem.startPetraClient: return "Start client";
 
                     case TaskItem.startPetraServer: return "Start server (if it is not running)";
 
                     case TaskItem.stopPetraServer: return "Stop server (if it is running)";
+
+                    case TaskItem.test: return "Run all tests";
+
+                    case TaskItem.testWithoutDisplay: return "Run all common and server tests";
 
                     case TaskItem.uncrustify: return "Uncrustify the source code";
 
@@ -675,8 +719,6 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 switch (_taskItem)
                 {
-                    case TaskItem.clean: return "Full clean";
-
                     case TaskItem.compile: return "Full compile";
 
                     case TaskItem.deleteBakFiles: return "Delete backup files";
@@ -723,13 +765,21 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.recreateDatabase: return "Re-create the complete database";
 
+                    case TaskItem.refreshCachedTables: return "Refresh cached tables";
+
                     case TaskItem.resetDatabase: return "Reset the database content";
+
+                    case TaskItem.runAdminConsole: return "Run the Admin Console";
 
                     case TaskItem.startPetraClient: return "Start client";
 
                     case TaskItem.startPetraServer: return "Start server";
 
                     case TaskItem.stopPetraServer: return "Stop server";
+
+                    case TaskItem.test: return "Run all tests";
+
+                    case TaskItem.testWithoutDisplay: return "Run all basic tests";
 
                     case TaskItem.uncrustify: return "Uncrustify the source code";
 

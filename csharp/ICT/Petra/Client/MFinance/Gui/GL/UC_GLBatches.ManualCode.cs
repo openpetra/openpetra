@@ -86,9 +86,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ClearControls();
                 ((TFrmGLBatch) this.ParentForm).DisableJournals();
-	            ((TFrmGLBatch) this.ParentForm).DisableTransactions();
+                ((TFrmGLBatch) this.ParentForm).DisableTransactions();
             }
-
 
             ShowData();
 
@@ -131,29 +130,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void EnableTransactionTabForBatch()
         {
-        	bool enable = false;
-        	
-        	//If a single journal exists and it is not status=Cancelled then enable transactions tab
-        	if (FPreviouslySelectedDetailRow != null && FPreviouslySelectedDetailRow.LastJournal == 1)
-        	{
-        		LoadJournalsForCurrentBatch();
-        		
-        		AJournalRow rJ = (AJournalRow)FMainDS.AJournal.DefaultView[0].Row;
-        		
-        		enable = (rJ.JournalStatus != MFinanceConstants.BATCH_CANCELLED);
-        	}
-        	
-        	if (enable)
-        	{
-        		((TFrmGLBatch) this.ParentForm).EnableTransactions();
-        	}
-        	else
-        	{
-        		((TFrmGLBatch) this.ParentForm).DisableTransactions();
-        	}
+            bool enable = false;
+
+            //If a single journal exists and it is not status=Cancelled then enable transactions tab
+            if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.LastJournal == 1))
+            {
+                LoadJournalsForCurrentBatch();
+
+                AJournalRow rJ = (AJournalRow)FMainDS.AJournal.DefaultView[0].Row;
+
+                enable = (rJ.JournalStatus != MFinanceConstants.BATCH_CANCELLED);
+            }
+
+            if (enable)
+            {
+                ((TFrmGLBatch) this.ParentForm).EnableTransactions();
+            }
+            else
+            {
+                ((TFrmGLBatch) this.ParentForm).DisableTransactions();
+            }
         }
-        
-        
+
         /// <summary>
         /// show ledger number
         /// </summary>
@@ -381,7 +379,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, batchNumber));
             }
         }
-        
+
         private void UpdateJournalTransEffectiveDate(bool ASetJournalDateOnly)
         {
             DateTime batchEffectiveDate = dtpDetailDateEffective.Date.Value;

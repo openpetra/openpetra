@@ -32,7 +32,7 @@ namespace Ict.Tools.DevelopersAssistant
     /// A class that maintains local settings between user sessions by reading and writing the settings to a file.
     /// It uses its own simple text-based serialisation
     /// </summary>
-    public class SettingsDictionary : SortedDictionary <string, string>
+    public class SettingsDictionary : SettingsDictionaryBase
     {
         /// <summary>
         /// Sets the header content that is written to the settings file
@@ -224,8 +224,8 @@ namespace Ict.Tools.DevelopersAssistant
         /// </summary>
         public void Load()
         {
-            // Call our helper method that reads the file and fills the dictionary
-            DoFileLoad(_path);
+            // Call our base method that reads the file and fills the dictionary
+            base.Load(_path);
 
             // After a load we set the latest values of each of our known properties
             AltSequence = this["AltSequence"];
@@ -247,6 +247,20 @@ namespace Ict.Tools.DevelopersAssistant
             TreatWarningsAsErrors = (this["TreatWarningsAsErrors"] != "0");
             DoPreBuildOnIctCommon = (this["DoPreBuildOnIctCommon"] != "0");
             DoPostBuildOnPetraClient = (this["DoPostBuildOnPetraClient"] != "0");
+
+            // Do version-specific upgrades
+            if (this.ContainsKey("ApplicationVersion"))
+            {
+                if (this["ApplicationVersion"].StartsWith("1.0.1."))
+                {
+                    // We no longer support 'clean' on the compilation combo
+                    if (CompilationComboID > 0)
+                    {
+                        CompilationComboID = CompilationComboID - 1;
+                        this["CompilationComboID"] = CompilationComboID.ToString();
+                    }
+                }
+            }
 
             // Set up the OS environment variables
             Environment.SetEnvironmentVariable("OPDA_PATH", System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
@@ -283,20 +297,143 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 this.Add("ApplicationVersion", _applicationVersion);
             }
+            else
+            {
+                this["ApplicationVersion"] = _applicationVersion;
+            }
 
             // Now do the low-level save of the file
-            DoFileSave(_path);
+            base.Save(_path, ContentHeader);
+        }
+    }
+
+    /// <summary>
+    /// Class that handles the External Web Links
+    /// </summary>
+    public class ExternalLinksDictionary : SettingsDictionaryBase
+    {
+        // Private members
+        private string _path;               // path to external link settings file
+        private string _contentHeader;      // static content header in file
+
+        /// <summary>
+        /// Standard constructor
+        /// </summary>
+        /// <param name="path">Full path to the web links file to be parsed.  If it does not exist, a new one is created containing 'standard' links.</param>
+        public ExternalLinksDictionary(string path)
+        {
+            _path = path;
+            _contentHeader = ("; File containing useful OPDA External Links");
+            _contentHeader += (Environment.NewLine + "; You can modify this file.  The format for each line is ...");
+            _contentHeader += (Environment.NewLine + ";   <Title> = <url> [++ <More_Info>]");
+            _contentHeader += (Environment.NewLine + "; The URL can contain an = but must not contain a 'double-plus'");
+            _contentHeader += (Environment.NewLine + "# Blank lines and lines that start with ; or # are ignored");
         }
 
-        /***************************************************************************************************************************************
-         *
-         * Helpers that handle the raw saving and loading
-         *
-         * ************************************************************************************************************************************/
-        private void DoFileSave(string path)
+        /// <summary>
+        /// Loads settings from the file specified in the constructor
+        /// </summary>
+        public void Load()
+        {
+            if (!File.Exists(_path))
+            {
+                // Create a default one
+                using (StreamWriter sw = new StreamWriter(_path))
+                {
+                    sw.WriteLine(_contentHeader);
+                    sw.WriteLine();
+                    sw.WriteLine(
+                        "Database Schema = http://openpetraorg.sourceforge.net/dbdoc/ ++ The complete architecture of the Open Petra database");
+                    sw.WriteLine(
+                        "Developer's Forum = http://sourceforge.net/apps/phpbb/openpetraorg/ ++ This links to the main developer forum where you can join in discussion of developer topics or ask a question.");
+                    sw.WriteLine(
+                        "Documentation for Developers = http://www.openpetra.org/en/developers-documentation ++ Useful links from the main public site for Open Petra");
+                    sw.WriteLine(
+                        "Jenkins Build Server = https://ci.openpetra.org/ ++ A link to the main Continuous Integration server that runs on Linux.");
+                    sw.WriteLine(
+                        "Jenkins Server on Windows = http://ci-win.openpetra.org:8080/ ++ A link to the dashboard of the Continuous Integration server that runs on Windows.");
+                    sw.WriteLine(
+                        "Launchpad = https://code.launchpad.net/openpetraorg/ ++ A web interface to the code on the main Launchpad repository");
+                    sw.WriteLine(
+                        "Mantis Bug Tracker = https://tracker.openpetra.org/main_page.php ++ This links to the main project work item database known as 'Mantis'");
+                    sw.WriteLine(
+                        "Mantis Bug Tracker (My View) = https://tracker.openpetra.org/my_view_page.php ++ This links to the 'My View' page in the main project work item database known as 'Mantis'");
+                    sw.WriteLine("OpenPetra Wiki = http://sourceforge.net/apps/mediawiki/openpetraorg/ ++ This links to the main project wiki");
+
+                    sw.Close();
+                }
+            }
+
+            // Call our base method that reads the file and fills the dictionary
+            base.Load(_path);
+        }
+
+        /// <summary>
+        /// Populate a list box using the keys in this dictionary
+        /// </summary>
+        /// <param name="listBox">The lsit box to be populated</param>
+        public void PopulateListBox(System.Windows.Forms.ListBox listBox)
+        {
+            listBox.Items.Clear();
+
+            foreach (KeyValuePair <string, string>kvp in this)
+            {
+                listBox.Items.Add(kvp.Key);
+            }
+
+            if (listBox.Items.Count > 0)
+            {
+                listBox.SelectedIndex = 0;
+            }
+        }
+
+        /// <summary>
+        /// Get the details for the specified web link key
+        /// </summary>
+        /// <param name="key">The key</param>
+        /// <param name="url">The URL</param>
+        /// <param name="info">The additional info</param>
+        public void GetDetails(string key, out string url, out string info)
+        {
+            if (this.ContainsKey(key) && (this[key] != String.Empty))
+            {
+                string[] splitter = new string[] {
+                    "++"
+                };
+                string[] items = this[key].Split(splitter, StringSplitOptions.None);
+                url = items[0].Trim();
+
+                if (items.Length > 1)
+                {
+                    info = items[1].TrimStart();
+                }
+                else
+                {
+                    info = String.Empty;
+                }
+            }
+            else
+            {
+                url = String.Empty;
+                info = String.Empty;
+            }
+        }
+    }
+
+    /// <summary>
+    /// A base class for OPDA settings
+    /// </summary>
+    public class SettingsDictionaryBase : SortedDictionary <string, string>
+    {
+        /// <summary>
+        /// The standard Save method to save the file
+        /// </summary>
+        /// <param name="APathToFile">Full path to file</param>
+        /// <param name="AContentHeader">An optional content header for the file</param>
+        protected void Save(string APathToFile, string AContentHeader)
         {
             // Make sure that the folder exists
-            string folderName = Path.GetDirectoryName(path);
+            string folderName = Path.GetDirectoryName(APathToFile);
 
             if (!Directory.Exists(folderName))
             {
@@ -304,11 +441,11 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             // Save each key/value pair
-            using (StreamWriter sw = new StreamWriter(path))
+            using (StreamWriter sw = new StreamWriter(APathToFile))
             {
-                if (ContentHeader != String.Empty)
+                if (AContentHeader != String.Empty)
                 {
-                    sw.Write(ContentHeader);
+                    sw.Write(AContentHeader);
                     sw.WriteLine();
                 }
 
@@ -323,16 +460,20 @@ namespace Ict.Tools.DevelopersAssistant
             }
         }
 
-        private void DoFileLoad(string path)
+        /// <summary>
+        /// Standard Load method to load settings from a file
+        /// </summary>
+        /// <param name="APathToFile">Full path to file to load</param>
+        protected void Load(string APathToFile)
         {
-            if (!File.Exists(path))
+            if (!File.Exists(APathToFile))
             {
                 return;
             }
 
             // Note that we load all key/values - even ones that we have not actually specified as public properties of the class
             // So any that were in the original file are preserved
-            using (StreamReader sr = new StreamReader(path))
+            using (StreamReader sr = new StreamReader(APathToFile))
             {
                 while (!sr.EndOfStream)
                 {
@@ -342,14 +483,14 @@ namespace Ict.Tools.DevelopersAssistant
 
                     if (s.Length > 0)
                     {
-                        string[] items = s.Split('=');
+                        int pos = s.IndexOf('=');
 
-                        if (items.Length == 2)
+                        if (pos > 0)
                         {
-                            string s1 = items[0].Trim();
-                            string s2 = items[1].Trim();
+                            string s1 = s.Substring(0, pos - 1).Trim();
+                            string s2 = s.Substring(pos + 1).Trim();
 
-                            if ((s1.Length > 0) && (s2.Length > 0) && !s1.StartsWith(";"))
+                            if ((s1.Length > 0) && (s2.Length > 0) && !s1.StartsWith(";") && !s1.StartsWith("#"))
                             {
                                 if (this.ContainsKey(s1))
                                 {
