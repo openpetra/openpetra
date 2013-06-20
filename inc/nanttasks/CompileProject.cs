@@ -151,7 +151,7 @@ namespace Ict.Tools.NAntTasks
                 mainProperties.Add(propNode.Name, propNode.InnerText);
             }
 
-            string OutputFile = Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" + mainProperties["OutputPath"]);
+            string OutputFile = Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" + mainProperties["OutputPath"].Replace("\\", "/"));
 
             OutputFile += "/" + mainProperties["AssemblyName"];
 
@@ -276,7 +276,7 @@ namespace Ict.Tools.NAntTasks
             parameters.GenerateInMemory = false;
             parameters.CompilerOptions = string.Empty;
 
-            string OutputFile = Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" + mainProperties["OutputPath"]);
+            string OutputFile = Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" + mainProperties["OutputPath"].Replace("\\", "/"));
 
             OutputFile += "/" + mainProperties["AssemblyName"];
 
@@ -345,8 +345,8 @@ namespace Ict.Tools.NAntTasks
                         {
                             string ReferencedProjectName = ItemNode.ChildNodes[1].InnerText;
                             parameters.ReferencedAssemblies.Add(
-                                Path.GetFullPath(Path.GetDirectoryName(OutputFile) + Path.DirectorySeparatorChar +
-                                    ReferencedProjectName + ".dll"));
+                                Path.GetFullPath(Path.GetDirectoryName(OutputFile) + "/" +
+                                    ReferencedProjectName.Replace("\\", "/") + ".dll"));
                         }
                         else if (ItemNode.Name == "Compile")
                         {
