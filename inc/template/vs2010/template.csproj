@@ -19,19 +19,19 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>Full</DebugType>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <BaseIntermediateOutputPath>${dir.obj}\${Namespace}\</BaseIntermediateOutputPath>
-    <OutputPath>${dir.bin}</OutputPath>
+    <BaseIntermediateOutputPath>${dir.obj.backslash}\${Namespace}\</BaseIntermediateOutputPath>
+    <OutputPath>${dir.bin.backslash}</OutputPath>
     <StartArguments>${DebugStartArguments}</StartArguments>
-    <DocumentationFile>${dir.bin}/${Namespace}.xml</DocumentationFile>
+    <DocumentationFile>${dir.bin.backslash}\${Namespace}.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugSymbols>False</DebugSymbols>
     <DebugType>None</DebugType>
     <DefineConstants>TRACE</DefineConstants>
-    <BaseIntermediateOutputPath>${dir.obj}\${Namespace}\</BaseIntermediateOutputPath>
-    <OutputPath>${dir.bin}</OutputPath>
-    <DocumentationFile>${dir.bin}/${Namespace}.xml</DocumentationFile>
+    <BaseIntermediateOutputPath>${dir.obj.backslash}\${Namespace}\</BaseIntermediateOutputPath>
+    <OutputPath>${dir.bin.backslash}</OutputPath>
+    <DocumentationFile>${dir.bin.backslash}/${Namespace}.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
 ${ApplicationIcon}${PreBuildEvent}${PostBuildEvent}  <ItemGroup>
