@@ -4,7 +4,7 @@
 // @Authors:
 //       alanp
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -337,6 +337,11 @@ namespace Ict.Tools.DevelopersAssistant
         {
             if (!File.Exists(_path))
             {
+                if (!Directory.Exists(Path.GetDirectoryName(_path)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(_path));
+                }
+
                 // Create a default one
                 using (StreamWriter sw = new StreamWriter(_path))
                 {
