@@ -342,7 +342,14 @@ namespace Ict.Tools.NAntTasks
                         }
                         else if (ItemNode.Name == "Compile")
                         {
-                            src.Add(ItemNode.Attributes["Include"].Value);
+                            if (ItemNode.Attributes["Include"].Value.Contains(".."))
+                            {
+                                src.Add(Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" + ItemNode.Attributes["Include"].Value.Replace("\\", "/")));
+                            }
+                            else
+                            {
+                                src.Add(ItemNode.Attributes["Include"].Value);
+                            }
                         }
                         else if (ItemNode.Name == "EmbeddedResource")
                         {

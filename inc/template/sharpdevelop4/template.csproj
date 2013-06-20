@@ -9,11 +9,11 @@
     <AssemblyName>${Namespace}</AssemblyName>
     <TargetFrameworkVersion>v${NETframework-version}</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <BaseIntermediateOutputPath>${dir.obj}\${Namespace}\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>${dir.obj.backslash}\${Namespace}\</BaseIntermediateOutputPath>
     <NoStdLib>False</NoStdLib>    
     <OutputPath>${dir.bin}</OutputPath>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DocumentationFile>${dir.bin}/${Namespace}.xml</DocumentationFile>
+    <DocumentationFile>${dir.bin.backslash}\${Namespace}.xml</DocumentationFile>
     <Optimize>False</Optimize>
     <StartArguments>${DebugStartArguments}</StartArguments>
   </PropertyGroup>

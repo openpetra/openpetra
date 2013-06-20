@@ -467,8 +467,7 @@ namespace Ict.Tools.NAntTasks
                     }
 
                     temp.Replace("${ProjectName}", OutputName);
-                    temp.Replace("${ProjectFile}",
-                        FDirProjectFiles + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + OutputName + ".csproj");
+                    temp.Replace("${ProjectFile}", OutputName + ".csproj");
                     temp.Replace("${ProjectGuid}", GetProjectGUID(projectName));
                     Projects += temp.ToString();
 
@@ -648,7 +647,7 @@ namespace Ict.Tools.NAntTasks
             swAssemblyInfo.Close();
 
             string relativeFilename = GetRelativePath(AssemblyInfoPath, FDirProjectFiles + "/dummy/").Replace('\\', Path.DirectorySeparatorChar);
-            string relativeFilenameBackslash = relativeFilename.Replace('/', Path.DirectorySeparatorChar);
+            string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
 
             temp = GetTemplateFile(ATemplateDir + "template.csproj.compile");
             temp.Replace("${filename}", AssemblyInfoPath);
@@ -676,8 +675,10 @@ namespace Ict.Tools.NAntTasks
             template.Replace("${OutputType}", AProjectType);
             template.Replace("${Namespace}", AProjectName);
             template.Replace("${NETframework-version}", FNetFrameworkVersion);
-            template.Replace("${dir.bin}", FDirBin);
-            template.Replace("${dir.obj}", this.Properties["dir.obj"]);
+            template.Replace("${dir.bin}", "../../bin");
+            template.Replace("${dir.bin.backslash}", "..\\..\\bin");
+            template.Replace("${dir.obj}", "../../obj");
+            template.Replace("${dir.obj.backslash}", "..\\..\\obj");
 
             if (FDebugParameters.ContainsKey(AProjectName))
             {
