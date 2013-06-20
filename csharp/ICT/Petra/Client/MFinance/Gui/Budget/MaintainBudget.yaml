@@ -108,6 +108,7 @@ RootNode:
         #cmbDetailYear: {Label=Year, List=UserDefinedList, OnChange=BudgetYearChanged}
         cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, Enabled=false, OnChange=CostCentreCodeDetailChanged}
         cmbDetailAccountCode: {Label=Account, List=UserDefinedList, Enabled=false, OnChange=AccountCodeDetailChanged}
+        #lblAccountCodeForeign: {Label=(Foreign Currency Account), Visible=false, TextAlign=left}
         #Adhoc controls
         txtPeriod01Amount: {Label=Period 1, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
         txtPeriod02Amount: {Label=Period 2, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
@@ -124,10 +125,10 @@ RootNode:
         txtPeriod13Amount: {Label=Period 13, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
         txtPeriod14Amount: {Label=Period 14, Format=Currency, OnLeave=ProcessBudgetTypeAdhoc}
         txtEmptyColumn1: {NoLabel=true, Visible=false}
-        txtTotalAdhocAmount: {Label=Total, Format=Decimal, ReadOnly=true, Width=150}
+        txtTotalAdhocAmount: {Label=Total Amount, Format=Decimal, ReadOnly=true, Width=150}
         #Same controls
-        txtAmount: {Label = Amount, Format=Currency, OnLeave=ProcessBudgetTypeSame}
-        txtSameTotalAmount: {Label=Total, Format=Decimal, ReadOnly=true, Width=150}
+        txtAmount: {Label = Amount Per Period, Format=Currency, OnLeave=ProcessBudgetTypeSame}
+        txtSameTotalAmount: {Label=Total Amount, Format=Decimal, ReadOnly=true, Width=150}
         #Split controls
         txtTotalSplitAmount: {Label = Total Amount, Format=Currency, OnLeave=ProcessBudgetTypeSplit}
         txtPerPeriodAmount: {Label = Amount for periods 1 to 11, Format=Currency, ReadOnly=true}
