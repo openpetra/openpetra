@@ -168,8 +168,11 @@ namespace Ict.Tools.NAntTasks
             csc.DocFile = new FileInfo(mainProperties["DocumentationFile"]);
             csc.OutputTarget = mainProperties["OutputType"];
 
-            // needed because of sqlite3.dll
-            csc.Platform = "x86";
+            // needed because of sqlite3.dll, when compiling on Linux for Windows
+            if (this.Project.PlatformName == "unix")
+            {
+                csc.Platform = "x86";
+            }
 
             csc.Define = "DEBUGMODE";
 
@@ -300,8 +303,11 @@ namespace Ict.Tools.NAntTasks
                 OutputFile += ".exe";
             }
 
-            // needed because of sqlite3.dll
-            parameters.CompilerOptions += " /platform:x86";
+            // needed because of sqlite3.dll, when compiling on Linux for Windows
+            if (this.Project.PlatformName == "unix")
+            {
+                parameters.CompilerOptions += " /platform:x86";
+            }
 
             parameters.OutputAssembly = OutputFile;
             parameters.WarningLevel = 4;

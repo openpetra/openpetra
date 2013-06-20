@@ -357,10 +357,15 @@ useful parameters
     <!-- download another demo database, and load it -->
     <delete file="demoWith2ledgers.yml.gz" />
     <exec program="wget" commandline="http://sourceforge.net/projects/openpetraorg/files/openpetraorg/demodata/demoWith2ledgers.yml.gz/download -OdemoWith2ledgers.yml.gz"/>
-    <property name="file" value="demoWith2ledgers.yml.gz"/>
-    <call target="loadDatabase"/>
+    <call target="startPetraServer"/>
+    <ExecDotNet program="${dir.bin}/PetraServerAdminConsole.exe" 
+        commandline="-C:../../etc/ServerAdmin.config -Command:LoadYmlGz -YmlGzFile:../../demoWith2ledgers.yml.gz"
+        failonerror="true"/>
+    <call target="stopPetraServer"/>
 
-    <copy file="${dir.delivery}/bin/Ict.Tools.DevelopersAssistant.exe" todir="${dir.root}"/>
+    <!-- copy does not work, need to compile on Windows: copy file="${dir.delivery}/bin/Ict.Tools.DevelopersAssistant.exe" todir="${dir.root}" -->
+    <exec program="wget" commandline="http://sourceforge.net/projects/openpetraorg/files/openpetraorg/Tools/Ict.Tools.DevelopersAssistant.exe/download -OIct.Tools.DevelopersAssistant.exe"/>
+
     <script prefix="utils" language="C#">
          <code>
              <![CDATA[
