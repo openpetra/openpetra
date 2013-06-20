@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -144,6 +144,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 btnUseTaxAccount.Enabled = false;
                 txtDetailBaseAmount.Enabled = false;
                 cmbDetailAccountCode.Enabled = false;
+                pnlDetails.Enabled = false;
             }
 
             tbbPostDocument.Enabled = ("|POSTED|PARTPAID|PAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) < 0);

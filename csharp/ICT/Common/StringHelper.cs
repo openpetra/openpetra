@@ -1440,16 +1440,11 @@ namespace Ict.Common
         /// <returns>true if greater or equals 0</returns>
         public static bool IsStringPositiveInteger(String APositiveInteger)
         {
-            bool ReturnValue;
-
-            ReturnValue = true;
-            try
+            Int64 Res64;
+            bool ReturnValue = Int64.TryParse(APositiveInteger, out Res64);
+            if (ReturnValue)
             {
-                System.Int64.Parse(APositiveInteger, System.Globalization.NumberStyles.None);
-            }
-            catch (Exception)
-            {
-                ReturnValue = false;
+                ReturnValue = (Res64 >= 0);
             }
             return ReturnValue;
         }

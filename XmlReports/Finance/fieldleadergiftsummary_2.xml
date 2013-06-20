@@ -3,8 +3,8 @@
 <reports>
 	<report id="FieldLeaderGiftSummary-2">
 		<description>
-			This report shows the income posted to all your Local cost centres, in account order. Each recipient
-			or Motivation Detail is listed separately.
+			This report shows the income posted to all your Local cost centres, in account order. 
+			Each recipient or Motivation Detail is listed separately.
 		</description>
 		<reportparameters>
 			<reportparameter name="param_ledger_number_i"/>
@@ -15,13 +15,13 @@
 			<reportparameter name="param_credit_column"/>
 			<reportparameter name="param_debit_column"/>
 		</reportparameters>
-		
+
 		<reportheader/>
 		<pageheader>
 			<field whichfield="title1">
 				<value text="Field Leader Gift Summary" />
 			</field>
-			
+
 			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
 			<field whichfield="descr1">
 				<value text="Ledger "/>
@@ -41,7 +41,6 @@
 				<value text="Currency: "/>
 				<value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
 			</field>
-			
 		</pageheader>
 
 		<calculations>
@@ -65,14 +64,14 @@
 							AND PUB_a_transaction.a_account_code_c &lt;= '4000'
 							AND PUB_a_account.a_account_code_c = PUB_a_transaction.a_account_code_c
 							AND PUB_a_account.a_ledger_number_i = {{param_ledger_number_i}}
-						
+
 						ORDER BY
 							AccountCode
 						</value>
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="SelectCostCentres" returns="CostCentreCode, a_cost_centre_name_c" returnsFormat="row">
 				<query>
 					<queryDetail>
@@ -90,22 +89,22 @@
 							AND PUB_a_general_ledger_master.a_account_code_c &lt;= "4000"
 							AND PUB_a_general_ledger_master.a_year_i = PUB_a_ledger.a_current_financial_year_i
 							AND PUB_a_ledger.a_ledger_number_i = {{param_ledger_number_i}}
-							
+
 							AND PUB_a_account.a_account_code_c = {AccountCode}
 							AND PUB_a_general_ledger_master.a_account_code_c = {AccountCode}
 							AND PUB_a_account.a_posting_status_l = true
-							
+
 							AND PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_general_ledger_master.a_cost_centre_code_c
 							AND PUB_a_cost_centre.a_posting_cost_centre_flag_l = true
 							AND PUB_a_cost_centre.a_cost_centre_type_c &lt;&gt; "Foreign"
 							AND PUB_a_cost_centre.a_ledger_number_i = {{param_ledger_number_i}}
-							
+
 							ORDER BY PUB_a_cost_centre.a_cost_centre_code_c
 						</value>
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="SelectGifts" returns="GiftAmount, MotivationGroup, MotivationDetail, PartnerKey, PartnerName" returnsFormat="row">
 				<query>
 					<queryDetail condition="eq({param_currency}, Base)">
@@ -117,7 +116,6 @@
 						<value>
 							SELECT SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftAmount,
 						 </value>
-						
 					</queryDetail>
 					<queryDetail>
 						<value>
@@ -135,20 +133,20 @@
 								PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
 							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
 							AND PUB_a_gift_batch.a_gl_effective_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-							
+
 							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
 							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift_batch.a_batch_number_i
-							
-							AND PUB_a_gift_detail.a_cost_centre_code_c = {CostCentreCode}            
-							
+
+							AND PUB_a_gift_detail.a_cost_centre_code_c = {CostCentreCode}
+
 							AND PUB_a_motivation_detail.a_ledger_number_i = {{param_ledger_number_i}}
 							AND PUB_a_motivation_detail.a_motivation_group_code_c = PUB_a_gift_detail.a_motivation_group_code_c
 							AND PUB_a_motivation_detail.a_motivation_detail_code_c = PUB_a_gift_detail.a_motivation_detail_code_c
-							
+
 							AND PUB_a_motivation_detail.a_account_code_c = {AccountCode}
-							
+
 							AND PUB_p_partner.p_partner_key_n = PUB_a_gift_detail.p_recipient_key_n
-						
+
 							GROUP BY
 								PUB_a_gift_detail.p_recipient_key_n,
 								PUB_p_partner.p_partner_short_name_c,
@@ -163,7 +161,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="SelectCurrentTransactionGifts" returns="GiftAmount, PartnerName, TransactionDate, a_debit_credit_indicator_l" returnsFormat="row">
 				<query>
 					<queryDetail condition="eq({param_currency}, Base)">
@@ -204,7 +202,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="CountCurrentGiftsAccount" returns="CurrentCountAccount" returnsFormat="row">
 				<query>
 					<queryDetail>
@@ -222,7 +220,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="CountCurrentGifts" returns="CurrentCount" returnsFormat="row">
 				<query>
 					<queryDetail>
@@ -241,7 +239,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="CleanUp" returns="automatic" returnsFormat="internal">
 				<query>
 					<queryDetail>
@@ -262,7 +260,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="CleanUp2" returns="automatic" returnsFormat="internal">
 				<query>
 					<queryDetail>
@@ -285,29 +283,27 @@
 					</queryDetail>
 				</query>
 			</calculation>
-					
+
 			<calculation id="CountTransactions" returns="TransactionCount" returnsFormat="row">
 				<query>
 					<queryDetail>
 						<value text="NO-SQL"/>
 						<value calculation="CountCurrentGifts"/>
-						<value function="assign(TransactionCount, add({CurrentCount}, {OldCount}))"/>
-						<value function="assign(TransactionCount, add({TransactionCount}, {PreviousCount}))"/>
+						<value function="assign(TransactionCount, CurrentCount)"/>
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="CountAccountTransactions" returns="TransactionCountAccount" returnsFormat="row">
 				<query>
 					<queryDetail>
 						<value text="NO-SQL"/>
 						<value calculation="CountCurrentGiftsAccount"/>
-						<value function="assign(TransactionCountAccount, add({CurrentCountAccount}, {OldCountAccount}))"/>
-						<value function="assign(TransactionCountAccount, add({TransactionCountAccount}, {PreviousCountAccount}))"/>
+						<value function="assign(TransactionCountAccount, CurrentCountAccount)"/>
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="ClearAccountTotals" returns="text" returnsFormat="internal">
 				<query>
 					<queryDetail>
@@ -317,7 +313,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="ShowRow" returns="text" returnsFormat="internal">
 				<query>
 					<queryDetail>
@@ -326,7 +322,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="HideRow" returns="text" returnsFormat="internal">
 				<query>
 					<queryDetail>
@@ -335,110 +331,121 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="Partner Key" returnsFormat="partnerkey" returns="text">
 				<caption><value text="Partner Key"/></caption>
 				<query>
 					<queryDetail><value variable="PartnerKey"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
+
 			<calculation id="Partner Name" returnsFormat="text" returns="text">
 				<caption><value text="Partner Name"/></caption>
 				<query>
 					<queryDetail><value variable="PartnerName"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
+
 			<calculation id="Partner Class" returnsFormat="text" returns="text">
 				<caption><value text="Partner Class"/></caption>
 				<query>
 					<queryDetail><value variable="PartnerClass"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
+
 			<calculation id="Field" returnsFormat="partnerkey" returns="text">
 				<caption><value text="Field"/></caption>
 				<query>
 					<queryDetail><value variable="FieldKey"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
+
 			<calculation id="Field Name" returnsFormat="text" returns="text">
 				<caption><value text="Field Name"/></caption>
 				<query>
 					<queryDetail><value variable="FieldName"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
+
 			<calculation id="Gift Amount" returnsFormat="currency" returns="amount">
 				<caption><value text="GiftAmount"/></caption>
 				<query>
 					<queryDetail><value variable="GiftAmount"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
+
 			<calculation id="Debits" returnsFormat="currency" returns="amount">
 				<caption><value text="Debits"/></caption>
 				<query>
 					<queryDetail>
 						<value variable="Debits"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
+
 			<calculation id="Credits" returnsFormat="currency" returns="amount">
 				<caption><value text="Credits"/></caption>
 				<query>
 					<queryDetail>
 						<value variable="Credits"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="Motivation Detail" returnsFormat="text" returns="text">
 				<caption><value text="Motivation Detail"/></caption>
 				<query>
 					<queryDetail><value variable="MotivationDetail"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
+
 			<calculation id="Motivation Group" returnsFormat="text" returns="text">
 				<caption><value text="Motivation Group"/></caption>
 				<query>
 					<queryDetail><value variable="MotivationGroup"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
+
 			<calculation id="Cost Centre Code" returnsFormat="text" returns="text">
 				<caption><value text="Cost Centre Code"/></caption>
 				<query>
 					<queryDetail><value variable="CostCentreCode"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
+
 			<calculation id="Account Code" returnsFormat="text" returns="text">
 				<caption><value text="Account Code"/></caption>
 				<query>
 					<queryDetail><value variable="AccountCode"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
+
 			<calculation id="Detail" returnsFormat="text" returns="text">
 				<caption><value text="Detail"/></caption>
 				<query>
 					<queryDetail><value variable="Detail"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 		</calculations>
-			
-		<levels>		
+
+		<levels>
 			<level name="main">
 				<detail>
 					<lowerLevelReport level="AccountLevel0" calculation="SelectAccounts"></lowerLevelReport>
 				</detail>
 			</level>
-			
+
 			<!-- Hide the results where there is no entry that matches this:
 			WHERE a_transaction.a_account_code_c = a_general_ledger_master.a_account_code_c
             AND a_transaction.a_cost_centre_code_c = a_general_ledger_master.a_cost_centre_code_c
@@ -446,18 +453,18 @@
             AND a_transaction.a_transaction_status_l = true
             AND NOT (a_transaction.a_narrative_c BEGINS "Year end re-allocation")
             AND a_transaction.a_transaction_date_d BETWEEN param_from_date AND param_to_date
-			
+
 			That's the reason why we have AccountLevel0, AccountLevel1, AccountLevel2 and
 			CostCentreLevel0, CostCentreLevel1, CostCentreLevel2
 			-->
-			
+
 			<level name="AccountLevel0">
 				<detail>
 					<lowerLevelReport level="AccountLevel1" calculation="CountAccountTransactions"></lowerLevelReport>
 					<lowerLevelReport level="AccountLevel1"></lowerLevelReport>
 				</detail>
 			</level>
-			
+
 			<level name="AccountLevel1">
 				<detail>
 					<switch>
@@ -470,7 +477,7 @@
 					<field whichfield="column 0" calculation="ClearAccountTotals"/>
 				</footer>
 			</level>
-			
+
 			<level name="AccountLevel2">
 				<detail>
 					<lowerLevelReport level="CostCentreLevel0" calculation="SelectCostCentres"></lowerLevelReport>
@@ -491,14 +498,14 @@
 					</switch>
 				</footer>
 			</level>
-			
+
 			<level name="CostCentreLevel0">
 				<detail>
 					<lowerLevelReport level="CostCentreLevel1" calculation="CountTransactions"></lowerLevelReport>
 					<lowerLevelReport level="CostCentreLevel1"></lowerLevelReport>
 				</detail>
 			</level>
-			
+
 			<level name="CostCentreLevel1">
 				<detail>
 					<switch>
@@ -509,10 +516,9 @@
 							<lowerLevelReport level="DummyLevel" calculation="HideRow"></lowerLevelReport>
 						</case>
 					</switch>
-					
 				</detail>
 			</level>
-			
+
 			<level name="CostCentreLevel2">
 				<header>
 					<field whichfield="header 0" pos="0cm" width="4cm">
@@ -541,26 +547,25 @@
 					</field>
 				</footer>
 			</level>
-			
+
 			<level name="GiftLevel1">
 				<detail>
 					<field whichfield="columns" calculation="CleanUp"/>
 				</detail>
 			</level>
-			
+
 			<level name="GiftLevel2">
 				<detail>
 					<field whichfield="columns" calculation="CleanUp2"/>
 				</detail>
 			</level>
-			
+
 			<level name="DummyLevel">
 				<detail>
 				</detail>
 			</level>
-			
 		</levels>
-		
+
 	</report>
-	
+
 </reports>
