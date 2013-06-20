@@ -28,7 +28,9 @@ using System.Data;
 using System.Windows.Forms;
 using Ict.Petra.Shared.MFinance;
 using Ict.Common.Controls;
+using Ict.Common.Data;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Client.MFinance.Logic;
@@ -59,6 +61,80 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FFilter = FLedgerNumber;
                 TSetupAdminGrants.PopulateComboBoxes(cmbDetailCostCentreCode, cmbDetailAccountCode, cmbDetailDrAccountCode, FLedgerNumber, true);
                 LoadDataAndFinishScreenSetup();
+            }
+        }
+
+        #region Extra Data Set for Fees payable
+
+        private TExtraDS FExtraDS = new TExtraDS();
+        private class TExtraDS : TTypedDataSet
+        {
+            private AFeesPayableTable FFeesPayableTable;
+
+            public AFeesPayableTable AFeesPayable
+            {
+                get
+                {
+                    return this.FFeesPayableTable;
+                }
+            }
+
+            protected override void InitTables()
+            {
+                this.Tables.Add(new AFeesPayableTable("AFeesPayable"));
+            }
+
+            protected override void InitTables(System.Data.DataSet ds)
+            {
+                if ((ds.Tables.IndexOf("AFeesPayable") != -1))
+                {
+                    this.Tables.Add(new AFeesPayableTable("AFeesPayable"));
+                }
+            }
+
+            protected override void MapTables()
+            {
+                this.InitVars();
+                base.MapTables();
+
+                if ((this.FFeesPayableTable != null))
+                {
+                    this.FFeesPayableTable.InitVars();
+                }
+            }
+
+            public override void InitVars()
+            {
+                this.DataSetName = "PrivateScreenTDS";
+                this.FFeesPayableTable = ((AFeesPayableTable)(this.Tables["AFeesPayable"]));
+            }
+
+            protected override void InitConstraints()
+            {
+            }
+        }
+
+        #endregion
+
+        private void RunOnceOnActivationManual()
+        {
+            FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
+
+            // Load the data from the Fees Payable cached table
+            Type DataTableType;
+            DataTable CacheDT = TDataCache.GetCacheableDataTableFromPetraServer("FeesPayableList", String.Empty, FFilter, out DataTableType);
+            FExtraDS.AFeesPayable.Merge(CacheDT);
+            FExtraDS.AFeesPayable.DefaultView.Sort = String.Format("{0}, {1} ASC",
+                AFeesPayableTable.GetLedgerNumberDBName(), AFeesPayableTable.GetFeeCodeDBName());
+        }
+
+        void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
+        {
+            if (!e.Success)
+            {
+                string msg = Catalog.GetString(
+                    "The data was not saved successfully.  If the reason given was that you, or another user, has modified the same data, please check that you have not used the same fee code for a 'Payable' and a 'Receivable' Administration Grant.");
+                MessageBox.Show(msg, Catalog.GetString("Additional Help For Administration Grants"), MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -94,36 +170,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             TSharedFinanceValidation_GLSetup.ValidateAdminGrantReceivable(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
+
+            // Need to check the Fee Code has not been used in FeesPayable
+            ValidateFeeCode(ARow.FeeCode, VerificationResultCollection);
+        }
+
+        private void ValidateFeeCode(string AFeeCode, TVerificationResultCollection AVerificationResultCollection)
+        {
+            TScreenVerificationResult result = null;
+            string context = "ReceivableCrossCodeCheck";
+
+            if (FExtraDS.AFeesPayable.DefaultView.Find(new object[] { LedgerNumber, AFeeCode }) >= 0)
+            {
+                // oops - we have this code in the other data set
+                result = new TScreenVerificationResult(context,
+                    FMainDS.AFeesReceivable.ColumnFeeCode,
+                    Catalog.GetString("The Fee Code has already been used as a Fee Code in the 'Payable Administration Grants' screen"),
+                    CommonErrorCodes.ERR_DUPLICATE_RECORD,
+                    txtDetailFeeCode,
+                    TResultSeverity.Resv_Critical);
+            }
+
+            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(context, result, FMainDS.AFeesReceivable.ColumnFeeCode);
         }
 
         private void ChargeOptionChanged(object sender, EventArgs e)
         {
             TSetupAdminGrants.ChargeOptionComboChanged((TCmbAutoComplete)sender, lblDetailChargeAmount,
                 txtDetailChargeAmount, txtDetailChargePercentage);
-        }
-
-        private void SelectByIndex(int rowIndex)
-        {
-            if (rowIndex >= grdDetails.Rows.Count)
-            {
-                rowIndex = grdDetails.Rows.Count - 1;
-            }
-
-            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
-            {
-                rowIndex = 1;
-            }
-
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
-            }
         }
     }
 }
