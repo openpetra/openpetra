@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -123,6 +123,11 @@ namespace Ict.Tools.NAntTasks
                     string[] projDef = line.Substring(line.IndexOf("=") + 1).Split(new char[] { ',' });
                     compileProject.CSProjFile = projDef[1].Trim().Trim(new char[] { '"' });
                     compileProject.UseCSC = true;
+
+                    if (!Path.IsPathRooted(compileProject.CSProjFile))
+                    {
+                        compileProject.CSProjFile = Path.GetDirectoryName(FSolutionFile) + Path.DirectorySeparatorChar + compileProject.CSProjFile;
+                    }
 
                     // ignore sections for Definition, SQL, Database, etc. in the solution file
                     if (compileProject.CSProjFile.ToLower().EndsWith(".csproj"))
