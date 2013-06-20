@@ -345,8 +345,8 @@ namespace Ict.Tools.NAntTasks
                         {
                             string ReferencedProjectName = ItemNode.ChildNodes[1].InnerText;
                             parameters.ReferencedAssemblies.Add(
-                                Path.GetDirectoryName(OutputFile) + Path.DirectorySeparatorChar +
-                                ReferencedProjectName + ".dll");
+                                Path.GetFullPath(Path.GetDirectoryName(OutputFile) + Path.DirectorySeparatorChar +
+                                    ReferencedProjectName + ".dll"));
                         }
                         else if (ItemNode.Name == "Compile")
                         {
