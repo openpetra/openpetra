@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, alanP
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -309,14 +309,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
+        private string FUsage;
+
         /// <summary>
         /// Gets the current text from the rate usage tooltip (used by the test software)
         /// </summary>
         public string Usage
         {
+            set
+            {
+                FUsage = value;
+
+                if (value == String.Empty)
+                {
+                    tooltipDeleteInfo.Hide(btnInvertExchangeRate);
+                }
+                else
+                {
+                    tooltipDeleteInfo.Show(value, btnInvertExchangeRate);
+                }
+            }
             get
             {
-                return tooltipDeleteInfo.GetToolTip(btnInvertExchangeRate);
+                return FUsage;
             }
         }
 
@@ -355,7 +370,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FCorporateDS.ACorporateExchangeRate.Merge(TypedTable);
         }
 
-        private void RunOnceOnActivationManual()
+        /// <summary>
+        /// not anymore RunOnceOnActivationManual, because that might not be run before the formhandler in a NUnitforms test
+        /// </summary>
+        private void RunBeforeActivation()
         {
             // Set the Tag for the checkbox since we don't want changes to the checkbox to look like we have to save the data
             this.chkHideOthers.Tag = MCommon.MCommonResourcestrings.StrCtrlSuppressChangeDetection;
@@ -416,6 +434,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             else
             {
                 ShowDetails(null);
+            }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            if (!this.blnIsInModalMode)
+            {
+                RunBeforeActivation();
             }
         }
 
@@ -525,6 +551,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             modalEffectiveDate = dteEnd;
 
             DefineModalSettings();
+
+            RunBeforeActivation();
 
             DialogResult dlgResult = base.ShowDialog();
 
@@ -1405,14 +1433,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
             }
 
-            if (tipText == String.Empty)
-            {
-                tooltipDeleteInfo.Hide(btnInvertExchangeRate);
-            }
-            else
-            {
-                tooltipDeleteInfo.Show(tipText, btnInvertExchangeRate);
-            }
+            Usage = tipText;
 
             // return true if the rate has been used
             CanEdit = !bHasPostedJournalEntries;
