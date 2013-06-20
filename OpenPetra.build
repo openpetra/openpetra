@@ -347,11 +347,19 @@ useful parameters
 </target>
 
 <target name="devzip">
-    <!-- todo write OpenPetra.build.config with sqlite -->
+    <!-- calling script must get a fresh bzr tree, write OpenPetra.build.config with sqlite -->
+
     <call target="quickClean"/>
     <call target="generateSolution"/>
     <call target="recreateDatabase"/>
     <call target="resetDatabase"/>
+
+    <!-- download another demo database, and load it -->
+    <delete file="demoWith2ledgers.yml.gz" />
+    <exec program="wget" commandline="http://sourceforge.net/projects/openpetraorg/files/openpetraorg/demodata/demoWith2ledgers.yml.gz/download -OdemoWith2ledgers.yml.gz"/>
+    <property name="file" value="demoWith2ledgers.yml.gz"/>
+    <call target="loadDatabase"/>
+
     <copy file="${dir.delivery}/bin/Ict.Tools.DevelopersAssistant.exe" todir="${dir.root}"/>
     <script prefix="utils" language="C#">
          <code>
@@ -362,15 +370,17 @@ useful parameters
                  }
              ]]>
          </code>
-   </script> 
-    <zip zipfile="${dir.root}/../openpetra_development_${utils::GetFormattedDate()}.zip">
+   </script>
+   <property name="zipfile" value="${dir.root}/../openpetra_development_${utils::GetFormattedDate()}.zip"/>
+    <zip zipfile="${zipfile}">
        <fileset basedir="${dir.root}" prefix="openpetra">
          <include name="**/*" />
          <exclude name="**/.bzr/**"/>
          <exclude name="**/.git/**"/>
        </fileset>
     </zip>
-    <!-- todo upload the zip file to sourceforge? -->
+
+    <!-- calling script must upload the zip file to sourceforge -->
 </target>
 </project>
 
