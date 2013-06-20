@@ -168,6 +168,9 @@ namespace Ict.Tools.NAntTasks
             csc.DocFile = new FileInfo(mainProperties["DocumentationFile"]);
             csc.OutputTarget = mainProperties["OutputType"];
 
+            // needed because of sqlite3.dll
+            csc.Platform = "x86";
+
             csc.Define = "DEBUGMODE";
 
             String FrameworkDLLPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(typeof(System.Type)).Location);
@@ -296,6 +299,9 @@ namespace Ict.Tools.NAntTasks
                 parameters.GenerateExecutable = true;
                 OutputFile += ".exe";
             }
+
+            // needed because of sqlite3.dll
+            parameters.CompilerOptions += " /platform:x86";
 
             parameters.OutputAssembly = OutputFile;
             parameters.WarningLevel = 4;
