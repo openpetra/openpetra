@@ -58,6 +58,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private Int32 FCurrentBudgetYear;
 
+        private Int32 FBudgetSequence = -1;
+
         //This may be 13 so allow for it
         private Int32 FNumberOfPeriods;
         private bool FHas13Periods;
@@ -68,6 +70,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private TDlgSelectCSVSeparator FdlgSeparator;
         private String FCurrencyCode = "";
+
+        private ACostCentreTable FCostCentreTable = null;
+        private AAccountTable FAccountTable = null;
 
         /// <summary>
         /// AP is opened in this ledger
@@ -91,24 +96,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             ALedgerRow ledgerRow = (ALedgerRow)FMainDS.ALedger.Rows[0];
             FNumberOfPeriods = ledgerRow.NumberOfAccountingPeriods;
+            FCurrencyCode = ledgerRow.BaseCurrency;
 
             FHas13Periods = (FNumberOfPeriods == 13);
             FHas14Periods = (FNumberOfPeriods == 14);
 
-            //Setup form and controls
-            this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
-            ClearBudgetTextboxCurrencyFormat();
-            ArrangeControlsForPeriodNumber();
+            FCostCentreTable = (ACostCentreTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+                FLedgerNumber);
+            FAccountTable = (AAccountTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
 
             // to get an empty ABudgetFee table, instead of null reference
             FMainDS.Merge(new BudgetTDS());
 
-            TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbSelectBudgetYear, FLedgerNumber, true);
-
-            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
-
-            // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
-            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true);
+            //Setup form and controls
+            this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
+            InitialiseControls();
 
             if (!int.TryParse(cmbSelectBudgetYear.GetSelectedString(), out FCurrentBudgetYear))
             {
@@ -118,9 +120,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             SetBudgetDefaultView();
             grdDetails.AutoSizeCells();
 
-            SelectRowInGrid(0);
+            SelectRowInGrid(1);
 
-            FCurrencyCode = FMainDS.ALedger[0].BaseCurrency;
             FLoadCompleted = true;
         }
 
@@ -134,8 +135,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
         }
 
-        private void ArrangeControlsForPeriodNumber()
+        private void InitialiseControls()
         {
+            ClearBudgetTextboxCurrencyFormat();
+
+            TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbSelectBudgetYear, FLedgerNumber, true);
+
+            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
+
+            // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
+            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true);
+
             if (FNumberOfPeriods == 12)
             {
                 txtPeriod07Amount.Top = txtPeriod08Amount.Top;
@@ -965,6 +975,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             txtInflateBaseTotalAmount.NumberValueDecimal = totalAmount; //.Text = StringHelper.FormatUsingCurrencyCode(totalAmount, FCurrencyCode);
         }
 
+        private string CurrencyCodeToUse()
+        {
+            string retVal = string.Empty;
+
+            AAccountRow currentAccountRow = null;
+
+            if ((FAccountTable != null) && (cmbDetailAccountCode.SelectedIndex != -1) && (cmbDetailAccountCode.Count > 0)
+                && (cmbDetailAccountCode.GetSelectedString() != null))
+            {
+                currentAccountRow = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, cmbDetailAccountCode.GetSelectedString() });
+
+                if ((currentAccountRow != null) && currentAccountRow.ForeignCurrencyFlag)
+                {
+                    grpBudgetDetails.Text = "Budget Details (Foreign Account)";
+                    retVal = currentAccountRow.ForeignCurrencyCode;
+                }
+            }
+
+            if (retVal == string.Empty)
+            {
+                grpBudgetDetails.Text = "Budget Details";
+                retVal = FCurrencyCode;
+            }
+
+            return retVal;
+        }
+
         private void ClearBudgetTypeTextboxesExcept(string AExcludeType = "")
         {
             if (AExcludeType != MFinanceConstants.BUDGET_ADHOC)
@@ -1032,6 +1069,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
         }
 
+        private void UpdateCurrencyCode()
+        {
+            string totalAmountLabel = "Total (" + CurrencyCodeToUse() + "):";
+
+            lblSameTotalAmount.Text = totalAmountLabel;
+            lblInflateNTotalAmount.Text = totalAmountLabel;
+            lblTotalSplitAmount.Text = totalAmountLabel;
+
+            if (FNumberOfPeriods == 12)
+            {
+                lblPeriod14Amount.Text = totalAmountLabel;
+                lblPeriod14Index.Text = totalAmountLabel;
+            }
+            else
+            {
+                lblTotalAdhocAmount.Text = totalAmountLabel;
+                lblInflateBaseTotalAmount.Text = totalAmountLabel;
+            }
+        }
+
         private void ClearBudgetTextboxCurrencyFormat()
         {
             //Adhoc controls
@@ -1064,9 +1121,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private void ShowDetailsManual(ABudgetRow ARow)
         {
             ClearBudgetTypeTextboxesExcept("None");
+            UpdateCurrencyCode();
 
-            if ((grdDetails.Rows.Count < 2) && rgrSelectBudgetType.Enabled)
+            if ((ARow == null) || ((grdDetails.Rows.Count < 2) && rgrSelectBudgetType.Enabled))
             {
+                FBudgetSequence = -1;
                 EnableBudgetEntry(false);
                 return;
             }
@@ -1075,43 +1134,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 EnableBudgetEntry(true);
             }
 
-            // ARow can be null...
-            if (ARow != null)
+            if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_SPLIT)
             {
-                if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_SPLIT)
-                {
-                    rbtSplit.Checked = true;
-                    DisplayBudgetTypeSplit();
-                }
-                else if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_ADHOC)
-                {
-                    rbtAdHoc.Checked = true;
-                    DisplayBudgetTypeAdhoc();
-                }
-                else if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_SAME)
-                {
-                    rbtSame.Checked = true;
-                    DisplayBudgetTypeSame();
-                }
-                else if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_INFLATE_BASE)
-                {
-                    rbtInflateBase.Checked = true;
-                    DisplayBudgetTypeInflateBase();
-                }
-                else          //ARow.BudgetTypeCode = MFinanceConstants.BUDGET_INFLATE_N
-                {
-                    rbtInflateN.Checked = true;
-                    DisplayBudgetTypeInflateN();
-                }
+                rbtSplit.Checked = true;
+                DisplayBudgetTypeSplit();
             }
+            else if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_ADHOC)
+            {
+                rbtAdHoc.Checked = true;
+                DisplayBudgetTypeAdhoc();
+            }
+            else if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_SAME)
+            {
+                rbtSame.Checked = true;
+                DisplayBudgetTypeSame();
+            }
+            else if (ARow.BudgetTypeCode == MFinanceConstants.BUDGET_INFLATE_BASE)
+            {
+                rbtInflateBase.Checked = true;
+                DisplayBudgetTypeInflateBase();
+            }
+            else          //ARow.BudgetTypeCode = MFinanceConstants.BUDGET_INFLATE_N
+            {
+                rbtInflateN.Checked = true;
+                DisplayBudgetTypeInflateN();
+            }
+
+            FBudgetSequence = ARow.BudgetSequence;
+
+            AccountIsActive();
+            CostCentreIsActive();
 
             pnlBudgetTypeAdhoc.Visible = rbtAdHoc.Checked;
             pnlBudgetTypeSame.Visible = rbtSame.Checked;
             pnlBudgetTypeSplit.Visible = rbtSplit.Checked;
             pnlBudgetTypeInflateN.Visible = rbtInflateN.Checked;
             pnlBudgetTypeInflateBase.Visible = rbtInflateBase.Checked;
-
-            FLoadCompleted = true;
         }
 
         private bool GetDetailDataFromControlsManual(ABudgetRow ARow)
@@ -1201,20 +1259,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void CostCentreCodeDetailChanged(object sender, EventArgs e)
         {
+            string currentCostCentre;
+            bool costCentreActive = true;
+
             if ((FLoadCompleted == false) || (FPreviouslySelectedDetailRow == null)
-                || (cmbDetailCostCentreCode.GetSelectedString() == String.Empty) || (cmbDetailCostCentreCode.SelectedIndex == -1)
-                || (cmbDetailAccountCode.SelectedIndex == -1))
+                || (cmbDetailCostCentreCode.GetSelectedString() == String.Empty) || (cmbDetailCostCentreCode.SelectedIndex == -1))
             {
                 return;
             }
 
-            if (!CostCentreAccountCombinationIsUnique())
+            currentCostCentre = cmbDetailCostCentreCode.GetSelectedString();
+            costCentreActive = CostCentreIsActive();
+
+            //If change from combo action as opposed to moving rows
+            if (FPreviouslySelectedDetailRow.BudgetSequence == FBudgetSequence)
             {
-                MessageBox.Show(String.Format(Catalog.GetString(
-                            "The Cost Centre ({0})/Account Code ({1}) combination is already used in this budget."),
-                        cmbDetailCostCentreCode.GetSelectedString(),
-                        cmbDetailAccountCode.GetSelectedString()));
-                cmbDetailCostCentreCode.SelectedIndex = -1;
+                if ((cmbDetailAccountCode.SelectedIndex != -1) && !CostCentreAccountCombinationIsUnique())
+                {
+                    MessageBox.Show(String.Format(Catalog.GetString(
+                                "The Cost Centre ({0})/Account Code ({1}) combination is already used in this budget."),
+                            currentCostCentre,
+                            cmbDetailAccountCode.GetSelectedString()));
+                    cmbDetailCostCentreCode.SelectedIndex = -1;
+                }
+                else if (!costCentreActive
+                         && (MessageBox.Show(String.Format(Catalog.GetString("Cost Centre Code {0} is set to Inactive. Do you want to select it?"),
+                                     currentCostCentre),
+                                 Catalog.GetString("Confirm Cost Centre"),
+                                 MessageBoxButtons.YesNo,
+                                 MessageBoxIcon.Question,
+                                 MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes))
+                {
+                    cmbDetailCostCentreCode.SelectedIndex = -1;
+                }
             }
         }
 
@@ -1223,20 +1300,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         /// </summary>
         private void AccountCodeDetailChanged(object sender, EventArgs e)
         {
+            string currentAccount;
+            bool accountActive = true;
+
             if ((FLoadCompleted == false) || (FPreviouslySelectedDetailRow == null) || (cmbDetailAccountCode.GetSelectedString() == String.Empty)
-                || (cmbDetailAccountCode.SelectedIndex == -1) || (cmbDetailCostCentreCode.SelectedIndex == -1))
+                || (cmbDetailAccountCode.SelectedIndex == -1))
             {
                 return;
             }
 
-            if (!CostCentreAccountCombinationIsUnique())
+            currentAccount = cmbDetailAccountCode.GetSelectedString();
+            accountActive = AccountIsActive();
+
+            //If change from combo action as opposed to moving rows
+            if (FPreviouslySelectedDetailRow.BudgetSequence == FBudgetSequence)
             {
-                MessageBox.Show(String.Format(Catalog.GetString(
-                            "The Cost Centre ({0})/Account Code ({1}) combination is already used in this budget."),
-                        cmbDetailCostCentreCode.GetSelectedString(),
-                        cmbDetailAccountCode.GetSelectedString()));
-                cmbDetailAccountCode.SelectedIndex = -1;
+                if ((cmbDetailCostCentreCode.SelectedIndex != -1) && !CostCentreAccountCombinationIsUnique())
+                {
+                    MessageBox.Show(String.Format(Catalog.GetString(
+                                "The Cost Centre ({0})/Account Code ({1}) combination is already used in this budget."),
+                            cmbDetailCostCentreCode.GetSelectedString(),
+                            cmbDetailAccountCode.GetSelectedString()));
+                    cmbDetailAccountCode.SelectedIndex = -1;
+                }
+                else if (!accountActive
+                         && (MessageBox.Show(String.Format(Catalog.GetString("Account Code {0} is set to Inactive. Do you want to select it?"),
+                                     currentAccount),
+                                 Catalog.GetString("Confirm Account"),
+                                 MessageBoxButtons.YesNo,
+                                 MessageBoxIcon.Question,
+                                 MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes))
+                {
+                    cmbDetailAccountCode.SelectedIndex = -1;
+                }
             }
+
+            UpdateCurrencyCode();
         }
 
         private bool CostCentreAccountCombinationIsUnique()
@@ -1256,6 +1355,47 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     FPreviouslySelectedDetailRow.BudgetSequence));
 
             return foundRows.Length == 0;
+        }
+
+        private bool AccountIsActive()
+        {
+            bool retVal = false;
+
+            AAccountRow currentAccountRow = null;
+
+            if ((FAccountTable != null) && (cmbDetailAccountCode.SelectedIndex != -1) && (cmbDetailAccountCode.Count > 0)
+                && (cmbDetailAccountCode.GetSelectedString() != null))
+            {
+                currentAccountRow = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, cmbDetailAccountCode.GetSelectedString() });
+
+                if (currentAccountRow != null)
+                {
+                    retVal = currentAccountRow.AccountActiveFlag;
+                }
+            }
+
+            return retVal;
+        }
+
+        private bool CostCentreIsActive()
+        {
+            bool retVal = true;
+
+            ACostCentreRow currentCostCentreRow = null;
+
+            if ((FCostCentreTable != null) && (cmbDetailCostCentreCode.SelectedIndex != -1) && (cmbDetailCostCentreCode.Count > 0)
+                && (cmbDetailCostCentreCode.GetSelectedString() != null))
+            {
+                currentCostCentreRow = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber,
+                                                                                                 cmbDetailCostCentreCode.GetSelectedString() });
+
+                if (currentCostCentreRow != null)
+                {
+                    retVal = currentCostCentreRow.CostCentreActiveFlag;
+                }
+            }
+
+            return retVal;
         }
     }
 }
