@@ -151,7 +151,7 @@ namespace Ict.Tools.NAntTasks
                 mainProperties.Add(propNode.Name, propNode.InnerText);
             }
 
-            string OutputFile = mainProperties["OutputPath"];
+            string OutputFile = Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" + mainProperties["OutputPath"]);
 
             OutputFile += "/" + mainProperties["AssemblyName"];
 
@@ -276,7 +276,7 @@ namespace Ict.Tools.NAntTasks
             parameters.GenerateInMemory = false;
             parameters.CompilerOptions = string.Empty;
 
-            string OutputFile = mainProperties["OutputPath"];
+            string OutputFile = Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" + mainProperties["OutputPath"]);
 
             OutputFile += "/" + mainProperties["AssemblyName"];
 
