@@ -323,7 +323,15 @@ namespace Ict.Tools.NAntTasks
                         {
                             if (ItemNode.HasChildNodes && (ItemNode.ChildNodes[0].Name == "HintPath"))
                             {
-                                parameters.ReferencedAssemblies.Add(ItemNode.ChildNodes[0].InnerText);
+                                if (ItemNode.ChildNodes[0].InnerText.Contains(".."))
+                                {
+                                    parameters.ReferencedAssemblies.Add(Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" +
+                                            ItemNode.ChildNodes[0].InnerText.Replace("\\", "/")));
+                                }
+                                else
+                                {
+                                    parameters.ReferencedAssemblies.Add(ItemNode.ChildNodes[0].InnerText);
+                                }
                             }
                             else
                             {
@@ -344,7 +352,8 @@ namespace Ict.Tools.NAntTasks
                         {
                             if (ItemNode.Attributes["Include"].Value.Contains(".."))
                             {
-                                src.Add(Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" + ItemNode.Attributes["Include"].Value.Replace("\\", "/")));
+                                src.Add(Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" +
+                                        ItemNode.Attributes["Include"].Value.Replace("\\", "/")));
                             }
                             else
                             {

@@ -615,7 +615,7 @@ namespace Ict.Tools.NAntTasks
                 {
                     if (workingDirectory[countSame] == '/')
                     {
-                        Result = "../" + Result;
+                        Result = "..\\" + Result;
                     }
 
                     countSame++;
@@ -921,7 +921,8 @@ namespace Ict.Tools.NAntTasks
                 template.Replace("${MiscellaneousFiles}", String.Empty);
             }
 
-            template.Replace("${dir.3rdParty}", FCodeRootDir + Path.DirectorySeparatorChar + "ThirdParty");
+            template.Replace("${dir.3rdParty}",
+                GetRelativePath(FCodeRootDir + Path.DirectorySeparatorChar + "ThirdParty", FDirProjectFiles + "\\devenv\\").Replace("/", "\\"));
             template.Replace("${csharpStdLibs}", "");
 
             string completedFile = template.ToString();
