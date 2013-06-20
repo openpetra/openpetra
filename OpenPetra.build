@@ -358,6 +358,7 @@ useful parameters
     <delete file="demoWith2ledgers.yml.gz" />
     <exec program="wget" commandline="http://sourceforge.net/projects/openpetraorg/files/openpetraorg/demodata/demoWith2ledgers.yml.gz/download -OdemoWith2ledgers.yml.gz"/>
     <call target="startPetraServer"/>
+    <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
     <ExecDotNet program="${dir.bin}/PetraServerAdminConsole.exe" 
         commandline="-C:${dir.root}/etc/ServerAdmin.config -Command:LoadYmlGz -YmlGzFile:${dir.root}/demoWith2ledgers.yml.gz"/>
     <call target="stopPetraServer"/>
