@@ -1160,6 +1160,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
 			FBudgetSequence = ARow.BudgetSequence;
 
+            AccountIsActive();
+            CostCentreIsActive();
+            
             pnlBudgetTypeAdhoc.Visible = rbtAdHoc.Checked;
             pnlBudgetTypeSame.Visible = rbtSame.Checked;
             pnlBudgetTypeSplit.Visible = rbtSplit.Checked;
@@ -1255,20 +1258,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private void CostCentreCodeDetailChanged(object sender, EventArgs e)
         {
             string currentCostCentre;
+            bool costCentreActive = true;
             
         	if ((FLoadCompleted == false) || (FPreviouslySelectedDetailRow == null)
-                || (cmbDetailCostCentreCode.GetSelectedString() == String.Empty) || (cmbDetailCostCentreCode.SelectedIndex == -1)
-                || (cmbDetailAccountCode.SelectedIndex == -1))
+                || (cmbDetailCostCentreCode.GetSelectedString() == String.Empty) || (cmbDetailCostCentreCode.SelectedIndex == -1))
             {
                 return;
             }
             
             currentCostCentre = cmbDetailCostCentreCode.GetSelectedString();
+            costCentreActive = CostCentreIsActive();
 
             //If change from combo action as opposed to moving rows
             if (FPreviouslySelectedDetailRow.BudgetSequence == FBudgetSequence)
             {
-	            if (!CostCentreAccountCombinationIsUnique())
+	            if (cmbDetailAccountCode.SelectedIndex != -1 && !CostCentreAccountCombinationIsUnique())
 	            {
 	                MessageBox.Show(String.Format(Catalog.GetString(
 	                            "The Cost Centre ({0})/Account Code ({1}) combination is already used in this budget."),
@@ -1276,7 +1280,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 	                        cmbDetailAccountCode.GetSelectedString()));
 	                cmbDetailCostCentreCode.SelectedIndex = -1;
 	            }
-	            else if (!CostCentreIsActive() && (MessageBox.Show(String.Format(Catalog.GetString("Cost Centre Code {0} is set to Inactive. Do you want to select it?"),
+	            else if (!costCentreActive && (MessageBox.Show(String.Format(Catalog.GetString("Cost Centre Code {0} is set to Inactive. Do you want to select it?"),
 	                                                                            currentCostCentre),
 	                         Catalog.GetString("Confirm Cost Centre"),
 	                         MessageBoxButtons.YesNo,
@@ -1294,19 +1298,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private void AccountCodeDetailChanged(object sender, EventArgs e)
         {
             string currentAccount;
+            bool accountActive = true;
 
             if ((FLoadCompleted == false) || (FPreviouslySelectedDetailRow == null) || (cmbDetailAccountCode.GetSelectedString() == String.Empty)
-                || (cmbDetailAccountCode.SelectedIndex == -1) || (cmbDetailCostCentreCode.SelectedIndex == -1))
+                || (cmbDetailAccountCode.SelectedIndex == -1))
             {
                 return;
             }
 
             currentAccount = cmbDetailAccountCode.GetSelectedString();
+            accountActive = AccountIsActive();
 
             //If change from combo action as opposed to moving rows
             if (FPreviouslySelectedDetailRow.BudgetSequence == FBudgetSequence)
             {
-	            if (!CostCentreAccountCombinationIsUnique())
+	            if (cmbDetailCostCentreCode.SelectedIndex != -1 && !CostCentreAccountCombinationIsUnique())
 	            {
 	                MessageBox.Show(String.Format(Catalog.GetString(
 	                            "The Cost Centre ({0})/Account Code ({1}) combination is already used in this budget."),
@@ -1314,7 +1320,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 	                        cmbDetailAccountCode.GetSelectedString()));
 	                cmbDetailAccountCode.SelectedIndex = -1;
 	            }
-	            else if (!AccountIsActive() && (MessageBox.Show(String.Format(Catalog.GetString("Account Code {0} is set to Inactive. Do you want to select it?"),
+	            else if (!accountActive && (MessageBox.Show(String.Format(Catalog.GetString("Account Code {0} is set to Inactive. Do you want to select it?"),
 	                                                                         currentAccount),
 	                         Catalog.GetString("Confirm Account"),
 	                         MessageBoxButtons.YesNo,
@@ -1368,7 +1374,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private bool CostCentreIsActive()
         {
-			bool retVal = false;
+			bool retVal = true;
         	
         	ACostCentreRow currentCostCentreRow = null;
         	
@@ -1382,7 +1388,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 	        	}
         	}
         	
-            return retVal;
+        	return retVal;
         }
 
     }
