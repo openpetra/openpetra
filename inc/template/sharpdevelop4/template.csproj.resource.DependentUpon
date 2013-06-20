@@ -1,3 +1,3 @@
     <EmbeddedResource Include="${relative-filename-backslash}">
-      <DependentUpon>${DependentUpon}</DependentUpon>
+      <DependentUpon>${relative-DependentUpon}</DependentUpon>
     </EmbeddedResource>
