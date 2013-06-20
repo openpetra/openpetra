@@ -225,8 +225,6 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// </summary>
         public void LoadModalEmptyTableHandler()
         {
-            FormTester formTester = new FormTester(FModalFormName);
-
             // Controls
             ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
             ButtonTester btnCloseTester = new ButtonTester("btnClose", FModalFormName);
@@ -339,8 +337,6 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// </summary>
         public void LoadModalTableHandler()
         {
-            FormTester formTester = new FormTester(FModalFormName);
-
             // Controls
             ButtonTester btnCloseTester = new ButtonTester("btnClose", FModalFormName);
             ButtonTester btnCancelTester = new ButtonTester("btnCancel", FModalFormName);
@@ -434,8 +430,6 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// </summary>
         public void ModalValidationHandler()
         {
-            FormTester formTester = new FormTester(FModalFormName);
-
             // Controls
             ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
             ButtonTester btnCloseTester = new ButtonTester("btnClose", FModalFormName);
