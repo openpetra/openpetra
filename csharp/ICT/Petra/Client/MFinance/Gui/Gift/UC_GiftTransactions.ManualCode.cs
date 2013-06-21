@@ -101,10 +101,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //Enable buttons accordingly
-            btnDelete.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
-            btnDeleteAll.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
-            btnNewDetail.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
-            btnNewGift.Enabled = !FPetraUtilsObject.DetailProtectedMode && !ViewMode;
+            btnDelete.Enabled = (!FPetraUtilsObject.DetailProtectedMode && !ViewMode && ABatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+            btnDeleteAll.Enabled = (!FPetraUtilsObject.DetailProtectedMode && !ViewMode && ABatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+            btnNewDetail.Enabled = (!FPetraUtilsObject.DetailProtectedMode && !ViewMode && ABatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+            btnNewGift.Enabled = (!FPetraUtilsObject.DetailProtectedMode && !ViewMode && ABatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus))
@@ -1445,8 +1445,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             pnlDetails.Enabled = !(PnlDetailsProtected);
 
-            btnDelete.Enabled = (grdDetails.Rows.Count > 1);
-            btnDeleteAll.Enabled = (grdDetails.Rows.Count > 1);
+            btnDelete.Enabled = ((grdDetails.Rows.Count > 1) && !PnlDetailsProtected);
+            btnDeleteAll.Enabled = ((grdDetails.Rows.Count > 1) && !PnlDetailsProtected);
         }
 
         private Boolean BatchHasMethodOfPayment()
