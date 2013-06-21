@@ -382,7 +382,15 @@ namespace Ict.Tools.NAntTasks
 
                                 if (ItemNode.HasChildNodes && (ItemNode.FirstChild.Name == "DependentUpon"))
                                 {
-                                    NamespaceAndClass = GetNamespaceAndClass(ItemNode.FirstChild.InnerText);
+                                    string CSFile = ItemNode.FirstChild.InnerText;
+
+                                    if (CSFile.StartsWith(".."))
+                                    {
+                                        CSFile = Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" +
+                                            CSFile.Replace("\\", "/"));
+                                    }
+
+                                    NamespaceAndClass = GetNamespaceAndClass(CSFile);
                                 }
 
                                 //"../../../../tmp/" +

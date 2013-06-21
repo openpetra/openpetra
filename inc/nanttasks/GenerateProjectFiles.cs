@@ -615,14 +615,14 @@ namespace Ict.Tools.NAntTasks
                 {
                     if (workingDirectory[countSame] == '/')
                     {
-                        Result = "..\\" + Result;
+                        Result = "../" + Result;
                     }
 
                     countSame++;
                 }
             }
 
-            return Result;
+            return Result.Replace('/', Path.DirectorySeparatorChar);
         }
 
         /// add AssemblyInfo file
@@ -868,7 +868,7 @@ namespace Ict.Tools.NAntTasks
             {
                 string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + "/dummy/");
 
-                string relativeFilenameBackslash = relativeFilename.Replace('/', Path.DirectorySeparatorChar);
+                string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
 
                 if (ContainsFiles.Contains(ContainedFile.Replace(".resx", ".cs")))
                 {
@@ -877,7 +877,7 @@ namespace Ict.Tools.NAntTasks
                     temp.Replace("${relative-filename-backslash}", relativeFilenameBackslash);
                     temp.Replace("${relative-filename}", relativeFilename);
                     temp.Replace("${DependentUpon}", ContainedFile.Replace(".resx", ".cs"));
-                    temp.Replace("${relative-DependentUpon}", Path.GetFileName(relativeFilename.Replace(".resx", ".cs")));
+                    temp.Replace("${relative-DependentUpon}", relativeFilename.Replace(".resx", ".cs"));
                     Resources.Append(temp.ToString());
                 }
                 else
