@@ -348,9 +348,9 @@ namespace Ict.Tools.DevelopersAssistant
                     sw.WriteLine(_contentHeader);
                     sw.WriteLine();
                     sw.WriteLine(
-                        "Database Schema = http://openpetraorg.sourceforge.net/dbdoc/ ++ The complete architecture of the Open Petra database");
+                        "Database Schema = http://dbdoc.openpetra.org/ ++ The complete architecture of the Open Petra database");
                     sw.WriteLine(
-                        "Developer's Forum = http://sourceforge.net/apps/phpbb/openpetraorg/ ++ This links to the main developer forum where you can join in discussion of developer topics or ask a question.");
+                        "Developer's Forum = http://forum.openpetra.org/ ++ This links to the main developer forum where you can join in discussion of developer topics or ask a question.");
                     sw.WriteLine(
                         "Documentation for Developers = http://www.openpetra.org/en/developers-documentation ++ Useful links from the main public site for Open Petra");
                     sw.WriteLine(
@@ -358,12 +358,14 @@ namespace Ict.Tools.DevelopersAssistant
                     sw.WriteLine(
                         "Jenkins Server on Windows = http://ci-win.openpetra.org:8080/ ++ A link to the dashboard of the Continuous Integration server that runs on Windows.");
                     sw.WriteLine(
-                        "Launchpad = https://code.launchpad.net/openpetraorg/ ++ A web interface to the code on the main Launchpad repository");
+                        "Launchpad = http://code.openpetra.org/ ++ A web interface to the code on the main Launchpad repository");
+                    sw.WriteLine(
+                        "Doxygen = http://codedoc.openpetra.org/ ++ A javadoc like documentation of the OpenPetra source code");
                     sw.WriteLine(
                         "Mantis Bug Tracker = https://tracker.openpetra.org/main_page.php ++ This links to the main project work item database known as 'Mantis'");
                     sw.WriteLine(
                         "Mantis Bug Tracker (My View) = https://tracker.openpetra.org/my_view_page.php ++ This links to the 'My View' page in the main project work item database known as 'Mantis'");
-                    sw.WriteLine("OpenPetra Wiki = http://sourceforge.net/apps/mediawiki/openpetraorg/ ++ This links to the main project wiki");
+                    sw.WriteLine("OpenPetra Wiki = http://wiki.openpetra.org/ ++ This links to the main project wiki");
 
                     sw.Close();
                 }
