@@ -701,7 +701,9 @@ namespace Ict.Tools.NAntTasks
                 if (iconFiles.Length > 0)
                 {
                     temp = GetTemplateFile(ATemplateDir + "template.csproj.appicon");
-                    temp.Replace("${application-Icon}", iconFiles[0]);
+                    string iconPath = GetRelativePath(iconFiles[0], FDirProjectFiles + "/dummy/");
+                    temp.Replace("${application-Icon}", iconPath.Replace('/', Path.DirectorySeparatorChar));
+                    temp.Replace("${application-Icon-backslash}", iconPath.Replace('/', '\\'));
                     replaceWith = temp.ToString();
                 }
             }
@@ -799,7 +801,7 @@ namespace Ict.Tools.NAntTasks
             foreach (string ContainedFile in ContainsFiles)
             {
                 string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + "/dummy/").Replace('\\', Path.DirectorySeparatorChar);
-                string relativeFilenameBackslash = relativeFilename.Replace('/', Path.DirectorySeparatorChar);
+                string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
 
                 if ((ContainedFile.EndsWith(".ManualCode.cs") && File.Exists(ContainedFile.Replace(".ManualCode.cs", "-generated.cs")))
                     || (ContainedFile.EndsWith(".Designer.cs") && File.Exists(ContainedFile.Replace(".Designer.cs", ".cs"))))

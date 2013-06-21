@@ -31,7 +31,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <BaseIntermediateOutputPath>${dir.obj.backslash}\${Namespace}\</BaseIntermediateOutputPath>
     <OutputPath>${dir.bin.backslash}</OutputPath>
-    <DocumentationFile>${dir.bin.backslash}/${Namespace}.xml</DocumentationFile>
+    <DocumentationFile>${dir.bin.backslash}\${Namespace}.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
 ${ApplicationIcon}${PreBuildEvent}${PostBuildEvent}  <ItemGroup>
