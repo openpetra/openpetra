@@ -877,7 +877,7 @@ namespace Ict.Tools.NAntTasks
                     temp.Replace("${relative-filename-backslash}", relativeFilenameBackslash);
                     temp.Replace("${relative-filename}", relativeFilename);
                     temp.Replace("${DependentUpon}", ContainedFile.Replace(".resx", ".cs"));
-                    temp.Replace("${relative-DependentUpon}", relativeFilename.Replace(".resx", ".cs"));
+                    temp.Replace("${relative-DependentUpon}", Path.GetFileName(relativeFilename.Replace(".resx", ".cs")));
                     Resources.Append(temp.ToString());
                 }
                 else

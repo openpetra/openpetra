@@ -376,6 +376,12 @@ namespace Ict.Tools.NAntTasks
                         {
                             string ResourceXFile = ItemNode.Attributes["Include"].Value;
 
+                            if (ResourceXFile.StartsWith(".."))
+                            {
+                                ResourceXFile = Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" +
+                                    ResourceXFile.Replace("\\", "/"));
+                            }
+
                             if (ResourceXFile.EndsWith(".resx"))
                             {
                                 string NamespaceAndClass = Path.GetFileNameWithoutExtension(ResourceXFile);
@@ -388,6 +394,11 @@ namespace Ict.Tools.NAntTasks
                                     {
                                         CSFile = Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" +
                                             CSFile.Replace("\\", "/"));
+                                    }
+                                    else if (!Path.IsPathRooted(CSFile))
+                                    {
+                                        CSFile = Path.GetFullPath(Path.GetDirectoryName(ResourceXFile) + "/" +
+                                            CSFile);
                                     }
 
                                     NamespaceAndClass = GetNamespaceAndClass(CSFile);
@@ -412,6 +423,10 @@ namespace Ict.Tools.NAntTasks
                                     writer.Close();
 
                                     parameters.EmbeddedResources.Add(ResourcesFile);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Warning: cannot find resource file " + ResourceXFile);
                                 }
                             }
                             else
