@@ -844,11 +844,14 @@ namespace Ict.Tools.NAntTasks
 
                         // Add the YAML file as a dependent non-compile file
                         OtherFile = ContainedFile.Replace("-generated.cs", ".yaml");
+                        string OtherFileRelativeFilename = GetRelativePath(OtherFile, FDirProjectFiles + "/dummy/");
 
                         if (File.Exists(OtherFile) && File.Exists(ATemplateDir + "template.csproj.none.DependentUpon"))
                         {
                             temp = GetTemplateFile(ATemplateDir + "template.csproj.none.DependentUpon");
                             temp.Replace("${filename}", OtherFile);
+                            temp.Replace("${relative-filename}", OtherFileRelativeFilename);
+                            temp.Replace("${relative-filename-backslash}", OtherFileRelativeFilename.Replace('/', '\\'));
                             temp.Replace("${relative-DependentUpon}", Path.GetFileName(relativeFilename));
                             CompileFile.Append(temp.ToString());
                         }
@@ -911,6 +914,9 @@ namespace Ict.Tools.NAntTasks
                     {
                         replaceWith += temp;
                         replaceWith = replaceWith.Replace("${filename}", dataXmlFiles[i]);
+                        string OtherFileRelativeFilename = GetRelativePath(dataXmlFiles[i], FDirProjectFiles + "/dummy/");
+                        replaceWith = replaceWith.Replace("${relative-filename}", OtherFileRelativeFilename);
+                        replaceWith = replaceWith.Replace("${relative-filename-backslash}", OtherFileRelativeFilename.Replace('/', '\\'));
                     }
 
                     replaceWith += ("  </ItemGroup>" + Environment.NewLine);
