@@ -17,16 +17,17 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailCurrencyCode, DetailLanguageCode, DetailUnitLabelSingular, DetailUnitLabelPlural, DetailDecimalLabelSingular, DetailDecimalLabelPlural, DetailDecimalOptions, DetailSpecialCode]
@@ -50,7 +51,7 @@ RootNode:
                 Row5: [txtDetailUnitLabelSingular, lblAndSingular, txtDetailDecimalLabelSingular]
                 Row6: [txtDetailUnitLabelPlural, lblAndPlural, txtDetailDecimalLabelPlural]
                 Row7: [cmbDetailSpecialCode]
-            ColWidths: [1=Fixed:150, 2=Fixed:40, 3=Fixed:200]
+            ColWidths: [1=Fixed:150, 2=Fixed:30, 3=Fixed:2]
         cmbDetailCurrencyCode: {Label=Currency Code, List=CurrencyCodeList, ColSpan=3, ComboBoxWidth=90}
         cmbDetailLanguageCode: {Label=Language Code, List=LanguageCodeList, ColSpan=3, ComboBoxWidth=90}
         lblUnit: {Text=Unit Name (e.g. Dollar), Align=Right}
@@ -72,10 +73,6 @@ RootNode:
         pnlPrintSample: {ColSpan=3}
             Controls:
                 Row0: [lblPrintSample]
-            Padding: 198,0,0,0
+            Padding: 60,0,0,0
             Margin: 0
         lblPrintSample: {Text=e.g. two thousand one hundred five dollars and one cent}
-
-    Toolbar:
-        tbbNew: 
-            Label: New Currency Language

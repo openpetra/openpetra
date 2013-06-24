@@ -20,10 +20,11 @@ RootNode:
         pnlGrid:
             Dock: Fill
             Controls: 
-                Row0: [grdDetails, pnlButtons]
+                Row0: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete, btnImport]
+            ControlsOrientation: horizontal
         pnlFilter:
             Dock: Bottom
             Controls:
@@ -37,9 +38,9 @@ RootNode:
             NoLabel: true
             Enabled: false
             OnChange: BudgetTypeChanged
-        btnNew: {Action=actNew, Stretch=horizontally}
-        btnDelete: {Action=actDelete, Stretch=horizontally}
-        btnImport: {Action=actImport, Stretch=horizontally}
+        btnNew: {Action=actNew, Width=80}
+        btnDelete: {Action=actDelete, Width=80}
+        btnImport: {Action=actImport, Width=80, StartNewButtonGroup=true}
         grdDetails:
             Dock: Fill
             Columns: [DetailCostCentreCode, DetailAccountCode, DetailBudgetTypeCode]
@@ -97,7 +98,7 @@ RootNode:
                 Row5: [txtPeriod06Index, txtPeriod13Index]
                 Row6: [txtPeriod07Index, txtPeriod14Index]
                 Row7: [txtEmptyColumn2, txtInflateBaseTotalAmount]
-        grpBudgetDetails: {ColSpan=1, Width:535, Height: 230}
+        grpBudgetDetails: {ColSpan=1, Width:560, Height: 230}
             Align: top-left
             Controls: 
                 Row0: [pnlBudgetTypeAdhoc]

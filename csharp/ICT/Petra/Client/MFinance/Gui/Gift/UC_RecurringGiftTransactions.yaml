@@ -28,13 +28,14 @@ RootNode:
         txtHashTotal: {Format=Currency, ReadOnly=true,  Unbound=true}
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNewGift, btnNewDetail, btnDelete]
-        btnNewGift: {Action=actNewGift, Stretch=horizontally}
-        btnNewDetail: {Action=actNewDetail, Stretch=horizontally}
-        btnDelete: {Action=actDelete, Stretch=horizontally}
+            ControlsOrientation: horizontal
+        btnNewGift: {Action=actNewGift, Width=120}
+        btnNewDetail: {Action=actNewDetail, Width=120, StartNewButtonGroup=true}
+        btnDelete: {Action=actDelete, Width=120}
         grdDetails:
             TableName: ARecurringGiftDetail
             Dock: Fill

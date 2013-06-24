@@ -12,7 +12,7 @@ RootNode:
     WindowHeight: 600
     Actions:
         cndDiscountEnabled: {InitialValue=false}
-        actNewDetail: {Label=Add De&tail, ActionClick=NewDetail}
+        actNewDetail: {Label=Add De&tail, ActionClick=NewDetail, Image=New_Record.ico}
         actDelete:  {Label=&Remove Detail, ActionClick=DeleteRecord}
         actAnalyse: {ActionClick=Analyse}
         actPostDocument: {Label=Post, ActionClick=PostDocument}
@@ -70,10 +70,11 @@ RootNode:
             Controls: [pnlDetailGrid, pnlDetails]
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnAddDetail, btnDelete]
+            ControlsOrientation: horizontal
         grdDetails:
             Dock: Fill
             TableName:AApDocumentDetail
@@ -88,10 +89,10 @@ RootNode:
                 Row3: [txtDetailBaseAmount, cmbDetailAccountCode]
                 Row4: [Empty1, pnlItemButtons]
         txtDetailNarrative: {ColSpan=2}
-            Width: 350
+            Width: 365
             Label: Narrati&ve
         txtDetailItemRef: {ColSpan=2}
-            Width: 350
+            Width: 365
             Label: Detail &Ref
         txtDetailAmount:
             Format: Currency(2)
@@ -119,12 +120,12 @@ RootNode:
             Label: Anal Attri&b
             Action: actAnalyse
         btnAddDetail:
-            Width: 100
+            Width: 120
             Action: actNewDetail
         btnDelete:
             Enabled: false
             Label: &Remove Detail
-            Width: 100
+            Width: 120
             Action: actDelete
 # TODO: Approval completely disabled for the moment
 #        btnApproveDetail:

@@ -18,16 +18,17 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailQualificationAreaName, DetailQualificationAreaDescr, DetailQualificationFlag, DetailQualificationDate, DetailDeletableFlag]
@@ -43,10 +44,7 @@ RootNode:
                 Row1: [chkDetailQualificationFlag, dtpDetailQualificationDate]
                 Row2: [chkDetailDeletableFlag]
         txtDetailQualificationAreaName: {Label=Professional Area, CharacterCasing=Upper}
-        txtDetailQualificationAreaDescr: {Label=Description, Width=265}
+        txtDetailQualificationAreaDescr: {Label=Description, Width=315}
         chkDetailQualificationFlag: {Label=Unassignable, OnChange=EnableDisableQualificationDate}
         dtpDetailQualificationDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
-    Toolbar:
-        tbbNew:
-            Label: New Professional Area
