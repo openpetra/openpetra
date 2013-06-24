@@ -1,1 +1,1 @@
-    <EmbeddedResource Include="${filename}" />
+    <EmbeddedResource Include="${relative-filename-backslash}" />

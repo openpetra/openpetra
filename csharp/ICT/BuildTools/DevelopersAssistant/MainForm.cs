@@ -4,7 +4,7 @@
 // @Authors:
 //       alanp
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -321,11 +321,25 @@ namespace Ict.Tools.DevelopersAssistant
 
             dlg.ShowNewFolderButton = false;
             dlg.Description = "Choose a new location of your working branch";
-            dlg.RootFolder = Environment.SpecialFolder.MyComputer;
+
+            // seems you cannot set RootFolder and SelectedPath at the same time
+            // FolderBrowserDialog ignores SelectedPath property if RootFolder has been set
+            // dlg.RootFolder = Environment.SpecialFolder.MyComputer;
 
             if (txtBranchLocation.Text != String.Empty)
             {
                 dlg.SelectedPath = txtBranchLocation.Text;
+            }
+            else
+            {
+                string path = Environment.CurrentDirectory;
+
+                if (path.Replace('\\', '/').EndsWith("/delivery/bin"))
+                {
+                    path = path.Substring(0, path.Length - "/delivery/bin".Length);
+                }
+
+                dlg.SelectedPath = path;
             }
 
             if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
