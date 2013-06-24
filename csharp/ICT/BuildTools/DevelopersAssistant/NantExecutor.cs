@@ -238,7 +238,7 @@ namespace Ict.Tools.DevelopersAssistant
             string initialDir = System.IO.Path.Combine(BranchLocation, "csharp\\ICT\\Petra\\Client");
 
             // This is one of the tasks where we don't wait for exit - so we write a dummy output file
-            using (System.IO.StreamWriter sw = new System.IO.StreamWriter(System.IO.Path.Combine(BranchLocation, "opda.txt")))
+            using (System.IO.StreamWriter sw = new System.IO.StreamWriter(System.IO.Path.Combine(initialDir, "opda.txt")))
             {
                 sw.WriteLine("This task does not generate a log file.");
                 sw.Close();
