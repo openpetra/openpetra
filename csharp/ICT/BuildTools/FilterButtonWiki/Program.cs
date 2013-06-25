@@ -32,18 +32,18 @@ namespace Ict.Tools.FilterButtonWiki
     class Program
     {
         // Lists of YAML files that use the specified WinForms template
-        private static List<string> FListWindowEditUIConnector = new List<string>();
-        private static List<string> FListWindowEditWebConnectorMasterDetail = new List<string>();
-        private static List<string> FListWindowEdit = new List<string>();
-        private static List<string> FListWindowTDS = new List<string>();
-        private static List<string> FListWindowMaintainTable = new List<string>();
-        private static List<string> FListWindowMaintainCacheableTable = new List<string>();
-        private static List<string> FListControlMaintainTable = new List<string>();
-        private static List<string> FListControlMaintainCacheableTable = new List<string>();
-        private static List<string> FListWindowSingleTable = new List<string>();
-        private static List<string> FListControlMaintainTableWithDataViewGrid = new List<string>();
-        private static List<string> FListWindowBrowsePrint = new List<string>();
-        private static List<string> FListMasterAndDetails = new List<string>();
+        private static List <string>FListWindowEditUIConnector = new List <string>();
+        private static List <string>FListWindowEditWebConnectorMasterDetail = new List <string>();
+        private static List <string>FListWindowEdit = new List <string>();
+        private static List <string>FListWindowTDS = new List <string>();
+        private static List <string>FListWindowMaintainTable = new List <string>();
+        private static List <string>FListWindowMaintainCacheableTable = new List <string>();
+        private static List <string>FListControlMaintainTable = new List <string>();
+        private static List <string>FListControlMaintainCacheableTable = new List <string>();
+        private static List <string>FListWindowSingleTable = new List <string>();
+        private static List <string>FListControlMaintainTableWithDataViewGrid = new List <string>();
+        private static List <string>FListWindowBrowsePrint = new List <string>();
+        private static List <string>FListMasterAndDetails = new List <string>();
 
         // various global variables
         private static string FBaseClientPath;
@@ -53,10 +53,11 @@ namespace Ict.Tools.FilterButtonWiki
         private static int FCountWithAll;
         private static StreamWriter FLogFile;
 
-        private static void CheckForIssues(List<string> AListToCheck, string ATitle)
+        private static void CheckForIssues(List <string>AListToCheck, string ATitle)
         {
             FLogFile.WriteLine("");
-            FLogFile.WriteLine("=== Screens Based on Template: {0} ({1} files use this template. Listings consist of only those files that have a grid, a details panel and a buttons panel) ===",
+            FLogFile.WriteLine(
+                "=== Screens Based on Template: {0} ({1} files use this template. Listings consist of only those files that have a grid, a details panel and a buttons panel) ===",
                 ATitle,
                 AListToCheck.Count);
             FLogFile.WriteLine("{| border=\"1\" cellpadding=\"5\" cellspacing=\"0\"");
@@ -70,7 +71,6 @@ namespace Ict.Tools.FilterButtonWiki
 
             FLogFile.WriteLine("|}");
         }
-
 
         private static void CheckForIssues(string AYAMLPath)
         {
@@ -118,7 +118,6 @@ namespace Ict.Tools.FilterButtonWiki
                 FLogFile.WriteLine(bHasDetails ? "|Yes" : "|No");
                 FLogFile.WriteLine(bHasButtons ? "|Yes" : "|No");
                 FLogFile.WriteLine(bHasGrid && bHasButtons && bHasDetails ? "|Yes" : "|No");
-
             }
         }
 
