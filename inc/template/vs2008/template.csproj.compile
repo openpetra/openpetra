@@ -1,1 +1,1 @@
-    <Compile Include="${filename}" />
+    <Compile Include="${relative-filename-backslash}" />

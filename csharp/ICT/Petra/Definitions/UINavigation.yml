@@ -308,7 +308,7 @@ OpenPetra:
                     ShortTermerReports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm}
                         GeneralShortTermerReport: {ActionOpenScreen=TFrmShortTermerReport}
                         AbilitiesReport: {ActionOpenScreen=TFrmAbilitiesReport}
-                        EmergencyContactReport: {ActionOpenScreen=TFrmEmergencyContactInformationReport}
+                        EmergencyContactReport: {ActionOpenScreen=TFrmEmergContInfReport}
                         LanguagesReport: {ActionOpenScreen=TFrmLanguagesReport}
 
                 Setup: {Namespace=Ict.Petra.Client.MPersonnel.Gui.Setup, DontShowNestedTasksAsLinks=true}
