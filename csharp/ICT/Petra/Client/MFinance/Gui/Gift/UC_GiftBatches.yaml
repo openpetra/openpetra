@@ -9,7 +9,7 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add Batch, ActionClick=NewRow}
-        actCancel: {Label=&Cancel Batch, ActionClick=CancelRecord, Image=Delete_record.ico}
+        actCancel: {Label=&Cancel Batch, ActionClick=CancelRecord, Image=Delete_Record.ico}
         actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
         actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
