@@ -182,7 +182,7 @@
 							FROM
 								PUB_a_transaction
 							WHERE
-									PUB_a_transaction.a_account_code_c = {AccountCode}
+								PUB_a_transaction.a_account_code_c = {AccountCode}
 								AND PUB_a_transaction.a_cost_centre_code_c = {CostCentreCode}
 								AND PUB_a_transaction.a_ledger_number_i = {{param_ledger_number_i}}
 								AND PUB_a_transaction.a_transaction_status_l = true
@@ -244,8 +244,8 @@
 				<query>
 					<queryDetail>
 						<value text="NO-SQL"/>
-						<value function="assign(Detail, concatenate({AccountCode}, -))"/>
-						<value function="assign(Detail, concatenate({Detail}, {CostCentreCode}))"/>
+						<value function="assign(Detail, concatenate({CostCentreCode}, -))"/>
+						<value function="assign(Detail, concatenate({Detail}, {AccountCode}))"/>
 						<value function="conditionrow(1)"/>
 					</queryDetail>
 					<queryDetail condition="ge({GiftAmount}, 0)">
@@ -522,9 +522,9 @@
 			<level name="CostCentreLevel2">
 				<header>
 					<field whichfield="header 0" pos="0cm" width="4cm">
-						<value variable="AccountCode"/>
-						<value text="-"/>
 						<value variable="CostCentreCode"/>
+						<value text="-"/>
+						<value variable="AccountCode"/>
 					</field>
 					<field whichfield="header 1" pos="5cm" width="9cm">
 						<value variable="a_account_code_short_desc_c"/>
