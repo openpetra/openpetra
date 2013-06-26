@@ -118,6 +118,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 //ABudgetRow emptyRow = (ABudgetRow)ABdgTable.NewRow();
 
                 DataView view = new DataView(ABdgTable);
+                view.RowFilter = String.Format("{0}={1}",
+                                               ABudgetTable.GetLedgerNumberDBName(),
+                                               FLedgerNumber);
                 //DataTable ABdgTable2 = view.ToTable(true, new string[] { BudgetSeqDBN, AccountDBN, CostCentreDBN });
                 DataTable ABdgTable2 = view.ToTable(true, new string[] { AccountDBN, CostCentreDBN });
                 ABdgTable2.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));

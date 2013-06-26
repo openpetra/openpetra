@@ -129,7 +129,26 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             if (AImportDS != null)
             {
-                int retVal = ImportBudgetFromCSV(ALedgerNumber,
+    			//Deal with untyped tables    
+//	            for (int i = 0; i < AImportDS.Tables.Count; i++)
+//	            {
+//	            	string tableName = AImportDS.Tables[i].TableName;
+//	            	TLogging.Log(i.ToString() + " " + tableName + "-" + AImportDS.Tables[i].GetType().FullName);
+//            		
+//	            	if (AImportDS.Tables[i].GetType().FullName == "System.Data.DataTable")
+//	            	{
+//		            	TLogging.Log(i.ToString() + " " + tableName + "-" + AImportDS.Tables[i].GetType().FullName);
+//	            		DataTable tb = AImportDS.Tables[i];
+//	            		//DataUtilities.ChangeDataTableToTypedDataTable(ref tb, typeof(TTypedDataTable), tb.TableName);
+//	            		TTypedDataTable fred = (TTypedDataTable)tb.Clone();
+//	            		TLogging.Log(i.ToString() + " " + tableName + "-" + AImportDS.Tables[i].GetType().FullName);
+//	            		AImportDS.Tables.Remove(tableName);
+//	            		AImportDS.Tables.Add(fred);
+//	            		TLogging.Log(tableName + "-" + AImportDS.Tables[tableName].GetType().FullName);
+//	            	}
+//	            }
+	            	
+            	int retVal = ImportBudgetFromCSV(ALedgerNumber,
                     ACurrentBudgetYear,
                     ACSVFileName,
                     AFdlgSeparator,
@@ -159,7 +178,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             ref TVerificationResultCollection AVerificationResult)
         {
             StreamReader DataFile = new StreamReader(ACSVFileName, System.Text.Encoding.Default);
-
+        
             string Separator = AFdlgSeparator[0];
             //string DateFormat = AFdlgSeparator[1];
             //string NumberFormat = AFdlgSeparator[2];
@@ -179,6 +198,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             string BudgetType = string.Empty;
             int YearFromCSV = 0;
 
+            //TODO: don't assume 12 periods
             decimal[] BudgetPeriods = new decimal[12];
             int YearForBudgetRevision = 0;
             int BdgRevision = 0;  //not currently implementing versioning so always zero

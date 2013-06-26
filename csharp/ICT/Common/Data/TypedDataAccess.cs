@@ -2197,12 +2197,28 @@ namespace Ict.Common.Data
 
             if (!ATable.ThrowAwayAfterSubmitChanges && (ATable.Rows.Count > 1000))
             {
-                TLogging.Log(
-                    "Warning to the developer: Saving " + ATable.Rows.Count.ToString() + " records to table " + ATable.TableName +
-                    " without ThrowAwayAfterSubmitChanges is quite slow");
-                TLogging.Log(
-                    "It is recommended to use either ThrowAwayAfterSubmitChanges and Reload all data at once, or GetChanges to have less queries for updated modification timestamp");
-                TLogging.LogStackTrace(TLoggingType.ToLogfile);
+				//If the table is not a typed table then ThrowAwayAfterSubmitChanges is always
+				// false and hence the data can never be discarded automatically.
+				// Therefore, only log messages if ATable is a typed table
+//            	if (ATable.GetType().FullName != "System.DataTable")
+//                {
+	            	TLogging.Log(
+	                    "Warning to the developer: Saving " + ATable.Rows.Count.ToString() + " records to table " + ATable.TableName +
+	                    " without ThrowAwayAfterSubmitChanges is quite slow");
+	                TLogging.Log(
+	                    "It is recommended to use either ThrowAwayAfterSubmitChanges and Reload all data at once, or GetChanges to have less queries for updated modification timestamp");
+	                TLogging.LogStackTrace(TLoggingType.ToLogfile);
+//                }
+//#if DEBUG
+//            	else
+//            	{
+//	            	TLogging.Log(
+//	                    "Warning to the developer: Saving " + ATable.Rows.Count.ToString() + " records to table " + ATable.TableName +
+//	                    " is quite slow. This table is not a typed table and hence ThrowAwayAfterSubmitChanges does not apply; you might"
+//							+ " want to empty the table manually after saving or call GetChanges to have less queries for updated modification timestamp. (THIS MESSAGE DOES NOT APPEAR IN THE RELEASE.)");
+//	                TLogging.LogStackTrace(TLoggingType.ToLogfile);
+//            	}
+//#endif
             }
 
             List <OdbcParameter>InsertParameters = new List <OdbcParameter>();

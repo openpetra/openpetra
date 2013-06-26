@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             FMainDS = TRemote.MFinance.Budget.WebConnectors.LoadBudget(FLedgerNumber);
 
             //Prepare form for correct number of periods
-            FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadLedgerInfo(FLedgerNumber));
+            //FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadLedgerInfo(FLedgerNumber));
 
             ALedgerRow ledgerRow = (ALedgerRow)FMainDS.ALedger.Rows[0];
             FNumberOfPeriods = ledgerRow.NumberOfAccountingPeriods;
@@ -107,7 +107,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             // to get an empty ABudgetFee table, instead of null reference
             FMainDS.Merge(new BudgetTDS());
-
+            
             //Setup form and controls
             this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
             InitialiseControls();

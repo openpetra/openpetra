@@ -212,9 +212,12 @@ namespace Ict.Common.Data
             {
                 FThrowAwayAfterSubmitChanges = value;
 
-                foreach (TTypedDataTable table in this.Tables)
+                foreach (DataTable table in this.Tables)
                 {
-                    table.ThrowAwayAfterSubmitChanges = value;
+                    if (table is TTypedDataTable)
+                    {
+                    	((TTypedDataTable)table).ThrowAwayAfterSubmitChanges = value;
+                    }
                 }
             }
 
