@@ -158,7 +158,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             // update language description in grid from language code used in details part
             ARow.LanguageDescription = cmbLanguageCode.GetSelectedDescription();
-        }        
+        }
+
         /// <summary>
         /// Code to be run after the deletion process
         /// </summary>

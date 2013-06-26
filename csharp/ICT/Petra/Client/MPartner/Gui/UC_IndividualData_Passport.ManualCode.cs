@@ -201,13 +201,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             // of a non-existing 'AfterNewRowManual' Method....
             DoRecalculateScreenParts();
         }
-        
+
         private void GetDetailDataFromControlsManual(IndividualDataTDSPmPassportDetailsRow ARow)
         {
             // update country name in grid from country code used in details part
             ARow.PassportNationalityName = cmbPassportNationality.GetSelectedDescription();
         }
-        
+
         /// <summary>
         /// Loads Person Passport Data from Petra Server into FMainDS, if not already loaded.
         /// </summary>

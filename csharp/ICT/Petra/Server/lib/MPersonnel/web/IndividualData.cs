@@ -126,18 +126,21 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
                 case TIndividualDataItemEnum.idiPersonalLanguages:
                     PmPersonLanguageAccess.LoadViaPPerson(IndividualDataDS, APartnerKey, AReadTransaction);
-                    
-                    PLanguageTable LanguageTable = (PLanguageTable)TSharedDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
+
+                    PLanguageTable LanguageTable = (PLanguageTable)TSharedDataCache.TMCommon.GetCacheableCommonTable(
+                    TCacheableCommonTablesEnum.LanguageCodeList);
                     PLanguageRow LanguageRow;
-                    
+
                     foreach (IndividualDataTDSPmPersonLanguageRow PersonLanguageRow in IndividualDataDS.PmPersonLanguage.Rows)
                     {
-                        LanguageRow = (PLanguageRow)LanguageTable.Rows.Find(new object[] {PersonLanguageRow.LanguageCode});
+                        LanguageRow = (PLanguageRow)LanguageTable.Rows.Find(new object[] { PersonLanguageRow.LanguageCode });
+
                         if (LanguageRow != null)
                         {
                             PersonLanguageRow.LanguageDescription = LanguageRow.LanguageDescription;
                         }
                     }
+
                     break;
 
                 case TIndividualDataItemEnum.idiSpecialNeeds:
@@ -184,18 +187,21 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
                 case TIndividualDataItemEnum.idiPassportDetails:
                     PmPassportDetailsAccess.LoadViaPPerson(IndividualDataDS, APartnerKey, AReadTransaction);
-                    
-                    PCountryTable CountryTable = (PCountryTable)TSharedDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
+
+                    PCountryTable CountryTable = (PCountryTable)TSharedDataCache.TMCommon.GetCacheableCommonTable(
+                    TCacheableCommonTablesEnum.CountryList);
                     PCountryRow CountryRow;
-                    
+
                     foreach (IndividualDataTDSPmPassportDetailsRow PassportRow in IndividualDataDS.PmPassportDetails.Rows)
                     {
-                        CountryRow = (PCountryRow)CountryTable.Rows.Find(new object[] {PassportRow.PassportNationalityCode});
+                        CountryRow = (PCountryRow)CountryTable.Rows.Find(new object[] { PassportRow.PassportNationalityCode });
+
                         if (CountryRow != null)
                         {
                             PassportRow.PassportNationalityName = CountryRow.CountryName;
                         }
                     }
+
                     break;
 
                 case TIndividualDataItemEnum.idiPersonalData:
