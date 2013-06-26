@@ -48,7 +48,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
         private PLanguageTable FLanguageCodeDT;
         private PtLanguageLevelTable FLanguageLevelDT;
-        private DataColumn FLanguageNameColumn;
 
         #region Properties
 
@@ -85,8 +84,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             LoadDataOnDemand();
 
             grdDetails.Columns.Clear();
-            grdDetails.AddTextColumn("Language",
-                FMainDS.PmPersonLanguage.Columns["Parent_" + PLanguageTable.GetLanguageDescriptionDBName()]);
+            grdDetails.AddTextColumn("Language", FMainDS.PmPersonLanguage.ColumnLanguageDescription);
             grdDetails.AddTextColumn("Language Level", FMainDS.PmPersonLanguage.ColumnLanguageLevel);
             grdDetails.AddTextColumn("Years Of Experience", FMainDS.PmPersonLanguage.ColumnYearsOfExperience);
             grdDetails.AddDateColumn("as of", FMainDS.PmPersonLanguage.ColumnYearsOfExperienceAsOf);
@@ -124,39 +122,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Add columns that were created and are not part of the normal PmPersonalLanguageTable
-        /// </summary>
-        public void AddSpecialColumns()
-        {
-            if (FLanguageNameColumn == null)
-            {
-                FLanguageNameColumn = new DataColumn();
-                FLanguageNameColumn.DataType = System.Type.GetType("System.String");
-                FLanguageNameColumn.ColumnName = "Parent_" + PLanguageTable.GetLanguageDescriptionDBName();
-                FLanguageNameColumn.Expression = "Parent." + PLanguageTable.GetLanguageDescriptionDBName();
-            }
-
-            if (!FMainDS.PmPersonLanguage.Columns.Contains(FLanguageNameColumn.ColumnName))
-            {
-                FMainDS.PmPersonLanguage.Columns.Add(FLanguageNameColumn);
-            }
-        }
-
-        /// <summary>
-        /// Remove columns that were created and are not part of the normal PmPersonalLanguageTable.
-        /// This is needed e.g. when table contents are to be merged with main PartnerEditTDS language
-        /// table that does not contain extra columns
-        /// </summary>
-        public void RemoveSpecialColumns()
-        {
-            if ((FLanguageNameColumn != null)
-                && FMainDS.PmPersonLanguage.Columns.Contains(FLanguageNameColumn.ColumnName))
-            {
-                FMainDS.PmPersonLanguage.Columns.Remove(FLanguageNameColumn);
-            }
-        }
-
-        /// <summary>
         /// add a new batch
         /// </summary>
         /// <param name="sender"></param>
@@ -169,7 +134,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private void NewRowManual(ref PmPersonLanguageRow ARow)
+        private void NewRowManual(ref IndividualDataTDSPmPersonLanguageRow ARow)
         {
             string newName;
             Int32 countNewDetail = 0;
@@ -189,6 +154,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.LanguageCode = newName;
         }
 
+        private void GetDetailDataFromControlsManual(IndividualDataTDSPmPersonLanguageRow ARow)
+        {
+            // update language description in grid from language code used in details part
+            ARow.LanguageDescription = cmbLanguageCode.GetSelectedDescription();
+        }        
         /// <summary>
         /// Code to be run after the deletion process
         /// </summary>
@@ -258,7 +228,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean LoadDataOnDemand()
         {
             Boolean ReturnValue;
-            PLanguageTable LanguageTable;
 
             try
             {
@@ -283,23 +252,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                     }
                 }
-
-                // Add relation table to data set
-                if (FMainDS.PLanguage == null)
-                {
-                    FMainDS.Tables.Add(new PLanguageTable());
-                }
-
-                LanguageTable = (PLanguageTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
-                // rename data table as otherwise the merge with the data set won't work; tables need to have same name
-                LanguageTable.TableName = PLanguageTable.GetTableName();
-                FMainDS.Merge(LanguageTable);
-
-                // Relations are not automatically enabled. Need to enable them here in order to use for columns.
-                FMainDS.EnableRelations();
-
-                // add column for language name
-                AddSpecialColumns();
 
                 if (FMainDS.PmPersonLanguage.Rows.Count != 0)
                 {
