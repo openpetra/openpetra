@@ -108,7 +108,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlCommitmentFieldOffice.Name = "pnlCommitmentFieldOffice";
             this.pnlCommitmentFieldOffice.Size = new System.Drawing.Size(294, 60);
             this.pnlCommitmentFieldOffice.TabIndex = 0;
-            this.pnlCommitmentFieldOffice.Tag = "BeginGroup";
+            this.pnlCommitmentFieldOffice.Tag = Ict.Common.Controls.Formatting.TSingleLineFlow.BeginGroupIndicator;
 
             //
             // lblCommitmentFOFromTo

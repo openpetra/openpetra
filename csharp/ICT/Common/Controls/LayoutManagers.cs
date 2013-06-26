@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,15 +25,20 @@ using System;
 using System.Collections;
 using System.Windows.Forms;
 
-namespace Ict.Petra.Client.App.Formatting
+namespace Ict.Common.Controls.Formatting
 {
     /// <summary>
     /// WinForms Layout Managers that can be used with any container
     /// control (eg. TabPage, Panel, GroupBox) to control how the controls that are
     /// placed within the container control are layed out.
     /// </summary>
-    public class SingleLineFlow
+    public class TSingleLineFlow
     {
+        /// <summary>
+        /// Indicator for starting a new 'group' of Controls (who are set off from the previous layed out Controls by SpacerDistance).
+        /// </summary>
+        public const String BeginGroupIndicator = "BeginGroup";
+        
         private Control FContainer;
         private int FMargin;
         private int FLeftMargin;
@@ -132,7 +137,7 @@ namespace Ict.Petra.Client.App.Formatting
         /// <param name="parent"></param>
         /// <param name="margin"></param>
         /// <param name="distance"></param>
-        public SingleLineFlow(Control parent, int margin, int distance)
+        public TSingleLineFlow(Control parent, int margin, int distance)
         {
             this.FContainer = parent;
             this.FLeftMargin = margin;
@@ -171,7 +176,7 @@ namespace Ict.Petra.Client.App.Formatting
                 // end;
                 if (FContainer.Controls[Counter].Tag != null)
                 {
-                    if (FContainer.Controls[Counter].Tag.ToString() == "BeginGroup")
+                    if (FContainer.Controls[Counter].Tag.ToString().Contains(TSingleLineFlow.BeginGroupIndicator))
                     {
                         y = y + FSpacerDistance;
                     }
