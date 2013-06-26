@@ -389,10 +389,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     // remove columns before merging (and re-add them afterwards) as otherwise merging raises exception
-                    UCPersonalLanguage.RemoveSpecialColumns();
                     FPartnerEditTDS.Tables[PmPersonLanguageTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PmPersonLanguageTable.GetTableName()].Merge(FMainDS.PmPersonLanguage);
-                    UCPersonalLanguage.AddSpecialColumns();
                 }
 
                 // Abilities
@@ -424,10 +422,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     // remove columns before merging (and re-add them afterwards) as otherwise merging raises exception
-                    UCPassport.RemoveSpecialColumns();
                     FPartnerEditTDS.Tables[PmPassportDetailsTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PmPassportDetailsTable.GetTableName()].Merge(FMainDS.PmPassportDetails);
-                    UCPassport.AddSpecialColumns();
                 }
 
                 //Personal Data
