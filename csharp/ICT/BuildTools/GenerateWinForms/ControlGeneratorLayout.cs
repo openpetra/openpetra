@@ -390,7 +390,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             for (int columnCounter = 0; columnCounter < FColumnCount; columnCounter++)
             {
-                int CurrentTopPosition = Convert.ToInt32(LayoutCtrl.GetAttribute("MarginTop", MARGIN_TOP.ToString()));
+                int CurrentTopPosition;
+
+                if (LayoutCtrl.IsHorizontalGridButtonPanel)
+                {
+//Console.WriteLine("Setting CurrentTopPosition to 3 for all Controls on Control '" + LayoutCtrl.controlName + "' as it is a horizontal Grid Button Panel (used for Buttons).");
+                    CurrentTopPosition = 3;
+                }
+                else
+                {
+                    CurrentTopPosition = Convert.ToInt32(LayoutCtrl.GetAttribute("MarginTop", MARGIN_TOP.ToString()));
+                }
 
                 // only twice the margin for groupboxes
                 if ((LayoutCtrl.controlTypePrefix == "grp") || (LayoutCtrl.controlTypePrefix == "rgr"))
@@ -446,6 +456,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             writer.ClearControlProperty(childctrl.controlName, "Margin");
                         }
 
+                        if ((childctrl.IsOnHorizontalGridButtonPanel)                             
+                            && (columnCounter != 0)
+                            && !((childctrl.HasAttribute("StartNewButtonGroup"))
+                                  && (childctrl.GetAttribute("StartNewButtonGroup").ToLower() == "true")))
+                        {
+//Console.WriteLine("Adjusted ControlLeftPosition for Control '" + childctrl.controlName + "' as it is on a horizontal Grid Button Panel.");
+                            ControlLeftPosition -= 8;
+                        }
+                        
                         writer.SetControlProperty(childctrl.controlName,
                             "Location",
                             String.Format("new System.Drawing.Point({0},{1})",
