@@ -57,12 +57,14 @@ namespace Ict.Tools.FilterButtonWiki
         {
             FLogFile.WriteLine("");
             FLogFile.WriteLine(
-                "=== Screens Based on Template: {0} ({1} files use this template. Listings consist of only those files that have a grid, a details panel and a buttons panel) ===",
+                "=== Screens Based on Template: {0} ({1} files use this template). ===",
                 ATitle,
                 AListToCheck.Count);
+            FLogFile.WriteLine(
+                "The table listings consist of only those files that have a grid, a details panel and a buttons panel.");
             FLogFile.WriteLine("{| border=\"1\" cellpadding=\"5\" cellspacing=\"0\"");
 
-            FLogFile.WriteLine("!Filename !! Has Grid !! Has Details !! Has Buttons !! Has All");
+            FLogFile.WriteLine("!Filename !! Has Grid !! Has Details !! Has Buttons !! Has All !! Comments");
 
             foreach (string tryPath in AListToCheck)
             {
@@ -118,6 +120,7 @@ namespace Ict.Tools.FilterButtonWiki
                 FLogFile.WriteLine(bHasDetails ? "|Yes" : "|No");
                 FLogFile.WriteLine(bHasButtons ? "|Yes" : "|No");
                 FLogFile.WriteLine(bHasGrid && bHasButtons && bHasDetails ? "|Yes" : "|No");
+                FLogFile.WriteLine("|");
             }
         }
 
@@ -136,7 +139,7 @@ namespace Ict.Tools.FilterButtonWiki
             {
                 FLogFile.WriteLine("== Filter Button Implementation ==");
                 FLogFile.WriteLine(
-                    "Analysis run at {0} on {1}.<br/>All the files listed below have either a grdDetails or pnlDetails or a pnlButtons",
+                    "Analysis run at {0} on {1}.<br/>All the files listed below have at least one of: a Details Grid, a Details Panel or a Buttons Panel",
                     DateTime.Now.ToShortTimeString(),
                     DateTime.Now.ToShortDateString());
 
