@@ -394,33 +394,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 FdlgSeparator = new TDlgSelectCSVSeparator(false);
-                FdlgSeparator.CSVFileName = dialog.FileName;
 
-                FdlgSeparator.DateFormat = dateFormatString;
+				try
+				{
+	                FdlgSeparator.CSVFileName = dialog.FileName;
+	
+	                FdlgSeparator.DateFormat = dateFormatString;
+	
+	                if (impOptions.Length > 1)
+	                {
+	                    FdlgSeparator.NumberFormat = impOptions.Substring(1);
+	                }
+	
+	                FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
 
-                if (impOptions.Length > 1)
-                {
-                    FdlgSeparator.NumberFormat = impOptions.Substring(1);
-                }
-
-                FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
-
-                if (FdlgSeparator.ShowDialog() == DialogResult.OK)
-                {
-                    TVerificationResultCollection AMessages;
-
-                    string[] FdlgSeparatorVal = new string[] {
-                        FdlgSeparator.SelectedSeparator, FdlgSeparator.DateFormat, FdlgSeparator.NumberFormat
-                    };
-
-                    //TODO return the budget from the year, and -99 for fail
-                    numRecsImported = TRemote.MFinance.Budget.WebConnectors.ImportBudgets(FLedgerNumber,
-                        FCurrentBudgetYear,
-                        dialog.FileName,
-                        FdlgSeparatorVal,
-                        ref FMainDS,
-                        out AMessages);
-                }
+	                if (FdlgSeparator.ShowDialog() == DialogResult.OK)
+	                {
+	                    TVerificationResultCollection AMessages;
+	
+	                    string[] FdlgSeparatorVal = new string[] {
+	                        FdlgSeparator.SelectedSeparator, FdlgSeparator.DateFormat, FdlgSeparator.NumberFormat
+	                    };
+	
+	                    //TODO return the budget from the year, and -99 for fail
+	                    numRecsImported = TRemote.MFinance.Budget.WebConnectors.ImportBudgets(FLedgerNumber,
+	                        FCurrentBudgetYear,
+	                        dialog.FileName,
+	                        FdlgSeparatorVal,
+	                        ref FMainDS,
+	                        out AMessages);
+	                }
+				}
+				catch (Exception ex)
+				{
+					
+					numRecsImported = -2;
+					MessageBox.Show(ex.Message, Catalog.GetString("Budget Import"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+				}
 
                 if (numRecsImported > 0)
                 {
@@ -441,7 +451,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                     SelectRowInGrid(1);
                 }
-                else
+                else if (numRecsImported == -2)
+                {
+                    SelectRowInGrid(1);
+                }
+                else //0
                 {
                     MessageBox.Show(Catalog.GetString("No records found to import"));
                 }

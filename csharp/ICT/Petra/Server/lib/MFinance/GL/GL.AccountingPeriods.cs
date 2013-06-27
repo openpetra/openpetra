@@ -164,6 +164,36 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// get the number of periods for the Ledger
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static Int32 GetNumberOfPeriods(
+            System.Int32 ALedgerNumber)
+        {
+			Int32 returnValue = 0;
+
+            bool newTransaction = false;
+
+			try
+			{
+	            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out newTransaction);
+	
+	            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+	
+	            returnValue = LedgerTable[0].NumberOfAccountingPeriods;
+			}
+			finally
+			{
+	            if (newTransaction)
+	            {
+	                DBAccess.GDBAccessObj.RollbackTransaction();
+	            }
+			}
+
+            return returnValue;
+        }
+
+        /// <summary>
         /// get the start date of the given period
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
