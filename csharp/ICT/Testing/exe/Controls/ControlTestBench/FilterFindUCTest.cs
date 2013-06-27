@@ -414,9 +414,9 @@ namespace ControlTestBench
         void Button1Click(object sender, EventArgs e)
         {
             // Attempt to show the Find Tab only if it is there...
-            if (FUcoFilterAndFind.GetShowFindPanel()) 
+            if (FUcoFilterAndFind.GetShowFindTab()) 
             {
-                FUcoFilterAndFind.ShowFindTab();
+                FUcoFilterAndFind.DisplayFindTab();
             }        
         }
     }

@@ -32,12 +32,13 @@ using Ict.Common.Controls.Formatting;
 namespace Ict.Common.Controls
 {
     /// <summary>
-    /// TODO
+    /// UserControl that handles one or two Filter Panels and optionally
+    /// a Find Panel.
     /// </summary>
     public partial class TUcoFilterAndFind : UserControl
     {
         /// <summary>
-        /// Filter Context to which a specific setting applies.
+        /// Defines to which context a specific setting applies.
         /// </summary>
         public enum FilterContext
         {
@@ -73,9 +74,16 @@ namespace Ict.Common.Controls
         private System.Windows.Forms.TabPage FTbpFind = new System.Windows.Forms.TabPage();
         TSingleLineFlow FLayoutManagerFilterControls;
         
+        #region Constructors
+        
         /// <summary>
-        /// Constructor.
+        /// Constructor. 
         /// </summary>
+        /// <remarks>
+        /// IMPORTANT: This constructor only exists for WinForms Designer support.
+        /// DO NOT create the UserControl using this Constructor at runtime - use the 
+        /// overloaded Constructor for that instead!!!
+        /// </remarks>
         public TUcoFilterAndFind()
         {
             //
@@ -85,9 +93,7 @@ namespace Ict.Common.Controls
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            #endregion
-            
-//            InitUserControlInternal();
+            #endregion            
         }
 
         /// <summary>
@@ -122,6 +128,7 @@ namespace Ict.Common.Controls
             InitUserControlInternal();
         }
         
+        #endregion
         
         #region Properties
         
@@ -180,7 +187,6 @@ namespace Ict.Common.Controls
             }
         }
 
-
         /// <summary>
         /// Sets the context in which an 'Filter Is Always On' Label is shown (if any).
         /// </summary>
@@ -214,6 +220,8 @@ namespace Ict.Common.Controls
 
         #region Events
 
+        // TODO
+        
         #endregion
 
         #region Public Methods
@@ -221,11 +229,12 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Call this Method to show a TabControl with both Filter and Find options.
         /// </summary>
-        public void SetShowFindPanel()
+        public void SetShowFindTab()
         {
             FShowFindPanel = true;                   
             
             AddTabs();
+
             SetupTitleText();
         }
 
@@ -233,16 +242,16 @@ namespace Ict.Common.Controls
         /// Tells whether a TabControl with both Filter and Find options is shown.
         /// </summary>
         /// <returns></returns>
-        public bool GetShowFindPanel()
+        public bool GetShowFindTab()
         {            
             return FShowFindPanel;
         }
         
         /// <summary>
-        /// Shows the Find Tab if it is available (<see cref="SetShowFindPanel" /> needs to have been called). 
+        /// Shows the Find Tab if it is available (<see cref="SetShowFindTab" /> needs to have been called). 
         /// If the Control is collapsed it will be expanded automatically, too.
         /// </summary>
-        public void ShowFindTab()
+        public void DisplayFindTab()
         {
             if(FShowFindPanel)
             {
@@ -287,7 +296,7 @@ namespace Ict.Common.Controls
             
             // Layout Manager for the 'Standard' Filter Panel
             // This will arrange 'Argument Panels' that will be added later to the 'Standard' Filter Panel.
-            FLayoutManagerFilterControls = new TSingleLineFlow(pnlFilterControls, 4, 3);             // 22
+            FLayoutManagerFilterControls = new TSingleLineFlow(pnlFilterControls, 4, 3);             
             FLayoutManagerFilterControls.TopMargin = 5;
             FLayoutManagerFilterControls.RightMargin = 9;
             FLayoutManagerFilterControls.SpacerDistance = 7;
@@ -296,7 +305,7 @@ namespace Ict.Common.Controls
             {
                 // Layout Manager for the 'Extra' Filter Panel.
                 // This will arrange 'Argument Panels' that will be added later to the 'Extra' Filter Panel.
-                LayoutManagerExtraFilterControls = new TSingleLineFlow(pnlExtraFilterControls, 4, 3);             // 22
+                LayoutManagerExtraFilterControls = new TSingleLineFlow(pnlExtraFilterControls, 4, 3);             
                 LayoutManagerExtraFilterControls.TopMargin = 5;
                 LayoutManagerExtraFilterControls.RightMargin = 9;
                 LayoutManagerExtraFilterControls.SpacerDistance = 7;                
@@ -313,7 +322,7 @@ namespace Ict.Common.Controls
             // This will arrange the 'Standard' and 'Extra' Filter Panel that are already shown on the UserControl.
             if (!FShowFindPanel) 
             {
-                LayoutManagerUserControl = new TSingleLineFlow(this, 5, 2);             // 22
+                LayoutManagerUserControl = new TSingleLineFlow(this, 5, 2);             
                 LayoutManagerUserControl.SpacerDistance = 5;                
             }
                 
@@ -350,7 +359,7 @@ namespace Ict.Common.Controls
 
             if (FShowFindPanel) 
             {
-                SetShowFindPanel();
+                SetShowFindTab();
             }
             
             // Reverse the Z-Order of the Panels so they 'stack up' correctly
@@ -360,9 +369,8 @@ namespace Ict.Common.Controls
             
             this.Invalidate();
             
-            AutoSizeAllPanelHeights();
-        }
-        
+            AutoSizeFilterPanelsHeights();
+        }        
         
         private void UpdateExtraFilterDisplay()
         {
@@ -421,7 +429,7 @@ namespace Ict.Common.Controls
             
             if (AAutoSizePanels) 
             {
-                AutoSizeAllPanelHeights();    
+                AutoSizeFilterPanelsHeights();    
             }
             
         }
@@ -517,7 +525,7 @@ namespace Ict.Common.Controls
             
             if (AAutoSizePanel) 
             {
-                AutoSizeAllPanelHeights();    
+                AutoSizeFilterPanelsHeights();    
             }
         }
         
@@ -623,12 +631,8 @@ namespace Ict.Common.Controls
         }
         
         #endregion
-        
-        
-        
-        
 
-        #region 'Keep Filter Turned On' Button adding/removal
+        #region 'Filter Always Turned On' Label adding/removal
         
         private void UpdateFilterIsAlwaysTurnedOnLabels(bool AAutoSizePanel = true)
         {
@@ -668,7 +672,7 @@ namespace Ict.Common.Controls
             
             if (AAutoSizePanel) 
             {
-                AutoSizeAllPanelHeights();    
+                AutoSizeFilterPanelsHeights();    
             }
         }
         
@@ -772,31 +776,23 @@ namespace Ict.Common.Controls
         }
         
         #endregion
-                
-        
-        
-        
-        
-        
-        
-        
-        
+                        
         /// <summary>
-        /// Adjusts the heights of both Filter Panels and the Find Panel (if applicable) so 
-        /// that all Controls fit on it.
+        /// Adjusts the heights of both Filter Panels so that all Controls fit on it.
         /// </summary>
-        private void AutoSizeAllPanelHeights()
+        /// <remarks>
+        /// Adjusting the height of the Find Panel (FPnlFindControls) needs to be done
+        /// in Method 'FTabFilterAndFind_SelectedIndexChanged' as the adjusting only works
+        /// once the Tab that contains the Find Panel has been shown, which only happens once
+        /// it has been switched to once!
+        /// </remarks>
+        private void AutoSizeFilterPanelsHeights()
         {
             AutoSizePanelHeight(pnlFilterControls);
             
             if (FShowExtraFilter) 
             {
                 AutoSizePanelHeight(pnlExtraFilterControls);    
-            }
-            
-            if (FShowFindPanel) 
-            {
-                AutoSizePanelHeight(FPnlFindControls);    
             }
         }
         
@@ -843,12 +839,7 @@ namespace Ict.Common.Controls
         
         private void AddTabs()
         {
-//            Panel pnlCode = new Panel();
-//            Label lblCode = new Label();
-//            TextBox txtCode = new TextBox();
-//            Panel pnlName = new Panel();
-//            Label lblName = new Label();
-//            TextBox txtName = new TextBox();            
+            Panel pnlFindOptions = new Panel();
             Button btnResetFilterCode = new Button();            
             Button btnResetFilterName = new Button();            
             Button btnFindNext = new Button();
@@ -856,13 +847,20 @@ namespace Ict.Common.Controls
             RadioButton rbtFindDirUp = new RadioButton();
             RadioButton rbtFindDirDown = new RadioButton();
             TSingleLineFlow LayoutManagerFindControls;
-                        
+            TSingleLineFlow LayoutManagerFilterTab;
+            TSingleLineFlow LayoutManagerFindTab;
             System.Drawing.Color GradientEndColor = Color.FromArgb(
                 System.Drawing.Color.BurlyWood.R - 30,
                 System.Drawing.Color.BurlyWood.G - 20,
                 System.Drawing.Color.BurlyWood.B - 15);
             
+            this.SuspendLayout();
+            grpFindDirection.SuspendLayout();
+            pnlFindOptions.SuspendLayout();
+            FTabFilterAndFind.SuspendLayout();
+            
             FPnlFindControls = new Owf.Controls.A1Panel();
+            FPnlFindControls.SuspendLayout();
             FPnlFindControls.Name = "FPnlFindControls";
             FPnlFindControls.Left = 7;
             FPnlFindControls.Top = 8;
@@ -877,87 +875,16 @@ namespace Ict.Common.Controls
             
             // Layout Manager for the 'Find' Panel.
             // This will arrange 'Argument Panels' that will be added later to the 'Find' Panel.
-            LayoutManagerFindControls = new TSingleLineFlow(FPnlFindControls, 4, 3);             // 22
+            LayoutManagerFindControls = new TSingleLineFlow(FPnlFindControls, 4, 3);             
             LayoutManagerFindControls.TopMargin = 5;
             LayoutManagerFindControls.RightMargin = 9;
-            LayoutManagerFindControls.SpacerDistance = 7;
+            LayoutManagerFindControls.SpacerDistance = 7;           
             
-            TSingleLineFlow LayoutManagerFilterTab;
-            TSingleLineFlow LayoutManagerFindTab;
-            
-//            lblCode.Left = 3;
-//            lblCode.Top = 5;
-//            lblCode.Text = "Batch Number:";
-//            lblCode.Font = new System.Drawing.Font("Verdana", 7.0f);
-//            lblCode.AutoSize = true;
-//
-//            txtCode.Left = 3;
-//            txtCode.Top = 21;            
-//            txtCode.Width = 115;
-//            txtCode.Tag = "SuppressChangeDetection";
-//            txtCode.Text = "1";
-//                
-//            btnResetFilterCode.Left = txtCode.Left + txtCode.Width + 5;
-//            btnResetFilterCode.Top = txtCode.Top;
-//            btnResetFilterCode.Width = 18;
-//            btnResetFilterCode.Height = 18;
-//            btnResetFilterCode.FlatStyle = FlatStyle.Flat;
-//            btnResetFilterCode.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-//            btnResetFilterCode.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Tomato;
-//            btnResetFilterCode.Text = "X";
-//            btnResetFilterCode.TextAlign = ContentAlignment.TopCenter;
-//            btnResetFilterCode.Font = new System.Drawing.Font("Verdana", 6.0f, FontStyle.Bold);
-//            btnResetFilterCode.Click += delegate(object sender, EventArgs e) { txtCode.Text = String.Empty; };
-                       
-//            pnlCode.Left = 3;
-//            pnlCode.Top = 3;
-//            pnlCode.Height = 40;
-//            pnlCode.Width = 144;
-//            pnlCode.BackColor = System.Drawing.Color.Transparent;
-//            pnlCode.Controls.Add(lblCode);
-//            pnlCode.Controls.Add(txtCode);
-//            pnlCode.Controls.Add(btnResetFilterCode);
-
-//            lblName.Left = 3;
-//            lblName.Top = 5;
-//            lblName.Text = "Description:";
-//            lblName.Font = new System.Drawing.Font("Verdana", 7.0f);
-//            lblName.AutoSize = true;
-//
-//            txtName.Left = 3;
-//            txtName.Top = 21;            
-//            txtName.Width = 115;
-//            txtName.Tag = "SuppressChangeDetection";
-//            txtName.Text = "a";
-                
-//            btnResetFilterName.Left = txtName.Left + txtName.Width + 5;
-//            btnResetFilterName.Top = txtName.Top;
-//            btnResetFilterName.Width = 18;
-//            btnResetFilterName.Height = 18;
-//            btnResetFilterName.FlatStyle = FlatStyle.Flat;
-//            btnResetFilterName.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-//            btnResetFilterName.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Tomato;
-//            btnResetFilterName.Text = "X";
-//            btnResetFilterName.TextAlign = ContentAlignment.TopCenter;
-//            btnResetFilterName.Font = new System.Drawing.Font("Verdana", 6.0f, FontStyle.Bold);
-//            btnResetFilterName.Click += delegate(object sender, EventArgs e) { txtName.Text = String.Empty; };
-//            
-//            pnlName.Left = 3;
-//            pnlName.Top = 45;
-//            pnlName.Height = 40;
-//            pnlName.Width = 144;
-//            pnlName.BackColor = System.Drawing.Color.Transparent;
-//            pnlName.Controls.Add(lblName);
-//            pnlName.Controls.Add(txtName);
-//            pnlName.Controls.Add(btnResetFilterName);
-//
-
-            btnFindNext.Top = 96;
+            btnFindNext.Top = 5;
             btnFindNext.Left = 5;
             btnFindNext.Width = 139;
             btnFindNext.Text = "Find Ne&xt";
             btnFindNext.BackColor = System.Drawing.SystemColors.ButtonFace;
-
             
             rbtFindDirUp.Top = 14;
             rbtFindDirUp.Left = 10;
@@ -970,9 +897,7 @@ namespace Ict.Common.Controls
             rbtFindDirDown.Checked = true;
             rbtFindDirDown.Text = Catalog.GetString("Down");            
             
-//            grpFindDirection.SuspendLayout();            
-            
-            grpFindDirection.Top = 121;
+            grpFindDirection.Top = 33;
             grpFindDirection.Left = 5;
             grpFindDirection.Width = 140;
             grpFindDirection.Height = 38;
@@ -981,21 +906,19 @@ namespace Ict.Common.Controls
             grpFindDirection.Controls.Add(rbtFindDirUp);
             grpFindDirection.Controls.Add(rbtFindDirDown);
 
-//            grpFindDirection.ResumeLayout();            
+            pnlFindOptions.Name = "FPnlFindControls";
+            pnlFindOptions.Left = 0;
+            pnlFindOptions.Width = FTabFilterAndFind.Width;
+            pnlFindOptions.Height = 75;
+            pnlFindOptions.BackColor = System.Drawing.Color.Transparent;
+            pnlFindOptions.Tag = TSingleLineFlow.BeginGroupIndicator;
+            pnlFindOptions.Controls.Add(btnFindNext);
+            pnlFindOptions.Controls.Add(grpFindDirection);           
             
-//            FPnlFindControls.SuspendLayout();
-            
-//            FPnlFindControls.Controls.Add(pnlCode);
-//            FPnlFindControls.Controls.Add(pnlName);
-            FPnlFindControls.Controls.Add(btnFindNext);
-            FPnlFindControls.Controls.Add(grpFindDirection);           
-            
-//            FPnlFindControls.ResumeLayout();
-            
-//            FTabFilterAndFind.SuspendLayout();
+            FPnlFindControls.Controls.Add(pnlFindOptions);
             
             //
-            // tabFilterAndFind
+            // FTabFilterAndFind
             //
             FTabFilterAndFind.BackColor = System.Drawing.Color.LightSteelBlue;
             FTabFilterAndFind.Alignment = System.Windows.Forms.TabAlignment.Bottom;
@@ -1013,10 +936,10 @@ namespace Ict.Common.Controls
             FTabFilterAndFind.SelectedIndex = 0;
             FTabFilterAndFind.ShowToolTips = true;
             FTabFilterAndFind.TabIndex = 10;
-//            FTabFilterAndFind.SelectedIndexChanged += delegate { FTabFilterAndFind_SelectedIndexChanged };
+            FTabFilterAndFind.SelectedIndexChanged += delegate(object sender, EventArgs e) { FTabFilterAndFind_SelectedIndexChanged(sender, e); };
 
             //
-            // tbpFilter
+            // FTbpFilter
             //
             FTbpFilter.BackColor = System.Drawing.Color.LightSteelBlue;
             FTbpFilter.Font =
@@ -1029,7 +952,7 @@ namespace Ict.Common.Controls
             FTbpFilter.Text = "Filter";
             FTbpFilter.ToolTipText = Catalog.GetString("Filter the rows shown in the list");
 
-            LayoutManagerFilterTab = new TSingleLineFlow(FTbpFilter, 4, 3);             // 22
+            LayoutManagerFilterTab = new TSingleLineFlow(FTbpFilter, 4, 3);             
             LayoutManagerFilterTab.SpacerDistance = 7;
             
             FTbpFilter.Controls.Add(pnlFilterControls);
@@ -1040,7 +963,7 @@ namespace Ict.Common.Controls
             }
 
             //
-            // tbpFind
+            // FTbpFind
             //
             FTbpFind.BackColor = System.Drawing.Color.LightSteelBlue;
             FTbpFind.Controls.Add(FPnlFindControls);
@@ -1054,13 +977,11 @@ namespace Ict.Common.Controls
             FTbpFind.Text = "Find";
             FTbpFind.ToolTipText = Catalog.GetString("Find within the rows shown in the list");
             
-            LayoutManagerFindTab = new TSingleLineFlow(FTbpFind, 4, 3);             // 22
+            LayoutManagerFindTab = new TSingleLineFlow(FTbpFind, 4, 3);             
             LayoutManagerFindTab.SpacerDistance = 7;
             
             FTabFilterAndFind.Dock = DockStyle.Fill;
-//            FTabFilterAndFind.ResumeLayout();
             
-//            this.SuspendLayout();
             this.Controls.Clear();
             pnlTitle.Dock = DockStyle.Top;
             this.Controls.Add(pnlTitle);
@@ -1068,20 +989,23 @@ namespace Ict.Common.Controls
             FTabFilterAndFind.BringToFront();
             
             FPnlFindControls.Top = pnlFilterControls.Top - 22;
-            
-//            this.ResumeLayout();
-//            this.Invalidate();
+
 
             // Add individual 'Argument Panels' Panels to the 'Find' Panel (on 'Find' Tab)
             // Layout is taken care of automatically due to a TSingleLineFlow Layout Manager!
-//            if((FFindControls != null) 
-//               && (FShowFindPanel))
-//            {            
-                foreach (Panel ArgumentPanel in FFindControls) 
-                {
-                    FPnlFindControls.Controls.Add(ArgumentPanel);
-                }            
-//            }
+            foreach (Panel ArgumentPanel in FFindControls) 
+            {
+                FPnlFindControls.Controls.Add(ArgumentPanel);
+            }            
+
+            FTabFilterAndFind.ResumeLayout();
+            FPnlFindControls.ResumeLayout();
+            pnlFindOptions.ResumeLayout();
+            grpFindDirection.ResumeLayout();                        
+            this.ResumeLayout();
+            
+            // Ensure that pnlFindOptions is always the bottommost of the Controls in the Panel
+            FPnlFindControls.Controls.SetChildIndex(pnlFindOptions, FPnlFindControls.Controls.Count);           
         }
 
         #endregion
@@ -1091,6 +1015,17 @@ namespace Ict.Common.Controls
         void BtnCloseFilterClick(object sender, System.EventArgs e)
         {
             this.Width = 0;
+        }
+        
+        void FTabFilterAndFind_SelectedIndexChanged(object sender, System.EventArgs e)
+        {
+            if ((FShowFindPanel)
+            && ((FTabFilterAndFind.SelectedIndex == 1)
+                && (FTabFilterAndFind.Tag == null)))
+            {
+                AutoSizePanelHeight(FPnlFindControls);    
+                FTabFilterAndFind.Tag = "AutoSized";
+            }
         }
         
         #endregion
