@@ -17,15 +17,16 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnMaintain, btnDeleteExtract, btnRefreshGrid]
-        btnMaintain: {Stretch=horizontally}
+            ControlsOrientation: horizontal
+        btnMaintain: {Width=80}
             Action: actMaintain
-        btnDeleteExtract: {Stretch=horizontally}
+        btnDeleteExtract: {Width=80}
             Action: actDelete
-        btnRefreshGrid: {NoLabel=true, Stretch=horizontally}
+        btnRefreshGrid: {NoLabel=true, Width=50}
             Action: actRefreshGrid
             Help: Refresh Extract List (e.g. after a new extract has been created)
         grdDetails:

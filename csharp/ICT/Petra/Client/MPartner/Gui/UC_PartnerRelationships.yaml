@@ -17,15 +17,16 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails,pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew,btnDelete,btnEditOtherPartner]
-        btnNew: {Stretch=horizontally}
+            ControlsOrientation: horizontal
+        btnNew: {Width=80}
             Action: actNew
-        btnDelete: {Stretch=horizontally}
+        btnDelete: {Width=80}
             Action: actDelete
-        btnEditOtherPartner: {Stretch=horizontally}
+        btnEditOtherPartner: {Width=120}
             Action: actEditOtherPartner
         grdDetails:
             Dock: Fill

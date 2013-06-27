@@ -9,7 +9,7 @@ RootNode:
     Template: controlMaintainTable
     #Template: window
     Actions:
-        actAdd: {Label=&Add, ActionClick=AddPartner}
+        actAdd: {Label=&Add, ActionClick=AddPartner, Image=New_Record.ico}
         actDelete: {Label=&Delete, ActionClick=DeletePartner}
         actEdit: {Label=&Edit, ActionClick=EditPartner}
     Controls:
@@ -18,17 +18,18 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
-            Controls: [btnEdit, btnAdd, btnDelete]
-        btnEdit: {Stretch=horizontally}
+            Dock: Bottom
+            Controls: [btnAdd, btnDelete, btnEdit]
+            ControlsOrientation: horizontal
+        btnEdit: {Width=100}
             Label: Edit Partner
             Action: actEdit
-        btnAdd: {Stretch=horizontally}
+        btnAdd: {Width=100}
             Label: Add Partner
             Action: actAdd
-        btnDelete: {Stretch=horizontally}
+        btnDelete: {Width=100}
             Label: Delete
             Action: actDelete
         grdDetails:
