@@ -54,11 +54,15 @@ namespace Ict.Common.Controls
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TUcoFilterAndFind));
             this.pnlTitle = new System.Windows.Forms.Panel();
             this.btnCloseFilter = new System.Windows.Forms.Button();
             this.lblTitle = new System.Windows.Forms.Label();
             this.pnlFilterControls = new Owf.Controls.A1Panel();
             this.pnlExtraFilterControls = new Owf.Controls.A1Panel();
+            this.imlButtonIcons = new System.Windows.Forms.ImageList(this.components);
+            this.tipGeneral = new System.Windows.Forms.ToolTip(this.components);
             this.pnlTitle.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -126,6 +130,15 @@ namespace Ict.Common.Controls
             this.pnlExtraFilterControls.Size = new System.Drawing.Size(139, 124);
             this.pnlExtraFilterControls.TabIndex = 2;
             // 
+            // imlButtonIcons
+            // 
+            this.imlButtonIcons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imlButtonIcons.ImageStream")));
+            this.imlButtonIcons.TransparentColor = System.Drawing.Color.Transparent;
+            this.imlButtonIcons.Images.SetKeyName(0, "X.ico");
+            this.imlButtonIcons.Images.SetKeyName(1, "X_red.ico");
+            this.imlButtonIcons.Images.SetKeyName(2, "Go.ico");
+            this.imlButtonIcons.Images.SetKeyName(3, "Find.ico");
+            // 
             // TUcoFilterAndFind
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -140,6 +153,8 @@ namespace Ict.Common.Controls
             this.pnlTitle.PerformLayout();
             this.ResumeLayout(false);
         }
+        private System.Windows.Forms.ToolTip tipGeneral;
+        private System.Windows.Forms.ImageList imlButtonIcons;
         private System.Windows.Forms.Button btnCloseFilter;
         private Owf.Controls.A1Panel pnlExtraFilterControls;
         private Owf.Controls.A1Panel pnlFilterControls;

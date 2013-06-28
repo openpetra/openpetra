@@ -330,9 +330,11 @@ namespace Ict.Common.Controls
             // Add individual 'Argument Panels' to the 'Standard Filter' Panel (topmost on 'Filter' Tab)
             // Layout is taken care of automatically due to a TSingleLineFlow Layout Manager!
             if (FFilterControls != null) 
-            {
+            {                
                 foreach (Panel ArgumentPanel in FFilterControls) 
                 {
+                    ProcessArgumentPanel(ArgumentPanel);
+                    
                     pnlFilterControls.Controls.Add(ArgumentPanel);
                 }               
             }
@@ -343,6 +345,8 @@ namespace Ict.Common.Controls
             {            
                 foreach (Panel ArgumentPanel in FExtraFilterControls) 
                 {
+                    ProcessArgumentPanel(ArgumentPanel);
+                    
                     pnlExtraFilterControls.Controls.Add(ArgumentPanel);
                 }
             }
@@ -453,7 +457,12 @@ namespace Ict.Common.Controls
                 BtnApplyFilter.Left = 5;
                 BtnApplyFilter.Text = "Appl&y Filter";                
                 BtnApplyFilter.BackColor = System.Drawing.SystemColors.ButtonFace;
+                BtnApplyFilter.ImageList = imlButtonIcons;
+                BtnApplyFilter.ImageIndex = 2;
+                BtnApplyFilter.ImageAlign = ContentAlignment.MiddleRight;
                 BtnApplyFilter.Click += delegate { BtnApplyFilter.Text = "Applying Filter..."; BtnApplyFilter.Enabled = false; System.Threading.Thread.Sleep(2000); BtnApplyFilter.Text = "Appl&y Filter"; BtnApplyFilter.Enabled = true; };                
+                
+                tipGeneral.SetToolTip(BtnApplyFilter, "Click to filter the data");
                 
                 AFilterPanel.Controls.Add(BtnApplyFilter);
 
@@ -555,6 +564,8 @@ namespace Ict.Common.Controls
                 BtnKeepFilterTurnedOn.TextAlign = ContentAlignment.MiddleCenter;  // Same as 'real' Button 
                 BtnKeepFilterTurnedOn.MinimumSize = new Size(75, 22);             // To prevent shrinkage!
                 
+                tipGeneral.SetToolTip(BtnKeepFilterTurnedOn, "Depress to keep the filter active\r\neven when the Filter Panel is closed");
+                
                 AFilterPanel.Controls.Add(BtnKeepFilterTurnedOn);
 
                 ControlsArray = AFilterPanel.Controls.Find(BTN_APPLY_FILTER_NAME, false);
@@ -575,7 +586,6 @@ namespace Ict.Common.Controls
                     
                     if (AFilterPanel.Controls.GetChildIndex(BtnKeepFilterTurnedOn) == AFilterPanel.Controls.Count - 1) 
                     {
-//                        BtnKeepFilterTurnedOn.Tag += TSingleLineFlow.BeginGroupIndicator;                        
                         ControlsArray[0].Tag = ""; // remove any TSingleLineFlow.BeginGroupIndicator!
                         AFilterPanel.Controls.SetChildIndex(BtnKeepFilterTurnedOn, AFilterPanel.Controls.Count - 2);
                     }
@@ -699,6 +709,8 @@ namespace Ict.Common.Controls
                 LblFilterIsAlwaysTurnedOn.Font = new System.Drawing.Font("Verdana", 8.0f, FontStyle.Italic);
                 LblFilterIsAlwaysTurnedOn.Text = Catalog.GetString("Filter Always Turned On");                
                 LblFilterIsAlwaysTurnedOn.TextAlign = ContentAlignment.MiddleCenter;
+                
+                tipGeneral.SetToolTip(LblFilterIsAlwaysTurnedOn, "This filter will be kept active even\r\nwhen the Filter Panel is closed!");
                 
                 AFilterPanel.Controls.Add(LblFilterIsAlwaysTurnedOn);
 
@@ -885,17 +897,22 @@ namespace Ict.Common.Controls
             btnFindNext.Width = 139;
             btnFindNext.Text = "Find Ne&xt";
             btnFindNext.BackColor = System.Drawing.SystemColors.ButtonFace;
+            btnFindNext.ImageList = imlButtonIcons;
+            btnFindNext.ImageIndex = 4;
+            btnFindNext.ImageAlign = ContentAlignment.MiddleRight;
+            
+            tipGeneral.SetToolTip(btnFindNext, "Click to find the next occurance\r\nin the search direction");
             
             rbtFindDirUp.Top = 14;
             rbtFindDirUp.Left = 10;
             rbtFindDirUp.AutoSize = true;
-            rbtFindDirUp.Text = Catalog.GetString("Up");
+            rbtFindDirUp.Text = Catalog.GetString("&Up");
             
             rbtFindDirDown.Top = 14;
             rbtFindDirDown.Left = 60;
             rbtFindDirDown.AutoSize = true;
             rbtFindDirDown.Checked = true;
-            rbtFindDirDown.Text = Catalog.GetString("Down");            
+            rbtFindDirDown.Text = Catalog.GetString("D&own");            
             
             grpFindDirection.Top = 33;
             grpFindDirection.Left = 5;
@@ -995,6 +1012,8 @@ namespace Ict.Common.Controls
             // Layout is taken care of automatically due to a TSingleLineFlow Layout Manager!
             foreach (Panel ArgumentPanel in FFindControls) 
             {
+                ProcessArgumentPanel(ArgumentPanel);
+                
                 FPnlFindControls.Controls.Add(ArgumentPanel);
             }            
 
@@ -1008,6 +1027,93 @@ namespace Ict.Common.Controls
             FPnlFindControls.Controls.SetChildIndex(pnlFindOptions, FPnlFindControls.Controls.Count);           
         }
 
+        private void ProcessArgumentPanel(Panel AArgumentPanel)
+        {           
+            string ArgumentPanelTag;
+            bool KeepPanelBackColour = false;
+            bool NoAutomaticArgumentClearButton = false;
+            Control ProbeControl;
+            Control ProbeControl2;
+            Button ClearArgumentCtrlButton;
+            int ControlLeftOfButtonMaxWidth = AArgumentPanel.Width - 18 - 9;
+            int TopAdjustment = 0;
+            
+            if (AArgumentPanel.Tag != null) 
+            {
+                  ArgumentPanelTag = AArgumentPanel.Tag.ToString();
+            }
+            else
+            {
+                ArgumentPanelTag = String.Empty;
+            }            
+                
+            KeepPanelBackColour = ArgumentPanelTag.Contains(PanelHelper.PANELTAG_KEEPBACKCOLOUR);
+            NoAutomaticArgumentClearButton = ArgumentPanelTag.Contains(PanelHelper.PANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON);
+            
+            // Remove any BackColour if it wasn't requested to keep it
+            if (!KeepPanelBackColour) 
+            {
+                AArgumentPanel.BackColor = System.Drawing.Color.Transparent;    
+            }
+
+            // Create an 'argument clear Button' if it wasn't requested to not create one            
+            if(!NoAutomaticArgumentClearButton)
+            {
+                foreach (Control ArgumentPanelCtrl in AArgumentPanel.Controls) 
+                {
+                    ProbeControl = ArgumentPanelCtrl as Label;
+                    ProbeControl2 = ArgumentPanelCtrl as Button;
+                    
+                    // Check if we found a Control that isn't a Label and also not a Button
+                    if ((ProbeControl == null) 
+                        && (ProbeControl2 == null))
+                    {
+                        // Check if the 'argument clear Button' will fit to the right of the Control                        
+                        if (ArgumentPanelCtrl.Width > ControlLeftOfButtonMaxWidth) 
+                        {
+                            // Reduce the width of the found Control so that we have space for the Button
+                            ArgumentPanelCtrl.Width = ControlLeftOfButtonMaxWidth;
+                        }
+                        
+                        if (ArgumentPanelCtrl is ComboBox) 
+                        {
+                            TopAdjustment = 1;                            
+                        }
+                        
+                        // Create a Button on-the-fly that will clear the value of the Control on the Argument Panel
+                        ClearArgumentCtrlButton = new Button();
+                        ClearArgumentCtrlButton.Left = ArgumentPanelCtrl.Left + ArgumentPanelCtrl.Width + 16 + (FShowFindPanel ? 0 : 6);
+                        ClearArgumentCtrlButton.Top = ArgumentPanelCtrl.Top + 2 + TopAdjustment;
+                        ClearArgumentCtrlButton.Width = 20;
+                        ClearArgumentCtrlButton.Height = 20;
+                        ClearArgumentCtrlButton.Name = "btnClearArgument_" + ArgumentPanelCtrl.Name;
+                        ClearArgumentCtrlButton.FlatStyle = FlatStyle.Flat;
+                        ClearArgumentCtrlButton.FlatAppearance.BorderSize = 0;
+                        ClearArgumentCtrlButton.FlatAppearance.MouseOverBackColor = AArgumentPanel.BackColor;
+                        ClearArgumentCtrlButton.ImageAlign = ContentAlignment.BottomCenter;
+                        ClearArgumentCtrlButton.ImageList = imlButtonIcons;
+                        ClearArgumentCtrlButton.ImageIndex = 0;  // start off with 'normal' appearance
+                        ClearArgumentCtrlButton.MouseHover += delegate 
+                        {
+                            ClearArgumentCtrlButton.ImageIndex = 1; 
+                            ClearArgumentCtrlButton.Cursor = System.Windows.Forms.Cursors.Hand; 
+                        };  // Turn the button to 'hot' appearance
+                        ClearArgumentCtrlButton.MouseLeave += delegate 
+                        {
+                            ClearArgumentCtrlButton.ImageIndex = 0; 
+                            ClearArgumentCtrlButton.Cursor = System.Windows.Forms.Cursors.Default; 
+                        };  // Turn the button back to 'normal' appearance
+                        
+                        ClearArgumentCtrlButton.Click += delegate(object sender, EventArgs e) { ArgumentPanelCtrl.Text = String.Empty; };
+                        
+                        tipGeneral.SetToolTip(ClearArgumentCtrlButton, "Clear value");
+                        
+                        AArgumentPanel.Controls.Add(ClearArgumentCtrlButton);
+                    }
+                }
+            }
+        }        
+        
         #endregion
 
         #region Event Handlers        
@@ -1029,5 +1135,20 @@ namespace Ict.Common.Controls
         }
         
         #endregion
+        
+        public static class PanelHelper
+        {
+            public const string PANELTAG_KEEPBACKCOLOUR = "KeepBackColour";
+            public const string PANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON = "NoAutomaticArgumentClearButton";
+            
+            public static Panel CreateArgumentPanel(Label AControlLabel, Control AControl, bool AAutomaticClearButton = true)
+            {
+                Panel ReturnValue = new Panel();
+                
+                // TODO
+                
+                return ReturnValue;
+            }
+        }
     }
 }

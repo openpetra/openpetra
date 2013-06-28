@@ -74,7 +74,6 @@ partial class FilterFindTest
         this.chkCurrencyNameFind = new System.Windows.Forms.CheckBox();
         this.chkCurrencyNameStd = new System.Windows.Forms.CheckBox();
         this.pnlCurrencyName = new System.Windows.Forms.Panel();
-        this.btnUnsetCurrencyName = new System.Windows.Forms.Button();
         this.txtCurrencyName = new System.Windows.Forms.TextBox();
         this.lblCurrencyName = new System.Windows.Forms.Label();
         this.label8 = new System.Windows.Forms.Label();
@@ -85,7 +84,6 @@ partial class FilterFindTest
         this.chkCurrencyCodeFind = new System.Windows.Forms.CheckBox();
         this.chkCurrencyCodeStd = new System.Windows.Forms.CheckBox();
         this.pnlCurrencyCode = new System.Windows.Forms.Panel();
-        this.btnUnsetCurrencyCode = new System.Windows.Forms.Button();
         this.txtCurrencyCode = new System.Windows.Forms.TextBox();
         this.lblCurrencyCode = new System.Windows.Forms.Label();
         this.label2 = new System.Windows.Forms.Label();
@@ -264,6 +262,7 @@ partial class FilterFindTest
         this.pnlYear.Name = "pnlYear";
         this.pnlYear.Size = new System.Drawing.Size(133, 43);
         this.pnlYear.TabIndex = 4;
+        this.pnlYear.Tag = "KeepBackColour;NoAutomaticArgumentClearButton";
         // 
         // cmbYear
         // 
@@ -318,26 +317,13 @@ partial class FilterFindTest
         // pnlCurrencyName
         // 
         this.pnlCurrencyName.BackColor = System.Drawing.Color.DarkSalmon;
-        this.pnlCurrencyName.Controls.Add(this.btnUnsetCurrencyName);
         this.pnlCurrencyName.Controls.Add(this.txtCurrencyName);
         this.pnlCurrencyName.Controls.Add(this.lblCurrencyName);
         this.pnlCurrencyName.Location = new System.Drawing.Point(6, 84);
         this.pnlCurrencyName.Name = "pnlCurrencyName";
         this.pnlCurrencyName.Size = new System.Drawing.Size(133, 43);
         this.pnlCurrencyName.TabIndex = 3;
-        // 
-        // btnUnsetCurrencyName
-        // 
-        this.btnUnsetCurrencyName.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-        this.btnUnsetCurrencyName.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-        this.btnUnsetCurrencyName.Font = new System.Drawing.Font("Verdana", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.btnUnsetCurrencyName.Location = new System.Drawing.Point(109, 17);
-        this.btnUnsetCurrencyName.Name = "btnUnsetCurrencyName";
-        this.btnUnsetCurrencyName.Size = new System.Drawing.Size(18, 18);
-        this.btnUnsetCurrencyName.TabIndex = 2;
-        this.btnUnsetCurrencyName.Text = "X";
-        this.btnUnsetCurrencyName.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-        this.btnUnsetCurrencyName.UseVisualStyleBackColor = true;
+        this.pnlCurrencyName.Tag = "";
         // 
         // txtCurrencyName
         // 
@@ -346,7 +332,7 @@ partial class FilterFindTest
         this.txtCurrencyName.Font = new System.Drawing.Font("Verdana", 8F);
         this.txtCurrencyName.Location = new System.Drawing.Point(3, 17);
         this.txtCurrencyName.Name = "txtCurrencyName";
-        this.txtCurrencyName.Size = new System.Drawing.Size(100, 20);
+        this.txtCurrencyName.Size = new System.Drawing.Size(120, 20);
         this.txtCurrencyName.TabIndex = 1;
         // 
         // lblCurrencyName
@@ -424,26 +410,13 @@ partial class FilterFindTest
         // pnlCurrencyCode
         // 
         this.pnlCurrencyCode.BackColor = System.Drawing.Color.DarkGray;
-        this.pnlCurrencyCode.Controls.Add(this.btnUnsetCurrencyCode);
         this.pnlCurrencyCode.Controls.Add(this.txtCurrencyCode);
         this.pnlCurrencyCode.Controls.Add(this.lblCurrencyCode);
         this.pnlCurrencyCode.Location = new System.Drawing.Point(6, 35);
         this.pnlCurrencyCode.Name = "pnlCurrencyCode";
         this.pnlCurrencyCode.Size = new System.Drawing.Size(133, 43);
         this.pnlCurrencyCode.TabIndex = 0;
-        // 
-        // btnUnsetCurrencyCode
-        // 
-        this.btnUnsetCurrencyCode.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-        this.btnUnsetCurrencyCode.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-        this.btnUnsetCurrencyCode.Font = new System.Drawing.Font("Verdana", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.btnUnsetCurrencyCode.Location = new System.Drawing.Point(109, 17);
-        this.btnUnsetCurrencyCode.Name = "btnUnsetCurrencyCode";
-        this.btnUnsetCurrencyCode.Size = new System.Drawing.Size(18, 18);
-        this.btnUnsetCurrencyCode.TabIndex = 2;
-        this.btnUnsetCurrencyCode.Text = "X";
-        this.btnUnsetCurrencyCode.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-        this.btnUnsetCurrencyCode.UseVisualStyleBackColor = true;
+        this.pnlCurrencyCode.Tag = "";
         // 
         // txtCurrencyCode
         // 
@@ -452,7 +425,7 @@ partial class FilterFindTest
         this.txtCurrencyCode.Font = new System.Drawing.Font("Verdana", 8F);
         this.txtCurrencyCode.Location = new System.Drawing.Point(3, 17);
         this.txtCurrencyCode.Name = "txtCurrencyCode";
-        this.txtCurrencyCode.Size = new System.Drawing.Size(100, 20);
+        this.txtCurrencyCode.Size = new System.Drawing.Size(89, 20);
         this.txtCurrencyCode.TabIndex = 1;
         // 
         // lblCurrencyCode
@@ -749,7 +722,6 @@ partial class FilterFindTest
     private System.Windows.Forms.Label label8;
     private System.Windows.Forms.Label lblCurrencyName;
     private System.Windows.Forms.TextBox txtCurrencyName;
-    private System.Windows.Forms.Button btnUnsetCurrencyName;
     private System.Windows.Forms.Panel pnlCurrencyName;
     private System.Windows.Forms.CheckBox chkCurrencyNameStd;
     private System.Windows.Forms.CheckBox chkCurrencyNameFind;
@@ -762,7 +734,6 @@ partial class FilterFindTest
     private System.Windows.Forms.CheckBox chkYearExtra;
     private System.Windows.Forms.Label lblCurrencyCode;
     private System.Windows.Forms.TextBox txtCurrencyCode;
-    private System.Windows.Forms.Button btnUnsetCurrencyCode;
     private System.Windows.Forms.Panel pnlCurrencyCode;
     private System.Windows.Forms.GroupBox groupBox5;
     private System.Windows.Forms.Button button1;
