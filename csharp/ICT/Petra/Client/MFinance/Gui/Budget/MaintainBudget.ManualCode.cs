@@ -371,7 +371,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void ImportBudget(System.Object sender, EventArgs e)
         {
-            int numRecsImported = 0;
+            decimal numRecsImported = 0;
 
             if (FPetraUtilsObject.HasChanges)
             {
@@ -434,7 +434,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 if (numRecsImported > 0)
                 {
-                    MessageBox.Show(String.Format(Catalog.GetString("{0} budget records imported successfully!"), numRecsImported),
+                	Int32 totalImported = Convert.ToInt32(Math.Truncate(numRecsImported));
+                	Int32 totalUpdated = Convert.ToInt32((numRecsImported - totalImported) * 10000);
+
+                	string msg = String.Format(Catalog.GetString("{0} budget records imported successfully!"), totalImported);
+                	
+                	if (totalUpdated > 0)
+                	{
+                		msg += Environment.NewLine + Environment.NewLine + String.Format(Catalog.GetString("({0} of which updated existing budgets)"), totalImported);
+                	}
+                	
+                	MessageBox.Show(msg,
                         Catalog.GetString("Success"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
