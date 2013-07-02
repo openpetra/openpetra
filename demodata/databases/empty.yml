@@ -742,11 +742,11 @@
         ALedgerTable:
         ALedgerInitFlagTable:
         ABudgetTypeTable:
-            Row1:{BudgetTypeCode=Adhoc, BudgetTypeDescription=Adhoc, BudgetProcessToCall=}
-            Row2:{BudgetTypeCode=Inf. n, BudgetTypeDescription=Inflate after n periods, BudgetProcessToCall=}
-            Row3:{BudgetTypeCode=Inf.Base, BudgetTypeDescription=Inflate off base, BudgetProcessToCall=}
-            Row4:{BudgetTypeCode=Same, BudgetTypeDescription=Same each period, BudgetProcessToCall=}
-            Row5:{BudgetTypeCode=Split, BudgetTypeDescription=Split total, BudgetProcessToCall=}
+            Row1:{BudgetTypeCode=ADHOC, BudgetTypeDescription=Adhoc, BudgetProcessToCall=}
+            Row2:{BudgetTypeCode=INFLATE_N, BudgetTypeDescription=Inflate after n periods, BudgetProcessToCall=}
+            Row3:{BudgetTypeCode=INFLATE_BASE, BudgetTypeDescription=Inflate off base, BudgetProcessToCall=}
+            Row4:{BudgetTypeCode=SAME, BudgetTypeDescription=Same each period, BudgetProcessToCall=}
+            Row5:{BudgetTypeCode=SPLIT, BudgetTypeDescription=Split total, BudgetProcessToCall=}
         AAccountTable:
         AAccountPropertyCodeTable:
             Row1:{PropertyCode=Bank Account, DateCreated=2009-06-15}

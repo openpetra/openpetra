@@ -91,7 +91,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
             BudgetTDS ImportDS = new BudgetTDS();
 
             // import budget from CSV
-            int RowsImported = TBudgetMaintainWebConnector.ImportBudgets(
+            decimal RowsImported = TBudgetMaintainWebConnector.ImportBudgets(
                 intLedgerNumber,
                 0,
                 budgetTestFile,

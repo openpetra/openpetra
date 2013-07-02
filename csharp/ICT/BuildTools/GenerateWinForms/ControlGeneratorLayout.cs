@@ -456,15 +456,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             writer.ClearControlProperty(childctrl.controlName, "Margin");
                         }
 
-                        if ((childctrl.IsOnHorizontalGridButtonPanel)                             
+                        if ((childctrl.IsOnHorizontalGridButtonPanel)
                             && (columnCounter != 0)
                             && !((childctrl.HasAttribute("StartNewButtonGroup"))
-                                  && (childctrl.GetAttribute("StartNewButtonGroup").ToLower() == "true")))
+                                 && (childctrl.GetAttribute("StartNewButtonGroup").ToLower() == "true")))
                         {
 //Console.WriteLine("Adjusted ControlLeftPosition for Control '" + childctrl.controlName + "' as it is on a horizontal Grid Button Panel.");
                             ControlLeftPosition -= 8;
                         }
-                        
+
                         writer.SetControlProperty(childctrl.controlName,
                             "Location",
                             String.Format("new System.Drawing.Point({0},{1})",

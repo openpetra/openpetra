@@ -137,8 +137,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                 switch (BudgetType)
                 {
-                    case MFinanceConstants.BUDGET_ADHOC_U:
-                    case MFinanceConstants.BUDGET_INFLATE_BASE_U:
+                    case MFinanceConstants.BUDGET_ADHOC:
+                    case MFinanceConstants.BUDGET_INFLATE_BASE:
 
                         for (int i = 1; i < CurrentPeriod; i++)
                         {
@@ -182,8 +182,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                         break;
 
-                    case MFinanceConstants.BUDGET_SAME_U:                      //because this case has no code it will fall through to the next case until it finds code.
-                    case MFinanceConstants.BUDGET_SPLIT_U:
+                    case MFinanceConstants.BUDGET_SAME:                      //because this case has no code it will fall through to the next case until it finds code.
+                    case MFinanceConstants.BUDGET_SPLIT:
 
                         if ((CurrentPeriod - 1) != 0)
                         {
@@ -261,7 +261,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                         break;
 
-                    case MFinanceConstants.BUDGET_INFLATE_N_U:
+                    case MFinanceConstants.BUDGET_INFLATE_N:
 
                         for (int i = 1; i <= NumAccPeriods; i++)
                         {
