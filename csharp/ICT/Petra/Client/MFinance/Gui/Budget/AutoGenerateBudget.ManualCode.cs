@@ -119,8 +119,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 DataView view = new DataView(ABdgTable);
                 view.RowFilter = String.Format("{0}={1}",
-                                               ABudgetTable.GetLedgerNumberDBName(),
-                                               FLedgerNumber);
+                    ABudgetTable.GetLedgerNumberDBName(),
+                    FLedgerNumber);
                 //DataTable ABdgTable2 = view.ToTable(true, new string[] { BudgetSeqDBN, AccountDBN, CostCentreDBN });
                 DataTable ABdgTable2 = view.ToTable(true, new string[] { AccountDBN, CostCentreDBN });
                 ABdgTable2.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
@@ -135,7 +135,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 clbCostCentreAccountCodes.AddTextColumn("Cost Centre-Account", ABdgTable2.Columns[CCAccDesc], 200);
                 //clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, BudgetSeqKey, CheckedMember, BudgetSeqKey, CCAccDesc, false, true, false);
                 clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, CCAccDesc, CheckedMember, CCAccDesc, CCAccDesc, false, true, false);
-                
+
                 clbCostCentreAccountCodes.SetCheckedStringList("");
             }
         }

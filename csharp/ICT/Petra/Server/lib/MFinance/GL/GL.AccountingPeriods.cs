@@ -170,25 +170,25 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static Int32 GetNumberOfPeriods(
             System.Int32 ALedgerNumber)
         {
-			Int32 returnValue = 0;
+            Int32 returnValue = 0;
 
             bool newTransaction = false;
 
-			try
-			{
-	            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out newTransaction);
-	
-	            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-	
-	            returnValue = LedgerTable[0].NumberOfAccountingPeriods;
-			}
-			finally
-			{
-	            if (newTransaction)
-	            {
-	                DBAccess.GDBAccessObj.RollbackTransaction();
-	            }
-			}
+            try
+            {
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out newTransaction);
+
+                ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+
+                returnValue = LedgerTable[0].NumberOfAccountingPeriods;
+            }
+            finally
+            {
+                if (newTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
 
             return returnValue;
         }

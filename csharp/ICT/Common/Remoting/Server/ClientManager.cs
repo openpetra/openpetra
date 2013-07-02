@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,8 +35,6 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using System.Threading;
-
-using Ict.Petra.Server.MCommon.Data.Access;
 
 namespace Ict.Common.Remoting.Server
 {

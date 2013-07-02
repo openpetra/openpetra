@@ -28,6 +28,7 @@ list of available commands:
   deleteBakFiles: delete all backup files
   initConfigFiles: write and overwrite the config files for client, server and testing, and the version.txt
   test: will run the NUnit tests
+  devzip: build a zip file for developers for easy start
 
 compat:
   createSQLStatements: generates the sql create table statements etc from the petra.xml
@@ -345,5 +346,46 @@ useful parameters
     </echo>
 </target>
 
+<target name="devzip">
+    <!-- calling script must get a fresh bzr tree, write OpenPetra.build.config with sqlite -->
+
+    <call target="quickClean"/>
+    <call target="generateSolution"/>
+    <call target="recreateDatabase"/>
+    <call target="resetDatabase"/>
+
+    <!-- download another demo database, and load it -->
+    <delete file="demoWith2ledgers.yml.gz" />
+    <exec program="wget" commandline="http://sourceforge.net/projects/openpetraorg/files/openpetraorg/demodata/demoWith2ledgers.yml.gz/download -OdemoWith2ledgers.yml.gz"/>
+    <call target="startPetraServer"/>
+    <sleep seconds="3"/>
+    <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+    <ExecDotNet program="${dir.bin}/PetraServerAdminConsole.exe" 
+        commandline="-C:${dir.root}/etc/ServerAdmin.config -Command:LoadYmlGz -YmlGzFile:${dir.root}/demoWith2ledgers.yml.gz"/>
+    <call target="stopPetraServer"/>
+
+    <copy file="${dir.delivery}/bin/Ict.Tools.DevelopersAssistant.exe" todir="${dir.root}"/>
+
+    <script prefix="utils" language="C#">
+         <code>
+             <![CDATA[
+                 [Function("GetFormattedDate")]
+                 public static string GetFormattedDate() {
+                    return System.DateTime.Now.ToString("yyyy-MM-dd");
+                 }
+             ]]>
+         </code>
+   </script>
+   <property name="zipfile" value="${dir.root}/../openpetra_development_${utils::GetFormattedDate()}.zip"/>
+    <zip zipfile="${zipfile}">
+       <fileset basedir="${dir.root}" prefix="openpetra">
+         <include name="**/*" />
+         <exclude name="**/.bzr/**"/>
+         <exclude name="**/.git/**"/>
+       </fileset>
+    </zip>
+
+    <!-- calling script must upload the zip file to sourceforge -->
+</target>
 </project>
 

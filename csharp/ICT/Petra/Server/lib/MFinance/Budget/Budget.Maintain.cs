@@ -129,7 +129,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             if (AImportDS != null)
             {
-            	decimal retVal = ImportBudgetFromCSV(ALedgerNumber,
+                decimal retVal = ImportBudgetFromCSV(ALedgerNumber,
                     ACurrentBudgetYear,
                     ACSVFileName,
                     AFdlgSeparator,
@@ -159,7 +159,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             ref TVerificationResultCollection AVerificationResult)
         {
             StreamReader DataFile = new StreamReader(ACSVFileName, System.Text.Encoding.Default);
-        
+
             string Separator = AFdlgSeparator[0];
             //string DateFormat = AFdlgSeparator[1];
             //string NumberFormat = AFdlgSeparator[2];
@@ -181,7 +181,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             int budgetYear = 0;
 
             Int32 numPeriods = TAccountingPeriodsWebConnector.GetNumberOfPeriods(ALedgerNumber);
-            
+
             decimal[] BudgetPeriods = new decimal[numPeriods];
             int YearForBudgetRevision = 0;
             int BdgRevision = 0;  //not currently implementing versioning so always zero
@@ -233,16 +233,16 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     //Allow for variations on Inf.Base and Inf.N
                     if (budgetType.Contains("INF"))
                     {
-                    	if (budgetType.Contains("BASE") && budgetType != MFinanceConstants.BUDGET_INFLATE_BASE)
-                    	{
-                    		budgetType = MFinanceConstants.BUDGET_INFLATE_BASE;
-                    	}
-                    	else
-                    	{
-                    		budgetType = MFinanceConstants.BUDGET_INFLATE_N;
-                    	}
+                        if (budgetType.Contains("BASE") && (budgetType != MFinanceConstants.BUDGET_INFLATE_BASE))
+                        {
+                            budgetType = MFinanceConstants.BUDGET_INFLATE_BASE;
+                        }
+                        else
+                        {
+                            budgetType = MFinanceConstants.BUDGET_INFLATE_N;
+                        }
                     }
-                    
+
                     if ((budgetType != MFinanceConstants.BUDGET_ADHOC)
                         && (budgetType != MFinanceConstants.BUDGET_SAME)
                         && (budgetType != MFinanceConstants.BUDGET_INFLATE_N)
@@ -255,20 +255,20 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                     ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, null);
                     ALedgerRow ledgerRow = (ALedgerRow)LedgerTable.Rows[0];
-                    
+
                     AAccountingPeriodTable accPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, null);
                     AAccountingPeriodRow accPeriodRow = (AAccountingPeriodRow)accPeriodTable.Rows[0];
-                    
+
                     //Calculate the budget Year
                     budgetYearString = StringHelper.GetNextCSV(ref Line, Separator, false);
-                    
+
                     if (budgetYearString.ToUpper() == "THIS")
                     {
-                    	budgetYear = accPeriodRow.PeriodStartDate.Year;
+                        budgetYear = accPeriodRow.PeriodStartDate.Year;
                     }
                     else
                     {
-                    	budgetYear = accPeriodRow.PeriodStartDate.Year + 1;
+                        budgetYear = accPeriodRow.PeriodStartDate.Year + 1;
                     }
 
                     DateTime CurrentYearEnd = TAccountingPeriodsWebConnector.GetPeriodEndDate(ALedgerNumber,
@@ -328,8 +328,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         if (BdgTRow != null)
                         {
                             duplicateRowNumber++;
-                            
-                        	BdgTRow.BeginEdit();
+
+                            BdgTRow.BeginEdit();
                             //Edit the new budget row
                             BdgTRow.BudgetTypeCode = budgetType;
                             BdgTRow.EndEdit();
@@ -387,136 +387,136 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             if (duplicateRowNumber > 0)
             {
-            	//fractional part is the number of updates divided by 10000
-            	if (duplicateRowNumber < 10000)
-            	{
-					rowNumber += (duplicateRowNumber / 10000);
-            	}
+                //fractional part is the number of updates divided by 10000
+                if (duplicateRowNumber < 10000)
+                {
+                    rowNumber += (duplicateRowNumber / 10000);
+                }
             }
-            
+
             return rowNumber;
         }
 
         private static bool ProcessBudgetTypeImportDetails(ref string Line, string Separator, string ABudgetType, ref decimal[] ABudgetPeriods)
         {
-        	bool retVal = false;
-        	int numPeriods = ABudgetPeriods.Length;
-        	
-        	try
-        	{
-        		switch (ABudgetType)
-	            {
-	                case MFinanceConstants.BUDGET_SAME:
-	            		
-	            		string periodAmountString = StringHelper.GetNextCSV(ref Line, Separator, false);
-						decimal periodAmount = Convert.ToDecimal(periodAmountString);
-						
-						for (int i = 0; i < numPeriods; i++)
-						{
-							ABudgetPeriods[i] = periodAmount;
-						}
-						
-	                    break;
-	
-	                case MFinanceConstants.BUDGET_SPLIT:
-	                    
-	            		string totalAmountString = StringHelper.GetNextCSV(ref Line, Separator, false);
-						decimal totalAmount = Convert.ToDecimal(totalAmountString);
-			            decimal perPeriodAmount = Math.Truncate(totalAmount / numPeriods);
-			            decimal lastPeriodAmount = totalAmount - perPeriodAmount * (numPeriods - 1);
-			
-			            //Write to Budget rows
-			            for (int i = 0; i < numPeriods; i++)
-			            {
-			            	if (i < (numPeriods - 1))
-		                    {
-		                        ABudgetPeriods[i] = perPeriodAmount;
-		                    }
-		                    else
-		                    {
-		                        ABudgetPeriods[i] = lastPeriodAmount;
-		                    }
-			            }
+            bool retVal = false;
+            int numPeriods = ABudgetPeriods.Length;
 
-		                break;
-	
-	                case MFinanceConstants.BUDGET_INFLATE_BASE:
-		                
-	            		string period1AmountString = StringHelper.GetNextCSV(ref Line, Separator, false);
-						decimal period1Amount = Convert.ToDecimal(period1AmountString);
-						string periodNPercentString = string.Empty;
-						
-						ABudgetPeriods[0] = period1Amount;
-            			
-						for (int i = 1; i < numPeriods; i++)
-						{
-							periodNPercentString = StringHelper.GetNextCSV(ref Line, Separator, false);
-							ABudgetPeriods[i] = ABudgetPeriods[i - 1] * (1 + (Convert.ToDecimal(periodNPercentString) / 100));
-						}
-		                
-	                    break;
-	
-	                case MFinanceConstants.BUDGET_INFLATE_N:
+            try
+            {
+                switch (ABudgetType)
+                {
+                    case MFinanceConstants.BUDGET_SAME:
 
-	                    string periodStartAmountString = StringHelper.GetNextCSV(ref Line, Separator, false);
-						decimal periodStartAmount = Convert.ToDecimal(periodStartAmountString);
-						
-						string inflateAfterPeriodString = StringHelper.GetNextCSV(ref Line, Separator, false);
-						decimal inflateAfterPeriod = Convert.ToDecimal(inflateAfterPeriodString);
-						
-						string inflationRateString = StringHelper.GetNextCSV(ref Line, Separator, false);
-						decimal inflationRate = Convert.ToDecimal(inflationRateString);
-						
-						decimal subsequentPeriodsAmount = periodStartAmount * (1 + inflationRate);
-						
-			            //Control the inflate after period number
-			            if (inflateAfterPeriod < 0)
-			            {
-			                inflateAfterPeriod = 0;
-			            }
-			            else if (inflateAfterPeriod >= numPeriods)
-			            {
-			                inflateAfterPeriod = (numPeriods - 1);
-			            }
-			
-			            //Write the period values
-			            for (int i = 0; i < numPeriods; i++)
-			            {
-			            	if (i <= (inflateAfterPeriod - 1))
-		                    {
-		                        ABudgetPeriods[i] = periodStartAmount;
-		                    }
-		                    else
-		                    {
-		                        ABudgetPeriods[i] = subsequentPeriodsAmount;
-		                    }
-			            }
-						
-	                    break;
-	
-	                default:                          //MFinanceConstants.BUDGET_ADHOC:
-	                    
-	            		string periodNAmount = string.Empty;
-	                    
-	            		for (int i = 0; i < numPeriods; i++)
-	            		{
-	            			periodNAmount = StringHelper.GetNextCSV(ref Line, Separator, false);
-	            			ABudgetPeriods[i] = Convert.ToDecimal(periodNAmount);
-	            		}
+                        string periodAmountString = StringHelper.GetNextCSV(ref Line, Separator, false);
+                        decimal periodAmount = Convert.ToDecimal(periodAmountString);
 
-	            		break;
-	            }
-	            
-	            retVal = true;
-        	}
-        	catch
-        	{
-        		//Do nothing
-        	}
-        	
-        	return retVal;
+                        for (int i = 0; i < numPeriods; i++)
+                        {
+                            ABudgetPeriods[i] = periodAmount;
+                        }
+
+                        break;
+
+                    case MFinanceConstants.BUDGET_SPLIT:
+
+                        string totalAmountString = StringHelper.GetNextCSV(ref Line, Separator, false);
+                        decimal totalAmount = Convert.ToDecimal(totalAmountString);
+                        decimal perPeriodAmount = Math.Truncate(totalAmount / numPeriods);
+                        decimal lastPeriodAmount = totalAmount - perPeriodAmount * (numPeriods - 1);
+
+                        //Write to Budget rows
+                        for (int i = 0; i < numPeriods; i++)
+                        {
+                            if (i < (numPeriods - 1))
+                            {
+                                ABudgetPeriods[i] = perPeriodAmount;
+                            }
+                            else
+                            {
+                                ABudgetPeriods[i] = lastPeriodAmount;
+                            }
+                        }
+
+                        break;
+
+                    case MFinanceConstants.BUDGET_INFLATE_BASE:
+
+                        string period1AmountString = StringHelper.GetNextCSV(ref Line, Separator, false);
+                        decimal period1Amount = Convert.ToDecimal(period1AmountString);
+                        string periodNPercentString = string.Empty;
+
+                        ABudgetPeriods[0] = period1Amount;
+
+                        for (int i = 1; i < numPeriods; i++)
+                        {
+                            periodNPercentString = StringHelper.GetNextCSV(ref Line, Separator, false);
+                            ABudgetPeriods[i] = ABudgetPeriods[i - 1] * (1 + (Convert.ToDecimal(periodNPercentString) / 100));
+                        }
+
+                        break;
+
+                    case MFinanceConstants.BUDGET_INFLATE_N:
+
+                        string periodStartAmountString = StringHelper.GetNextCSV(ref Line, Separator, false);
+                        decimal periodStartAmount = Convert.ToDecimal(periodStartAmountString);
+
+                        string inflateAfterPeriodString = StringHelper.GetNextCSV(ref Line, Separator, false);
+                        decimal inflateAfterPeriod = Convert.ToDecimal(inflateAfterPeriodString);
+
+                        string inflationRateString = StringHelper.GetNextCSV(ref Line, Separator, false);
+                        decimal inflationRate = Convert.ToDecimal(inflationRateString);
+
+                        decimal subsequentPeriodsAmount = periodStartAmount * (1 + inflationRate);
+
+                        //Control the inflate after period number
+                        if (inflateAfterPeriod < 0)
+                        {
+                            inflateAfterPeriod = 0;
+                        }
+                        else if (inflateAfterPeriod >= numPeriods)
+                        {
+                            inflateAfterPeriod = (numPeriods - 1);
+                        }
+
+                        //Write the period values
+                        for (int i = 0; i < numPeriods; i++)
+                        {
+                            if (i <= (inflateAfterPeriod - 1))
+                            {
+                                ABudgetPeriods[i] = periodStartAmount;
+                            }
+                            else
+                            {
+                                ABudgetPeriods[i] = subsequentPeriodsAmount;
+                            }
+                        }
+
+                        break;
+
+                    default:                              //MFinanceConstants.BUDGET_ADHOC:
+
+                        string periodNAmount = string.Empty;
+
+                        for (int i = 0; i < numPeriods; i++)
+                        {
+                            periodNAmount = StringHelper.GetNextCSV(ref Line, Separator, false);
+                            ABudgetPeriods[i] = Convert.ToDecimal(periodNAmount);
+                        }
+
+                        break;
+                }
+
+                retVal = true;
+            }
+            catch
+            {
+                //Do nothing
+            }
+
+            return retVal;
         }
-        
+
         /// <summary>
         /// GetGLMSequence
         /// </summary>
@@ -889,7 +889,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <returns></returns>
         private static bool ValidateBudgetTypeSame(Int32 ANumberOfPeriods, decimal[] APeriodValues)
         {
-        	bool PeriodValuesOK = true;
+            bool PeriodValuesOK = true;
 
             decimal Period1Amount = APeriodValues[0];
 
@@ -913,11 +913,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <returns></returns>
         private static bool ValidateBudgetTypeSplit(Int32 ANumberOfPeriods, decimal[] APeriodValues)
         {
-        	bool PeriodValuesOK = true;
+            bool PeriodValuesOK = true;
 
             decimal Period1Amount = APeriodValues[0];
 
-            for (int i = 1; i < (ANumberOfPeriods-1); i++)
+            for (int i = 1; i < (ANumberOfPeriods - 1); i++)
             {
                 if (Period1Amount != APeriodValues[i])
                 {
@@ -928,8 +928,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             if (PeriodValuesOK)
             {
-                if ((APeriodValues[ANumberOfPeriods-1] < Period1Amount)
-                    || ((APeriodValues[ANumberOfPeriods-1] - Period1Amount) >= ANumberOfPeriods))
+                if ((APeriodValues[ANumberOfPeriods - 1] < Period1Amount)
+                    || ((APeriodValues[ANumberOfPeriods - 1] - Period1Amount) >= ANumberOfPeriods))
                 {
                     PeriodValuesOK = false;
                 }
@@ -963,7 +963,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <returns></returns>
         private static bool ValidateBudgetTypeInflateN(Int32 ANumberOfPeriods, decimal[] APeriodValues)
         {
-        	bool PeriodValuesOK = true;
+            bool PeriodValuesOK = true;
             bool PeriodAmountHasChanged = false;
 
             decimal Period1Amount = APeriodValues[0];

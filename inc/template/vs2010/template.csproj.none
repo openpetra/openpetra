@@ -1,1 +1,1 @@
-    <None Include="${filename}" />
+    <None Include="${relative-filename-backslash}" />

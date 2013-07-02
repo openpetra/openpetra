@@ -2197,7 +2197,7 @@ namespace Ict.Common.Data
 
             if (!ATable.ThrowAwayAfterSubmitChanges && (ATable.Rows.Count > 1000))
             {
-            	TLogging.Log(
+                TLogging.Log(
                     "Warning to the developer: Saving " + ATable.Rows.Count.ToString() + " records to table " + ATable.TableName +
                     " without ThrowAwayAfterSubmitChanges is quite slow");
                 TLogging.Log(

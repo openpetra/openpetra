@@ -68,8 +68,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         public static bool LoadBudgetForConsolidate(Int32 ALedgerNumber)
         {
             FBudgetTDS = new BudgetTDS();
-            
-            
+
 
             ALedgerAccess.LoadByPrimaryKey(FBudgetTDS, ALedgerNumber, null);
 
