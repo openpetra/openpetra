@@ -263,6 +263,16 @@ namespace ControlTestBench
             FUcoFilterAndFind.Dock = System.Windows.Forms.DockStyle.Left;
             
             this.Controls.Add(FilterAndFind);
+            
+            FUcoFilterAndFind.Expanded += delegate(object UcoEventSender, EventArgs UcoEventArgs) { MultiEventHandler(UcoEventSender, UcoEventArgs, "Expanded"); };
+            FUcoFilterAndFind.Collapsed += delegate(object UcoEventSender, EventArgs UcoEventArgs) { MultiEventHandler(UcoEventSender, UcoEventArgs, "Collapsed"); };
+            FUcoFilterAndFind.FindTabDisplayed += delegate(object UcoEventSender, EventArgs UcoEventArgs) { MultiEventHandler(UcoEventSender, UcoEventArgs, "FindTabDisplayed"); };
+            FUcoFilterAndFind.ApplyFilterClicked += delegate(object UcoEventSender, TUcoFilterAndFind.TContextEventExtControlArgs UcoEventArgs) { MultiEventHandler(UcoEventSender, UcoEventArgs, "ApplyFilterClicked"); };
+            FUcoFilterAndFind.KeepFilterTurnedOnClicked += delegate(object UcoEventSender, TUcoFilterAndFind.TContextEventExtButtonDepressedArgs UcoEventArgs) { MultiEventHandler(UcoEventSender, UcoEventArgs, "KeepFilterTurnedOnClicked"); };
+            FUcoFilterAndFind.FindNextClicked += delegate(object UcoEventSender, TUcoFilterAndFind.TContextEventExtSearchDirectionArgs UcoEventArgs) { MultiEventHandler(UcoEventSender, UcoEventArgs, "FindNextClicked"); };
+            FUcoFilterAndFind.ClearArgumentCtrlButtonClicked += delegate(object UcoEventSender, TUcoFilterAndFind.TContextEventExtControlArgs UcoEventArgs) { MultiEventHandler(UcoEventSender, UcoEventArgs, "ClearArgumentCtrlButtonClicked");};
+            FUcoFilterAndFind.TabSwitched += delegate(object UcoEventSender, TUcoFilterAndFind.TContextEventArgs UcoEventArgs) { MultiEventHandler(UcoEventSender, UcoEventArgs, "TabSwitched"); };
+            FUcoFilterAndFind.ArgumentCtrlValueChanged += delegate(object UcoEventSender, TUcoFilterAndFind.TContextEventExtControlValueArgs UcoEventArgs) { MultiEventHandler(UcoEventSender, UcoEventArgs, "ArgumentCtrlValueChanged"); };
         }        
     
         void RbtOneFilterPanelCheckedChanged(object sender, System.EventArgs e)
@@ -447,7 +457,7 @@ namespace ControlTestBench
     
         void BtnCollapseExpandPanelClick(object sender, EventArgs e)
         {
-            if (!FUcoFilterAndFind.Collapsed) 
+            if (!FUcoFilterAndFind.IsCollapsed) 
             {
                 FUcoFilterAndFind.Collapse();
             }
@@ -460,7 +470,7 @@ namespace ControlTestBench
         void Button1Click(object sender, EventArgs e)
         {
             // Attempt to show the Find Tab only if it is there...
-            if (FUcoFilterAndFind.FindTabShown) 
+            if (FUcoFilterAndFind.IsFindTabShown) 
             {
                 FUcoFilterAndFind.DisplayFindTab();
             }        
@@ -469,7 +479,62 @@ namespace ControlTestBench
         void BtnFocusFirstArgumentControlClick(object sender, System.EventArgs e)
         {
             FUcoFilterAndFind.FocusFirstArgumentControl();
-        }        
+        }     
+
+        void MultiEventHandler(object sender, EventArgs e, string AEventName)        
+        {
+            TUcoFilterAndFind.TContextEventArgs ContextArgs = e as TUcoFilterAndFind.TContextEventArgs;
+            
+            txtEventsLog.Text += DateTime.Now.ToLongTimeString() + "   Event: '" + AEventName + "'";
+            
+            if (ContextArgs == null) 
+            {
+                txtEventsLog.Text += "." + Environment.NewLine;
+            }
+            else
+            {
+                if (ContextArgs is TUcoFilterAndFind.TContextEventExtButtonDepressedArgs) 
+                {
+                    txtEventsLog.Text += "  (Context: '" + ContextArgs.Context.ToString("G") + "' - Button is " + (((TUcoFilterAndFind.TContextEventExtButtonDepressedArgs)ContextArgs).ButtonIsDepressed ? "depressed" : "not depressed") + ")." + Environment.NewLine;
+                }
+                else if (ContextArgs is TUcoFilterAndFind.TContextEventExtSearchDirectionArgs) 
+                {
+                    txtEventsLog.Text += "  (Context: '" + ContextArgs.Context.ToString("G") + "' - search direction is " + (((TUcoFilterAndFind.TContextEventExtSearchDirectionArgs)ContextArgs).SearchUpwards ? "upwards" : "downwards") + ")." + Environment.NewLine;
+                }                                        
+                else if (ContextArgs is TUcoFilterAndFind.TContextEventExtControlValueArgs) 
+                {
+                    txtEventsLog.Text += "  (Context: '" + ContextArgs.Context.ToString("G") + "' - Control: '" + ((TUcoFilterAndFind.TContextEventExtControlValueArgs)ContextArgs).AffectedControl.Name + "'. Changed Value: " + 
+                        ((TUcoFilterAndFind.TContextEventExtControlValueArgs)ContextArgs).Value.ToString() + " (Type: " +
+                        ((TUcoFilterAndFind.TContextEventExtControlValueArgs)ContextArgs).TypeOfValue.FullName + ")" + Environment.NewLine;
+                }
+                else if (ContextArgs is TUcoFilterAndFind.TContextEventExtControlArgs) 
+                {
+                    txtEventsLog.Text += "  (Context: '" + ContextArgs.Context.ToString("G") + "' - associated Control: '" + ((TUcoFilterAndFind.TContextEventExtControlArgs)ContextArgs).AffectedControl.Name + "'." + Environment.NewLine;
+                    
+                    if (ContextArgs.Action != null) 
+                    {
+                        ContextArgs.Action(((TUcoFilterAndFind.TContextEventExtControlArgs)ContextArgs).AffectedControl);
+                    }                    
+                    
+                    if (ContextArgs.ResetAction != null) 
+                    {
+                        System.Threading.Thread.Sleep(1000);
+                        
+                        ContextArgs.ResetAction(((TUcoFilterAndFind.TContextEventExtControlArgs)ContextArgs).AffectedControl);
+                    }                    
+                    
+                } 
+                else
+                {
+                    txtEventsLog.Text += "  (Context: '" + ContextArgs.Context.ToString("G") + "')." + Environment.NewLine;                                        
+                }                
+            }    
+
+            // Scroll to the last line in the TextBox
+            txtEventsLog.SelectionStart = txtEventsLog.Text.Length;
+            txtEventsLog.SelectionLength = 0;
+            txtEventsLog.ScrollToCaret();
+        }
     }
      
     /// <summary>

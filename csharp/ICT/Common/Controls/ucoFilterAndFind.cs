@@ -54,11 +54,260 @@ namespace Ict.Common.Controls
             /// <summary>Both 'Standard' and 'Extra' Filter Context.</summary>
             fcStandardAndExtraFilter
         }
+        
+        /// <summary>
+        /// Defines the context in which an Event happened.
+        /// </summary>
+        public enum EventContext
+        {
+            /// <summary>
+            /// Event happened on the 'Standard' Filter Panel.
+            /// </summary>
+            ecStandardFilterPanel,
 
+            /// <summary>
+            /// Event happened on the 'Extra' Filter Panel.
+            /// </summary>            
+            ecExtraFilterPanel,
+            
+            /// <summary>
+            /// Event happened on the Find Panel.
+            /// </summary>
+            ecFindPanel,
+            
+            /// <summary>
+            /// Event happened on the 'Extra' Filter Panel.
+            /// </summary>            
+            ecFilterTab,
+            
+            /// <summary>
+            /// Event happened on the Find Panel.
+            /// </summary>
+            ecFindTab,
+            
+            /// <summary>
+            /// Event happened on a Control that isn't known to the UserControl
+            /// </summary>
+            ecUnknownControl
+        }
+
+        /// <summary>
+        /// Event Arguments for Events that are related to an <see cref="EventContext" />.
+        /// </summary>
+        public class TContextEventArgs : EventArgs
+        {
+            private EventContext FContext;
+            private Action<Control> FAction = null;
+            private Action<Control> FResetAction = null;
+            
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            /// <param name="AContext"></param>
+            public TContextEventArgs(EventContext AContext)
+            {
+                FContext = AContext;
+            }
+
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            /// <param name="AContext"></param>
+            /// <param name="AAction">The Action that is associated with the Event (optional!).</param>
+            /// <param name="AResetAction">The Action that resets the Action that is associated with the Event (optional!).</param>
+            public TContextEventArgs(EventContext AContext, Action<Control> AAction, Action<Control> AResetAction = null)
+            {
+                FContext = AContext;
+                FAction = AAction;
+                FResetAction = AResetAction;
+            }
+            
+            /// <summary>
+            /// The Context in which the Event happened.
+            /// </summary>
+            public EventContext Context
+            {
+                get 
+                { 
+                    return FContext; 
+                }
+            }
+            
+            /// <summary>
+            /// The Action that is associated with the Event (optional!).
+            /// </summary>
+            public Action<Control> Action
+            {
+                get 
+                { 
+                    return FAction; 
+                }
+            }
+            
+            /// <summary>
+            /// The Action that resets the Action that is associated with the Event (optional!).
+            /// </summary>
+            public Action<Control> ResetAction
+            {
+                get 
+                { 
+                    return FResetAction; 
+                }
+            }            
+        }       
+
+        /// <summary>
+        /// Event Arguments for Events that are related to an <see cref="EventContext" /> and
+        /// who are sent by a Button that can be in a depressed and non-depressed state.
+        /// </summary>        
+        public class TContextEventExtButtonDepressedArgs : TContextEventArgs
+        {
+            private bool FButtonIsDepressed;
+            
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            /// <param name="AContext">Context in which the Button got pressed.</param>
+            /// <param name="AButtonIsDepressed">Whether the Button is in a depressed or non-depressed state.</param>
+            public TContextEventExtButtonDepressedArgs(EventContext AContext, bool AButtonIsDepressed): base(AContext)
+            {
+                FButtonIsDepressed = AButtonIsDepressed;
+            }
+            
+            /// <summary>
+            /// Whether the Button that sends this Event is in a depressed or non-depressed state.
+            /// </summary>
+            public bool ButtonIsDepressed
+            {
+                get
+                {
+                    return FButtonIsDepressed;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Event Arguments for Events that are fired when the 'Find Next' Button is pressed.
+        /// </summary>        
+        public class TContextEventExtSearchDirectionArgs : TContextEventArgs
+        {
+            private bool FSearchUpwards;
+            
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            /// <param name="AContext">Context in which the 'Find Next' Button got pressed.</param>
+            /// <param name="ASearchUpwards">Whether the search direction is 'upwards' or 'downwards'.</param>
+            public TContextEventExtSearchDirectionArgs(EventContext AContext, bool ASearchUpwards): base(AContext)
+            {
+                FSearchUpwards = ASearchUpwards;
+            }
+            
+            /// <summary>
+            /// Whether the search direction is 'upwards' or 'downwards'.
+            /// </summary>
+            public bool SearchUpwards
+            {
+                get
+                {
+                    return FSearchUpwards;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Event Arguments for Events that are related to a <see cref="System.Windows.Forms.Control" />.
+        /// </summary>        
+        public class TContextEventExtControlArgs : TContextEventArgs
+        {
+            private Control FAffectedControl;
+            
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            /// <param name="AContext">Context in which the Event was fired.</param>
+            /// <param name="AAffectedControl">The Control that is affected by the Event.</param>
+            public TContextEventExtControlArgs(EventContext AContext, Control AAffectedControl): base(AContext)
+            {
+                FAffectedControl = AAffectedControl;
+            }
+
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            /// <param name="AContext">Context in which the Event was fired.</param>
+            /// <param name="AAffectedControl">The Control that is affected by the Event.</param>
+            /// <param name="AAction">The Action that is associated with the Event (optional!).</param>
+            /// <param name="AResetAction">The Action that resets the Action that is associated with the Event (optional!).</param>
+            public TContextEventExtControlArgs(EventContext AContext, Control AAffectedControl, Action<Control> AAction, Action<Control> AResetAction = null): base(AContext, AAction, AResetAction)
+            {
+                FAffectedControl = AAffectedControl;
+            }
+            
+            /// <summary>
+            /// The Control that is affected by the Event.
+            /// </summary>
+            public Control AffectedControl
+            {
+                get
+                {
+                    return FAffectedControl;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Event Arguments for Events that are related to a <see cref="System.Windows.Forms.Control" />
+        /// and that transport a value.
+        /// </summary>        
+        public class TContextEventExtControlValueArgs : TContextEventExtControlArgs
+        {
+            private object FValue;
+            private System.Type FTypeOfValue;
+            
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            /// <param name="AContext">Context in which the Event was fired.</param>
+            /// <param name="AAffectedControl">The Control that is affected by the Event.</param>
+            /// <param name="AValue">The Value that is associated with the affected Control.</param>
+            /// <param name="ATypeOfValue">The <see cref="System.Type" /> of the Value that is associated with the affected Control.</param>
+            public TContextEventExtControlValueArgs(EventContext AContext, Control AAffectedControl, 
+                object AValue, System.Type ATypeOfValue): base(AContext, AAffectedControl)
+            {
+                FValue = AValue;
+                FTypeOfValue = ATypeOfValue;
+            }
+            
+            /// <summary>
+            /// The Value that is associated with the affected Control.
+            /// </summary>
+            public object Value
+            {
+                get
+                {
+                    return FValue;
+                }
+            }
+            
+            /// <summary>
+            /// The <see cref="System.Type" /> of the Value that is associated with the affected Control.
+            /// </summary>
+            public System.Type TypeOfValue
+            {
+                get
+                {
+                    return FTypeOfValue;
+                }
+            }            
+        }
+        
         private const string BTN_APPLY_FILTER_NAME = "btnApplyFilter";
         private const string BTN_KEEP_FILTER_TURNED_ON_NAME = "btnKeepFilterTurnedOn";
         private const string LBL_FILTER_IS_ALWAYS_TURNED_ON_NAME = "lblFilterIsAlwaysTurned On";
-
+        private readonly string StrApplyFilter = Catalog.GetString("Appl&y Filter");
+        private readonly string StrApplyingFilter = Catalog.GetString("Applying Filter...");
+        
         private int FInitialWidth = 150;        
         private List<Panel> FFilterControls;
         private List<Panel> FExtraFilterControls;
@@ -188,7 +437,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Whether the Control is collapsed.
         /// </summary>
-        public bool Collapsed
+        public bool IsCollapsed
         {
             get
             {
@@ -200,7 +449,7 @@ namespace Ict.Common.Controls
         /// Whether the 'Extra Filter' Panel is shown.
         /// </summary>
         /// <returns></returns>
-        public bool ExtraFilterShown
+        public bool IsExtraFilterShown
         {            
             get
             {
@@ -212,7 +461,7 @@ namespace Ict.Common.Controls
         /// Whether a TabControl with both Filter and Find options is shown.
         /// </summary>
         /// <returns></returns>
-        public bool FindTabShown
+        public bool IsFindTabShown
         {            
             get
             {
@@ -220,11 +469,54 @@ namespace Ict.Common.Controls
             }
         }    
         
-        #endregion
-
+        #endregion        
+            
         #region Events
 
-        // TODO
+        /// <summary>
+        /// Raised when the UserControl got expanded.
+        /// </summary>        
+        public event EventHandler Expanded;
+        
+        /// <summary>
+        /// Raised when the UserControl got collapsed.
+        /// </summary>
+        public event EventHandler Collapsed;
+        
+        /// <summary>
+        /// Raised when the Find Tab is displayed on request by calling Method <see cref="DisplayFindTab" />.
+        /// </summary>
+        public event EventHandler FindTabDisplayed;
+        
+        /// <summary>
+        /// Raised when the 'Apply Filter' Button has been clicked.
+        /// </summary>
+        public event EventHandler<TContextEventExtControlArgs> ApplyFilterClicked;
+        
+        /// <summary>
+        /// Raised when the 'Keep Filter Turned On' Button has been clicked.
+        /// </summary>
+        public event EventHandler<TContextEventExtButtonDepressedArgs> KeepFilterTurnedOnClicked;
+
+        /// <summary>
+        /// Raised when the 'Find Next' Button has been clicked.
+        /// </summary>
+        public event EventHandler<TContextEventExtSearchDirectionArgs> FindNextClicked;
+
+        /// <summary>
+        /// Raised when a 'Clear Argument' Button has been clicked.
+        /// </summary>        
+        public event EventHandler<TContextEventExtControlArgs> ClearArgumentCtrlButtonClicked;
+        
+        /// <summary>
+        /// Raised when the Tab of the TabControl is changed.
+        /// </summary>                
+        public event EventHandler<TContextEventArgs> TabSwitched;
+        
+        /// <summary>
+        /// Raised when a value of an Argument Control has changed.
+        /// </summary>
+        public event EventHandler<TContextEventExtControlValueArgs> ArgumentCtrlValueChanged;
         
         #endregion
 
@@ -245,9 +537,11 @@ namespace Ict.Common.Controls
                 {
                     FFindPanelFirstArgumentControl.Focus();
                 }
+                
+                OnFindTabDisplayed();
             }
             
-            if (Collapsed) 
+            if (IsCollapsed) 
             {
                 Expand();    
             }
@@ -258,9 +552,14 @@ namespace Ict.Common.Controls
         /// </summary>        
         public void Expand()
         {
-            this.Width = FInitialWidth;
-            
-            FocusFirstArgumentControl();
+            if (this.Width != FInitialWidth) 
+            {
+                this.Width = FInitialWidth;
+                
+                FocusFirstArgumentControl();
+                
+                OnExpanded();
+            }
         }
         
         /// <summary>
@@ -268,7 +567,12 @@ namespace Ict.Common.Controls
         /// </summary>
         public void Collapse()
         {
-            this.Width = 0;
+            if (this.Width != 0) 
+            {
+                this.Width = 0;
+
+                OnCollapsed();
+            }            
         }
         
         /// <summary>
@@ -504,6 +808,9 @@ namespace Ict.Common.Controls
         {
             Control[] ControlsArray;
             Button BtnApplyFilter;
+            Action<Control> FilterIsBeingApplied = null;
+            Action<Control> FilterApplyingFinished = null;
+            
             
             ControlsArray = AFilterPanel.Controls.Find(BTN_APPLY_FILTER_NAME, false);
                         
@@ -513,18 +820,22 @@ namespace Ict.Common.Controls
                 BtnApplyFilter.Name = BTN_APPLY_FILTER_NAME;
                 
                 BtnApplyFilter.Left = 5;
-                BtnApplyFilter.Text = "Appl&y Filter";                
+                BtnApplyFilter.Text = StrApplyFilter;
                 BtnApplyFilter.BackColor = System.Drawing.SystemColors.ButtonFace;
                 BtnApplyFilter.ImageList = imlButtonIcons;
                 BtnApplyFilter.ImageIndex = 2;
                 BtnApplyFilter.ImageAlign = ContentAlignment.MiddleRight;
-                BtnApplyFilter.Click += delegate { BtnApplyFilter.Text = "Applying Filter..."; BtnApplyFilter.Enabled = false; System.Threading.Thread.Sleep(2000); BtnApplyFilter.Text = "Appl&y Filter"; BtnApplyFilter.Enabled = true; };                
+                
+                FilterIsBeingApplied += delegate(Control obj) { SetApplyFilterButtonState(obj, "APPLYING"); };
+                FilterApplyingFinished += delegate(Control obj) { SetApplyFilterButtonState(obj, "FINISHED"); };
+                
+                BtnApplyFilter.Click += delegate(object sender, EventArgs e) { OnApplyFilterClicked(sender, e, FilterIsBeingApplied, FilterApplyingFinished); };
                 
                 tipGeneral.SetToolTip(BtnApplyFilter, "Click to filter the data");
                 
                 AFilterPanel.Controls.Add(BtnApplyFilter);
 
-
+                
                 // In case there is no 'Keep Filter Turned On' Button and no 'Filter Always Turned On' Label
                 if((AFilterPanel.Controls.Find(BTN_KEEP_FILTER_TURNED_ON_NAME, false).Length == 0)
                    && (AFilterPanel.Controls.Find(LBL_FILTER_IS_ALWAYS_TURNED_ON_NAME, false).Length == 0))
@@ -621,6 +932,7 @@ namespace Ict.Common.Controls
                 BtnKeepFilterTurnedOn.Appearance = Appearance.Button;
                 BtnKeepFilterTurnedOn.TextAlign = ContentAlignment.MiddleCenter;  // Same as 'real' Button 
                 BtnKeepFilterTurnedOn.MinimumSize = new Size(75, 22);             // To prevent shrinkage!
+                BtnKeepFilterTurnedOn.Click += delegate(object sender, EventArgs e) { OnKeepFilterTurnedOnClicked(sender, e); };
                 
                 tipGeneral.SetToolTip(BtnKeepFilterTurnedOn, "Depress to keep the filter active\r\neven when the Filter Panel is closed");
                 
@@ -957,24 +1269,28 @@ namespace Ict.Common.Controls
             btnFindNext.ImageList = imlButtonIcons;
             btnFindNext.ImageIndex = 4;
             btnFindNext.ImageAlign = ContentAlignment.MiddleRight;
+            btnFindNext.Click += delegate(object sender, EventArgs e) { OnFindNextClicked(sender, e); };
             
             tipGeneral.SetToolTip(btnFindNext, "Click to find the next occurance\r\nin the search direction");
             
             rbtFindDirUp.Top = 14;
             rbtFindDirUp.Left = 10;
             rbtFindDirUp.AutoSize = true;
+            rbtFindDirUp.Name = "rbtFindDirUp";
             rbtFindDirUp.Text = Catalog.GetString("&Up");
             
             rbtFindDirDown.Top = 14;
             rbtFindDirDown.Left = 60;
             rbtFindDirDown.AutoSize = true;
             rbtFindDirDown.Checked = true;
+            rbtFindDirDown.Name = "rbtFindDirDown";
             rbtFindDirDown.Text = Catalog.GetString("D&own");            
             
             grpFindDirection.Top = 30;
             grpFindDirection.Left = 3;
             grpFindDirection.Height = 38;
             grpFindDirection.BackColor = System.Drawing.Color.Transparent;
+            grpFindDirection.Name = "grpFindDirection";
             grpFindDirection.Text = "Direction";
             grpFindDirection.Controls.Add(rbtFindDirUp);
             grpFindDirection.Controls.Add(rbtFindDirDown);
@@ -1030,7 +1346,7 @@ namespace Ict.Common.Controls
             
             FTbpFilter.Controls.Add(pnlFilterControls);
 
-            if (ExtraFilterShown) 
+            if (IsExtraFilterShown) 
             {
                 FTbpFilter.Controls.Add(pnlExtraFilterControls);    
             }
@@ -1098,6 +1414,9 @@ namespace Ict.Common.Controls
             bool NoAutomaticArgumentClearButton = false;
             Control ProbeControl;
             Control ProbeControl2;
+            TextBox ControlAsTextBox;
+            ComboBox ControlAsComboBox;
+            CheckBox ControlAsCheckBox;
             Button ClearArgumentCtrlButton;
             int ControlLeftOfButtonMaxWidth;
             int TopAdjustment = 0;
@@ -1120,10 +1439,32 @@ namespace Ict.Common.Controls
                 AArgumentPanel.BackColor = System.Drawing.Color.Transparent;    
             }
 
-            // Create an 'argument clear Button' if it wasn't requested to not create one            
-            if(!NoAutomaticArgumentClearButton)
-            {
-                foreach (Control ArgumentPanelCtrl in AArgumentPanel.Controls) 
+            foreach (Control ArgumentPanelCtrl in AArgumentPanel.Controls) 
+            {            
+                // Hook up 'value change' Events according to type of Control
+                ControlAsTextBox = ArgumentPanelCtrl as TextBox;
+                
+                if (ControlAsTextBox != null) 
+                {
+                    ControlAsTextBox.TextChanged += delegate(object sender, EventArgs e) { OnArgumentCtrlValueChanged(sender, e); };
+                } 
+                
+                ControlAsComboBox = ArgumentPanelCtrl as ComboBox;
+                
+                if (ControlAsComboBox != null) 
+                {
+                    ControlAsComboBox.SelectedIndexChanged += delegate(object sender, EventArgs e) { OnArgumentCtrlValueChanged(sender, e); };
+                }
+                
+                ControlAsCheckBox = ArgumentPanelCtrl as CheckBox;
+                
+                if (ControlAsCheckBox != null) 
+                {
+                    ControlAsCheckBox.CheckedChanged += delegate(object sender, EventArgs e) { OnArgumentCtrlValueChanged(sender, e); };
+                }            
+            
+                // Create an 'argument clear Button' if it wasn't requested to not create one            
+                if(!NoAutomaticArgumentClearButton)
                 {
                     ProbeControl = ArgumentPanelCtrl as Label;
                     ProbeControl2 = ArgumentPanelCtrl as Button;
@@ -1131,10 +1472,10 @@ namespace Ict.Common.Controls
                     // Check if we found a Control that isn't a Label and also not a Button
                     if ((ProbeControl == null) 
                         && (ProbeControl2 == null))
-                    {
+                    {                       
                         if (ArgumentPanelCtrl is ComboBox) 
                         {
-                            TopAdjustment = 1;                        
+                            TopAdjustment = 1;        
                         }
                         
                         if (ArgumentPanelCtrl is CheckBox) 
@@ -1198,13 +1539,36 @@ namespace Ict.Common.Controls
             }
         }        
         
+        private void SetApplyFilterButtonState(Control AButton, string AState)
+        {
+            Button ApplyFilterButton = AButton as Button;
+
+            if (ApplyFilterButton == null) 
+            {
+                throw new ArgumentNullException("Argument 'AButton' must not be null and must be a Button");
+            }            
+            
+            if (AState == "APPLYING") 
+            {
+                ApplyFilterButton.Text = StrApplyingFilter;
+                ApplyFilterButton.Enabled = false;
+                ApplyFilterButton.Font = new Font(ApplyFilterButton.Font, FontStyle.Italic);                
+            }
+            else
+            {
+                ApplyFilterButton.Text = StrApplyFilter;
+                ApplyFilterButton.Enabled = true;
+                ApplyFilterButton.Font = new Font(ApplyFilterButton.Font, FontStyle.Regular);                                
+            }
+        }
+                
         #endregion
 
         #region Event Handlers        
         
         private void BtnCloseFilterClick(object sender, System.EventArgs e)
         {
-            this.Width = 0;
+            Collapse();
         }
         
         private void FTabFilterAndFind_SelectedIndexChanged(object sender, System.EventArgs e)
@@ -1219,6 +1583,8 @@ namespace Ict.Common.Controls
             }
             
             FocusFirstArgumentControl();
+            
+            OnTabSwitched(sender, e);
         }
         
         /// <summary>
@@ -1238,7 +1604,7 @@ namespace Ict.Common.Controls
             int ControlToClearTagParameterAsInt;
             TextBox ControlToClearAsTextBox;
             CheckBox ControlToClearAsCheckBox;
-            ComboBox ControlToClearAsAutoPopulatedCombo;
+            ComboBox ControlToClearAsCombo;
             
             // Determine the Argument Control whose value should be cleared.
             // This information is held in the Tag of the Button that sends this Event;
@@ -1265,6 +1631,8 @@ namespace Ict.Common.Controls
                 if (ControlToClearAsTextBox != null) 
                 {
                     ControlToClearAsTextBox.Text = String.Empty;    
+                    
+                    OnClearArgumentCtrlButtonClicked(sender, null, ControlToClearAsTextBox);
                     
                     return;
                 }
@@ -1295,17 +1663,19 @@ namespace Ict.Common.Controls
                         ControlToClearAsCheckBox.Checked = false;
                     }
                     
+                    OnClearArgumentCtrlButtonClicked(sender, null, ControlToClearAsCheckBox);
+                    
                     return;
                 }
                                                 
                 //
                 // Clearing of a ComboBox
                 //
-                ControlToClearAsAutoPopulatedCombo = ControlToClearInstance as ComboBox;
+                ControlToClearAsCombo = ControlToClearInstance as ComboBox;
 
-                if (ControlToClearAsAutoPopulatedCombo != null) 
+                if (ControlToClearAsCombo != null) 
                 {
-                    TagAsString = ControlToClearAsAutoPopulatedCombo.Tag != null ? ControlToClearAsAutoPopulatedCombo.Tag.ToString() : String.Empty;
+                    TagAsString = ControlToClearAsCombo.Tag != null ? ControlToClearAsCombo.Tag.ToString() : String.Empty;
                     
                     if (!String.IsNullOrEmpty(TagAsString))
                     {
@@ -1313,7 +1683,7 @@ namespace Ict.Common.Controls
                             || (TagAsString.Contains(ArgumentPanelHelper.ARGUMENTCONTROLTAG_CLEARVALUE + "=0")))
                         {                    
                             // Index 0 is the 'nothing selected' (=clear) value
-                            ControlToClearAsAutoPopulatedCombo.SelectedIndex = 0;    
+                            ControlToClearAsCombo.SelectedIndex = 0;    
                         }
                         else
                         {
@@ -1328,24 +1698,24 @@ namespace Ict.Common.Controls
                                     if (System.Int32.TryParse(ControlToClearTagParameter, out ControlToClearTagParameterAsInt)) 
                                     {
                                         // The Index specified through ControlToClearTagParameterAsInt is the 'nothing selected' (=clear) value
-                                        ControlToClearAsAutoPopulatedCombo.SelectedIndex = ControlToClearTagParameterAsInt;
+                                        ControlToClearAsCombo.SelectedIndex = ControlToClearTagParameterAsInt;
                                     }
                                     else
                                     {
                                         // Index 0 is the 'nothing selected' (=clear) value
-                                        ControlToClearAsAutoPopulatedCombo.SelectedIndex = 0;
+                                        ControlToClearAsCombo.SelectedIndex = 0;
                                     }                                    
                                 }
                                 else
                                 {
                                     // Index 0 is the 'nothing selected' (=clear) value
-                                    ControlToClearAsAutoPopulatedCombo.SelectedIndex = 0;
+                                    ControlToClearAsCombo.SelectedIndex = 0;
                                 }
                             }
                             else
                             {
                                 // Index 0 is the 'nothing selected' (=clear) value
-                                ControlToClearAsAutoPopulatedCombo.SelectedIndex = 0;
+                                ControlToClearAsCombo.SelectedIndex = 0;
                                 
                             }
                         }
@@ -1353,8 +1723,10 @@ namespace Ict.Common.Controls
                     else
                     {
                         // Index 0 is assumed to be the 'nothing selected' (=clear) value
-                        ControlToClearAsAutoPopulatedCombo.SelectedIndex = 0;                            
+                        ControlToClearAsCombo.SelectedIndex = 0;                            
                     }
+                    
+                    OnClearArgumentCtrlButtonClicked(sender, null, ControlToClearAsCombo);
                     
                     return;
                 }
@@ -1362,6 +1734,269 @@ namespace Ict.Common.Controls
                 // optional implementation for further kinds of Controls can be done here....
             }            
         }
+        
+        #region Custom Events
+        
+        /// <summary>
+        /// Raises the 'Expanded' Event.
+        /// </summary>
+        private void OnExpanded()
+        {
+            if (Expanded != null) 
+            {
+                Expanded(this, null);
+            }
+        }
+
+        /// <summary>
+        /// Raises the 'Collapsed' Event.
+        /// </summary>
+        private void OnCollapsed()
+        {
+            if (Collapsed != null) 
+            {
+                Collapsed(this, null);
+            }
+        }
+
+        /// <summary>
+        /// Raises the 'FindTabDisplayed' Event.
+        /// </summary>
+        private void OnFindTabDisplayed()
+        {
+            if (FindTabDisplayed != null) 
+            {
+                FindTabDisplayed(this, null);
+            }
+        }
+
+        /// <summary>
+        /// Raises the 'ApplyFilterClicked' Event.
+        /// </summary>        
+        private void OnApplyFilterClicked(object sender, EventArgs e, Action<Control> AAction, Action<Control> AResetAction)
+        {
+            Button ClickedButton = sender as Button;
+            Panel ContainingPanel;
+            EventContext Context;
+            
+            if (ClickedButton == null) 
+            {
+                throw new ArgumentNullException("Argument 'sender' must not be null and must be a Button");
+            }
+
+            if (ApplyFilterClicked != null) 
+            {
+                ContainingPanel = ClickedButton.Parent as Panel;
+                
+                if (ContainingPanel != null) 
+                {
+                    if (ContainingPanel == pnlFilterControls) 
+                    {
+                        Context = EventContext.ecStandardFilterPanel;    
+                    }
+                    else
+                    {
+                        Context = EventContext.ecExtraFilterPanel;    
+                    }
+                    
+                    ApplyFilterClicked(this, new TContextEventExtControlArgs(Context, ClickedButton, AAction, AResetAction));
+                }
+            }    
+        }
+
+        /// <summary>
+        /// Raises the 'KeepFilterTurnedOnClicked' Event.
+        /// </summary>        
+        private void OnKeepFilterTurnedOnClicked(object sender, EventArgs e)
+        {
+            CheckBox ClickedButton = sender as CheckBox;
+            Panel ContainingPanel;
+            EventContext Context;
+            
+            if (ClickedButton == null) 
+            {
+                throw new ArgumentNullException("Argument 'sender' must not be null and must be a CheckBox in Button form (Appearance Property: Appearance.Button)");
+            }
+
+            if (KeepFilterTurnedOnClicked != null) 
+            {
+                ContainingPanel = ClickedButton.Parent as Panel;
+                
+                if (ContainingPanel != null) 
+                {
+                    if (ContainingPanel.Name == pnlFilterControls.Name) 
+                    {
+                        Context = EventContext.ecStandardFilterPanel;    
+                    }
+                    else
+                    {
+                        Context = EventContext.ecExtraFilterPanel;    
+                    }
+                    
+                    KeepFilterTurnedOnClicked(this, new TContextEventExtButtonDepressedArgs(Context, ClickedButton.Checked));
+                }
+            }    
+        }
+        
+        /// <summary>
+        /// Raises the 'FindNextClicked' Event.
+        /// </summary>
+        private void OnFindNextClicked(object sender, EventArgs e)
+        {
+            Button ClickedButton = sender as Button;
+            Panel ContainingPanel;
+            
+            if (ClickedButton == null) 
+            {
+                throw new ArgumentNullException("Argument 'sender' must not be null and must be a Button");
+            }
+
+            if (ApplyFilterClicked != null) 
+            {
+                ContainingPanel = ClickedButton.Parent as Panel;
+                
+                if (ContainingPanel != null) 
+                {
+                    FindNextClicked(this, new TContextEventExtSearchDirectionArgs(EventContext.ecFindPanel,
+                         ((RadioButton)ContainingPanel.Controls["grpFindDirection"].Controls["rbtFindDirUp"]).Checked));
+                }
+            }
+        }
+        
+        /// <summary>
+        /// Raises the 'ClearArgumentCtrlButtonClicked' Event.
+        /// </summary>
+        private void OnClearArgumentCtrlButtonClicked(object sender, EventArgs e, Control AAssociatedArgumentCtrl)
+        {
+            Button ClickedButton = sender as Button;
+            Panel ContainingPanel;
+            EventContext Context;
+            
+            if (ClickedButton == null) 
+            {
+                throw new ArgumentNullException("Argument 'sender' must not be null and must be a Button");
+            }
+            
+            if (AAssociatedArgumentCtrl == null) 
+            {
+                throw new ArgumentNullException("Argument 'AAssociatedArgumentCtrl' must not be null");
+            }
+
+            if (ApplyFilterClicked != null) 
+            {
+                ContainingPanel = (ClickedButton.Parent.Parent) as Panel;
+                
+                if (ContainingPanel != null) 
+                {
+                    if (ContainingPanel.Name == pnlFilterControls.Name) 
+                    {
+                        Context = EventContext.ecStandardFilterPanel;    
+                    }
+                    else if (ContainingPanel.Name == pnlExtraFilterControls.Name) 
+                    {
+                        Context = EventContext.ecExtraFilterPanel;    
+                    }
+                    else if (ContainingPanel.Name == FPnlFindControls.Name) 
+                    {
+                        Context = EventContext.ecFindPanel;    
+                    }                        
+                    else
+                    {
+                        Context = EventContext.ecUnknownControl;
+                    }
+                    
+                    ClearArgumentCtrlButtonClicked(sender, new TContextEventExtControlArgs(Context,
+                        AAssociatedArgumentCtrl));
+                }
+            }
+        }
+            
+        /// <summary>
+        /// Raises the 'TabSwitched' Event.
+        /// </summary>        
+        private void OnTabSwitched(object sender, EventArgs e)
+        {
+            if (TabSwitched != null) 
+            {
+                TabSwitched(sender, 
+                    new TContextEventArgs(FTabFilterAndFind.SelectedIndex == 0 ? EventContext.ecFilterTab : EventContext.ecFindTab));
+            }    
+        }
+        
+        /// <summary>
+        /// Raises the 'ArgumentCtrlValueChanged' Event.
+        /// </summary>        
+        private void OnArgumentCtrlValueChanged(object sender, EventArgs e)
+        {
+            Control ArgumentControl = sender as Control;
+            Panel ContainingPanel;
+            EventContext Context;
+            TextBox SenderAsTextBox;
+            CheckBox SenderAsCheckBox;
+            ComboBox SenderAsComboBox;
+            object Value = null;
+            System.Type ValueType = null;
+            
+            if (ArgumentControl == null) 
+            {
+                throw new ArgumentNullException("Argument 'sender' must not be null and must be a Control");
+            }
+            
+            if (ArgumentCtrlValueChanged != null) 
+            {
+                ContainingPanel = (ArgumentControl.Parent.Parent) as Panel;
+                
+                if (ContainingPanel != null) 
+                {
+                    if (ContainingPanel.Name == pnlFilterControls.Name) 
+                    {
+                        Context = EventContext.ecStandardFilterPanel;    
+                    }
+                    else if (ContainingPanel.Name == pnlExtraFilterControls.Name) 
+                    {
+                        Context = EventContext.ecExtraFilterPanel;    
+                    }
+                    else if (ContainingPanel.Name == FPnlFindControls.Name) 
+                    {
+                        Context = EventContext.ecFindPanel;    
+                    }                        
+                    else
+                    {
+                        Context = EventContext.ecUnknownControl;
+                    }
+                
+                    
+                    SenderAsTextBox = sender as TextBox;
+                    
+                    if (SenderAsTextBox != null) 
+                    {
+                        Value = SenderAsTextBox.Text;
+                        ValueType = typeof(System.String);
+                    }
+
+                    SenderAsCheckBox = sender as CheckBox;
+                        
+                    if (SenderAsCheckBox != null) 
+                    {
+                        Value = SenderAsCheckBox.Checked;
+                        ValueType = typeof(System.Boolean);
+                    }
+                    
+                    SenderAsComboBox = sender as ComboBox; 
+                    
+                    if (SenderAsComboBox != null) 
+                    {
+                        Value = SenderAsComboBox.SelectedIndex;
+                        ValueType = typeof(System.Int32);
+                    }
+                    
+                    ArgumentCtrlValueChanged(sender, new TContextEventExtControlValueArgs(Context,
+                        ArgumentControl, Value, ValueType));                
+                }
+            }            
+        }
+        
+        #endregion
         
         #endregion
         

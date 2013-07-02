@@ -139,6 +139,8 @@ partial class FilterFindTest
         this.btnHideShowAFBtnExtra = new System.Windows.Forms.Button();
         this.btnHideShowKFTOBtnExtra = new System.Windows.Forms.Button();
         this.groupBox4 = new System.Windows.Forms.GroupBox();
+        this.groupBox9 = new System.Windows.Forms.GroupBox();
+        this.txtEventsLog = new System.Windows.Forms.TextBox();
         this.groupBox2.SuspendLayout();
         this.groupBox5.SuspendLayout();
         this.tabControl1.SuspendLayout();
@@ -157,6 +159,7 @@ partial class FilterFindTest
         this.groupBox3.SuspendLayout();
         this.groupBox1.SuspendLayout();
         this.groupBox4.SuspendLayout();
+        this.groupBox9.SuspendLayout();
         this.SuspendLayout();
         // 
         // btnTestDefaultConstructor
@@ -1045,6 +1048,26 @@ partial class FilterFindTest
         this.groupBox4.TabStop = false;
         this.groupBox4.Text = "\'Standard\' Filter Panel";
         // 
+        // groupBox9
+        // 
+        this.groupBox9.Controls.Add(this.txtEventsLog);
+        this.groupBox9.Location = new System.Drawing.Point(667, 304);
+        this.groupBox9.Name = "groupBox9";
+        this.groupBox9.Size = new System.Drawing.Size(300, 184);
+        this.groupBox9.TabIndex = 11;
+        this.groupBox9.TabStop = false;
+        this.groupBox9.Text = "Events Log";
+        // 
+        // txtEventsLog
+        // 
+        this.txtEventsLog.Dock = System.Windows.Forms.DockStyle.Fill;
+        this.txtEventsLog.Location = new System.Drawing.Point(3, 16);
+        this.txtEventsLog.Multiline = true;
+        this.txtEventsLog.Name = "txtEventsLog";
+        this.txtEventsLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+        this.txtEventsLog.Size = new System.Drawing.Size(294, 165);
+        this.txtEventsLog.TabIndex = 0;
+        // 
         // FilterFindTest
         // 
         this.AcceptButton = this.btnTestFullConstructor;
@@ -1052,6 +1075,7 @@ partial class FilterFindTest
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.AutoSize = true;
         this.ClientSize = new System.Drawing.Size(985, 500);
+        this.Controls.Add(this.groupBox9);
         this.Controls.Add(this.groupBox3);
         this.Controls.Add(this.groupBox2);
         this.Controls.Add(this.FUcoFilterAndFind);
@@ -1082,8 +1106,12 @@ partial class FilterFindTest
         this.groupBox3.ResumeLayout(false);
         this.groupBox1.ResumeLayout(false);
         this.groupBox4.ResumeLayout(false);
+        this.groupBox9.ResumeLayout(false);
+        this.groupBox9.PerformLayout();
         this.ResumeLayout(false);
     }
+    private System.Windows.Forms.TextBox txtEventsLog;
+    private System.Windows.Forms.GroupBox groupBox9;
     private System.Windows.Forms.Button btnFocusFirstArgumentControl;
     private System.Windows.Forms.CheckBox chkDynamicCtrl3Std;
     private System.Windows.Forms.CheckBox chkDynamicCtrl3Find;
