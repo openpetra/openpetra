@@ -172,7 +172,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             //   inverting of the two currencies when calculating
             //   the inverse value.
 
-            string currentBudgetVal = string.Empty;
+            //string currentBudgetVal = string.Empty;
             //string mess = string.Empty;
             string CostCentre = string.Empty;
             string Account = string.Empty;

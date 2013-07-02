@@ -90,7 +90,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             string CheckedMember = "CHECKED";
             string AccountDBN = ABudgetTable.GetAccountCodeDBName();
             string CostCentreDBN = ABudgetTable.GetCostCentreCodeDBName();
-            string BudgetSeqDBN = ABudgetTable.GetBudgetSequenceDBName();
+            //string BudgetSeqDBN = ABudgetTable.GetBudgetSequenceDBName();
             //string CCAccKey = "CostCentreAccountKey";
             string CCAccDesc = "CostCentreAccountDescription";
             //string BudgetSeqKey = "BudgetSequenceKey";
