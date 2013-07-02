@@ -49,7 +49,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>holds a reference to the Proxy object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
         // private PtPassportTypeTable FPassportTypeDT;
-        private DataColumn FPassportCountryNameColumn;
 
         #region Properties
 
@@ -88,8 +87,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.Columns.Clear();
             grdDetails.AddTextColumn("Passport Number", FMainDS.PmPassportDetails.ColumnPassportNumber);
             grdDetails.AddTextColumn("Type", FMainDS.PmPassportDetails.ColumnPassportDetailsType);
-            grdDetails.AddTextColumn("Passport Nationality",
-                FMainDS.PmPassportDetails.Columns["Parent_" + PCountryTable.GetCountryNameDBName()]);
+            grdDetails.AddTextColumn("Passport Nationality", FMainDS.PmPassportDetails.ColumnPassportNationalityName);
             grdDetails.AddDateColumn("Expiration Date", FMainDS.PmPassportDetails.ColumnDateOfExpiration);
             grdDetails.AddDateColumn("Issue Date", FMainDS.PmPassportDetails.ColumnDateOfIssue);
 
@@ -126,39 +124,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Add columns that were created and are not part of the normal PmPassportDetails
-        /// </summary>
-        public void AddSpecialColumns()
-        {
-            if (FPassportCountryNameColumn == null)
-            {
-                FPassportCountryNameColumn = new DataColumn();
-                FPassportCountryNameColumn.DataType = System.Type.GetType("System.String");
-                FPassportCountryNameColumn.ColumnName = "Parent_" + PCountryTable.GetCountryNameDBName();
-                FPassportCountryNameColumn.Expression = "Parent." + PCountryTable.GetCountryNameDBName();
-            }
-
-            if (!FMainDS.PmPassportDetails.Columns.Contains(FPassportCountryNameColumn.ColumnName))
-            {
-                FMainDS.PmPassportDetails.Columns.Add(FPassportCountryNameColumn);
-            }
-        }
-
-        /// <summary>
-        /// Remove columns that were created and are not part of the normal PmPassportDetails.
-        /// This is needed e.g. when table contents are to be merged with main PartnerEditTDS passport
-        /// table that does not contain extra columns
-        /// </summary>
-        public void RemoveSpecialColumns()
-        {
-            if ((FPassportCountryNameColumn != null)
-                && FMainDS.PmPassportDetails.Columns.Contains(FPassportCountryNameColumn.ColumnName))
-            {
-                FMainDS.PmPassportDetails.Columns.Remove(FPassportCountryNameColumn);
-            }
-        }
-
-        /// <summary>
         /// add a new passport record
         /// </summary>
         /// <param name="sender"></param>
@@ -168,7 +133,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.CreateNewPmPassportDetails();
         }
 
-        private void NewRowManual(ref PmPassportDetailsRow ARow)
+        private void NewRowManual(ref IndividualDataTDSPmPassportDetailsRow ARow)
         {
             string newName;
             Int32 countNewDetail = 0;
@@ -237,6 +202,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             DoRecalculateScreenParts();
         }
 
+        private void GetDetailDataFromControlsManual(IndividualDataTDSPmPassportDetailsRow ARow)
+        {
+            // update country name in grid from country code used in details part
+            ARow.PassportNationalityName = cmbPassportNationality.GetSelectedDescription();
+        }
+
         /// <summary>
         /// Loads Person Passport Data from Petra Server into FMainDS, if not already loaded.
         /// </summary>
@@ -244,7 +215,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean LoadDataOnDemand()
         {
             Boolean ReturnValue;
-            PCountryTable CountryTable;
 
             try
             {
@@ -269,23 +239,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                     }
                 }
-
-                // Add relation table to data set
-                if (FMainDS.PCountry == null)
-                {
-                    FMainDS.Tables.Add(new PCountryTable());
-                }
-
-                CountryTable = (PCountryTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
-                // rename data table as otherwise the merge with the data set won't work; tables need to have same name
-                CountryTable.TableName = PCountryTable.GetTableName();
-                FMainDS.Merge(CountryTable);
-
-                // Relations are not automatically enabled. Need to enable them here in order to use for columns.
-                FMainDS.EnableRelations();
-
-                // add column for passport nationality name
-                AddSpecialColumns();
 
                 if (FMainDS.PmPassportDetails.Rows.Count != 0)
                 {
