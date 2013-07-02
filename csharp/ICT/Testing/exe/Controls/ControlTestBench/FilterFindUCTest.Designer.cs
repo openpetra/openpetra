@@ -64,6 +64,8 @@ partial class FilterFindTest
         this.FUcoFilterAndFind = new Ict.Common.Controls.TUcoFilterAndFind();
         this.groupBox2 = new System.Windows.Forms.GroupBox();
         this.groupBox5 = new System.Windows.Forms.GroupBox();
+        this.tabControl1 = new System.Windows.Forms.TabControl();
+        this.tabPage1 = new System.Windows.Forms.TabPage();
         this.chkYearExtra = new System.Windows.Forms.CheckBox();
         this.chkYearFind = new System.Windows.Forms.CheckBox();
         this.chkYearStd = new System.Windows.Forms.CheckBox();
@@ -86,6 +88,34 @@ partial class FilterFindTest
         this.pnlCurrencyCode = new System.Windows.Forms.Panel();
         this.txtCurrencyCode = new System.Windows.Forms.TextBox();
         this.lblCurrencyCode = new System.Windows.Forms.Label();
+        this.tabPage2 = new System.Windows.Forms.TabPage();
+        this.groupBox7 = new System.Windows.Forms.GroupBox();
+        this.chkDynCtrl2 = new System.Windows.Forms.CheckBox();
+        this.txtLblDynCtrl2 = new System.Windows.Forms.TextBox();
+        this.groupBox6 = new System.Windows.Forms.GroupBox();
+        this.lblDynCtrl1 = new System.Windows.Forms.Label();
+        this.txtDynCtrl1 = new System.Windows.Forms.TextBox();
+        this.chkDynamicCtrl2Extra = new System.Windows.Forms.CheckBox();
+        this.chkDynamicCtrl2Find = new System.Windows.Forms.CheckBox();
+        this.chkDynamicCtrl2Std = new System.Windows.Forms.CheckBox();
+        this.label5 = new System.Windows.Forms.Label();
+        this.label6 = new System.Windows.Forms.Label();
+        this.label9 = new System.Windows.Forms.Label();
+        this.label10 = new System.Windows.Forms.Label();
+        this.chkDynamicCtrl1Extra = new System.Windows.Forms.CheckBox();
+        this.chkDynamicCtrl1Find = new System.Windows.Forms.CheckBox();
+        this.chkDynamicCtrl1Std = new System.Windows.Forms.CheckBox();
+        this.tabPage3 = new System.Windows.Forms.TabPage();
+        this.groupBox8 = new System.Windows.Forms.GroupBox();
+        this.cmbDynCtrl3 = new Ict.Common.Controls.TCmbAutoComplete();
+        this.lblDynCtrl3 = new System.Windows.Forms.Label();
+        this.label12 = new System.Windows.Forms.Label();
+        this.label13 = new System.Windows.Forms.Label();
+        this.label14 = new System.Windows.Forms.Label();
+        this.label15 = new System.Windows.Forms.Label();
+        this.chkDynamicCtrl3Extra = new System.Windows.Forms.CheckBox();
+        this.chkDynamicCtrl3Find = new System.Windows.Forms.CheckBox();
+        this.chkDynamicCtrl3Std = new System.Windows.Forms.CheckBox();
         this.label2 = new System.Windows.Forms.Label();
         this.txtControlWidth = new System.Windows.Forms.TextBox();
         this.label1 = new System.Windows.Forms.Label();
@@ -100,9 +130,9 @@ partial class FilterFindTest
         this.btnApplyFilterButtonStd = new System.Windows.Forms.CheckBox();
         this.rbtTwoFilterPanels = new System.Windows.Forms.RadioButton();
         this.rbtOneFilterPanel = new System.Windows.Forms.RadioButton();
-        this.chkShowFindTab = new System.Windows.Forms.CheckBox();
         this.groupBox3 = new System.Windows.Forms.GroupBox();
         this.button1 = new System.Windows.Forms.Button();
+        this.btnFocusFirstArgumentControl = new System.Windows.Forms.Button();
         this.btnCollapseExpandPanel = new System.Windows.Forms.Button();
         this.groupBox1 = new System.Windows.Forms.GroupBox();
         this.btnHideShowFIAOLblExtra = new System.Windows.Forms.Button();
@@ -111,9 +141,16 @@ partial class FilterFindTest
         this.groupBox4 = new System.Windows.Forms.GroupBox();
         this.groupBox2.SuspendLayout();
         this.groupBox5.SuspendLayout();
+        this.tabControl1.SuspendLayout();
+        this.tabPage1.SuspendLayout();
         this.pnlYear.SuspendLayout();
         this.pnlCurrencyName.SuspendLayout();
         this.pnlCurrencyCode.SuspendLayout();
+        this.tabPage2.SuspendLayout();
+        this.groupBox7.SuspendLayout();
+        this.groupBox6.SuspendLayout();
+        this.tabPage3.SuspendLayout();
+        this.groupBox8.SuspendLayout();
         this.panel1.SuspendLayout();
         this.grpExtraFilterPanel.SuspendLayout();
         this.grpStandardFilterPanel.SuspendLayout();
@@ -135,7 +172,7 @@ partial class FilterFindTest
         // btnTestFullConstructor
         // 
         this.btnTestFullConstructor.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.btnTestFullConstructor.Location = new System.Drawing.Point(6, 206);
+        this.btnTestFullConstructor.Location = new System.Drawing.Point(6, 213);
         this.btnTestFullConstructor.Name = "btnTestFullConstructor";
         this.btnTestFullConstructor.Size = new System.Drawing.Size(147, 23);
         this.btnTestFullConstructor.TabIndex = 1;
@@ -180,7 +217,6 @@ partial class FilterFindTest
         this.FUcoFilterAndFind.Location = new System.Drawing.Point(0, 0);
         this.FUcoFilterAndFind.Name = "FUcoFilterAndFind";
         this.FUcoFilterAndFind.ShowApplyFilterButton = Ict.Common.Controls.TUcoFilterAndFind.FilterContext.fcNone;
-        this.FUcoFilterAndFind.ShowExtraFilter = false;
         this.FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = Ict.Common.Controls.TUcoFilterAndFind.FilterContext.fcNone;
         this.FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = Ict.Common.Controls.TUcoFilterAndFind.FilterContext.fcNone;
         this.FUcoFilterAndFind.Size = new System.Drawing.Size(150, 500);
@@ -193,64 +229,85 @@ partial class FilterFindTest
         this.groupBox2.Controls.Add(this.txtControlWidth);
         this.groupBox2.Controls.Add(this.label1);
         this.groupBox2.Controls.Add(this.panel1);
-        this.groupBox2.Controls.Add(this.chkShowFindTab);
         this.groupBox2.Controls.Add(this.btnTestFullConstructor);
         this.groupBox2.Location = new System.Drawing.Point(191, 50);
         this.groupBox2.Name = "groupBox2";
-        this.groupBox2.Size = new System.Drawing.Size(782, 236);
+        this.groupBox2.Size = new System.Drawing.Size(782, 248);
         this.groupBox2.TabIndex = 9;
         this.groupBox2.TabStop = false;
         this.groupBox2.Text = "Full Constructor Options";
         // 
         // groupBox5
         // 
-        this.groupBox5.Controls.Add(this.chkYearExtra);
-        this.groupBox5.Controls.Add(this.chkYearFind);
-        this.groupBox5.Controls.Add(this.chkYearStd);
-        this.groupBox5.Controls.Add(this.pnlYear);
-        this.groupBox5.Controls.Add(this.chkCurrencyNameExtra);
-        this.groupBox5.Controls.Add(this.chkCurrencyNameFind);
-        this.groupBox5.Controls.Add(this.chkCurrencyNameStd);
-        this.groupBox5.Controls.Add(this.pnlCurrencyName);
-        this.groupBox5.Controls.Add(this.label8);
-        this.groupBox5.Controls.Add(this.label7);
-        this.groupBox5.Controls.Add(this.label4);
-        this.groupBox5.Controls.Add(this.label3);
-        this.groupBox5.Controls.Add(this.chkCurrencyCodeExtra);
-        this.groupBox5.Controls.Add(this.chkCurrencyCodeFind);
-        this.groupBox5.Controls.Add(this.chkCurrencyCodeStd);
-        this.groupBox5.Controls.Add(this.pnlCurrencyCode);
+        this.groupBox5.Controls.Add(this.tabControl1);
         this.groupBox5.Location = new System.Drawing.Point(476, 16);
         this.groupBox5.Name = "groupBox5";
-        this.groupBox5.Size = new System.Drawing.Size(300, 213);
+        this.groupBox5.Size = new System.Drawing.Size(300, 220);
         this.groupBox5.TabIndex = 7;
         this.groupBox5.TabStop = false;
         this.groupBox5.Text = "Controls for Panels";
         // 
+        // tabControl1
+        // 
+        this.tabControl1.Controls.Add(this.tabPage1);
+        this.tabControl1.Controls.Add(this.tabPage2);
+        this.tabControl1.Controls.Add(this.tabPage3);
+        this.tabControl1.Location = new System.Drawing.Point(6, 19);
+        this.tabControl1.Name = "tabControl1";
+        this.tabControl1.SelectedIndex = 0;
+        this.tabControl1.Size = new System.Drawing.Size(288, 194);
+        this.tabControl1.TabIndex = 16;
+        // 
+        // tabPage1
+        // 
+        this.tabPage1.Controls.Add(this.chkYearExtra);
+        this.tabPage1.Controls.Add(this.chkYearFind);
+        this.tabPage1.Controls.Add(this.chkYearStd);
+        this.tabPage1.Controls.Add(this.pnlYear);
+        this.tabPage1.Controls.Add(this.chkCurrencyNameExtra);
+        this.tabPage1.Controls.Add(this.chkCurrencyNameFind);
+        this.tabPage1.Controls.Add(this.chkCurrencyNameStd);
+        this.tabPage1.Controls.Add(this.pnlCurrencyName);
+        this.tabPage1.Controls.Add(this.label8);
+        this.tabPage1.Controls.Add(this.label7);
+        this.tabPage1.Controls.Add(this.label4);
+        this.tabPage1.Controls.Add(this.label3);
+        this.tabPage1.Controls.Add(this.chkCurrencyCodeExtra);
+        this.tabPage1.Controls.Add(this.chkCurrencyCodeFind);
+        this.tabPage1.Controls.Add(this.chkCurrencyCodeStd);
+        this.tabPage1.Controls.Add(this.pnlCurrencyCode);
+        this.tabPage1.Location = new System.Drawing.Point(4, 22);
+        this.tabPage1.Name = "tabPage1";
+        this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+        this.tabPage1.Size = new System.Drawing.Size(280, 168);
+        this.tabPage1.TabIndex = 0;
+        this.tabPage1.Text = "Panel Instances";
+        this.tabPage1.UseVisualStyleBackColor = true;
+        // 
         // chkYearExtra
         // 
-        this.chkYearExtra.Location = new System.Drawing.Point(211, 153);
+        this.chkYearExtra.Checked = true;
+        this.chkYearExtra.CheckState = System.Windows.Forms.CheckState.Checked;
+        this.chkYearExtra.Location = new System.Drawing.Point(209, 142);
         this.chkYearExtra.Name = "chkYearExtra";
         this.chkYearExtra.Size = new System.Drawing.Size(18, 18);
-        this.chkYearExtra.TabIndex = 15;
+        this.chkYearExtra.TabIndex = 31;
         this.chkYearExtra.UseVisualStyleBackColor = true;
         // 
         // chkYearFind
         // 
-        this.chkYearFind.Checked = true;
-        this.chkYearFind.CheckState = System.Windows.Forms.CheckState.Checked;
-        this.chkYearFind.Location = new System.Drawing.Point(251, 153);
+        this.chkYearFind.Location = new System.Drawing.Point(249, 142);
         this.chkYearFind.Name = "chkYearFind";
         this.chkYearFind.Size = new System.Drawing.Size(18, 18);
-        this.chkYearFind.TabIndex = 14;
+        this.chkYearFind.TabIndex = 30;
         this.chkYearFind.UseVisualStyleBackColor = true;
         // 
         // chkYearStd
         // 
-        this.chkYearStd.Location = new System.Drawing.Point(167, 153);
+        this.chkYearStd.Location = new System.Drawing.Point(165, 142);
         this.chkYearStd.Name = "chkYearStd";
         this.chkYearStd.Size = new System.Drawing.Size(18, 18);
-        this.chkYearStd.TabIndex = 13;
+        this.chkYearStd.TabIndex = 29;
         this.chkYearStd.UseVisualStyleBackColor = true;
         // 
         // pnlYear
@@ -258,60 +315,61 @@ partial class FilterFindTest
         this.pnlYear.BackColor = System.Drawing.Color.Gold;
         this.pnlYear.Controls.Add(this.cmbYear);
         this.pnlYear.Controls.Add(this.lblYear);
-        this.pnlYear.Location = new System.Drawing.Point(6, 133);
+        this.pnlYear.Location = new System.Drawing.Point(4, 122);
         this.pnlYear.Name = "pnlYear";
         this.pnlYear.Size = new System.Drawing.Size(133, 43);
-        this.pnlYear.TabIndex = 4;
-        this.pnlYear.Tag = "KeepBackColour;NoAutomaticArgumentClearButton";
+        this.pnlYear.TabIndex = 22;
+        this.pnlYear.Tag = "NoAutomaticArgumentClearButton";
         // 
         // cmbYear
         // 
-        this.cmbYear.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-                        | System.Windows.Forms.AnchorStyles.Right)));
         this.cmbYear.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.cmbYear.FormattingEnabled = true;
         this.cmbYear.Items.AddRange(new object[] {
+                        "",
                         "2012",
                         "2013"});
         this.cmbYear.Location = new System.Drawing.Point(3, 19);
         this.cmbYear.Name = "cmbYear";
         this.cmbYear.Size = new System.Drawing.Size(127, 21);
         this.cmbYear.TabIndex = 1;
+        this.cmbYear.Tag = "ClearValue=2";
         this.cmbYear.Text = "2012";
         // 
         // lblYear
         // 
+        this.lblYear.AutoSize = true;
         this.lblYear.Font = new System.Drawing.Font("Verdana", 7F);
         this.lblYear.Location = new System.Drawing.Point(3, 0);
         this.lblYear.Name = "lblYear";
-        this.lblYear.Size = new System.Drawing.Size(100, 22);
+        this.lblYear.Size = new System.Drawing.Size(35, 12);
         this.lblYear.TabIndex = 0;
-        this.lblYear.Text = "Year:";
+        this.lblYear.Text = "&Year:";
         // 
         // chkCurrencyNameExtra
         // 
-        this.chkCurrencyNameExtra.Location = new System.Drawing.Point(211, 100);
+        this.chkCurrencyNameExtra.Location = new System.Drawing.Point(209, 91);
         this.chkCurrencyNameExtra.Name = "chkCurrencyNameExtra";
         this.chkCurrencyNameExtra.Size = new System.Drawing.Size(18, 18);
-        this.chkCurrencyNameExtra.TabIndex = 12;
+        this.chkCurrencyNameExtra.TabIndex = 28;
         this.chkCurrencyNameExtra.UseVisualStyleBackColor = true;
         // 
         // chkCurrencyNameFind
         // 
-        this.chkCurrencyNameFind.Location = new System.Drawing.Point(251, 100);
+        this.chkCurrencyNameFind.Location = new System.Drawing.Point(249, 91);
         this.chkCurrencyNameFind.Name = "chkCurrencyNameFind";
         this.chkCurrencyNameFind.Size = new System.Drawing.Size(18, 18);
-        this.chkCurrencyNameFind.TabIndex = 11;
+        this.chkCurrencyNameFind.TabIndex = 27;
         this.chkCurrencyNameFind.UseVisualStyleBackColor = true;
         // 
         // chkCurrencyNameStd
         // 
         this.chkCurrencyNameStd.Checked = true;
         this.chkCurrencyNameStd.CheckState = System.Windows.Forms.CheckState.Checked;
-        this.chkCurrencyNameStd.Location = new System.Drawing.Point(167, 100);
+        this.chkCurrencyNameStd.Location = new System.Drawing.Point(165, 91);
         this.chkCurrencyNameStd.Name = "chkCurrencyNameStd";
         this.chkCurrencyNameStd.Size = new System.Drawing.Size(18, 18);
-        this.chkCurrencyNameStd.TabIndex = 10;
+        this.chkCurrencyNameStd.TabIndex = 26;
         this.chkCurrencyNameStd.UseVisualStyleBackColor = true;
         // 
         // pnlCurrencyName
@@ -319,16 +377,14 @@ partial class FilterFindTest
         this.pnlCurrencyName.BackColor = System.Drawing.Color.DarkSalmon;
         this.pnlCurrencyName.Controls.Add(this.txtCurrencyName);
         this.pnlCurrencyName.Controls.Add(this.lblCurrencyName);
-        this.pnlCurrencyName.Location = new System.Drawing.Point(6, 84);
+        this.pnlCurrencyName.Location = new System.Drawing.Point(4, 73);
         this.pnlCurrencyName.Name = "pnlCurrencyName";
         this.pnlCurrencyName.Size = new System.Drawing.Size(133, 43);
-        this.pnlCurrencyName.TabIndex = 3;
+        this.pnlCurrencyName.TabIndex = 19;
         this.pnlCurrencyName.Tag = "";
         // 
         // txtCurrencyName
         // 
-        this.txtCurrencyName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-                        | System.Windows.Forms.AnchorStyles.Right)));
         this.txtCurrencyName.Font = new System.Drawing.Font("Verdana", 8F);
         this.txtCurrencyName.Location = new System.Drawing.Point(3, 17);
         this.txtCurrencyName.Name = "txtCurrencyName";
@@ -337,74 +393,75 @@ partial class FilterFindTest
         // 
         // lblCurrencyName
         // 
+        this.lblCurrencyName.AutoSize = true;
         this.lblCurrencyName.Font = new System.Drawing.Font("Verdana", 7F);
         this.lblCurrencyName.Location = new System.Drawing.Point(3, 0);
         this.lblCurrencyName.Name = "lblCurrencyName";
-        this.lblCurrencyName.Size = new System.Drawing.Size(100, 22);
+        this.lblCurrencyName.Size = new System.Drawing.Size(94, 12);
         this.lblCurrencyName.TabIndex = 0;
-        this.lblCurrencyName.Text = "Currency Name:";
+        this.lblCurrencyName.Text = "Cu&rrency Name:";
         // 
         // label8
         // 
         this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.label8.Location = new System.Drawing.Point(241, 25);
+        this.label8.Location = new System.Drawing.Point(239, 16);
         this.label8.Name = "label8";
         this.label8.Size = new System.Drawing.Size(37, 23);
-        this.label8.TabIndex = 9;
+        this.label8.TabIndex = 25;
         this.label8.Text = "Find";
         // 
         // label7
         // 
         this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.label7.Location = new System.Drawing.Point(196, 25);
+        this.label7.Location = new System.Drawing.Point(194, 16);
         this.label7.Name = "label7";
         this.label7.Size = new System.Drawing.Size(48, 23);
-        this.label7.TabIndex = 8;
+        this.label7.TabIndex = 24;
         this.label7.Text = "Extra";
         // 
         // label4
         // 
         this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.label4.Location = new System.Drawing.Point(163, 25);
+        this.label4.Location = new System.Drawing.Point(161, 16);
         this.label4.Name = "label4";
         this.label4.Size = new System.Drawing.Size(27, 23);
-        this.label4.TabIndex = 5;
+        this.label4.TabIndex = 23;
         this.label4.Text = "Std.";
         // 
         // label3
         // 
         this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.label3.Location = new System.Drawing.Point(159, 9);
+        this.label3.Location = new System.Drawing.Point(157, 0);
         this.label3.Name = "label3";
         this.label3.Size = new System.Drawing.Size(120, 23);
-        this.label3.TabIndex = 4;
+        this.label3.TabIndex = 21;
         this.label3.Text = "Should Appear On...";
         this.label3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
         // 
         // chkCurrencyCodeExtra
         // 
-        this.chkCurrencyCodeExtra.Location = new System.Drawing.Point(211, 51);
+        this.chkCurrencyCodeExtra.Location = new System.Drawing.Point(209, 42);
         this.chkCurrencyCodeExtra.Name = "chkCurrencyCodeExtra";
         this.chkCurrencyCodeExtra.Size = new System.Drawing.Size(18, 18);
-        this.chkCurrencyCodeExtra.TabIndex = 3;
+        this.chkCurrencyCodeExtra.TabIndex = 20;
         this.chkCurrencyCodeExtra.UseVisualStyleBackColor = true;
         // 
         // chkCurrencyCodeFind
         // 
-        this.chkCurrencyCodeFind.Location = new System.Drawing.Point(251, 51);
+        this.chkCurrencyCodeFind.Location = new System.Drawing.Point(249, 42);
         this.chkCurrencyCodeFind.Name = "chkCurrencyCodeFind";
         this.chkCurrencyCodeFind.Size = new System.Drawing.Size(18, 18);
-        this.chkCurrencyCodeFind.TabIndex = 2;
+        this.chkCurrencyCodeFind.TabIndex = 18;
         this.chkCurrencyCodeFind.UseVisualStyleBackColor = true;
         // 
         // chkCurrencyCodeStd
         // 
         this.chkCurrencyCodeStd.Checked = true;
         this.chkCurrencyCodeStd.CheckState = System.Windows.Forms.CheckState.Checked;
-        this.chkCurrencyCodeStd.Location = new System.Drawing.Point(167, 51);
+        this.chkCurrencyCodeStd.Location = new System.Drawing.Point(165, 42);
         this.chkCurrencyCodeStd.Name = "chkCurrencyCodeStd";
         this.chkCurrencyCodeStd.Size = new System.Drawing.Size(18, 18);
-        this.chkCurrencyCodeStd.TabIndex = 1;
+        this.chkCurrencyCodeStd.TabIndex = 17;
         this.chkCurrencyCodeStd.UseVisualStyleBackColor = true;
         // 
         // pnlCurrencyCode
@@ -412,16 +469,14 @@ partial class FilterFindTest
         this.pnlCurrencyCode.BackColor = System.Drawing.Color.DarkGray;
         this.pnlCurrencyCode.Controls.Add(this.txtCurrencyCode);
         this.pnlCurrencyCode.Controls.Add(this.lblCurrencyCode);
-        this.pnlCurrencyCode.Location = new System.Drawing.Point(6, 35);
+        this.pnlCurrencyCode.Location = new System.Drawing.Point(4, 24);
         this.pnlCurrencyCode.Name = "pnlCurrencyCode";
         this.pnlCurrencyCode.Size = new System.Drawing.Size(133, 43);
-        this.pnlCurrencyCode.TabIndex = 0;
+        this.pnlCurrencyCode.TabIndex = 16;
         this.pnlCurrencyCode.Tag = "";
         // 
         // txtCurrencyCode
         // 
-        this.txtCurrencyCode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-                        | System.Windows.Forms.AnchorStyles.Right)));
         this.txtCurrencyCode.Font = new System.Drawing.Font("Verdana", 8F);
         this.txtCurrencyCode.Location = new System.Drawing.Point(3, 17);
         this.txtCurrencyCode.Name = "txtCurrencyCode";
@@ -430,16 +485,320 @@ partial class FilterFindTest
         // 
         // lblCurrencyCode
         // 
+        this.lblCurrencyCode.AutoSize = true;
         this.lblCurrencyCode.Font = new System.Drawing.Font("Verdana", 7F);
         this.lblCurrencyCode.Location = new System.Drawing.Point(3, 0);
         this.lblCurrencyCode.Name = "lblCurrencyCode";
-        this.lblCurrencyCode.Size = new System.Drawing.Size(100, 22);
+        this.lblCurrencyCode.Size = new System.Drawing.Size(91, 12);
         this.lblCurrencyCode.TabIndex = 0;
-        this.lblCurrencyCode.Text = "Currency Code:";
+        this.lblCurrencyCode.Text = "C&urrency Code:";
+        // 
+        // tabPage2
+        // 
+        this.tabPage2.Controls.Add(this.groupBox7);
+        this.tabPage2.Controls.Add(this.groupBox6);
+        this.tabPage2.Controls.Add(this.chkDynamicCtrl2Extra);
+        this.tabPage2.Controls.Add(this.chkDynamicCtrl2Find);
+        this.tabPage2.Controls.Add(this.chkDynamicCtrl2Std);
+        this.tabPage2.Controls.Add(this.label5);
+        this.tabPage2.Controls.Add(this.label6);
+        this.tabPage2.Controls.Add(this.label9);
+        this.tabPage2.Controls.Add(this.label10);
+        this.tabPage2.Controls.Add(this.chkDynamicCtrl1Extra);
+        this.tabPage2.Controls.Add(this.chkDynamicCtrl1Find);
+        this.tabPage2.Controls.Add(this.chkDynamicCtrl1Std);
+        this.tabPage2.Location = new System.Drawing.Point(4, 22);
+        this.tabPage2.Name = "tabPage2";
+        this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+        this.tabPage2.Size = new System.Drawing.Size(280, 168);
+        this.tabPage2.TabIndex = 1;
+        this.tabPage2.Text = "Control Instances #1";
+        this.tabPage2.UseVisualStyleBackColor = true;
+        // 
+        // groupBox7
+        // 
+        this.groupBox7.BackColor = System.Drawing.Color.YellowGreen;
+        this.groupBox7.Controls.Add(this.chkDynCtrl2);
+        this.groupBox7.Controls.Add(this.txtLblDynCtrl2);
+        this.groupBox7.Location = new System.Drawing.Point(10, 91);
+        this.groupBox7.Name = "groupBox7";
+        this.groupBox7.Size = new System.Drawing.Size(149, 64);
+        this.groupBox7.TabIndex = 46;
+        this.groupBox7.TabStop = false;
+        this.groupBox7.Text = "DynamicCtrl2";
+        // 
+        // chkDynCtrl2
+        // 
+        this.chkDynCtrl2.AutoSize = true;
+        this.chkDynCtrl2.Location = new System.Drawing.Point(6, 34);
+        this.chkDynCtrl2.Name = "chkDynCtrl2";
+        this.chkDynCtrl2.Size = new System.Drawing.Size(85, 17);
+        this.chkDynCtrl2.TabIndex = 1;
+        this.chkDynCtrl2.Tag = "ClearValue=true";
+        this.chkDynCtrl2.Text = "ChkDynCtrl2";
+        this.chkDynCtrl2.UseVisualStyleBackColor = true;
+        // 
+        // txtLblDynCtrl2
+        // 
+        this.txtLblDynCtrl2.Location = new System.Drawing.Point(43, 17);
+        this.txtLblDynCtrl2.Name = "txtLblDynCtrl2";
+        this.txtLblDynCtrl2.Size = new System.Drawing.Size(100, 20);
+        this.txtLblDynCtrl2.TabIndex = 0;
+        this.txtLblDynCtrl2.Text = "DynCtrlLabe&l2:";
+        // 
+        // groupBox6
+        // 
+        this.groupBox6.BackColor = System.Drawing.Color.Violet;
+        this.groupBox6.Controls.Add(this.lblDynCtrl1);
+        this.groupBox6.Controls.Add(this.txtDynCtrl1);
+        this.groupBox6.Location = new System.Drawing.Point(10, 21);
+        this.groupBox6.Name = "groupBox6";
+        this.groupBox6.Size = new System.Drawing.Size(149, 64);
+        this.groupBox6.TabIndex = 45;
+        this.groupBox6.TabStop = false;
+        this.groupBox6.Text = "DynamicCtrl1";
+        // 
+        // lblDynCtrl1
+        // 
+        this.lblDynCtrl1.Location = new System.Drawing.Point(37, 34);
+        this.lblDynCtrl1.Name = "lblDynCtrl1";
+        this.lblDynCtrl1.Size = new System.Drawing.Size(90, 23);
+        this.lblDynCtrl1.TabIndex = 1;
+        this.lblDynCtrl1.Text = "DynCtrlLabel&1:";
+        // 
+        // txtDynCtrl1
+        // 
+        this.txtDynCtrl1.AutoCompleteCustomSource.AddRange(new string[] {
+                        "MYTEXT",
+                        "ALEX",
+                        "PIA",
+                        "JOSEPH",
+                        "JOHN",
+                        "MELISSA"});
+        this.txtDynCtrl1.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+        this.txtDynCtrl1.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
+        this.txtDynCtrl1.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
+        this.txtDynCtrl1.Location = new System.Drawing.Point(17, 15);
+        this.txtDynCtrl1.Name = "txtDynCtrl1";
+        this.txtDynCtrl1.Size = new System.Drawing.Size(100, 20);
+        this.txtDynCtrl1.TabIndex = 0;
+        this.txtDynCtrl1.Text = "MYTEXT";
+        // 
+        // chkDynamicCtrl2Extra
+        // 
+        this.chkDynamicCtrl2Extra.Checked = true;
+        this.chkDynamicCtrl2Extra.CheckState = System.Windows.Forms.CheckState.Checked;
+        this.chkDynamicCtrl2Extra.Location = new System.Drawing.Point(209, 118);
+        this.chkDynamicCtrl2Extra.Name = "chkDynamicCtrl2Extra";
+        this.chkDynamicCtrl2Extra.Size = new System.Drawing.Size(18, 18);
+        this.chkDynamicCtrl2Extra.TabIndex = 41;
+        this.chkDynamicCtrl2Extra.UseVisualStyleBackColor = true;
+        // 
+        // chkDynamicCtrl2Find
+        // 
+        this.chkDynamicCtrl2Find.Location = new System.Drawing.Point(249, 118);
+        this.chkDynamicCtrl2Find.Name = "chkDynamicCtrl2Find";
+        this.chkDynamicCtrl2Find.Size = new System.Drawing.Size(18, 18);
+        this.chkDynamicCtrl2Find.TabIndex = 40;
+        this.chkDynamicCtrl2Find.UseVisualStyleBackColor = true;
+        // 
+        // chkDynamicCtrl2Std
+        // 
+        this.chkDynamicCtrl2Std.Location = new System.Drawing.Point(165, 118);
+        this.chkDynamicCtrl2Std.Name = "chkDynamicCtrl2Std";
+        this.chkDynamicCtrl2Std.Size = new System.Drawing.Size(18, 18);
+        this.chkDynamicCtrl2Std.TabIndex = 39;
+        this.chkDynamicCtrl2Std.UseVisualStyleBackColor = true;
+        // 
+        // label5
+        // 
+        this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        this.label5.Location = new System.Drawing.Point(239, 16);
+        this.label5.Name = "label5";
+        this.label5.Size = new System.Drawing.Size(37, 23);
+        this.label5.TabIndex = 38;
+        this.label5.Text = "Find";
+        // 
+        // label6
+        // 
+        this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        this.label6.Location = new System.Drawing.Point(194, 16);
+        this.label6.Name = "label6";
+        this.label6.Size = new System.Drawing.Size(48, 23);
+        this.label6.TabIndex = 37;
+        this.label6.Text = "Extra";
+        // 
+        // label9
+        // 
+        this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        this.label9.Location = new System.Drawing.Point(161, 16);
+        this.label9.Name = "label9";
+        this.label9.Size = new System.Drawing.Size(27, 23);
+        this.label9.TabIndex = 36;
+        this.label9.Text = "Std.";
+        // 
+        // label10
+        // 
+        this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        this.label10.Location = new System.Drawing.Point(157, 0);
+        this.label10.Name = "label10";
+        this.label10.Size = new System.Drawing.Size(120, 23);
+        this.label10.TabIndex = 35;
+        this.label10.Text = "Should Appear On...";
+        this.label10.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+        // 
+        // chkDynamicCtrl1Extra
+        // 
+        this.chkDynamicCtrl1Extra.Location = new System.Drawing.Point(209, 47);
+        this.chkDynamicCtrl1Extra.Name = "chkDynamicCtrl1Extra";
+        this.chkDynamicCtrl1Extra.Size = new System.Drawing.Size(18, 18);
+        this.chkDynamicCtrl1Extra.TabIndex = 34;
+        this.chkDynamicCtrl1Extra.UseVisualStyleBackColor = true;
+        // 
+        // chkDynamicCtrl1Find
+        // 
+        this.chkDynamicCtrl1Find.Location = new System.Drawing.Point(249, 47);
+        this.chkDynamicCtrl1Find.Name = "chkDynamicCtrl1Find";
+        this.chkDynamicCtrl1Find.Size = new System.Drawing.Size(18, 18);
+        this.chkDynamicCtrl1Find.TabIndex = 33;
+        this.chkDynamicCtrl1Find.UseVisualStyleBackColor = true;
+        // 
+        // chkDynamicCtrl1Std
+        // 
+        this.chkDynamicCtrl1Std.Checked = true;
+        this.chkDynamicCtrl1Std.CheckState = System.Windows.Forms.CheckState.Checked;
+        this.chkDynamicCtrl1Std.Location = new System.Drawing.Point(165, 47);
+        this.chkDynamicCtrl1Std.Name = "chkDynamicCtrl1Std";
+        this.chkDynamicCtrl1Std.Size = new System.Drawing.Size(18, 18);
+        this.chkDynamicCtrl1Std.TabIndex = 32;
+        this.chkDynamicCtrl1Std.UseVisualStyleBackColor = true;
+        // 
+        // tabPage3
+        // 
+        this.tabPage3.Controls.Add(this.groupBox8);
+        this.tabPage3.Controls.Add(this.label12);
+        this.tabPage3.Controls.Add(this.label13);
+        this.tabPage3.Controls.Add(this.label14);
+        this.tabPage3.Controls.Add(this.label15);
+        this.tabPage3.Controls.Add(this.chkDynamicCtrl3Extra);
+        this.tabPage3.Controls.Add(this.chkDynamicCtrl3Find);
+        this.tabPage3.Controls.Add(this.chkDynamicCtrl3Std);
+        this.tabPage3.Location = new System.Drawing.Point(4, 22);
+        this.tabPage3.Name = "tabPage3";
+        this.tabPage3.Size = new System.Drawing.Size(280, 168);
+        this.tabPage3.TabIndex = 2;
+        this.tabPage3.Text = "Control Instances #2";
+        this.tabPage3.UseVisualStyleBackColor = true;
+        // 
+        // groupBox8
+        // 
+        this.groupBox8.BackColor = System.Drawing.Color.Tomato;
+        this.groupBox8.Controls.Add(this.cmbDynCtrl3);
+        this.groupBox8.Controls.Add(this.lblDynCtrl3);
+        this.groupBox8.Location = new System.Drawing.Point(10, 21);
+        this.groupBox8.Name = "groupBox8";
+        this.groupBox8.Size = new System.Drawing.Size(149, 64);
+        this.groupBox8.TabIndex = 53;
+        this.groupBox8.TabStop = false;
+        this.groupBox8.Text = "DynamicCtrl3";
+        // 
+        // cmbDynCtrl3
+        // 
+        this.cmbDynCtrl3.AcceptNewValues = true;
+        this.cmbDynCtrl3.CaseSensitiveSearch = true;
+        this.cmbDynCtrl3.ColumnsToSearch = "#VALUE#, #DISPLAY#";
+        this.cmbDynCtrl3.DescriptionMember = null;
+        this.cmbDynCtrl3.FormattingEnabled = true;
+        this.cmbDynCtrl3.Items.AddRange(new object[] {
+                        "One",
+                        "Two",
+                        "Three",
+                        "Four",
+                        "Five",
+                        "Six",
+                        " "});
+        this.cmbDynCtrl3.Location = new System.Drawing.Point(6, 37);
+        this.cmbDynCtrl3.MaxDropDownItems = 3;
+        this.cmbDynCtrl3.Name = "cmbDynCtrl3";
+        this.cmbDynCtrl3.Size = new System.Drawing.Size(121, 21);
+        this.cmbDynCtrl3.SuppressSelectionColor = true;
+        this.cmbDynCtrl3.TabIndex = 2;
+        this.cmbDynCtrl3.Tag = "ClearValue=6";
+        // 
+        // lblDynCtrl3
+        // 
+        this.lblDynCtrl3.Location = new System.Drawing.Point(37, 16);
+        this.lblDynCtrl3.Name = "lblDynCtrl3";
+        this.lblDynCtrl3.Size = new System.Drawing.Size(90, 23);
+        this.lblDynCtrl3.TabIndex = 1;
+        this.lblDynCtrl3.Text = "DynCtrlLabel&3:";
+        // 
+        // label12
+        // 
+        this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        this.label12.Location = new System.Drawing.Point(239, 16);
+        this.label12.Name = "label12";
+        this.label12.Size = new System.Drawing.Size(37, 23);
+        this.label12.TabIndex = 52;
+        this.label12.Text = "Find";
+        // 
+        // label13
+        // 
+        this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        this.label13.Location = new System.Drawing.Point(194, 16);
+        this.label13.Name = "label13";
+        this.label13.Size = new System.Drawing.Size(48, 23);
+        this.label13.TabIndex = 51;
+        this.label13.Text = "Extra";
+        // 
+        // label14
+        // 
+        this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        this.label14.Location = new System.Drawing.Point(161, 16);
+        this.label14.Name = "label14";
+        this.label14.Size = new System.Drawing.Size(27, 23);
+        this.label14.TabIndex = 50;
+        this.label14.Text = "Std.";
+        // 
+        // label15
+        // 
+        this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        this.label15.Location = new System.Drawing.Point(157, 0);
+        this.label15.Name = "label15";
+        this.label15.Size = new System.Drawing.Size(120, 23);
+        this.label15.TabIndex = 49;
+        this.label15.Text = "Should Appear On...";
+        this.label15.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+        // 
+        // chkDynamicCtrl3Extra
+        // 
+        this.chkDynamicCtrl3Extra.Location = new System.Drawing.Point(209, 47);
+        this.chkDynamicCtrl3Extra.Name = "chkDynamicCtrl3Extra";
+        this.chkDynamicCtrl3Extra.Size = new System.Drawing.Size(18, 18);
+        this.chkDynamicCtrl3Extra.TabIndex = 48;
+        this.chkDynamicCtrl3Extra.UseVisualStyleBackColor = true;
+        // 
+        // chkDynamicCtrl3Find
+        // 
+        this.chkDynamicCtrl3Find.Location = new System.Drawing.Point(249, 47);
+        this.chkDynamicCtrl3Find.Name = "chkDynamicCtrl3Find";
+        this.chkDynamicCtrl3Find.Size = new System.Drawing.Size(18, 18);
+        this.chkDynamicCtrl3Find.TabIndex = 47;
+        this.chkDynamicCtrl3Find.UseVisualStyleBackColor = true;
+        // 
+        // chkDynamicCtrl3Std
+        // 
+        this.chkDynamicCtrl3Std.Checked = true;
+        this.chkDynamicCtrl3Std.CheckState = System.Windows.Forms.CheckState.Checked;
+        this.chkDynamicCtrl3Std.Location = new System.Drawing.Point(165, 47);
+        this.chkDynamicCtrl3Std.Name = "chkDynamicCtrl3Std";
+        this.chkDynamicCtrl3Std.Size = new System.Drawing.Size(18, 18);
+        this.chkDynamicCtrl3Std.TabIndex = 46;
+        this.chkDynamicCtrl3Std.UseVisualStyleBackColor = true;
         // 
         // label2
         // 
-        this.label2.Location = new System.Drawing.Point(369, 180);
+        this.label2.Location = new System.Drawing.Point(304, 180);
         this.label2.Name = "label2";
         this.label2.Size = new System.Drawing.Size(32, 23);
         this.label2.TabIndex = 6;
@@ -448,7 +807,7 @@ partial class FilterFindTest
         // txtControlWidth
         // 
         this.txtControlWidth.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-        this.txtControlWidth.Location = new System.Drawing.Point(319, 178);
+        this.txtControlWidth.Location = new System.Drawing.Point(254, 178);
         this.txtControlWidth.Name = "txtControlWidth";
         this.txtControlWidth.Size = new System.Drawing.Size(44, 20);
         this.txtControlWidth.TabIndex = 5;
@@ -457,7 +816,7 @@ partial class FilterFindTest
         // 
         // label1
         // 
-        this.label1.Location = new System.Drawing.Point(213, 181);
+        this.label1.Location = new System.Drawing.Point(148, 181);
         this.label1.Name = "label1";
         this.label1.Size = new System.Drawing.Size(100, 23);
         this.label1.TabIndex = 4;
@@ -588,18 +947,10 @@ partial class FilterFindTest
         this.rbtOneFilterPanel.UseVisualStyleBackColor = true;
         this.rbtOneFilterPanel.CheckedChanged += new System.EventHandler(this.RbtOneFilterPanelCheckedChanged);
         // 
-        // chkShowFindTab
-        // 
-        this.chkShowFindTab.Location = new System.Drawing.Point(59, 176);
-        this.chkShowFindTab.Name = "chkShowFindTab";
-        this.chkShowFindTab.Size = new System.Drawing.Size(104, 24);
-        this.chkShowFindTab.TabIndex = 3;
-        this.chkShowFindTab.Text = "Show \'Fi&nd\' Tab";
-        this.chkShowFindTab.UseVisualStyleBackColor = true;
-        // 
         // groupBox3
         // 
         this.groupBox3.Controls.Add(this.button1);
+        this.groupBox3.Controls.Add(this.btnFocusFirstArgumentControl);
         this.groupBox3.Controls.Add(this.btnCollapseExpandPanel);
         this.groupBox3.Controls.Add(this.groupBox1);
         this.groupBox3.Controls.Add(this.groupBox4);
@@ -612,7 +963,7 @@ partial class FilterFindTest
         // 
         // button1
         // 
-        this.button1.Location = new System.Drawing.Point(254, 143);
+        this.button1.Location = new System.Drawing.Point(254, 132);
         this.button1.Name = "button1";
         this.button1.Size = new System.Drawing.Size(188, 23);
         this.button1.TabIndex = 8;
@@ -620,9 +971,19 @@ partial class FilterFindTest
         this.button1.UseVisualStyleBackColor = true;
         this.button1.Click += new System.EventHandler(this.Button1Click);
         // 
+        // btnFocusFirstArgumentControl
+        // 
+        this.btnFocusFirstArgumentControl.Location = new System.Drawing.Point(23, 155);
+        this.btnFocusFirstArgumentControl.Name = "btnFocusFirstArgumentControl";
+        this.btnFocusFirstArgumentControl.Size = new System.Drawing.Size(188, 23);
+        this.btnFocusFirstArgumentControl.TabIndex = 7;
+        this.btnFocusFirstArgumentControl.Text = "Focus First ArgumentControl";
+        this.btnFocusFirstArgumentControl.UseVisualStyleBackColor = true;
+        this.btnFocusFirstArgumentControl.Click += new System.EventHandler(this.BtnFocusFirstArgumentControlClick);
+        // 
         // btnCollapseExpandPanel
         // 
-        this.btnCollapseExpandPanel.Location = new System.Drawing.Point(23, 143);
+        this.btnCollapseExpandPanel.Location = new System.Drawing.Point(23, 132);
         this.btnCollapseExpandPanel.Name = "btnCollapseExpandPanel";
         this.btnCollapseExpandPanel.Size = new System.Drawing.Size(188, 23);
         this.btnCollapseExpandPanel.TabIndex = 7;
@@ -700,11 +1061,21 @@ partial class FilterFindTest
         this.groupBox2.ResumeLayout(false);
         this.groupBox2.PerformLayout();
         this.groupBox5.ResumeLayout(false);
+        this.tabControl1.ResumeLayout(false);
+        this.tabPage1.ResumeLayout(false);
         this.pnlYear.ResumeLayout(false);
+        this.pnlYear.PerformLayout();
         this.pnlCurrencyName.ResumeLayout(false);
         this.pnlCurrencyName.PerformLayout();
         this.pnlCurrencyCode.ResumeLayout(false);
         this.pnlCurrencyCode.PerformLayout();
+        this.tabPage2.ResumeLayout(false);
+        this.groupBox7.ResumeLayout(false);
+        this.groupBox7.PerformLayout();
+        this.groupBox6.ResumeLayout(false);
+        this.groupBox6.PerformLayout();
+        this.tabPage3.ResumeLayout(false);
+        this.groupBox8.ResumeLayout(false);
         this.panel1.ResumeLayout(false);
         this.grpExtraFilterPanel.ResumeLayout(false);
         this.grpStandardFilterPanel.ResumeLayout(false);
@@ -713,6 +1084,37 @@ partial class FilterFindTest
         this.groupBox4.ResumeLayout(false);
         this.ResumeLayout(false);
     }
+    private System.Windows.Forms.Button btnFocusFirstArgumentControl;
+    private System.Windows.Forms.CheckBox chkDynamicCtrl3Std;
+    private System.Windows.Forms.CheckBox chkDynamicCtrl3Find;
+    private System.Windows.Forms.CheckBox chkDynamicCtrl3Extra;
+    private System.Windows.Forms.Label label15;
+    private System.Windows.Forms.Label label14;
+    private System.Windows.Forms.Label label13;
+    private System.Windows.Forms.Label label12;
+    private System.Windows.Forms.Label lblDynCtrl3;
+    private Ict.Common.Controls.TCmbAutoComplete cmbDynCtrl3;
+    private System.Windows.Forms.GroupBox groupBox8;
+    private System.Windows.Forms.TabPage tabPage3;
+    private System.Windows.Forms.TextBox txtDynCtrl1;
+    private System.Windows.Forms.Label lblDynCtrl1;
+    private System.Windows.Forms.GroupBox groupBox6;
+    private System.Windows.Forms.TextBox txtLblDynCtrl2;
+    private System.Windows.Forms.CheckBox chkDynCtrl2;
+    private System.Windows.Forms.GroupBox groupBox7;
+    private System.Windows.Forms.CheckBox chkDynamicCtrl1Std;
+    private System.Windows.Forms.CheckBox chkDynamicCtrl1Find;
+    private System.Windows.Forms.CheckBox chkDynamicCtrl1Extra;
+    private System.Windows.Forms.Label label10;
+    private System.Windows.Forms.Label label9;
+    private System.Windows.Forms.Label label6;
+    private System.Windows.Forms.Label label5;
+    private System.Windows.Forms.CheckBox chkDynamicCtrl2Std;
+    private System.Windows.Forms.CheckBox chkDynamicCtrl2Find;
+    private System.Windows.Forms.CheckBox chkDynamicCtrl2Extra;
+    private System.Windows.Forms.TabPage tabPage2;
+    private System.Windows.Forms.TabPage tabPage1;
+    private System.Windows.Forms.TabControl tabControl1;
     private System.Windows.Forms.CheckBox chkCurrencyCodeStd;
     private System.Windows.Forms.CheckBox chkCurrencyCodeFind;
     private System.Windows.Forms.CheckBox chkCurrencyCodeExtra;
@@ -757,7 +1159,6 @@ partial class FilterFindTest
     private System.Windows.Forms.CheckBox btnKeepFilterTurnedOnButtonStd;
     private System.Windows.Forms.GroupBox grpStandardFilterPanel;
     private System.Windows.Forms.Panel panel1;
-    private System.Windows.Forms.CheckBox chkShowFindTab;
     private System.Windows.Forms.GroupBox groupBox2;
     private Ict.Common.Controls.TUcoFilterAndFind FUcoFilterAndFind;
 
@@ -767,6 +1168,5 @@ partial class FilterFindTest
     private System.Windows.Forms.Button btnHideShowKFTOBtnStd;
     private System.Windows.Forms.Button btnTestFullConstructor;
     private System.Windows.Forms.Button btnTestDefaultConstructor;
-    
 }
 }

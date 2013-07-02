@@ -62,7 +62,6 @@ namespace ControlTestBench
             List<Panel> ExtraFilterControls = new List<Panel>();
             List<Panel> FindControls = new List<Panel>();
             
-            bool ShowFindTab = chkShowFindTab.Checked;
             bool ShowExtraFilter = rbtTwoFilterPanels.Checked;
             bool ApplyFilterButtonStd = btnApplyFilterButtonStd.Checked;
             bool ApplyFilterButtonExtra = btnApplyFilterButtonExtra.Checked;
@@ -79,6 +78,9 @@ namespace ControlTestBench
 
 
             // Build Control Lists
+            
+            #region Panel Instances
+            
             if (chkCurrencyCodeStd.Checked)
             {
                 FilterControls.Add(pnlCurrencyCode);
@@ -206,9 +208,53 @@ namespace ControlTestBench
                 }
             }
             
+            #endregion
+            
+            
+            #region Control Instances
+            
+            if (chkDynamicCtrl1Std.Checked)
+            {
+                FilterControls.Add(TUcoFilterAndFind.ArgumentPanelHelper.CreateArgumentPanel(lblDynCtrl1, txtDynCtrl1));
+            }
+            if (chkDynamicCtrl1Extra.Checked)
+            {
+                ExtraFilterControls.Add(TUcoFilterAndFind.ArgumentPanelHelper.CreateArgumentPanel(lblDynCtrl1, txtDynCtrl1));
+            }
+            if (chkDynamicCtrl1Find.Checked)
+            {
+                FindControls.Add(TUcoFilterAndFind.ArgumentPanelHelper.CreateArgumentPanel(lblDynCtrl1, txtDynCtrl1));;
+            }
+            
+            if (chkDynamicCtrl2Std.Checked)
+            {
+                FilterControls.Add(TUcoFilterAndFind.ArgumentPanelHelper.CreateArgumentPanel(txtLblDynCtrl2.Text, chkDynCtrl2));
+            }
+            if (chkDynamicCtrl2Extra.Checked)
+            {
+                ExtraFilterControls.Add(TUcoFilterAndFind.ArgumentPanelHelper.CreateArgumentPanel(txtLblDynCtrl2.Text, chkDynCtrl2));
+            }
+            if (chkDynamicCtrl2Find.Checked)
+            {
+                FindControls.Add(TUcoFilterAndFind.ArgumentPanelHelper.CreateArgumentPanel(txtLblDynCtrl2.Text, chkDynCtrl2));
+            }            
+
+            if (chkDynamicCtrl3Std.Checked)
+            {
+                FilterControls.Add(TUcoFilterAndFind.ArgumentPanelHelper.CreateArgumentPanel(lblDynCtrl3.Text, cmbDynCtrl3));
+            }
+            if (chkDynamicCtrl3Extra.Checked)
+            {
+                ExtraFilterControls.Add(TUcoFilterAndFind.ArgumentPanelHelper.CreateArgumentPanel(lblDynCtrl3.Text, cmbDynCtrl3));
+            }
+            if (chkDynamicCtrl3Find.Checked)
+            {
+                FindControls.Add(TUcoFilterAndFind.ArgumentPanelHelper.CreateArgumentPanel(lblDynCtrl3.Text, cmbDynCtrl3));
+            }            
+                           
+            #endregion
             
             FilterAndFind = new TUcoFilterAndFind(FilterControls, ExtraFilterControls, FindControls,
-                ShowExtraFilter, ShowFindTab, 
                 ApplyFilterButtonContext, ShowKeepFilterTurnedOnButtonContext, ShowFilterIsAlwaysOnLabelContext, 
                 System.Int32.Parse(txtControlWidth.Text));
                 
@@ -414,11 +460,16 @@ namespace ControlTestBench
         void Button1Click(object sender, EventArgs e)
         {
             // Attempt to show the Find Tab only if it is there...
-            if (FUcoFilterAndFind.GetShowFindTab()) 
+            if (FUcoFilterAndFind.FindTabShown) 
             {
                 FUcoFilterAndFind.DisplayFindTab();
             }        
         }
+        
+        void BtnFocusFirstArgumentControlClick(object sender, System.EventArgs e)
+        {
+            FUcoFilterAndFind.FocusFirstArgumentControl();
+        }        
     }
      
     /// <summary>

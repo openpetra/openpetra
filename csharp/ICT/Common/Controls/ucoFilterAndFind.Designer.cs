@@ -88,6 +88,7 @@ namespace Ict.Common.Controls
             this.btnCloseFilter.TabIndex = 9999;
             this.btnCloseFilter.Text = "X";
             this.btnCloseFilter.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.tipGeneral.SetToolTip(this.btnCloseFilter, "Closes this panel");
             this.btnCloseFilter.UseVisualStyleBackColor = true;
             this.btnCloseFilter.Click += new System.EventHandler(this.BtnCloseFilterClick);
             // 
