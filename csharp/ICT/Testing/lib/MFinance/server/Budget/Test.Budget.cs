@@ -84,7 +84,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
             CommonNUnitFunctions.ResetDatabase();
 
             string budgetTestFile = TAppSettingsManager.GetValue("GiftBatch.file",
-                CommonNUnitFunctions.rootPath + "/csharp/ICT/Testing/lib/MFinance/SampleData/BudgetImport-01.csv");
+                CommonNUnitFunctions.rootPath + "/csharp/ICT/Testing/lib/MFinance/SampleData/BudgetImport-All.csv");
 
             TVerificationResultCollection VerificationResult;
 
@@ -122,7 +122,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                     intLedgerNumber);
 
             decimal budgetValue = Convert.ToDecimal(DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryBudget, IsolationLevel.ReadCommitted));
-            Assert.AreEqual(23.0m, budgetValue, "problem with importing budget from CSV");
+            Assert.AreEqual(250m, budgetValue, "problem with importing budget from CSV");
 
             // check for zero in glmperiod budget: that row does not even exist yet, so check that it does not exist
             string sqlQueryCheckEmptyConsolidatedBudget =
@@ -162,7 +162,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
 
             decimal consolidatedBudgetValue =
                 Convert.ToDecimal(DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryConsolidatedBudget, IsolationLevel.ReadCommitted));
-            Assert.AreEqual(23.0m, consolidatedBudgetValue, "budget should now be consolidated");
+            Assert.AreEqual(250m, consolidatedBudgetValue, "budget should now be consolidated");
 
             // TODO: also check some summary account and cost centre for summed up budget values
 

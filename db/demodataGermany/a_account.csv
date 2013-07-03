@@ -1,242 +1,242 @@
-43,0100,Income,Support Gifts: Local,Support Gifts: Local,Support Gifts: Local,Support Gifts: Local,false,true,false,true,true,false,Same,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,0100,Income,Support Gifts: Local,Support Gifts: Local,Support Gifts: Local,Support Gifts: Local,false,true,false,true,true,false,SAME,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,0100S,Income,Support Gifts: local,Support Gifts: local,Support Gifts: local,Support Gifts: local,false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,0200,Income,Fund Gifts: Local,Fund Gifts: Local,Fund Gifts: Local,Fund Gifts: Local,false,true,false,true,true,false,Same,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,0200,Income,Fund Gifts: Local,Fund Gifts: Local,Fund Gifts: Local,Fund Gifts: Local,false,true,false,true,true,false,SAME,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,0200S,Income,Fund Gifts: Local,Fund Gifts: Local,Fund Gifts: Local,Fund Gifts: Local,false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,0210,Income,Subscriptions and Fees,Subscriptions and Fees,Subscriptions and Fees,Subscriptions and Fees,false,true,false,true,true,false,Same,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,0300,Income,Undesignated Gifts,Undesignated Gifts,Undesignated Gifts,Undesignated Gifts,false,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,0210,Income,Subscriptions and Fees,Subscriptions and Fees,Subscriptions and Fees,Subscriptions and Fees,false,true,false,true,true,false,SAME,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,0300,Income,Undesignated Gifts,Undesignated Gifts,Undesignated Gifts,Undesignated Gifts,false,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,0300S,Income,Undesignated Gifts,Undesignated Gifts,Undesignated Gifts,Undesignated Gifts,false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,0400,Income,Project Gifts: Local,Project Gifts: Local,Project Gifts: Local,Project Gifts: Local,false,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,0400,Income,Project Gifts: Local,Project Gifts: Local,Project Gifts: Local,Project Gifts: Local,false,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,0400S,Income,Project Gifts: Local (Total),Project Gifts: Local,Project Gifts: Local,Project Gifts: Local (Total),false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,0900,Income,Event Income for Others,Event Income for Others,Event Income for Others,Event Income for Others,false,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,0900,Income,Event Income for Others,Event Income for Others,Event Income for Others,Event Income for Others,false,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,0900S,Income,Event Income for Others,Event Income for Others,Event Income for Others,Event Income for Others,false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,0910,Income,Event Supplements for Others,Event Supplements for Others,Event Supplements for Others,Event Supplements for Others,false,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,0910,Income,Event Supplements for Others,Event Supplements for Others,Event Supplements for Others,Event Supplements for Others,false,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,0910S,Income,Event Supplements for Others (Total),Event Supplements for Others,Event Supplements for Others,Event Supplements for Others (Total),false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,0980,Income,Event Supplements,Event Supplements,Event Supplements,Event Supplements,false,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,0980,Income,Event Supplements,Event Supplements,Event Supplements,Event Supplements,false,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,0980S,Income,Event Supplements (Total),Event Supplements,Event Supplements,Event Supplements (Total),false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,1000,Income,Local Event Income,Local Event Income,Local Event Income,Local Event Income,false,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,1000,Income,Local Event Income,Local Event Income,Local Event Income,Local Event Income,false,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,1000S,Income,Local Event Income (Total),Local Event Income,Local Event Income,Local Event Income (Total),false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,1010,Income,Local Event Supplements,Local Event Supplements,Local Event Supplements,Local Event Supplements,false,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,1010,Income,Local Event Supplements,Local Event Supplements,Local Event Supplements,Local Event Supplements,false,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,1010S,Income,Local Event Supplements (Total),Local Event Supplements,Local Event Supplements,Local Event Supplements (Total),false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,1100,Income,Support Gifts: Foreign (ie via other funds),Support Gifts: Foreign,"Support Gifts, Foreign",Support Gifts: Foreign (ie via other funds),false,true,false,true,true,false,Same,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,1100,Income,Support Gifts: Foreign (ie via other funds),Support Gifts: Foreign,"Support Gifts, Foreign",Support Gifts: Foreign (ie via other funds),false,true,false,true,true,false,SAME,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,1100S,Income,Support Gifts: Foreign,Support Gifts: Foreign,Support Gifts: Foreign,Support Gifts: Foreign,false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,1200,Income,Fund Gifts: Foreign,Fund Gifts: Foreign,Fund Gifts: Foreign,Fund Gifts: Foreign,false,true,false,true,true,false,Same,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,1200,Income,Fund Gifts: Foreign,Fund Gifts: Foreign,Fund Gifts: Foreign,Fund Gifts: Foreign,false,true,false,true,true,false,SAME,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,1200S,Income,Fund Gifts: Foreign,Fund Gifts: Foreign,Fund Gifts: Foreign,Fund Gifts: Foreign,false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,1400,Income,Project Gifts: Foreign,Project Gifts: Foreign,Project Gifts: Foreign,Project Gifts: Foreign,false,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,1400,Income,Project Gifts: Foreign,Project Gifts: Foreign,Project Gifts: Foreign,Project Gifts: Foreign,false,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,1400S,Income,Project Gifts: Foreign (Total),Project Gifts: Foreign,Project Gifts: Foreign,Project Gifts: Foreign (Total),false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,1900,Income,Foreign Income: Unidentified,Foreign Income: Unidentified,Foreign Income: Unidentified,Foreign Income: Unidentified,false,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,1900,Income,Foreign Income: Unidentified,Foreign Income: Unidentified,Foreign Income: Unidentified,Foreign Income: Unidentified,false,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,1900S,Income,Foreign Income: Unidentified,Foreign Income: Unidentified,Foreign Income: Unidentified,Foreign Income: Unidentified,false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,2100,Income,Literature Sales external,Literature Sales external,Literature Sales external,Literature Sales external,false,true,false,true,true,false,Same,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,2100,Income,Literature Sales external,Literature Sales external,Literature Sales external,Literature Sales external,false,true,false,true,true,false,SAME,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,2100S,Income,Literature Sales external,Literature Sales external,Literature Sales external,Literature Sales external,false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,2200,Income,Literature Sales internal,Literature Sales internal,Literature Sales internal,Literature Sales internal,false,true,false,true,true,false,Same,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,2200,Income,Literature Sales internal,Literature Sales internal,Literature Sales internal,Literature Sales internal,false,true,false,true,true,false,SAME,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,2200S,Income,Literature Sales internal (Total),Literature Sales internal,Literature Sales internal,Literature Sales internal (Total),false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,3100,Income,Interest Earned,Interest Earned,Interest Earned,Interest Earned,false,true,false,true,true,false,Same,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,3100,Income,Interest Earned,Interest Earned,Interest Earned,Interest Earned,false,true,false,true,true,false,SAME,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,3100S,Income,Interest (Total),Interest,Interest,Interest (Total),false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,3200,Income,Central Services,Central Services,Central Services,Central Services,false,true,false,true,true,false,Same,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,3200,Income,Central Services,Central Services,Central Services,Central Services,false,true,false,true,true,false,SAME,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,3200S,Income,Central Services (Total),Central Services,Central Services,Central Services (Total),false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,3300,Income,Grants from Other Funds,Grants from Other Funds,Grants from Other Funds,Grants from Other Funds,false,true,false,true,true,false,Same,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,3300,Income,Grants from Other Funds,Grants from Other Funds,Grants from Other Funds,Grants from Other Funds,false,true,false,true,true,false,SAME,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,3300S,Income,Grants from Other Funds (Total),Grants from Other Funds,Grants from Other Funds,Grants from Other Funds (Total),false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,3400,Income,Admin Grant Income,Admin Grant Income,Admin Grant Income,Admin Grant Income,false,true,false,true,true,false,Same,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,3400,Income,Admin Grant Income,Admin Grant Income,Admin Grant Income,Admin Grant Income,false,true,false,true,true,false,SAME,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,3400S,Income,Admin Grant Income (Total),Admin Grant Income,Admin Grant Income,Admin Grant Income (Total),false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,3700,Income,Other Income,Other Income,Other Income,Other Income,false,true,false,true,true,false,Same,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,3700,Income,Other Income,Other Income,Other Income,Other Income,false,true,false,true,true,false,SAME,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,3700S,Income,Other Income (Total),Other Income,Other Income,Other Income (Total),false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,3710,Income,Registration Fees,Registration Fees,Registration Fees,Registration Fees,false,true,false,true,true,false,Same,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,3720,Income,Sale of Fixed Assets,Sale of Fixed Assets,Sale of Fixed Assets,Sale of Fixed Assets,false,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,3730,Income,Gifts in Kind,Gifts in Kind,Gifts in Kind,Gifts in Kind,false,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,3740,Income,Other Sales,Other Sales,Other Sales,Other Sales,false,true,false,true,true,false,Same,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4100,Expense,Ministry,Ministry: General,Ministry: General,Ministry,true,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,3710,Income,Registration Fees,Registration Fees,Registration Fees,Registration Fees,false,true,false,true,true,false,SAME,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,3720,Income,Sale of Fixed Assets,Sale of Fixed Assets,Sale of Fixed Assets,Sale of Fixed Assets,false,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,3730,Income,Gifts in Kind,Gifts in Kind,Gifts in Kind,Gifts in Kind,false,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,3740,Income,Other Sales,Other Sales,Other Sales,Other Sales,false,true,false,true,true,false,SAME,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4100,Expense,Ministry,Ministry: General,Ministry: General,Ministry,true,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4100S,Expense,Ministry (Total),Ministry,Ministry,Ministry (Total),true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4110,Expense,Literature,Literature: General,Literature: General,Literature,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4110,Expense,Literature,Literature: General,Literature: General,Literature,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4110S,Expense,Literature (Total),Literature,Literature,Literature (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4111,Expense,Literature For Sale,Literature For Sale,Literature For Sale,Literature For Sale,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4112,Expense,Literature for free Distribution,Literature for free Distribution,Literature for free Distribution,Literature for free Distribution,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4113,Expense,Freight Inward (lit.),Freight Inward (lit.),Freight Inward (lit.),Freight Inward (lit.),true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4114,Expense,Carriage Out (lit.),Carriage Out (lit.),Carriage Out (lit.),Carriage Out (lit.),true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4120,Expense,Relief of Need,Relief of Need,Relief of Need,Relief of Need,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4111,Expense,Literature For Sale,Literature For Sale,Literature For Sale,Literature For Sale,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4112,Expense,Literature for free Distribution,Literature for free Distribution,Literature for free Distribution,Literature for free Distribution,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4113,Expense,Freight Inward (lit.),Freight Inward (lit.),Freight Inward (lit.),Freight Inward (lit.),true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4114,Expense,Carriage Out (lit.),Carriage Out (lit.),Carriage Out (lit.),Carriage Out (lit.),true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4120,Expense,Relief of Need,Relief of Need,Relief of Need,Relief of Need,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4120S,Expense,Relief of Need (Total),Relief of Need,Relief of Need,Relief of Need (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4130S,Expense,Project Expenses (Total),Project Expenses,Project Expenses,Project Expenses (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4140,Expense,AV (for outreach),AV (for outreach),AV (for outreach),AV (for outreach),true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4140,Expense,AV (for outreach),AV (for outreach),AV (for outreach),AV (for outreach),true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4140S,Expense,AV (for outreach) (Total),AV (for outreach),AV (for outreach),AV (for outreach) (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4180,Expense,Home Event Expenses,Home Event Expenses,Home Event Expenses,Home Event Expenses,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4180,Expense,Home Event Expenses,Home Event Expenses,Home Event Expenses,Home Event Expenses,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4180S,Expense,Home Event Expenses (Total),Home Event Expenses,Home Event Expenses,Home Event Expenses (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4200,Expense,Administration,Administration: General,Administration: General,Administration,true,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4200,Expense,Administration,Administration: General,Administration: General,Administration,true,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4200S,Expense,Administration (Total),Administration,Administration,Administration (Total),true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4202,Expense,Business Hospitality/Meals,Business Hospitality/Meals,Business Hospitality/Meals,Business Hospitality/Meals,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4203,Expense,Subscriptions,Subscriptions Payable,Subscriptions (Payable),Subscriptions,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4210,Expense,Office Rent & Utilities,"Office Rent & Utilities, General","Office Rent & Utilities, General",Office Rent & Utilities,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4202,Expense,Business Hospitality/Meals,Business Hospitality/Meals,Business Hospitality/Meals,Business Hospitality/Meals,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4203,Expense,Subscriptions,Subscriptions Payable,Subscriptions (Payable),Subscriptions,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4210,Expense,Office Rent & Utilities,"Office Rent & Utilities, General","Office Rent & Utilities, General",Office Rent & Utilities,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4210S,Expense,Office Rent & Utilities (Total),Office Rent & Utilities,Office Rent & Utilities,Office Rent & Utilities (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4211,Expense,Rent,Rent,Rent,Rent,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4212,Expense,Gas,Gas,Gas,Gas,true,true,false,true,true,false,Same,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4213,Expense,Electricity,Electricity,Electricity,Electricity,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4214,Expense,Heating Oil,Heating Oil,Heating Oil,Heating Oil,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4215,Expense,Water & Sewage,Water & Sewage,Water & Sewage,Water & Sewage,true,true,false,true,true,false,Same,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4216,Expense,Insurance,Insurance,Insurance,Insurance,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4220,Expense,COMMUNICATION,"Communication, General","Communication, General",COMMUNICATION,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4211,Expense,Rent,Rent,Rent,Rent,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4212,Expense,Gas,Gas,Gas,Gas,true,true,false,true,true,false,SAME,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4213,Expense,Electricity,Electricity,Electricity,Electricity,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4214,Expense,Heating Oil,Heating Oil,Heating Oil,Heating Oil,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4215,Expense,Water & Sewage,Water & Sewage,Water & Sewage,Water & Sewage,true,true,false,true,true,false,SAME,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4216,Expense,Insurance,Insurance,Insurance,Insurance,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4220,Expense,COMMUNICATION,"Communication, General","Communication, General",COMMUNICATION,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4220S,Expense,Communication (Total),Communication,Communication,Communication (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4221,Expense,Telephone,Telephone,Telephone,Telephone,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4222,Expense,Fax,Fax,Fax,Fax,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4223,Expense,E-mail,E-mail,E-mail,E-mail,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4224,Expense,Postage,Postage,Postage,Postage,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4225,Expense,Prayer Letter postage,Prayer Letter postage,Prayer Letter postage,Prayer Letter postage,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4230,Expense,OFFICE SUPPLIES,"Office Supplies, General","Office Supplies, General",OFFICE SUPPLIES,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4221,Expense,Telephone,Telephone,Telephone,Telephone,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4222,Expense,Fax,Fax,Fax,Fax,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4223,Expense,E-mail,E-mail,E-mail,E-mail,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4224,Expense,Postage,Postage,Postage,Postage,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4225,Expense,Prayer Letter postage,Prayer Letter postage,Prayer Letter postage,Prayer Letter postage,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4230,Expense,OFFICE SUPPLIES,"Office Supplies, General","Office Supplies, General",OFFICE SUPPLIES,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4230S,Expense,Office Supplies (Total),Office Supplies,Office Supplies,Office Supplies (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4231,Expense,Stationery,Stationery,Stationery,Stationery,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4232,Expense,Computer Expense,Computer Expense,Computer Expense,Computer Expense,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4233,Expense,Printer/copier supplies,Printer/copier supplies,Printer/copier supplies,Printer/copier supplies,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4234,Expense,Photocopying,Photocopying,Photocopying,Photocopying,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4240,Expense,EQUIP/MAINT & REPAIRS,"Equip. Maint. & Repairs, General","Equip. Maint. & Repairs, General",EQUIP/MAINT & REPAIRS,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4231,Expense,Stationery,Stationery,Stationery,Stationery,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4232,Expense,Computer Expense,Computer Expense,Computer Expense,Computer Expense,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4233,Expense,Printer/copier supplies,Printer/copier supplies,Printer/copier supplies,Printer/copier supplies,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4234,Expense,Photocopying,Photocopying,Photocopying,Photocopying,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4240,Expense,EQUIP/MAINT & REPAIRS,"Equip. Maint. & Repairs, General","Equip. Maint. & Repairs, General",EQUIP/MAINT & REPAIRS,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4240S,Expense,"Equipment, Maintenance & Repairs (Total)","Equipment, Maint. & Repairs","Equipment, Maint. & Repairs","Equipment, Maintenance & Repairs (Total)",true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4241,Expense,Service Contracts,Service Contracts,Service Contracts,Service Contracts,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4242,Expense,Equipment Leasing,Equipment Leasing,Equipment Leasing,Equipment Leasing,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4250,Expense,BUILDING REPAIRS AND MAINTENANCE,Building Repairs & Maint,Building Repairs & Maint,BUILDING REPAIRS AND MAINTENANCE,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4241,Expense,Service Contracts,Service Contracts,Service Contracts,Service Contracts,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4242,Expense,Equipment Leasing,Equipment Leasing,Equipment Leasing,Equipment Leasing,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4250,Expense,BUILDING REPAIRS AND MAINTENANCE,Building Repairs & Maint,Building Repairs & Maint,BUILDING REPAIRS AND MAINTENANCE,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4250S,Expense,Building Repairs & Maintenance (Total),Building Repairs & Maint.,Building Repairs & Maint.,Building Repairs & Maintenance (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4260,Expense,PROFESSIONAL FEES,"Professional Fees, General","Professional Fees, General",PROFESSIONAL FEES,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4260,Expense,PROFESSIONAL FEES,"Professional Fees, General","Professional Fees, General",PROFESSIONAL FEES,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4260S,Expense,Professional Fees (Total),Professional Fees,Professional Fees,Professional Fees (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4261,Expense,Legal Fees,Legal Fees,Legal Fees,Legal Fees,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4262,Expense,Consultancy,Consultancy,Consultancy,Consultancy,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4263,Expense,Audit Fees,Audit Fees,Audit Fees,Audit Fees,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4280,Expense,HOME Event ADMIN.,Home Event Admin.,Home Event Admin.,HOME Event ADMIN.,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4261,Expense,Legal Fees,Legal Fees,Legal Fees,Legal Fees,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4262,Expense,Consultancy,Consultancy,Consultancy,Consultancy,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4263,Expense,Audit Fees,Audit Fees,Audit Fees,Audit Fees,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4280,Expense,HOME Event ADMIN.,Home Event Admin.,Home Event Admin.,HOME Event ADMIN.,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4280S,Expense,Home Event Administration (Total),Home Event Admin.,Home Event Admin.,Home Event Administration (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,43,?,?,?,?,?,true,true,false,false,false,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4300,Expense,PERSONNEL,"Personnel, General","Personnel, General",PERSONNEL,true,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4300,Expense,PERSONNEL,"Personnel, General","Personnel, General",PERSONNEL,true,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4300S,Expense,PERSONNEL,Personnel,Personnel,PERSONNEL,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4310S,Expense,Salaries/Allowances & Payroll Taxes (Total),Salaries/Allow. & Payroll Taxes,Salaries/Allow. & Payroll Taxes,Salaries/Allowances & Payroll Taxes (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4330,Expense,PENSION/INSURANCE,"Pension/Insurance, General","Pension/Insurance, General",PENSION/INSURANCE,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4330,Expense,PENSION/INSURANCE,"Pension/Insurance, General","Pension/Insurance, General",PENSION/INSURANCE,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4330S,Expense,Pension/Insurance (Total),Pension/Insurance,Pension/Insurance,Pension/Insurance (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4331,Expense,Pension,Pension,Pension,Pension,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4332,Expense,Insurance,Insurance,Insurance,Insurance,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4340,Expense,HOUSING,Housing,Housing,HOUSING,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4331,Expense,Pension,Pension,Pension,Pension,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4332,Expense,Insurance,Insurance,Insurance,Insurance,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4340,Expense,HOUSING,Housing,Housing,HOUSING,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4340S,Expense,Housing (Total),Housing,Housing,Housing (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4350,Expense,TEAM LIVING,Team Living,Team Living,TEAM LIVING,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4350,Expense,TEAM LIVING,Team Living,Team Living,TEAM LIVING,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4350S,Expense,Team Living (Total),Team Living,Team Living,Team Living (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4360,Expense,PERSONAL TRAVEL,Personal Travel,Personal Travel,PERSONAL TRAVEL,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4360,Expense,PERSONAL TRAVEL,Personal Travel,Personal Travel,PERSONAL TRAVEL,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4360S,Expense,Personal Travel (Total),Personal Travel,Personal Travel,Personal Travel (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4370,Expense,MEDICAL EXPENSES,Medical Expenses,Medical Expenses,MEDICAL EXPENSES,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4370,Expense,MEDICAL EXPENSES,Medical Expenses,Medical Expenses,MEDICAL EXPENSES,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4370S,Expense,Medical Expenses (Total),Medical Expenses,Medical Expenses,Medical Expenses (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4380,Expense,HOME Event PERSONNEL,Home Event Personnel,Home Event Personnel,HOME Event PERSONNEL,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4380,Expense,HOME Event PERSONNEL,Home Event Personnel,Home Event Personnel,HOME Event PERSONNEL,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4380S,Expense,Home Event Personnel (Total),Home Event Personnel,Home Event Personnel,Home Event Personnel (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4390,Expense,FURTHER EDUCATION/TRAINING,Further Education/Training,Further Education/Training,FURTHER EDUCATION/TRAINING,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4390,Expense,FURTHER EDUCATION/TRAINING,Further Education/Training,Further Education/Training,FURTHER EDUCATION/TRAINING,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4390S,Expense,Further Education/Training (Total),Further Education/Training,Further Education/Training,Further Education/Training (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4400,Expense,Business Travel,"Business Travel, General","Business Travel, General",Business Travel,true,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4400,Expense,Business Travel,"Business Travel, General","Business Travel, General",Business Travel,true,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4400S,Expense,BUSINESS TRAVEL,Business Travel,Business Travel,BUSINESS TRAVEL,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4410,Expense,PUBLIC TRANSPORT,Public Transport,Public Transport,PUBLIC TRANSPORT,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4410,Expense,PUBLIC TRANSPORT,Public Transport,Public Transport,PUBLIC TRANSPORT,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4410S,Expense,Public Transport (Total),Public Transport,Public Transport,Public Transport (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4420,Expense,VEHICLE,"Vehicle, General","Vehicle, General",VEHICLE,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4420,Expense,VEHICLE,"Vehicle, General","Vehicle, General",VEHICLE,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4420S,Expense,Vehicle (Total),Vehicle,Vehicle,Vehicle (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4421,Expense,Vehicle Maintenance,Vehicle Maintenance,Vehicle Maintenance,Vehicle Maintenance,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4422,Expense,Vehicle,Vehicle Insurance/Tax,Vehicle Insurance/Tax,Vehicle,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4423,Expense,Vehicle Fuel,Vehicle Fuel,Vehicle Fuel,Vehicle Fuel,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4430,Expense,AIR,Air,Air,AIR,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4421,Expense,Vehicle Maintenance,Vehicle Maintenance,Vehicle Maintenance,Vehicle Maintenance,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4422,Expense,Vehicle,Vehicle Insurance/Tax,Vehicle Insurance/Tax,Vehicle,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4423,Expense,Vehicle Fuel,Vehicle Fuel,Vehicle Fuel,Vehicle Fuel,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4430,Expense,AIR,Air,Air,AIR,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4430S,Expense,Air (Total),Air,Air,Air (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4480,Expense,HOME Event TRAVEL,Home Event Travel,Home Event Travel,HOME Event TRAVEL,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4480,Expense,HOME Event TRAVEL,Home Event Travel,Home Event Travel,HOME Event TRAVEL,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4480S,Expense,Home Event Travel (Total),Home Event Travel,Home Event Travel,Home Event Travel (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4500,Expense,Public Relations,"Public Relations, General","Public Relations, General",Public Relations,true,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4500,Expense,Public Relations,"Public Relations, General","Public Relations, General",Public Relations,true,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4500S,Expense,PUBLIC RELATIONS,Public Relations,Public Relations,PUBLIC RELATIONS,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4510,Expense,ADVERTSIING,Advertising,Advertising,ADVERTSIING,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4510,Expense,ADVERTSIING,Advertising,Advertising,ADVERTSIING,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4510S,Expense,Advertising (Total),Advertising,Advertising,Advertising (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4520,Expense,NEWSLETTERS,Newsletters,Newsletters,NEWSLETTERS,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4520,Expense,NEWSLETTERS,Newsletters,Newsletters,NEWSLETTERS,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4520S,Expense,Newsletters (Total),Newsletters,Newsletters,Newsletters (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4530,Expense,BROCHURES,Brochures,Brochures,BROCHURES,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4530,Expense,BROCHURES,Brochures,Brochures,BROCHURES,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4530S,Expense,Brochures (Total),Brochures,Brochures,Brochures (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4550,Expense,AV PRODUCTIONS,"AV Productions, General","AV Productions, General",AV PRODUCTIONS,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4550,Expense,AV PRODUCTIONS,"AV Productions, General","AV Productions, General",AV PRODUCTIONS,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4550S,Expense,AV Productions (Total),AV Productions,AV Productions,AV Productions (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4551,Expense,Videos,Videos,Videos,Videos,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4552,Expense,Slide Presentations,Slide Presentations,Slide Presentations,Slide Presentations,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4553,Expense,Casettes,Casettes,Casettes,Casettes,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4600,Expense,Cost of Sales,"Cost of Sales, General","Cost of Sales, General",Cost of Sales,true,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4551,Expense,Videos,Videos,Videos,Videos,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4552,Expense,Slide Presentations,Slide Presentations,Slide Presentations,Slide Presentations,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4553,Expense,Casettes,Casettes,Casettes,Casettes,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4600,Expense,Cost of Sales,"Cost of Sales, General","Cost of Sales, General",Cost of Sales,true,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4600S,Expense,Cost of Sales,Cost of Sales,Cost of Sales,Cost of Sales,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4800,Expense,Grants to Other Funds,Grants to Other Funds,Grants to Other Funds,Grants to Other Funds,true,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4800,Expense,Grants to Other Funds,Grants to Other Funds,Grants to Other Funds,Grants to Other Funds,true,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4800S,Expense,Grants to Other Funds (Total),Grants to Other Funds,Grants to Other Funds,Grants to Other Funds (Total),true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,4900,Expense,Admin Grant Expense,Admin Grant Expense,Admin Grant Expense,Admin Grant Expense,true,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,4900,Expense,Admin Grant Expense,Admin Grant Expense,Admin Grant Expense,Admin Grant Expense,true,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,4900S,Expense,Admin Grant Expense (Total),Admin Grant Expense,Admin Grant Expense,Admin Grant Expense (Total),true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5000,Expense,Financial and Other,"Financial and Other, General","Financial and Other, General",Financial and Other,true,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5000,Expense,Financial and Other,"Financial and Other, General","Financial and Other, General",Financial and Other,true,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,5000S,Expense,Financial  and Other (Total),Financial  and Other,Financial  and Other,Financial  and Other (Total),true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5003,Expense,Currency Revaluation,Currency Revaluation,Currency Revaluation,Currency Revaluation,true,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5010,Expense,EQUIPMENT ACQUIRED,"Equipment Acquired, General","Equipment Acquired, General",EQUIPMENT ACQUIRED,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5003,Expense,Currency Revaluation,Currency Revaluation,Currency Revaluation,Currency Revaluation,true,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5010,Expense,EQUIPMENT ACQUIRED,"Equipment Acquired, General","Equipment Acquired, General",EQUIPMENT ACQUIRED,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,5010S,Expense,Equipment Acquired (Total),Equipment Acquired,Equipment Acquired,Equipment Acquired (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5011,Expense,Business Equi[ment,Business Equipment,Business Equipment,Business Equipment,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5012,Expense,Vehicle,Vehicle,Vehicle,Vehicle,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5013,Expense,Computer Equipment,Computer Equipment,Computer Equipment,Computer Exuipment,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5014,Expense,Audio Visial Equipment,Audio Visial Equipment,Audio Visial Equipment,Audio Visial Equipment,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5020,Expense,DEPRECIATION,Depreciation,Depreciation,DEPRECIATION,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5011,Expense,Business Equi[ment,Business Equipment,Business Equipment,Business Equipment,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5012,Expense,Vehicle,Vehicle,Vehicle,Vehicle,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5013,Expense,Computer Equipment,Computer Equipment,Computer Equipment,Computer Exuipment,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5014,Expense,Audio Visial Equipment,Audio Visial Equipment,Audio Visial Equipment,Audio Visial Equipment,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5020,Expense,DEPRECIATION,Depreciation,Depreciation,DEPRECIATION,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,5020S,Expense,Depreciation (Total),Depreciation,Depreciation,Depreciation (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5030,Expense,INTEREST & BANK CHARGES,Interest & Bank Charges,Interest & Bank Charges,INTEREST & BANK CHARGES,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5030,Expense,INTEREST & BANK CHARGES,Interest & Bank Charges,Interest & Bank Charges,INTEREST & BANK CHARGES,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,5030S,Expense,Interest & Bank Charges (Total),Interest & Bank Charges,Interest & Bank Charges,Interest & Bank Charges (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5040,Expense,Bad and Doubtful Debts,"Bad and Doubtful Debts, General","Bad and Doubtful Debts, General",Bad and Doubtful Debts,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5040,Expense,Bad and Doubtful Debts,"Bad and Doubtful Debts, General","Bad and Doubtful Debts, General",Bad and Doubtful Debts,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,5040S,Expense,Bad and Doubtful Debts (Total),Bad and Doubtful Debts,Bad and Doubtful Debts,Bad and Doubtful Debts (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5041,Expense,Bad Debts,Bad Debts,Bad Debts,Bad Debts,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5042,Expense,Doubtful Debts,Doubtful Debts,Doubtful Debts,Doubtful Debts,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5050,Expense,PRIOR YEAR ADJUSTMENTS,Prior Year Adjustments,Prior Year Adjustments,PRIOR YEAR ADJUSTMENTS,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5041,Expense,Bad Debts,Bad Debts,Bad Debts,Bad Debts,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5042,Expense,Doubtful Debts,Doubtful Debts,Doubtful Debts,Doubtful Debts,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5050,Expense,PRIOR YEAR ADJUSTMENTS,Prior Year Adjustments,Prior Year Adjustments,PRIOR YEAR ADJUSTMENTS,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
 43,5050S,Expense,Prior Year Adjustments (Total),Prior Year Adjustments,Prior Year Adjustments,Prior Year Adjustments (Total),true,true,false,true,true,false,?,false,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5100,Expense,Conference Expenses,Conference Expenses,Conference Expenses,Conference Expenses,true,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5100,Expense,Conference Expenses,Conference Expenses,Conference Expenses,Conference Expenses,true,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,5100S,Expense,Conference Expenses,Conference Expenses,Conference Expenses,Conference Expenses,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5200,Expense,Event Fees to Other Funds,Event Fees to Other Funds,Event Fees to Other Funds,Event Fees to Other Funds,true,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5200,Expense,Event Fees to Other Funds,Event Fees to Other Funds,Event Fees to Other Funds,Event Fees to Other Funds,true,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,5200S,Expense,Event Fees to Other Funds,Event Fees to Other Funds,Event Fees to Other Funds,Event Fees to Other Funds,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5400,Expense,Foreign Expenses: Unidentified,Foreign Expenses: Unidentified,Foreign Expenses: Unidentified,Foreign Expenses: Unidentified,true,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5400,Expense,Foreign Expenses: Unidentified,Foreign Expenses: Unidentified,Foreign Expenses: Unidentified,Foreign Expenses: Unidentified,true,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,5400S,Expense,Foreign Expenses: Unidentified,Foreign Expenses: Unidentified,Foreign Expenses: Unidentified,Foreign Expenses: Unidentified,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5500,Expense,Recharges to Other Funds,Recharges to Other Funds,Recharges to Other Funds,Recharges to Other Funds,true,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5500,Expense,Recharges to Other Funds,Recharges to Other Funds,Recharges to Other Funds,Recharges to Other Funds,true,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,5500S,Expense,Recharges to Other Funds (Total),Recharges to Other Funds,Recharges to Other Funds,Recharges to Other Funds (Total),true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5501,Expense,DIRECT TRANSFERS,Direct Transfers,Direct Transfers,DIRECT TRANSFERS,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5600,Expense,ICH Settlement Transfers,ICH Settlement Transfers,ICH Settlement Transfers,ICH Settlement Transfers,true,true,false,true,true,false,Adhoc,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5501,Expense,DIRECT TRANSFERS,Direct Transfers,Direct Transfers,DIRECT TRANSFERS,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,5600,Expense,ICH Settlement Transfers,ICH Settlement Transfers,ICH Settlement Transfers,ICH Settlement Transfers,true,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,5600S,Expense,ICH Settlement (Total),ICH Settlement,ICH Settlement,ICH Settlement (Total),true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,5601,Expense,ICH Settlement,ICH Settlement,ICH Settlement,ICH Settlement,true,true,false,true,true,false,Adhoc,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
-43,6000,Asset,Petty Cash,Petty Cash,Petty Cash,Petty Cash,true,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,5601,Expense,ICH Settlement,ICH Settlement,ICH Settlement,ICH Settlement,true,true,false,true,true,false,ADHOC,true,false,false,All,false,?,?,2009-6-15,?,?,?,?
+43,6000,Asset,Petty Cash,Petty Cash,Petty Cash,Petty Cash,true,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,6000S,Asset,Petty Cash Accounts (Total),Petty Cash Accounts (Total),Petty Cash Accounts (Total),Petty Cash Accounts (Total),true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,6200,Asset,Bank Accounts Operational,Bank Accounts Operational,Bank Accounts Operational,Bank Accounts Operational,true,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
-43,6210,Asset,GBP Bank Account,GBP Bank Account,GBP Bank Account,GBP Bank Account,true,true,false,true,true,false,Adhoc,true,true,false,Local,true,GBP,?,2009-6-15,?,?,?,?
+43,6200,Asset,Bank Accounts Operational,Bank Accounts Operational,Bank Accounts Operational,Bank Accounts Operational,true,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,6210,Asset,GBP Bank Account,GBP Bank Account,GBP Bank Account,GBP Bank Account,true,true,false,true,true,false,ADHOC,true,true,false,Local,true,GBP,?,2009-6-15,?,?,?,?
 43,6200S,Asset,Bank Accounts(Total Operational),Bank Accounts(Total Operational),Bank Accounts(Total Operational),Bank Accounts(Total Operational),true,true,false,true,false,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,6400,Asset,Bank Accounts Deposit,Bank Accounts Deposit,Bank Accounts Deposit,Bank Accounts Deposit,true,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,6400,Asset,Bank Accounts Deposit,Bank Accounts Deposit,Bank Accounts Deposit,Bank Accounts Deposit,true,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,6400S,Asset,Bank Accounts (Total Deposit),Bank Accounts (Total Deposit),Bank Accounts (Total Deposit),Bank Accounts (Total Deposit),true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,6500,Asset,"Investments, General",Investments,Investments,"Investments, General",true,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,6500,Asset,"Investments, General",Investments,Investments,"Investments, General",true,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,6500S,Asset,INVESTMENTS,Investments,Investments,INVESTMENTS,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,6600,Liability,Provision for Doubtful Debts,Provision for Doubtful Debts,Provision for Doubtful Debts,Provision for Doubtful Debts,false,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,6600,Liability,Provision for Doubtful Debts,Provision for Doubtful Debts,Provision for Doubtful Debts,Provision for Doubtful Debts,false,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,6600S,Asset,Provision for Dbtful Debts (Total),Provision for Dbtful Debts,Provision for Dbtful Debts,Provision for Dbtful Debts (Total),true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,6700,Asset,Prepaid Expense,Prepaid Expense,Prepaid Expense,Prepaid Expense,true,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,6700,Asset,Prepaid Expense,Prepaid Expense,Prepaid Expense,Prepaid Expense,true,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,6700S,Asset,Prepaid Expenses,Prepaid Expenses,Prepaid Expenses,Prepaid Expenses,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,6800,Asset,Accounts Receivable within one year,Accounts Receivable,Accounts Receivable,Accounts Receivable within one year,true,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,6800,Asset,Accounts Receivable within one year,Accounts Receivable,Accounts Receivable,Accounts Receivable within one year,true,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,6800S,Asset,Accounts Receivable within one year,Accounts Receivable,Accounts Receivable,Accounts Receivable within one year,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,6900,Asset,Accounts Receivable from other Funds within one year,Accounts Receivable Funds,Accounts Receivable Funds,Accounts Receivable from other Funds within one year,true,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,6900,Asset,Accounts Receivable from other Funds within one year,Accounts Receivable Funds,Accounts Receivable Funds,Accounts Receivable from other Funds within one year,true,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,6900S,Asset,Accounts Receivable from other Funds within one year,Accounts Receivable Funds,Accounts Receivable Funds,Accounts Receivable from other Funds within one year,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,7000,Asset,Long Term Loans Receivable,Long Term Loans Receivable,Long Term Loans Receivable,Long Term Loans Receivable,true,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,7000,Asset,Long Term Loans Receivable,Long Term Loans Receivable,Long Term Loans Receivable,Long Term Loans Receivable,true,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,7000S,Asset,Long Term Loans Receivable,Long Term Loans Receivable,Long Term Loans Receivable,Long Term Loans Receivable,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,7010,Asset,Deposits (landlords etc),Deposits (landlords etc),Deposits (landlords etc),Deposits (landlords etc),true,true,false,true,true,false,Adhoc,true,false,false,Local,false,?,?,2009-6-15,?,?,?,?
-43,7100,Asset,Long Term Loans Receivable from other Funds,Long Term Loans Receivable Funds,Long Term Loans Receivable Funds,Long Term Loans Receivable from other Funds,true,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,7010,Asset,Deposits (landlords etc),Deposits (landlords etc),Deposits (landlords etc),Deposits (landlords etc),true,true,false,true,true,false,ADHOC,true,false,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,7100,Asset,Long Term Loans Receivable from other Funds,Long Term Loans Receivable Funds,Long Term Loans Receivable Funds,Long Term Loans Receivable from other Funds,true,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,7100S,Asset,Long Term Loans Receivable from other Funds,Long Term Loans Receivable Funds,Long Term Loans Receivable Funds,Long Term Loans Receivable from other Funds,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,7200,Asset,Stock Inventory,Stock Inventory,Stock Inventory,Stock Inventory,true,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
-43,7200S,Asset,Stock Inventory,Stock Inventory,Stock Inventory,Stock Inventory,true,true,false,true,true,false,Adhoc,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,7300,Asset,Equipment,"Equipment, General","Equipment, General",Equipment,true,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,7200,Asset,Stock Inventory,Stock Inventory,Stock Inventory,Stock Inventory,true,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,7200S,Asset,Stock Inventory,Stock Inventory,Stock Inventory,Stock Inventory,true,true,false,true,true,false,ADHOC,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,7300,Asset,Equipment,"Equipment, General","Equipment, General",Equipment,true,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,7300S,Asset,Equipment,Equipment,Equipment,Equipment,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,7311,Asset,Business Equipment,Business Equipment,Business Equipment,Business Equipment,true,true,false,true,true,false,Adhoc,true,false,false,Local,false,?,?,2009-6-15,?,?,?,?
-43,7312,Asset,Vehicles,Vehicles,Vehicles,Vehicles,true,true,false,true,true,false,Adhoc,true,false,false,Local,false,?,?,2009-6-15,?,?,?,?
-43,7313,Asset,Computer Equipment,Computer Equipment,Computer Equipment,Computer Equipment,true,true,false,true,true,false,Adhoc,true,false,false,Local,false,?,?,2009-6-15,?,?,?,?
-43,7314,Asset,Audio Visual Equipment,Audio Visual Equipment,Audio Visual Equipment,Audio Visual Equipment,true,true,false,true,true,false,Adhoc,true,false,false,Local,false,?,?,2009-6-15,?,?,?,?
-43,7400,Asset,Land & Buildings,Land & Buildings,Land & Buildings,Land & Buildings,true,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,7311,Asset,Business Equipment,Business Equipment,Business Equipment,Business Equipment,true,true,false,true,true,false,ADHOC,true,false,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,7312,Asset,Vehicles,Vehicles,Vehicles,Vehicles,true,true,false,true,true,false,ADHOC,true,false,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,7313,Asset,Computer Equipment,Computer Equipment,Computer Equipment,Computer Equipment,true,true,false,true,true,false,ADHOC,true,false,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,7314,Asset,Audio Visual Equipment,Audio Visual Equipment,Audio Visual Equipment,Audio Visual Equipment,true,true,false,true,true,false,ADHOC,true,false,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,7400,Asset,Land & Buildings,Land & Buildings,Land & Buildings,Land & Buildings,true,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,7400S,Asset,Land & Buildings,Land & Buildings,Land & Buildings,Land & Buildings,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,7500,Liability,Accumulated Depreciation Equip,Accumulated Depreciation Equip,Accumulated Depreciation Equip,Accumulated Depreciation Equip,false,true,false,true,true,false,?,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,7500S,Asset,Accum. Depreciation: Equipment,Accum. Depreciation: Equipment,Accum. Depreciation: Equipment,Accum. Depreciation: Equipment,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,7600,Liability,Land and Buildings,Land and Buildings,Land and Buildings,Land and Buildings,false,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,7600,Liability,Land and Buildings,Land and Buildings,Land and Buildings,Land and Buildings,false,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,7600S,Asset,Accum. Depreciation:  Land & Buildings,Accum. Depr.:  Land & Buildings,Accum. Depr.:  Land & Buildings,Accum. Depreciation:  Land & Buildings,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,8100,Liability,Stewardship Clearing,Stewardship Clearing,Stewardship Clearing,Stewardship Clearing,false,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
-43,8100S,Liability,Stewardship Clearing,Stewardship Clearing,Stewardship Clearing,Stewardship Clearing,false,true,false,true,true,false,Adhoc,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,8200,Liability,Suspense Account,Suspense Account,Suspense Account,Suspense Account,false,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,8100,Liability,Stewardship Clearing,Stewardship Clearing,Stewardship Clearing,Stewardship Clearing,false,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,8100S,Liability,Stewardship Clearing,Stewardship Clearing,Stewardship Clearing,Stewardship Clearing,false,true,false,true,true,false,ADHOC,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,8200,Liability,Suspense Account,Suspense Account,Suspense Account,Suspense Account,false,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,8200S,Liability,Suspense Accounts (Total),Suspense Accounts,Suspense Accounts,Suspense Accounts (Total),false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,8500,Liability,International Clearing House,International Clearing House,International Clearing House,International Clearing House,false,true,false,true,true,false,?,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,8500S,Liability,International Clearing House,International Clearing House,International Clearing House,International Clearing House,false,true,false,true,true,false,?,false,true,false,Local,false,?,?,2009-6-15,?,?,?,?
-43,9000,Liability,Deferred Income,Deferred income,Deferred income,Defrerred Income,false,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
-43,9000S,Liability,Deferred Income (Total),Deferred income,Deferred income,Deferred Income(Total),false,true,false,true,true,false,Adhoc,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,9100,Liability,Accounts Payable within one year,Accounts Payable,Accounts Payable,Accounts Payable within one year,false,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,9000,Liability,Deferred Income,Deferred income,Deferred income,Defrerred Income,false,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,9000S,Liability,Deferred Income (Total),Deferred income,Deferred income,Deferred Income(Total),false,true,false,true,true,false,ADHOC,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,9100,Liability,Accounts Payable within one year,Accounts Payable,Accounts Payable,Accounts Payable within one year,false,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,9100S,Liability,Accounts Payable within one year,Accounts Payable,Accounts Payable,Accounts Payable within one year,false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,9200,Liability,Accounts Payable to other Funds within one year,Accounts Payable Funds,Accounts Payable Funds,Accounts Payable to other Funds within one year,false,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,9200,Liability,Accounts Payable to other Funds within one year,Accounts Payable Funds,Accounts Payable Funds,Accounts Payable to other Funds within one year,false,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,9200S,Liability,Accounts Payable to other Funds within one year,Accounts Payable Funds,Accounts Payable Funds,Accounts Payable to other Funds within one year,false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,9300,Liability,Long Term Loans Payable,Long Term Loans Payable,Long Term Loans Payable,Long Term Loans Payable,false,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,9300,Liability,Long Term Loans Payable,Long Term Loans Payable,Long Term Loans Payable,Long Term Loans Payable,false,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,9300S,Liability,Long Term Loans Payable,Long Term Loans Payable,Long Term Loans Payable,Long Term Loans Payable,false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,9400,Liability,Long Term Loans Payable to other Funds,Long Term Loans Payable Funds,Long Term Loans Payable Funds,Long Term Loans Payable to other Funds,false,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,9400,Liability,Long Term Loans Payable to other Funds,Long Term Loans Payable Funds,Long Term Loans Payable Funds,Long Term Loans Payable to other Funds,false,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,9400S,Liability,Long Term Loans Payable to other Funds,Long Term Loans Payable Funds,Long Term Loans Payable Funds,Long Term Loans Payable to other Funds,false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,9500,Liability,Provisions,Provisions,Provisions,Provisions,false,true,false,true,true,false,?,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,9500S,Liability,Provisions,Provisions,Provisions,Provisions,false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,9700,Equity,Balance Brought Forward 1st January,Brought Forward 1st January,Brought Forward 1st January,Balance Brought Forward 1st January,false,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
-43,9700S,Equity,Balance Brought Forward 1st January,Brought Forward 1st January,Brought Forward 1st January,Balance Brought Forward 1st January,false,true,false,true,true,false,Adhoc,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,9800,Liability,Internal Transfer,Internal Transfer,Internal Transfer,Internal Transfer,false,true,false,true,true,false,Adhoc,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
-43,9800S,Liability,Internal Transfer,Internal Transfer,Internal Transfer,Internal Transfer,false,true,false,true,true,false,Adhoc,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,9700,Equity,Balance Brought Forward 1st January,Brought Forward 1st January,Brought Forward 1st January,Balance Brought Forward 1st January,false,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,9700S,Equity,Balance Brought Forward 1st January,Brought Forward 1st January,Brought Forward 1st January,Balance Brought Forward 1st January,false,true,false,true,true,false,ADHOC,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
+43,9800,Liability,Internal Transfer,Internal Transfer,Internal Transfer,Internal Transfer,false,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,9800S,Liability,Internal Transfer,Internal Transfer,Internal Transfer,Internal Transfer,false,true,false,true,true,false,ADHOC,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,ASSETS,Asset,Total Assets,Total Assets,Total Assets,Total Assets,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,BAL SHT,Asset,Balance Sheet,Balance Sheet,Balance Sheet,Balance Sheet,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,CASH,Asset,Bank,Cash & Bank,Cash & Bank,Bank,true,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
