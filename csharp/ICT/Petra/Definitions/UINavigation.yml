@@ -375,8 +375,12 @@ OpenPetra:
                         RegisteringFieldReport: {ActionOpenScreen=TFrmRegisteringFieldReport}
                         OutreachReport: {ActionOpenScreen=TFrmOutreachReport}
                 Setup: {Namespace=Ict.Petra.Client.MConference.Gui.Setup, DontShowNestedTasksAsLinks=true}
+                    CurrentConference:
+                        ConferenceStandardCost: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Conference Standard Costs, Description=Maintain Conference Standard Costs, ActionClick=TConferenceMain.StandardCostsForSelectedConference}
+                        EarlyLateRegistration: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Early and Late Registrations, Description=Maintain Early and Late Registrations, ActionClick=TConferenceMain.EarlyLateRegistrationsForSelectedConference}
+                        ChildDiscount: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Child Discounts, Description=Maintain Child Discounts, ActionClick=TConferenceMain.ChildDiscountsForSelectedConference}
                     General:
-                        ConferenceCostType: {Label= Conference Cost Types, Description=Maintain Conference Cost Types, ActionOpenScreen=TFrmConferenceCostTypeSetup}
+                        ConferenceCostType: {Label=Conference Cost Types, Description=Maintain Conference Cost Types, ActionOpenScreen=TFrmConferenceCostTypeSetup}
         FinancialDevelopment: {Icon=develope.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=Financial Development, DependsOnLedger=true, PermissionsRequired=DEVUSER}
             Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}  # Icon=Print.ico
                 GeneralReports: {DontShowNestedTasksAsLinks=true}

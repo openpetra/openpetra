@@ -107,6 +107,27 @@ namespace Ict.Petra.Shared
         public const String ERR_VALUESIDENTICAL_ERROR = "GEN.00008V";
 
         #endregion
+        
+        #region Conference Module-specific error codes
+        
+        
+       /// <summary>Standard cost inconsistency</summary>
+       [ErrCodeAttribute("Standard cost inconsistency.",
+            ErrorMessageText = "{0} day/s at the conference costs more than {1} days!\r\n" + "Are you sure this is correct?",
+            ErrorMessageTitle = "Standard cost inconsistency")]
+       public const String ERR_STANDARD_COST_INCONSISTENCY = "CON.00001N";
+       
+       /// <summary>Applicable date after conference end date</summary>
+       [ErrCodeAttribute("Applicable date after conference end date.",
+            ErrorMessageText = "Applicable date cannot be after the end of the conference.")]
+       public const String ERR_APPLICABLE_DATE_AFTER_CONFERENCE_END_DATE = "CON.00002V";
+       
+       /// <summary>Late applicable date earlier than an early applicable date</summary>
+       [ErrCodeAttribute("Late applicable date earlier than an early applicable date.",
+            ErrorMessageText = "There is {0} which has a date {1} than this {2}.")]
+       public const String ERR_LATE_APPLICABLE_DATE_EARLIER_THAN_EARLY_APPLICABLE_DATE = "CON.00003V";
+        
+        #endregion
 
         #region Finance Module-specific error codes
 
@@ -238,5 +259,7 @@ namespace Ict.Petra.Shared
         public const String ERR_APPLICATION_DUPLICATE_EVENT = "PES.00001V";
 
         #endregion
+        
+
     }
 }
