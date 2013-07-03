@@ -159,14 +159,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             requestParams.Add("DateFormatString", cmbDateFormat.GetSelectedString());
             requestParams.Add("NumberFormat", ConvertNumberFormat(cmbNumberFormat));
 
-            String exportString;
-            TVerificationResultCollection AMessages;
+            String exportString = string.Empty;
+            TVerificationResultCollection AMessages = null;
 
 
-            Int32 BatchCount = TRemote.MFinance.Gift.WebConnectors.ExportAllGiftBatchData(
-                requestParams,
-                out exportString,
-                out AMessages);
+            Int32 BatchCount = 0; //TRemote.MFinance.Budget.WebConnectors.ExportBudgets(FLedgerNumber, fileName, ConvertDelimiter(cmbDelimiter.GetSelectedString()),
+
+            //.ExportAllGiftBatchData(requestParams,out exportString,out AMessages);
 
             if (AMessages.Count > 0)
             {
