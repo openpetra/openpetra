@@ -870,11 +870,44 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             return retVal;
         }
 
-//        private static bool ExportBudgetToCSV(Int32 ALedgerNumber, string ACSVFileName, string[] AFdlgSeparator, ref BudgetTDS AImportDS,
-//            out TVerificationResultCollection AVerificationResult)
-//        {
-//
-//        }
+        /// <summary>
+        /// Exports budgets
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ACSVFileName"></param>
+        /// <param name="AFdlgSeparator"></param>
+        /// <param name="AExportDS"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns>Total number of records exported</returns>
+        [RequireModulePermission("FINANCE-3")]
+        public static int ExportBudgets(Int32 ALedgerNumber,
+            string ACSVFileName,
+            string[] AFdlgSeparator,
+            ref BudgetTDS AExportDS,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = null;
+
+            if (AExportDS != null)
+            {
+                int retVal = ExportBudgetToCSV(ALedgerNumber,
+                    ACSVFileName,
+                    AFdlgSeparator,
+                    ref AExportDS,
+                    ref AVerificationResult);
+                return retVal;
+            }
+
+            return 0;
+        }
+
+        private static Int32 ExportBudgetToCSV(Int32 ALedgerNumber, string ACSVFileName, string[] AFdlgSeparator, ref BudgetTDS AExportDS,
+            ref TVerificationResultCollection AVerificationResult)
+        {
+            Int32 numBudgetsExported = 0;
+
+            return numBudgetsExported;
+        }
 
         private static bool IsZero(decimal d)
         {
