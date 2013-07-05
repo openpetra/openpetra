@@ -715,6 +715,11 @@ namespace Ict.Tools.CodeGeneration
         /// Name of Panel that contains Buttons that are related to a Grid (such as 'Add' and 'Delete')
         /// </summary>        
         public const string STR_DETAIL_BUTTON_PANEL_NAME = "pnlDetailButtons";
+
+        /// <summary>
+        /// Name of Panel that contains Buttons that are related to a Grid (such as 'Add' and 'Delete')
+        /// </summary>        
+        public const string STR_INNER_BUTTON_PANEL_NAME = "pnlButtonsInner";
         
         /// <summary>
         /// construtor
@@ -979,8 +984,13 @@ namespace Ict.Tools.CodeGeneration
         {
             get
             {
+TLogging.Log("Control: " + this.controlName + "  is IsGridButtonPanel: " + 
+                       (this.controlName == STR_BUTTON_PANEL_NAME 
+                              || this.controlName == STR_DETAIL_BUTTON_PANEL_NAME 
+                              || this.controlName == STR_INNER_BUTTON_PANEL_NAME).ToString()     );
                 return (this.controlName == STR_BUTTON_PANEL_NAME 
-                    || this.controlName == STR_DETAIL_BUTTON_PANEL_NAME);
+                    || this.controlName == STR_DETAIL_BUTTON_PANEL_NAME
+                    || this.controlName == STR_INNER_BUTTON_PANEL_NAME);
             }
         }
         
@@ -1005,8 +1015,8 @@ namespace Ict.Tools.CodeGeneration
         {
             get
             {
-                return (this.parentName == STR_BUTTON_PANEL_NAME 
-                    || this.parentName == STR_DETAIL_BUTTON_PANEL_NAME);
+                return ((this.parentName == String.Empty)
+                        || (this.parentName == STR_INNER_BUTTON_PANEL_NAME));
             }
         }
         
@@ -1018,11 +1028,15 @@ namespace Ict.Tools.CodeGeneration
             get
             {
                 TControlDef ParentControl = FCodeStorage.GetControl(this.parentName);
-                
-                return IsOnGridButtonPanel &&
-                    (
-                        ParentControl.HasAttribute("ControlsOrientation"))
-                        && (ParentControl.GetAttribute("ControlsOrientation").ToLower() == "horizontal");
+TLogging.Log("IsOnHorizontalGridButtonPanel:   Control: " + this.controlName + "; Parent: " + this.parentName);
+TLogging.Log("IsOnHorizontalGridButtonPanel result: " + (IsOnGridButtonPanel 
+                    && ((ParentControl == null) 
+                    || (ParentControl.HasAttribute("ControlsOrientation"))
+                        && (ParentControl.GetAttribute("ControlsOrientation").ToLower() == "horizontal"))).ToString());
+                return IsOnGridButtonPanel 
+                    && ((ParentControl == null) 
+                    || (ParentControl.HasAttribute("ControlsOrientation"))
+                        && (ParentControl.GetAttribute("ControlsOrientation").ToLower() == "horizontal"));             
             }
         }        
     }

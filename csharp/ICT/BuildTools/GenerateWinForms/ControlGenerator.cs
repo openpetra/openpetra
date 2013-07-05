@@ -190,7 +190,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             bool OverrideImageAlign = false;
             bool OverrideTextAlign = false;            
             bool NoLabel = false;
-            
+Console.WriteLine("ButtonGenerator.SetControlProperties for Control " + ctrl.controlName);
             if (!ctrl.HasAttribute("Width"))
             {
                 ctrl.SetAttribute("Width", (PanelLayoutGenerator.MeasureTextWidth(ctrl.Label) + 15).ToString());
@@ -211,7 +211,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             
             if (ctrl.IsOnHorizontalGridButtonPanel)
             {
-//Console.WriteLine("Setting Height for Control '" + ctrl.controlName + "' to 23 as it is on a horizontal Grid Button Panel");
+Console.WriteLine("Setting Height for Control '" + ctrl.controlName + "' to 23 as it is on a horizontal Grid Button Panel");
                 FDefaultHeight = 23;
                 
                 if (!ctrl.HasAttribute("ImageAlign"))

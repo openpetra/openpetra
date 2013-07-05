@@ -53,6 +53,10 @@ namespace {#NAMESPACE}
 {#IFNDEF DATASETTYPE}
     {#INLINETYPEDDATASET}
 {#ENDIFN DATASETTYPE}
+{#IFDEF FILTERANDFIND}
+    Label FlblRecordCounter = new Label();
+    CheckBox FBtnToggleFilter = new CheckBox();
+{#ENDIF FILTERANDFIND}
 
     /// constructor
     public {#CLASSNAME}(Form AParentForm) : base()
@@ -99,6 +103,9 @@ namespace {#NAMESPACE}
 {#IFDEF SHOWDETAILS}       
       SetPrimaryKeyControl();
 {#ENDIF SHOWDETAILS}
+{#IFDEF FILTERANDFIND}
+      SetupFilterAndFindControls();
+{#ENDIF FILTERANDFIND}
     }
 
     #region Show Method overrides
@@ -1091,6 +1098,32 @@ namespace {#NAMESPACE}
     }
 {#ENDIF GENERATECONTROLUPDATEDATAHANDLER}
 {#ENDIF SAVEDETAILS}
+
+{#IFDEF FILTERANDFIND}
+    private void SetupFilterAndFindControls()
+    {
+        // FlblRecordCounter.Top = 8;
+        // FlblRecordCounter.Left = 1;
+        // FlblRecordCounter.AutoSize = true;
+        // FlblRecordCounter.Text = "n records";
+        // FlblRecordCounter.Padding = new Padding(4, 3, 0, 0);
+        // FlblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+        // FlblRecordCounter.Dock = DockStyle.Fill;
+        
+        // System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmSetupCurrency));
+        // FBtnToggleFilter.Top = 3;
+        // FBtnToggleFilter.Height = 22;
+        // FBtnToggleFilter.AutoSize = true;
+        // FBtnToggleFilter.Text = Catalog.GetString("&Filter");
+        // FBtnToggleFilter.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbFilter.Glyph"));
+        // FBtnToggleFilter.ImageAlign = ContentAlignment.MiddleLeft;
+        // FBtnToggleFilter.Dock = DockStyle.Left;
+        // FBtnToggleFilter.Appearance = Appearance.Button;
+        // FBtnToggleFilter.TextAlign = ContentAlignment.MiddleCenter;  // Same as 'real' Button 
+        // FBtnToggleFilter.MinimumSize = new Size(75, 22);             // To prevent shrinkage!
+        // FBtnToggleFilter.Click += delegate { ToggleFilter(); };    
+    }
+{#ENDIF FILTERANDFIND}    
 
 #region Implement interface functions
 
