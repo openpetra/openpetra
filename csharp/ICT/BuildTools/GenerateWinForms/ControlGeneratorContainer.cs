@@ -816,15 +816,24 @@ TLogging.Log("Iteration #1:  Child: '" + Child.controlName + "'");
                 pnlButtonsRecordCounter.SetAttribute("AutoSize", "true");
                 pnlButtonsRecordCounter.SetAttribute("Padding", "0, 4, 5, 2");
                 pnlButtonsRecordCounter.SetAttribute("Dock", "Right");
-                pnlButtonsRecordCounter.SetAttribute("BackColor", "System.Drawing.Color.LightBlue");
-    
-                ctrl.Children.Add(pnlButtonsRecordCounter);
                 
+                TControlDef lblRecordCounter = writer.CodeStorage.FindOrCreateControl("lblRecordCounter", pnlButtonsRecordCounter.controlName);
+                lblRecordCounter.SetAttribute("AutoSize", "true");
+                lblRecordCounter.SetAttribute("Text", "n records");
+                lblRecordCounter.SetAttribute("Padding", "4, 5, 0, 0");
+                lblRecordCounter.SetAttribute("ForeColor", "System.Drawing.Color.SlateGray");
+                lblRecordCounter.SetAttribute("Dock", "Fill");
+                
+                pnlButtonsRecordCounter.Children.Add(lblRecordCounter);                
 
-
-
-
-
+                TControlDef chkToggleFilter = writer.CodeStorage.FindOrCreateControl("chkToggleFilter", pnlButtonsRecordCounter.controlName);
+                chkToggleFilter.SetAttribute("Height", "22");
+                chkToggleFilter.SetAttribute("Dock", "Left");
+                
+                pnlButtonsRecordCounter.Children.Add(chkToggleFilter);                
+                
+                ctrl.Children.Add(pnlButtonsRecordCounter);                
+                
                 base.ProcessChildren(writer, ctrl);                
                 
 

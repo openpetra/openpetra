@@ -1102,6 +1102,21 @@ namespace {#NAMESPACE}
 {#IFDEF FILTERANDFIND}
     private void SetupFilterAndFindControls()
     {
+        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof({#CLASSNAME}));    
+        
+        // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
+        lblRecordCounter.AutoSize = true;
+        pnlButtonsRecordCounter.AutoSize = true;
+        
+        chkToggleFilter.AutoSize = true;
+        chkToggleFilter.Text = Catalog.GetString("&Filter");
+        chkToggleFilter.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbFilter.Glyph"));
+        chkToggleFilter.ImageAlign = ContentAlignment.MiddleLeft;
+        chkToggleFilter.Appearance = Appearance.Button;
+        chkToggleFilter.TextAlign = ContentAlignment.MiddleCenter;  // Same as 'real' Button 
+        chkToggleFilter.MinimumSize = new Size(75, 22);             // To prevent shrinkage!
+        chkToggleFilter.Click += delegate { ToggleFilter(); };    
+        
         // FlblRecordCounter.Top = 8;
         // FlblRecordCounter.Left = 1;
         // FlblRecordCounter.AutoSize = true;
@@ -1123,6 +1138,38 @@ namespace {#NAMESPACE}
         // FBtnToggleFilter.MinimumSize = new Size(75, 22);             // To prevent shrinkage!
         // FBtnToggleFilter.Click += delegate { ToggleFilter(); };    
     }
+    
+        private void ToggleFilterPanel(System.Object sender, EventArgs e)
+        {
+            ToggleFilter();
+        }
+        
+        private void ToggleFilter()
+        {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof({#CLASSNAME}));
+            
+            if (pnlFilterAndFind.Width == 0) 
+            {
+                pnlFilterAndFind.Width = 150;    
+                chkToggleFilter.Checked = true; 
+                                
+                lblRecordCounter.ForeColor = System.Drawing.Color.MidnightBlue;                
+                lblRecordCounter.Font = new Font(lblRecordCounter.Font, FontStyle.Italic);
+                
+                chkToggleFilter.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbFilterActive.Glyph"));
+            }
+            else
+            {
+                pnlFilterAndFind.Width = 0;    
+                chkToggleFilter.Checked = false;  
+                                
+                lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;                
+                lblRecordCounter.Font = new Font(lblRecordCounter.Font, FontStyle.Regular);
+                chkToggleFilter.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbFilter.Glyph"));
+            }                      
+            
+//            UpdateRecordNumberDisplay();            
+        }            
 {#ENDIF FILTERANDFIND}    
 
 #region Implement interface functions
