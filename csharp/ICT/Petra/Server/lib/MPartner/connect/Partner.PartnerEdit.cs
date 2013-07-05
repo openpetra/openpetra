@@ -2441,7 +2441,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 TempDS.Merge(AInspectDS);
                 TSubmitChangesResult IndividualDataResult;
 
-                // can remove tables PPerson, PDataLabelValuePartner and PDataLabelValueApplication here 
+                // can remove tables PPerson, PDataLabelValuePartner and PDataLabelValueApplication here
                 // as this is part of both PartnerEditTDS and IndividualDataTDS and
                 // so the relevant data was already saved when PartnerEditTDS was saved
                 TempDS.RemoveTable(PPersonTable.GetTableName());
