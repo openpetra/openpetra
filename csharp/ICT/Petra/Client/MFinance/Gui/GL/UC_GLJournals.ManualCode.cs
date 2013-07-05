@@ -146,11 +146,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AEffectiveDate"></param>
         public void UpdateEffectiveDateForCurrentRow(DateTime AEffectiveDate)
         {
-            if ((GetSelectedDetailRow() != null) && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
+            if ((GetSelectedDetailRow() != null))
             {
-                GetSelectedDetailRow().DateEffective = AEffectiveDate;
-                dtpDetailDateEffective.Date = AEffectiveDate;
-                GetDetailsFromControls(GetSelectedDetailRow());
+            	if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+            	{
+	                GetSelectedDetailRow().DateEffective = AEffectiveDate;
+	                dtpDetailDateEffective.Date = AEffectiveDate;
+	                GetDetailsFromControls(GetSelectedDetailRow());
+            	}
+            	else
+            	{
+            		dtpDetailDateEffective.Date = AEffectiveDate;
+            	}
             }
         }
 
