@@ -1290,7 +1290,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                  */
 
                 // MessageBox.Show('FLocalDataLabelValuesGrid.RowsCount: ' + FLocalDataLabelValuesGrid.RowsCount.ToString);
-                for (Counter = 1; Counter <= FLocalDataLabelValuesGrid.RowsCount - 2; Counter += 1)
+                for (Counter = 0; Counter <= FLocalDataLabelValuesGrid.RowsCount - 1; Counter += 1)
                 {
                     if (FLocalDataLabelValuesGrid[Counter, 1].Editor != null)
                     {
