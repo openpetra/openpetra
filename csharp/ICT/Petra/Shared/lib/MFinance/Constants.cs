@@ -329,34 +329,19 @@ namespace Ict.Petra.Shared.MFinance
         public const string HIGH_FIN_USER_LEVEL = "FINANCE-3";
 
         /// Budget Types
-        public const string BUDGET_SPLIT = "Split";
+        public const string BUDGET_SPLIT = "SPLIT";
 
         /// Budget Types
-        public const string BUDGET_ADHOC = "Adhoc";
+        public const string BUDGET_ADHOC = "ADHOC";
 
         /// Budget Types
-        public const string BUDGET_SAME = "Same";
+        public const string BUDGET_SAME = "SAME";
 
         /// Budget Types
-        public const string BUDGET_INFLATE_BASE = "Inf.Base";
+        public const string BUDGET_INFLATE_BASE = "INFLATE_BASE";
 
         /// Budget Types
-        public const string BUDGET_INFLATE_N = "Inf. n";
-
-        /// Budget Types
-        public const string BUDGET_SPLIT_U = "SPLIT";
-
-        /// Budget Types
-        public const string BUDGET_ADHOC_U = "ADHOC";
-
-        /// Budget Types
-        public const string BUDGET_SAME_U = "SAME";
-
-        /// Budget Types
-        public const string BUDGET_INFLATE_BASE_U = "INF.BASE";
-
-        /// Budget Types
-        public const string BUDGET_INFLATE_N_U = "INF. N";
+        public const string BUDGET_INFLATE_N = "INFLATE_N";
 
         /// Budget Forecast Types
         public const string FORECAST_TYPE_BUDGET = "Budget";
