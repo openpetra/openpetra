@@ -92,6 +92,86 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        ///  Structure for holding parameters for a <see cref="TUcoFilterAndFind" /> instance (that migth get created
+        ///  at a later point).
+        /// </summary>
+        public struct FilterAndFindParameters
+        {
+            private int FFlterAndFindInitialWidth;
+            private bool FFilterAndFindInitiallyExpanded;
+            private FilterContext FApplyFilterButtonContext;
+            private FilterContext FShowKeepFilterTurnedOnButtonContext;
+            private FilterContext FShowFilterIsAlwaysOnLabelContext;
+            
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            /// <param name="AFilterAndFindInitialWidth">Initial Width of the Filter and Find Panel.</param>
+            /// <param name="AFilterAndFindInitiallyExpanded">Wether the Filter and Find Panel are shown when the containing Form/UserControl
+            /// is opened/shown.</param>
+            /// <param name="AApplyFilterButtonContext"></param>
+            /// <param name="AShowKeepFilterTurnedOnButtonContext"></param>
+            /// <param name="AShowFilterIsAlwaysOnLabelContext"></param>
+            public FilterAndFindParameters(int AFilterAndFindInitialWidth, bool AFilterAndFindInitiallyExpanded,
+                FilterContext AApplyFilterButtonContext, FilterContext AShowKeepFilterTurnedOnButtonContext,
+                FilterContext AShowFilterIsAlwaysOnLabelContext)
+            {
+                FFlterAndFindInitialWidth = AFilterAndFindInitialWidth;
+                FFilterAndFindInitiallyExpanded = AFilterAndFindInitiallyExpanded;
+                FApplyFilterButtonContext = AApplyFilterButtonContext;
+                FShowKeepFilterTurnedOnButtonContext = AShowKeepFilterTurnedOnButtonContext;
+                FShowFilterIsAlwaysOnLabelContext = AShowFilterIsAlwaysOnLabelContext;                
+            }
+            
+            /// <summary>
+            /// Initial Width of the Filter and Find Panel.
+            /// </summary>
+            public int FindAndFilterInitialWidth
+            {
+                get
+                {
+                    return FFlterAndFindInitialWidth;
+                }
+            }
+            
+            /// <summary>
+            /// Wether the Filter and Find Panel are shown when the containing Form/UserControl
+            /// is first opened/shown.
+            /// </summary>
+            public bool FindAndFilterInitiallyExpanded
+            {
+                get
+                {
+                    return FFilterAndFindInitiallyExpanded;
+                }
+            }
+            
+            public FilterContext ApplyFilterButtonContext
+            {
+                get
+                {
+                    return FApplyFilterButtonContext;
+                }
+            }
+            
+            public FilterContext ShowKeepFilterTurnedOnButtonContext
+            {
+                get
+                {
+                    return FShowKeepFilterTurnedOnButtonContext;
+                }
+            }
+            
+            public FilterContext ShowFilterIsAlwaysOnLabelContext
+            {
+                get
+                {
+                    return FShowFilterIsAlwaysOnLabelContext;
+                }
+            }           
+        }
+        
+        /// <summary>
         /// Event Arguments for Events that are related to an <see cref="EventContext" />.
         /// </summary>
         public class TContextEventArgs : EventArgs
@@ -654,7 +734,7 @@ namespace Ict.Common.Controls
                 LayoutManagerUserControl.SpacerDistance = 5;                
             }
                 
-            
+
             // Add individual 'Argument Panels' to the 'Standard Filter' Panel (topmost on 'Filter' Tab)
             // Layout is taken care of automatically due to a TSingleLineFlow Layout Manager!
             if (FFilterControls != null) 
@@ -1502,7 +1582,7 @@ namespace Ict.Common.Controls
                             ArgumentPanelCtrl.AutoSize = false;
                             ArgumentPanelCtrl.Width = ControlLeftOfButtonMaxWidth;
                         }
-                        
+                                                
                         // Create a Button on-the-fly that will clear the value of the Control on the Argument Panel
                         ClearArgumentCtrlButton = new Button();
                         ClearArgumentCtrlButton.Left = ArgumentPanelCtrl.Left + ArgumentPanelCtrl.Width;
@@ -1533,11 +1613,11 @@ namespace Ict.Common.Controls
                         
                         tipGeneral.SetToolTip(ClearArgumentCtrlButton, "Clear value");
                         
-                        AArgumentPanel.Controls.Add(ClearArgumentCtrlButton);
+                    AArgumentPanel.Controls.Add(ClearArgumentCtrlButton);
                     }
-                }
+                }                
             }
-        }        
+        }
         
         private void SetApplyFilterButtonState(Control AButton, string AState)
         {

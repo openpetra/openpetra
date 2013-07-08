@@ -710,11 +710,31 @@ Console.WriteLine("Adjusted Height of Panel '" + ctrl.controlName + "' as it is 
                 
                 writer.SetControlProperty(ctrl, "Dock", "Left");
                 writer.SetControlProperty(ctrl, "BackColor", "System.Drawing.Color.LightSteelBlue");
+                writer.SetControlProperty(ctrl, "Width", "0");
                 
-                if (!ctrl.HasAttribute("Width")) 
+                if (!ctrl.HasAttribute("ExpandedWidth")) 
                 {
-                    writer.SetControlProperty(ctrl, "Width", "150");    
+                    writer.Template.SetCodelet("FINDANDFILTERINITIALWIDTH", "150");                    
                 }
+                else
+                {
+                    writer.Template.SetCodelet("FINDANDFILTERINITIALWIDTH", ctrl.GetAttribute("ExpandedWidth"));
+                }
+                
+                if ((ctrl.HasAttribute("InitiallyExpanded")) 
+                    && (ctrl.GetAttribute("InitiallyExpanded").ToLower() != "false"))
+                {
+                    writer.Template.SetCodelet("FINDANDFILTERINITIALLYEXPANDED", "true");                    
+                }
+                else
+                {
+                    writer.Template.SetCodelet("FINDANDFILTERINITIALLYEXPANDED", "false");
+                }
+                
+                
+                writer.Template.SetCodelet("FINDANDFILTERAPPLYFILTERBUTTONCONTEXT", "TUcoFilterAndFind.FilterContext.fcNone");
+                writer.Template.SetCodelet("FINDANDFILTERSHOWKEEPFILTERTURNEDONBUTTONCONTEXT", "TUcoFilterAndFind.FilterContext.fcNone");
+                writer.Template.SetCodelet("FINDANDFILTERSHOWFILTERISALWAYSONLABELCONTEXT", "TUcoFilterAndFind.FilterContext.fcNone");
             }
             
             if (ctrl.controlName == PNL_BUTTONS) 
@@ -820,17 +840,21 @@ TLogging.Log("Iteration #1:  Child: '" + Child.controlName + "'");
                 TControlDef lblRecordCounter = writer.CodeStorage.FindOrCreateControl("lblRecordCounter", pnlButtonsRecordCounter.controlName);
                 lblRecordCounter.SetAttribute("AutoSize", "true");
                 lblRecordCounter.SetAttribute("Text", "n records");
-                lblRecordCounter.SetAttribute("Padding", "4, 5, 0, 0");
-                lblRecordCounter.SetAttribute("ForeColor", "System.Drawing.Color.SlateGray");
                 lblRecordCounter.SetAttribute("Dock", "Fill");
                 
                 pnlButtonsRecordCounter.Children.Add(lblRecordCounter);                
 
-                TControlDef chkToggleFilter = writer.CodeStorage.FindOrCreateControl("chkToggleFilter", pnlButtonsRecordCounter.controlName);
-                chkToggleFilter.SetAttribute("Height", "22");
-                chkToggleFilter.SetAttribute("Dock", "Left");
                 
-                pnlButtonsRecordCounter.Children.Add(chkToggleFilter);                
+                if (writer.CodeStorage.GetControl(PNL_FILTER_AND_FIND) != null)
+                {
+                    TControlDef chkToggleFilter = writer.CodeStorage.FindOrCreateControl("chkToggleFilter", pnlButtonsRecordCounter.controlName);
+                    chkToggleFilter.SetAttribute("Height", "22");
+                    chkToggleFilter.SetAttribute("Dock", "Left");
+                    chkToggleFilter.SetAttribute("Height", "22");
+                    chkToggleFilter.SetAttribute("Tag", "SuppressChangeDetection");
+                    
+                    pnlButtonsRecordCounter.Children.Add(chkToggleFilter);                                    
+                }
                 
                 ctrl.Children.Add(pnlButtonsRecordCounter);                
                 
