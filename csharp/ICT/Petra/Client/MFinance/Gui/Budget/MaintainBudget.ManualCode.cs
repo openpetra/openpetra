@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             FMainDS = TRemote.MFinance.Budget.WebConnectors.LoadBudget(FLedgerNumber);
 
             //Prepare form for correct number of periods
-            FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadLedgerInfo(FLedgerNumber));
+            //FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadLedgerInfo(FLedgerNumber));
 
             ALedgerRow ledgerRow = (ALedgerRow)FMainDS.ALedger.Rows[0];
             FNumberOfPeriods = ledgerRow.NumberOfAccountingPeriods;
@@ -371,7 +371,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void ImportBudget(System.Object sender, EventArgs e)
         {
-            int numRecsImported = 0;
+            decimal numRecsImported = 0;
 
             if (FPetraUtilsObject.HasChanges)
             {
@@ -394,37 +394,57 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 FdlgSeparator = new TDlgSelectCSVSeparator(false);
-                FdlgSeparator.CSVFileName = dialog.FileName;
 
-                FdlgSeparator.DateFormat = dateFormatString;
-
-                if (impOptions.Length > 1)
+                try
                 {
-                    FdlgSeparator.NumberFormat = impOptions.Substring(1);
+                    FdlgSeparator.CSVFileName = dialog.FileName;
+
+                    FdlgSeparator.DateFormat = dateFormatString;
+
+                    if (impOptions.Length > 1)
+                    {
+                        FdlgSeparator.NumberFormat = impOptions.Substring(1);
+                    }
+
+                    FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
+
+                    if (FdlgSeparator.ShowDialog() == DialogResult.OK)
+                    {
+                        TVerificationResultCollection AMessages;
+
+                        string[] FdlgSeparatorVal = new string[] {
+                            FdlgSeparator.SelectedSeparator, FdlgSeparator.DateFormat, FdlgSeparator.NumberFormat
+                        };
+
+                        //TODO return the budget from the year, and -99 for fail
+                        numRecsImported = TRemote.MFinance.Budget.WebConnectors.ImportBudgets(FLedgerNumber,
+                            FCurrentBudgetYear,
+                            dialog.FileName,
+                            FdlgSeparatorVal,
+                            ref FMainDS,
+                            out AMessages);
+                    }
                 }
-
-                FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
-
-                if (FdlgSeparator.ShowDialog() == DialogResult.OK)
+                catch (Exception ex)
                 {
-                    TVerificationResultCollection AMessages;
-
-                    string[] FdlgSeparatorVal = new string[] {
-                        FdlgSeparator.SelectedSeparator, FdlgSeparator.DateFormat, FdlgSeparator.NumberFormat
-                    };
-
-                    //TODO return the budget from the year, and -99 for fail
-                    numRecsImported = TRemote.MFinance.Budget.WebConnectors.ImportBudgets(FLedgerNumber,
-                        FCurrentBudgetYear,
-                        dialog.FileName,
-                        FdlgSeparatorVal,
-                        ref FMainDS,
-                        out AMessages);
+                    numRecsImported = -2;
+                    MessageBox.Show(ex.Message, Catalog.GetString("Budget Import"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 if (numRecsImported > 0)
                 {
-                    MessageBox.Show(String.Format(Catalog.GetString("{0} budget records imported successfully!"), numRecsImported),
+                    Int32 totalImported = Convert.ToInt32(Math.Truncate(numRecsImported));
+                    Int32 totalUpdated = Convert.ToInt32((numRecsImported - totalImported) * 10000);
+
+                    string msg = String.Format(Catalog.GetString("{0} budget records imported successfully!"), totalImported);
+
+                    if (totalUpdated > 0)
+                    {
+                        msg += Environment.NewLine + Environment.NewLine + String.Format(Catalog.GetString(
+                                "({0} of which updated existing budgets)"), totalImported);
+                    }
+
+                    MessageBox.Show(msg,
                         Catalog.GetString("Success"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
@@ -441,7 +461,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                     SelectRowInGrid(1);
                 }
-                else
+                else if (numRecsImported == -2)
+                {
+                    SelectRowInGrid(1);
+                }
+                else //0
                 {
                     MessageBox.Show(Catalog.GetString("No records found to import"));
                 }
