@@ -2,6 +2,7 @@
   <ImportUnit name="Ict.Petra.Shared.MSysMan.Data"/>
  
     <DataSet name="MaintainUsersTDS">
+        <Table sqltable="s_user"/>
         <Table sqltable="s_module"/>
         <Table sqltable="s_group"/>
         <Table sqltable="s_user_group"/>        
@@ -9,7 +10,6 @@
         <Table sqltable="s_group_table_access_permission"/>
         <Table sqltable="s_user_module_access_permission"/>
         <Table sqltable="s_user_table_access_permission"/>
-        <Table sqltable="s_user"/>
     </DataSet> 
     
 </PetraDataSets>

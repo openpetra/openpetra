@@ -241,7 +241,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ATransaction"></param>
-        /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         private static Int32 NextApDocumentNumber(Int32 ALedgerNumber,
             TDBTransaction ATransaction)
