@@ -321,7 +321,6 @@ OpenPetra:
                         JobAssignmentType: {Label=Job Assignment Types, Description=Maintain Job Assignment Types, ActionOpenScreen=TFrmJobAssignmentTypeSetup}
                         LanguageLevel: {Label=Language Levels, Description=Maintain Language Levels, ActionOpenScreen=TFrmLanguageLevelSetup}
                         LeadershipRating: {Label=Leadership Ratings, Description=Maintain Leadership Ratings, ActionOpenScreen=TFrmLeadershipRatingSetup}
-                        LeavingCode: {Label=Leaving Codes, Description=Maintain Leaving Codes, ActionOpenScreen=TFrmLeavingCodeSetup}
                         PassportType: {Label=Passport Types, Description=Maintain Passport Types, ActionOpenScreen=TFrmPassportTypeSetup}
                         Position: {Label=Positions, Description=Maintain Positions, ActionOpenScreen=TFrmPositionSetup}
                         ProfessionalArea: {Label=Professional Areas, Description=Maintain Professional Areas, ActionOpenScreen=TFrmProfessionalAreaSetup}
