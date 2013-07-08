@@ -518,7 +518,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (SelectedGridRow.Length >= 1)
             {
-                Object Cell = SelectedGridRow[0]["DocumentId"];
+                Object Cell = SelectedGridRow[0].Row[0];
 
                 if (Cell.GetType() == typeof(Int32))
                 {

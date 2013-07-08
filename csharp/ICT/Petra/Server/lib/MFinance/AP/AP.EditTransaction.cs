@@ -244,21 +244,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         private static Int32 NextApDocumentNumber(Int32 ALedgerNumber,
-            TDBTransaction ATransaction,
-            out TVerificationResultCollection AVerificationResult)
+            TDBTransaction ATransaction)
         {
-            StringCollection fieldlist = new StringCollection();
-            ALedgerTable myLedgerTable;
-
-            fieldlist.Add(ALedgerTable.GetLastApInvNumberDBName());
-            myLedgerTable = ALedgerAccess.LoadByPrimaryKey(
-                ALedgerNumber,
-                fieldlist,
-                ATransaction);
-            myLedgerTable[0].LastApInvNumber++;
-            Int32 NewApNum = myLedgerTable[0].LastApInvNumber;
-
-            ALedgerAccess.SubmitChanges(myLedgerTable, ATransaction, out AVerificationResult);
+            Int32 NewApNum = 1;
+            Object MaxVal = DBAccess.GDBAccessObj.ExecuteScalar(String.Format("SELECT max(a_ap_number_i) from PUB_a_ap_document where a_ledger_number_i={0}", ALedgerNumber), ATransaction);
+            if (MaxVal.GetType() != typeof(System.DBNull))
+            {
+                NewApNum = Convert.ToInt32(MaxVal) + 1;
+            }
             return NewApNum;
         }
 
@@ -296,7 +289,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 {
                     if (NewDocRow.DocumentCode.Length == 0)
                     {
-                        AVerificationResult.Add(new TVerificationResult("Check Document", "The Document has no Document number.",
+                        AVerificationResult.Add(new TVerificationResult("Save Document", "The Document has no Document number.",
                                 TResultSeverity.Resv_Noncritical));
                         return TSubmitChangesResult.scrInfoNeeded;
                     }
@@ -311,7 +304,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     {
                         if (MatchingRow.ApDocumentId != NewDocRow.ApDocumentId) // This Document Code is in use, and not by me!
                         {
-                            AVerificationResult.Add(new TVerificationResult("Check Document", "A Document with this number already exists.",
+                            AVerificationResult.Add(new TVerificationResult("Save Document",
+                                String.Format("Document Code {0} already exists.", NewDocRow.DocumentCode),
                                     TResultSeverity.Resv_Noncritical));
                             return TSubmitChangesResult.scrInfoNeeded;
                         }
@@ -333,7 +327,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         // Set AP Number if it has not been set yet.
                         if (NewDocRow.ApNumber < 0)
                         {
-                            NewDocRow.ApNumber = NextApDocumentNumber(NewDocRow.LedgerNumber, SubmitChangesTransaction, out AVerificationResult);
+                            NewDocRow.ApNumber = NextApDocumentNumber(NewDocRow.LedgerNumber, SubmitChangesTransaction);
                         }
 
                         SetOutstandingAmount(NewDocRow, NewDocRow.LedgerNumber, AInspectDS.AApDocumentPayment);
@@ -1814,7 +1808,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                     NewDocumentRow.DateCreated = DateTime.Now;
                     NewDocumentRow.DateEntered = DateTime.Now;
-                    NewDocumentRow.ApNumber = NextApDocumentNumber(ALedgerNumber, ReversalTransaction, out AVerifications);
+                    NewDocumentRow.ApNumber = NextApDocumentNumber(ALedgerNumber, ReversalTransaction);
                     NewDocumentRow.ExchangeRateToBase = OldDocumentRow.ExchangeRateToBase;
                     NewDocumentRow.SavedExchangeRate = OldPaymentRow.ExchangeRateToBase;
                     ReverseDS.AApDocument.Rows.Add(NewDocumentRow);

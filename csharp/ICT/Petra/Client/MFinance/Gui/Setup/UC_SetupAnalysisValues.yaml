@@ -29,7 +29,7 @@ RootNode:
             Columns: [AFreeformAnalysis.AnalysisValue, AFreeformAnalysis.Active]
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
-            Height: 150
+            Height: 70
             Dock: Bottom
             Controls:
                 Row0: [txtDetailAnalysisValue]

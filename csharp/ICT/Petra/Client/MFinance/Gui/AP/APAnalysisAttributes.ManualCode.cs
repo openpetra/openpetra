@@ -65,7 +65,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             // First I'll find out whether I already have records for the required entries:
             FMainDS.AAnalysisAttribute.DefaultView.RowFilter =
-                String.Format("{0}={1}", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode);         // Do I need Cost Centre in here too?
+                String.Format("{0}={1} AND {2}={3}", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode,
+                        AAnalysisAttributeTable.GetActiveDBName(), true);
 
             foreach (DataRowView rv in FMainDS.AAnalysisAttribute.DefaultView)
             {
@@ -109,7 +110,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FocusedRowChanged(null, null);
         }
 
-        private void BtnOK_Click(object sender, EventArgs e)
+        private void BtnClose_Click(object sender, EventArgs e)
         {
             Close();
         }
@@ -149,7 +150,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             AApAnalAttribRow Row = (AApAnalAttribRow)SelectedGridRow[0].Row;
 
             FMainDS.AFreeformAnalysis.DefaultView.RowFilter =
-                String.Format("{0}='{1}'", AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(), Row.AnalysisTypeCode);
+                String.Format("{0}='{1}' AND {2}={3}", AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(), Row.AnalysisTypeCode,
+                        AFreeformAnalysisTable.GetActiveDBName(), true);
 
             cmbDetailAttrib.Items.Clear();
 

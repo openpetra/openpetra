@@ -8,17 +8,17 @@ RootNode:
     FormType: edit
     Template: windowEdit
     WindowWidth: 660
-    WindowHeight: 700
+    WindowHeight: 550
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlValues, pnlDetails]
+            Controls: [pnlGrid, pnlDetails, pnlValues]
             Dock: Fill
         pnlGrid:
-            Height: 200
             Dock: Top
+            Height: 150
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
             Dock: Right
@@ -31,17 +31,18 @@ RootNode:
             Stretch: horizontally
         grdDetails:
             Dock: Fill
+            Height: 148
             Columns: [AAnalysisType.AnalysisTypeCode, AAnalysisType.AnalysisTypeDescription]
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
-            Dock: Bottom
+            Dock: Top
             Controls:
                 Row0: [txtDetailAnalysisTypeCode]
                 Row1: [txtDetailAnalysisTypeDescription]
                 Row2: [chkDetailSystemAnalysisType]
         pnlValues:
-            Dock: Bottom
-            Height: 400
+            Dock: Top
+            Height: 250
             Controls: [ucoValues]
         ucoValues:
             Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_SetupAnalysisValues

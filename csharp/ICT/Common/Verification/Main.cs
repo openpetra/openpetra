@@ -643,13 +643,6 @@ namespace Ict.Common.Verification
     [Serializable]
     public class TVerificationResultCollection : CollectionBase
     {
-        #region Resourcestrings
-
-        private static readonly string StrErrorFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    (Severity: {1}, Code={3})");
-        private static readonly string StrStatusFooter = Catalog.GetString("{0}\r\n    Status: {2}\r\n");
-
-        #endregion
-
         /// <summary>
         /// Control for which the first data validation error is recorded.
         /// </summary>
@@ -955,6 +948,10 @@ namespace Ict.Common.Verification
             }
         }
 
+        private static readonly string StrErrorFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    (Severity: {1}, Code={3})");
+        private static readonly string StrErrorNoCodeFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    (Severity: {1})");
+        private static readonly string StrStatusFooter = Catalog.GetString("{0}\r\n    Status: {2}\r\n");
+
         /// <summary>
         /// Returns a formatted String that contains information about all
         /// <see cref="TVerificationResult" />s in the <see cref="TVerificationResultCollection" />.
@@ -985,6 +982,10 @@ namespace Ict.Common.Verification
                         break;
                 }
 
+                if ((Formatter == StrErrorFooter) && (si.ResultCode == "")) // If no code was given, don't show the empty placeholder.
+                {
+                    Formatter = StrErrorNoCodeFooter;
+                }
                 ReturnValue = ReturnValue +
                               (String.Format(Formatter,
                                    new object[] { si.ResultContext, Status, si.ResultText, si.ResultCode })) +
