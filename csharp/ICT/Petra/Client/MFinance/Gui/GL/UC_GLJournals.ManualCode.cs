@@ -131,10 +131,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ShowData();
 
-            if (grdDetails.Rows.Count < 2)
-            {
-                ShowDetails(null);
-            }
+            SelectRowInGrid(1);
 
             txtDetailExchangeRateToBase.Enabled = false;
             txtBatchNumber.Text = FBatchNumber.ToString();
@@ -146,18 +143,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AEffectiveDate"></param>
         public void UpdateEffectiveDateForCurrentRow(DateTime AEffectiveDate)
         {
-            if ((GetSelectedDetailRow() != null))
+            if ((GetSelectedDetailRow() != null) && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
-            	if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
-            	{
-	                GetSelectedDetailRow().DateEffective = AEffectiveDate;
-	                dtpDetailDateEffective.Date = AEffectiveDate;
-	                GetDetailsFromControls(GetSelectedDetailRow());
-            	}
-            	else
-            	{
-            		dtpDetailDateEffective.Date = AEffectiveDate;
-            	}
+                GetSelectedDetailRow().DateEffective = AEffectiveDate;
+                dtpDetailDateEffective.Date = AEffectiveDate;
+                GetDetailsFromControls(GetSelectedDetailRow());
             }
         }
 
@@ -208,7 +198,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FPreviouslySelectedDetailRow.JournalCreditTotal;
             }
 
-            dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
+            //Stops the date field being updated for posted batches. So do not use.
+            //dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
 
             UpdateChangeableStatus();
         }

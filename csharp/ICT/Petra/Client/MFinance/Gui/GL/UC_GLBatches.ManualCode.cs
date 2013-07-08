@@ -251,12 +251,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED)
                  || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED));
 
-            dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
+            //This line stops the date changing when a new row is selected, if the new row is a posted batch
+            //dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
 
             FSelectedBatchNumber = ARow.BatchNumber;
 
-            //Update the batch period if necessary
-            UpdateBatchPeriod(null, null);
+           	UpdateBatchPeriod(null, null);
 
             UpdateChangeableStatus();
         }
@@ -457,7 +457,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void UpdateBatchPeriod(object sender, EventArgs e)
         {
-            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
+        	if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
             {
                 return;
             }
