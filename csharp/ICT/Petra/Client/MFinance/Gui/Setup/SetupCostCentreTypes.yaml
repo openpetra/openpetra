@@ -35,7 +35,7 @@ RootNode:
             CustomColumns:
                 CostCentreType:  {Label=Cost Centre Type}
                 CcDescription:  {Label=Description}
-                Deletable:  {Label=Deletable}
+                Deletable:  {Label=Deletable, Type=Boolean}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
