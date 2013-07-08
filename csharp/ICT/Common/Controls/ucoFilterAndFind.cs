@@ -432,6 +432,16 @@ namespace Ict.Common.Controls
         /// Constructor.
         /// </summary>
         public TUcoFilterAndFind(List<Panel> AFilterControls, List<Panel> AExtraFilterControls, List<Panel> AFindControls,
+            FilterAndFindParameters AParameters) : this (AFilterControls, AExtraFilterControls, AFindControls,
+            AParameters.ApplyFilterButtonContext, AParameters.ShowFilterIsAlwaysOnLabelContext, 
+            AParameters.ShowFilterIsAlwaysOnLabelContext, AParameters.FindAndFilterInitialWidth)
+        {            
+        }
+        
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public TUcoFilterAndFind(List<Panel> AFilterControls, List<Panel> AExtraFilterControls, List<Panel> AFindControls,
             FilterContext AShowApplyFilterButton = FilterContext.fcNone,
             FilterContext AShowKeepFilterTurnedOnButton = FilterContext.fcNone,
             FilterContext AShowFilterIsAlwaysOnLabel = FilterContext.fcNone,

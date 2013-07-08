@@ -86,6 +86,7 @@ namespace Ict.Common.Controls
             this.btnCloseFilter.Name = "btnCloseFilter";
             this.btnCloseFilter.Size = new System.Drawing.Size(18, 18);
             this.btnCloseFilter.TabIndex = 9999;
+            this.btnCloseFilter.Tag = "SuppressChangeDetection";
             this.btnCloseFilter.Text = "X";
             this.btnCloseFilter.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.tipGeneral.SetToolTip(this.btnCloseFilter, "Closes this panel");

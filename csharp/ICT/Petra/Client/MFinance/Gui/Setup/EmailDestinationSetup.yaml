@@ -20,7 +20,8 @@ RootNode:
             Dock: Fill
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
-        
+            ExpandedWidth: 175
+#            InitiallyExpanded: true
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]

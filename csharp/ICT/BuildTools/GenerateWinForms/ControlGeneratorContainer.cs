@@ -730,11 +730,16 @@ Console.WriteLine("Adjusted Height of Panel '" + ctrl.controlName + "' as it is 
                 {
                     writer.Template.SetCodelet("FINDANDFILTERINITIALLYEXPANDED", "false");
                 }
-                
-                
+                                
                 writer.Template.SetCodelet("FINDANDFILTERAPPLYFILTERBUTTONCONTEXT", "TUcoFilterAndFind.FilterContext.fcNone");
                 writer.Template.SetCodelet("FINDANDFILTERSHOWKEEPFILTERTURNEDONBUTTONCONTEXT", "TUcoFilterAndFind.FilterContext.fcNone");
                 writer.Template.SetCodelet("FINDANDFILTERSHOWFILTERISALWAYSONLABELCONTEXT", "TUcoFilterAndFind.FilterContext.fcNone");
+                
+                writer.Template.SetCodelet("CUSTOMDISPOSING", 
+                    "if (FucoFilterAndFind != null)" + Environment.NewLine + 
+                    "{" + Environment.NewLine + 
+                    "    FUcoAddresses.Dispose();" + Environment.NewLine + 
+                    "}");                
             }
             
             if (ctrl.controlName == PNL_BUTTONS) 
@@ -856,7 +861,7 @@ TLogging.Log("Iteration #1:  Child: '" + Child.controlName + "'");
                     pnlButtonsRecordCounter.Children.Add(chkToggleFilter);                                    
                 }
                 
-                ctrl.Children.Add(pnlButtonsRecordCounter);                
+                ctrl.Children.Add(pnlButtonsRecordCounter);       
                 
                 base.ProcessChildren(writer, ctrl);                
                 

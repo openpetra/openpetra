@@ -54,7 +54,10 @@ namespace {#NAMESPACE}
     {#INLINETYPEDDATASET}
 {#ENDIFN DATASETTYPE}
 {#IFDEF FILTERANDFIND}
+    #region Filter and Find
+    TUcoFilterAndFind FucoFilterAndFind = null;
     TUcoFilterAndFind.FilterAndFindParameters FFilterAndFindParameters;
+    #endregion
 {#ENDIF FILTERANDFIND}
 
     /// constructor
@@ -1129,6 +1132,7 @@ namespace {#NAMESPACE}
         
         chkToggleFilter.AutoSize = true;
         chkToggleFilter.Text = Catalog.GetString("Filte&r");
+        chkToggleFilter.Tag = "SuppressChangeDetection";
         chkToggleFilter.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbFilter.Glyph"));
         chkToggleFilter.ImageAlign = ContentAlignment.MiddleLeft;
         chkToggleFilter.Appearance = Appearance.Button;
@@ -1161,6 +1165,18 @@ namespace {#NAMESPACE}
         
         if (pnlFilterAndFind.Width == 0) 
         {
+            // Create the Filter and Find UserControl on-the-fly (loading the usercontrol only when is is shown so that the screen can load faster!)
+            if (FucoFilterAndFind == null)
+            {                
+                FucoFilterAndFind = new TUcoFilterAndFind(null, null, null, FFilterAndFindParameters);
+            
+                FucoFilterAndFind.Dock = DockStyle.Fill;
+                pnlFilterAndFind.Controls.Add(FucoFilterAndFind);   
+
+                FucoFilterAndFind.Expanded += delegate { ToggleFilter(); };
+                FucoFilterAndFind.Collapsed += delegate { ToggleFilter(); };
+            }
+
             pnlFilterAndFind.Width = 150;    
             chkToggleFilter.Checked = true; 
                             
