@@ -164,7 +164,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (txtDetailPartnerKey.LabelText.Length > 0)
             {
                 ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
-            
+
                 ADeletionQuestion += String.Format("{0}{0}({1} {2}, {3} {4})",
                     Environment.NewLine,
                     lblDetailPartnerKey.Text,
@@ -172,7 +172,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     lblDetailConditionalValue.Text,
                     txtDetailConditionalValue.Text);
             }
-            
+
             return true;
         }
     }
