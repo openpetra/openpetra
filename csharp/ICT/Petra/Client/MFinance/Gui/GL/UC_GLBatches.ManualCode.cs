@@ -251,7 +251,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED)
                  || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED));
 
-            //This line stops the date changing when a new row is selected, if the new row is a posted batch
+            //This line stops the date changing when a new row is selected if AllowVerification=False
             //dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
 
             FSelectedBatchNumber = ARow.BatchNumber;
@@ -1167,7 +1167,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             }
                             catch (Exception exp)
                             {
-                                MessageBox.Show(Catalog.GetString("Problem with date in row " + lineCounter.ToString() + " Fehler: " + exp.Message));
+                                MessageBox.Show(Catalog.GetString("Problem with date in row " + lineCounter.ToString() + " Error: " + exp.Message));
                             }
                         }
                     }

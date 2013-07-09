@@ -198,9 +198,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FPreviouslySelectedDetailRow.JournalCreditTotal;
             }
 
-            //Stops the date field being updated for posted batches. So do not use.
-            //dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
-
             UpdateChangeableStatus();
         }
 
