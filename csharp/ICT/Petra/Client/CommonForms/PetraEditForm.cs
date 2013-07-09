@@ -33,6 +33,7 @@ using System.Runtime.Remoting.Lifetime;
 using System.Runtime.InteropServices;
 using GNU.Gettext;
 using SourceGrid;
+using Owf.Controls;
 
 using Ict.Common;
 using Ict.Common.Verification;
@@ -303,7 +304,8 @@ namespace Ict.Petra.Client.CommonForms
                          || (ctrl.GetType() == typeof(TTrvTreeView))
                          || (ctrl.GetType() == typeof(TbtnCreated))
                          || ((ctrl.GetType() == typeof(System.Windows.Forms.TableLayoutPanel))
-                             || (ctrl.GetType() == typeof(DevAge.Windows.Forms.Line))))
+                         || (ctrl.GetType() == typeof(DevAge.Windows.Forms.Line))
+                         || (ctrl.GetType() == typeof(Owf.Controls.A1Panel))))
                 {
                     // nothing to do
                 }
