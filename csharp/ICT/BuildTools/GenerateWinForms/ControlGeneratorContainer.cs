@@ -738,12 +738,14 @@ Console.WriteLine("Adjusted Height of Panel '" + ctrl.controlName + "' as it is 
                 writer.Template.SetCodelet("CUSTOMDISPOSING", 
                     "if (FucoFilterAndFind != null)" + Environment.NewLine + 
                     "{" + Environment.NewLine + 
-                    "    FUcoAddresses.Dispose();" + Environment.NewLine + 
+                    "    FucoFilterAndFind.Dispose();" + Environment.NewLine + 
                     "}");                
             }
             
             if (ctrl.controlName == PNL_BUTTONS) 
             {
+                writer.Template.SetCodelet("BUTTONPANEL", "true");
+                
 //                base.ProcessChildren(writer, ctrl);
 /*                
                 List<TControlDef> PresentButtonControls = new List<TControlDef>();

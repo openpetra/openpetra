@@ -57,6 +57,7 @@ namespace {#NAMESPACE}
     #region Filter and Find
     TUcoFilterAndFind FucoFilterAndFind = null;
     TUcoFilterAndFind.FilterAndFindParameters FFilterAndFindParameters;
+    ImageList FFilterImages;
     #endregion
 {#ENDIF FILTERANDFIND}
 
@@ -105,7 +106,9 @@ namespace {#NAMESPACE}
 {#IFDEF SHOWDETAILS}       
       SetPrimaryKeyControl();
 {#ENDIF SHOWDETAILS}
+{#IFDEF BUTTONPANEL}
       FinishButtonPanelSetup();
+{#ENDIF BUTTONPANEL}
 {#IFDEF FILTERANDFIND}
       SetupFilterAndFindControls();
 {#ENDIF FILTERANDFIND}
@@ -1102,6 +1105,7 @@ namespace {#NAMESPACE}
 {#ENDIF GENERATECONTROLUPDATEDATAHANDLER}
 {#ENDIF SAVEDETAILS}
 
+{#IFDEF BUTTONPANEL}
     ///<summary>
     /// Finish the set up of the Button Panel.
     /// </summary>
@@ -1114,37 +1118,38 @@ namespace {#NAMESPACE}
 
         pnlButtonsRecordCounter.AutoSize = true;
     }
+{#ENDIF BUTTONPANEL}
 
 {#IFDEF FILTERANDFIND}
+
+    #region Filter and Find
+    
     ///<summary>
-    /// Set up the Filter and Find Controls.
+    /// Sets up the Filter Button and the Filter and Find UserControl.
     /// </summary>
     private void SetupFilterAndFindControls()
     {
-        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof({#CLASSNAME}));    
-        
-        // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
-        lblRecordCounter.AutoSize = true;
-        lblRecordCounter.Padding = new Padding(4, 3, 0, 0);
-        lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+        LoadFilterIcons();
 
-        pnlButtonsRecordCounter.AutoSize = true;
-        
+        // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
         chkToggleFilter.AutoSize = true;
         chkToggleFilter.Text = Catalog.GetString("Filte&r");
         chkToggleFilter.Tag = "SuppressChangeDetection";
-        chkToggleFilter.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbFilter.Glyph"));
+        chkToggleFilter.Image = FFilterImages.Images[0];  // 'Filter is inactive' icon
         chkToggleFilter.ImageAlign = ContentAlignment.MiddleLeft;
         chkToggleFilter.Appearance = Appearance.Button;
-        chkToggleFilter.TextAlign = ContentAlignment.MiddleCenter;  // Same as 'real' Button 
+        chkToggleFilter.TextAlign = ContentAlignment.MiddleCenter;  // Same as 'real' Button
         chkToggleFilter.MinimumSize = new Size(75, 22);             // To prevent shrinkage!
-        chkToggleFilter.Click += delegate { ToggleFilter(); };    
+        chkToggleFilter.Click += delegate { ToggleFilter(); };
         
+        GetPetraUtilsObject().SetToolTip(chkToggleFilter, CommonFormsResourcestrings.StrFilterIsTurnedOff);
+                                         
+        // Prepare parameters for the UserControl that will display the Filter and Find Panels
         FFilterAndFindParameters = new TUcoFilterAndFind.FilterAndFindParameters(
             {#FINDANDFILTERINITIALWIDTH}, {#FINDANDFILTERINITIALLYEXPANDED},
             {#FINDANDFILTERAPPLYFILTERBUTTONCONTEXT}, {#FINDANDFILTERSHOWKEEPFILTERTURNEDONBUTTONCONTEXT}, 
             {#FINDANDFILTERSHOWFILTERISALWAYSONLABELCONTEXT});
-            
+
         // Show Filter and Find Panels initially collapsed or expanded
         pnlFilterAndFind.Width = 0;
 
@@ -1154,49 +1159,85 @@ namespace {#NAMESPACE}
         }
     }
 
+    private void LoadFilterIcons()
+    {
+        const string FILENAME_FILTER_ICON = "Filter.ico";
+        const string FILENAME_FILTER_ACTIVEICON = "FilterActive.ico";
+        string ResourceDirectory;
+
+        if (FFilterImages == null)
+        {
+            FFilterImages = new ImageList();
+
+            ResourceDirectory = TAppSettingsManager.GetValue("Resource.Dir");
+
+            if (System.IO.File.Exists(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + FILENAME_FILTER_ICON))
+            {
+                FFilterImages.Images.Add(FILENAME_FILTER_ICON, Image.FromFile(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + FILENAME_FILTER_ICON));
+            }
+            else
+            {
+                MessageBox.Show("LoadFilterIcons: cannot find file " + ResourceDirectory + System.IO.Path.DirectorySeparatorChar + FILENAME_FILTER_ICON);
+            }
+
+            if (System.IO.File.Exists(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + FILENAME_FILTER_ACTIVEICON))
+            {
+                FFilterImages.Images.Add(FILENAME_FILTER_ICON, Image.FromFile(ResourceDirectory + System.IO.Path.DirectorySeparatorChar + FILENAME_FILTER_ACTIVEICON));
+            }
+            else
+            {
+                MessageBox.Show("LoadFilterIcons: cannot find file " + ResourceDirectory + System.IO.Path.DirectorySeparatorChar + FILENAME_FILTER_ACTIVEICON);
+            }
+        }
+    }
+
     private void ToggleFilterPanel(System.Object sender, EventArgs e)
     {
         ToggleFilter();
     }
-    
+
     private void ToggleFilter()
     {
-        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof({#CLASSNAME}));
-        
-        if (pnlFilterAndFind.Width == 0) 
+        if (pnlFilterAndFind.Width == 0)
         {
-            // Create the Filter and Find UserControl on-the-fly (loading the usercontrol only when is is shown so that the screen can load faster!)
+            // Create the Filter and Find UserControl on-the-fly (loading the UserControl only when is is shown so that the screen can load faster!)
             if (FucoFilterAndFind == null)
-            {                
+            {
                 FucoFilterAndFind = new TUcoFilterAndFind(null, null, null, FFilterAndFindParameters);
-            
+
                 FucoFilterAndFind.Dock = DockStyle.Fill;
-                pnlFilterAndFind.Controls.Add(FucoFilterAndFind);   
+                pnlFilterAndFind.Controls.Add(FucoFilterAndFind);
 
                 FucoFilterAndFind.Expanded += delegate { ToggleFilter(); };
                 FucoFilterAndFind.Collapsed += delegate { ToggleFilter(); };
             }
 
-            pnlFilterAndFind.Width = 150;    
-            chkToggleFilter.Checked = true; 
-                            
-            lblRecordCounter.ForeColor = System.Drawing.Color.MidnightBlue;                
+            pnlFilterAndFind.Width = 150;
+            chkToggleFilter.Checked = true;
+
+            lblRecordCounter.ForeColor = System.Drawing.Color.MidnightBlue;
             lblRecordCounter.Font = new Font(lblRecordCounter.Font, FontStyle.Italic);
+
+            chkToggleFilter.Image =  FFilterImages.Images[1];  // 'Filter is active' icon
             
-            chkToggleFilter.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbFilterActive.Glyph"));
+            GetPetraUtilsObject().SetToolTip(chkToggleFilter, CommonFormsResourcestrings.StrFilterIsTurnedOn);
         }
         else
         {
-            pnlFilterAndFind.Width = 0;    
-            chkToggleFilter.Checked = false;  
-                            
-            lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;                
+            pnlFilterAndFind.Width = 0;
+            chkToggleFilter.Checked = false;
+
+            lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
             lblRecordCounter.Font = new Font(lblRecordCounter.Font, FontStyle.Regular);
-            chkToggleFilter.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbFilter.Glyph"));
-        }                      
-        
-//            UpdateRecordNumberDisplay();            
-    }            
+            chkToggleFilter.Image = FFilterImages.Images[0]; // 'Filter is inactive' icon
+            
+            GetPetraUtilsObject().SetToolTip(chkToggleFilter, CommonFormsResourcestrings.StrFilterIsTurnedOff);
+        }       
+
+//            UpdateRecordNumberDisplay();
+    }
+    
+    #endregion
 {#ENDIF FILTERANDFIND}    
 
 #region Implement interface functions
