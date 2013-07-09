@@ -18,16 +18,17 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailDocCode, DetailDocCategory, DetailDescription, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
@@ -45,11 +46,8 @@ RootNode:
                 Row2: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row3: [chkDetailDeletableFlag]
         txtDetailDocCode: {Label=Document Code, CharacterCasing=Upper, Width=160}
-        txtDetailDescription: {Label=Description, Width=290}
+        txtDetailDescription: {Label=Description, Width=340}
         cmbDetailDocCategory: {Label=Document Category, List=DocumentTypeCategoryList, ColSpan=2, ComboBoxWidth=130}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
-    Toolbar:
-        tbbNew:
-            Label: New Document Type

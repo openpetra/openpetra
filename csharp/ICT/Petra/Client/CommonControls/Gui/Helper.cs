@@ -204,7 +204,21 @@ namespace Ict.Petra.Client.CommonControls
             {
                 string controlName = AHostControl.Controls[i].Name;
 
-                if (controlName.ToLower().EndsWith(primaryKeyColName))
+                if (controlName.StartsWith("pnl") || controlName.StartsWith("grp"))
+                {
+                    // Call ourself recursively to see if the desired control is on a sub-panel
+                    Label subLabelControl = null;
+                    Control subDataControl = null;
+
+                    if (GetControlsForPrimaryKey(APrimaryKey, AHostControl.Controls[i], out subLabelControl, out subDataControl))
+                    {
+                        ALabelControl = subLabelControl;
+                        ADataControl = subDataControl;
+                        bFound = true;
+                        break;
+                    }
+                }
+                else if (controlName.ToLower().EndsWith(primaryKeyColName))
                 {
                     if (controlName.StartsWith("lbl") && (AHostControl.Controls[i].GetType() == typeof(System.Windows.Forms.Label)))
                     {
@@ -217,20 +231,6 @@ namespace Ict.Petra.Client.CommonControls
 
                     if ((ALabelControl != null) && (ADataControl != null))
                     {
-                        bFound = true;
-                        break;
-                    }
-                }
-                else if (controlName.StartsWith("pnl") || controlName.StartsWith("grp"))
-                {
-                    // Call ourself recursively to see if the desired control is on a sub-panel
-                    Label subLabelControl = null;
-                    Control subDataControl = null;
-
-                    if (GetControlsForPrimaryKey(APrimaryKey, AHostControl.Controls[i], out subLabelControl, out subDataControl))
-                    {
-                        ALabelControl = subLabelControl;
-                        ADataControl = subDataControl;
                         bFound = true;
                         break;
                     }

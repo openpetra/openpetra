@@ -19,18 +19,23 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnClose, btnCancel, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
+            Width: 80
         btnClose: 
             Action: actClose
+            Width: 80
         btnCancel: 
             Action: actCancel
+            Width: 80
         btnDelete: 
             Action: actDelete
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailFromCurrencyCode, DetailToCurrencyCode, DetailDateEffectiveFrom, DetailTimeEffectiveFrom, DetailRateOfExchange]

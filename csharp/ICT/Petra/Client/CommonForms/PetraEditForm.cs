@@ -457,10 +457,7 @@ namespace Ict.Petra.Client.CommonForms
                     else if (ctrl.Controls.Count > 0)
                     {
                         // Clear these controls as well
-                        foreach (Control c in ctrl.Controls)
-                        {
-                            ClearControls(c);
-                        }
+                        ClearControls(ctrl);
                     }
                 }
                 catch (Exception ex)

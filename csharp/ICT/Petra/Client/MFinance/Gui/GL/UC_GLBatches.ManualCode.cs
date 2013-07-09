@@ -256,7 +256,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FSelectedBatchNumber = ARow.BatchNumber;
 
-           	UpdateBatchPeriod(null, null);
+            UpdateBatchPeriod(null, null);
 
             UpdateChangeableStatus();
         }
@@ -457,7 +457,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void UpdateBatchPeriod(object sender, EventArgs e)
         {
-        	if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
+            if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
             {
                 return;
             }
