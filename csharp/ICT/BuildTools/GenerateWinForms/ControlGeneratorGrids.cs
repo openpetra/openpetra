@@ -395,8 +395,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     if (FCodeStorage.FControlList.ContainsKey("btnDelete"))
                     {
-                        writer.Template.SetCodelet("SELECTIONCHANGEDEVENT",
-                            "grdDetails.Selection.SelectionChanged += new RangeRegionChangedEventHandler(Selection_SelectionChanged);" + Environment.NewLine);
+                        writer.Template.SetCodelet(
+                            "SELECTIONCHANGEDEVENT",
+                            "grdDetails.Selection.SelectionChanged += new RangeRegionChangedEventHandler(Selection_SelectionChanged);" +
+                            Environment.NewLine);
 
                         ProcessTemplate snippet = writer.Template.GetSnippet("SNIPSELECTIONCHANGEDHANDLER");
                         writer.Template.InsertSnippet("SELECTIONCHANGEDHANDLER", snippet);
