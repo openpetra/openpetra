@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Common;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
@@ -49,6 +50,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ARow.MethodOfPaymentCode = newName;
+            ARow.MethodOfPaymentDesc = Catalog.GetString("PLEASE ENTER DESCRIPTION");
         }
     }
 }

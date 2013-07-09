@@ -9,7 +9,7 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add Batch, ActionClick=NewRow}
-        actCancel: {Label=&Cancel Batch, ActionClick=CancelRow}
+        actCancel: {Label=&Cancel Batch, ActionClick=CancelRow, Image=Delete_Record.ico}
         actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
         actTestPostBatch: {Label=&Test Batch, ActionClick=TestPostBatch}
         actImportFromSpreadSheet: {ActionClick=ImportFromSpreadSheet}
@@ -35,14 +35,15 @@ RootNode:
             Controls: [cmbYearFilter, cmbPeriodFilter]
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnCancel, btnTestPostBatch, btnPostBatch]
-        btnNew: {Action=actNew, Stretch=horizontally}
-        btnCancel: {Action=actCancel, Stretch=horizontally}
-        btnPostBatch: {Action=actPostBatch, Stretch=horizontally}
-        btnTestPostBatch: {Stretch=horizontally}
+            ControlsOrientation: horizontal
+        btnNew: {Action=actNew, Width=120}
+        btnCancel: {Action=actCancel, Width=120}
+        btnTestPostBatch: {Width=120, StartNewButtonGroup=true}
+        btnPostBatch: {Action=actPostBatch, Width=120}
         grdDetails:
             Dock: Fill
             Columns: [BatchNumber, BatchStatus, DateEffective, BatchDebitTotal, BatchCreditTotal, BatchControlTotal, BatchDescription]

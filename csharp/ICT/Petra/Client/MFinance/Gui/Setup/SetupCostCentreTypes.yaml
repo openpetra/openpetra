@@ -18,23 +18,24 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [CostCentreType, CcDescription, Deletable]
             CustomColumns:
                 CostCentreType:  {Label=Cost Centre Type}
                 CcDescription:  {Label=Description}
-                Deletable:  {Label=Deletable}
+                Deletable:  {Label=Deletable, Type=Boolean}
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
@@ -42,8 +43,5 @@ RootNode:
                 Row0: [txtDetailCostCentreType, txtDetailCcDescription]
                 Row1: [chkDetailDeletable]
         txtDetailCostCentreType: {Label=Cost Centre Type}
-        txtDetailCcDescription: {Label=Description, Width=319}
+        txtDetailCcDescription: {Label=Description, Width=360}
         chkDetailDeletable: {Label=Deletable}
-    Toolbar:
-        tbbNew:
-            Label: New Cost Centre Type

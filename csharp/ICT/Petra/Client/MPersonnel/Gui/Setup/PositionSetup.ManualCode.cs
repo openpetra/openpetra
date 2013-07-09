@@ -60,7 +60,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             }
 
             ARow.PositionName = newName;
-            ARow.PositionScope = String.Empty;
+            ARow.PositionScope = "Not used";
         }
 
         private void NewRecord(Object sender, EventArgs e)

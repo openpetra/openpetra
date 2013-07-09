@@ -18,17 +18,18 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Height: 200
-            Dock: Top
-            Controls: [grdDetails, pnlButtons]
+            Dock: Fill
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNewType, btnDelete]
+            ControlsOrientation: horizontal
         btnNewType:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [AAnalysisType.AnalysisTypeCode, AAnalysisType.AnalysisTypeDescription]
@@ -41,7 +42,7 @@ RootNode:
                 Row2: [chkDetailSystemAnalysisType]
         pnlValues:
             Dock: Bottom
-            Height: 400
+            Height: 300
             Controls: [ucoValues]
         ucoValues:
             Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_SetupAnalysisValues
@@ -52,7 +53,4 @@ RootNode:
         chkDetailSystemAnalysisType: {Label=System Analysis Type, ReadOnly=true}
     Menu:
         mniAnalysisTypes:
-    Toolbar:
-        tbbNew:
-            Label: New Analysis Type
 

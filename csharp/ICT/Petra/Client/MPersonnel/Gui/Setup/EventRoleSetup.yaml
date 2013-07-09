@@ -18,16 +18,17 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailCode, DetailDescription, DetailPreCongress, DetailConference, DetailOutreach, DetailDiscounted, DetailParticipant, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
@@ -51,7 +52,7 @@ RootNode:
                 Row4: [chkDetailDeletableFlag]
             ColWidths: [0=Fixed:150, 2=Fixed:155]
         txtDetailCode: {Label=Role, CharacterCasing=Upper, Width=120}
-        txtDetailDescription: {Label=Description, Width=290}
+        txtDetailDescription: {Label=Description, Width=340}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
@@ -60,12 +61,9 @@ RootNode:
             Margin: 0
             Controls:
                 Row0: [chkDetailPreCongress, chkDetailConference, chkDetailOutreach]
-            ColWidths: [0=Fixed:150, 2=Fixed:155]
+            #ColWidths: [0=Fixed:150, 2=Fixed:85]
         chkDetailPreCongress: {Label=Pre-Conference Role, CheckBoxAttachedLabel=right}
         chkDetailConference: {Label=Conference Role, CheckBoxAttachedLabel=right}
         chkDetailOutreach: {Label=Outreach Role, CheckBoxAttachedLabel=right}
         chkDetailDiscounted: {Label=Discounted Fees}
         chkDetailParticipant: {Label=Included in Participants}
-    Toolbar:
-        tbbNew:
-            Label: New Event Role

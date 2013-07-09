@@ -16,12 +16,13 @@ RootNode:
             Controls: [pnlDetailGrid, pnlDetails]
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
-        btnNew: {Action=actNew, Stretch=horizontally}
-        btnDelete: {Action=actDelete, Stretch=horizontally}
+            ControlsOrientation: horizontal
+        btnNew: {Action=actNew, Width=80}
+        btnDelete: {Action=actDelete, Width=80}
         grdDetails:
             Dock: Fill
             TableName: PmPastExperience

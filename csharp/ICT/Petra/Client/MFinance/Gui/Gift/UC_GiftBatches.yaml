@@ -9,7 +9,7 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add Batch, ActionClick=NewRow}
-        actCancel: {Label=&Cancel Batch, ActionClick=CancelRecord}
+        actCancel: {Label=&Cancel Batch, ActionClick=CancelRecord, Image=Delete_Record.ico}
         actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
         actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
@@ -36,13 +36,14 @@ RootNode:
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnCancel, btnPostBatch]
-        btnNew: {Action=actNew, Stretch=horizontally}
-        btnCancel: {Action=actCancel, Stretch=horizontally}
-        btnPostBatch: {Action=actPostBatch, Stretch=horizontally}
+            ControlsOrientation: horizontal
+        btnNew: {Action=actNew, Width=120}
+        btnCancel: {Action=actCancel, Width=120}
+        btnPostBatch: {Action=actPostBatch, Width=120, StartNewButtonGroup=true}
         grdDetails:
             Dock: Fill
             TableName: AGiftBatch

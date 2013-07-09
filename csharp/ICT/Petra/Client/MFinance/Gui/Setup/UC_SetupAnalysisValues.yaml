@@ -16,20 +16,23 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlDetailTop,grdDetails, pnlButtons]
+            Controls: [pnlDetailTop, pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
+            Width: 80
         btnDelete:
             Action: actDelete
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [AFreeformAnalysis.AnalysisValue, AFreeformAnalysis.Active]
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
-            Height: 150
+            #Height: 150
             Dock: Bottom
             Controls:
                 Row0: [txtDetailAnalysisValue]
@@ -42,6 +45,3 @@ RootNode:
         txtHeaderLedgerNumber: {Label=Values for this Type and Ledger Number,ReadOnly=true}
     Menu:
         mniAnalysisValues:
-    Toolbar:
-        tbbNew:
-            Label: New Analysis Value

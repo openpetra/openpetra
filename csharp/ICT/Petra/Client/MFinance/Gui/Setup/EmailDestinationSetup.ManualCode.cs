@@ -158,5 +158,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             txtDetailEmailAddress.Text = newAddresses;
         }
+
+        private bool PreDeleteManual(AEmailDestinationRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            if (txtDetailPartnerKey.LabelText.Length > 0)
+            {
+                ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+
+                ADeletionQuestion += String.Format("{0}{0}({1} {2}, {3} {4})",
+                    Environment.NewLine,
+                    lblDetailPartnerKey.Text,
+                    txtDetailPartnerKey.LabelText,
+                    lblDetailConditionalValue.Text,
+                    txtDetailConditionalValue.Text);
+            }
+
+            return true;
+        }
     }
 }
