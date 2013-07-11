@@ -104,6 +104,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ABatchTable.GetLedgerNumberDBName(),
                 ABatchTable.GetBatchNumberDBName()
                 );
+            
+            UpdateRecordNumberDisplay();            
 
             grdDetails.Focus();
         }
@@ -1332,6 +1334,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 rbtAll.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
                 rbtPosting.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
             }
+        }
+        
+        /// <summary>
+        /// Shows the Filter/Find UserControl and switches to the Find Tab.
+        /// </summary>        
+        public void ShowFindPanel()
+        {
+            FucoFilterAndFind.DisplayFindTab();
         }
     }
 }

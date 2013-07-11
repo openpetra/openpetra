@@ -35,14 +35,18 @@ RootNode:
             Controls: [cmbYearFilter, cmbPeriodFilter]
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlFilterAndFind, grdDetails, pnlDetailButtons]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            InitiallyExpanded: true        
         pnlDetailButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnCancel, btnTestPostBatch, btnPostBatch]
-        btnNew: {Action=actNew, Stretch=horizontally}
-        btnCancel: {Action=actCancel, Stretch=horizontally}
-        btnPostBatch: {Action=actPostBatch, Stretch=horizontally}
-        btnTestPostBatch: {Stretch=horizontally}
+            ControlsOrientation: horizontal
+        btnNew: {Action=actNew, Width=100}
+        btnCancel: {Action=actCancel, Width=100}
+        btnTestPostBatch: {Width=100, StartNewButtonGroup=true}
+        btnPostBatch: {Action=actPostBatch, Width=100}
         grdDetails:
             Dock: Fill
             Columns: [BatchNumber, BatchStatus, DateEffective, BatchDebitTotal, BatchCreditTotal, BatchControlTotal, BatchDescription]
@@ -80,8 +84,6 @@ RootNode:
             mniImportBatches:
             mniExportBatches:
     Toolbar:
-        tbbTestPostBatch:
-        tbbPostBatch:
         #tbbImportFromSpreadSheet:
         tbbImportBatches:
         tbbExportBatches:
