@@ -720,6 +720,11 @@ namespace Ict.Tools.CodeGeneration
         /// Name of Panel that contains Buttons that are related to a Grid (such as 'Add' and 'Delete')
         /// </summary>        
         public const string STR_INNER_BUTTON_PANEL_NAME = "pnlButtonsInner";
+
+        /// <summary>
+        /// Name of the Grid that is connected to the Details section of the Form/UserControl
+        /// </summary>
+        public const string STR_GRID_DETAILS_NAME = "grdDetails";
         
         /// <summary>
         /// construtor
@@ -991,6 +996,21 @@ TLogging.Log("Control: " + this.controlName + "  is IsGridButtonPanel: " +
                 return (this.controlName == STR_BUTTON_PANEL_NAME 
                     || this.controlName == STR_DETAIL_BUTTON_PANEL_NAME
                     || this.controlName == STR_INNER_BUTTON_PANEL_NAME);
+            }
+        }
+
+        /// <summary>
+        /// True if the Control is a Grid Button Panel.
+        /// </summary>
+        public bool IsGridButtonPanelStrict
+        {
+            get
+            {
+TLogging.Log("Control: " + this.controlName + "  is IsGridButtonPanel: " + 
+                       (this.controlName == STR_BUTTON_PANEL_NAME 
+                              || this.controlName == STR_DETAIL_BUTTON_PANEL_NAME).ToString()     );
+                return (this.controlName == STR_BUTTON_PANEL_NAME 
+                    || this.controlName == STR_DETAIL_BUTTON_PANEL_NAME);
             }
         }
         

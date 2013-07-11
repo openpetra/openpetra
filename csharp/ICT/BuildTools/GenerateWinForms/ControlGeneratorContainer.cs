@@ -505,14 +505,19 @@ TLogging.Log("foreach (TControlDef childCtrl in ctrl.Children) -- Control: " + c
 
                     foreach (TControlDef ChildControl in ctrl.Children)
                     {
-                        if (ChildControl.HasAttribute("Dock"))
+                        if ((ChildControl.HasAttribute("Dock"))
+                            && ((!ChildControl.IsGridButtonPanelStrict) 
+                                && (ChildControl.controlName != TControlDef.STR_GRID_DETAILS_NAME)))
                         {
                             ChildControl.ClearAttribute("Dock");
                             clearDockAttributeChildren.Add(ChildControl.controlName);
                         }
                     }
 
-                    TLogging.Log("Warning: please remove the Dock attribute from control(s) " + StringHelper.StrMerge(clearDockAttributeChildren, ','));
+                    if (clearDockAttributeChildren.Count > 0) 
+                    {
+                        TLogging.Log("Warning: please remove the Dock attribute from control(s) " + StringHelper.StrMerge(clearDockAttributeChildren, ','));    
+                    }
                 }
 
                 if (ctrl.GetAttribute("Margin") == "0")
@@ -643,7 +648,6 @@ TLogging.Log("foreach (TControlDef childCtrl in ctrl.Children) -- Control: " + c
     /// </summary>
     public class PanelGenerator : GroupBoxGenerator
     {
-        private const string PNL_BUTTONS = "pnlButtons";
         private const string PNL_FILTER_AND_FIND = "pnlFilterAndFind";
         
         /// <summary>constructor</summary>
@@ -739,10 +743,10 @@ Console.WriteLine("Adjusted Height of Panel '" + ctrl.controlName + "' as it is 
                     "if (FucoFilterAndFind != null)" + Environment.NewLine + 
                     "{" + Environment.NewLine + 
                     "    FucoFilterAndFind.Dispose();" + Environment.NewLine + 
-                    "}");                
+                    "}");              
             }
             
-            if (ctrl.controlName == PNL_BUTTONS) 
+            if (ctrl.IsGridButtonPanelStrict) 
             {
                 writer.Template.SetCodelet("BUTTONPANEL", "true");
                 
