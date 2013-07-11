@@ -208,7 +208,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ATransactionTable.GetJournalNumberDBName(),
                     FJournalNumber);
 
-                FMainDS.ATransaction.DefaultView.Sort = String.Format("{0} DESC",
+                FMainDS.ATransaction.DefaultView.Sort = String.Format("{0} ASC",
                     ATransactionTable.GetTransactionNumberDBName()
                     );
             }

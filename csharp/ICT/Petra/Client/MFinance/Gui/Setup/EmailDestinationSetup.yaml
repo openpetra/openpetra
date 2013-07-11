@@ -44,14 +44,14 @@ RootNode:
             Controls:
                 Row0: [cmbDetailFileCode, txtDetailConditionalValue]
                 Row1: [pnlEmailAddress]
-            ColWidths: [0=Fixed:135]
+            ColWidths: [0=Fixed:210]
         cmbDetailFileCode: {Label=File Code, OnChange=OnFileCodeChange}
             OptionalValues: [ =AFO, BRANCH, FUND BALS-AFO, FUND BALANCE, HOSA, STEWARDSHIP, ICH, GIFT STATEMENT ]
-        txtDetailConditionalValue: {Label=Condition value, Width=180}
+        txtDetailConditionalValue: {Label=Condition value, Width=210}
         pnlEmailAddress:
             Controls:
                 Row0: [txtDetailPartnerKey]
                 Row1: [txtDetailEmailAddress]
             ColSpan: 2
         txtDetailPartnerKey: {Label=Partner Key, Type=PartnerKey, OnChange=PartnerKeyChanged}
-        txtDetailEmailAddress: {Label=Email address(es) (one per line), Multiline=true, ScrollBars=Vertical, Height=80, Width=400}
+        txtDetailEmailAddress: {Label=Email address(es) (one per line), Multiline=true, ScrollBars=Vertical, Height=80, Width=480}

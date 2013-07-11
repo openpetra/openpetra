@@ -69,6 +69,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         {
             FBudgetTDS = new BudgetTDS();
 
+
             ALedgerAccess.LoadByPrimaryKey(FBudgetTDS, ALedgerNumber, null);
 
             string sqlLoadBudgetForThisAndNextYear =

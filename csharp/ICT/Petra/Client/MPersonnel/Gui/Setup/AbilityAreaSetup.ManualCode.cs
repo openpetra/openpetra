@@ -60,6 +60,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             }
 
             ARow.AbilityAreaName = newName;
+            ARow.RequirementAreaDescr = "Not used";
         }
 
         private void NewRecord(Object sender, EventArgs e)

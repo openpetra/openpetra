@@ -384,14 +384,14 @@ partial class FilterFindTest
         this.pnlCurrencyName.Name = "pnlCurrencyName";
         this.pnlCurrencyName.Size = new System.Drawing.Size(133, 43);
         this.pnlCurrencyName.TabIndex = 19;
-        this.pnlCurrencyName.Tag = "";
+        this.pnlCurrencyName.Tag = "KeepBackColour";
         // 
         // txtCurrencyName
         // 
         this.txtCurrencyName.Font = new System.Drawing.Font("Verdana", 8F);
         this.txtCurrencyName.Location = new System.Drawing.Point(3, 17);
         this.txtCurrencyName.Name = "txtCurrencyName";
-        this.txtCurrencyName.Size = new System.Drawing.Size(120, 20);
+        this.txtCurrencyName.Size = new System.Drawing.Size(79, 20);
         this.txtCurrencyName.TabIndex = 1;
         // 
         // lblCurrencyName
@@ -476,14 +476,14 @@ partial class FilterFindTest
         this.pnlCurrencyCode.Name = "pnlCurrencyCode";
         this.pnlCurrencyCode.Size = new System.Drawing.Size(133, 43);
         this.pnlCurrencyCode.TabIndex = 16;
-        this.pnlCurrencyCode.Tag = "";
+        this.pnlCurrencyCode.Tag = "KeepBackColour";
         // 
         // txtCurrencyCode
         // 
         this.txtCurrencyCode.Font = new System.Drawing.Font("Verdana", 8F);
         this.txtCurrencyCode.Location = new System.Drawing.Point(3, 17);
         this.txtCurrencyCode.Name = "txtCurrencyCode";
-        this.txtCurrencyCode.Size = new System.Drawing.Size(89, 20);
+        this.txtCurrencyCode.Size = new System.Drawing.Size(79, 20);
         this.txtCurrencyCode.TabIndex = 1;
         // 
         // lblCurrencyCode
@@ -583,7 +583,7 @@ partial class FilterFindTest
         this.txtDynCtrl1.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
         this.txtDynCtrl1.Location = new System.Drawing.Point(17, 15);
         this.txtDynCtrl1.Name = "txtDynCtrl1";
-        this.txtDynCtrl1.Size = new System.Drawing.Size(100, 20);
+        this.txtDynCtrl1.Size = new System.Drawing.Size(59, 20);
         this.txtDynCtrl1.TabIndex = 0;
         this.txtDynCtrl1.Text = "MYTEXT";
         // 

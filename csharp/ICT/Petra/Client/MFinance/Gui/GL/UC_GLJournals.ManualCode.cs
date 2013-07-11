@@ -131,10 +131,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ShowData();
 
-            if (grdDetails.Rows.Count < 2)
-            {
-                ShowDetails(null);
-            }
+            SelectRowInGrid(1);
 
             txtDetailExchangeRateToBase.Enabled = false;
             txtBatchNumber.Text = FBatchNumber.ToString();
@@ -200,8 +197,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FPreviouslySelectedDetailRow.JournalDebitTotal -
                     FPreviouslySelectedDetailRow.JournalCreditTotal;
             }
-
-            dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
 
             UpdateChangeableStatus();
         }

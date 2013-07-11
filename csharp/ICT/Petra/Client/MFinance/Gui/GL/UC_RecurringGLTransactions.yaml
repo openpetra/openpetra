@@ -24,7 +24,7 @@ RootNode:
         txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlDetailButtons, grdDetails]
             Height: 200
             Width: 600
         pnlDetailsSection:
@@ -32,11 +32,12 @@ RootNode:
             Controls: [pnlDetails, pnlTransAnalysisAttributes]
             Height: 320
         pnlDetailButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete, btnDeleteAll]
-        btnNew: {Action=actNew, Stretch=horizontally}
-        btnDelete: {Action=actDelete, Stretch=horizontally}
-        btnDeleteAll: {Action=actDeleteAll, Stretch=horizontally}
+            ControlsOrientation: horizontal
+        btnNew: {Action=actNew, Width=120}
+        btnDelete: {Action=actDelete, Width=120}
+        btnDeleteAll: {Action=actDeleteAll, Width=120, StartNewButtonGroup=true}
 
         pnlTransAnalysisAttributes:
             Dock: Right
