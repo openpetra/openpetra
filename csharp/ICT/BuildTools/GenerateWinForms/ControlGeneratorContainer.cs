@@ -744,6 +744,12 @@ Console.WriteLine("Adjusted Height of Panel '" + ctrl.controlName + "' as it is 
                     "{" + Environment.NewLine + 
                     "    FucoFilterAndFind.Dispose();" + Environment.NewLine + 
                     "}");              
+
+                ProcessTemplate snippetFilterAndFindDeclarations = writer.Template.GetSnippet("FILTERANDFINDDECLARATIONS");                
+                writer.Template.InsertSnippet("FILTERANDFINDDECLARATIONS", snippetFilterAndFindDeclarations);
+
+                ProcessTemplate snippetFilterAndFindMethods = writer.Template.GetSnippet("FILTERANDFINDMETHODS");                
+                writer.Template.InsertSnippet("FILTERANDFINDMETHODS", snippetFilterAndFindMethods);                
             }
             
             if (ctrl.IsGridButtonPanelStrict) 

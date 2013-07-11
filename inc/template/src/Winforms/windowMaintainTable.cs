@@ -53,8 +53,7 @@ namespace {#NAMESPACE}
     {#INLINETYPEDDATASET}
 {#ENDIFN DATASETTYPE} 
 {#IFDEF FILTERANDFIND}
-    Label FlblRecordCounter = new Label();
-    CheckBox FBtnToggleFilter = new CheckBox();
+    {#FILTERANDFINDDECLARATIONS}
 {#ENDIF FILTERANDFIND}
 
     /// constructor
@@ -138,6 +137,9 @@ namespace {#NAMESPACE}
 {#IFDEF SHOWDETAILS}       
       SetPrimaryKeyControl();
 {#ENDIF SHOWDETAILS}
+{#IFDEF BUTTONPANEL}
+      FinishButtonPanelSetup();
+{#ENDIF BUTTONPANEL}
 {#IFDEF FILTERANDFIND}
       SetupFilterAndFindControls();
 {#ENDIF FILTERANDFIND}
@@ -985,32 +987,39 @@ namespace {#NAMESPACE}
 {#ENDIF GENERATECONTROLUPDATEDATAHANDLER}
 {#ENDIF SAVEDETAILS}
 
-{#IFDEF FILTERANDFIND}
-    private void SetupFilterAndFindControls()
+{#IFDEF BUTTONPANEL}
+    ///<summary>
+    /// Finish the set up of the Button Panel.
+    /// </summary>
+    private void FinishButtonPanelSetup()
     {
-        // FlblRecordCounter.Top = 8;
-        // FlblRecordCounter.Left = 1;
-        // FlblRecordCounter.AutoSize = true;
-        // FlblRecordCounter.Text = "n records";
-        // FlblRecordCounter.Padding = new Padding(4, 3, 0, 0);
-        // FlblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
-        // FlblRecordCounter.Dock = DockStyle.Fill;
+        // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
+        lblRecordCounter.AutoSize = true;
+        lblRecordCounter.Padding = new Padding(4, 3, 0, 0);
+        lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+
+        pnlButtonsRecordCounter.AutoSize = true;
         
-        // System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmSetupCurrency));
-        // FBtnToggleFilter.Top = 3;
-        // FBtnToggleFilter.Height = 22;
-        // FBtnToggleFilter.AutoSize = true;
-        // FBtnToggleFilter.Text = Catalog.GetString("&Filter");
-        // FBtnToggleFilter.Image = ((System.Drawing.Bitmap)resources.GetObject("tbbFilter.Glyph"));
-        // FBtnToggleFilter.ImageAlign = ContentAlignment.MiddleLeft;
-        // FBtnToggleFilter.Dock = DockStyle.Left;
-        // FBtnToggleFilter.Appearance = Appearance.Button;
-        // FBtnToggleFilter.TextAlign = ContentAlignment.MiddleCenter;  // Same as 'real' Button 
-        // FBtnToggleFilter.MinimumSize = new Size(75, 22);             // To prevent shrinkage!
-        // FBtnToggleFilter.Click += delegate { ToggleFilter(); };    
+        UpdateRecordNumberDisplay();
     }
-{#ENDIF FILTERANDFIND}    
     
+    private void UpdateRecordNumberDisplay()
+    {
+        int RecordCount;
+        
+        if (grdDetails.DataSource != null) 
+        {
+            RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
+            lblRecordCounter.Text = String.Format(Catalog.GetPluralString("{0} record", "{0} records", RecordCount, true), RecordCount);
+        }                
+    }        
+
+{#ENDIF BUTTONPANEL}
+
+{#IFDEF FILTERANDFIND}
+    {#FILTERANDFINDMETHODS}
+{#ENDIF FILTERANDFIND}    
+   
     /// <summary>
     /// Performs data validation.
     /// </summary>
@@ -1463,6 +1472,8 @@ namespace {#NAMESPACE}
 {#INCLUDE copyvalues.cs}
 {#INCLUDE validationcontrolsdict.cs}
 {#INCLUDE inline_typed_dataset.cs}
+{#INCLUDE findandfilter.cs}
+
 
 {##SNIPDELETEREFERENCECOUNT}
 if (!FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors)
