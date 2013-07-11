@@ -510,6 +510,7 @@ namespace ControlTestBench
                 else if (ContextArgs is TUcoFilterAndFind.TContextEventExtControlArgs) 
                 {
                     txtEventsLog.Text += "  (Context: '" + ContextArgs.Context.ToString("G") + "' - associated Control: '" + ((TUcoFilterAndFind.TContextEventExtControlArgs)ContextArgs).AffectedControl.Name + "'." + Environment.NewLine;
+                    Application.DoEvents();
                     
                     if (ContextArgs.Action != null) 
                     {
