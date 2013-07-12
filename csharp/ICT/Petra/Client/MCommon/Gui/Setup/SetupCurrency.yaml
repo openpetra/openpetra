@@ -19,6 +19,7 @@ RootNode:
             Dock: Fill
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
+            FilterControls: [txtDetailCurrencyCode, txtDetailCurrencyName, txtDetailCurrencySymbol, cmbDetailCountryCode, Column:ACurrency.DisplayFormat]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]

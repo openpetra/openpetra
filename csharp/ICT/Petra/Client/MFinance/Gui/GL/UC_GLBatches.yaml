@@ -37,8 +37,23 @@ RootNode:
             Dock: Fill
             Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
         pnlFilterAndFind:
-            ExpandedWidth: 175
-            InitiallyExpanded: true        
+            ExpandedWidth: 180
+            InitiallyExpanded: true     
+            ShowApplyFilterButton: FilterContext.StandardAndExtraFilter
+            ShowFilterIsAlwaysOnLabel: FilterContext.StandardFilterOnly
+            ShowKeepFilterTurnedOnButton: FilterContext.ExtraFilterOnly
+            FilterControls: [pnlBatchFilter]
+            ExtraFilterControls: [Column:BatchNumber, txtDetailBatchDescription, txtDetailBatchControlTotal]
+            Panels:
+                pnlBatchFilter:
+                    Controls: [rgrShowBatches, cmbYearFilter, cmbPeriodFilter]
+                    
+                    rgrShowBatches: 
+                        Label: Show batches available for
+                        OptionalValues: [Posting, =Editing, All]
+                        
+                    cmbYearFilter: {List: UserDefinedList, Width=100}
+                    cmbPeriodFilter: {List: UserDefinedList, Width=250}
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNew, btnCancel, btnTestPostBatch, btnPostBatch]

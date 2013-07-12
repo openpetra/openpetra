@@ -22,6 +22,8 @@ RootNode:
         pnlFilterAndFind:
             ExpandedWidth: 175
 #            InitiallyExpanded: true
+            FilterControls: [cmbDetailFileCode, txtDetailConditionalValue, txtDetailEmailAddress]
+            
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
