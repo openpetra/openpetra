@@ -50,6 +50,7 @@ namespace Ict.Common.Controls
         private bool FMovingSplitter = false;       // avoid recursion of events on Mono
         private bool FMultiLedgerSite = false;
         private int FCurrentLedger = -1;
+        private bool FConferenceSelected = false;
 
         #region Public Static
 
@@ -179,6 +180,22 @@ namespace Ict.Common.Controls
                 FCurrentLedger = value;
             }
         }
+        
+        /// <summary>
+        /// True if the user has previously selected a conference.
+        /// </summary>
+        public bool ConferenceSelected
+        {
+            get
+            {
+                return FConferenceSelected;
+            }
+
+            set
+            {
+                FConferenceSelected = value;
+            }
+        }
 
         #endregion
 
@@ -290,7 +307,7 @@ namespace Ict.Common.Controls
             {
                 APanelCreated = true;
 
-                CollPanelHoster = new TPnlModuleNavigation(AFolderNode, FDashboard, this.Width, FMultiLedgerSite);
+                CollPanelHoster = new TPnlModuleNavigation(AFolderNode, FDashboard, this.Width, FMultiLedgerSite, FConferenceSelected);
                 CollPanelHoster.Name = pnlName;
                 CollPanelHoster.Statusbar = FStatusbar;
                 CollPanelHoster.Dock = DockStyle.Left;

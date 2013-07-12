@@ -35,19 +35,22 @@ RootNode:
             Dock: Fill
             Columns: [DetailUpToAge, DetailDiscount, DetailCostTypeCode]
             CustomColumns:
-                DetailDiscount: {Label=Discount (%)}
+                DetailDiscount: {Label=Discount (%), Format=Integer}
                 DetailCostTypeCode: {Label=Apply Discount To}
             ActionFocusRow: FocusedRowChanged
             SortOrder: DetailUpToAge ASC
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtUpToAge, cmbCostTypeCode, txtDiscount]
-        txtUpToAge: {Width=30, Format=Integer}
-        cmbCostTypeCode:
-            OptionalValues: [=Conference, Accommodation]
+                Row0: [txtDetailUpToAge, cmbDetailCostTypeCode, txtDetailDiscount]
+        txtDetailUpToAge:
+            Width: 30
+            Format: Integer
+            OnChange: UpdateCostTypeCode
+        cmbDetailCostTypeCode:
+            OptionalValues: [=ACCOMMODATION, CONFERENCE]
             Label: Apply discount to
-        txtDiscount: {Width=50, Format=PercentInteger}
+        txtDetailDiscount: {Width=50, Format=PercentInteger}
     Toolbar:
         tbbNew:
             Label: New Child Discount

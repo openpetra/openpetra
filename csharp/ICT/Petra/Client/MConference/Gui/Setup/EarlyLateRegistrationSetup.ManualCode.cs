@@ -42,7 +42,14 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 {
     public partial class TFrmEarlyLateRegistrationSetup
     {
-        private Int64 FPartnerKey = 1110198;
+        private Int64 FPartnerKey;
+        
+        /// constructor
+        public TFrmEarlyLateRegistrationSetup(Form AParentForm, TSearchCriteria[] ASearchCriteria, long ASelectedConferenceKey) : base()
+        {
+            FPartnerKey = ASelectedConferenceKey;
+            Initialize(AParentForm, ASearchCriteria);
+        }
         
         private void InitializeManualCode()
         {
@@ -50,12 +57,15 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             string CurrencyName;
             string ConferenceName;
             TPartnerClass PartnerClass;
+            
+            FPartnerKey = TUserDefaults.GetInt64Default("LastConferenceWorkedWith");
         
             // display the conference name in the title bar and in a text box at the top of the screen
             TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(FPartnerKey, out ConferenceName, out PartnerClass);
             this.Text = this.Text + " [" + ConferenceName + "]";
             txtConferenceName.Text = ConferenceName;
             
+            // display the conference dates in a text box at the top of the screen
             txtConferenceDates.Text = TRemote.MConference.Conference.WebConnectors.GetStartDate(FPartnerKey).ToShortDateString() + " to " +
                 TRemote.MConference.Conference.WebConnectors.GetEndDate(FPartnerKey).ToShortDateString();
             
@@ -112,7 +122,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
         {
             DateTime ApplicableDate = TRemote.MConference.Conference.WebConnectors.GetStartDate(FPartnerKey).AddDays(-1);
             
-            if (FMainDS.PcEarlyLate.Count > 1)
+            if (FMainDS.PcEarlyLate.Count >= 1)
             {
                 DateTime EarliestDate = ApplicableDate;
                 DataRowCollection AllRecords = FMainDS.PcEarlyLate.Rows;

@@ -42,7 +42,14 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 {
     public partial class TFrmConferenceStandardCostSetup
     {
-        private Int64 FPartnerKey = 1110198;
+        private Int64 FPartnerKey;
+        
+        /// constructor
+        public TFrmConferenceStandardCostSetup(Form AParentForm, TSearchCriteria[] ASearchCriteria, long ASelectedConferenceKey) : base()
+        {
+            FPartnerKey = ASelectedConferenceKey;
+            Initialize(AParentForm, ASearchCriteria);
+        }
         
         private void InitializeManualCode()
         {

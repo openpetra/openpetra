@@ -252,11 +252,27 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     if (CustomColumnNode != null)
                     {
-                        AddColumnToGrid(writer, ctrl.controlName,
-                            TYml2Xml.GetAttribute(CustomColumnNode, "Type"),
-                            TYml2Xml.GetAttribute(CustomColumnNode, "Label"),
-                            TableFieldTable,
-                            ColumnFieldNameResolved);
+                        // if grd has no TableName property
+                        if (TableFieldTable== "" && ColumnFieldNameResolved.Contains("."))
+                        {
+                            int Period = ColumnFieldNameResolved.IndexOf(".");
+                            string TableName = ColumnFieldNameResolved.Remove(Period);
+                            string ColumnName = ColumnFieldNameResolved.Remove(0, TableName.Length + 1);
+                            
+                            AddColumnToGrid(writer, ctrl.controlName,
+                                TYml2Xml.GetAttribute(CustomColumnNode, "Type"),
+                                TYml2Xml.GetAttribute(CustomColumnNode, "Label"),
+                                TableName,
+                                ColumnName);
+                        }
+                        else
+                        {
+                            AddColumnToGrid(writer, ctrl.controlName,
+                                TYml2Xml.GetAttribute(CustomColumnNode, "Type"),
+                                TYml2Xml.GetAttribute(CustomColumnNode, "Label"),
+                                TableFieldTable,
+                                ColumnFieldNameResolved);
+                        }
                     }
                     else if (ctrl.HasAttribute("TableName"))
                     {
@@ -466,7 +482,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         {
                             //ColumnType = "CheckBox";
                         }
-
+                        
                         writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".Columns.Add(" +
                             "FMainDS." + ctrl.GetAttribute("TableName") + ".Get" + ColumnFieldName + "DBName(), \"" +
                             TYml2Xml.GetAttribute(CustomColumnNode, "Label") + "\");" + Environment.NewLine);

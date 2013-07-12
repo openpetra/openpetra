@@ -345,10 +345,12 @@ OpenPetra:
                         #LocalDataFieldOrderShortTermApp: {Label=Field Order for Short Term Applications, Description=Maintain Field Order for Short Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=ShortTermApp}
                         LocalDataFieldOrderPersonnel: {Label=Field Order for Personnel, Description=Maintain Field Order for Personnel, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Personnel}
                         
-        ConferenceManagement: {Icon=conference.ico, PermissionsRequired=CONFERENCE}
+        ConferenceManagement: {Icon=conference.ico, PermissionsRequired=CONFERENCE, DependsOnConference=true}
             Main: {SkipThisLevel=true}
                 Find: {Namespace=Ict.Petra.Client.MConference.Gui, DontShowNestedTasksAsLinks=true}
-                    FindConference: {ActionOpenScreen=TFrmConferenceFindForm}
+                    Find:    
+                        SelectConference: {Description=Select a Conference to work on, ActionOpenScreen=TFrmConferenceFindForm}
+                        NewConference: {Namespace=Ict.Petra.Client.MConference.Gui, Description=Create a new Conference, ActionClick=TConferenceMain.NewConference}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MConference, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
                     Reports:
                         AbsenteeReport: {ActionOpenScreen=TFrmAbsenteeReport}

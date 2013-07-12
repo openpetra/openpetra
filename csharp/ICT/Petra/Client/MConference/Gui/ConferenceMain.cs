@@ -22,9 +22,12 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System.Windows.Forms;
+using System.Runtime.Serialization;
+using System;
 using Ict.Common;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Client.MConference.Gui.Setup;
+using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.MConference.Gui
 {
@@ -38,9 +41,11 @@ namespace Ict.Petra.Client.MConference.Gui
         /// </summary>
         public static void EarlyLateRegistrationsForSelectedConference(Form AParentForm)
         {
+            long ConferenceKey = Convert.ToInt64(AParentForm.GetType().GetMethod("GetSelectedConferenceKey").Invoke(AParentForm, null));
+            
             TSearchCriteria[] Search = new TSearchCriteria[1];
-            Search[0] = new TSearchCriteria(PcEarlyLateTable.GetConferenceKeyDBName(), 1110198);
-            TFrmEarlyLateRegistrationSetup frm = new TFrmEarlyLateRegistrationSetup(AParentForm, Search);
+            Search[0] = new TSearchCriteria(PcEarlyLateTable.GetConferenceKeyDBName(), ConferenceKey);
+            TFrmEarlyLateRegistrationSetup frm = new TFrmEarlyLateRegistrationSetup(AParentForm, Search, ConferenceKey);
             
             frm.Show();
         }
@@ -50,9 +55,11 @@ namespace Ict.Petra.Client.MConference.Gui
         /// </summary>
         public static void StandardCostsForSelectedConference(Form AParentForm)
         {
+            long ConferenceKey = Convert.ToInt64(AParentForm.GetType().GetMethod("GetSelectedConferenceKey").Invoke(AParentForm, null));
+            
             TSearchCriteria[] Search = new TSearchCriteria[1];
-            Search[0] = new TSearchCriteria(PcConferenceCostTable.GetConferenceKeyDBName(), 1110198);
-            TFrmConferenceStandardCostSetup frm = new TFrmConferenceStandardCostSetup(AParentForm, Search);
+            Search[0] = new TSearchCriteria(PcConferenceCostTable.GetConferenceKeyDBName(), ConferenceKey);
+            TFrmConferenceStandardCostSetup frm = new TFrmConferenceStandardCostSetup(AParentForm, Search, ConferenceKey);
             
             frm.Show();
         }
@@ -62,11 +69,23 @@ namespace Ict.Petra.Client.MConference.Gui
         /// </summary>
         public static void ChildDiscountsForSelectedConference(Form AParentForm)
         {
-            TSearchCriteria[] Search = new TSearchCriteria[1];
-            Search[0] = new TSearchCriteria(PcDiscountTable.GetConferenceKeyDBName(), 1110198);
-            TFrmChildDiscountSetup frm = new TFrmChildDiscountSetup(AParentForm, Search);
+            long ConferenceKey = Convert.ToInt64(AParentForm.GetType().GetMethod("GetSelectedConferenceKey").Invoke(AParentForm, null));
+            
+            TSearchCriteria[] Search = new TSearchCriteria[2];
+            Search[0] = new TSearchCriteria(PcDiscountTable.GetConferenceKeyDBName(), ConferenceKey);
+            Search[1] = new TSearchCriteria(PcDiscountTable.GetDiscountCriteriaCodeDBName(), "CHILD");
+            TFrmChildDiscountSetup frm = new TFrmChildDiscountSetup(AParentForm, Search, ConferenceKey);
             
             frm.Show();
+        }
+        
+        /// <summary>
+        /// opens Event Find Screen screen and uses Conference Find Form (not displayed) to create a new conference
+        /// </summary>
+        public static void NewConference(Form AParentForm)
+        {
+            TFrmConferenceFindForm frm = new TFrmConferenceFindForm(AParentForm);
+            frm.NewConference(new object(), new EventArgs());
         }
     }
 }

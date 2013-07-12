@@ -42,7 +42,14 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 {
     public partial class TFrmChildDiscountSetup
     {
-        private Int64 FPartnerKey = 1110198;
+        private Int64 FPartnerKey;
+        
+        /// constructor
+        public TFrmChildDiscountSetup(Form AParentForm, TSearchCriteria[] ASearchCriteria, long ASelectedConferenceKey) : base()
+        {
+            FPartnerKey = ASelectedConferenceKey;
+            Initialize(AParentForm, ASearchCriteria);
+        }
         
         private void InitializeManualCode()
         {
@@ -53,6 +60,11 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(FPartnerKey, out ConferenceName, out PartnerClass);
             this.Text = this.Text + " [" + ConferenceName + "]";
             txtConferenceName.Text = ConferenceName;
+            
+            // create foreign keys if they do not already exist
+            TRemote.MConference.Conference.WebConnectors.CreateDiscountCriteriaIfNotExisting("CHILD", "Child");
+            TRemote.MConference.Conference.WebConnectors.CreateCostTypeIfNotExisting("ACCOMMODATION", "Extra accommodation costs");
+            TRemote.MConference.Conference.WebConnectors.CreateCostTypeIfNotExisting("CONFERENCE", "Additional costs for conference");
         }
         
         private void NewRowManual(ref PcDiscountRow ARow)
@@ -63,7 +75,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             int NewAge = 0;  // starts at 0 years
             int i = 0;
 
-            // if a row already exists for 0 years find the next available integer
+            // if PK already exists, find the next available
             while (FMainDS.PcDiscount.Rows.Find(new object[] { FPartnerKey, DiscountCriteriaCode, CostType, Validity, NewAge + i}) != null)
             {
                 if (CostType == "CONFERENCE")
@@ -79,15 +91,16 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 
             NewAge += i;
             
+            // set default values for new row
             ARow.DiscountCriteriaCode = DiscountCriteriaCode;
             ARow.CostTypeCode = CostType;
             ARow.Validity = Validity;
             ARow.UpToAge = NewAge;
+            ARow.Percentage = true;
+            ARow.Discount = 0;
             
             // set the conference key
             ARow.ConferenceKey = FPartnerKey;
-            
-            TRemote.MConference.Conference.WebConnectors.CheckDiscountCriteriaCode("CHILD", true);
         }
         
         private void NewRecord(Object sender, EventArgs e)
@@ -95,29 +108,82 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             CreateNewPcDiscount();
         }
         
-        // check the correct radio buttons and set the correct text box to read only on screen load and record change
         private void ShowDetailsManual(PcDiscountRow ARow)
         {
-            // only run if screen in not empty
+            // converts the numeric value in table to int
             if (ARow != null)
             {
-                if (ARow.CostTypeCode == "CONFERENCE")
+                if (ARow.IsDiscountNull())
                 {
-                    cmbCostTypeCode.SelectedItem = "Conference";
+                    txtDetailDiscount.NumberValueInt = null;
                 }
-                
-                else if (ARow.CostTypeCode == "ACCOMMODATION")
+                else
                 {
-                    cmbCostTypeCode.SelectedItem = "Accommodation";
+                    txtDetailDiscount.NumberValueInt = Convert.ToInt32(ARow.Discount);
+                }
+            
+                EnableOrDisableCmb(ARow);
+            }
+        }
+        
+        private void UpdateCostTypeCode(object sender, EventArgs e)
+        {
+            PcDiscountRow ARow = GetSelectedDetailRow();
+            
+            // if txtDetailUpToDate has just been changed for a row, select available Cost Type Code (if any)
+            // and enable or diable cmb as appropriate
+            if (sender.Equals(txtDetailUpToAge) && txtDetailUpToAge.NumberValueInt != ARow.UpToAge)
+            {
+                if (FMainDS.PcDiscount.Rows.Find(new object[] { FPartnerKey, ARow.DiscountCriteriaCode, "ACCOMMODATION", ARow.Validity, txtDetailUpToAge.NumberValueInt})
+                    != null)
+                {
+                    cmbDetailCostTypeCode.SelectedItem = "CONFERENCE";
+                    cmbDetailCostTypeCode.Enabled = false;
+                }
+                else if (FMainDS.PcDiscount.Rows.Find(new object[] { FPartnerKey, ARow.DiscountCriteriaCode, "CONFERENCE", ARow.Validity, txtDetailUpToAge.NumberValueInt})
+                    != null)
+                {
+                    cmbDetailCostTypeCode.SelectedItem = "ACCOMMODATION";
+                    cmbDetailCostTypeCode.Enabled = false;
+                }
+                else
+                {
+                    cmbDetailCostTypeCode.Enabled = true;
                 }
             }
         }
         
-    private void GetDetailsFromControls(PcDiscountRow ARow, bool AIsNewRow = false, Control AControl=null)
-    {}
+        // enables or disables the combo box depending on the availability of the two Cost Type Codes for selected UpToAge
+        private void EnableOrDisableCmb(PcDiscountRow ARow)
+        {
+            if (ARow.CostTypeCode == "CONFERENCE")
+            {
+                if (FMainDS.PcDiscount.Rows.Find(new object[] { FPartnerKey, ARow.DiscountCriteriaCode, "ACCOMMODATION", ARow.Validity, ARow.UpToAge}) != null)
+                {
+                    cmbDetailCostTypeCode.Enabled = false;
+                }
+                else
+                {
+                    cmbDetailCostTypeCode.Enabled = true;
+                }
+            }
+            else if (ARow.CostTypeCode == "ACCOMMODATION")
+            {
+                if (FMainDS.PcDiscount.Rows.Find(new object[] { FPartnerKey, ARow.DiscountCriteriaCode, "CONFERENCE", ARow.Validity, ARow.UpToAge}) != null)
+                {
+                    cmbDetailCostTypeCode.Enabled = false;
+                }
+                else
+                {
+                    cmbDetailCostTypeCode.Enabled = true;
+                }
+            }
+        }
     
         private void ValidateDataDetailsManual(PcDiscountRow ARow)
         {   
+            EnableOrDisableCmb(ARow);
+            
             // this is used to compare with the row that is being validated            
             /*DataRowCollection GridData = FMainDS.PcEarlyLate.Rows;
 
