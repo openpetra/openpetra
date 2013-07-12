@@ -905,50 +905,6 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             ref TVerificationResultCollection AVerificationResult)
         {
             Int32 numBudgetsExported = 0;
-
-            //TODO: update this section for export
-            //string filename = Path.GetFullPath(Path.Combine(AOutputPath, "transaction.csv"));
-
-//            TLogging.Log("Writing file: " + filename);
-//
-//            StringBuilder sb = new StringBuilder();
-//            
-//            // get a list of all batches involved
-//            List <Int64>batches = new List <Int64>();
-//            StringBuilder batchnumbers = new StringBuilder();
-//
-//            foreach (ATransactionRow r in transactions.Rows)
-//            {
-//                if (!batches.Contains(r.BatchNumber))
-//                {
-//                    batches.Add(r.BatchNumber);
-//                    batchnumbers.Append(r.BatchNumber.ToString() + ",");
-//                }
-//            }
-//
-//            foreach (ATransactionRow row in transactions.Rows)
-//            {
-//
-//                sb.Append(StringHelper.StrMerge(
-//                        new string[] {
-//                            "B" + row.BatchNumber.ToString() + "_J" + row.JournalNumber.ToString() + "_T" + row.TransactionNumber.ToString(),
-//                            row.CostCentreCode,
-//                            row.AccountCode,
-//                            row.TransactionDate.ToString("yyyyMMdd"),
-//                            OtherCostCentres,
-//                            OtherAccountCodes,
-//                            Narrative,
-//                            row.Reference,
-//                            String.Format("{0:N}", row.TransactionAmount),
-//                            attributes.ToString(),
-//                            TaxOnIncome.ToString(),
-//                            TaxOnExpense.ToString()
-//                        }, ACSVSeparator));
-//
-//                sb.Append(ANewLine);
-//                
-//               numBudgetsExported++; 
-//            }
                 	
             return numBudgetsExported;
         }

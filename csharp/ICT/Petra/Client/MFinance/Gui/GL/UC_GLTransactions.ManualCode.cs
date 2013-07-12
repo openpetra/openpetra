@@ -47,6 +47,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FBatchNumber = -1;
         private Int32 FJournalNumber = -1;
         private Int32 FTransactionNumber = -1;
+        private bool FActiveOnly = true;
         private string FTransactionCurrency = string.Empty;
         private string FBatchStatus = string.Empty;
         private string FJournalStatus = string.Empty;
@@ -146,10 +147,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // if this form is readonly or batch is posted, then we need all account and cost centre codes, because old codes might have been used
             bool ActiveOnly = (this.Enabled && FBatchStatus == MFinanceConstants.BATCH_UNPOSTED);
-
-            if (requireControlSetup)
+            
+            if (requireControlSetup || FActiveOnly != ActiveOnly) 
             {
-                //Load all analysis attribute values
+                FActiveOnly = ActiveOnly;
+                	
+            	//Load all analysis attribute values
                 if (FCacheDS == null)
                 {
                     FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber);
