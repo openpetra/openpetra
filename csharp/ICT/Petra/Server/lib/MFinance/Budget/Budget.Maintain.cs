@@ -905,7 +905,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             ref TVerificationResultCollection AVerificationResult)
         {
             Int32 numBudgetsExported = 0;
-                	
+
             return numBudgetsExported;
         }
 

@@ -164,7 +164,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, ConsolidateAll, out VerificationResult);
 
                 string CheckItemsList = clbCostCentreAccountCodes.GetCheckedStringList();
-                
+
                 string[] CheckedItems = CheckItemsList.Split(',');
 
                 string ForecastType;
@@ -204,7 +204,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
             catch (Exception ex)
             {
-	            Cursor.Current = Cursors.Default;
+                Cursor.Current = Cursors.Default;
                 throw ex;
             }
 
