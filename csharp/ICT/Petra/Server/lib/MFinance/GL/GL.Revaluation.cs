@@ -21,6 +21,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Data;
 using System.Text.RegularExpressions;
 
 using Ict.Petra.Server.MFinance.Account.Data.Access;
@@ -44,6 +45,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using System.Collections.Specialized;
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
@@ -58,8 +60,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// for each account number - cost center combination which holds a foreign currency value
         /// </summary>
         /// <param name="ALedgerNum">Number of the Ledger to be revaluated</param>
-        /// <param name="AAccoutingPeriod">Number of the accounting period
-        /// (other form of the date)</param>
+        /// <param name="AAccoutingPeriod">Number of the accounting period (other form of the date)</param>
         /// <param name="AForeignCurrency">Types (Array) of the foreign currency account</param>
         /// <param name="ANewExchangeRate">Array of the exchange rates</param>
         /// <param name="AVerificationResult">A TVerificationResultCollection for possible error messages</param>
@@ -90,27 +91,24 @@ namespace Ict.Petra.Server.MFinance.GL
     /// </summary>
     public class CLSRevaluation
     {
-        private int intLedgerNum;
-        private int intAccountingPeriod;
-        private string[] strArrForeignCurrencyType;
-        private decimal[] decArrExchangeRate;
+        private int F_LedgerNum;
+        private int F_AccountingPeriod;
+        private string[] F_CurrencyCode;
+        private decimal[] F_ExchangeRate;
 
-        private string strBaseCurrencyType;
-        private string strRevaluationAccount;
-
-        private int intPtrToForeignData;
-
-        decimal decDelta;
-
-        private GLBatchTDS GLDataset = null;
-        private ABatchRow batch;
-        private AJournalRow journal;
+        private string F_BaseCurrency;
+        private int F_BaseCurrencyDigits;
+        private string F_RevaluationAccCode;
+        private int F_FinancialYear;
+        private GLBatchTDS F_GLDataset = null;
+        private ABatchRow F_batch;
+        private AJournalRow F_journal;
 
 
         string strStatusContent = Catalog.GetString("Revaluation ...");
 
         TVerificationResultCollection verificationCollection = new TVerificationResultCollection();
-        TResultSeverity resultSeverity = TResultSeverity.Resv_Noncritical;
+        TResultSeverity F_resultSeverity = TResultSeverity.Resv_Noncritical;
 
 
         /// <summary>
@@ -125,10 +123,10 @@ namespace Ict.Petra.Server.MFinance.GL
             string[] AForeignCurrency,
             decimal[] ANewExchangeRate)
         {
-            intLedgerNum = ALedgerNum;
-            intAccountingPeriod = AAccoutingPeriod;
-            strArrForeignCurrencyType = AForeignCurrency;
-            decArrExchangeRate = ANewExchangeRate;
+            F_LedgerNum = ALedgerNum;
+//            F_AccountingPeriod = AAccoutingPeriod; // Ignoring what the client asked for, I'm going to revaluate the current period!
+            F_CurrencyCode = AForeignCurrency;
+            F_ExchangeRate = ANewExchangeRate;
         }
 
         /// <summary>
@@ -143,20 +141,23 @@ namespace Ict.Petra.Server.MFinance.GL
 
 
         /// <summary>
-        /// run the revaluation and set the flag for the ledger
+        /// Run the revaluation and set the flag for the ledger
         /// </summary>
         public bool RunRevaluation()
         {
             try
             {
-                TLedgerInfo gli = new TLedgerInfo(intLedgerNum);
-                strBaseCurrencyType = gli.BaseCurrency;
-                strRevaluationAccount = gli.RevaluationAccount;
+                TLedgerInfo gli = new TLedgerInfo(F_LedgerNum);
+                F_BaseCurrency = gli.BaseCurrency;
+                F_BaseCurrencyDigits = new TCurrencyInfo(F_BaseCurrency).digits;
+                F_RevaluationAccCode = gli.RevaluationAccount;
+                F_FinancialYear = gli.CurrentFinancialYear;
+                F_AccountingPeriod = gli.CurrentPeriod;
                 RunRevaluationIntern();
 
-                if (resultSeverity != TResultSeverity.Resv_Critical)
+                if (F_resultSeverity != TResultSeverity.Resv_Critical)
                 {
-                    new TLedgerInitFlagHandler(intLedgerNum,
+                    new TLedgerInitFlagHandler(F_LedgerNum,
                         TLedgerInitFlagEnum.Revaluation).Flag = true;
                 }
             }
@@ -164,120 +165,100 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 verificationCollection = terminate.ResultCollection();
             }
-            return resultSeverity == TResultSeverity.Resv_Critical;
+            return F_resultSeverity == TResultSeverity.Resv_Critical;
         }
 
         private void RunRevaluationIntern()
         {
-            AAccountTable accountTable =
-                AAccountAccess.LoadViaALedger(intLedgerNum, null);
-            AGeneralLedgerMasterTable generalLedgerMasterTable =
-                AGeneralLedgerMasterAccess.LoadViaALedger(intLedgerNum, null);
+            Boolean NewTransaction;
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            AAccountTable accountTable = new AAccountTable();
 
-            if (accountTable.Rows.Count == 0)
+            AAccountRow accountTemplate = (AAccountRow)accountTable.NewRowTyped(false);
+            accountTemplate.LedgerNumber = F_LedgerNum;
+            accountTemplate.AccountActiveFlag = true;
+            accountTemplate.ForeignCurrencyFlag = true;
+            accountTable = AAccountAccess.LoadUsingTemplate(accountTemplate, DBTransaction);
+
+            AGeneralLedgerMasterTable glmTable = new AGeneralLedgerMasterTable();
+            AGeneralLedgerMasterRow glmTemplate = (AGeneralLedgerMasterRow)glmTable.NewRowTyped(false);
+            glmTemplate.LedgerNumber = F_LedgerNum;
+            glmTemplate.Year = F_FinancialYear;
+            glmTable = AGeneralLedgerMasterAccess.LoadUsingTemplate(glmTemplate, DBTransaction);
+
+            if (NewTransaction)
             {
-                TVerificationException terminate = new TVerificationException(
-                    Catalog.GetString(Catalog.GetString(
-                            "No Entries in GeneralLedgerMasterTable")));
-                terminate.Context = "Common Accountig";
-                terminate.ErrorCode = "001";
-                throw terminate;
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            if (accountTable.Rows.Count == 0) // not using any foreign accounts?
+            {
+                return;
             }
 
             for (int iCnt = 0; iCnt < accountTable.Rows.Count; ++iCnt)
             {
                 AAccountRow accountRow = (AAccountRow)accountTable[iCnt];
 
-                // Account shall be active
-                if (accountRow.AccountActiveFlag)
+                for (int kCnt = 0; kCnt < F_CurrencyCode.Length; ++kCnt)
                 {
-                    // Account shall hold foreign Currency values
-                    if (accountRow.ForeignCurrencyFlag)
+                    // AForeignCurrency[] and ANewExchangeRate[] shall support a value
+                    // for this account resp. for the currency of the account
+                    if (accountRow.ForeignCurrencyCode.Equals(F_CurrencyCode[kCnt]))
                     {
-                        for (int kCnt = 0; kCnt < strArrForeignCurrencyType.Length; ++kCnt)
+                        glmTable.DefaultView.RowFilter = "a_account_code_c = '" + accountRow.AccountCode + "'";
+                        if (glmTable.DefaultView.Count > 0)
                         {
-                            intPtrToForeignData = kCnt;
-                            bool blnFoundGlmEntry = false;
-
-                            // AForeignCurrency[] and ANewExchangeRate[] shall support a value
-                            // for this account resp. for the currency of the account
-                            if (accountRow.ForeignCurrencyCode.Equals(strArrForeignCurrencyType[kCnt]))
-                            {
-                                for (int jCnt = 0; jCnt < generalLedgerMasterTable.Rows.Count; ++jCnt)
-                                {
-                                    AGeneralLedgerMasterRow generalLedgerMasterRow =
-                                        (AGeneralLedgerMasterRow)generalLedgerMasterTable[jCnt];
-
-                                    // generalLedgerMaster shall support Entries for this account
-                                    if (generalLedgerMasterRow.AccountCode.Equals(accountRow.AccountCode))
-                                    {
-                                        // Account is localized ...
-                                        RevaluateAccount(accountRow.AccountCode);
-                                        blnFoundGlmEntry = true;
-                                    }
-                                }
-                            }
-
-                            if (!blnFoundGlmEntry)
-                            {
-                                string strMessage = Catalog.GetString(
-                                    "The account {0} has no glm-entry and a revaluation is not necessary");
-                                strMessage = String.Format(strMessage, accountRow.AccountCode);
-                                verificationCollection.Add(new TVerificationResult(
-                                        strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
-                            }
+                            RevaluateAccount(glmTable.DefaultView, F_ExchangeRate[kCnt]);
                         }
                     }
-                    else
-                    {
-                        string strMessage = Catalog.GetString(
-                            "The account {0} is not defined as foreign and a revaluation is not possible");
-                        strMessage = String.Format(strMessage, accountRow.AccountCode);
-                        verificationCollection.Add(new TVerificationResult(
-                                strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
-                    }
-                }
-                else
-                {
-                    string strMessage = Catalog.GetString(
-                        "The account {0} is not active and a revaluation is not possible");
-                    strMessage = String.Format(strMessage, accountRow.AccountCode);
-                    verificationCollection.Add(new TVerificationResult(
-                            strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
                 }
             }
+
+
+            CloseRevaluationAccountingBatch();
         }
 
-        private void RevaluateAccount(string ARelevantAccount)
+        private void RevaluateAccount(DataView GLMView, decimal AExchangeRate)
         {
-            AGeneralLedgerMasterTable generalLedgerMasterTable =
-                AGeneralLedgerMasterAccess.LoadViaAAccount(intLedgerNum, ARelevantAccount, null);
-
-            for (int iCnt = 0; iCnt < generalLedgerMasterTable.Rows.Count; ++iCnt)
+            foreach (DataRowView RowView in GLMView)
             {
-                AGeneralLedgerMasterRow generalLedgerMasterRow =
-                    (AGeneralLedgerMasterRow)generalLedgerMasterTable[iCnt];
-
+                AGeneralLedgerMasterRow glmRow = (AGeneralLedgerMasterRow)RowView.Row;
+                ACostCentreTable tempTbl = ACostCentreAccess.LoadByPrimaryKey(F_LedgerNum,glmRow.CostCentreCode, null);
+                if (tempTbl.Rows.Count == 0)
+                {
+                    continue; // I really don't expect this, but if it does happen, this will prevent a crash!
+                }
+                ACostCentreRow tempRow = tempTbl[0];
+                if (!tempRow.PostingCostCentreFlag)
+                {
+                    continue; // I do expect this - many rows are not "posting" cost centres.
+                }
                 try
                 {
-                    int intNoOfForeignDigts = new TCurrencyInfo(strBaseCurrencyType).digits;
-                    decDelta = AccountDelta(generalLedgerMasterRow.YtdActualBase,
-                        generalLedgerMasterRow.YtdActualForeign,
-                        decArrExchangeRate[intPtrToForeignData],
-                        intNoOfForeignDigts);
+                    AGeneralLedgerMasterPeriodTable glmpTbl = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(glmRow.GlmSequence, F_AccountingPeriod, null);
+                    if (glmpTbl.Rows.Count == 0)
+                    {
+                        continue; // I really don't expect this, but if it does happen, this will prevent a crash!
+                    }
+                    AGeneralLedgerMasterPeriodRow glmpRow = glmpTbl[0];
+                    decimal delta = AccountDelta(glmpRow.ActualBase,
+                        glmpRow.ActualForeign,
+                        AExchangeRate,
+                        F_BaseCurrencyDigits);
 
-                    if (decDelta != 0)
+                    if (delta != 0)
                     {
                         // Now we have the relevant Cost Centre ...
-                        RevaluateCostCentre(ARelevantAccount, generalLedgerMasterRow.CostCentreCode);
+                        RevaluateCostCentre(glmRow.AccountCode, glmRow.CostCentreCode, delta);
                     }
                     else
                     {
-                        string strMessage = Catalog.GetString(
-                            "The account {1}:{0} was allread valuated to {2}");
-                        strMessage = String.Format(strMessage, ARelevantAccount,
-                            generalLedgerMasterRow.CostCentreCode,
-                            decArrExchangeRate[intPtrToForeignData]);
+                        string strMessage = String.Format(
+                            Catalog.GetString("The account {1}:{0} does not require revaluation."),
+                            glmRow.AccountCode,
+                            glmRow.CostCentreCode,
+                            AExchangeRate);
                         verificationCollection.Add(new TVerificationResult(
                                 strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
                     }
@@ -288,116 +269,109 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
                 catch (DivideByZeroException)
                 {
-                    string strMessage = Catalog.GetString(
-                        "DivideByZeroException");
                     verificationCollection.Add(new TVerificationResult(
-                            strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
+                            strStatusContent, Catalog.GetString("DivideByZeroException"), TResultSeverity.Resv_Noncritical));
                 }
                 catch (OverflowException)
                 {
-                    string strMessage = Catalog.GetString(
-                        "OverflowException");
                     verificationCollection.Add(new TVerificationResult(
-                            strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
+                            strStatusContent, Catalog.GetString("OverflowException"), TResultSeverity.Resv_Noncritical));
                 }
             }
-
-            CloseRevaluationAccountingBatch();
         }
 
-        private void RevaluateCostCentre(string ARelevantAccount, string ACostCentre)
+        private void RevaluateCostCentre(string ARelevantAccount, string ACostCentre, decimal Adelta)
         {
             // In the very first run Batch and Journal shall be created ...
-            if (GLDataset == null)
+            if (F_GLDataset == null)
             {
                 InitBatchAndJournal();
             }
 
-            string strMsgGain =
-                Catalog.GetString("Gain on foreign account {0}, cost centre {1}");
-            string strMsgLoss =
-                Catalog.GetString("Loss on foreign account {0}, cost centre {1}");
             string strMessage;
             bool blnDebitFlag;
 
-            if (decDelta > 0)
+            if (Adelta > 0)
             {
-                strMessage = strMsgGain;
+                strMessage = Catalog.GetString("Gain on foreign account {0}, cost centre {1}");
                 blnDebitFlag = true;
             }
             else
             {
-                strMessage = strMsgLoss;
+                strMessage = Catalog.GetString("Loss on foreign account {0}, cost centre {1}");
                 blnDebitFlag = false;
             }
 
-            decDelta = Math.Abs(decDelta);
+            Adelta = Math.Abs(Adelta);
 
             strMessage = String.Format(strMessage, ARelevantAccount, ACostCentre);
 
-            CreateTransaction(strMessage, strRevaluationAccount, !blnDebitFlag, ACostCentre);
-            CreateTransaction(strMessage, ARelevantAccount, blnDebitFlag, ACostCentre);
-            journal.JournalDebitTotal = journal.JournalDebitTotal + decDelta;
-            journal.JournalCreditTotal = journal.JournalCreditTotal + decDelta;
+            CreateTransaction(strMessage, F_RevaluationAccCode, !blnDebitFlag, ACostCentre, Adelta);
+            CreateTransaction(strMessage, ARelevantAccount, blnDebitFlag, ACostCentre, Adelta);
+            F_journal.JournalDebitTotal = F_journal.JournalDebitTotal + Adelta;
+            F_journal.JournalCreditTotal = F_journal.JournalCreditTotal + Adelta;
         }
 
         private void InitBatchAndJournal()
         {
-            GLDataset = TGLPosting.CreateABatch(intLedgerNum);
-            batch = GLDataset.ABatch[0];
-            batch.BatchDescription = Catalog.GetString("Period end revaluations");
+            F_GLDataset = TGLPosting.CreateABatch(F_LedgerNum);
+            F_batch = F_GLDataset.ABatch[0];
+            F_batch.BatchDescription = Catalog.GetString("Period end revaluations");
 
-            TAccountPeriodInfo accountingPeriodInfo = new TAccountPeriodInfo(intLedgerNum);
-            accountingPeriodInfo.AccountingPeriodNumber = intAccountingPeriod;
-            batch.DateEffective = accountingPeriodInfo.PeriodEndDate;
+            TAccountPeriodInfo accountingPeriodInfo = new TAccountPeriodInfo(F_LedgerNum);
+            accountingPeriodInfo.AccountingPeriodNumber = F_batch.BatchPeriod;
+            F_batch.DateEffective = accountingPeriodInfo.PeriodEndDate;
 
-            batch.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
+            F_batch.BatchStatus = MFinanceConstants.BATCH_UNPOSTED;
 
-            journal = GLDataset.AJournal.NewRowTyped();
-            journal.LedgerNumber = batch.LedgerNumber;
-            journal.BatchNumber = batch.BatchNumber;
-            journal.JournalNumber = 1;
-            journal.DateEffective = batch.DateEffective;
-            journal.JournalPeriod = intAccountingPeriod;
-            journal.TransactionCurrency = strBaseCurrencyType;
-            journal.JournalDescription = batch.BatchDescription;
-            journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.REVAL.ToString();
-            journal.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
-            journal.LastTransactionNumber = 0;
-            journal.DateOfEntry = DateTime.Now;
-            journal.ExchangeRateToBase = 1.0M;
-            GLDataset.AJournal.Rows.Add(journal);
+            F_journal = F_GLDataset.AJournal.NewRowTyped();
+            F_journal.LedgerNumber = F_batch.LedgerNumber;
+            F_journal.BatchNumber = F_batch.BatchNumber;
+            F_journal.JournalNumber = 1;
+            F_journal.DateEffective = F_batch.DateEffective;
+            F_journal.JournalPeriod = F_batch.BatchPeriod;
+            F_journal.TransactionCurrency = F_BaseCurrency;
+            F_journal.JournalDescription = F_batch.BatchDescription;
+            F_journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.REVAL.ToString();
+            F_journal.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
+            F_journal.LastTransactionNumber = 0;
+            F_journal.DateOfEntry = DateTime.Now;
+            F_journal.ExchangeRateToBase = 1.0M;
+            F_GLDataset.AJournal.Rows.Add(F_journal);
         }
 
         private void CreateTransaction(string AMessage, string AAccount,
-            bool ADebitFlag, string ACostCenter)
+            bool ADebitFlag, string ACostCenter, decimal Aamount)
         {
             ATransactionRow transaction = null;
 
-            transaction = GLDataset.ATransaction.NewRowTyped();
-            transaction.LedgerNumber = journal.LedgerNumber;
-            transaction.BatchNumber = journal.BatchNumber;
-            transaction.JournalNumber = journal.JournalNumber;
-            transaction.TransactionNumber = ++journal.LastTransactionNumber;
+            transaction = F_GLDataset.ATransaction.NewRowTyped();
+            transaction.LedgerNumber = F_journal.LedgerNumber;
+            transaction.BatchNumber = F_journal.BatchNumber;
+            transaction.JournalNumber = F_journal.JournalNumber;
+            transaction.TransactionNumber = ++F_journal.LastTransactionNumber;
             transaction.AccountCode = AAccount;
             transaction.CostCentreCode = ACostCenter;
             transaction.Narrative = AMessage;
             transaction.Reference = CommonAccountingTransactionTypesEnum.REVAL.ToString();
             transaction.DebitCreditIndicator = ADebitFlag;
-            transaction.AmountInBaseCurrency = decDelta;
-            transaction.TransactionAmount = 2;
-            transaction.TransactionDate = batch.DateEffective;
+            transaction.AmountInBaseCurrency = Aamount;
+            transaction.TransactionAmount = Aamount;
+            transaction.TransactionDate = F_batch.DateEffective;
 
-            GLDataset.ATransaction.Rows.Add(transaction);
+            F_GLDataset.ATransaction.Rows.Add(transaction);
         }
 
         private void CloseRevaluationAccountingBatch()
         {
-            if (GLDataset != null)
+            if (F_GLDataset != null)
             {
+                F_batch.BatchCreditTotal = F_journal.JournalCreditTotal;
+                F_batch.BatchDebitTotal = F_journal.JournalDebitTotal;
                 TVerificationResultCollection AVerifications;
                 bool blnReturnValue = (TGLTransactionWebConnector.SaveGLBatchTDS(
-                                           ref GLDataset, out AVerifications) == TSubmitChangesResult.scrOK);
+                                           ref F_GLDataset, out AVerifications) == TSubmitChangesResult.scrOK);
+                F_GLDataset.AcceptChanges();
 
                 if (blnReturnValue)
                 {
@@ -405,7 +379,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
 
                 blnReturnValue = (TGLTransactionWebConnector.PostGLBatch(
-                                      batch.LedgerNumber, batch.BatchNumber, out AVerifications));
+                                      F_batch.LedgerNumber, F_batch.BatchNumber, out AVerifications));
             }
         }
 
@@ -417,7 +391,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (AResultSeverity == TResultSeverity.Resv_Critical)
             {
-                resultSeverity = TResultSeverity.Resv_Critical;
+                F_resultSeverity = TResultSeverity.Resv_Critical;
             }
         }
 
@@ -434,8 +408,8 @@ namespace Ict.Petra.Server.MFinance.GL
             decimal AAmountInForeignCurrency,
             decimal AExchangeRate, int ACurrencyDigits)
         {
-            return AAmountInBaseCurency -
-                   Math.Round((AAmountInForeignCurrency / AExchangeRate), ACurrencyDigits);
+            return Math.Round((AAmountInForeignCurrency / AExchangeRate), ACurrencyDigits)
+                   - AAmountInBaseCurency;
         }
     }
 }

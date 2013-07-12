@@ -63,13 +63,9 @@ namespace Ict.Petra.Client.MFinance.Logic
                         );
             }
 
-            try
+            if (AExchangeRate != 0)
             {
                 AExchangeRate = 1 / AExchangeRate;
-            }
-            catch (Exception)
-            {
-                AExchangeRate = 0;
             }
 
             if (AExchangeRateRow == null)

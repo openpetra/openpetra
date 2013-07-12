@@ -62,14 +62,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private Int32 FLedgerNumber;
 
-        private DateTime StartDateCurrentPeriod;
-        private DateTime EndDateLastForwardingPeriod;
+        private DateTime FperiodStart;
+        private DateTime FperiodEnd;
 
-        private string strBaseCurrency;
-        private string strLedgerName;
-        private string strCountryCode;
-
-        private string strRevaluationCurrencies;
+        private List<CurrencyExchange> FcurrencyExchangeList = new List<CurrencyExchange>();
+        private DevAge.ComponentModel.BoundList<CurrencyExchange> FBoundList;
 
         //TFrmSetupDailyExchangeRate tFrmSetupDailyExchangeRate;
 
@@ -85,33 +82,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FLedgerNumber = value;
 
-                TLedgerSelection.GetCurrentPostingRangeDates(FLedgerNumber,
-                    out StartDateCurrentPeriod,
-                    out EndDateLastForwardingPeriod);
+                TRemote.MFinance.GL.WebConnectors.GetCurrentPeriodDates(FLedgerNumber, out FperiodStart, out FperiodEnd);
 
                 CreateDataGridHeader();
-                GetListOfRevaluationCurrencies();
+                String currencyList = GetListOfRevaluationCurrencies();
 
-                LoadUserDefaults();
+                this.lblAccountText.Text = Catalog.GetString("Ledger:");
 
-                this.lblAccountText.Text = Catalog.GetString("Account:");
+                lblAccountValue.Text = GetLedgerInfo(FLedgerNumber);
 
-                GetLedgerInfos(FLedgerNumber);
-
-                lblAccountValue.Text = FLedgerNumber.ToString() + " - " +
-                                       strLedgerName + " [" + strBaseCurrency + "]";
-
-                lblDateStart.Text = Catalog.GetString("Start Date:");
-                lblDateStartValue.Text = StartDateCurrentPeriod.ToLongDateString();
-                lblDateEnd.Text = Catalog.GetString("End Date (=Revaluation Date):");
-                lblDateEndValue.Text = EndDateLastForwardingPeriod.ToLongDateString();
+                lblDateEnd.Text = Catalog.GetString("Revaluation Date:");
+                lblDateEndValue.Text = FperiodEnd.ToLongDateString();
 
                 lblRevCur.Text = Catalog.GetString("Revaluation Currencies:");
-                lblRevCurValue.Text = strRevaluationCurrencies;
+                lblRevCurValue.Text = currencyList;
             }
         }
 
-        private void GetListOfRevaluationCurrencies()
+        private String GetListOfRevaluationCurrencies()
         {
             TFrmSetupDailyExchangeRate frmExchangeRate =
                 new TFrmSetupDailyExchangeRate(this);
@@ -120,6 +108,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
 
             int ic = 0;
+            String strRevaluationCurrencies = "";
 
             foreach (DataRow row in table.Rows)
             {
@@ -131,9 +120,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (blnIsLedger && blnAccountActive
                     && blnAccountForeign && blnAccountHasPostings)
                 {
-                    ++ic;
 
-                    if (strRevaluationCurrencies == null)
+                    if (strRevaluationCurrencies == "")
                     {
                         strRevaluationCurrencies =
                             "[" + (string)row["a_foreign_currency_code_c"];
@@ -141,26 +129,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     else
                     {
                         strRevaluationCurrencies = strRevaluationCurrencies +
-                                                   "|" + row["a_foreign_currency_code_c"];
+                                                   "|" + (string)row["a_foreign_currency_code_c"];
                     }
 
                     string strCurrencyCode = (string)row["a_foreign_currency_code_c"];
                     decimal decExchangeRate = frmExchangeRate.GetLastExchangeValueOfInterval(FLedgerNumber,
-                        StartDateCurrentPeriod, EndDateLastForwardingPeriod, strCurrencyCode);
+                        FperiodStart, FperiodEnd, strCurrencyCode);
                     AddADataRow(ic, strCurrencyCode, decExchangeRate);
+                    ++ic;
                 }
             }
 
-            if (strRevaluationCurrencies != null)
+            if (strRevaluationCurrencies != "")
             {
                 strRevaluationCurrencies = strRevaluationCurrencies + "]";
             }
+            return strRevaluationCurrencies;
         }
 
         private void CreateDataGridHeader()
         {
             grdDetails.BorderStyle = BorderStyle.FixedSingle;
-
 
             grdDetails.Columns.Add("DoRevaluation", "...",
                 typeof(bool)).Width = 30;
@@ -178,7 +167,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             gridColumn = grdDetails.Columns.Add(
                 null, "", new SourceGrid.Cells.Button("..."));
-            linkClickDelete.InitFrmData(this, StartDateCurrentPeriod, EndDateLastForwardingPeriod);
+            linkClickDelete.InitFrmData(this, FperiodStart, FperiodEnd);
             gridColumn.DataCell.AddController(linkClickDelete);
         }
 
@@ -186,25 +175,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             CurrencyExchange ce = new CurrencyExchange(ACurrencyValue, AExchangeRate);
 
-            currencyExchangeList.Add(ce);
-            mBoundList = new DevAge.ComponentModel.BoundList <CurrencyExchange>
-                             (currencyExchangeList);
-            grdDetails.DataSource = mBoundList;
+            FcurrencyExchangeList.Add(ce);
+            FBoundList = new DevAge.ComponentModel.BoundList <CurrencyExchange>
+                             (FcurrencyExchangeList);
+            grdDetails.DataSource = FBoundList;
 
-            mBoundList.AllowNew = false;
-            mBoundList.AllowDelete = false;
-            linkClickDelete.SetDataList(currencyExchangeList);
+            FBoundList.AllowNew = false;
+            FBoundList.AllowDelete = false;
+            for (Int32 column = 1; column <= 3; column++)
+            {
+                grdDetails.Columns[column].GetDataCell(AIndex).Editor.EnableEdit = false;
+            }
+            linkClickDelete.SetDataList(FcurrencyExchangeList);
         }
 
-        private void GetLedgerInfos(Int32 ALedgerNumber)
+        private String GetLedgerInfo(Int32 ALedgerNumber)
         {
             ALedgerRow ledger =
                 ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(
                      TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
-
-            strBaseCurrency = ledger.BaseCurrency;
-            strCountryCode = ledger.CountryCode;
-
+            String strBaseCurrency = ledger.BaseCurrency;
+            String strCountryCode = ledger.CountryCode;
 
             PCountryTable DataCacheCountryDT =
                 (PCountryTable)TDataCache.TMCommon.GetCacheableCommonTable(
@@ -212,22 +203,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             PCountryRow CountryDR =
                 (PCountryRow)DataCacheCountryDT.Rows.Find(strCountryCode);
 
+            String strLedgerName = FLedgerNumber.ToString();
             if (CountryDR != null)
             {
-                strLedgerName = CountryDR.CountryName;
+                strLedgerName += (" - " + CountryDR.CountryName);
             }
-            else
-            {
-                strLedgerName = "";
-            }
-        }
-
-        private void SaveUserDefaults()
-        {
-        }
-
-        private void LoadUserDefaults()
-        {
+            strLedgerName += (" [" + strBaseCurrency + "]");
+            return strLedgerName;
         }
 
         private void CancelRevaluation(object btn, EventArgs e)
@@ -237,13 +219,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RunRevaluation(object btn, EventArgs e)
         {
-            //  TRemote.MFinance.GL.WebConnectors
-
             int intUsedEntries = 0;
 
-            for (int i = 0; i < currencyExchangeList.Count; ++i)
+            for (int i = 0; i < FcurrencyExchangeList.Count; ++i)
             {
-                if (currencyExchangeList[i].DoRevaluation)
+                if (FcurrencyExchangeList[i].DoRevaluation)
                 {
                     ++intUsedEntries;
                 }
@@ -253,18 +233,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             decimal[] rates = new decimal[intUsedEntries];
             int j = 0;
 
-            for (int i = 0; i < currencyExchangeList.Count; ++i)
+            for (int i = 0; i < FcurrencyExchangeList.Count; ++i)
             {
-                if (currencyExchangeList[i].DoRevaluation)
+                if (FcurrencyExchangeList[i].DoRevaluation)
                 {
-                    currencies[j] = currencyExchangeList[i].Currency;
-                    rates[j] = currencyExchangeList[i].ExchangeRate;
+                    currencies[j] = FcurrencyExchangeList[i].Currency;
+                    rates[j] = FcurrencyExchangeList[i].ExchangeRate;
+                    j++;
                 }
             }
 
             TVerificationResultCollection verificationResult;
             bool blnRevalutationState =
-                TRemote.MFinance.GL.WebConnectors.Revaluate(FLedgerNumber, 1,
+                TRemote.MFinance.GL.WebConnectors.Revaluate(FLedgerNumber, 1, // TODO: Period shouldn't be 1!
                     currencies, rates, out verificationResult);
 
             if (blnRevalutationState)
@@ -274,17 +255,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-                MessageBox.Show(Catalog.GetString(
-                        "GL Revaluation complete."));
+                MessageBox.Show(Catalog.GetString("GL Revaluation complete."));
             }
 
-            SaveUserDefaults();
             this.Close();
         }
 
         /// <summary>
         /// A CurrencyExchange-Element is a member of a currencyExchangeList which is used as a
-        /// data base local to tue revaluation gui. Here the settings of the user dialogs are stored
+        /// data base local to the revaluation gui. Here the settings of the user dialogs are stored
         /// </summary>
         public class CurrencyExchange
         {
@@ -436,9 +415,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
         }
-
-        private List <CurrencyExchange>currencyExchangeList = new List <CurrencyExchange>();
-        private DevAge.ComponentModel.BoundList <CurrencyExchange>mBoundList;
 
         private class LinkClickDelete : SourceGrid.Cells.Controllers.ControllerBase
         {

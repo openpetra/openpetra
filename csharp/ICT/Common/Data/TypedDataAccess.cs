@@ -121,15 +121,10 @@ namespace Ict.Common.Data
             out System.DateTime AModifiedDate,
             bool ATreatRowAsAdded = false)
         {
-            Int32 Counter;
-            Boolean First;
-            String SqlString;
-            DataTable table;
-
-            SqlString = "SELECT " + MODIFICATION_ID + ", " + MODIFIED_BY + ", " + MODIFIED_DATE +
+            String SqlString = "SELECT " + MODIFICATION_ID + ", " + MODIFIED_BY + ", " + MODIFIED_DATE +
                         " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                         " WHERE ";
-            First = true;
+            Boolean First = true;
 
             foreach (int PrimKeyOrd in APrimKeyColumnOrdList)
             {
@@ -147,8 +142,6 @@ namespace Ict.Common.Data
 
             OdbcParameter[] Parameters = new OdbcParameter[APrimKeyColumnOrdList.Length];
 
-            Counter = 0;
-
             DataRowVersion WhichVersion = DataRowVersion.Original;
 
             if ((ADataRow.RowState == DataRowState.Added)
@@ -157,14 +150,15 @@ namespace Ict.Common.Data
                 WhichVersion = DataRowVersion.Current;
             }
 
+            Int32 Counter = 0;
             foreach (int i in APrimKeyColumnOrdList)
             {
                 Parameters[Counter] = CreateOdbcParameter(ATableId, i, ADataRow[i, WhichVersion].GetType());
                 Parameters[Counter].Value = ADataRow[i, WhichVersion];
-                Counter = Counter + 1;
+                Counter++;
             }
 
-            table = DBAccess.GDBAccessObj.SelectDT(SqlString, TTypedDataTable.GetTableNameSQL(ATableId), ATransaction, Parameters);
+            DataTable table = DBAccess.GDBAccessObj.SelectDT(SqlString, TTypedDataTable.GetTableNameSQL(ATableId), ATransaction, Parameters);
             AModificationID = DateTime.MinValue;
             AModifiedBy = "";
             AModifiedDate = DateTime.MinValue;
@@ -2182,8 +2176,6 @@ namespace Ict.Common.Data
         {
             bool ResultValue = true;
             bool ExceptionReported = false;
-            bool TreatRowAsAdded = false;
-            DataRow TheRow = null;
 
             AVerificationResult = new TVerificationResultCollection();
 
@@ -2210,11 +2202,12 @@ namespace Ict.Common.Data
 
             for (RowCount = 0; (RowCount != ATable.Rows.Count); RowCount++)
             {
-                TheRow = ATable.Rows[RowCount];
+                DataRow TheRow = ATable.Rows[RowCount];
                 try
                 {
                     if ((TheRow.RowState == DataRowState.Added) && ((ASelectedOperations & eSubmitChangesOperations.eInsert) != 0))
                     {
+                        bool TreatRowAsAdded = false;
                         if (ASequenceField.Length > 0)
                         {
                             // only insert next sequence value if the field has negative value.

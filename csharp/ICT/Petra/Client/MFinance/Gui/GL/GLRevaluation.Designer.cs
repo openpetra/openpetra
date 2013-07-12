@@ -65,14 +65,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 resources = new System.ComponentModel.ComponentResourceManager(
                 typeof(TFrmGLBatch));
 
-
-            this.lblName = new System.Windows.Forms.Label();
-
             this.lblAccountText = new System.Windows.Forms.Label();
             this.lblAccountValue = new System.Windows.Forms.Label();
 
-            this.lblDateStart = new System.Windows.Forms.Label();
-            this.lblDateStartValue = new System.Windows.Forms.Label();
             this.lblDateEnd = new System.Windows.Forms.Label();
             this.lblDateEndValue = new System.Windows.Forms.Label();
 
@@ -115,25 +110,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             rowY = rowY + rowHeight;
 
             //
-            // lblDateStart
-            //
-            this.lblDateStart.Location = new System.Drawing.Point(leftColStart, rowY);
-            this.lblDateStart.Name = "lblDateStart";
-            this.lblDateStart.Size = new System.Drawing.Size(leftColWidth, 21);
-            lblDateStart.TextAlign = ContentAlignment.MiddleRight;
-
-            //
-            // lblDateStartValue
-            //
-            this.lblDateStartValue.Location = new System.Drawing.Point(
-                leftColStart + leftColWidth + colSpace, rowY);
-            this.lblDateStartValue.Name = "lblDateStartValue";
-            this.lblDateStartValue.Size = new System.Drawing.Size(rightColWidth, 21);
-            lblDateStartValue.TextAlign = ContentAlignment.MiddleLeft;
-
-            rowY = rowY + rowHeight;
-
-            //
             // lblDateEnd
             //
             this.lblDateEnd.Location = new System.Drawing.Point(leftColStart, rowY);
@@ -149,18 +125,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.lblDateEndValue.Name = "lblDateEndValue";
             this.lblDateEndValue.Size = new System.Drawing.Size(rightColWidth, 21);
             lblDateEndValue.TextAlign = ContentAlignment.MiddleLeft;
-
-            rowY = rowY + rowHeight;
-
-            //
-            // lblName
-            //
-            this.lblName.Location = new System.Drawing.Point(leftColStart, rowY);
-            this.lblName.Name = "lblName";
-            this.lblName.Size = new System.Drawing.Size(leftColWidth, 21);
-            this.lblName.TabIndex = 0;
-            this.lblName.Text = "Select cost center:";
-            lblName.TextAlign = ContentAlignment.MiddleRight;
 
             rowY = rowY + rowHeight;
 
@@ -221,11 +185,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.ClientSize = new System.Drawing.Size(600, rowY + 50);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnRevaluate);
-            this.Controls.Add(this.lblName);
             this.Controls.Add(this.lblAccountText);
             this.Controls.Add(this.lblAccountValue);
-            this.Controls.Add(this.lblDateStart);
-            this.Controls.Add(this.lblDateStartValue);
             this.Controls.Add(this.lblDateEnd);
             this.Controls.Add(this.lblDateEndValue);
             this.Controls.Add(this.lblRevCur);
@@ -241,11 +202,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Button btnRevaluate;
-        private System.Windows.Forms.Label lblName;
         private System.Windows.Forms.Label lblAccountText;
         private System.Windows.Forms.Label lblAccountValue;
-        private System.Windows.Forms.Label lblDateStart;
-        private System.Windows.Forms.Label lblDateStartValue;
         private System.Windows.Forms.Label lblDateEnd;
         private System.Windows.Forms.Label lblDateEndValue;
         private System.Windows.Forms.Label lblRevCur;
