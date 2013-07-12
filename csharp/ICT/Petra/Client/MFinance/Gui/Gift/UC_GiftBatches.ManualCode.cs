@@ -546,7 +546,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FPetraUtilsObject.DetailProtectedMode =
                 (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
 
-            dtpDetailGlEffectiveDate.Date = ARow.GlEffectiveDate;
+            //dtpDetailGlEffectiveDate.Date = ARow.GlEffectiveDate;
 
             //Update the batch period if necessary
             UpdateBatchPeriod(null, null);

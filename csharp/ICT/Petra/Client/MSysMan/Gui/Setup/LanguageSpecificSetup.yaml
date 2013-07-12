@@ -18,16 +18,17 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailLanguageCode, DetailMonthName1, DetailMonthName2, DetailMonthName3, DetailMonthName4, DetailMonthName5, DetailMonthName6, DetailMonthName7, DetailMonthName8, DetailMonthName9, DetailMonthName10, DetailMonthName11, DetailMonthName12]
@@ -94,6 +95,3 @@ RootNode:
             Margin: 0
         cmbDetailLanguageCode: {List=LanguageCodeList}
         Empty:
-    Toolbar:
-        tbbNew:
-            Label: New Month Names for Different Language

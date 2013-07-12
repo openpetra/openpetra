@@ -46,15 +46,16 @@ RootNode:
         pnlGrid:
             Dock: Fill
             Height: 120
-            Controls: [grdDetails,pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete, btnSetMainAccount]
-        btnNew: {Stretch=horizontally}
+            ControlsOrientation: horizontal
+        btnNew: {Width=80}
             Action: actNew
-        btnDelete: {Stretch=horizontally}
+        btnDelete: {Width=80}
             Action: actDelete
-        btnSetMainAccount: {Stretch=horizontally}
+        btnSetMainAccount: {Width=120, StartNewButtonGroup=true}
             Action: actSetMainAccount
         grdDetails:
             Dock: Fill

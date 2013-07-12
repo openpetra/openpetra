@@ -348,7 +348,7 @@ namespace {#NAMESPACE}
                         default:
 
                             throw new Exception(
-                            "{#CACHEABLECLASS}.SaveChangedStandardCacheableTable: unsupported Cacheabled DataTable '" + CacheableDTName + "'");
+                            "{#CACHEABLECLASS}.SaveChangedStandardCacheableTable: unsupported Cacheable DataTable '" + CacheableDTName + "'");
                     }
 
                     if (SubmissionResult == TSubmitChangesResult.scrOK)
@@ -360,10 +360,16 @@ namespace {#NAMESPACE}
                         DBAccess.GDBAccessObj.RollbackTransaction();
                     }
                 }
+                catch (EDBConcurrencyException)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
+                    throw;
+                }
                 catch (Exception e)
                 {
                     TLogging.Log(
-                        "{#CACHEABLECLASS}.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheabled DataTable '" +
+                        "{#CACHEABLECLASS}.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheable DataTable '" +
                         CacheableDTName +
                         "':  Exception " + e.ToString());
 
@@ -559,7 +565,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
                 default:
 
                     throw new Exception(
-                    "TFinanceCacheable.SaveChangedStandardCacheableTable: unsupported Cacheabled DataTable '" + CacheableDTName + "'");
+                    "TFinanceCacheable.SaveChangedStandardCacheableTable: unsupported Cacheable DataTable '" + CacheableDTName + "'");
             }
 
             if (SubmissionResult == TSubmitChangesResult.scrOK)
@@ -571,10 +577,16 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
         }
+        catch (EDBConcurrencyException)
+        {
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            throw;
+        }
         catch (Exception e)
         {
             TLogging.Log(
-                "TFinanceCacheable.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheabled DataTable '" +
+                "TFinanceCacheable.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheable DataTable '" +
                 CacheableDTName +
                 "':  Exception " + e.ToString());
 

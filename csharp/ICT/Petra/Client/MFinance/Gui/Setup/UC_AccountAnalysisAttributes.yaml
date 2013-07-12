@@ -16,12 +16,13 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
-        btnNew:
-        btnDelete:
+            ControlsOrientation: horizontal
+        btnNew: {Width=80}
+        btnDelete: {Width=80}
         grdDetails:
             Dock: Fill
             Columns: [AAnalysisAttribute.AnalysisTypeCode, AAnalysisAttribute.Active]

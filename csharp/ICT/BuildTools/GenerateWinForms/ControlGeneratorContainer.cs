@@ -657,7 +657,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (ctrl.GetAttribute("Height").ToString() == "31")  // 31 is the Height of pnlButtons/pnlDetailButtons Panels that have ControlsOrientation=horizontal and whose Buttons have been shrinked in size to 23 Pixels by the ButtonGenerator - and
             {                                                    // whose 'Height' Element hasn't been set in the YAML file...
-
                 if (ctrl.IsGridButtonPanel)
                 {
                     Width = ctrl.GetAttribute("Width").ToString();

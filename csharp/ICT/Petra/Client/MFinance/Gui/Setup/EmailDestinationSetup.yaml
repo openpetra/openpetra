@@ -18,16 +18,17 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailFileCode, DetailConditionalValue, DetailPartnerKey, DetailEmailAddress]
@@ -40,18 +41,14 @@ RootNode:
             Controls:
                 Row0: [cmbDetailFileCode, txtDetailConditionalValue]
                 Row1: [pnlEmailAddress]
-            ColWidths: [0=Fixed:135]
+            ColWidths: [0=Fixed:210]
         cmbDetailFileCode: {Label=File Code, OnChange=OnFileCodeChange}
             OptionalValues: [ =AFO, BRANCH, FUND BALS-AFO, FUND BALANCE, HOSA, STEWARDSHIP, ICH, GIFT STATEMENT ]
-        txtDetailConditionalValue: {Label=Condition value, Width=180}
+        txtDetailConditionalValue: {Label=Condition value, Width=210}
         pnlEmailAddress:
             Controls:
                 Row0: [txtDetailPartnerKey]
                 Row1: [txtDetailEmailAddress]
             ColSpan: 2
         txtDetailPartnerKey: {Label=Partner Key, Type=PartnerKey, OnChange=PartnerKeyChanged}
-        txtDetailEmailAddress: {Label=Email address(es) (one per line), Multiline=true, ScrollBars=Vertical, Height=80, Width=400}
-
-    Toolbar:
-        tbbNew: 
-            Label: New Email Destination
+        txtDetailEmailAddress: {Label=Email address(es) (one per line), Multiline=true, ScrollBars=Vertical, Height=80, Width=480}

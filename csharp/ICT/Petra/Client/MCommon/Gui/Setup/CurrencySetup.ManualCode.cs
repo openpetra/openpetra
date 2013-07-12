@@ -37,24 +37,41 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            if (ValidateAllData(true, true))
+            CreateNewACurrency();
+        }
+
+        private void NewRowManual(ref ACurrencyRow ARow)
+        {
+            string newCode = Catalog.GetString("NEWCODE");
+            Int32 countNewDetail = 0;
+
+            if (FMainDS.ACurrency.Rows.Find(new object[] { newCode }) != null)
             {
-                ACurrencyRow NewRow = FMainDS.ACurrency.NewRowTyped();
-                NewRow.CurrencyCode = "";
-                NewRow.CurrencyName = Catalog.GetString("New Currency");
-                NewRow.CurrencySymbol = "";
-                NewRow.CountryCode = "99";
-                NewRow.DisplayFormat = "->>>,>>>,>>>,>>9.99";
-                FMainDS.ACurrency.Rows.Add(NewRow);
+                while (FMainDS.ACurrency.Rows.Find(new object[] { newCode + countNewDetail.ToString() }) != null)
+                {
+                    countNewDetail++;
+                }
 
-                FPetraUtilsObject.SetChangedFlag();
-
-                grdDetails.DataSource = null;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ACurrency.DefaultView);
-
-                SelectDetailRowByDataTableIndex(FMainDS.ACurrency.Rows.Count - 1);
-                txtDetailCurrencyCode.Focus();
+                newCode += countNewDetail.ToString();
             }
+
+            ARow.CurrencyCode = newCode;
+            ARow.CurrencySymbol = String.Empty;
+            ARow.CountryCode = "99";
+            ARow.CurrencyName = Catalog.GetString("New Currency");
+            ARow.DisplayFormat = "->>>,>>>,>>>,>>9.99";
+        }
+
+        private bool PreDeleteManual(ACurrencyRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            ADeletionQuestion += String.Format("{0}{0}({1} {2}, {3} {4})",
+                Environment.NewLine,
+                lblDetailCurrencyCode.Text,
+                txtDetailCurrencyCode.Text,
+                lblDetailCurrencyName.Text,
+                txtDetailCurrencyName.Text);
+            return true;
         }
     }
 }

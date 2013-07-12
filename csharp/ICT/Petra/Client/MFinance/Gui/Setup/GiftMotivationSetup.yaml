@@ -18,16 +18,17 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailMotivationGroupCode, DetailMotivationDetailCode, DetailMotivationDetailDesc, DetailAccountCode, DetailCostCentreCode, DetailMotivationStatus, DetailReceipt]
@@ -46,7 +47,7 @@ RootNode:
                 Row4: [cmbDetailCostCentreCode, cmbReportColumn]
                 Row5: [lblFeePayable, lblFeeReceivable]
                 Row6: [clbDetailFeesPayable, clbDetailFeesReceivable]
-            ColWidths: [1=Fixed:200, 2=Fixed:120]
+            ColWidths: [1=Fixed:220, 2=Fixed:120]
         pnlMoreChecks:
             ControlsOrientation: horizontal
             Controls: [chkDetailMotivationStatus, chkDetailReceipt]
@@ -54,7 +55,7 @@ RootNode:
             OptionalValues: [Worker, =Field]
         cmbDetailMotivationGroupCode: {Label=Group, List=UserDefinedList}
         txtDetailMotivationDetailCode: {Label=Detail, CharacterCasing=Upper}
-        txtDetailMotivationDetailDesc: {Label=Description, Width=173}
+        txtDetailMotivationDetailDesc: {Label=Description, Width=185}
         cmbDetailAccountCode: {Label=Account, List=UserDefinedList, Width=200}
         cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, Width=200}
         chkDetailMotivationStatus: {Label=Active}
@@ -65,12 +66,9 @@ RootNode:
             NoLabel: true
             List: UserDefinedList
             Height:140
-            Width:298
+            Width:318
         clbDetailFeesReceivable:
             NoLabel: true
             List: UserDefinedList
             Height:140
-            Width:298
-    Toolbar:
-        tbbNew:
-            Label: New Motivation Detail
+            Width:318

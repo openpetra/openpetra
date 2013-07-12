@@ -21,14 +21,15 @@ RootNode:
             Height: 150
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNewType, btnDelete]
+            ControlsOrientation: horizontal
         btnNewType:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Height: 148
@@ -53,7 +54,4 @@ RootNode:
         chkDetailSystemAnalysisType: {Label=System Analysis Type, ReadOnly=true}
     Menu:
         mniAnalysisTypes:
-    Toolbar:
-        tbbNew:
-            Label: New Analysis Type
 

@@ -18,16 +18,17 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailAddresseeTypeCode, DetailDescription, DetailDeletable]
@@ -37,9 +38,6 @@ RootNode:
             Controls:
                 Row0: [txtDetailAddresseeTypeCode, txtDetailDescription]
                 Row1: [chkDetailDeletable]
-        txtDetailAddresseeTypeCode: {Label=Addressee Type Code, Width=150, CharacterCasing=Upper}
+        txtDetailAddresseeTypeCode: {Label=Addressee Type Code, Width=200, CharacterCasing=Upper}
         txtDetailDescription: {Width=194}
         chkDetailDeletable:
-    Toolbar:
-        tbbNew:
-            Label: New Addressee Type
