@@ -70,9 +70,9 @@ namespace ControlTestBench
             bool FilterIsAlwaysOnLabelStd = btnFilterIsAlwaysOnLabelStd.Checked;
             bool FilterIsAlwaysOnLabelExtra = btnFilterIsAlwaysOnLabelExtra.Checked;
             
-            TUcoFilterAndFind.FilterContext ApplyFilterButtonContext = TUcoFilterAndFind.FilterContext.fcNone;
-            TUcoFilterAndFind.FilterContext ShowKeepFilterTurnedOnButtonContext = TUcoFilterAndFind.FilterContext.fcNone;
-            TUcoFilterAndFind.FilterContext ShowFilterIsAlwaysOnLabelContext = TUcoFilterAndFind.FilterContext.fcNone;
+            TUcoFilterAndFind.FilterContext ApplyFilterButtonContext = TUcoFilterAndFind.FilterContext.None;
+            TUcoFilterAndFind.FilterContext ShowKeepFilterTurnedOnButtonContext = TUcoFilterAndFind.FilterContext.None;
+            TUcoFilterAndFind.FilterContext ShowFilterIsAlwaysOnLabelContext = TUcoFilterAndFind.FilterContext.None;
         
 
 
@@ -127,16 +127,16 @@ namespace ControlTestBench
                 {
                     if (btnApplyFilterButtonExtra.Checked) 
                     {
-                        ApplyFilterButtonContext = TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter;
+                        ApplyFilterButtonContext = TUcoFilterAndFind.FilterContext.StandardAndExtraFilter;
                     }
                     else
                     {
-                        ApplyFilterButtonContext = TUcoFilterAndFind.FilterContext.fcStandardFilterOnly;
+                        ApplyFilterButtonContext = TUcoFilterAndFind.FilterContext.StandardFilterOnly;
                     }
                 }    
                 else
                 {
-                    ApplyFilterButtonContext = TUcoFilterAndFind.FilterContext.fcStandardFilterOnly;
+                    ApplyFilterButtonContext = TUcoFilterAndFind.FilterContext.StandardFilterOnly;
                 }
             }
             else
@@ -145,7 +145,7 @@ namespace ControlTestBench
                 {                
                     if (btnApplyFilterButtonExtra.Checked) 
                     {
-                        ApplyFilterButtonContext = TUcoFilterAndFind.FilterContext.fcExtraFilterOnly;
+                        ApplyFilterButtonContext = TUcoFilterAndFind.FilterContext.ExtraFilterOnly;
                     }
                 }
             }
@@ -156,16 +156,16 @@ namespace ControlTestBench
                 {
                     if (btnKeepFilterTurnedOnButtonExtra.Checked) 
                     {
-                        ShowKeepFilterTurnedOnButtonContext = TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter;
+                        ShowKeepFilterTurnedOnButtonContext = TUcoFilterAndFind.FilterContext.StandardAndExtraFilter;
                     }
                     else
                     {
-                        ShowKeepFilterTurnedOnButtonContext = TUcoFilterAndFind.FilterContext.fcStandardFilterOnly;
+                        ShowKeepFilterTurnedOnButtonContext = TUcoFilterAndFind.FilterContext.StandardFilterOnly;
                     }
                 }    
                 else
                 {
-                    ShowKeepFilterTurnedOnButtonContext = TUcoFilterAndFind.FilterContext.fcStandardFilterOnly;
+                    ShowKeepFilterTurnedOnButtonContext = TUcoFilterAndFind.FilterContext.StandardFilterOnly;
                 }
             }
             else
@@ -174,7 +174,7 @@ namespace ControlTestBench
                 {                
                     if (btnKeepFilterTurnedOnButtonExtra.Checked) 
                     {
-                        ShowKeepFilterTurnedOnButtonContext = TUcoFilterAndFind.FilterContext.fcExtraFilterOnly;
+                        ShowKeepFilterTurnedOnButtonContext = TUcoFilterAndFind.FilterContext.ExtraFilterOnly;
                     }
                 }
             }
@@ -185,16 +185,16 @@ namespace ControlTestBench
                 {
                     if (btnFilterIsAlwaysOnLabelExtra.Checked) 
                     {
-                        ShowFilterIsAlwaysOnLabelContext = TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter;
+                        ShowFilterIsAlwaysOnLabelContext = TUcoFilterAndFind.FilterContext.StandardAndExtraFilter;
                     }
                     else
                     {
-                        ShowFilterIsAlwaysOnLabelContext = TUcoFilterAndFind.FilterContext.fcStandardFilterOnly;
+                        ShowFilterIsAlwaysOnLabelContext = TUcoFilterAndFind.FilterContext.StandardFilterOnly;
                     }
                 }    
                 else
                 {
-                    ShowFilterIsAlwaysOnLabelContext = TUcoFilterAndFind.FilterContext.fcStandardFilterOnly;
+                    ShowFilterIsAlwaysOnLabelContext = TUcoFilterAndFind.FilterContext.StandardFilterOnly;
                 }
             }
             else
@@ -203,7 +203,7 @@ namespace ControlTestBench
                 {                
                     if (btnFilterIsAlwaysOnLabelExtra.Checked) 
                     {
-                        ShowFilterIsAlwaysOnLabelContext = TUcoFilterAndFind.FilterContext.fcExtraFilterOnly;
+                        ShowFilterIsAlwaysOnLabelContext = TUcoFilterAndFind.FilterContext.ExtraFilterOnly;
                     }
                 }
             }
@@ -292,22 +292,22 @@ namespace ControlTestBench
             {
                 switch (FUcoFilterAndFind.ShowApplyFilterButton) 
                 {
-                    case TUcoFilterAndFind.FilterContext.fcNone:                
-                        FUcoFilterAndFind.ShowApplyFilterButton = TUcoFilterAndFind.FilterContext.fcStandardFilterOnly;
+                    case TUcoFilterAndFind.FilterContext.None:                
+                        FUcoFilterAndFind.ShowApplyFilterButton = TUcoFilterAndFind.FilterContext.StandardFilterOnly;
                         
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcStandardFilterOnly:
-                        FUcoFilterAndFind.ShowApplyFilterButton = TUcoFilterAndFind.FilterContext.fcNone;
+                    case TUcoFilterAndFind.FilterContext.StandardFilterOnly:
+                        FUcoFilterAndFind.ShowApplyFilterButton = TUcoFilterAndFind.FilterContext.None;
                         
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcExtraFilterOnly:
-                        FUcoFilterAndFind.ShowApplyFilterButton = TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter;
+                    case TUcoFilterAndFind.FilterContext.ExtraFilterOnly:
+                        FUcoFilterAndFind.ShowApplyFilterButton = TUcoFilterAndFind.FilterContext.StandardAndExtraFilter;
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter:
-                        FUcoFilterAndFind.ShowApplyFilterButton = TUcoFilterAndFind.FilterContext.fcExtraFilterOnly;
+                    case TUcoFilterAndFind.FilterContext.StandardAndExtraFilter:
+                        FUcoFilterAndFind.ShowApplyFilterButton = TUcoFilterAndFind.FilterContext.ExtraFilterOnly;
                         break;
                         
                     default:
@@ -318,22 +318,22 @@ namespace ControlTestBench
             {
                 switch (FUcoFilterAndFind.ShowApplyFilterButton) 
                 {
-                    case TUcoFilterAndFind.FilterContext.fcNone:                
-                        FUcoFilterAndFind.ShowApplyFilterButton= TUcoFilterAndFind.FilterContext.fcExtraFilterOnly;
+                    case TUcoFilterAndFind.FilterContext.None:                
+                        FUcoFilterAndFind.ShowApplyFilterButton= TUcoFilterAndFind.FilterContext.ExtraFilterOnly;
                         
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcStandardFilterOnly:
-                        FUcoFilterAndFind.ShowApplyFilterButton = TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter;
+                    case TUcoFilterAndFind.FilterContext.StandardFilterOnly:
+                        FUcoFilterAndFind.ShowApplyFilterButton = TUcoFilterAndFind.FilterContext.StandardAndExtraFilter;
                         
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcExtraFilterOnly:
-                        FUcoFilterAndFind.ShowApplyFilterButton = TUcoFilterAndFind.FilterContext.fcNone;
+                    case TUcoFilterAndFind.FilterContext.ExtraFilterOnly:
+                        FUcoFilterAndFind.ShowApplyFilterButton = TUcoFilterAndFind.FilterContext.None;
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter:
-                        FUcoFilterAndFind.ShowApplyFilterButton = TUcoFilterAndFind.FilterContext.fcStandardFilterOnly;
+                    case TUcoFilterAndFind.FilterContext.StandardAndExtraFilter:
+                        FUcoFilterAndFind.ShowApplyFilterButton = TUcoFilterAndFind.FilterContext.StandardFilterOnly;
                         break;
                         
                     default:
@@ -349,22 +349,22 @@ namespace ControlTestBench
             {
                 switch (FUcoFilterAndFind.ShowKeepFilterTurnedOnButton) 
                 {
-                    case TUcoFilterAndFind.FilterContext.fcNone:                
-                        FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = TUcoFilterAndFind.FilterContext.fcStandardFilterOnly;
+                    case TUcoFilterAndFind.FilterContext.None:                
+                        FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = TUcoFilterAndFind.FilterContext.StandardFilterOnly;
                         
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcStandardFilterOnly:
-                        FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = TUcoFilterAndFind.FilterContext.fcNone;
+                    case TUcoFilterAndFind.FilterContext.StandardFilterOnly:
+                        FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = TUcoFilterAndFind.FilterContext.None;
                         
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcExtraFilterOnly:
-                        FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter;
+                    case TUcoFilterAndFind.FilterContext.ExtraFilterOnly:
+                        FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = TUcoFilterAndFind.FilterContext.StandardAndExtraFilter;
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter:
-                        FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = TUcoFilterAndFind.FilterContext.fcExtraFilterOnly;
+                    case TUcoFilterAndFind.FilterContext.StandardAndExtraFilter:
+                        FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = TUcoFilterAndFind.FilterContext.ExtraFilterOnly;
                         break;
                         
                     default:
@@ -375,22 +375,22 @@ namespace ControlTestBench
             {
                 switch (FUcoFilterAndFind.ShowKeepFilterTurnedOnButton) 
                 {
-                    case TUcoFilterAndFind.FilterContext.fcNone:                
-                        FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = TUcoFilterAndFind.FilterContext.fcExtraFilterOnly;
+                    case TUcoFilterAndFind.FilterContext.None:                
+                        FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = TUcoFilterAndFind.FilterContext.ExtraFilterOnly;
                         
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcStandardFilterOnly:
-                        FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter;
+                    case TUcoFilterAndFind.FilterContext.StandardFilterOnly:
+                        FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = TUcoFilterAndFind.FilterContext.StandardAndExtraFilter;
                         
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcExtraFilterOnly:
-                        FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = TUcoFilterAndFind.FilterContext.fcNone;
+                    case TUcoFilterAndFind.FilterContext.ExtraFilterOnly:
+                        FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = TUcoFilterAndFind.FilterContext.None;
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter:
-                        FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = TUcoFilterAndFind.FilterContext.fcStandardFilterOnly;
+                    case TUcoFilterAndFind.FilterContext.StandardAndExtraFilter:
+                        FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = TUcoFilterAndFind.FilterContext.StandardFilterOnly;
                         break;
                         
                     default:
@@ -405,22 +405,22 @@ namespace ControlTestBench
             {
                 switch (FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel) 
                 {
-                    case TUcoFilterAndFind.FilterContext.fcNone:                
-                        FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = TUcoFilterAndFind.FilterContext.fcStandardFilterOnly;
+                    case TUcoFilterAndFind.FilterContext.None:                
+                        FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = TUcoFilterAndFind.FilterContext.StandardFilterOnly;
                         
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcStandardFilterOnly:
-                        FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = TUcoFilterAndFind.FilterContext.fcNone;
+                    case TUcoFilterAndFind.FilterContext.StandardFilterOnly:
+                        FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = TUcoFilterAndFind.FilterContext.None;
                         
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcExtraFilterOnly:
-                        FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter;
+                    case TUcoFilterAndFind.FilterContext.ExtraFilterOnly:
+                        FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = TUcoFilterAndFind.FilterContext.StandardAndExtraFilter;
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter:
-                        FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = TUcoFilterAndFind.FilterContext.fcExtraFilterOnly;
+                    case TUcoFilterAndFind.FilterContext.StandardAndExtraFilter:
+                        FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = TUcoFilterAndFind.FilterContext.ExtraFilterOnly;
                         break;
                         
                     default:
@@ -431,22 +431,22 @@ namespace ControlTestBench
             {
                 switch (FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel) 
                 {
-                    case TUcoFilterAndFind.FilterContext.fcNone:                
-                        FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = TUcoFilterAndFind.FilterContext.fcExtraFilterOnly;
+                    case TUcoFilterAndFind.FilterContext.None:                
+                        FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = TUcoFilterAndFind.FilterContext.ExtraFilterOnly;
                         
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcStandardFilterOnly:
-                        FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter;
+                    case TUcoFilterAndFind.FilterContext.StandardFilterOnly:
+                        FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = TUcoFilterAndFind.FilterContext.StandardAndExtraFilter;
                         
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcExtraFilterOnly:
-                        FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = TUcoFilterAndFind.FilterContext.fcNone;
+                    case TUcoFilterAndFind.FilterContext.ExtraFilterOnly:
+                        FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = TUcoFilterAndFind.FilterContext.None;
                         break;
                         
-                    case TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter:
-                        FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = TUcoFilterAndFind.FilterContext.fcStandardFilterOnly;
+                    case TUcoFilterAndFind.FilterContext.StandardAndExtraFilter:
+                        FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = TUcoFilterAndFind.FilterContext.StandardFilterOnly;
                         break;
                         
                     default:

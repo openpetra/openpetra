@@ -734,10 +734,33 @@ Console.WriteLine("Adjusted Height of Panel '" + ctrl.controlName + "' as it is 
                 {
                     writer.Template.SetCodelet("FINDANDFILTERINITIALLYEXPANDED", "false");
                 }
+                
+                if (!ctrl.HasAttribute("ShowApplyFilterButton"))
+                {                
+                    writer.Template.SetCodelet("FINDANDFILTERAPPLYFILTERBUTTONCONTEXT", "TUcoFilterAndFind.FilterContext.None");
+                }
+                else
+                {
+                    writer.Template.SetCodelet("FINDANDFILTERAPPLYFILTERBUTTONCONTEXT", "TUcoFilterAndFind." + ctrl.GetAttribute("ShowApplyFilterButton"));
+                }
+
+                if (!ctrl.HasAttribute("ShowKeepFilterTurnedOnButton"))
+                {                
+                    writer.Template.SetCodelet("FINDANDFILTERSHOWKEEPFILTERTURNEDONBUTTONCONTEXT", "TUcoFilterAndFind.FilterContext.None");
+                }
+                else
+                {
+                    writer.Template.SetCodelet("FINDANDFILTERSHOWKEEPFILTERTURNEDONBUTTONCONTEXT", "TUcoFilterAndFind." + ctrl.GetAttribute("ShowKeepFilterTurnedOnButton"));
+                }
                                 
-                writer.Template.SetCodelet("FINDANDFILTERAPPLYFILTERBUTTONCONTEXT", "TUcoFilterAndFind.FilterContext.fcNone");
-                writer.Template.SetCodelet("FINDANDFILTERSHOWKEEPFILTERTURNEDONBUTTONCONTEXT", "TUcoFilterAndFind.FilterContext.fcNone");
-                writer.Template.SetCodelet("FINDANDFILTERSHOWFILTERISALWAYSONLABELCONTEXT", "TUcoFilterAndFind.FilterContext.fcNone");
+                if (!ctrl.HasAttribute("ShowFilterIsAlwaysOnLabel"))
+                {                
+                    writer.Template.SetCodelet("FINDANDFILTERSHOWFILTERISALWAYSONLABELCONTEXT", "TUcoFilterAndFind.FilterContext.None");
+                }
+                else
+                {
+                    writer.Template.SetCodelet("FINDANDFILTERSHOWFILTERISALWAYSONLABELCONTEXT", "TUcoFilterAndFind." + ctrl.GetAttribute("ShowFilterIsAlwaysOnLabel"));
+                }
                 
                 writer.Template.SetCodelet("CUSTOMDISPOSING", 
                     "if (FucoFilterAndFind != null)" + Environment.NewLine + 

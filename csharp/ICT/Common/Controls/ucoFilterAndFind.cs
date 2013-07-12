@@ -43,16 +43,16 @@ namespace Ict.Common.Controls
         public enum FilterContext
         {
             /// <summary>No Filter Context (=do not show!).</summary>
-            fcNone,
+            None,
             
             /// <summary>'Standard' Filter Context only (=not 'Extra' Filter Context).</summary>
-            fcStandardFilterOnly,
+            StandardFilterOnly,
             
             /// <summary>'Extra' Filter Context only (=not 'Standard' Filter Context).</summary>
-            fcExtraFilterOnly,
+            ExtraFilterOnly,
             
             /// <summary>Both 'Standard' and 'Extra' Filter Context.</summary>
-            fcStandardAndExtraFilter
+            StandardAndExtraFilter
         }
         
         /// <summary>
@@ -97,7 +97,7 @@ namespace Ict.Common.Controls
         /// </summary>
         public struct FilterAndFindParameters
         {
-            private int FFlterAndFindInitialWidth;
+            private int FFilterAndFindInitialWidth;
             private bool FFilterAndFindInitiallyExpanded;
             private FilterContext FApplyFilterButtonContext;
             private FilterContext FShowKeepFilterTurnedOnButtonContext;
@@ -116,7 +116,7 @@ namespace Ict.Common.Controls
                 FilterContext AApplyFilterButtonContext, FilterContext AShowKeepFilterTurnedOnButtonContext,
                 FilterContext AShowFilterIsAlwaysOnLabelContext)
             {
-                FFlterAndFindInitialWidth = AFilterAndFindInitialWidth;
+                FFilterAndFindInitialWidth = AFilterAndFindInitialWidth;
                 FFilterAndFindInitiallyExpanded = AFilterAndFindInitiallyExpanded;
                 FApplyFilterButtonContext = AApplyFilterButtonContext;
                 FShowKeepFilterTurnedOnButtonContext = AShowKeepFilterTurnedOnButtonContext;
@@ -130,7 +130,7 @@ namespace Ict.Common.Controls
             {
                 get
                 {
-                    return FFlterAndFindInitialWidth;
+                    return FFilterAndFindInitialWidth;
                 }
             }
             
@@ -403,9 +403,9 @@ namespace Ict.Common.Controls
         private List<Panel> FFindControls;
         private bool FShowExtraFilter = false;
         private bool FShowFindPanel = false;
-        private FilterContext FShowApplyFilterButton = FilterContext.fcNone;
-        private FilterContext FShowKeepFilterTurnedOnButton = FilterContext.fcNone;        
-        private FilterContext FShowFilterIsAlwaysTurnedOnLabel = FilterContext.fcNone;
+        private FilterContext FShowApplyFilterButton = FilterContext.None;
+        private FilterContext FShowKeepFilterTurnedOnButton = FilterContext.None;        
+        private FilterContext FShowFilterIsAlwaysTurnedOnLabel = FilterContext.None;
         private Owf.Controls.A1Panel FPnlFindControls;
         private Ict.Common.Controls.TTabVersatile FTabFilterAndFind = new TTabVersatile();
         private System.Windows.Forms.TabPage FTbpFilter = new System.Windows.Forms.TabPage();
@@ -451,9 +451,9 @@ namespace Ict.Common.Controls
         /// Constructor.
         /// </summary>
         public TUcoFilterAndFind(List<Panel> AFilterControls, List<Panel> AExtraFilterControls, List<Panel> AFindControls,
-            FilterContext AShowApplyFilterButton = FilterContext.fcNone,
-            FilterContext AShowKeepFilterTurnedOnButton = FilterContext.fcNone,
-            FilterContext AShowFilterIsAlwaysOnLabel = FilterContext.fcNone,
+            FilterContext AShowApplyFilterButton = FilterContext.None,
+            FilterContext AShowKeepFilterTurnedOnButton = FilterContext.None,
+            FilterContext AShowFilterIsAlwaysOnLabel = FilterContext.None,
             int AWidth = 150)
         {
             //
@@ -860,28 +860,28 @@ namespace Ict.Common.Controls
         {
             switch (FShowApplyFilterButton) 
             {
-                case TUcoFilterAndFind.FilterContext.fcNone:
+                case TUcoFilterAndFind.FilterContext.None:
                     
                     RemoveButtonApplyFilter(pnlFilterControls);
                     RemoveButtonApplyFilter(pnlExtraFilterControls);
 
                     break;
                     
-                case TUcoFilterAndFind.FilterContext.fcStandardFilterOnly:
+                case TUcoFilterAndFind.FilterContext.StandardFilterOnly:
                     
                     AddButtonApplyFilter(pnlFilterControls);
                     RemoveButtonApplyFilter(pnlExtraFilterControls);
                     
                     break;
                     
-                case TUcoFilterAndFind.FilterContext.fcExtraFilterOnly:
+                case TUcoFilterAndFind.FilterContext.ExtraFilterOnly:
 
                     AddButtonApplyFilter(pnlExtraFilterControls);
                     RemoveButtonApplyFilter(pnlFilterControls);
                     
                     break;
                     
-                case TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter:
+                case TUcoFilterAndFind.FilterContext.StandardAndExtraFilter:
                     
                     AddButtonApplyFilter(pnlFilterControls);
                     AddButtonApplyFilter(pnlExtraFilterControls);
@@ -968,28 +968,28 @@ namespace Ict.Common.Controls
         {
             switch (FShowKeepFilterTurnedOnButton) 
             {
-                case TUcoFilterAndFind.FilterContext.fcNone:
+                case TUcoFilterAndFind.FilterContext.None:
                     
                     RemoveButtonKeepFilterTurnedOn(pnlFilterControls);
                     RemoveButtonKeepFilterTurnedOn(pnlExtraFilterControls);
 
                     break;
                     
-                case TUcoFilterAndFind.FilterContext.fcStandardFilterOnly:
+                case TUcoFilterAndFind.FilterContext.StandardFilterOnly:
                     
                     AddButtonKeepFilterTurnedOn(pnlFilterControls);
                     RemoveButtonKeepFilterTurnedOn(pnlExtraFilterControls);
                     
                     break;
                     
-                case TUcoFilterAndFind.FilterContext.fcExtraFilterOnly:
+                case TUcoFilterAndFind.FilterContext.ExtraFilterOnly:
 
                     AddButtonKeepFilterTurnedOn(pnlExtraFilterControls);
                     RemoveButtonKeepFilterTurnedOn(pnlFilterControls);
                     
                     break;
                     
-                case TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter:
+                case TUcoFilterAndFind.FilterContext.StandardAndExtraFilter:
                     
                     AddButtonKeepFilterTurnedOn(pnlFilterControls);
                     AddButtonKeepFilterTurnedOn(pnlExtraFilterControls);
@@ -1070,21 +1070,21 @@ namespace Ict.Common.Controls
             {
                 RemoveLabelFilterIsAlwaysTurnedOn(AFilterPanel);
 
-                if (FShowFilterIsAlwaysTurnedOnLabel == FilterContext.fcStandardAndExtraFilter) 
+                if (FShowFilterIsAlwaysTurnedOnLabel == FilterContext.StandardAndExtraFilter) 
                 {
                     if (AFilterPanel == pnlFilterControls) 
                     {
-                        FShowFilterIsAlwaysTurnedOnLabel = FilterContext.fcExtraFilterOnly;
+                        FShowFilterIsAlwaysTurnedOnLabel = FilterContext.ExtraFilterOnly;
                     }
                     else
                     {
-                        FShowFilterIsAlwaysTurnedOnLabel = FilterContext.fcStandardFilterOnly;
+                        FShowFilterIsAlwaysTurnedOnLabel = FilterContext.StandardFilterOnly;
                     }
                 }
-                else if((FShowFilterIsAlwaysTurnedOnLabel == FilterContext.fcStandardFilterOnly) 
-                        || (FShowFilterIsAlwaysTurnedOnLabel == FilterContext.fcExtraFilterOnly))
+                else if((FShowFilterIsAlwaysTurnedOnLabel == FilterContext.StandardFilterOnly) 
+                        || (FShowFilterIsAlwaysTurnedOnLabel == FilterContext.ExtraFilterOnly))
                 {
-                    FShowFilterIsAlwaysTurnedOnLabel = FilterContext.fcNone;
+                    FShowFilterIsAlwaysTurnedOnLabel = FilterContext.None;
                 }                                    
             }            
         }
@@ -1117,28 +1117,28 @@ namespace Ict.Common.Controls
         {
             switch (FShowFilterIsAlwaysTurnedOnLabel) 
             {
-                case TUcoFilterAndFind.FilterContext.fcNone:
+                case TUcoFilterAndFind.FilterContext.None:
                     
                     RemoveLabelFilterIsAlwaysTurnedOn(pnlFilterControls);
                     RemoveLabelFilterIsAlwaysTurnedOn(pnlExtraFilterControls);
 
                     break;
                     
-                case TUcoFilterAndFind.FilterContext.fcStandardFilterOnly:
+                case TUcoFilterAndFind.FilterContext.StandardFilterOnly:
                     
                     AddLabelFilterIsAlwaysTurnedOn(pnlFilterControls);
                     RemoveLabelFilterIsAlwaysTurnedOn(pnlExtraFilterControls);
                     
                     break;
                     
-                case TUcoFilterAndFind.FilterContext.fcExtraFilterOnly:
+                case TUcoFilterAndFind.FilterContext.ExtraFilterOnly:
 
                     AddLabelFilterIsAlwaysTurnedOn(pnlExtraFilterControls);
                     RemoveLabelFilterIsAlwaysTurnedOn(pnlFilterControls);
                     
                     break;
                     
-                case TUcoFilterAndFind.FilterContext.fcStandardAndExtraFilter:
+                case TUcoFilterAndFind.FilterContext.StandardAndExtraFilter:
                     
                     AddLabelFilterIsAlwaysTurnedOn(pnlFilterControls);
                     AddLabelFilterIsAlwaysTurnedOn(pnlExtraFilterControls);
@@ -1217,21 +1217,21 @@ namespace Ict.Common.Controls
             {
                 RemoveButtonKeepFilterTurnedOn(AFilterPanel);
                 
-                if (FShowKeepFilterTurnedOnButton == FilterContext.fcStandardAndExtraFilter) 
+                if (FShowKeepFilterTurnedOnButton == FilterContext.StandardAndExtraFilter) 
                 {
                     if (AFilterPanel == pnlFilterControls) 
                     {
-                        FShowKeepFilterTurnedOnButton = FilterContext.fcExtraFilterOnly;
+                        FShowKeepFilterTurnedOnButton = FilterContext.ExtraFilterOnly;
                     }
                     else
                     {
-                        FShowKeepFilterTurnedOnButton = FilterContext.fcStandardFilterOnly;
+                        FShowKeepFilterTurnedOnButton = FilterContext.StandardFilterOnly;
                     }
                 }
-                else if((FShowKeepFilterTurnedOnButton == FilterContext.fcStandardFilterOnly) 
-                        || (FShowKeepFilterTurnedOnButton == FilterContext.fcExtraFilterOnly))
+                else if((FShowKeepFilterTurnedOnButton == FilterContext.StandardFilterOnly) 
+                        || (FShowKeepFilterTurnedOnButton == FilterContext.ExtraFilterOnly))
                 {
-                    FShowKeepFilterTurnedOnButton = FilterContext.fcNone;
+                    FShowKeepFilterTurnedOnButton = FilterContext.None;
                 }                    
             }
         }

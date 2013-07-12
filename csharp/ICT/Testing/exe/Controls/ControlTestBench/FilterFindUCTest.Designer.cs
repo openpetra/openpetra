@@ -219,9 +219,9 @@ partial class FilterFindTest
         this.FUcoFilterAndFind.Dock = System.Windows.Forms.DockStyle.Left;
         this.FUcoFilterAndFind.Location = new System.Drawing.Point(0, 0);
         this.FUcoFilterAndFind.Name = "FUcoFilterAndFind";
-        this.FUcoFilterAndFind.ShowApplyFilterButton = Ict.Common.Controls.TUcoFilterAndFind.FilterContext.fcNone;
-        this.FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = Ict.Common.Controls.TUcoFilterAndFind.FilterContext.fcNone;
-        this.FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = Ict.Common.Controls.TUcoFilterAndFind.FilterContext.fcNone;
+        this.FUcoFilterAndFind.ShowApplyFilterButton = Ict.Common.Controls.TUcoFilterAndFind.FilterContext.None;
+        this.FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel = Ict.Common.Controls.TUcoFilterAndFind.FilterContext.None;
+        this.FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = Ict.Common.Controls.TUcoFilterAndFind.FilterContext.None;
         this.FUcoFilterAndFind.Size = new System.Drawing.Size(150, 500);
         this.FUcoFilterAndFind.TabIndex = 8;
         // 

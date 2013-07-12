@@ -38,7 +38,10 @@ private void SetupFilterAndFindControls()
 
     // Show Filter and Find Panels initially collapsed or expanded
     pnlFilterAndFind.Width = 0;
-
+    
+    // Ensure that the Filter and Find Panel 'pushes' the Grid away instead of overlaying the Grid
+    grdDetails.BringToFront();
+    
     if (FFilterAndFindParameters.FindAndFilterInitiallyExpanded)
     {
         ToggleFilter();
@@ -98,7 +101,7 @@ private void ToggleFilter()
             FucoFilterAndFind.Collapsed += delegate { ToggleFilter(); };
         }
 
-        pnlFilterAndFind.Width = 150;
+        pnlFilterAndFind.Width = FFilterAndFindParameters.FindAndFilterInitialWidth;
         chkToggleFilter.Checked = true;
 
         lblRecordCounter.ForeColor = System.Drawing.Color.MidnightBlue;
