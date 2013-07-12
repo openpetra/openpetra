@@ -109,9 +109,9 @@ namespace Ict.Common.Controls
             /// <param name="AFilterAndFindInitialWidth">Initial Width of the Filter and Find Panel.</param>
             /// <param name="AFilterAndFindInitiallyExpanded">Wether the Filter and Find Panel are shown when the containing Form/UserControl
             /// is opened/shown.</param>
-            /// <param name="AApplyFilterButtonContext"></param>
-            /// <param name="AShowKeepFilterTurnedOnButtonContext"></param>
-            /// <param name="AShowFilterIsAlwaysOnLabelContext"></param>
+            /// <param name="AApplyFilterButtonContext">The context in which an 'Apply Filter' Button is shown (if any).</param>
+            /// <param name="AShowKeepFilterTurnedOnButtonContext">The context in which a 'Keep Filter Turned On' Button is shown (if any).</param>
+            /// <param name="AShowFilterIsAlwaysOnLabelContext">The context in which a 'Filter Is Always On' Label is shown (if any).</param>
             public FilterAndFindParameters(int AFilterAndFindInitialWidth, bool AFilterAndFindInitiallyExpanded,
                 FilterContext AApplyFilterButtonContext, FilterContext AShowKeepFilterTurnedOnButtonContext,
                 FilterContext AShowFilterIsAlwaysOnLabelContext)
@@ -145,7 +145,10 @@ namespace Ict.Common.Controls
                     return FFilterAndFindInitiallyExpanded;
                 }
             }
-            
+
+            /// <summary>
+            /// The context in which an 'Apply Filter' Button is shown (if any).
+            /// </summary>            
             public FilterContext ApplyFilterButtonContext
             {
                 get
@@ -154,6 +157,9 @@ namespace Ict.Common.Controls
                 }
             }
             
+            /// <summary>
+            /// The context in which a 'Keep Filter Turned On' Button is shown (if any).
+            /// </summary>            
             public FilterContext ShowKeepFilterTurnedOnButtonContext
             {
                 get
@@ -162,6 +168,9 @@ namespace Ict.Common.Controls
                 }
             }
             
+            /// <summary>
+            /// The context in which a 'Filter Is Always On' Label is shown (if any).
+            /// </summary>            
             public FilterContext ShowFilterIsAlwaysOnLabelContext
             {
                 get
@@ -489,7 +498,7 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// Sets the context in which an 'Keep Filter Turned On' Button is shown (if any).
+        /// Sets the context in which a 'Keep Filter Turned On' Button is shown (if any).
         /// </summary>
         public FilterContext ShowKeepFilterTurnedOnButton
         {
@@ -507,7 +516,7 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// Sets the context in which an 'Filter Is Always On' Label is shown (if any).
+        /// Sets the context in which a 'Filter Is Always On' Label is shown (if any).
         /// </summary>
         public FilterContext ShowFilterIsAlwaysOnLabel
         {
