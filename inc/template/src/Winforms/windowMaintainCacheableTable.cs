@@ -198,6 +198,7 @@ namespace {#NAMESPACE}
       
       {#INITACTIONSTATE}            
       {#DISPLAYFILTERINFORMTITLE}
+            UpdateRecordNumberDisplay();
     }
     
     private void TFrmPetra_Closed(object sender, EventArgs e)
