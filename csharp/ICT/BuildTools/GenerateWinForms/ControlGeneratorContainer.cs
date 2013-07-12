@@ -506,7 +506,7 @@ TLogging.Log("foreach (TControlDef childCtrl in ctrl.Children) -- Control: " + c
                     foreach (TControlDef ChildControl in ctrl.Children)
                     {
                         if ((ChildControl.HasAttribute("Dock"))
-                            && ((!ChildControl.IsGridButtonPanelStrict) 
+                            && ((!ChildControl.IsHorizontalGridButtonPanelStrict) 
                                 && (ChildControl.controlName != TControlDef.STR_GRID_DETAILS_NAME)))
                         {
                             ChildControl.ClearAttribute("Dock");
@@ -752,35 +752,10 @@ Console.WriteLine("Adjusted Height of Panel '" + ctrl.controlName + "' as it is 
                 writer.Template.InsertSnippet("FILTERANDFINDMETHODS", snippetFilterAndFindMethods);                
             }
             
-            if (ctrl.IsGridButtonPanelStrict) 
+            if (ctrl.IsHorizontalGridButtonPanelStrict) 
             {
                 writer.Template.SetCodelet("BUTTONPANEL", "true");
                 
-//                base.ProcessChildren(writer, ctrl);
-/*                
-                List<TControlDef> PresentButtonControls = new List<TControlDef>();
-//                base.ProcessChildren(writer, ctrl);                
-//                foreach (TControlDef child in ctrl.FCodeStorage.FSortedControlList.Values)
-//                {
-//TLogging.Log("Iteration 0:  Child.ParentName: '" + child.parentName + "'");                                            
-//                    if (child.parentName == ctrl.controlName)
-//                    {
-//TLogging.Log("Iteration 0:  Child: '" + child.controlName + "'");                                            
-////                        container.Children.Add(child);
-//                        PresentButtonControls.Add(child);
-//                    }
-//                }
-*/
-
-
-
-
-
-
-
-
-
-
                 XmlNode controlsNode = TXMLParser.GetChild(ctrl.xmlNode, "Controls");
 
                 TControlDef pnlButtonsInner = writer.CodeStorage.FindOrCreateControl("pnlButtonsInner", ctrl.controlName);
@@ -794,59 +769,20 @@ Console.WriteLine("Adjusted Height of Panel '" + ctrl.controlName + "' as it is 
                         if (childCtrlName != "pnlButtonsInner") 
                         {
                             TControlDef childCtrl = writer.CodeStorage.GetControl(childCtrlName);
-    TLogging.Log("Iteration 0:  Child: '" + childCtrl.controlName + "'");                        
+TLogging.Log("Iteration 0:  Child: '" + childCtrl.controlName + "'");                        
                             
                             pnlButtonsInner.Children.Add(childCtrl);
                             childCtrl.SetAttribute("Top", "3");
-//                            childCtrl.parentName = pnlButtonsInner.controlName;
-//                            PresentButtonControls.Add(childCtrl);
-                            
+                            childCtrl.parentName = pnlButtonsInner.controlName;                            
                         }
                     }
                 }
 
-
-
-
-//                pnlButtonsInner.SetAttribute("AutoSize", "true");
                 pnlButtonsInner.SetAttribute("Dock", "Fill");
                 pnlButtonsInner.SetAttribute("ControlsOrientation", "horizontal");
                 pnlButtonsInner.SetAttribute("AutoScroll", "false");
     
                 ctrl.Children.Add(pnlButtonsInner);
-
-                
-                
-                
-
-
-/*
-                
-                
-//                List<TControlDef> PresentButtonControls = ctrl.Children;
-                List<string> PresentButtonControlNames = new List<string>(PresentButtonControls.Count);
-TLogging.Log("PresentButtonControls.Count.ToString(): " + PresentButtonControls.Count.ToString());
-TLogging.Log("ctrl.Children.Count.ToString(): " + ctrl.Children.Count.ToString());
-                foreach (var Child in PresentButtonControls) 
-                {
-TLogging.Log("Iteration #1:  Child: '" + Child.controlName + "'");
-                    PresentButtonControlNames.Add(Child.controlName);
-                }   
-                
-    
-                pnlButtonsInner.SetAttribute("AutoSize", "true");
-                pnlButtonsInner.SetAttribute("Dock", "Fill");
-    
-                ctrl.Children.Add(pnlButtonsInner);
-*/                
-
-
-
-
-
-
-
-
 
                 TControlDef pnlButtonsRecordCounter = writer.CodeStorage.FindOrCreateControl("pnlButtonsRecordCounter", ctrl.controlName);
     
@@ -858,9 +794,14 @@ TLogging.Log("Iteration #1:  Child: '" + Child.controlName + "'");
                 lblRecordCounter.SetAttribute("AutoSize", "true");
                 lblRecordCounter.SetAttribute("Text", "n records");
                 lblRecordCounter.SetAttribute("Dock", "Fill");
-                
-                pnlButtonsRecordCounter.Children.Add(lblRecordCounter);                
 
+                if ((ctrl.HasAttribute("ShowRecordCounter")) 
+                    && (ctrl.GetAttribute("ShowRecordCounter").ToLower() == "false"))
+                {
+                    lblRecordCounter.SetAttribute("Visible", "false");                    
+                }
+                                
+                pnlButtonsRecordCounter.Children.Add(lblRecordCounter);                
                 
                 if (writer.CodeStorage.GetControl(PNL_FILTER_AND_FIND) != null)
                 {
@@ -876,118 +817,11 @@ TLogging.Log("Iteration #1:  Child: '" + Child.controlName + "'");
                 ctrl.Children.Add(pnlButtonsRecordCounter);       
                 
                 base.ProcessChildren(writer, ctrl);                
-                
-
-
-
-                
-                
-//                pnlGrid.Children.Add(pnlButtonsRecordCounter);
-
-/*
-foreach (var Child in PresentButtonControls) 
-{
-    TLogging.Log("Iteration #2:  Child: '" + Child.controlName + "'");
-}                
-
-
-                foreach (string ChildName in PresentButtonControlNames) 
-                {
-                    TLogging.Log("Iteration #3:  Child: '" + ChildName + "'");
-                    TControlDef Child = writer.CodeStorage.FindOrCreateControl(ChildName, ctrl.controlName);
-                    
-//                    ctrl.Children.Remove(Child);
-//                    base.ProcessChildren(writer, ctrl);
-                    
-                    Child.parentName = pnlButtonsInner.controlName;
-     
-                }   
-                    
-                base.ProcessChildren(writer, pnlButtonsInner);                
-*/                           
-                
             }
             else
             {
                 base.ProcessChildren(writer, ctrl);                
             }
-
-//            StringCollection optionalValues =
-//                TYml2Xml.GetElements(TXMLParser.GetChild(ctrl.xmlNode, "OptionalValues"));
-//            string DefaultValue;
-//
-//            if ((TYml2Xml.HasAttribute(ctrl.xmlNode, "NoDefaultValue")
-//                 && ((TYml2Xml.GetAttribute(ctrl.xmlNode, "NoDefaultValue")) == "true")))
-//            {
-//                DefaultValue = String.Empty;
-//                FNoDefaultValue = true;
-//            }
-//            else
-//            {
-//                DefaultValue = optionalValues[0];
-//            }
-//
-//            if (TYml2Xml.HasAttribute(ctrl.xmlNode, "DefaultValue"))
-//            {
-//                DefaultValue = TYml2Xml.GetAttribute(ctrl.xmlNode, "DefaultValue");
-//            }
-//            else
-//            {
-//                // DefaultValue with = sign before control name
-//                for (int counter = 0; counter < optionalValues.Count; counter++)
-//                {
-//                    if (optionalValues[counter].StartsWith("="))
-//                    {
-//                        optionalValues[counter] = optionalValues[counter].Substring(1).Trim();
-//                        DefaultValue = optionalValues[counter];
-//                    }
-//                }
-//            }
-//
-//            StringCollection optionalValuesLabels =
-//                TYml2Xml.GetElements(TYml2Xml.GetChild(ctrl.xmlNode, "LabelsForOptionalValues"));
-//            StringCollection optionalValuesConstants =
-//                TYml2Xml.GetElements(TYml2Xml.GetChild(ctrl.xmlNode, "OptionalValuesConstants"));
-//
-//            // add the radiobuttons on the fly
-//            int count = 0;
-
-//            foreach (string optionalValue in optionalValues)
-//            {
-//                string radioButtonName = "rbt" +
-//                                         StringHelper.UpperCamelCase(optionalValue.Replace("'", "").Replace(" ",
-//                        "_").Replace("&",
-//                        ""), false, false);
-//                TControlDef newCtrl = writer.CodeStorage.FindOrCreateControl(radioButtonName, ctrl.controlName);
-//                newCtrl.Label = optionalValuesLabels.Count > 0 ? optionalValuesLabels[count] : optionalValue;
-//
-//                if (StringHelper.IsSame(DefaultValue, optionalValue))
-//                {
-//                    newCtrl.SetAttribute("RadioChecked", "true");
-//                    FDefaultValueRadioButton = radioButtonName;
-//                }
-//
-//                if (TYml2Xml.HasAttribute(ctrl.xmlNode, "SuppressChangeDetection"))
-//                {
-//                    newCtrl.SetAttribute("SuppressChangeDetection", TYml2Xml.GetAttribute(ctrl.xmlNode, "SuppressChangeDetection"));
-//                }
-//
-//                if (TYml2Xml.HasAttribute(ctrl.xmlNode, "OnChange"))
-//                {
-//                    newCtrl.SetAttribute("OnChange", TYml2Xml.GetAttribute(ctrl.xmlNode, "OnChange"));
-//                }
-//
-//                if (optionalValuesConstants.Count > count)
-//                {
-//                    newCtrl.SetAttribute("ConstantValue", optionalValuesConstants[count]);
-//                }
-//
-//                ctrl.Children.Add(newCtrl);
-//                count++;
-//            }
-//
-
-            
         }
     }
 
