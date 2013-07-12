@@ -732,8 +732,8 @@ namespace Ict.Common.Controls
                 {
                     case TNumericTextBoxMode.Integer :
                     case TNumericTextBoxMode.LongInteger :
-                    case TNumericTextBoxMode.Decimal:
-                    case TNumericTextBoxMode.Currency:
+                    case TNumericTextBoxMode.Decimal :
+                    case TNumericTextBoxMode.Currency :
                         {
                             #region Numeric Validation Rule
 
@@ -919,11 +919,11 @@ namespace Ict.Common.Controls
                             break;
                         }
 
-                    case TNumericTextBoxMode.NormalTextBox :
-                        {
-                            //Nothing here..
-                            break;
-                        }
+                    case TNumericTextBoxMode.NormalTextBox:
+                    {
+                        //Nothing here..
+                        break;
+                    }
                 }
 
                 if (bolDelete == true)

@@ -175,6 +175,7 @@ namespace Ict.Petra.Server.MFinance.GL
             AAccountTable accountTable = new AAccountTable();
 
             AAccountRow accountTemplate = (AAccountRow)accountTable.NewRowTyped(false);
+
             accountTemplate.LedgerNumber = F_LedgerNum;
             accountTemplate.AccountActiveFlag = true;
             accountTemplate.ForeignCurrencyFlag = true;
@@ -207,6 +208,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     if (accountRow.ForeignCurrencyCode.Equals(F_CurrencyCode[kCnt]))
                     {
                         glmTable.DefaultView.RowFilter = "a_account_code_c = '" + accountRow.AccountCode + "'";
+
                         if (glmTable.DefaultView.Count > 0)
                         {
                             RevaluateAccount(glmTable.DefaultView, F_ExchangeRate[kCnt]);
@@ -214,7 +216,6 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
                 }
             }
-
 
             CloseRevaluationAccountingBatch();
         }
@@ -224,23 +225,31 @@ namespace Ict.Petra.Server.MFinance.GL
             foreach (DataRowView RowView in GLMView)
             {
                 AGeneralLedgerMasterRow glmRow = (AGeneralLedgerMasterRow)RowView.Row;
-                ACostCentreTable tempTbl = ACostCentreAccess.LoadByPrimaryKey(F_LedgerNum,glmRow.CostCentreCode, null);
+                ACostCentreTable tempTbl = ACostCentreAccess.LoadByPrimaryKey(F_LedgerNum, glmRow.CostCentreCode, null);
+
                 if (tempTbl.Rows.Count == 0)
                 {
                     continue; // I really don't expect this, but if it does happen, this will prevent a crash!
                 }
+
                 ACostCentreRow tempRow = tempTbl[0];
+
                 if (!tempRow.PostingCostCentreFlag)
                 {
                     continue; // I do expect this - many rows are not "posting" cost centres.
                 }
+
                 try
                 {
-                    AGeneralLedgerMasterPeriodTable glmpTbl = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(glmRow.GlmSequence, F_AccountingPeriod, null);
+                    AGeneralLedgerMasterPeriodTable glmpTbl = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(glmRow.GlmSequence,
+                        F_AccountingPeriod,
+                        null);
+
                     if (glmpTbl.Rows.Count == 0)
                     {
                         continue; // I really don't expect this, but if it does happen, this will prevent a crash!
                     }
+
                     AGeneralLedgerMasterPeriodRow glmpRow = glmpTbl[0];
                     decimal delta = AccountDelta(glmpRow.ActualBase,
                         glmpRow.ActualForeign,
@@ -408,8 +417,8 @@ namespace Ict.Petra.Server.MFinance.GL
             decimal AAmountInForeignCurrency,
             decimal AExchangeRate, int ACurrencyDigits)
         {
-            return Math.Round((AAmountInForeignCurrency / AExchangeRate), ACurrencyDigits)
-                   - AAmountInBaseCurency;
+            return Math.Round((AAmountInForeignCurrency / AExchangeRate), ACurrencyDigits) -
+                   AAmountInBaseCurency;
         }
     }
 }

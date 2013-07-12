@@ -986,6 +986,7 @@ namespace Ict.Common.Verification
                 {
                     Formatter = StrErrorNoCodeFooter;
                 }
+
                 ReturnValue = ReturnValue +
                               (String.Format(Formatter,
                                    new object[] { si.ResultContext, Status, si.ResultText, si.ResultCode })) +

@@ -1442,10 +1442,12 @@ namespace Ict.Common
         {
             Int64 Res64;
             bool ReturnValue = Int64.TryParse(APositiveInteger, out Res64);
+
             if (ReturnValue)
             {
                 ReturnValue = (Res64 >= 0);
             }
+
             return ReturnValue;
         }
 

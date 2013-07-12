@@ -122,8 +122,8 @@ namespace Ict.Common.Data
             bool ATreatRowAsAdded = false)
         {
             String SqlString = "SELECT " + MODIFICATION_ID + ", " + MODIFIED_BY + ", " + MODIFIED_DATE +
-                        " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
-                        " WHERE ";
+                               " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+                               " WHERE ";
             Boolean First = true;
 
             foreach (int PrimKeyOrd in APrimKeyColumnOrdList)
@@ -151,6 +151,7 @@ namespace Ict.Common.Data
             }
 
             Int32 Counter = 0;
+
             foreach (int i in APrimKeyColumnOrdList)
             {
                 Parameters[Counter] = CreateOdbcParameter(ATableId, i, ADataRow[i, WhichVersion].GetType());
@@ -2208,6 +2209,7 @@ namespace Ict.Common.Data
                     if ((TheRow.RowState == DataRowState.Added) && ((ASelectedOperations & eSubmitChangesOperations.eInsert) != 0))
                     {
                         bool TreatRowAsAdded = false;
+
                         if (ASequenceField.Length > 0)
                         {
                             // only insert next sequence value if the field has negative value.

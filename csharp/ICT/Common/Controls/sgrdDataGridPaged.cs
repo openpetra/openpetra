@@ -461,6 +461,7 @@ namespace Ict.Common.Controls
                 {
                     FTransferredDataPages.Add(ANeededPage);
                     Int32 IdxBase = ANeededPage * FPageSize;
+
                     // MessageBox.Show('Inserting Page ' + ANeededPage.ToString + ' (PageSize: ' + FPageSize.ToString + '; Records returned: ' +  PagedTable.Rows.Count.ToString + ')...');
                     for (Int32 Counter = 0; Counter < PagedTable.Rows.Count; Counter++)
                     {
@@ -474,6 +475,7 @@ namespace Ict.Common.Controls
                         {
                             TargetRow = FPagedDataTable.Rows[IdxBase + Counter]; // Otherwise overwrite the existing one
                         }
+
                         TargetRow.ItemArray = PagedTable.Rows[Counter].ItemArray;
                     }
                 }

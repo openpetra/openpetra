@@ -3176,9 +3176,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
 
                 ACostCentreRow PrevRow = TempTbl[0];
+
                 if (PrevRow.SystemCostCentreFlag)
                 {
-                    VerificationResults.Add(new TVerificationResult(VerificationContext, String.Format("Cannot rename System Cost Centre {0}.", AOldCode),
+                    VerificationResults.Add(new TVerificationResult(VerificationContext,
+                            String.Format("Cannot rename System Cost Centre {0}.", AOldCode),
                             TResultSeverity.Resv_Critical));
                     return false;
                 }

@@ -787,7 +787,6 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth, EditorBase AEditor, bool AReadOnly)
         {
-
             if (ADataColumn == null)
             {
                 throw new ArgumentNullException("ADataColumn", "ADataColumn must not be nil!");

@@ -246,11 +246,15 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             TDBTransaction ATransaction)
         {
             Int32 NewApNum = 1;
-            Object MaxVal = DBAccess.GDBAccessObj.ExecuteScalar(String.Format("SELECT max(a_ap_number_i) from PUB_a_ap_document where a_ledger_number_i={0}", ALedgerNumber), ATransaction);
+            Object MaxVal =
+                DBAccess.GDBAccessObj.ExecuteScalar(String.Format("SELECT max(a_ap_number_i) from PUB_a_ap_document where a_ledger_number_i={0}",
+                        ALedgerNumber), ATransaction);
+
             if (MaxVal.GetType() != typeof(System.DBNull))
             {
                 NewApNum = Convert.ToInt32(MaxVal) + 1;
             }
+
             return NewApNum;
         }
 
@@ -304,7 +308,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         if (MatchingRow.ApDocumentId != NewDocRow.ApDocumentId) // This Document Code is in use, and not by me!
                         {
                             AVerificationResult.Add(new TVerificationResult("Save Document",
-                                String.Format("Document Code {0} already exists.", NewDocRow.DocumentCode),
+                                    String.Format("Document Code {0} already exists.", NewDocRow.DocumentCode),
                                     TResultSeverity.Resv_Noncritical));
                             return TSubmitChangesResult.scrInfoNeeded;
                         }

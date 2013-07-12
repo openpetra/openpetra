@@ -721,7 +721,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             if (Success)
                             {
                                 DataTable NewTable;
-                                TRemote.MFinance.Cacheable.WebConnectors.RefreshCacheableTable(TCacheableFinanceTablesEnum.CostCentreList,FLedgerNumber,out NewTable);
+                                TRemote.MFinance.Cacheable.WebConnectors.RefreshCacheableTable(TCacheableFinanceTablesEnum.CostCentreList,
+                                    FLedgerNumber,
+                                    out NewTable);
                                 FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
                                 strOldDetailCostCentreCode = "";
                                 txtDetailCostCentreCode.Text = "";

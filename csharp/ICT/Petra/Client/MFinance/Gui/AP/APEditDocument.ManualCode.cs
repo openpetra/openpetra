@@ -492,6 +492,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 return;
             }
+
             grdDetails.Columns[1].Width = pnlDetailGrid.Width - 380;   // It doesn't really work having these here -
             grdDetails.Columns[0].Width = 90;                          // there's something else that overrides these settings.
             grdDetails.Columns[2].Width = 200;

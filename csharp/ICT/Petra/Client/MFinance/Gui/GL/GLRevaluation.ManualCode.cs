@@ -65,8 +65,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private DateTime FperiodStart;
         private DateTime FperiodEnd;
 
-        private List<CurrencyExchange> FcurrencyExchangeList = new List<CurrencyExchange>();
-        private DevAge.ComponentModel.BoundList<CurrencyExchange> FBoundList;
+        private List <CurrencyExchange>FcurrencyExchangeList = new List <CurrencyExchange>();
+        private DevAge.ComponentModel.BoundList <CurrencyExchange>FBoundList;
 
         //TFrmSetupDailyExchangeRate tFrmSetupDailyExchangeRate;
 
@@ -120,7 +120,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (blnIsLedger && blnAccountActive
                     && blnAccountForeign && blnAccountHasPostings)
                 {
-
                     if (strRevaluationCurrencies == "")
                     {
                         strRevaluationCurrencies =
@@ -144,6 +143,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 strRevaluationCurrencies = strRevaluationCurrencies + "]";
             }
+
             return strRevaluationCurrencies;
         }
 
@@ -182,10 +182,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FBoundList.AllowNew = false;
             FBoundList.AllowDelete = false;
+
             for (Int32 column = 1; column <= 3; column++)
             {
                 grdDetails.Columns[column].GetDataCell(AIndex).Editor.EnableEdit = false;
             }
+
             linkClickDelete.SetDataList(FcurrencyExchangeList);
         }
 
@@ -204,10 +206,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 (PCountryRow)DataCacheCountryDT.Rows.Find(strCountryCode);
 
             String strLedgerName = FLedgerNumber.ToString();
+
             if (CountryDR != null)
             {
                 strLedgerName += (" - " + CountryDR.CountryName);
             }
+
             strLedgerName += (" [" + strBaseCurrency + "]");
             return strLedgerName;
         }
