@@ -1000,6 +1000,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("MULTIDELETEDELETABLE", "");
             FTemplate.AddToCodelet("SELECTTABMANUAL", "");
             FTemplate.AddToCodelet("STOREMANUALCODE", "");
+            FTemplate.AddToCodelet("FINDANDFILTERHOOKUPEVENTS", "");
             FTemplate.AddToCodelet("ACTIONENABLINGDISABLEMISSINGFUNCS", "");
             FTemplate.AddToCodelet("PRIMARYKEYCONTROLSREADONLY", "");
             FTemplate.AddToCodelet("SHOWDETAILSMANUAL", "");
@@ -1085,6 +1086,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "SubmissionResult = StoreManualCode(ref SubmitDS, out VerificationResult);" + Environment.NewLine);
             }
 
+            if (FCodeStorage.ManualFileExistsAndContains("FindAndFilterHookUpEvents"))
+            {
+                FTemplate.AddToCodelet("FINDANDFILTERHOOKUPEVENTS", "FindAndFilterHookUpEvents();" + Environment.NewLine);
+            }
+            
             if (FCodeStorage.HasAttribute("DatasetType"))
             {
                 FTemplate.SetCodelet("DATASETTYPE", FCodeStorage.GetAttribute("DatasetType"));

@@ -414,6 +414,7 @@ namespace Ict.Common.Controls
         Control FFilterPanelFirstArgumentControl;
         Control FExtraFilterPanelFirstArgumentControl;
         Control FFindPanelFirstArgumentControl;
+        FilterContext FKeepFilterTurnedOnButtonDepressed = FilterContext.None;
         
         #region Constructors
         
@@ -530,6 +531,17 @@ namespace Ict.Common.Controls
                 FShowFilterIsAlwaysTurnedOnLabel = value;
                 
                 UpdateFilterIsAlwaysTurnedOnLabels();
+            }
+        }
+        
+        /// <summary>
+        /// Gets which 'Keep Filter Turned On' button is currently depressed (if any).
+        /// </summary>
+        public FilterContext KeepFilterTurnedOnButtonDepressed
+        {
+            get
+            {
+                return FKeepFilterTurnedOnButtonDepressed;
             }
         }
         
@@ -1086,7 +1098,9 @@ namespace Ict.Common.Controls
                 {
                     FShowFilterIsAlwaysTurnedOnLabel = FilterContext.None;
                 }                                    
-            }            
+            }           
+
+            UpdateKeepFilterTurnedOnButtonDepressedState();
         }
         
         /// <summary>
@@ -1107,6 +1121,8 @@ namespace Ict.Common.Controls
             
             // Remove 'Keep Filter Turned On'  Button from Filter Panel
             AFilterPanel.Controls.RemoveByKey(BTN_KEEP_FILTER_TURNED_ON_NAME);
+            
+            UpdateKeepFilterTurnedOnButtonDepressedState();
         }
         
         #endregion
@@ -1234,6 +1250,8 @@ namespace Ict.Common.Controls
                     FShowKeepFilterTurnedOnButton = FilterContext.None;
                 }                    
             }
+            
+            UpdateKeepFilterTurnedOnButtonDepressedState();
         }
         
         /// <summary>
@@ -1254,6 +1272,8 @@ namespace Ict.Common.Controls
             
             // Remove 'Filter Always Turned On' Label from Filter Panel
             AFilterPanel.Controls.RemoveByKey(LBL_FILTER_IS_ALWAYS_TURNED_ON_NAME);
+            
+            UpdateKeepFilterTurnedOnButtonDepressedState();
         }
         
         #endregion
@@ -1910,31 +1930,91 @@ namespace Ict.Common.Controls
         {
             CheckBox ClickedButton = sender as CheckBox;
             Panel ContainingPanel;
-            EventContext Context;
+            EventContext EContext;
             
             if (ClickedButton == null) 
             {
                 throw new ArgumentNullException("Argument 'sender' must not be null and must be a CheckBox in Button form (Appearance Property: Appearance.Button)");
             }
 
-            if (KeepFilterTurnedOnClicked != null) 
+            ContainingPanel = ClickedButton.Parent as Panel;
+            
+            if (ContainingPanel != null) 
             {
-                ContainingPanel = ClickedButton.Parent as Panel;
-                
-                if (ContainingPanel != null) 
+                if (ContainingPanel.Name == pnlFilterControls.Name) 
                 {
-                    if (ContainingPanel.Name == pnlFilterControls.Name) 
-                    {
-                        Context = EventContext.ecStandardFilterPanel;    
-                    }
+                    EContext = EventContext.ecStandardFilterPanel;    
+                }
+                else
+                {
+                    EContext = EventContext.ecExtraFilterPanel;    
+                }
+                
+                UpdateKeepFilterTurnedOnButtonDepressedState();
+                
+                if (KeepFilterTurnedOnClicked != null) 
+                {
+                    KeepFilterTurnedOnClicked(this, new TContextEventExtButtonDepressedArgs(EContext, ClickedButton.Checked));
+                }
+                
+            }    
+        }
+        
+        private void UpdateKeepFilterTurnedOnButtonDepressedState()
+        {
+            Control[] ControlsArray = pnlFilterControls.Controls.Find(BTN_KEEP_FILTER_TURNED_ON_NAME, false);
+            
+            FKeepFilterTurnedOnButtonDepressed = FilterContext.None;
+            
+            // If a 'Keep Filter Turned On' Button is shown: check whether it is checked
+            if (ControlsArray.Length != 0)
+            {
+                if (((CheckBox)ControlsArray[0]).Checked)
+                {
+                    ControlsArray = pnlExtraFilterControls.Controls.Find(BTN_KEEP_FILTER_TURNED_ON_NAME, false);
+                    
+                    if (ControlsArray.Length != 0)
+                    {       
+                        if (((CheckBox)ControlsArray[0]).Checked)
+                        {                            
+                            FKeepFilterTurnedOnButtonDepressed = FilterContext.StandardAndExtraFilter;
+                            
+                            return;
+                        }
+                        else
+                        {
+                            FKeepFilterTurnedOnButtonDepressed = FilterContext.StandardFilterOnly;    
+                            
+                            return;
+                        }
+                    }                    
                     else
                     {
-                        Context = EventContext.ecExtraFilterPanel;    
+                        FKeepFilterTurnedOnButtonDepressed = FilterContext.StandardFilterOnly;
+                        
+                        return;
                     }
-                    
-                    KeepFilterTurnedOnClicked(this, new TContextEventExtButtonDepressedArgs(Context, ClickedButton.Checked));
                 }
-            }    
+            }
+            
+            // Now Check the Extra Filter Panel
+            ControlsArray = pnlExtraFilterControls.Controls.Find(BTN_KEEP_FILTER_TURNED_ON_NAME, false);
+                    
+            // If a 'Keep Filter Turned On' Button is shown: check whether it is checked
+            if (ControlsArray.Length != 0)
+            {
+                if (((CheckBox)ControlsArray[0]).Checked)
+                {
+                    FKeepFilterTurnedOnButtonDepressed = FilterContext.ExtraFilterOnly;    
+                            
+                    return;
+                }                 
+                else
+                {
+                    FKeepFilterTurnedOnButtonDepressed = FilterContext.None;
+                    
+                }
+            }            
         }
         
         /// <summary>

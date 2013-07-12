@@ -536,6 +536,23 @@ namespace ControlTestBench
             txtEventsLog.SelectionLength = 0;
             txtEventsLog.ScrollToCaret();
         }
+    
+        void BtnAllowedToSetFilterToInactiveClick(object sender, EventArgs e)
+        {
+            if ((FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel == TUcoFilterAndFind.FilterContext.None)
+                && (FUcoFilterAndFind.KeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.None))    
+            {
+                MessageBox.Show("One is allowed to set the Filter to inactive.\r\nShowFilterIsAlwaysOnLabel: " + 
+                    FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel.ToString("G") + "\r\n" +
+                    "KeepFilterTurnedOnButtonDepressed: " + FUcoFilterAndFind.KeepFilterTurnedOnButtonDepressed.ToString("G"));
+            }
+            else
+            {
+                MessageBox.Show("One is NOT ALLOWED to set the Filter to inactive.\r\nShowFilterIsAlwaysOnLabel: " + 
+                    FUcoFilterAndFind.ShowFilterIsAlwaysOnLabel.ToString("G") + "\r\n" +
+                    "KeepFilterTurnedOnButtonDepressed: " + FUcoFilterAndFind.KeepFilterTurnedOnButtonDepressed.ToString("G"));            
+            }
+        }
     }
      
     /// <summary>

@@ -22,7 +22,9 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Client.MCommon.Gui.Setup
@@ -73,5 +75,15 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 txtDetailCurrencyName.Text);
             return true;
         }
+        
+        
+        #region Filter and Find Event Handling
+        
+        private void FindAndFilter_ArgumentCtrlValueChanged(object AUcoEventSender, TUcoFilterAndFind.TContextEventExtControlValueArgs AUcoEventArgs)
+        {
+            // TODO
+        } 
+        
+        #endregion        
     }
 }

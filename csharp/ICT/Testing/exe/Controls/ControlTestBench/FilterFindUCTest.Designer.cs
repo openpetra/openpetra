@@ -131,6 +131,7 @@ partial class FilterFindTest
         this.rbtTwoFilterPanels = new System.Windows.Forms.RadioButton();
         this.rbtOneFilterPanel = new System.Windows.Forms.RadioButton();
         this.groupBox3 = new System.Windows.Forms.GroupBox();
+        this.btnAllowedToSetFilterToInactive = new System.Windows.Forms.Button();
         this.button1 = new System.Windows.Forms.Button();
         this.btnFocusFirstArgumentControl = new System.Windows.Forms.Button();
         this.btnCollapseExpandPanel = new System.Windows.Forms.Button();
@@ -952,6 +953,7 @@ partial class FilterFindTest
         // 
         // groupBox3
         // 
+        this.groupBox3.Controls.Add(this.btnAllowedToSetFilterToInactive);
         this.groupBox3.Controls.Add(this.button1);
         this.groupBox3.Controls.Add(this.btnFocusFirstArgumentControl);
         this.groupBox3.Controls.Add(this.btnCollapseExpandPanel);
@@ -963,6 +965,16 @@ partial class FilterFindTest
         this.groupBox3.TabIndex = 10;
         this.groupBox3.TabStop = false;
         this.groupBox3.Text = "Manipulations on the running instance";
+        // 
+        // btnAllowedToSetFilterToInactive
+        // 
+        this.btnAllowedToSetFilterToInactive.Location = new System.Drawing.Point(254, 155);
+        this.btnAllowedToSetFilterToInactive.Name = "btnAllowedToSetFilterToInactive";
+        this.btnAllowedToSetFilterToInactive.Size = new System.Drawing.Size(188, 23);
+        this.btnAllowedToSetFilterToInactive.TabIndex = 8;
+        this.btnAllowedToSetFilterToInactive.Text = "Filter Allowed to be Inactive?";
+        this.btnAllowedToSetFilterToInactive.UseVisualStyleBackColor = true;
+        this.btnAllowedToSetFilterToInactive.Click += new System.EventHandler(this.BtnAllowedToSetFilterToInactiveClick);
         // 
         // button1
         // 
@@ -1110,6 +1122,7 @@ partial class FilterFindTest
         this.groupBox9.PerformLayout();
         this.ResumeLayout(false);
     }
+    private System.Windows.Forms.Button btnAllowedToSetFilterToInactive;
     private System.Windows.Forms.TextBox txtEventsLog;
     private System.Windows.Forms.GroupBox groupBox9;
     private System.Windows.Forms.Button btnFocusFirstArgumentControl;

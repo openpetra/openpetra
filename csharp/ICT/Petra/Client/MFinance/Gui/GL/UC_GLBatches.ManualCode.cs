@@ -1343,5 +1343,54 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FucoFilterAndFind.DisplayFindTab();
         }
+        
+        #region Filter and Find Event Handling
+        
+        private void FindAndFilterHookUpEvents()
+        {
+            // TODO
+            FucoFilterAndFind.ApplyFilterClicked += delegate(object AUcoEventSender, TUcoFilterAndFind.TContextEventExtControlArgs AUcoEventArgs) 
+                { FindAndFilter_ApplyFilterClicked(AUcoEventSender, AUcoEventArgs); };
+        }
+        
+        private void FindAndFilter_ArgumentCtrlValueChanged(object AUcoEventSender, TUcoFilterAndFind.TContextEventExtControlValueArgs AUcoEventArgs)
+        {
+            // TODO
+        } 
+        
+        private void FindAndFilter_ApplyFilterClicked(object AUcoEventSender, TUcoFilterAndFind.TContextEventExtControlArgs AUcoEventArgs)
+        {
+
+            if (AUcoEventArgs.Action != null) 
+            {
+                // Start whatever is needed to apply the Filter - asynchronously -
+                // and then immediately execute the AUcoEventArgs.Action command to update the 'Apply Filter' Button
+                // to signalise to the user that the filter is being applied!
+                
+                // TODO: asynchronously start method that will apply the Filter 
+                
+                this.Cursor = Cursors.WaitCursor;
+                Application.DoEvents();
+                            
+                AUcoEventArgs.Action(((TUcoFilterAndFind.TContextEventExtControlArgs)AUcoEventArgs).AffectedControl);
+            }                    
+            
+            // Simulate applying of filter... (that would happen in a separate Thread!)
+            System.Threading.Thread.Sleep(2000);
+            // Applying of Filter is finished...
+            
+            if (AUcoEventArgs.ResetAction != null) 
+            {
+                // Once the applying of the Filter is finished, execute the AUcoEventArgs.ResetAction command to update 
+                // the 'Apply Filter' Button (so that the Button is brought back to its normal state)!
+                AUcoEventArgs.ResetAction(((TUcoFilterAndFind.TContextEventExtControlArgs)AUcoEventArgs).AffectedControl);
+                
+                UpdateRecordNumberDisplay();
+                
+                this.Cursor = Cursors.Default;
+            }                                
+        }
+        
+        #endregion        
     }
 }

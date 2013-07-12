@@ -28,10 +28,12 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Collections.Specialized;
 using GNU.Gettext;
-using Ict.Common.Verification;
+
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
@@ -175,5 +177,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             return true;
         }
+ 
+        #region Filter and Find Event Handling
+        
+        private void FindAndFilterHookUpEvents()
+        {
+            // TODO
+        }
+        
+        private void FindAndFilter_ArgumentCtrlValueChanged(object AUcoEventSender, TUcoFilterAndFind.TContextEventExtControlValueArgs AUcoEventArgs)
+        {
+            // TODO
+        } 
+        
+        #endregion
     }
 }

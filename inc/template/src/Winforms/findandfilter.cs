@@ -99,6 +99,11 @@ private void ToggleFilter()
 
             FucoFilterAndFind.Expanded += delegate { ToggleFilter(); };
             FucoFilterAndFind.Collapsed += delegate { ToggleFilter(); };
+    
+            // Hook up Events of the Filter and Find Panel
+            FucoFilterAndFind.ArgumentCtrlValueChanged += delegate(object AUcoEventSender, TUcoFilterAndFind.TContextEventExtControlValueArgs AUcoEventArgs) 
+                { FindAndFilter_ArgumentCtrlValueChanged(AUcoEventSender, AUcoEventArgs); };
+            {#FINDANDFILTERHOOKUPEVENTS}
         }
 
         pnlFilterAndFind.Width = FFilterAndFindParameters.FindAndFilterInitialWidth;
