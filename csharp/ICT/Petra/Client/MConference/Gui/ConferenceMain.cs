@@ -42,49 +42,50 @@ namespace Ict.Petra.Client.MConference.Gui
         public static void EarlyLateRegistrationsForSelectedConference(Form AParentForm)
         {
             long ConferenceKey = Convert.ToInt64(AParentForm.GetType().GetMethod("GetSelectedConferenceKey").Invoke(AParentForm, null));
-            
+
             TSearchCriteria[] Search = new TSearchCriteria[1];
             Search[0] = new TSearchCriteria(PcEarlyLateTable.GetConferenceKeyDBName(), ConferenceKey);
             TFrmEarlyLateRegistrationSetup frm = new TFrmEarlyLateRegistrationSetup(AParentForm, Search, ConferenceKey);
-            
+
             frm.Show();
         }
-                
+
         /// <summary>
         /// opens Standard Cost screen for pre selected conference
         /// </summary>
         public static void StandardCostsForSelectedConference(Form AParentForm)
         {
             long ConferenceKey = Convert.ToInt64(AParentForm.GetType().GetMethod("GetSelectedConferenceKey").Invoke(AParentForm, null));
-            
+
             TSearchCriteria[] Search = new TSearchCriteria[1];
             Search[0] = new TSearchCriteria(PcConferenceCostTable.GetConferenceKeyDBName(), ConferenceKey);
             TFrmConferenceStandardCostSetup frm = new TFrmConferenceStandardCostSetup(AParentForm, Search, ConferenceKey);
-            
+
             frm.Show();
         }
-        
+
         /// <summary>
         /// opens Child Discount screen for pre selected conference
         /// </summary>
         public static void ChildDiscountsForSelectedConference(Form AParentForm)
         {
             long ConferenceKey = Convert.ToInt64(AParentForm.GetType().GetMethod("GetSelectedConferenceKey").Invoke(AParentForm, null));
-            
+
             TSearchCriteria[] Search = new TSearchCriteria[2];
             Search[0] = new TSearchCriteria(PcDiscountTable.GetConferenceKeyDBName(), ConferenceKey);
             Search[1] = new TSearchCriteria(PcDiscountTable.GetDiscountCriteriaCodeDBName(), "CHILD");
             TFrmChildDiscountSetup frm = new TFrmChildDiscountSetup(AParentForm, Search, ConferenceKey);
-            
+
             frm.Show();
         }
-        
+
         /// <summary>
         /// opens Event Find Screen screen and uses Conference Find Form (not displayed) to create a new conference
         /// </summary>
         public static void NewConference(Form AParentForm)
         {
             TFrmConferenceFindForm frm = new TFrmConferenceFindForm(AParentForm);
+
             frm.NewConference(new object(), new EventArgs());
         }
     }

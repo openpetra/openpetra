@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -90,10 +90,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             string CheckedMember = "CHECKED";
             string AccountDBN = ABudgetTable.GetAccountCodeDBName();
             string CostCentreDBN = ABudgetTable.GetCostCentreCodeDBName();
-            string BudgetSeqDBN = ABudgetTable.GetBudgetSequenceDBName();
+            //string BudgetSeqDBN = ABudgetTable.GetBudgetSequenceDBName();
             //string CCAccKey = "CostCentreAccountKey";
             string CCAccDesc = "CostCentreAccountDescription";
-            string BudgetSeqKey = "BudgetSequenceKey";
+            //string BudgetSeqKey = "BudgetSequenceKey";
 
             //Calculate the longest Cost Centre to calculate padding amount
             ABudgetRow BudgetRow;
@@ -118,18 +118,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 //ABudgetRow emptyRow = (ABudgetRow)ABdgTable.NewRow();
 
                 DataView view = new DataView(ABdgTable);
-                DataTable ABdgTable2 = view.ToTable(true, new string[] { BudgetSeqDBN, AccountDBN, CostCentreDBN });
+                view.RowFilter = String.Format("{0}={1}",
+                    ABudgetTable.GetLedgerNumberDBName(),
+                    FLedgerNumber);
+                //DataTable ABdgTable2 = view.ToTable(true, new string[] { BudgetSeqDBN, AccountDBN, CostCentreDBN });
+                DataTable ABdgTable2 = view.ToTable(true, new string[] { AccountDBN, CostCentreDBN });
                 ABdgTable2.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
-                ABdgTable2.Columns.Add(new DataColumn(BudgetSeqKey, typeof(string), BudgetSeqDBN));
+                //ABdgTable2.Columns.Add(new DataColumn(BudgetSeqKey, typeof(string), BudgetSeqDBN));
                 ABdgTable2.Columns.Add(new DataColumn(CCAccDesc, typeof(string),
                         CostCentreDBN.PadRight(CostCentrePadding + 2, ' ') + " + '-' + " + AccountDBN));
 
                 clbCostCentreAccountCodes.Columns.Clear();
                 clbCostCentreAccountCodes.AddCheckBoxColumn("", ABdgTable2.Columns[CheckedMember], 17, false);
-                clbCostCentreAccountCodes.AddTextColumn("Key", ABdgTable2.Columns[BudgetSeqKey], 0);
+                //clbCostCentreAccountCodes.AddTextColumn("Key", ABdgTable2.Columns[BudgetSeqKey], 0);
                 clbCostCentreAccountCodes.AddTextColumn("Cost Centre-Account", ABdgTable2.Columns[CCAccDesc], 200);
-                clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, BudgetSeqKey, CheckedMember, BudgetSeqKey, CCAccDesc, false, true, false);
+                //clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, BudgetSeqKey, CheckedMember, BudgetSeqKey, CCAccDesc, false, true, false);
+                clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, CCAccDesc, CheckedMember, CCAccDesc, CCAccDesc, false, true, false);
 
                 clbCostCentreAccountCodes.SetCheckedStringList("");
             }
@@ -159,17 +164,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, ConsolidateAll, out VerificationResult);
 
                 string CheckItemsList = clbCostCentreAccountCodes.GetCheckedStringList();
+
                 string[] CheckedItems = CheckItemsList.Split(',');
 
                 string ForecastType;
 
                 if (rbtThisYearsBudgets.Checked)
                 {
-                    ForecastType = "Budget";
+                    ForecastType = MFinanceConstants.FORECAST_TYPE_BUDGET;
                 }
                 else
                 {
-                    ForecastType = "Actuals";
+                    ForecastType = MFinanceConstants.FORECAST_TYPE_ACTUALS;
                 }
 
                 if (rbtSelectedBudgets.Checked && (CheckItemsList.Length > 0)
@@ -196,14 +202,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             {
                 MessageBox.Show(ex.Message);
             }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
+            catch (Exception ex)
             {
                 Cursor.Current = Cursors.Default;
+                throw ex;
             }
+
+            Cursor.Current = Cursors.Default;
         }
 
         //This flag is needed to stop the event occuring twice for each
@@ -261,8 +266,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             for (int i = 0; i < BudgetTable.Count; i++)
             {
                 BudgetRow = (ABudgetRow)BudgetTable.Rows[i];
-                //CheckedList += BudgetRow.CostCentreCode + '-' + BudgetRow.AccountCode + ",";
-                CheckedList += BudgetRow.BudgetSequence.ToString() + ",";
+                CheckedList += BudgetRow.CostCentreCode + '-' + BudgetRow.AccountCode + ",";
+                //CheckedList += BudgetRow.BudgetSequence.ToString() + ",";
             }
 
             if (CheckedList.Length > 0)

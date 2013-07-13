@@ -43,32 +43,32 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
     public partial class TFrmConferenceStandardCostSetup
     {
         private Int64 FPartnerKey;
-        
+
         /// constructor
         public TFrmConferenceStandardCostSetup(Form AParentForm, TSearchCriteria[] ASearchCriteria, long ASelectedConferenceKey) : base()
         {
             FPartnerKey = ASelectedConferenceKey;
             Initialize(AParentForm, ASearchCriteria);
         }
-        
+
         private void InitializeManualCode()
         {
             string CurrencyCode;
             string CurrencyName;
             string ConferenceName;
             TPartnerClass PartnerClass;
-        
+
             // display the conference name in the title bar and in a text box at the top of the screen
             TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(FPartnerKey, out ConferenceName, out PartnerClass);
             this.Text = this.Text + " [" + ConferenceName + "]";
             txtConferenceName.Text = ConferenceName;
-            
+
             // display the conference currency in a text box at the top of the screen and in pnlDetails
             TRemote.MConference.Conference.WebConnectors.GetCurrency(FPartnerKey, out CurrencyCode, out CurrencyName);
             txtConferenceCurrency.Text = CurrencyCode + ": " + CurrencyName;
             txtDetailCharge.CurrencySymbol = CurrencyCode;
         }
-        
+
         private void NewRowManual(ref PcConferenceCostRow ARow)
         {
             int NewOptionDays = 1;  // starts at 1 day
@@ -86,7 +86,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             }
 
             ARow.OptionDays = NewOptionDays;
-            
+
             // set the conference key
             ARow.ConferenceKey = FPartnerKey;
         }
@@ -95,14 +95,14 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
         {
             CreateNewPcConferenceCost();
         }
-        
+
         private void ValidateDataDetailsManual(PcConferenceCostRow ARow)
-        {   
-            // this is used to compare with the row that is being validated            
+        {
+            // this is used to compare with the row that is being validated
             DataRowCollection GridData = FMainDS.PcConferenceCost.Rows;
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-            
+
             TSharedConferenceValidation_Conference.ValidateConferenceStandardCost(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict, GridData);
         }

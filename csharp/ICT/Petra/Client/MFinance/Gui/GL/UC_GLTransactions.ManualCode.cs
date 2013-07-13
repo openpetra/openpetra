@@ -47,6 +47,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FBatchNumber = -1;
         private Int32 FJournalNumber = -1;
         private Int32 FTransactionNumber = -1;
+        private bool FActiveOnly = true;
         private string FTransactionCurrency = string.Empty;
         private string FBatchStatus = string.Empty;
         private string FJournalStatus = string.Empty;
@@ -144,11 +145,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FMainDS.ATransAnalAttrib.DefaultView.AllowNew = false;
             grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
 
-            // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
-            bool ActiveOnly = this.Enabled;
+            // if this form is readonly or batch is posted, then we need all account and cost centre codes, because old codes might have been used
+            bool ActiveOnly = (this.Enabled && FBatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
-            if (requireControlSetup)
+            if (requireControlSetup || (FActiveOnly != ActiveOnly))
             {
+                FActiveOnly = ActiveOnly;
+
                 //Load all analysis attribute values
                 if (FCacheDS == null)
                 {
@@ -208,7 +211,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ATransactionTable.GetJournalNumberDBName(),
                     FJournalNumber);
 
-                FMainDS.ATransaction.DefaultView.Sort = String.Format("{0} DESC",
+                FMainDS.ATransaction.DefaultView.Sort = String.Format("{0} ASC",
                     ATransactionTable.GetTransactionNumberDBName()
                     );
             }
@@ -697,7 +700,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             decimal amtCreditTotal = 0.0M;
             decimal amtCreditTotalBase = 0.0M;
 
-            if ((FJournalNumber != -1) && (FBatchRow != null) && (FJournalRow != null) && (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED))         // && !pnlDetailsProtected)
+            if ((FJournalNumber != -1) && (FBatchRow != null) && (FJournalRow != null)) // && (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED))         // && !pnlDetailsProtected)
             {
                 if (FPreviouslySelectedDetailRow != null)
                 {
@@ -771,7 +774,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtCreditTotalAmount.NumberValueDecimal = FJournalRow.JournalCreditTotal;
                 txtDebitTotalAmount.NumberValueDecimal = FJournalRow.JournalDebitTotal;
 
-                // refresh the currency symbols
                 ShowDataManual();
             }
         }

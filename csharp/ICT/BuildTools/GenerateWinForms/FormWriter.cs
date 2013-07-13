@@ -981,6 +981,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("INITUSERCONTROLS", "");
             FTemplate.AddToCodelet("INITMANUALCODE", "");
             FTemplate.AddToCodelet("GRIDMULTISELECTION", "");
+            FTemplate.AddToCodelet("SELECTIONCHANGEDEVENT", "");
+            FTemplate.AddToCodelet("SELECTIONCHANGEDHANDLER", "");
             FTemplate.AddToCodelet("RUNONCEONACTIVATIONMANUAL", "");
             FTemplate.AddToCodelet("EXITMANUALCODE", "");
             FTemplate.AddToCodelet("CANCLOSEMANUAL", "");
@@ -1312,7 +1314,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     // Write the one-line codelet that handles enable/disable of the delete button
                     string enableDelete = "btnDelete.Enabled = ";
-                    string enableDeleteExtra = "((grdDetails.SelectedDataRowsAsDataRowView.Length > 1)";
+                    string enableDeleteExtra = "((grdDetails.SelectedDataRows.Length > 1)";
 
                     if (FCodeStorage.FControlList.ContainsKey("chkDetailDeletable")
                         || FCodeStorage.FControlList.ContainsKey("chkDeletable"))

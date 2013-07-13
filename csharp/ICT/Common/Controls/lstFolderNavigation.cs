@@ -180,7 +180,7 @@ namespace Ict.Common.Controls
                 FCurrentLedger = value;
             }
         }
-        
+
         /// <summary>
         /// True if the user has previously selected a conference.
         /// </summary>

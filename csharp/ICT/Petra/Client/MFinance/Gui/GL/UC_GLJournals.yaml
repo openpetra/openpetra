@@ -12,6 +12,7 @@ RootNode:
         actCancel:
             Label: &Cancel Journal
             ActionClick: CancelRow
+            Image: Delete_Record.ico
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
@@ -30,12 +31,13 @@ RootNode:
         txtControl: {ReadOnly=true, Label=Hash, Unbound=true, Format=Decimal, Width=147}
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnAdd, btnCancel]
-        btnAdd: {Action=actNew, Stretch=horizontally}
-        btnCancel: {Action=actCancel, Stretch=horizontally}
+            ControlsOrientation: horizontal
+        btnAdd: {Action=actNew, Width=120}
+        btnCancel: {Action=actCancel, Width=120}
         grdDetails:
             Dock: Fill
             Columns: [JournalNumber, JournalStatus, JournalDebitTotal, JournalCreditTotal, TransactionCurrency, JournalDescription, SubSystemCode, TransactionTypeCode]

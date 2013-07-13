@@ -166,7 +166,7 @@ namespace Ict.Common.Controls
                 FIsLedgerBasedModule = true;
             }
             else if (AConferenceSelected
-                && (TXMLParser.GetAttribute(AFolderNode, "DependsOnConference").ToLower() == "true"))
+                     && (TXMLParser.GetAttribute(AFolderNode, "DependsOnConference").ToLower() == "true"))
             {
                 FIsConferenceBasedModule = true;
             }

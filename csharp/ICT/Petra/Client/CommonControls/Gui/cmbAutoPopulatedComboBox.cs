@@ -332,13 +332,13 @@ namespace Ict.Petra.Client.CommonControls
             {
                 return cmbCombobox.Tag;
             }
-            
+
             set
             {
                 cmbCombobox.Tag = value;
             }
         }
-        
+
         /**
          * This Event is thrown when the internal ComboBox throws the SelectedValueChanged Event.
          */

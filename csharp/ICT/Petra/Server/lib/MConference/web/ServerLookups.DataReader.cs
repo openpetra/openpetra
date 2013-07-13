@@ -61,32 +61,32 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         {
             ACurrencyCode = "";
             ACurrencyName = "";
-            
+
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
             PcConferenceTable ConferenceTable;
             ACurrencyTable CurrencyTable;
             Boolean ReturnValue = false;
-            
+
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             try
             {
                 ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
-                
+
                 if (ConferenceTable.Rows.Count == 0)
                 {
                     ReturnValue = false;
                 }
                 else
                 {
-                    ACurrencyCode = ((PcConferenceRow) ConferenceTable.Rows[0]).CurrencyCode;
-                    
+                    ACurrencyCode = ((PcConferenceRow)ConferenceTable.Rows[0]).CurrencyCode;
+
                     // use the obtained currency code to retrieve the currency name
                     CurrencyTable = ACurrencyAccess.LoadByPrimaryKey(ACurrencyCode, ReadTransaction);
                     ACurrencyName = CurrencyTable[0].CurrencyName;
-                    
+
                     ReturnValue = true;
                 }
             }
@@ -102,10 +102,10 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                     TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.GetCurrency: rollback own transaction.");
                 }
             }
-            
+
             return ReturnValue;
         }
-        
+
         /// <summary>
         /// Return selected conference's start date
         /// </summary>
@@ -118,15 +118,15 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             Boolean NewTransaction;
             PcConferenceTable ConferenceTable;
             DateTime ConferenceStartDate = new DateTime();
-            
+
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             try
             {
                 ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
-                
-                ConferenceStartDate = (DateTime) ((PcConferenceRow) ConferenceTable.Rows[0]).Start;
+
+                ConferenceStartDate = (DateTime)((PcConferenceRow)ConferenceTable.Rows[0]).Start;
             }
             catch (Exception e)
             {
@@ -140,10 +140,10 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                     TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.GetStartDate: rollback own transaction.");
                 }
             }
-            
+
             return ConferenceStartDate;
         }
-        
+
         /// <summary>
         /// Return selected conference's end date
         /// </summary>
@@ -156,15 +156,15 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             Boolean NewTransaction;
             PcConferenceTable ConferenceTable;
             DateTime ConferenceEndDate = new DateTime();
-            
+
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             try
             {
                 ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
-                
-                ConferenceEndDate = (DateTime) ((PcConferenceRow) ConferenceTable.Rows[0]).End;
+
+                ConferenceEndDate = (DateTime)((PcConferenceRow)ConferenceTable.Rows[0]).End;
             }
             catch (Exception e)
             {
@@ -178,10 +178,10 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                     TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.GetEndDate: rollback own transaction.");
                 }
             }
-            
+
             return ConferenceEndDate;
         }
-        
+
         /// <summary>
         /// Check Discount Criteria row exists
         /// </summary>
@@ -194,9 +194,9 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
             Boolean RowExists = false;
-            
+
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             try
             {
@@ -214,14 +214,14 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                     TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CreateDiscountCriteriaIfNotExisting: rollback own transaction.");
                 }
             }
-            
+
             // add row is it does not exist
             if (!RowExists)
             {
                 AddDiscountCriteriaCode(ADiscountCriteriaCode, ADiscountCriteriaDescription);
             }
         }
-        
+
         /// <summary>
         /// Create new Discount Criteria row
         /// </summary>
@@ -234,7 +234,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             TDBTransaction Transaction;
             PcDiscountCriteriaTable DiscountCriteriaTable = null;
             TVerificationResultCollection VerificationResult;
-            
+
             Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             try
@@ -246,7 +246,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                 AddRow.DiscountCriteriaCode = ADiscountCriteriaCode;
                 AddRow.DiscountCriteriaDesc = ADiscountCriteriaDescription;
                 AddRow.DeletableFlag = false;
-                
+
                 // add new row to database table
                 DiscountCriteriaTable.Rows.Add(AddRow);
                 PcDiscountCriteriaAccess.SubmitChanges(DiscountCriteriaTable, Transaction, out VerificationResult);
@@ -261,8 +261,8 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                 TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.AddDiscountCriteriaCode: commit own transaction.");
             }
         }
-        
-         /// <summary>
+
+        /// <summary>
         /// Check Cost Type row exists
         /// </summary>
         /// <param name="ACostTypeCode">Primary Key to check exists</param>
@@ -274,9 +274,9 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
             Boolean RowExists = false;
-            
+
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             try
             {
@@ -294,14 +294,14 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                     TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CreateCostTypeIfNotExisting: rollback own transaction.");
                 }
             }
-            
+
             // add row is it does not exist
             if (!RowExists)
             {
                 AddCostTypeCode(ACostTypeCode, ACostTypeDescription);
             }
         }
-        
+
         /// <summary>
         /// Create new Cost Type row
         /// </summary>
@@ -314,7 +314,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             TDBTransaction Transaction;
             PcCostTypeTable CostTypeTable = null;
             TVerificationResultCollection VerificationResult;
-            
+
             Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             try
@@ -326,7 +326,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                 AddRow.CostTypeCode = ACostTypeCode;
                 AddRow.CostTypeDescription = ACostTypeDescription;
                 AddRow.DeletableFlag = false;
-                
+
                 // add new row to database table
                 CostTypeTable.Rows.Add(AddRow);
                 PcCostTypeAccess.SubmitChanges(CostTypeTable, Transaction, out VerificationResult);
@@ -341,7 +341,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                 TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.AddCostTypeCode: commit own transaction.");
             }
         }
-        
+
         /// <summary>
         /// Create new Conference
         /// </summary>
@@ -352,7 +352,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         {
             TDBTransaction ReadTransaction;
             Boolean Exists = false;
-            
+
             ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             try
@@ -368,10 +368,10 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                 DBAccess.GDBAccessObj.CommitTransaction();
                 TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CreateNewConference: commit own transaction.");
             }
-            
+
             return Exists;
         }
-        
+
         /// <summary>
         /// Create a new Conference
         /// </summary>
@@ -385,7 +385,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             PcConferenceTable ConferenceTable;
             PUnitTable UnitTable;
             PPartnerLocationTable PartnerLocationTable;
-            
+
             Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             try
@@ -393,22 +393,22 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                 ConferenceTable = PcConferenceAccess.LoadAll(Transaction);
                 UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction);
                 PartnerLocationTable = PPartnerLocationAccess.LoadAll(Transaction);
-                
+
                 DateTime Start = new DateTime();
                 DateTime End = new DateTime();
-                
+
                 foreach (PPartnerLocationRow PartnerLocationRow in PartnerLocationTable.Rows)
                 {
                     if (PartnerLocationRow.PartnerKey == APartnerKey)
                     {
                         if (PartnerLocationRow.DateEffective != null)
                         {
-                            Start = (DateTime) PartnerLocationRow.DateEffective;
+                            Start = (DateTime)PartnerLocationRow.DateEffective;
                         }
-                        
+
                         if (PartnerLocationRow.DateGoodUntil != null)
                         {
-                            End = (DateTime) PartnerLocationRow.DateGoodUntil;
+                            End = (DateTime)PartnerLocationRow.DateGoodUntil;
                         }
                     }
                 }
@@ -416,30 +416,30 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                 // set column values
                 PcConferenceRow AddRow = ConferenceTable.NewRowTyped();
                 AddRow.ConferenceKey = APartnerKey;
-                
-                string OutreachPrefix = ((PUnitRow) UnitTable.Rows[0]).OutreachCode;
-                
+
+                string OutreachPrefix = ((PUnitRow)UnitTable.Rows[0]).OutreachCode;
+
                 if (OutreachPrefix.Length > 4)
                 {
-                    AddRow.OutreachPrefix = OutreachPrefix.Substring(0,5);
+                    AddRow.OutreachPrefix = OutreachPrefix.Substring(0, 5);
                 }
                 else
                 {
                     AddRow.OutreachPrefix = OutreachPrefix;
                 }
-                
+
                 if (Start != DateTime.MinValue)
                 {
                     AddRow.Start = Start;
                 }
-                
+
                 if (End != DateTime.MinValue)
                 {
                     AddRow.End = End;
                 }
-                
+
                 AddRow.CurrencyCode = "USD";
-                
+
                 // add new row to database table
                 ConferenceTable.Rows.Add(AddRow);
                 PcConferenceAccess.SubmitChanges(ConferenceTable, Transaction, out VerificationResult);
@@ -454,7 +454,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                 TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CreateNewConference: commit own transaction.");
             }
         }
-        
+
         /// <summary>
         /// Counts the records that reference a 'DataRow' of a non-cachable DataTable. The record count is recursive, i.e.
         /// counts all records of all related DB tables that reference the 'DataRow' AND the records that reference
@@ -471,7 +471,9 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         /// Method if the count yielded more than 0 referencing DataRows.</param>
         /// <returns>The number records that reference a 'DataRow' of a non-cachable DataTable.</returns>
         [RequireModulePermission("NONE")]
-        public static int GetNonCacheableRecordReferenceCountManual(TTypedDataTable ADataTable, object[] APrimaryKeyValues, out TVerificationResultCollection AVerificationResult)
+        public static int GetNonCacheableRecordReferenceCountManual(TTypedDataTable ADataTable,
+            object[] APrimaryKeyValues,
+            out TVerificationResultCollection AVerificationResult)
         {
             int ReturnValue = 0;
 
@@ -503,32 +505,46 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
 
             return ReturnValue;
         }
-        
+
         /// cascading count
-        private static int CountByPrimaryKey(Int64 AConferenceKey, TDBTransaction ATransaction, bool AWithCascCount, out List<TRowReferenceInfo>AReferences, int ANestingDepth = 0)
+        private static int CountByPrimaryKey(Int64 AConferenceKey,
+            TDBTransaction ATransaction,
+            bool AWithCascCount,
+            out List <TRowReferenceInfo>AReferences,
+            int ANestingDepth = 0)
         {
             int OverallReferences = 0;
-            AReferences = new List<TRowReferenceInfo>();
+
+            AReferences = new List <TRowReferenceInfo>();
 
             return OverallReferences;
         }
 
         /// cascading count
-        private static int CountByPrimaryKey(Int64 AConferenceKey, TDBTransaction ATransaction, bool AWithCascCount, out TVerificationResultCollection AVerificationResults,
-            int ANestingDepth = 0, TResultSeverity AResultSeverity = TResultSeverity.Resv_Critical)
+        private static int CountByPrimaryKey(Int64 AConferenceKey,
+            TDBTransaction ATransaction,
+            bool AWithCascCount,
+            out TVerificationResultCollection AVerificationResults,
+            int ANestingDepth = 0,
+            TResultSeverity AResultSeverity = TResultSeverity.Resv_Critical)
         {
             int ReturnValue;
-            List<TRowReferenceInfo> References;
-            Dictionary<string, object> PKInfo = null;
+
+            List <TRowReferenceInfo>References;
+            Dictionary <string, object>PKInfo = null;
 
             ReturnValue = CountByPrimaryKey(AConferenceKey, ATransaction, AWithCascCount, out References, ANestingDepth);
 
-            if(ReturnValue > 0)
+            if (ReturnValue > 0)
             {
-                PKInfo = new Dictionary<string, object>(1);
-                PKInfo.Add("Partner Key",  AConferenceKey);
+                PKInfo = new Dictionary <string, object>(1);
+                PKInfo.Add("Partner Key", AConferenceKey);
 
-                AVerificationResults = TTypedDataAccess.BuildVerificationResultCollectionFromRefTables("PcConference", "Conference", PKInfo, References, AResultSeverity);
+                AVerificationResults = TTypedDataAccess.BuildVerificationResultCollectionFromRefTables("PcConference",
+                    "Conference",
+                    PKInfo,
+                    References,
+                    AResultSeverity);
             }
             else
             {
@@ -539,11 +555,15 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         }
 
         /// cascading count
-        private static int CountByPrimaryKey(object[] APrimaryKeyValues, TDBTransaction ATransaction, bool AWithCascCount, out TVerificationResultCollection AVerificationResults,
-            int ANestingDepth = 0, TResultSeverity AResultSeverity = TResultSeverity.Resv_Critical)
+        private static int CountByPrimaryKey(object[] APrimaryKeyValues,
+            TDBTransaction ATransaction,
+            bool AWithCascCount,
+            out TVerificationResultCollection AVerificationResults,
+            int ANestingDepth = 0,
+            TResultSeverity AResultSeverity = TResultSeverity.Resv_Critical)
         {
-            if((APrimaryKeyValues == null)
-              || (APrimaryKeyValues.Length == 0))
+            if ((APrimaryKeyValues == null)
+                || (APrimaryKeyValues.Length == 0))
             {
                 throw new ArgumentException("APrimaryKeyValues must not be null and must contain at least one element");
             }

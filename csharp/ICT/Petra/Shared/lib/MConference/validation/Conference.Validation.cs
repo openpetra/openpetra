@@ -62,34 +62,35 @@ namespace Ict.Petra.Shared.MConference.Validation
             {
                 return;
             }
-            
+
             // Check the row being validated is consistent with the rest of the data in the table
             PcConferenceCostRow ARowCompare = null;
             Boolean StandardCostInconsistency = false;
             string[] InconsistentRows = new string[2];  // used for the error message
             int i = 0;
-            
+
             while (i < AGridData.Count)
             {
-                ARowCompare = (PcConferenceCostRow) AGridData[i];
-                
-                if (ARowCompare.RowState != DataRowState.Deleted && ARowCompare.OptionDays > ARow.OptionDays && ARowCompare.Charge < ARow.Charge)
+                ARowCompare = (PcConferenceCostRow)AGridData[i];
+
+                if ((ARowCompare.RowState != DataRowState.Deleted) && (ARowCompare.OptionDays > ARow.OptionDays) && (ARowCompare.Charge < ARow.Charge))
                 {
                     StandardCostInconsistency = true;
                     InconsistentRows[0] = ARow.OptionDays.ToString();
                     InconsistentRows[1] = ARowCompare.OptionDays.ToString();
                     break;
                 }
-                else if (ARowCompare.RowState != DataRowState.Deleted && ARowCompare.OptionDays < ARow.OptionDays && ARowCompare.Charge > ARow.Charge)
+                else if ((ARowCompare.RowState != DataRowState.Deleted) && (ARowCompare.OptionDays < ARow.OptionDays)
+                         && (ARowCompare.Charge > ARow.Charge))
                 {
                     StandardCostInconsistency = true;
                     InconsistentRows[0] = ARowCompare.OptionDays.ToString();
                     InconsistentRows[1] = ARow.OptionDays.ToString();
                     break;
                 }
-                
+
                 i++;
-            }  
+            }
 
             // if an inconsistency is found
             if (StandardCostInconsistency == true)
@@ -97,17 +98,17 @@ namespace Ict.Petra.Shared.MConference.Validation
                 TValidationControlsData ValidationControlsData;
                 TScreenVerificationResult VerificationResult = null;
                 DataColumn ValidationColumn = ARow.Table.Columns[PcConferenceCostTable.ColumnChargeId];
-            
+
                 // displays a warning message (non-critical error)
                 VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
-                    PetraErrorCodes.ERR_STANDARD_COST_INCONSISTENCY, InconsistentRows)), 
+                            PetraErrorCodes.ERR_STANDARD_COST_INCONSISTENCY, InconsistentRows)),
                     ValidationColumn, ValidationControlsData.ValidationControl);
-                
+
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
-        
+
         /// <summary>
         /// Validates the MConference Standard Cost Setup screen data.
         /// </summary>
@@ -125,40 +126,40 @@ namespace Ict.Petra.Shared.MConference.Validation
             TValidationControlsData ValidationControlsData;
             TScreenVerificationResult VerificationResult = null;
             DataColumn ValidationColumn;
-                
+
             // Don't validate deleted DataRows
             if (ARow.RowState == DataRowState.Deleted)
             {
                 return;
             }
-            
+
             DateTime EndDate = TRemote.MConference.Conference.WebConnectors.GetEndDate(ARow.ConferenceKey);
-            
+
             if (ARow.Applicable > EndDate)
             {
                 ValidationColumn = ARow.Table.Columns[PcEarlyLateTable.ColumnApplicableId];
-            
+
                 // displays an error message
                 VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
-                    PetraErrorCodes.ERR_APPLICABLE_DATE_AFTER_CONFERENCE_END_DATE)), 
+                            PetraErrorCodes.ERR_APPLICABLE_DATE_AFTER_CONFERENCE_END_DATE)),
                     ValidationColumn, ValidationControlsData.ValidationControl);
-                
+
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
-            
+
             // Check the row being validated is consistent with the rest of the data in the table
             PcEarlyLateRow ARowCompare = null;
             Boolean ApplicableDateInconsistency = false;
             string[] ErrorMessageData = new string[3];  // used for the error message
             int i = 0;
-            
+
             while (i < AGridData.Count)
             {
-                ARowCompare = (PcEarlyLateRow) AGridData[i];
-                
-                if (ARowCompare.RowState != DataRowState.Deleted && ARowCompare.Type == true
-                    && ARow.Type == false && ARowCompare.Applicable > ARow.Applicable)
+                ARowCompare = (PcEarlyLateRow)AGridData[i];
+
+                if ((ARowCompare.RowState != DataRowState.Deleted) && (ARowCompare.Type == true)
+                    && (ARow.Type == false) && (ARowCompare.Applicable > ARow.Applicable))
                 {
                     ApplicableDateInconsistency = true;
                     ErrorMessageData[0] = "an early registration discount";
@@ -166,8 +167,8 @@ namespace Ict.Petra.Shared.MConference.Validation
                     ErrorMessageData[2] = "late registration surcharge";
                     break;
                 }
-                else if (ARowCompare.RowState != DataRowState.Deleted && ARowCompare.Type == false
-                    && ARow.Type == true && ARowCompare.Applicable < ARow.Applicable)
+                else if ((ARowCompare.RowState != DataRowState.Deleted) && (ARowCompare.Type == false)
+                         && (ARow.Type == true) && (ARowCompare.Applicable < ARow.Applicable))
                 {
                     ApplicableDateInconsistency = true;
                     ErrorMessageData[0] = "a late registration surcharge";
@@ -175,20 +176,20 @@ namespace Ict.Petra.Shared.MConference.Validation
                     ErrorMessageData[2] = "early registration discount";
                     break;
                 }
-                
+
                 i++;
-            }  
+            }
 
             // if an inconsistency is found
             if (ApplicableDateInconsistency == true)
             {
                 ValidationColumn = ARow.Table.Columns[PcEarlyLateTable.ColumnApplicableId];
-            
+
                 // displays a warning message (non-critical error)
                 VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
-                    PetraErrorCodes.ERR_LATE_APPLICABLE_DATE_EARLIER_THAN_EARLY_APPLICABLE_DATE, ErrorMessageData)), 
+                            PetraErrorCodes.ERR_LATE_APPLICABLE_DATE_EARLIER_THAN_EARLY_APPLICABLE_DATE, ErrorMessageData)),
                     ValidationColumn, ValidationControlsData.ValidationControl);
-                
+
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }

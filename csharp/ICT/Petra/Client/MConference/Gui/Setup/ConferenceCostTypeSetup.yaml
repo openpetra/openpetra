@@ -18,16 +18,17 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailCostTypeCode, DetailCostTypeDescription, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
@@ -43,10 +44,7 @@ RootNode:
                 Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row2: [chkDetailDeletableFlag]
         txtDetailCostTypeCode: {Label=Cost Type Code, CharacterCasing=Upper, Width=160}
-        txtDetailCostTypeDescription: {Label=Description, Width=315}
+        txtDetailCostTypeDescription: {Label=Description, Width=360}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
-    Toolbar:
-        tbbNew:
-            Label: New Cost Type
