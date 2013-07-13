@@ -454,5 +454,101 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                 TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CreateNewConference: commit own transaction.");
             }
         }
+        
+        /// <summary>
+        /// Counts the records that reference a 'DataRow' of a non-cachable DataTable. The record count is recursive, i.e.
+        /// counts all records of all related DB tables that reference the 'DataRow' AND the records that reference
+        /// the record(s) of all related DB tables that reference the 'DataRow'!
+        /// </summary>
+        /// <param name="ADataTable">Tells for which non-cachable DataTable the records that reference a 'DataRow'
+        /// of that cachable DataTable should be counted.
+        /// IMPORTANT NOTE: Only tables that have a client screen with a delete button are implemented.</param>
+        /// <param name="APrimaryKeyValues">Values of the Primary Key of the DataRow in question represented as an Array of object.
+        /// (This can easily be obtained using the Method 'Ict.Common.Data.DataUtilities.GetPKValuesFromDataRow()'). The reason why
+        /// a DataRow isn't passed for this Argument is that the 'DataRow' Class is not Serializable. </param>
+        /// <param name="AVerificationResult">A 'TVerificationResultCollection' containing a single
+        /// 'TVerificationResult' that contains information about DB Table references created by a cascading count
+        /// Method if the count yielded more than 0 referencing DataRows.</param>
+        /// <returns>The number records that reference a 'DataRow' of a non-cachable DataTable.</returns>
+        [RequireModulePermission("NONE")]
+        public static int GetNonCacheableRecordReferenceCountManual(TTypedDataTable ADataTable, object[] APrimaryKeyValues, out TVerificationResultCollection AVerificationResult)
+        {
+            int ReturnValue = 0;
+
+            Boolean NewTransaction;
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                if (ADataTable is PcConferenceTable)
+                {
+                    ReturnValue = CountByPrimaryKey(APrimaryKeyValues, ReadTransaction, true, out AVerificationResult);
+                }
+                else
+                {
+                    AVerificationResult = new TVerificationResultCollection();
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(9, ADataTable.TableName + ": GetNonCacheableRecordReferenceCount: committed own transaction.");
+                }
+            }
+
+            return ReturnValue;
+        }
+        
+        /// cascading count
+        private static int CountByPrimaryKey(Int64 AConferenceKey, TDBTransaction ATransaction, bool AWithCascCount, out List<TRowReferenceInfo>AReferences, int ANestingDepth = 0)
+        {
+            int OverallReferences = 0;
+            AReferences = new List<TRowReferenceInfo>();
+
+            return OverallReferences;
+        }
+
+        /// cascading count
+        private static int CountByPrimaryKey(Int64 AConferenceKey, TDBTransaction ATransaction, bool AWithCascCount, out TVerificationResultCollection AVerificationResults,
+            int ANestingDepth = 0, TResultSeverity AResultSeverity = TResultSeverity.Resv_Critical)
+        {
+            int ReturnValue;
+            List<TRowReferenceInfo> References;
+            Dictionary<string, object> PKInfo = null;
+
+            ReturnValue = CountByPrimaryKey(AConferenceKey, ATransaction, AWithCascCount, out References, ANestingDepth);
+
+            if(ReturnValue > 0)
+            {
+                PKInfo = new Dictionary<string, object>(1);
+                PKInfo.Add("Partner Key",  AConferenceKey);
+
+                AVerificationResults = TTypedDataAccess.BuildVerificationResultCollectionFromRefTables("PcConference", "Conference", PKInfo, References, AResultSeverity);
+            }
+            else
+            {
+                AVerificationResults = null;
+            }
+
+            return ReturnValue;
+        }
+
+        /// cascading count
+        private static int CountByPrimaryKey(object[] APrimaryKeyValues, TDBTransaction ATransaction, bool AWithCascCount, out TVerificationResultCollection AVerificationResults,
+            int ANestingDepth = 0, TResultSeverity AResultSeverity = TResultSeverity.Resv_Critical)
+        {
+            if((APrimaryKeyValues == null)
+              || (APrimaryKeyValues.Length == 0))
+            {
+                throw new ArgumentException("APrimaryKeyValues must not be null and must contain at least one element");
+            }
+
+            return CountByPrimaryKey((Int64)APrimaryKeyValues[0], ATransaction, AWithCascCount, out AVerificationResults, ANestingDepth);
+        }
     }
 }

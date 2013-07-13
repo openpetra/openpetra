@@ -402,6 +402,18 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                             SubmissionResult = TSubmitChangesResult.scrError;
                         }
                     }
+                    else if (ATablename == PcConferenceTable.GetTableDBName())
+                    {
+                        if (PcConferenceAccess.SubmitChanges((PcConferenceTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
                     else if (ATablename == PcConferenceCostTable.GetTableDBName())
                     {
                         if (PcConferenceCostAccess.SubmitChanges((PcConferenceCostTable)ASubmitTable, SubmitChangesTransaction,
