@@ -7,7 +7,8 @@ RootNode:
     WindowWidth: 660
     WindowHeight: 300
     Actions:
-        actExportBudget: {Label=&Start, ActionClick=ExportBudget}
+        actExportBudget: {Label=&Export, ActionClick=ExportBudget}
+        actExportBudgetView: {Label=Export && &View, ActionClick=ExportBudgetView}
         actClose: {Label=&Close, ActionClick=BtnCloseClick}
         actHelp: {Label=&Help, ActionClick=BtnHelpClick}
     Controls:
@@ -28,16 +29,17 @@ RootNode:
         pnlButtons:
             Dock:Bottom
             Controls:
-                Row0: [btnHelp, btnOK, btnClose]
-            ColWidths: [0=Fixed:350,1=Fixed:100,2=Fixed:100]
+                Row0: [btnHelp, btnOK, btnView, btnClose]
+            #ColWidths: [0=Fixed:350,1=Fixed:100,2=Fixed:100]
         btnHelp: {Action=actHelp}
         btnClose: {Action=actClose}
-        btnOK: {Action=actExportBudget}                
+        btnOK: {Action=actExportBudget}
+        btnView: {Action=actExportBudgetView}        
         txtFilename: 
             Width:400
         btnBrowseFilename:
             ActionClick: BtnBrowseClick
-            Label: &Browse...
+            Label: ...
         cmbDateFormat:
             OptionalValues: [MM/dd/yyyy,dd/MM/yyyy,yyyy-MM-dd]
             Width: 160

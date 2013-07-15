@@ -29,6 +29,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.Xml;
 using System.IO;
+using System.Text;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
@@ -876,6 +877,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ACSVFileName"></param>
         /// <param name="AFdlgSeparator"></param>
+        /// <param name="AFileContents"></param>
         /// <param name="AExportDS"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns>Total number of records exported</returns>
@@ -883,6 +885,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         public static int ExportBudgets(Int32 ALedgerNumber,
             string ACSVFileName,
             string[] AFdlgSeparator,
+            ref string AFileContents,
             ref BudgetTDS AExportDS,
             out TVerificationResultCollection AVerificationResult)
         {
@@ -893,6 +896,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 int retVal = ExportBudgetToCSV(ALedgerNumber,
                     ACSVFileName,
                     AFdlgSeparator,
+                    ref AFileContents,
                     ref AExportDS,
                     ref AVerificationResult);
                 return retVal;
@@ -901,11 +905,34 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             return 0;
         }
 
-        private static Int32 ExportBudgetToCSV(Int32 ALedgerNumber, string ACSVFileName, string[] AFdlgSeparator, ref BudgetTDS AExportDS,
+        private static Int32 ExportBudgetToCSV(Int32 ALedgerNumber, string ACSVFileName, string[] AFdlgSeparator, ref string AFileContents, ref BudgetTDS AExportDS,
             ref TVerificationResultCollection AVerificationResult)
         {
             Int32 numBudgetsExported = 0;
+            
+            char separator = AFdlgSeparator[0].Substring(0, 1).ToCharArray()[0];
 
+            TLogging.Log("Writing file: " + ACSVFileName);
+
+            StringBuilder sb = new StringBuilder();
+            
+            foreach (ABudgetRow row in AExportDS.ABudget.Rows)
+            {
+                sb.Append(StringHelper.StrMerge(
+                        new string[] {
+            			"B" + row.BudgetSequence.ToString() + "_L" + row.LedgerNumber.ToString() + "_Y" + row.Year.ToString(),
+                            row.CostCentreCode,
+                            row.AccountCode,
+                            row.BudgetTypeCode
+            		}, separator));
+
+                sb.Append(Environment.NewLine);
+                
+               numBudgetsExported++; 
+            }
+            
+            AFileContents = sb.ToString();
+            
             return numBudgetsExported;
         }
 
