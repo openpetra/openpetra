@@ -132,6 +132,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
         private void GetDetailDataFromControlsManual(SUserRow ARow)
         {
+            ARow.UserId = ARow.UserId.ToUpperInvariant();
             FMainDS.SUserModuleAccessPermission.DefaultView.RowFilter =
                 String.Format("{0}='{1}'",
                     SUserModuleAccessPermissionTable.GetUserIdDBName(),

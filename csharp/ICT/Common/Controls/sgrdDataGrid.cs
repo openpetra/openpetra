@@ -787,22 +787,19 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth, EditorBase AEditor, bool AReadOnly)
         {
-            SourceGrid.Cells.ICellVirtual ADataCell;
-            SourceGrid.DataGridColumn AGridColumn;
-
             if (ADataColumn == null)
             {
                 throw new ArgumentNullException("ADataColumn", "ADataColumn must not be nil!");
             }
 
-            ADataCell = new SourceGrid.Cells.DataGrid.CheckBox();
+            SourceGrid.Cells.ICellVirtual ADataCell = new SourceGrid.Cells.DataGrid.CheckBox();
 
             if (AEditor != null)
             {
                 ADataCell.Editor = AEditor;
             }
 
-            AGridColumn = new TSgrdTextColumn(this, ADataColumn, AColumnTitle, ADataCell, AColumnWidth, FSortableHeaders);
+            SourceGrid.DataGridColumn AGridColumn = new TSgrdTextColumn(this, ADataColumn, AColumnTitle, ADataCell, AColumnWidth, FSortableHeaders);
 
             if (AReadOnly)
             {

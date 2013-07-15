@@ -43,6 +43,7 @@ namespace Ict.Common.Controls
 
         private static TRetrieveCurrencyList FRetrieveCurrencyList;
         private static DataTable GCurrencyList;
+        string FCurrencyDisplayFormat = "->>>,>>>,>>>,>>9.99";
 
         #region Properties (handed through to TTxtNumericTextBox!)
 
@@ -114,12 +115,51 @@ namespace Ict.Common.Controls
         {
             get
             {
-                return FTxtNumeric.NumberValueDecimal;
+                if (!DesignMode)
+                {
+                    if (FTxtNumeric.Text != String.Empty)
+                    {
+                        decimal? Ret = null;
+                        try
+                        {
+                            Ret = Convert.ToDecimal(FTxtNumeric.Text, FTxtNumeric.Culture);
+                        }
+                        catch (Exception)
+                        {
+                        }
+                        return Ret;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    return 0;
+                }
             }
 
             set
             {
-                FTxtNumeric.NumberValueDecimal = value;
+                if (value != null)
+                {
+                    ((TextBox)FTxtNumeric).Text = StringHelper.FormatCurrency(new TVariant(value), FCurrencyDisplayFormat);
+//                  ((TextBox)FTxtNumeric).Text = ((decimal)value).ToString(FTxtNumeric.Culture);
+                }
+                else
+                {
+                    if (FTxtNumeric.FNullValueAllowed)
+                    {
+                        ((TextBox)FTxtNumeric).Text = String.Empty;
+                        return;
+                    }
+                    else
+                    {
+                        throw new ArgumentNullException(
+                            "The 'NumberValueDecimal' Property must not be set to null if the 'NullValueAllowed' Property is false.");
+                    }
+                }
             }
         }
 
@@ -167,7 +207,7 @@ namespace Ict.Common.Controls
          DefaultValue("###"),
          Browsable(true),
          Description("Determines the currency symbol.")]
-        public string CurrencySymbol
+        public string CurrencyCode
         {
             get
             {
@@ -197,12 +237,12 @@ namespace Ict.Common.Controls
 
                         tipCurrencyName.SetToolTip(FLblCurrency, FCurrencyName);
 
-                        string DisplayFormat = (string)CurrencyDR[COLUMNNAME_DISPLAYFORMAT_NAME];
-                        int DecimalSeparatorPos = DisplayFormat.LastIndexOf('.');
+                        FCurrencyDisplayFormat = (string)CurrencyDR[COLUMNNAME_DISPLAYFORMAT_NAME];
+                        int DecimalSeparatorPos = FCurrencyDisplayFormat.LastIndexOf('.');
 
                         if (DecimalSeparatorPos != -1)
                         {
-                            this.DecimalPlaces = DisplayFormat.Length - DecimalSeparatorPos - 1;
+                            this.DecimalPlaces = FCurrencyDisplayFormat.Length - DecimalSeparatorPos - 1;
                         }
                         else
                         {
@@ -212,6 +252,7 @@ namespace Ict.Common.Controls
                     else
                     {
                         FCurrencyName = String.Empty;
+                        FCurrencyDisplayFormat = "->>>,>>>,>>>,>>9.99";
                     }
                 }
             }

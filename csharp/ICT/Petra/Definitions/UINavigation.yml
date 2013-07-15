@@ -267,7 +267,7 @@ OpenPetra:
                     CreateLedger: {Description=Create a new Ledger, ActionOpenScreen=TFrmGLCreateLedger, PermissionsRequired="FINANCE-3", Singleton=true}
                 Setup: {Label="Finance Setup (Cross-Ledger)", DontShowNestedTasksAsLinks=true}
                     SetupEmailDestinations: {Description=Maintain Email Destinations, ActionOpenScreen=TFrmEmailDestinationSetup, PermissionsRequired=FINANCE-3}
-                    SetupCurrencies: {Description=Maintain Currencies, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency, PermissionsRequired=FINANCE-3}
+                    SetupCurrencies: {Description=Maintain Currencies, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmCurrencySetup, PermissionsRequired=FINANCE-3}
                     SetupCurrencyLanguages: {Description=Maintain Currency Languages, ActionOpenScreen=TFrmCurrencyLanguageSetup, PermissionsRequired=FINANCE-3}
                     SetupMethodsOfGiving: {Description=Maintain Methods of Giving,ActionOpenScreen=TFrmSetupMethodOfGiving, PermissionsRequired=FINANCE-3}
                     SetupMethodsOfPayment: {Description=Maintain Methods of Payment, ActionOpenScreen=TFrmSetupMethodOfPayment, PermissionsRequired=FINANCE-3}

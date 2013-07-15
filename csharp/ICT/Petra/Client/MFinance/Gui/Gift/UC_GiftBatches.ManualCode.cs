@@ -1034,7 +1034,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             String ACurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
 
-            txtDetailHashTotal.CurrencySymbol = ACurrencyCode;
+            txtDetailHashTotal.CurrencyCode = ACurrencyCode;
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false);
 

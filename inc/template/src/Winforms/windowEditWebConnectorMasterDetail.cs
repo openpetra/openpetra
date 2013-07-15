@@ -475,11 +475,18 @@ namespace {#NAMESPACE}
     private void ShowDetails({#DETAILTABLETYPE}Row ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
-        
-        pnlDetails.Enabled = (ARow != null);
-        
-        {#SHOWDETAILS}
-        
+
+        if (ARow == null)
+        {
+            pnlDetails.Enabled = false;
+            {#CLEARDETAILS}
+        }
+        else
+        {
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            {#SHOWDETAILS}
+        }
+
         {#ENABLEDELETEBUTTON}FPetraUtilsObject.EnableDataChangedEvent();
     }
 
@@ -1195,7 +1202,7 @@ namespace {#NAMESPACE}
     public bool SaveChanges()
     {
         bool ReturnValue = false;
-        
+
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
         // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
@@ -1220,7 +1227,7 @@ namespace {#NAMESPACE}
                 TVerificationResultCollection VerificationResult;
 
                 {#DATASETTYPE} SubmitDS = FMainDS.GetChangesTyped(true);
-                
+
                 if (SubmitDS == null)
                 {
                     // There is nothing to be saved.
@@ -1245,7 +1252,7 @@ namespace {#NAMESPACE}
                     this.Cursor = Cursors.Default;
 
                     TMessages.MsgSecurityException(Exp, this.GetType());
-                    
+
                     ReturnValue = false;
                     FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                     return ReturnValue;
@@ -1349,7 +1356,7 @@ namespace {#NAMESPACE}
 
                 ReturnValue = true;
                 FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-            }                
+            }
         }
 
         return ReturnValue;

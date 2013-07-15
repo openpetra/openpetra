@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -144,6 +144,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 btnUseTaxAccount.Enabled = false;
                 txtDetailBaseAmount.Enabled = false;
                 cmbDetailAccountCode.Enabled = false;
+                pnlDetails.Enabled = false;
             }
 
             tbbPostDocument.Enabled = ("|POSTED|PARTPAID|PAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) < 0);
@@ -286,41 +287,43 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 btnLookupExchangeRate.Enabled = false;
             }
 
-            txtTotalAmount.CurrencySymbol = DocumentRow.CurrencyCode;
-            txtDetailAmount.CurrencySymbol = DocumentRow.CurrencyCode;
+            txtTotalAmount.CurrencyCode = DocumentRow.CurrencyCode;
+            txtDetailAmount.CurrencyCode = DocumentRow.CurrencyCode;
 
             this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FDocumentLedgerNumber);
 
             ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FDocumentLedgerNumber);
             FLedgerRow = Tbl[0];
-            txtDetailBaseAmount.CurrencySymbol = FLedgerRow.BaseCurrency;
+            txtDetailBaseAmount.CurrencyCode = FLedgerRow.BaseCurrency;
             dtpDateDue.Date = DocumentRow.DateIssued.AddDays(Convert.ToDouble(nudCreditTerms.Value));
 
-            if (FMainDS.AApDocumentDetail != null) // When the form is new, this can be null.
+            if ((FMainDS.AApDocumentDetail == null) || (FMainDS.AApDocumentDetail.Rows.Count == 0)) // When the document is new, I need to create the first detail line.
             {
-                FMainDS.AApDocumentDetail.DefaultView.Sort = AApDocumentDetailTable.GetDetailNumberDBName();
+                NewDetail(null, null);
+            }
 
-                // Create Text description of Anal Attribs for each DetailRow..
-                foreach (AccountsPayableTDSAApDocumentDetailRow DetailRow in FMainDS.AApDocumentDetail.Rows)
+            FMainDS.AApDocumentDetail.DefaultView.Sort = AApDocumentDetailTable.GetDetailNumberDBName();
+
+            // Create Text description of Anal Attribs for each DetailRow..
+            foreach (AccountsPayableTDSAApDocumentDetailRow DetailRow in FMainDS.AApDocumentDetail.Rows)
+            {
+                string strAnalAttr = "";
+                FMainDS.AApAnalAttrib.DefaultView.RowFilter =
+                    String.Format("{0}={1}", AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber);
+
+                foreach (DataRowView rv in FMainDS.AApAnalAttrib.DefaultView)
                 {
-                    string strAnalAttr = "";
-                    FMainDS.AApAnalAttrib.DefaultView.RowFilter =
-                        String.Format("{0}={1}", AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber);
+                    AApAnalAttribRow Row = (AApAnalAttribRow)rv.Row;
 
-                    foreach (DataRowView rv in FMainDS.AApAnalAttrib.DefaultView)
+                    if (strAnalAttr.Length > 0)
                     {
-                        AApAnalAttribRow Row = (AApAnalAttribRow)rv.Row;
-
-                        if (strAnalAttr.Length > 0)
-                        {
-                            strAnalAttr += ", ";
-                        }
-
-                        strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
+                        strAnalAttr += ", ";
                     }
 
-                    DetailRow.AnalAttr = strAnalAttr;
+                    strAnalAttr += (Row.AnalysisTypeCode + "=" + Row.AnalysisAttributeValue);
                 }
+
+                DetailRow.AnalAttr = strAnalAttr;
             }
 
             EnableControls();
@@ -369,14 +372,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
-        ///  row is permissable
+        /// row is permissable
         /// </summary>
         /// <param name="ARowToDelete">the currently selected row to be deleted</param>
         /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
         /// <returns>true if user is permitted and able to delete the current row</returns>
         private bool PreDeleteManual(AApDocumentDetailRow ARowToDelete, ref string ADeletionQuestion)
         {
-            ADeletionQuestion = String.Empty;
             GetDataFromControls(FMainDS.AApDocument[0]);
             return true;
         }
@@ -421,14 +423,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void ValidateDataManual(AccountsPayableTDSAApDocumentRow ARow)
         {
-            DataColumn ValidationColumn;
-
-            ValidationColumn = ARow.Table.Columns[AccountsPayableTDSAApDocumentTable.ColumnDocumentCodeId];
-
-            FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
-                TStringChecks.StringMustNotBeEmpty(ARow.DocumentCode,
-                    lblDocumentCode.Text,
-                    this, ValidationColumn, txtDocumentCode), ValidationColumn);
         }
 
         private void ValidateDataDetailsManual(AApDocumentDetailRow ARow)
@@ -494,6 +488,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// initialise some comboboxes
         private void BeforeShowDetailsManual(AApDocumentDetailRow ARow)
         {
+            if (ARow == null)
+            {
+                return;
+            }
+
             grdDetails.Columns[1].Width = pnlDetailGrid.Width - 380;   // It doesn't really work having these here -
             grdDetails.Columns[0].Width = 90;                          // there's something else that overrides these settings.
             grdDetails.Columns[2].Width = 200;

@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    BaseYaml: ../../../CommonForms/PetraFormBasic.yaml
     Template: window
     FormTitle: AP Analysis Attributes
     Namespace: Ict.Petra.Client.MFinance.Gui.AP
@@ -11,13 +11,13 @@ RootNode:
     WindowHeight: 250
     Actions:
     Controls:
-        pnlDialogContent:
+        pnlContent:
             Dock: Fill
             Controls: [grdDetails,pnlDetails]
         grdDetails:
             Dock: Fill
             ActionFocusRow: FocusedRowChanged
-        pnlDetails:
+        pnlDetails: { ControlsOrientation = horizontal}
             Dock: Bottom
             Controls: [cmbDetailAttrib]
         cmbDetailAttrib: { OnChange=UnloadDetails, AcceptNewValues=false }

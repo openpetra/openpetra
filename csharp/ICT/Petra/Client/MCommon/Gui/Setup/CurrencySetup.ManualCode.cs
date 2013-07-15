@@ -27,7 +27,7 @@ using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
-    public partial class TFrmSetupCurrency
+    public partial class TFrmCurrencySetup
     {
         /// <summary>
         /// I'm using my own code here because that provided by the auto-generated code

@@ -144,8 +144,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             Currency = cmbApplicationCurrency.GetSelectedString();
 
-            txtJoiningCharge.CurrencySymbol = Currency;
-            txtAgreedSupport.CurrencySymbol = Currency;
+            txtJoiningCharge.CurrencyCode = Currency;
+            txtAgreedSupport.CurrencyCode = Currency;
         }
 
         #endregion

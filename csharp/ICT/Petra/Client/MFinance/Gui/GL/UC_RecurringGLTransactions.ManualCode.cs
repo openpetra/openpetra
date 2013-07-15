@@ -398,10 +398,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 string TransactionCurrency = GetJournalRow().TransactionCurrency;
                 lblTransactionCurrency.Text = String.Format(Catalog.GetString("{0} (Transaction Currency)"), TransactionCurrency);
-                txtDebitAmount.CurrencySymbol = TransactionCurrency;
-                txtCreditAmount.CurrencySymbol = TransactionCurrency;
-                txtCreditTotalAmount.CurrencySymbol = TransactionCurrency;
-                txtDebitTotalAmount.CurrencySymbol = TransactionCurrency;
+                txtDebitAmount.CurrencyCode = TransactionCurrency;
+                txtCreditAmount.CurrencyCode = TransactionCurrency;
+                txtCreditTotalAmount.CurrencyCode = TransactionCurrency;
+                txtDebitTotalAmount.CurrencyCode = TransactionCurrency;
 
                 // foreign currency accounts only get transactions in that currency
                 if (FTransactionCurrency != TransactionCurrency)

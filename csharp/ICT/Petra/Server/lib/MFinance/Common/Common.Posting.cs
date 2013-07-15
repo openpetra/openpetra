@@ -661,8 +661,10 @@ namespace Ict.Petra.Server.MFinance.Common
 
                     APostingLevel[key].baseAmount += SignBaseAmount;
 
-                    // Only foreign currency accounts store a value in the transaction currency
-                    if (Account.ForeignCurrencyFlag)
+                    // Only foreign currency accounts store a value in the transaction currency,
+                    // if the transaction was actually in the foreign currency.
+
+                    if (Account.ForeignCurrencyFlag && (journal.TransactionCurrency == Account.ForeignCurrencyCode))
                     {
                         APostingLevel[key].transAmount += SignTransAmount;
                     }

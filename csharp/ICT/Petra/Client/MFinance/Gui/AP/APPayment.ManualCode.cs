@@ -107,6 +107,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // If this payment has a payment number, it's because it's already been paid, so I need to display it read-only.
             if ((FMainDS.AApPayment.Rows.Count > 0) && (FMainDS.AApPayment[0].PaymentNumber > 0))
             {
+                txtPaymntNum.Text = FMainDS.AApPayment[0].PaymentNumber.ToString();
                 txtAmountToPay.Enabled = false;
                 txtChequeNumber.Enabled = false;
                 txtCurrency.Enabled = false;
@@ -464,7 +465,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             FMainDS = TRemote.MFinance.AP.WebConnectors.LoadAPPayment(ALedgerNumber, APaymentNumber);
             FLedgerNumber = FMainDS.AApPayment[0].LedgerNumber;
-            ShowDataManual();
+            ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
+            FLedgerRow = Tbl[0];
+            ShowData(FMainDS.AApSupplier[0]);
         }
 
         /// <summary>
