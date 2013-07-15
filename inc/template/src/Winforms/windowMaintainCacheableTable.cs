@@ -198,7 +198,8 @@ namespace {#NAMESPACE}
       
       {#INITACTIONSTATE}            
       {#DISPLAYFILTERINFORMTITLE}
-            UpdateRecordNumberDisplay();
+ {#IFDEF BUTTONPANEL}           UpdateRecordNumberDisplay();
+ {#ENDIF BUTTONPANEL}
     }
     
     private void TFrmPetra_Closed(object sender, EventArgs e)
