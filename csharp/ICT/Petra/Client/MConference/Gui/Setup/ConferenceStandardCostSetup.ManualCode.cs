@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             // display the conference currency in a text box at the top of the screen and in pnlDetails
             TRemote.MConference.Conference.WebConnectors.GetCurrency(FPartnerKey, out CurrencyCode, out CurrencyName);
             txtConferenceCurrency.Text = CurrencyCode + ": " + CurrencyName;
-            txtDetailCharge.CurrencySymbol = CurrencyCode;
+            txtDetailCharge.CurrencyCode = CurrencyCode;
         }
 
         private void NewRowManual(ref PcConferenceCostRow ARow)
