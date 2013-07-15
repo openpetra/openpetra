@@ -1,0 +1,56 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Child Discounts
+    Namespace: Ict.Petra.Client.MConference.Gui.Setup
+    DetailTable: PcDiscount
+    UsingNamespaces: [Ict.Petra.Shared.MConference.Data, Ict.Petra.Shared.MConference.Validation, Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.Interfaces.MConference]
+    FormType: edit
+    Template: windowMaintainTable
+    WindowWidth: 800
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlConferenceDetails, pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlConferenceDetails:
+            Dock: Top
+            Controls: [txtConferenceName]
+        txtConferenceName: {ReadOnly=true, BorderStyle=None, Stretch=horizontally}
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Right
+            Controls: [btnNew, btnDelete]
+        btnNew:
+            Action: actNew
+            Stretch: horizontally
+        btnDelete:
+            Action: actDelete
+            Stretch: horizontally
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailUpToAge, DetailDiscount, DetailCostTypeCode]
+            CustomColumns:
+                DetailDiscount: {Label=Discount (%), Format=Integer}
+                DetailCostTypeCode: {Label=Apply Discount To}
+            ActionFocusRow: FocusedRowChanged
+            SortOrder: DetailUpToAge ASC
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailUpToAge, cmbDetailCostTypeCode, txtDetailDiscount]
+        txtDetailUpToAge:
+            Width: 30
+            Format: Integer
+            OnChange: UpdateCostTypeCode
+        cmbDetailCostTypeCode:
+            OptionalValues: [=ACCOMMODATION, CONFERENCE]
+            Label: Apply discount to
+        txtDetailDiscount: {Width=50, Format=PercentInteger}
+    Toolbar:
+        tbbNew:
+            Label: New Child Discount
