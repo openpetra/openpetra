@@ -43,12 +43,12 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// <param name="ACurrencyDigits"></param>
         /// <param name="AExpectedResult"></param>
         // "-40" means: 40 Currency Units are missing for the correct ratio
-        [TestCase(10, 100, 2, 2, -40)]
-        [TestCase(200, 100, 2, 2, 150)]
+        [TestCase(10, 100, 2, 2, 40)]
+        [TestCase(200, 100, 2, 2, -150)]
         [TestCase(50, 100, 2, 2, 0)]
-        [TestCase(50, 100, 1.123456789, 2, -39.01)]
-        [TestCase(50, 100, 1.123456789, 4, -39.011)]
-        [TestCase(50, 100, 1.123456789, 6, -39.010989)]
+        [TestCase(50, 100, 1.123456789, 2, 39.01)]
+        [TestCase(50, 100, 1.123456789, 4, 39.011)]
+        [TestCase(50, 100, 1.123456789, 6, 39.010989)]
         public void Test_05_AccountDelta(decimal AAmountInBaseCurency,
             decimal AAmountInForeignCurrency,
             decimal AExchangeRate, int ACurrencyDigits, decimal AExpectedResult)
