@@ -7,6 +7,7 @@ using System;
 using System.Windows.Forms;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
+using Owf.Controls;
 
 namespace {#NAMESPACE}
 {

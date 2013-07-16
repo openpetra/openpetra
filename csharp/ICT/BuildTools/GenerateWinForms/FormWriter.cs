@@ -94,6 +94,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddControlGenerator(new ButtonGenerator());
                 AddControlGenerator(new RangeGenerator());
                 AddControlGenerator(new PanelGenerator());
+                AddControlGenerator(new ExtendedPanelGenerator());                
                 AddControlGenerator(new CheckBoxReportGenerator());
                 AddControlGenerator(new TClbVersatileReportGenerator());
                 AddControlGenerator(new DateTimePickerReportGenerator());
@@ -127,6 +128,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddControlGenerator(new GroupBoxGenerator());
                 AddControlGenerator(new RangeGenerator());
                 AddControlGenerator(new PanelGenerator());
+                AddControlGenerator(new ExtendedPanelGenerator());
                 AddControlGenerator(new SplitContainerGenerator());
                 AddControlGenerator(new UserControlGenerator());
                 AddControlGenerator(new LabelGenerator());

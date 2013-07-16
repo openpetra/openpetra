@@ -31,6 +31,7 @@ using Ict.Tools.CodeGeneration;
 using Ict.Common.IO;
 using Ict.Common;
 using Ict.Tools.DBXML;
+using Owf.Controls;
 
 namespace Ict.Tools.CodeGeneration.Winforms
 {
@@ -648,7 +649,8 @@ TLogging.Log("foreach (TControlDef childCtrl in ctrl.Children) -- Control: " + c
     /// </summary>
     public class PanelGenerator : GroupBoxGenerator
     {
-        private const string PNL_FILTER_AND_FIND = "pnlFilterAndFind";
+        /// <summary>Name of the Filter and Find Panel</summary>
+        public const string PNL_FILTER_AND_FIND = "pnlFilterAndFind";
         
         /// <summary>constructor</summary>
         public PanelGenerator()
@@ -656,6 +658,35 @@ TLogging.Log("foreach (TControlDef childCtrl in ctrl.Children) -- Control: " + c
         {
         }
 
+        /// <summary>constructor</summary>
+        public PanelGenerator(string prefix, System.Type type)
+            : base(prefix, type)
+        {
+        }
+        
+        /// <summary>check if the generator fits the given control by checking the prefix and perhaps some of the attributes</summary>
+        public override bool ControlFitsNode(XmlNode curNode)
+        {
+            if (base.ControlFitsNode(curNode))
+            {
+                TControlDef ctrl = FCodeStorage.GetControl(curNode.Name);
+                
+                if (ctrl.IsHorizontalGridButtonPanelStrict) 
+                {
+                    return false;
+                }
+
+                if (TYml2Xml.GetAttribute(curNode, "ExtendedPanel").ToLower() == "true")
+                {
+                    return false;
+                } 
+                
+                return true;
+            }
+
+            return false;
+        }
+        
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
@@ -774,7 +805,131 @@ Console.WriteLine("Adjusted Height of Panel '" + ctrl.controlName + "' as it is 
                 ProcessTemplate snippetFilterAndFindMethods = writer.Template.GetSnippet("FILTERANDFINDMETHODS");                
                 writer.Template.InsertSnippet("FILTERANDFINDMETHODS", snippetFilterAndFindMethods);                
             }
-            
+            else
+            {
+                base.ProcessChildren(writer, ctrl);                
+            }
+        }
+    }
+
+    /// <summary>
+    /// generator for a panel that has extended features (such as gradient background, border, shadow, etc)
+    /// </summary>
+    public class ExtendedPanelGenerator : PanelGenerator
+    {
+        private bool FManualExtendedPanel = false;
+        
+        /// <summary>constructor</summary>
+        public ExtendedPanelGenerator()
+            : base("pnl", typeof(Owf.Controls.A1Panel))
+        {
+        }
+        
+        /// <summary>check if the generator fits the given control by checking the prefix and perhaps some of the attributes</summary>
+        public override bool ControlFitsNode(XmlNode curNode)
+        {
+            if (SimplePrefixMatch(curNode))
+            {
+                TControlDef ctrl = FCodeStorage.GetControl(curNode.Name);
+                
+                if (TYml2Xml.GetAttribute(curNode, "ExtendedPanel").ToLower() == "true")
+                {
+                    FManualExtendedPanel = true;
+                    
+                    return true;
+                } 
+                
+                if (!ctrl.IsHorizontalGridButtonPanelStrict) 
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            base.SetControlProperties(writer, ctrl);
+                
+            if (!FManualExtendedPanel) 
+            {
+                writer.SetControlProperty(ctrl, "ShadowOffSet", "0");
+                writer.SetControlProperty(ctrl, "RoundCornerRadius", "0");
+                writer.SetControlProperty(ctrl, "GradientStartColor", "System.Drawing.Color.AntiqueWhite");
+                writer.SetControlProperty(ctrl, "GradientEndColor", "System.Drawing.Color.LightGray");
+                writer.SetControlProperty(ctrl, "GradientDirection", "System.Drawing.Drawing2D.LinearGradientMode.Vertical");                                    
+            }
+            else
+            {
+                if (ctrl.HasAttribute("ShadowOffSet"))
+                {
+                    writer.SetControlProperty(ctrl, "ShadowOffSet", ctrl.GetAttribute("ShadowOffSet"));
+                }
+                else
+                {
+                    writer.SetControlProperty(ctrl, "ShadowOffSet", "0");
+                }
+
+                if (ctrl.HasAttribute("RoundCornerRadius"))
+                {
+                    writer.SetControlProperty(ctrl, "RoundCornerRadius", ctrl.GetAttribute("RoundCornerRadius"));
+                }
+                else
+                {
+                    writer.SetControlProperty(ctrl, "RoundCornerRadius", "0");
+                }
+                
+                if (ctrl.HasAttribute("GradientDirection"))
+                {
+                    writer.SetControlProperty(ctrl, "GradientDirection", ctrl.GetAttribute("GradientDirection"));
+                }
+                else
+                {
+                    writer.SetControlProperty(ctrl, "GradientDirection", "System.Drawing.Drawing2D.LinearGradientMode.Horizontal");
+                }
+
+                if (ctrl.HasAttribute("GradientStartColor"))
+                {
+                    writer.SetControlProperty(ctrl, "GradientStartColor", ctrl.GetAttribute("GradientStartColor"));
+                }
+                else
+                {
+                    writer.SetControlProperty(ctrl, "GradientStartColor", "System.Drawing.Color.Yellow");
+                }
+                
+                if (ctrl.HasAttribute("GradientEndColor"))
+                {
+                    writer.SetControlProperty(ctrl, "GradientEndColor", ctrl.GetAttribute("GradientEndColor"));
+                }
+                else
+                {
+                    writer.SetControlProperty(ctrl, "GradientEndColor", "System.Drawing.Color.Green");
+                }
+                
+                if (ctrl.HasAttribute("BorderColor"))
+                {
+                    writer.SetControlProperty(ctrl, "BorderColor", ctrl.GetAttribute("BorderColor"));
+                }
+
+                if (ctrl.HasAttribute("BorderWidth"))
+                {
+                    writer.SetControlProperty(ctrl, "BorderWidth", ctrl.GetAttribute("BorderWidth"));
+                }
+            }
+
+            return writer.FTemplate;
+        }
+        
+        /// <summary>
+        /// Handle 'special' Panels
+        /// </summary>
+        public override void ProcessChildren(TFormWriter writer, TControlDef ctrl)
+        {            
             if (ctrl.IsHorizontalGridButtonPanelStrict) 
             {
                 writer.Template.SetCodelet("BUTTONPANEL", "true");
@@ -804,6 +959,7 @@ TLogging.Log("Iteration 0:  Child: '" + childCtrl.controlName + "'");
                 pnlButtonsInner.SetAttribute("Dock", "Fill");
                 pnlButtonsInner.SetAttribute("ControlsOrientation", "horizontal");
                 pnlButtonsInner.SetAttribute("AutoScroll", "false");
+                pnlButtonsInner.SetAttribute("BackColor", "System.Drawing.Color.Transparent");
     
                 ctrl.Children.Add(pnlButtonsInner);
 
@@ -812,6 +968,7 @@ TLogging.Log("Iteration 0:  Child: '" + childCtrl.controlName + "'");
                 pnlButtonsRecordCounter.SetAttribute("AutoSize", "true");
                 pnlButtonsRecordCounter.SetAttribute("Padding", "0, 4, 5, 2");
                 pnlButtonsRecordCounter.SetAttribute("Dock", "Right");
+                pnlButtonsRecordCounter.SetAttribute("BackColor", "System.Drawing.Color.Transparent");
                 
                 TControlDef lblRecordCounter = writer.CodeStorage.FindOrCreateControl("lblRecordCounter", pnlButtonsRecordCounter.controlName);
                 lblRecordCounter.SetAttribute("AutoSize", "true");
@@ -826,7 +983,7 @@ TLogging.Log("Iteration 0:  Child: '" + childCtrl.controlName + "'");
                                 
                 pnlButtonsRecordCounter.Children.Add(lblRecordCounter);                
                 
-                if (writer.CodeStorage.GetControl(PNL_FILTER_AND_FIND) != null)
+                if (writer.CodeStorage.GetControl(PanelGenerator.PNL_FILTER_AND_FIND) != null)
                 {
                     TControlDef chkToggleFilter = writer.CodeStorage.FindOrCreateControl("chkToggleFilter", pnlButtonsRecordCounter.controlName);
                     chkToggleFilter.SetAttribute("Height", "22");
