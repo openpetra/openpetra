@@ -718,7 +718,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 journal.JournalNumber = CounterJournals++;
                 journal.DateEffective = batch.DateEffective;
                 journal.TransactionCurrency = CurrencyCode.Substring(0, CurrencyCode.IndexOf("|"));
-                journal.JournalDescription = "AP"; // TODO: journal description for posting AP documents
+                journal.JournalDescription = "AP";
 
                 if (Reversal)
                 {
@@ -1164,7 +1164,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 journal.JournalNumber = CounterJournals++;
                 journal.DateEffective = batch.DateEffective;
                 journal.TransactionCurrency = CurrencyCode.Substring(0, CurrencyCode.IndexOf("|"));
-                journal.JournalDescription = "TODO"; // TODO: journal description for posting AP documents
+                journal.JournalDescription = "AP";
                 journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
                 journal.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
                 journal.DateOfEntry = DateTime.Now;

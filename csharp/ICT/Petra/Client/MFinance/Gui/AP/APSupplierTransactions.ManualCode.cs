@@ -554,7 +554,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                                 true,
                                 out Verifications))
                         {
-                            System.Windows.Forms.MessageBox.Show("Ivoice reversed to Approved status.", Catalog.GetString("Reversal"));
+                            System.Windows.Forms.MessageBox.Show("Invoice reversed to Approved status.", Catalog.GetString("Reversal"));
                             return;
                         }
                         else
@@ -576,7 +576,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                     if ("|PAID|PARTPAID".IndexOf(barstatus) >= 0)
                     {
-                        MessageBox.Show("Can't reverse paid a invoice. Reverse the payment instead.", "Reverse");
+                        MessageBox.Show("Can't reverse a paid invoice. Reverse the payment instead.", "Reverse");
                     }
                 }
                 else // Reverse payment
