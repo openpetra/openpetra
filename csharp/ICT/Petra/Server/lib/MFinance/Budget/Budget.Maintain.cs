@@ -254,30 +254,10 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         throw new InvalidOperationException("Budget Type: " + budgetType + " in row: " + rowNumber.ToString() + " does not exist.");
                     }
 
-                    ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, null);
-                    ALedgerRow ledgerRow = (ALedgerRow)LedgerTable.Rows[0];
-
-                    AAccountingPeriodTable accPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, null);
-                    AAccountingPeriodRow accPeriodRow = (AAccountingPeriodRow)accPeriodTable.Rows[0];
-
                     //Calculate the budget Year
                     budgetYearString = StringHelper.GetNextCSV(ref Line, Separator, false);
 
-                    if (budgetYearString.ToUpper() == "THIS")
-                    {
-                        budgetYear = accPeriodRow.PeriodStartDate.Year;
-                    }
-                    else
-                    {
-                        budgetYear = accPeriodRow.PeriodStartDate.Year + 1;
-                    }
-
-                    DateTime CurrentYearEnd = TAccountingPeriodsWebConnector.GetPeriodEndDate(ALedgerNumber,
-                        ledgerRow.CurrentFinancialYear,
-                        0,
-                        ledgerRow.NumberOfAccountingPeriods);
-
-                    YearForBudgetRevision = budgetYear - CurrentYearEnd.Year + ledgerRow.CurrentFinancialYear;
+                    YearForBudgetRevision = BudgetRevisionYearNumber(ALedgerNumber, budgetYearString);
 
                     //Add budget revision record if there's not one already.
                     if (AImportDS.ABudgetRevision.Rows.Find(new object[] { ALedgerNumber, YearForBudgetRevision, BdgRevision }) == null)
@@ -396,6 +376,60 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             }
 
             return rowNumber;
+        }
+
+        private static int BudgetRevisionYearNumber(int ALedgerNumber, string ABudgetYearName)
+        {
+            int budgetYear = 0;
+            
+        	ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, null);
+            ALedgerRow ledgerRow = (ALedgerRow)LedgerTable.Rows[0];
+
+            AAccountingPeriodTable accPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, null);
+            AAccountingPeriodRow accPeriodRow = (AAccountingPeriodRow)accPeriodTable.Rows[0];
+
+            if (ABudgetYearName.ToUpper() == "THIS")
+            {
+                budgetYear = accPeriodRow.PeriodStartDate.Year;
+            }
+            else
+            {
+                budgetYear = accPeriodRow.PeriodStartDate.Year + 1;
+            }
+
+            DateTime CurrentYearEnd = TAccountingPeriodsWebConnector.GetPeriodEndDate(ALedgerNumber,
+                ledgerRow.CurrentFinancialYear,
+                0,
+                ledgerRow.NumberOfAccountingPeriods);
+
+            return (budgetYear - CurrentYearEnd.Year + ledgerRow.CurrentFinancialYear);
+        }
+
+        private static string BudgetRevisionYearName(int ALedgerNumber, int ABudgetRevisionYear)
+        {
+            int budgetYear = 0;
+            
+        	ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, null);
+            ALedgerRow ledgerRow = (ALedgerRow)LedgerTable.Rows[0];
+
+            AAccountingPeriodTable accPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, null);
+            AAccountingPeriodRow accPeriodRow = (AAccountingPeriodRow)accPeriodTable.Rows[0];
+
+            DateTime CurrentYearEnd = TAccountingPeriodsWebConnector.GetPeriodEndDate(ALedgerNumber,
+                ledgerRow.CurrentFinancialYear,
+                0,
+                ledgerRow.NumberOfAccountingPeriods);
+
+            budgetYear = ABudgetRevisionYear + CurrentYearEnd.Year - ledgerRow.CurrentFinancialYear;
+            
+            if (budgetYear == accPeriodRow.PeriodStartDate.Year)
+            {
+                return "This";
+            }
+            else
+            {
+                return "Next";
+            }
         }
 
         private static bool ProcessBudgetTypeImportDetails(ref string Line, string Separator, string ABudgetType, ref decimal[] ABudgetPeriods)
@@ -910,22 +944,59 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         {
             Int32 numBudgetsExported = 0;
             
+            ALedgerRow lr = (ALedgerRow)AExportDS.ALedger.Rows[0];
+            
+            ABudgetPeriodTable budgetPeriod = (ABudgetPeriodTable)AExportDS.ABudgetPeriod;
+            
+            Int32 numPeriods = lr.NumberOfAccountingPeriods;
+            
             char separator = AFdlgSeparator[0].Substring(0, 1).ToCharArray()[0];
 
             TLogging.Log("Writing file: " + ACSVFileName);
 
             StringBuilder sb = new StringBuilder();
+            string budgetAmounts = string.Empty;
             
             foreach (ABudgetRow row in AExportDS.ABudget.Rows)
             {
-                sb.Append(StringHelper.StrMerge(
+                switch (row.BudgetTypeCode)
+                {
+                    case MFinanceConstants.BUDGET_SAME:
+						StringBudgetTypeSameAmounts(row.BudgetSequence, ref budgetPeriod, out budgetAmounts);
+
+                        break;
+
+                    case MFinanceConstants.BUDGET_SPLIT:
+						StringBudgetTypeSplitAmounts(row.BudgetSequence, numPeriods, ref budgetPeriod, separator, out budgetAmounts);
+						
+                        break;
+
+                    case MFinanceConstants.BUDGET_INFLATE_BASE:
+						StringBudgetTypeInflateBaseAmounts(row.BudgetSequence, numPeriods, ref budgetPeriod, separator, out budgetAmounts);
+						
+                        break;
+
+                    case MFinanceConstants.BUDGET_INFLATE_N:
+						StringBudgetTypeInflateNAmounts(row.BudgetSequence, numPeriods, ref budgetPeriod, separator, out budgetAmounts);
+
+                        break;
+
+                    default:                              //MFinanceConstants.BUDGET_ADHOC:
+						StringBudgetTypeAdhocAmounts(row.BudgetSequence, numPeriods, ref budgetPeriod, separator, out budgetAmounts);
+
+                        break;
+                }
+
+            	sb.Append(StringHelper.StrMerge(
                         new string[] {
-            			"B" + row.BudgetSequence.ToString() + "_L" + row.LedgerNumber.ToString() + "_Y" + row.Year.ToString(),
-                            row.CostCentreCode,
-                            row.AccountCode,
-                            row.BudgetTypeCode
+										Encase(row.CostCentreCode),
+										Encase(row.AccountCode),
+										Encase(row.BudgetTypeCode),
+										Encase(BudgetRevisionYearName(ALedgerNumber, row.Year))
             		}, separator));
 
+                sb.Append(separator.ToString());
+                sb.Append(budgetAmounts);
                 sb.Append(Environment.NewLine);
                 
                numBudgetsExported++; 
@@ -934,6 +1005,159 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             AFileContents = sb.ToString();
             
             return numBudgetsExported;
+        }
+
+        private static string Encase(string AStringToEncase)
+        {
+        	return "\"" + AStringToEncase + "\"";
+        }
+        
+        private static void StringBudgetTypeSplitAmounts(int ABudgetSequence, int ANumPeriods, ref ABudgetPeriodTable ABudgetPeriod, char ASeparator, out String ASb)
+        {
+            ABudgetPeriodRow budgetPeriodRow;
+            ASb = string.Empty;
+            decimal perPeriodAmount = 0;
+            decimal endPeriodAmount = 0;
+
+            //Find periods 1-(total periods-1) amount
+            budgetPeriodRow = (ABudgetPeriodRow)ABudgetPeriod.Rows.Find(new object[] { ABudgetSequence, 1 });
+
+            if (budgetPeriodRow != null)
+            {
+                perPeriodAmount = budgetPeriodRow.BudgetBase;
+                budgetPeriodRow = null;
+
+                //Find period FNumberOfPeriods amount
+                budgetPeriodRow = (ABudgetPeriodRow)ABudgetPeriod.Rows.Find(new object[] { ABudgetSequence,
+                                                                                                   ANumPeriods });
+
+                if (budgetPeriodRow != null)
+                {
+                    endPeriodAmount = budgetPeriodRow.BudgetBase;
+                }
+            }
+
+            //Calculate the total amount
+            ASb += (perPeriodAmount * (ANumPeriods - 1) + endPeriodAmount).ToString();
+        }
+
+        private static void StringBudgetTypeAdhocAmounts(int ABudgetSequence, int ANumPeriods, ref ABudgetPeriodTable ABudgetPeriod, char ASeparator, out String ASb)
+        {
+            ABudgetPeriodRow budgetPeriodRow;
+            ASb = string.Empty;
+            
+            for (int i = 1; i <= ANumPeriods; i++)
+            {
+                budgetPeriodRow = (ABudgetPeriodRow)ABudgetPeriod.Rows.Find(new object[] { ABudgetSequence, i });
+
+                if (budgetPeriodRow != null)
+                {
+                	ASb += budgetPeriodRow.BudgetBase.ToString();
+                	if (i < ANumPeriods)
+                	{
+                		ASb += ASeparator.ToString();
+                	}
+                }
+
+                budgetPeriodRow = null;
+            }
+        }
+
+        private static void StringBudgetTypeSameAmounts(int ABudgetSequence, ref ABudgetPeriodTable ABudgetPeriod, out String ASb)
+        {
+            ABudgetPeriodRow budgetPeriodRow;
+            ASb = string.Empty;
+            
+            budgetPeriodRow = (ABudgetPeriodRow)ABudgetPeriod.Rows.Find(new object[] { ABudgetSequence, 1 });
+
+            if (budgetPeriodRow != null)
+            {
+            	ASb += budgetPeriodRow.BudgetBase.ToString();
+            }
+        }
+
+        private static void StringBudgetTypeInflateBaseAmounts(int ABudgetSequence, int ANumPeriods, ref ABudgetPeriodTable ABudgetPeriod, char ASeparator, out String ASb)
+        {
+            ABudgetPeriodRow budgetPeriodRow;
+            ASb = string.Empty;
+            
+            decimal[] periodValues = new decimal[ANumPeriods];
+            decimal priorPeriodAmount = 0;
+            decimal currentPeriodAmount = 0;
+
+            for (int i = 1; i <= ANumPeriods; i++)
+            {
+                budgetPeriodRow = (ABudgetPeriodRow)ABudgetPeriod.Rows.Find(new object[] { ABudgetSequence, i });
+
+                if (budgetPeriodRow != null)
+                {
+                    currentPeriodAmount = budgetPeriodRow.BudgetBase;
+
+                    if (i == 1)
+                    {
+                    	ASb += currentPeriodAmount.ToString();
+                    }
+                    else
+                    {
+                    	ASb += ((currentPeriodAmount - priorPeriodAmount) / priorPeriodAmount * 100).ToString();
+                    }
+
+					if (i < ANumPeriods)
+					{
+						ASb += ASeparator.ToString();
+					}
+					
+                    priorPeriodAmount = currentPeriodAmount;
+                }
+
+                budgetPeriodRow = null;
+            }
+        }
+
+        private static void StringBudgetTypeInflateNAmounts(int ABudgetSequence, int ANumPeriods, ref ABudgetPeriodTable ABudgetPeriod, char ASeparator, out String ASb)
+        {
+            ABudgetPeriodRow budgetPeriodRow;
+            ASb = string.Empty;
+            
+            decimal firstPeriodAmount = 0;
+            decimal currentPeriodAmount;
+
+            for (int i = 1; i <= ANumPeriods; i++)
+            {
+				budgetPeriodRow = (ABudgetPeriodRow)ABudgetPeriod.Rows.Find(new object[] { ABudgetSequence, i });
+				
+				if (budgetPeriodRow != null)
+                {
+                    currentPeriodAmount = budgetPeriodRow.BudgetBase;
+
+                    if (i == 1)
+                    {
+                    	firstPeriodAmount = currentPeriodAmount;
+                    	ASb += currentPeriodAmount.ToString();
+                    	ASb += ASeparator.ToString();
+                    }
+                    else
+                    {
+                        if (currentPeriodAmount != firstPeriodAmount)
+                        {
+                        	ASb += (i - 1).ToString();
+                        	ASb += ASeparator.ToString();
+                        	ASb += ((currentPeriodAmount - firstPeriodAmount) / firstPeriodAmount * 100).ToString();
+                            break;
+                        }
+                        else if (i == ANumPeriods)     // and by implication CurrentPeriodAmount == FirstPeriodAmount
+                        {
+                            //This is an odd case that the user should never implement, but still needs to be covered.
+                            //  It is equivalent to using BUDGET TYPE: SAME
+                        	ASb += "0";
+                        	ASb += ASeparator.ToString();
+                        	ASb += "0";
+                        }
+                    }
+                }
+
+                budgetPeriodRow = null;
+            }
         }
 
         private static bool IsZero(decimal d)

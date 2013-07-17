@@ -32,7 +32,7 @@ RootNode:
                 Row1: [rgrSelectBudgetType]
                 Row2: [grpBudgetDetails]
         rgrSelectBudgetType:
-            OptionalValues: [Split, Ad hoc, Same, Inflate Base, Inflate n]
+            OptionalValues: [Split, Ad hoc, Same, Inflate base, Inflate n]
             ControlsOrientation: horizontal
             Align: left
             NoLabel: true

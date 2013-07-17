@@ -35,13 +35,13 @@ using System.Resources;
 using System.Collections.Specialized;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Data;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
-using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
@@ -87,7 +87,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 FLedgerNumber = value;
             
 	            LoadBudgets();
-                //TFinanceControls.InitialiseAccountList(ref cmbDontSummarizeAccount, FLedgerNumber, true, false, false, false);
+
+	            TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbDetailYear, FLedgerNumber, true);
+	
+	            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
+	
+	            // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
+	            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true);
             }
         }
 
@@ -116,48 +122,50 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private void LoadUserDefaults()
         {
             // This is for compatibility with old Petra
-            txtFilename.Text = TUserDefaults.GetStringDefault("Imp Filename",
-                TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "export.csv");
+            txtFilename.Text = TUserDefaults.GetStringDefault("Exp Filename",
+                TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "BudgetExport.csv");
 
-            //TODO: unrem when adding export behaviour
             //String expOptions = TUserDefaults.GetStringDefault("Exp Options", "DTrans");
+            String expOptions = TUserDefaults.GetStringDefault("Exp Options", ";American");
 
-            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
-
-            if (impOptions.Length > 0)
+            if (expOptions.Length > 0)
             {
-                cmbDelimiter.SetSelectedString(ConvertDelimiter(impOptions.Substring(0, 1), true));
+                cmbDelimiter.SetSelectedString(ConvertDelimiter(expOptions.Substring(0, 1), true));
             }
 
-            if (impOptions.Length > 1)
+            if (expOptions.Length > 1)
             {
-                cmbNumberFormat.SelectedIndex = impOptions.Substring(1) == "American" ? 0 : 1;
+                cmbNumberFormat.SelectedIndex = expOptions.Substring(1) == "American" ? 0 : 1;
             }
 
-            cmbDateFormat.SetSelectedString(TUserDefaults.GetStringDefault("Imp Date", "MDY"));
+            cmbDateFormat.SetSelectedString(TUserDefaults.GetStringDefault("Exp Date", "DMY"));
         }
 
         private void SaveUserDefaults()
         {
-            TUserDefaults.SetDefault("Imp Filename", txtFilename.Text);
-
-            String expOptions = "";
+            String expOptions = ConvertDelimiter((String)cmbDelimiter.SelectedItem, false);
+            expOptions += ConvertNumberFormat(cmbNumberFormat);
             TUserDefaults.SetDefault("Exp Options", expOptions);
-            String impOptions = ConvertDelimiter((String)cmbDelimiter.SelectedItem, false);
-            impOptions += ConvertNumberFormat(cmbNumberFormat);
-            TUserDefaults.SetDefault("Imp Options", impOptions);
-            TUserDefaults.SetDefault("Imp Date", (String)cmbDateFormat.SelectedItem);
+            TUserDefaults.SetDefault("Exp Filename", txtFilename.Text);
+            TUserDefaults.SetDefault("Exp Date", (String)cmbDateFormat.SelectedItem);
             TUserDefaults.SaveChangedUserDefaults();
         }
 
-		private void ExportBudgetView(object sender, EventArgs e)
+		private void ExportBudgetSelect(object sender, EventArgs e)
 		{
 			ExportBudget(null, null);
-			//Open file in explorer
 
-			if (FExportFileName.Length > 0)
+			//Open file in explorer
+			if (FExportFileName.Length > 0 && Utilities.DetermineExecutingOS() != TExecutingOSEnum.oesUnsupportedPlatform)
 			{
-				Process.Start("explorer", "/e,/select," + FExportFileName);
+				if (Utilities.DetermineExecutingOS() == TExecutingOSEnum.eosLinux)
+				{
+					//TODO: add code to select a file in Linux					
+				}
+				else
+				{
+					Process.Start("explorer", "/e,/select," + FExportFileName);
+				}
 			}
 		}
 
@@ -271,16 +279,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         }
 
         void BtnHelpClick(object sender, EventArgs e)
-        {
-            // TODO
-        }
-
-        void BtnRecipientClick(object sender, EventArgs e)
-        {
-            // TODO
-        }
-
-        void BtnFieldClick(object sender, EventArgs e)
         {
             // TODO
         }
