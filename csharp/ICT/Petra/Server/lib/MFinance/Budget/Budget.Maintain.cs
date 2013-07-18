@@ -1106,7 +1106,6 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             ASb = string.Empty;
 
-            decimal[] periodValues = new decimal[ANumPeriods];
             decimal priorPeriodAmount = 0;
             decimal currentPeriodAmount = 0;
 
