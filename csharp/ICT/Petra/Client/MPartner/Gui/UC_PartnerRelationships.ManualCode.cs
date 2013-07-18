@@ -132,8 +132,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                MakeDetailsInvisible(true);
-                btnDelete.Enabled = false;
                 btnEditOtherPartner.Enabled = false;
             }
         }
@@ -171,10 +169,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             long RelationPartnerKey;
 
-            // show controls if not visible yet
-            MakeDetailsInvisible(false);
-
-            btnDelete.Enabled = false;
             btnEditOtherPartner.Enabled = false;
 
             if (ARow != null)
@@ -307,8 +301,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         private bool PreDeleteManual(PartnerEditTDSPPartnerRelationshipRow ARowToDelete, ref string ADeletionQuestion)
         {
             /*Code to execute before the delete can take place*/
-            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Relationship record: '{0}'?"),
-                ARowToDelete.RelationName);
+            ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            ADeletionQuestion += String.Format("{0}{0}({1} {2})",
+                Environment.NewLine,
+                lblPPartnerRelationshipRelationKey,
+                cmbPPartnerRelationshipRelationName.GetSelectedString());            
             return true;
         }
 
@@ -379,16 +376,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 this.Cursor = Cursors.Default;
             }
-        }
-
-        /// <summary>
-        /// Sets this Usercontrol visible or unvisile true = visible, false = invisible.
-        /// </summary>
-        /// <returns>void</returns>
-        private void MakeDetailsInvisible(Boolean value)
-        {
-            /* make the details part of this screen visible or invisible. */
-            this.pnlDetails.Visible = !value;
         }
 
         private void ValidateDataDetailsManual(PPartnerRelationshipRow ARow)
