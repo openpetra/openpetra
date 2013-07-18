@@ -24,30 +24,30 @@ RootNode:
                 Row0: [cmbDelimiter]
                 Row1: [cmbDateFormat]
                 Row2: [cmbNumberFormat]
-        pnlDetails:
-            Controls:
-                Row0: [cmbDetailCostCentreCode]
-                Row1: [cmbDetailAccountCode]
-                Row2: [cmbDetailYear]
-                Row3: [cmbBudgetType]
+        #pnlDetails:  #Left in if filtering is required at a later date
+        #    Controls:
+        #        Row0: [cmbDetailCostCentreCode]
+        #        Row1: [cmbDetailAccountCode]
+        #        Row2: [cmbDetailYear]
+        #        Row3: [cmbBudgetType]
         pnlFilename:
             Controls:
                 Row0: [txtFilename, btnBrowseFilename]
         pnlFilter:
             Dock: Top
             Controls:
-                Row0: [grpBudgetFilter, grpExportOptions]
-                #Row1: [grpExportOptions]
+                Row0: [grpExportOptions]
+                #Row0: [grpBudgetFilter, grpExportOptions]
         pnlButtons:
             Dock:Bottom
             Controls:
                 Row0: [btnHelp, btnOK, btnView, btnClose]
             #ColWidths: [0=Fixed:350,1=Fixed:100,2=Fixed:100]
-        grpBudgetFilter: {ColSpan=1, Width:325, Height: 125}
-            Controls: 
-                Row0: [pnlDetails]
-            Label: Filter
-        grpExportOptions: {ColSpan=1, Width:300, Height: 125}
+        #grpBudgetFilter: {ColSpan=1, Width:325, Height: 125}
+        #    Controls: 
+        #        Row0: [pnlDetails]
+        #    Label: Filter
+        grpExportOptions: {ColSpan=1, Width:300, Height: 100}
             Controls: 
                 Row0: [pnlExportOptions]
             Label: Options
@@ -69,11 +69,11 @@ RootNode:
         cmbDelimiter:
             OptionalValues: [";", ",", ":", "[SPACE]"]
             Width: 80
-        cmbBudgetType:
-            OptionalValues: [=Split, Ad hoc, Same, Inflate base, Inflate n]
-            Label: &Budget Type
-        cmbDetailYear: {Label=Year, List=UserDefinedList}
-        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList}
-        cmbDetailAccountCode: {Label=Account, List=UserDefinedList}
+        #cmbBudgetType:
+        #    OptionalValues: [=Split, Ad hoc, Same, Inflate base, Inflate n]
+        #    Label: &Budget Type
+        #cmbDetailYear: {Label=Year, List=UserDefinedList}
+        #cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList}
+        #cmbDetailAccountCode: {Label=Account, List=UserDefinedList}
     Toolbar:
         tbbExportBudget:

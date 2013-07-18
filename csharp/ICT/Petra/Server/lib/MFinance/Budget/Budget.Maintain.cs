@@ -230,15 +230,19 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     //Read the values for the current line
                     Account = StringHelper.GetNextCSV(ref Line, Separator, false).ToString();
                     budgetType = StringHelper.GetNextCSV(ref Line, Separator, false).ToString().ToUpper();
+                    budgetType = budgetType.Replace(" ", ""); //Ad hoc will become ADHOC
 
                     //Allow for variations on Inf.Base and Inf.N
                     if (budgetType.Contains("INF"))
                     {
-                        if (budgetType.Contains("BASE") && (budgetType != MFinanceConstants.BUDGET_INFLATE_BASE))
+                    	if (budgetType.Contains("BASE"))
                         {
-                            budgetType = MFinanceConstants.BUDGET_INFLATE_BASE;
-                        }
-                        else
+                    		if (budgetType != MFinanceConstants.BUDGET_INFLATE_BASE)
+                    		{
+                    			budgetType = MFinanceConstants.BUDGET_INFLATE_BASE;
+                    		}
+                    	}
+                   		else if (budgetType != MFinanceConstants.BUDGET_INFLATE_N)
                         {
                             budgetType = MFinanceConstants.BUDGET_INFLATE_N;
                         }

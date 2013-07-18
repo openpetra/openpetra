@@ -88,12 +88,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             
 	            LoadBudgets();
 
-	            TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbDetailYear, FLedgerNumber, true);
+	            //TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbDetailYear, FLedgerNumber, true);
 	
-	            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
+	            //TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
 	
 	            // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
-	            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true);
+	            //TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true);
             }
         }
 
@@ -248,10 +248,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 }
             }
 
-            MessageBox.Show(Catalog.GetString(String.Format("{0} Budget rows exported successfully into file:{1}{1}{2}",
+            MessageBox.Show(Catalog.GetString(String.Format("Exported successfully! {0} Budget rows exported as file:{1}{1}{2}",
                                                             budgetCount.ToString(),
                                                             Environment.NewLine,
-                                                            FExportFileName)),
+                                                            FExportFileName.ToUpper())),
                 Catalog.GetString("Budget Export"),
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
