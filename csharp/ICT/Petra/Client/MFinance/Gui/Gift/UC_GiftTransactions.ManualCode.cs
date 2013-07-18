@@ -567,7 +567,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
 //christiank: when you have a moFBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED &&
                 txtGiftTotal.NumberValueDecimal = sum;
-                txtGiftTotal.CurrencySymbol = txtDetailGiftTransactionAmount.CurrencySymbol;
+                txtGiftTotal.CurrencyCode = txtDetailGiftTransactionAmount.CurrencyCode;
                 txtGiftTotal.ReadOnly = true;
                 //this is here because at the moment the generator does not generate this
                 txtBatchTotal.NumberValueDecimal = sumBatch;
@@ -1216,7 +1216,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FBatchRow != null)
             {
-                txtDetailGiftTransactionAmount.CurrencySymbol = FBatchRow.CurrencyCode;
+                txtDetailGiftTransactionAmount.CurrencyCode = FBatchRow.CurrencyCode;
             }
 
             if (grdDetails.Rows.Count == 1)
@@ -1335,10 +1335,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateCurrencySymbols(String ACurrencyCode)
         {
-            txtDetailGiftTransactionAmount.CurrencySymbol = ACurrencyCode;
-            txtGiftTotal.CurrencySymbol = ACurrencyCode;
-            txtBatchTotal.CurrencySymbol = ACurrencyCode;
-            txtHashTotal.CurrencySymbol = ACurrencyCode;
+            txtDetailGiftTransactionAmount.CurrencyCode = ACurrencyCode;
+            txtGiftTotal.CurrencyCode = ACurrencyCode;
+            txtBatchTotal.CurrencyCode = ACurrencyCode;
+            txtHashTotal.CurrencyCode = ACurrencyCode;
         }
 
         /// <summary>

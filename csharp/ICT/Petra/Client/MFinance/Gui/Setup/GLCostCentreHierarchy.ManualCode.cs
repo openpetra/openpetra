@@ -3,6 +3,7 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
 // Copyright 2004-2013 by OM International
 //
@@ -38,6 +39,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using System.Drawing;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -71,7 +73,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             public Boolean? CanHaveChildren;
 
             /// <summary>
-            /// This will be initially false for Summary cost codes that have children, unknown for "leaves.
+            /// This will be initially false for Summary cost codes that have children, unknown for "leaves".
             /// On newly created cost codes, this will be true.
             /// On a "need to know" basis, it will be set false for cost codes that already have transactions posted to them.
             /// </summary>
@@ -563,7 +565,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     MessageBox.Show(
                         Catalog.GetString(
-                            "Cost centre code is empty.\r\nSupply a valid cost centre code or also remove the Name to delete this record."),
+                            "Cost centre code is empty.\r\nSupply a valid cost centre code or also remove the name to delete this record."),
                         Catalog.GetString("GL Cost Centre Hierarchy"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
@@ -718,6 +720,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                             if (Success)
                             {
+                                DataTable NewTable;
+                                TRemote.MFinance.Cacheable.WebConnectors.RefreshCacheableTable(TCacheableFinanceTablesEnum.CostCentreList,
+                                    FLedgerNumber,
+                                    out NewTable);
                                 FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
                                 strOldDetailCostCentreCode = "";
                                 txtDetailCostCentreCode.Text = "";

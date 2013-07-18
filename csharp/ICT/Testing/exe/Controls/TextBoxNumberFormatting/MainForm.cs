@@ -145,7 +145,7 @@ public partial class MainForm : Form
 
     void TxtCurrencySymbolTextChanged(object sender, System.EventArgs e)
     {
-        txtCurrency.CurrencySymbol = txtCurrencySymbol.Text;
+        txtCurrency.CurrencyCode = txtCurrencySymbol.Text;
     }
 }
 }

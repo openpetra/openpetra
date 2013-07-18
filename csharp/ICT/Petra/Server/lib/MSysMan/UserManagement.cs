@@ -173,7 +173,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             SUserTable userTable = new SUserTable();
             SUserRow newUser = userTable.NewRowTyped();
 
-            newUser.UserId = AUsername.ToUpper();
+            newUser.UserId = AUsername;
             newUser.FirstName = AFirstName;
             newUser.LastName = AFamilyName;
 

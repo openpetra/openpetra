@@ -41,7 +41,7 @@ RootNode:
             Padding: 5,0,10,0
             # todo: electronic payment; 
             # todo: pay by transfer (select another supplier; payment will create another invoice with the other supplier, at a given exchange rate, with the given invoice number)
-            Height: 170
+            Height: 180
             Dock:Top
         pnlExchangeRate: {ControlsOrientation = horizontal}
             Controls: [txtExchangeRate, btnLookupExchangeRate]
@@ -63,7 +63,7 @@ RootNode:
             DetailTable: true
             ActionFocusRow: FocusedRowChangedDetails
         pnlDetails:
-            Controls: [rgrAmountToPay, chkClaimDiscount, txtAmountToPay]
+            Controls: [rgrAmountToPay, chkClaimDiscount, pnlBottomLine]
             Dock: Bottom
         rgrAmountToPay:
             Controls: [rbtPayFullOutstandingAmount, rbtPayPartialAmount]
@@ -74,7 +74,14 @@ RootNode:
             # TODO: allow discounts
             CheckBoxAttachedLabel: right
             ReadOnly: true
+        pnlBottomLine: {ControlsOrientation = horizontal}
+            Controls: [txtAmountToPay, txtPaymntNum]
         txtAmountToPay:
+        txtPaymntNum:
+            Label: Payment num
+            ReadOnly: true
+            DataField: AApPayment.PaymentNumber
+            Width: 60
         txtCurrency:
             Label: Currency
             ReadOnly: true

@@ -1116,30 +1116,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private void ClearBudgetTextboxCurrencyFormat()
         {
             //Adhoc controls
-            txtPeriod01Amount.CurrencySymbol = String.Empty;
-            txtPeriod02Amount.CurrencySymbol = String.Empty;
-            txtPeriod03Amount.CurrencySymbol = String.Empty;
-            txtPeriod04Amount.CurrencySymbol = String.Empty;
-            txtPeriod05Amount.CurrencySymbol = String.Empty;
-            txtPeriod06Amount.CurrencySymbol = String.Empty;
-            txtPeriod07Amount.CurrencySymbol = String.Empty;
-            txtPeriod08Amount.CurrencySymbol = String.Empty;
-            txtPeriod09Amount.CurrencySymbol = String.Empty;
-            txtPeriod10Amount.CurrencySymbol = String.Empty;
-            txtPeriod11Amount.CurrencySymbol = String.Empty;
-            txtPeriod12Amount.CurrencySymbol = String.Empty;
-            txtPeriod13Amount.CurrencySymbol = String.Empty;
-            txtPeriod14Amount.CurrencySymbol = String.Empty;
+            txtPeriod01Amount.CurrencyCode = String.Empty;
+            txtPeriod02Amount.CurrencyCode = String.Empty;
+            txtPeriod03Amount.CurrencyCode = String.Empty;
+            txtPeriod04Amount.CurrencyCode = String.Empty;
+            txtPeriod05Amount.CurrencyCode = String.Empty;
+            txtPeriod06Amount.CurrencyCode = String.Empty;
+            txtPeriod07Amount.CurrencyCode = String.Empty;
+            txtPeriod08Amount.CurrencyCode = String.Empty;
+            txtPeriod09Amount.CurrencyCode = String.Empty;
+            txtPeriod10Amount.CurrencyCode = String.Empty;
+            txtPeriod11Amount.CurrencyCode = String.Empty;
+            txtPeriod12Amount.CurrencyCode = String.Empty;
+            txtPeriod13Amount.CurrencyCode = String.Empty;
+            txtPeriod14Amount.CurrencyCode = String.Empty;
             //Same controls
-            txtAmount.CurrencySymbol = String.Empty;
+            txtAmount.CurrencyCode = String.Empty;
             //Split controls
-            txtTotalSplitAmount.CurrencySymbol = String.Empty;
-            txtPerPeriodAmount.CurrencySymbol = String.Empty;
-            txtLastPeriodAmount.CurrencySymbol = String.Empty;
+            txtTotalSplitAmount.CurrencyCode = String.Empty;
+            txtPerPeriodAmount.CurrencyCode = String.Empty;
+            txtLastPeriodAmount.CurrencyCode = String.Empty;
             //Inflate N controls
-            txtFirstPeriodAmount.CurrencySymbol = String.Empty;
+            txtFirstPeriodAmount.CurrencyCode = String.Empty;
             //Inflate Base controls
-            txtPeriod1Amount.CurrencySymbol = String.Empty;
+            txtPeriod1Amount.CurrencyCode = String.Empty;
         }
 
         private void ShowDetailsManual(ABudgetRow ARow)
