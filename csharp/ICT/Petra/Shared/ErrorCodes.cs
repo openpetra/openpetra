@@ -122,10 +122,15 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Applicable date cannot be after the end of the conference.")]
         public const String ERR_APPLICABLE_DATE_AFTER_CONFERENCE_END_DATE = "CON.00002V";
 
+        /// <summary>Early applicable date later than a late applicable date</summary>
+        [ErrCodeAttribute("Early applicable date later than a late applicable date.",
+             ErrorMessageText = "There is an early registration discount which has a date later than this late registration surcharge.")]
+        public const String ERR_EARLY_APPLICABLE_DATE_LATER_THAN_LATE_APPLICABLE_DATE = "CON.00003V";
+
         /// <summary>Late applicable date earlier than an early applicable date</summary>
         [ErrCodeAttribute("Late applicable date earlier than an early applicable date.",
-             ErrorMessageText = "There is {0} which has a date {1} than this {2}.")]
-        public const String ERR_LATE_APPLICABLE_DATE_EARLIER_THAN_EARLY_APPLICABLE_DATE = "CON.00003V";
+             ErrorMessageText = "There is a late registration surcharge which has a date earlier than this early registration discount.")]
+        public const String ERR_LATE_APPLICABLE_DATE_EARLIER_THAN_EARLY_APPLICABLE_DATE = "CON.00004V";
 
         #endregion
 
