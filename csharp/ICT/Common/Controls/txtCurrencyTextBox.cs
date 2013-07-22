@@ -123,13 +123,14 @@ namespace Ict.Common.Controls
                         try
                         {
                             Decimal LocalCultureVersion;
+
                             if (Decimal.TryParse(FTxtNumeric.Text, out LocalCultureVersion))
                             {
                                 Ret = LocalCultureVersion;
                             }
                             else
                             {
-                            Ret = Convert.ToDecimal(FTxtNumeric.Text, FTxtNumeric.Culture);
+                                Ret = Convert.ToDecimal(FTxtNumeric.Text, FTxtNumeric.Culture);
                             }
                         }
                         catch (Exception)
