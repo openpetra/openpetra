@@ -79,6 +79,10 @@ namespace Ict.Common
                     {
                         return TExecutingOSEnum.eosWin7;
                     }
+                    else if ((OSVersion.Major == 6) && (OSVersion.Minor == 2))
+                    {
+                        return TExecutingOSEnum.eosWin8;
+                    }
 
                     return TExecutingOSEnum.eosWinNTOrLater;
 
