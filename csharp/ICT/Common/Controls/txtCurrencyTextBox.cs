@@ -122,7 +122,15 @@ namespace Ict.Common.Controls
                         decimal? Ret = null;
                         try
                         {
+                            Decimal LocalCultureVersion;
+                            if (Decimal.TryParse(FTxtNumeric.Text, out LocalCultureVersion))
+                            {
+                                Ret = LocalCultureVersion;
+                            }
+                            else
+                            {
                             Ret = Convert.ToDecimal(FTxtNumeric.Text, FTxtNumeric.Culture);
+                            }
                         }
                         catch (Exception)
                         {
@@ -271,7 +279,7 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// Gets or sets how text is aliagned in the TextBox.
+        /// Gets or sets how text is aligned in the TextBox.
         /// </summary>
         public System.Windows.Forms.HorizontalAlignment TextAlign
         {

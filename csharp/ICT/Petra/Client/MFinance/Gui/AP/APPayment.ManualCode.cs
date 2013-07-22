@@ -156,15 +156,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         ///
         /// </summary>
         /// <param name="Atds"></param>
-        /// <param name="Adocument"></param>
+        /// <param name="AdocumentRow"></param>
         /// <returns></returns>
-        public static bool ApDocumentCanPay(AccountsPayableTDS Atds, AApDocumentRow Adocument)
+        public static bool ApDocumentCanPay(AccountsPayableTDS Atds, AApDocumentRow AdocumentRow)
         {
-            if (!CurrencyIsOkForPaying(Atds, Adocument))
+            if (!CurrencyIsOkForPaying(Atds, AdocumentRow))
             {
                 return false;
             }
 
+            if ("|POSTED|PARTPAID|".IndexOf("|" + AdocumentRow.DocumentStatus) < 0)
+            {
+                return false;
+            }
             return true;
         }
 
@@ -388,8 +392,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 foreach (DataRowView rv in FMainDS.AApDocumentPayment.DefaultView)
                 {
                     AccountsPayableTDSAApDocumentPaymentRow DocPaymentRow = (AccountsPayableTDSAApDocumentPaymentRow)rv.Row;
+                    Boolean overPayment = (DocPaymentRow.DocType == "INVOICE") ?
+                        (DocPaymentRow.Amount > DocPaymentRow.InvoiceTotal) : (DocPaymentRow.Amount < DocPaymentRow.InvoiceTotal);
 
-                    if (DocPaymentRow.Amount > DocPaymentRow.InvoiceTotal)
+                    if (overPayment)
                     {
                         String strMessage =
                             String.Format(Catalog.GetString(

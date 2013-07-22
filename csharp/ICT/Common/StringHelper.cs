@@ -1819,10 +1819,6 @@ namespace Ict.Common
             String ReturnValue;
             decimal d;
             DateTime ThisYearDate;
-            String formatNegative;
-            String formatPositive;
-            String formatZero;
-            String formatNil;
 
             // for partnerkey
             String OrigFormat;
@@ -1867,10 +1863,10 @@ namespace Ict.Common
                     return value.ToString();
                 }
 
-                formatPositive = GetNextCSV(ref format, ";");
-                formatNegative = GetNextCSV(ref format, ";");
-                formatZero = GetNextCSV(ref format, ";");
-                formatNil = GetNextCSV(ref format, ";");
+                String formatPositive = GetNextCSV(ref format, ";");
+                String formatNegative = GetNextCSV(ref format, ";");
+                String formatZero = GetNextCSV(ref format, ";");
+                String formatNil = GetNextCSV(ref format, ";");
 
                 if ((OrigFormat.ToLower() == "partnerkey") || (value.FormatString == "partnerkey"))
                 {

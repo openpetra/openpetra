@@ -1015,6 +1015,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPosting(ALedgerNumber, APostingDate, Reversal, ref MainDS);
+            Boolean PostingWorkedOk = true;
 
             ABatchRow batch = GLDataset.ABatch[0];
 
@@ -1022,18 +1023,29 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             if (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
                     out AVerificationResult) != TSubmitChangesResult.scrOK)
             {
-                return false;
+                PostingWorkedOk = false;
             }
 
             // post the batch
-            if (!TGLPosting.PostGLBatch(ALedgerNumber, batch.BatchNumber, out AVerificationResult))
+            if (PostingWorkedOk)
             {
-                // TODO: what if posting fails? do we have an orphaned batch lying around? can this be put into one single transaction? probably not
-                // TODO: we should cancel that batch
+                PostingWorkedOk = TGLPosting.PostGLBatch(ALedgerNumber, batch.BatchNumber, out AVerificationResult);
+            }
+
+            if (!PostingWorkedOk)
+            {
+                TVerificationResultCollection MoreResults;
+
+                TGLPosting.DeleteGLBatch(
+                            ALedgerNumber,
+                            GLDataset.ABatch[0].BatchNumber,
+                            out MoreResults);
+                AVerificationResult.AddCollection(MoreResults);
+
                 return false;
             }
 
-            // change status of AP documents and save to database
+            // GL posting is OK - change status of AP documents and save to database
             foreach (AApDocumentRow row in MainDS.AApDocument.Rows)
             {
                 if (Reversal)
@@ -1047,7 +1059,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             TDBTransaction SubmitChangesTransaction;
-            bool IsMyOwnTransaction = false; // If I create a transaction here, then I need to rollback when I'm done.
+            bool IsMyOwnTransaction = false; // If I create a transaction here, then I need to Commit when I'm done.
 
             try
             {
@@ -1072,7 +1084,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             catch (Exception e)
             {
                 // we should not get here; how would the database get broken?
-                // TODO do we need a bigger transaction around everything?
+                // Now I've got GL entries, but "unposted" AP documents!
 
                 TLogging.Log("PostApDocuments: exception " + e.Message);
 
@@ -1426,6 +1438,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             supplierPaymentsRow.SupplierKey = supplierRow.PartnerKey;
                             supplierPaymentsRow.MethodOfPayment = supplierRow.PaymentType;
                             supplierPaymentsRow.BankAccount = supplierRow.DefaultBankAccount;
+
                             supplierPaymentsRow.CurrencyCode = apDocumentRow.CurrencyCode;
                             supplierPaymentsRow.ExchangeRateToBase = apDocumentRow.ExchangeRateToBase; // The client may change this.
 
@@ -1492,7 +1505,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="MainDS"></param>
         /// <param name="APostingDate"></param>
         /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
+        /// <returns>true if it seemed to work OK</returns>
         [RequireModulePermission("FINANCE-3")]
         public static bool PostAPPayments(
             ref AccountsPayableTDS MainDS,
@@ -1566,7 +1579,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             if (IsMyOwnTransaction)
             {
-                DBAccess.GDBAccessObj.CommitTransaction();
+                DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
             foreach (AccountsPayableTDSAApPaymentRow paymentRow in MainDS.AApPayment.Rows)
@@ -1600,36 +1613,43 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 ABatchRow batch = GLDataset.ABatch[0];
 
                 // save the batch
-                if (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
-                        out AVerificationResult) == TSubmitChangesResult.scrOK)
+                Boolean PostingWorkedOk = (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
+                        out AVerificationResult) == TSubmitChangesResult.scrOK);
+
+                if (PostingWorkedOk)
                 {
                     // post the batch
-                    if (!TGLPosting.PostGLBatch(MainDS.AApPayment[0].LedgerNumber, batch.BatchNumber,
+                    PostingWorkedOk = TGLPosting.PostGLBatch(MainDS.AApPayment[0].LedgerNumber, batch.BatchNumber,
+                            out AVerificationResult);
+                }
+
+                if (!PostingWorkedOk)
+                {
+                    TVerificationResultCollection MoreResults;
+
+                    TGLPosting.DeleteGLBatch(
+                                MainDS.AApPayment[0].LedgerNumber,
+                                batch.BatchNumber,
+                                out MoreResults);
+                    AVerificationResult.AddCollection(MoreResults);
+
+                    return false;
+                }
+
+                SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
+                                                (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
+
+                // store ApPayment and ApDocumentPayment to database
+                if (AApPaymentAccess.SubmitChanges(MainDS.AApPayment, SubmitChangesTransaction,
+                        out AVerificationResult))
+                {
+                    if (AApDocumentPaymentAccess.SubmitChanges(MainDS.AApDocumentPayment, SubmitChangesTransaction,
                             out AVerificationResult))
                     {
-                        // TODO: what if posting fails? do we have an orphaned batch lying around? can this be put into one single transaction? probably not
-                        // TODO: we should cancel that batch
-
-                        // TODO: I need to at least report this to the user.
-                    }
-                    else
-                    {
-                        SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                                       (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
-
-                        // store ApPayment and ApDocumentPayment to database
-                        if (AApPaymentAccess.SubmitChanges(MainDS.AApPayment, SubmitChangesTransaction,
-                                out AVerificationResult))
+                        // save changed status of AP documents to database
+                        if (AApDocumentAccess.SubmitChanges(MainDS.AApDocument, SubmitChangesTransaction, out AVerificationResult))
                         {
-                            if (AApDocumentPaymentAccess.SubmitChanges(MainDS.AApDocumentPayment, SubmitChangesTransaction,
-                                    out AVerificationResult))
-                            {
-                                // save changed status of AP documents to database
-                                if (AApDocumentAccess.SubmitChanges(MainDS.AApDocument, SubmitChangesTransaction, out AVerificationResult))
-                                {
-                                    ResultValue = true;
-                                }
-                            }
+                            ResultValue = true;
                         }
                     }
                 }
@@ -1637,7 +1657,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             catch (Exception e)
             {
                 // we should not get here; how would the database get broken?
-                // TODO do we need a bigger transaction around everything?
+                // Now I've got payment entries in the GL, and "unposted" payment records.
 
                 TLogging.Log("Posting payments: exception " + e.Message);
 
