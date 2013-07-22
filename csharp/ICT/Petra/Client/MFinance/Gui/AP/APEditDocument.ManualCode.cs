@@ -508,8 +508,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdDetails.Columns[2].Width = 200;
             grdDetails.Columns[3].Width = 90;
 
-            // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
-            bool ActiveOnly = this.Enabled;
+            // if this document was already posted, then we need all account and cost centre codes, because old codes might have been used
+            bool ActiveOnly = ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) < 0);
 
             TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
