@@ -318,7 +318,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                             TaggedInvoicesDeletable = true;
                         }
 
-                        if ("|POSTED" == BarStatus)
+                        if ("|POSTED|" == BarStatus)
                         {
                             TaggedInvoicesReversable = true;
                         }

@@ -555,6 +555,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                                 out Verifications))
                         {
                             System.Windows.Forms.MessageBox.Show("Invoice reversed to Approved status.", Catalog.GetString("Reversal"));
+                            Reload();
                             return;
                         }
                         else
