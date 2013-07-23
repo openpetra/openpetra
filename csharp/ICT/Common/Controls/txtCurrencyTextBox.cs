@@ -129,7 +129,7 @@ namespace Ict.Common.Controls
                             }
                             else
                             {
-                            Ret = Convert.ToDecimal(FTxtNumeric.Text, FTxtNumeric.Culture);
+                                Ret = Convert.ToDecimal(FTxtNumeric.Text, FTxtNumeric.Culture);
                             }
                         }
                         catch (Exception)
