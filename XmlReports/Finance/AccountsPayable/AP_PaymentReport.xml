@@ -2,34 +2,39 @@
 <!DOCTYPE reports SYSTEM "../../reports.dtd">
 <reports>
 
-	<report id="APPaymentReport">
-		<description>
+  <report id="APPaymentReport">
+    <description>
 			Show all the documents that together made up a payment to a supplier.
 		</description>
-		<reportparameters>
-			<reportparameter name="param_ledger_number_i"/>
-			<reportparameter name="param_payment_number_i"/>
-			<reportparameter name="param_payment_num_from_i"/>
-			<reportparameter name="param_payment_num_to_i"/>
-			<reportparameter name="param_payment_date_from_i"/>
-			<reportparameter name="param_payment_date_to_i"/>
-			<reportparameter name="param_filter_by_date"/>
-			<reportparameter name="param_filter_by_payment_num"/>
-		</reportparameters>
-		
-		<reportheader/>
-		
-		<pageheader>
-			<field whichfield="title1">
-					<value text ="AP - Payment Report" />
-			</field>
-			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
-			<field whichfield="descr1"><value text="Ledger: "/><value variable="param_ledger_number_i"/>
-				<value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/>
-			</field>
-		</pageheader>
-		
-		<calculations>
+    <reportparameters>
+      <reportparameter name="param_ledger_number_i"/>
+      <reportparameter name="param_payment_number_i"/>
+      <reportparameter name="param_payment_num_from_i"/>
+      <reportparameter name="param_payment_num_to_i"/>
+      <reportparameter name="param_payment_date_from_i"/>
+      <reportparameter name="param_payment_date_to_i"/>
+      <reportparameter name="param_filter_by_date"/>
+      <reportparameter name="param_filter_by_payment_num"/>
+    </reportparameters>
+
+    <reportheader/>
+
+    <pageheader>
+      <field whichfield="title1">
+        <value text ="AP - Payment Report" />
+      </field>
+      <field whichfield="title2">
+        <value function="getLedgerName({{param_ledger_number_i}})"/>
+      </field>
+      <field whichfield="descr1">
+        <value text="Ledger: "/>
+        <value variable="param_ledger_number_i"/>
+        <value text="   "/>
+        <value function="getLedgerName({{param_ledger_number_i}})"/>
+      </field>
+    </pageheader>
+
+    <calculations>
 
       <calculation id="SelectSupplier" returns="Automatic" returnsFormat="row">
         <query>
@@ -55,21 +60,21 @@
               AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
               AND PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
 						 </value>
-					</queryDetail>
-			    <queryDetail condition="eq({{param_filter_by_payment_num}}, 1)">
-  				    <value>
+          </queryDetail>
+          <queryDetail condition="eq({{param_filter_by_payment_num}}, 1)">
+            <value>
                 AND PUB_a_ap_payment.a_payment_number_i &gt;= {{param_payment_num_from_i}}
                 AND PUB_a_ap_payment.a_payment_number_i &lt;= {{param_payment_num_to_i}}
               </value>
-           </queryDetail>
-			    <queryDetail condition="eq({{param_filter_by_date}}, 1)">
-  				    <value>
+          </queryDetail>
+          <queryDetail condition="eq({{param_filter_by_date}}, 1)">
+            <value>
                 AND PUB_a_ap_payment.a_payment_date_d BETWEEN {#param_payment_date_from_i#} AND {#param_payment_date_to_i#}
               </value>
-           </queryDetail>
+          </queryDetail>
         </query>
       </calculation>
-      
+
 
       <calculation id="SupplierName" returnsFormat="text" returns="text">
         <caption>
@@ -81,7 +86,7 @@
           </queryDetail>
         </query>
       </calculation>
-      
+
 
       <calculation id="PaymentNumber" returnsFormat="text" returns="text">
         <caption>
@@ -156,7 +161,7 @@
           </queryDetail>
         </query>
       </calculation>
-     
+
       <calculation id="SelectDocuments" returns="Automatic" returnsFormat="row">
         <query>
           <queryDetail>
@@ -247,7 +252,7 @@
           </queryDetail>
         </query>
       </calculation>
-        
+
       <calculation id="DetailAccount" returnsFormat="text" returns="text">
         <query>
           <queryDetail>
@@ -274,28 +279,28 @@
 
 
     </calculations>
-		
-		<levels>
-		<level name="main">
-			<detail>
-  				<lowerLevelReport level="SupplierListLevel" calculation="SelectSupplier"/>
-			</detail>
-		</level>
 
-    <level name="SupplierListLevel">
-			<detail>
-        <lowerLevelReport level="SupplierLevel"/>
-			</detail>
-			<footer space="above">
-        <field whichfield="column 5">
-          <value text="Total Payment"/>
-        </field>
-        <field whichfield="column 6" format="currency" pos="indented">
-          <value function="getSumLowerReport({{lineId}}, 6)"/>
-        </field>
-			</footer>
+    <levels>
+      <level name="main">
+        <detail>
+          <lowerLevelReport level="SupplierListLevel" calculation="SelectSupplier"/>
+        </detail>
       </level>
-      
+
+      <level name="SupplierListLevel">
+        <detail>
+          <lowerLevelReport level="SupplierLevel"/>
+        </detail>
+        <footer space="above">
+          <field whichfield="column 5">
+            <value text="Total Payment"/>
+          </field>
+          <field whichfield="column 6" format="currency" pos="indented">
+            <value function="getSumLowerReport({{lineId}}, 6)"/>
+          </field>
+        </footer>
+      </level>
+
       <level name="SupplierLevel" identification ="p_partner_key_n">
         <header>
           <field whichfield="header 1" pos="0 cm" width="8cm">
@@ -303,7 +308,7 @@
           </field>
         </header>
         <detail>
-  				<lowerLevelReport level="DocumentLevel" calculation="SelectDocuments"/>
+          <lowerLevelReport level="DocumentLevel" calculation="SelectDocuments"/>
         </detail>
         <footer>
           <field whichfield="column 0">
@@ -315,7 +320,7 @@
           <field whichfield="column 2">
             <value variable="PaymentBank"/>
           </field>
-           <field whichfield="column 3">
+          <field whichfield="column 3">
             <value variable="PaymentRef"/>
           </field>
           <field whichfield="column 4">
@@ -329,21 +334,21 @@
         </footer>
       </level>
 
-        <level name="DocumentLevel">
+      <level name="DocumentLevel">
         <header>
         </header>
-		    <detail>
+        <detail>
           <lowerLevelReport level="APDocumentLevel"/>
           <lowerLevelReport level="DetailLevel" calculation="SelectDetails"/>
-		    </detail>
-          <footer space="below">
-           <field whichfield="column 5" format="currency" pos="indented">
+        </detail>
+        <footer space="below">
+          <field whichfield="column 5" format="currency" pos="indented">
             <value variable="DocTotal"/>
           </field>
-            
-          </footer>
- 		  </level>
-      
+
+        </footer>
+      </level>
+
       <level name="APDocumentLevel">
         <detail>
           <field whichfield="column 1">
@@ -352,42 +357,42 @@
           <field whichfield="column 2">
             <value variable="DocCode"/>
           </field>
-           <field whichfield="column 3">
+          <field whichfield="column 3">
             <value variable="DocRef"/>
           </field>
-           <field whichfield="column 4">
+          <field whichfield="column 4">
             <value variable="DocDate"/>
           </field>
         </detail>
       </level>
-      
+
       <level name="DetailLevel">
         <detail>
           <field whichfield="column 1">
             <value text=""/>
           </field>
-           <field whichfield="column 2">
-             <value text="    (Acc#: "/>
-             <value variable="DetailAccount"/>
-             <value text=")"/>
-           </field>
-           <field whichfield="column 3">
-             <value text="   "/>
-             <value variable="DetailRef"/>
+          <field whichfield="column 2">
+            <value text="    (Acc#: "/>
+            <value variable="DetailAccount"/>
+            <value text=")"/>
           </field>
-           <field whichfield="column 4">
+          <field whichfield="column 3">
+            <value text="   "/>
+            <value variable="DetailRef"/>
+          </field>
+          <field whichfield="column 4">
             <value text=""/>
           </field>
-           <field whichfield="column 5" format="currency">
+          <field whichfield="column 5" format="currency">
             <value variable="DetailAmount"/>
           </field>
-           <field whichfield="column 6" format="text">
+          <field whichfield="column 6" format="text">
             <value text=""/>
           </field>
-          
+
         </detail>
- 		</level>
-		
-		</levels>
-	</report>
+      </level>
+
+    </levels>
+  </report>
 </reports>
