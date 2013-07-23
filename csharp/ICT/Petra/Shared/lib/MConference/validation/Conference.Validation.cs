@@ -150,7 +150,6 @@ namespace Ict.Petra.Shared.MConference.Validation
             PcEarlyLateRow ARowCompare = null;
             Boolean ApplicableDateTooEarly = false;
             Boolean ApplicableDateTooLate = false;
-            string[] ErrorMessageData = new string[3];  // used for the error message
             int i = 0;
 
             while (i < AGridData.Count)
