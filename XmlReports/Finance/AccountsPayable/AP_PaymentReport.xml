@@ -3,9 +3,7 @@
 <reports>
 
   <report id="APPaymentReport">
-    <description>
-			Show all the documents that together made up a payment to a supplier.
-		</description>
+    <description>Show all the documents that together made up a payment to a supplier.</description>
     <reportparameters>
       <reportparameter name="param_ledger_number_i"/>
       <reportparameter name="param_payment_number_i"/>
@@ -59,7 +57,7 @@
               AND PUB_a_ap_document_payment.a_ap_document_id_i = PUB_a_ap_document.a_ap_document_id_i
               AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
               AND PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
-						 </value>
+          </value>
           </queryDetail>
           <queryDetail condition="eq({{param_filter_by_payment_num}}, 1)">
             <value>
@@ -171,8 +169,9 @@
               PUB_a_ap_document.a_ap_document_id_i AS ApDocumentId,
               PUB_a_ap_document.a_document_code_c AS DocCode,
               PUB_a_ap_document.a_reference_c AS DocRef,
+              PUB_a_ap_document.a_credit_note_flag_l AS DocCreditNote,
               PUB_a_ap_document.a_date_issued_d AS DocDate,
-              PUB_a_ap_document.a_total_amount_n AS DocTotal
+              PUB_a_ap_document_payment.a_amount_n AS DocumentPaymentTotal
               FROM
               PUB_a_ap_document, PUB_a_ap_document_payment
               WHERE
@@ -230,7 +229,7 @@
       <calculation id="DocTotal" returnsFormat="currency" returns="text">
         <query>
           <queryDetail>
-            <value variable="DocTotal"/>
+            <value variable="DocumentPaymentTotal"/>
           </queryDetail>
         </query>
       </calculation>
@@ -269,9 +268,14 @@
         </query>
       </calculation>
 
-      <calculation id="DetailAmount" returnsFormat="currency" returns="text">
+      <calculation id="DetailAmountPlusOrMinus" returnsFormat="currency" returns="text">
         <query>
-          <queryDetail>
+          <queryDetail condition="eq({{DocCreditNote}}, true)">
+            <value text="("/>
+            <value variable="DetailAmount"/>
+            <value text=")"/>
+          </queryDetail>
+          <queryDetail condition="eq({{DocCreditNote}}, false)">
             <value variable="DetailAmount"/>
           </queryDetail>
         </query>
@@ -297,6 +301,8 @@
           </field>
           <field whichfield="column 6" format="currency" pos="indented">
             <value function="getSumLowerReport({{lineId}}, 6)"/>
+            <value text=" "/>
+            <value variable="PaymentCurrency"/>
           </field>
         </footer>
       </level>
@@ -342,8 +348,8 @@
           <lowerLevelReport level="DetailLevel" calculation="SelectDetails"/>
         </detail>
         <footer space="below">
-          <field whichfield="column 5" format="currency" pos="indented">
-            <value variable="DocTotal"/>
+          <field whichfield="column 6" format="currency" pos="indented">
+            <value calculation="DocTotal"/>
           </field>
 
         </footer>
@@ -362,6 +368,9 @@
           </field>
           <field whichfield="column 4">
             <value variable="DocDate"/>
+          </field>
+          <field whichfield="column 5" format="text">
+            <value text=""/>
           </field>
         </detail>
       </level>
@@ -384,7 +393,7 @@
             <value text=""/>
           </field>
           <field whichfield="column 5" format="currency">
-            <value variable="DetailAmount"/>
+            <value calculation="DetailAmountPlusOrMinus"/>
           </field>
           <field whichfield="column 6" format="text">
             <value text=""/>
