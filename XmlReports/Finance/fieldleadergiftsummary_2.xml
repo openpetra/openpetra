@@ -1,571 +1,609 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE reports SYSTEM "../reports.dtd">
 <reports>
-	<report id="FieldLeaderGiftSummary-2">
-		<description>
-			This report shows the income posted to all your Local cost centres, in account order. 
-			Each recipient or Motivation Detail is listed separately.
-		</description>
-		<reportparameters>
-			<reportparameter name="param_ledger_number_i"/>
-			<reportparameter name="param_currency"/>
-			<reportparameter name="param_from_date"/>
-			<reportparameter name="param_to_date"/> 
-			<reportparameter name="param_gift_amount_column"/> 
-			<reportparameter name="param_credit_column"/>
-			<reportparameter name="param_debit_column"/>
-		</reportparameters>
+  <report id="FieldLeaderGiftSummary-2">
+    <description>This report shows the income posted to all your Local cost centres, in account order. 
+      Each recipient or Motivation Detail is listed separately.
+    </description>
+    <reportparameters>
+      <reportparameter name="param_ledger_number_i"/>
+      <reportparameter name="param_currency"/>
+      <reportparameter name="param_from_date"/>
+      <reportparameter name="param_to_date"/>
+      <reportparameter name="param_gift_amount_column"/>
+      <reportparameter name="param_credit_column"/>
+      <reportparameter name="param_debit_column"/>
+    </reportparameters>
 
-		<reportheader/>
-		<pageheader>
-			<field whichfield="title1">
-				<value text="Field Leader Gift Summary" />
-			</field>
+    <reportheader/>
+    <pageheader>
+      <field whichfield="title1">
+        <value text="Field Leader Gift Summary" />
+      </field>
 
-			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
-			<field whichfield="descr1">
-				<value text="Ledger "/>
-				<value variable="param_ledger_number_i"/>
-				<value text="   "/>
-				<value function="getLedgerName({{param_ledger_number_i}})"/>
-			</field>
-			<field whichfield="period1">
-				<fielddetail>
-					<value text="Date Range: "/>
-					<value variable="param_from_date" format="formatteddate"/>
-					<value text=" To: "/>
-					<value variable="param_to_date" format="formatteddate"/>
-				</fielddetail>
-			</field>
-			<field whichfield="period3">
-				<value text="Currency: "/>
-				<value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
-			</field>
-		</pageheader>
+      <field whichfield="title2">
+        <value function="getLedgerName({{param_ledger_number_i}})"/>
+      </field>
+      <field whichfield="descr1">
+        <value text="Ledger "/>
+        <value variable="param_ledger_number_i"/>
+        <value text="   "/>
+        <value function="getLedgerName({{param_ledger_number_i}})"/>
+      </field>
+      <field whichfield="period1">
+        <fielddetail>
+          <value text="Date Range: "/>
+          <value variable="param_from_date" format="formatteddate"/>
+          <value text=" To: "/>
+          <value variable="param_to_date" format="formatteddate"/>
+        </fielddetail>
+      </field>
+      <field whichfield="period3">
+        <value text="Currency: "/>
+        <value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
+      </field>
+    </pageheader>
 
-		<calculations>
-			<calculation id="SelectAccounts" returns="AccountCode, a_account_code_short_desc_c" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value>
-						SELECT DISTINCT
-							PUB_a_transaction.a_account_code_c AS AccountCode,
-							PUB_a_account.a_account_code_short_desc_c
-						FROM
-							PUB_a_transaction, PUB_a_general_ledger_master, PUB_a_account
-						WHERE
-								PUB_a_transaction.a_account_code_c = PUB_a_general_ledger_master.a_account_code_c
-							AND PUB_a_transaction.a_cost_centre_code_c = PUB_a_general_ledger_master.a_cost_centre_code_c
-							AND PUB_a_general_ledger_master.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_transaction.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_transaction.a_transaction_status_l = true
-							AND NOT (PUB_a_transaction.a_narrative_c Like "Year end re-allocation%")
-							AND PUB_a_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-							AND PUB_a_transaction.a_account_code_c &lt;= '4000'
-							AND PUB_a_account.a_account_code_c = PUB_a_transaction.a_account_code_c
-							AND PUB_a_account.a_ledger_number_i = {{param_ledger_number_i}}
+    <calculations>
+      <calculation id="SelectAccounts" returns="AccountCode, a_account_code_short_desc_c" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+            SELECT DISTINCT
+             PUB_a_transaction.a_account_code_c AS AccountCode,
+             PUB_a_account.a_account_code_short_desc_c
+            FROM
+             PUB_a_transaction, PUB_a_general_ledger_master, PUB_a_account
+            WHERE
+              PUB_a_transaction.a_account_code_c = PUB_a_general_ledger_master.a_account_code_c
+             AND PUB_a_transaction.a_cost_centre_code_c = PUB_a_general_ledger_master.a_cost_centre_code_c
+             AND PUB_a_general_ledger_master.a_ledger_number_i = {{param_ledger_number_i}}
+             AND PUB_a_transaction.a_ledger_number_i = {{param_ledger_number_i}}
+             AND PUB_a_transaction.a_transaction_status_l = true
+             AND NOT (PUB_a_transaction.a_narrative_c Like "Year end re-allocation%")
+             AND PUB_a_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+             AND PUB_a_transaction.a_account_code_c &lt;= '4000'
+             AND PUB_a_account.a_account_code_c = PUB_a_transaction.a_account_code_c
+             AND PUB_a_account.a_ledger_number_i = {{param_ledger_number_i}}
 
-						ORDER BY
-							AccountCode
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
+            ORDER BY
+             AccountCode
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="SelectCostCentres" returns="CostCentreCode, a_cost_centre_name_c" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value>
-						SELECT DISTINCT
-							PUB_a_cost_centre.a_cost_centre_code_c AS CostCentreCode,
-							PUB_a_cost_centre.a_cost_centre_name_c
-						FROM
-							PUB_a_general_ledger_master,
-							PUB_a_cost_centre,
-							PUB_a_account,
-							PUB_a_ledger
-						WHERE
-								PUB_a_general_ledger_master.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_general_ledger_master.a_account_code_c &lt;= "4000"
-							AND PUB_a_general_ledger_master.a_year_i = PUB_a_ledger.a_current_financial_year_i
-							AND PUB_a_ledger.a_ledger_number_i = {{param_ledger_number_i}}
+      <calculation id="SelectCostCentres" returns="CostCentreCode, a_cost_centre_name_c" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+            SELECT DISTINCT
+             PUB_a_cost_centre.a_cost_centre_code_c AS CostCentreCode,
+             PUB_a_cost_centre.a_cost_centre_name_c
+            FROM
+             PUB_a_general_ledger_master,
+             PUB_a_cost_centre,
+             PUB_a_account,
+             PUB_a_ledger
+            WHERE
+              PUB_a_general_ledger_master.a_ledger_number_i = {{param_ledger_number_i}}
+             AND PUB_a_general_ledger_master.a_account_code_c &lt;= "4000"
+             AND PUB_a_general_ledger_master.a_year_i = PUB_a_ledger.a_current_financial_year_i
+             AND PUB_a_ledger.a_ledger_number_i = {{param_ledger_number_i}}
 
-							AND PUB_a_account.a_account_code_c = {AccountCode}
-							AND PUB_a_general_ledger_master.a_account_code_c = {AccountCode}
-							AND PUB_a_account.a_posting_status_l = true
+             AND PUB_a_account.a_account_code_c = {AccountCode}
+             AND PUB_a_general_ledger_master.a_account_code_c = {AccountCode}
+             AND PUB_a_account.a_posting_status_l = true
 
-							AND PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_general_ledger_master.a_cost_centre_code_c
-							AND PUB_a_cost_centre.a_posting_cost_centre_flag_l = true
-							AND PUB_a_cost_centre.a_cost_centre_type_c &lt;&gt; "Foreign"
-							AND PUB_a_cost_centre.a_ledger_number_i = {{param_ledger_number_i}}
+             AND PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_general_ledger_master.a_cost_centre_code_c
+             AND PUB_a_cost_centre.a_posting_cost_centre_flag_l = true
+             AND PUB_a_cost_centre.a_cost_centre_type_c &lt;&gt; "Foreign"
+             AND PUB_a_cost_centre.a_ledger_number_i = {{param_ledger_number_i}}
 
-							ORDER BY PUB_a_cost_centre.a_cost_centre_code_c
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
+             ORDER BY PUB_a_cost_centre.a_cost_centre_code_c
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="SelectGifts" returns="GiftAmount, MotivationGroup, MotivationDetail, PartnerKey, PartnerName" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-							SELECT SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftAmount,
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-							SELECT SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftAmount,
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-								PUB_a_gift_detail.p_recipient_key_n AS PartnerKey,
-								PUB_p_partner.p_partner_short_name_c AS PartnerName,
-								PUB_a_motivation_detail.a_motivation_group_code_c AS MotivationGroup,
-								PUB_a_motivation_detail.a_motivation_detail_desc_c AS MotivationDetail,
-								PUB_a_motivation_detail.a_motivation_detail_code_c
-							FROM
-								PUB_a_gift_batch,
-								PUB_a_gift_detail,
-								PUB_a_motivation_detail,
-								PUB_p_partner
-						WHERE
-								PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_gl_effective_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+      <calculation id="SelectGifts" returns="GiftAmount, MotivationGroup, MotivationDetail, PartnerKey, PartnerName" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+             SELECT SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftAmount,
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+             SELECT SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftAmount,
+            </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+              PUB_a_gift_detail.p_recipient_key_n AS PartnerKey,
+              PUB_p_partner.p_partner_short_name_c AS PartnerName,
+              PUB_a_motivation_detail.a_motivation_group_code_c AS MotivationGroup,
+              PUB_a_motivation_detail.a_motivation_detail_desc_c AS MotivationDetail,
+              PUB_a_motivation_detail.a_motivation_detail_code_c
+             FROM
+              PUB_a_gift_batch,
+              PUB_a_gift_detail,
+              PUB_a_motivation_detail,
+              PUB_p_partner
+            WHERE
+              PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+             AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+             AND PUB_a_gift_batch.a_gl_effective_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
 
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift_batch.a_batch_number_i
+             AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+             AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift_batch.a_batch_number_i
 
-							AND PUB_a_gift_detail.a_cost_centre_code_c = {CostCentreCode}
+             AND PUB_a_gift_detail.a_cost_centre_code_c = {CostCentreCode}
 
-							AND PUB_a_motivation_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_motivation_detail.a_motivation_group_code_c = PUB_a_gift_detail.a_motivation_group_code_c
-							AND PUB_a_motivation_detail.a_motivation_detail_code_c = PUB_a_gift_detail.a_motivation_detail_code_c
+             AND PUB_a_motivation_detail.a_ledger_number_i = {{param_ledger_number_i}}
+             AND PUB_a_motivation_detail.a_motivation_group_code_c = PUB_a_gift_detail.a_motivation_group_code_c
+             AND PUB_a_motivation_detail.a_motivation_detail_code_c = PUB_a_gift_detail.a_motivation_detail_code_c
 
-							AND PUB_a_motivation_detail.a_account_code_c = {AccountCode}
+             AND PUB_a_motivation_detail.a_account_code_c = {AccountCode}
 
-							AND PUB_p_partner.p_partner_key_n = PUB_a_gift_detail.p_recipient_key_n
+             AND PUB_p_partner.p_partner_key_n = PUB_a_gift_detail.p_recipient_key_n
 
-							GROUP BY
-								PUB_a_gift_detail.p_recipient_key_n,
-								PUB_p_partner.p_partner_short_name_c,
-								PUB_a_motivation_detail.a_motivation_group_code_c,
-								PUB_a_motivation_detail.a_motivation_detail_desc_c,
-								PUB_a_motivation_detail.a_motivation_detail_code_c
-							ORDER BY
-								PUB_a_gift_detail.p_recipient_key_n,
-								PUB_a_motivation_detail.a_motivation_group_code_c,
-								PUB_a_motivation_detail.a_motivation_detail_code_c
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
+             GROUP BY
+              PUB_a_gift_detail.p_recipient_key_n,
+              PUB_p_partner.p_partner_short_name_c,
+              PUB_a_motivation_detail.a_motivation_group_code_c,
+              PUB_a_motivation_detail.a_motivation_detail_desc_c,
+              PUB_a_motivation_detail.a_motivation_detail_code_c
+             ORDER BY
+              PUB_a_gift_detail.p_recipient_key_n,
+              PUB_a_motivation_detail.a_motivation_group_code_c,
+              PUB_a_motivation_detail.a_motivation_detail_code_c
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="SelectCurrentTransactionGifts" returns="GiftAmount, PartnerName, TransactionDate, a_debit_credit_indicator_l" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-							SELECT SUM (PUB_a_transaction.a_amount_in_base_currency_n) AS GiftAmount,
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-							SELECT SUM (PUB_a_transaction.a_transaction_amount_n) AS GiftAmount,
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-								PUB_a_transaction.a_narrative_c AS PartnerName,
-								PUB_a_transaction.a_transaction_date_d AS TransactionDate,
-								PUB_a_transaction.a_debit_credit_indicator_l
-							FROM
-								PUB_a_transaction
-							WHERE
-								PUB_a_transaction.a_account_code_c = {AccountCode}
-								AND PUB_a_transaction.a_cost_centre_code_c = {CostCentreCode}
-								AND PUB_a_transaction.a_ledger_number_i = {{param_ledger_number_i}}
-								AND PUB_a_transaction.a_transaction_status_l = true
-								AND (PUB_a_transaction.a_system_generated_l = false
-									OR ( PUB_a_transaction.a_system_generated_l = true
-										AND NOT (PUB_a_transaction.a_narrative_c LIKE "Gifts received - Gift Batch%"
-												OR PUB_a_transaction.a_narrative_c LIKE "GB - Gift Batch%"
-												OR PUB_a_transaction.a_narrative_c LIKE "Year end re-allocation%" ) ) )
-								AND PUB_a_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-							GROUP BY	
-								PUB_a_transaction.a_narrative_c,
-								PUB_a_transaction.a_transaction_date_d,
-								PUB_a_transaction.a_debit_credit_indicator_l
-							ORDER BY
-								PUB_a_transaction.a_transaction_date_d
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="SelectCurrentTransactionGifts" returns="GiftAmount, PartnerName, TransactionDate, a_debit_credit_indicator_l" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+              SELECT SUM (PUB_a_transaction.a_amount_in_base_currency_n) AS GiftAmount,
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+              SELECT SUM (PUB_a_transaction.a_transaction_amount_n) AS GiftAmount,
+            </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+              PUB_a_transaction.a_narrative_c AS PartnerName,
+              PUB_a_transaction.a_transaction_date_d AS TransactionDate,
+              PUB_a_transaction.a_debit_credit_indicator_l
+             FROM
+              PUB_a_transaction
+             WHERE
+              PUB_a_transaction.a_account_code_c = {AccountCode}
+              AND PUB_a_transaction.a_cost_centre_code_c = {CostCentreCode}
+              AND PUB_a_transaction.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_transaction.a_transaction_status_l = true
+              AND (PUB_a_transaction.a_system_generated_l = false
+               OR ( PUB_a_transaction.a_system_generated_l = true
+                AND NOT (PUB_a_transaction.a_narrative_c LIKE "Gifts received - Gift Batch%"
+                  OR PUB_a_transaction.a_narrative_c LIKE "GB - Gift Batch%"
+                  OR PUB_a_transaction.a_narrative_c LIKE "Year end re-allocation%" ) ) )
+              AND PUB_a_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+             GROUP BY 
+              PUB_a_transaction.a_narrative_c,
+              PUB_a_transaction.a_transaction_date_d,
+              PUB_a_transaction.a_debit_credit_indicator_l
+             ORDER BY
+              PUB_a_transaction.a_transaction_date_d
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="CountCurrentGiftsAccount" returns="CurrentCountAccount" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value>
-						SELECT COUNT (PUB_a_transaction.a_amount_in_base_currency_n) AS CurrentCountAccount
-							FROM
-								PUB_a_transaction
-						WHERE
-								PUB_a_transaction.a_account_code_c = {AccountCode}
-							AND PUB_a_transaction.a_ledger_number_i ={{param_ledger_number_i}}
-							AND PUB_a_transaction.a_transaction_status_l = true
-							AND PUB_a_transaction.a_narrative_c NOT LIKE "Year end re-allocation%"
-							AND PUB_a_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="CountCurrentGiftsAccount" returns="CurrentCountAccount" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT COUNT (PUB_a_transaction.a_amount_in_base_currency_n) AS CurrentCountAccount
+               FROM
+                PUB_a_transaction
+              WHERE
+                PUB_a_transaction.a_account_code_c = {AccountCode}
+               AND PUB_a_transaction.a_ledger_number_i ={{param_ledger_number_i}}
+               AND PUB_a_transaction.a_transaction_status_l = true
+               AND PUB_a_transaction.a_narrative_c NOT LIKE "Year end re-allocation%"
+               AND PUB_a_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="CountCurrentGifts" returns="CurrentCount" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value>
-						SELECT COUNT (PUB_a_transaction.a_transaction_status_l) AS CurrentCount
-							FROM
-								PUB_a_transaction
-						WHERE
-								PUB_a_transaction.a_account_code_c = {AccountCode}
-							AND PUB_a_transaction.a_cost_centre_code_c = {CostCentreCode}
-							AND PUB_a_transaction.a_ledger_number_i ={{param_ledger_number_i}}
-							AND PUB_a_transaction.a_transaction_status_l = true
-							AND PUB_a_transaction.a_narrative_c NOT LIKE "Year end re-allocation%"
-							AND PUB_a_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="CountCurrentGifts" returns="CurrentCount" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+              SELECT COUNT (PUB_a_transaction.a_transaction_status_l) AS CurrentCount
+               FROM
+                PUB_a_transaction
+              WHERE
+                PUB_a_transaction.a_account_code_c = {AccountCode}
+               AND PUB_a_transaction.a_cost_centre_code_c = {CostCentreCode}
+               AND PUB_a_transaction.a_ledger_number_i ={{param_ledger_number_i}}
+               AND PUB_a_transaction.a_transaction_status_l = true
+               AND PUB_a_transaction.a_narrative_c NOT LIKE "Year end re-allocation%"
+               AND PUB_a_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="CleanUp" returns="automatic" returnsFormat="internal">
-				<query>
-					<queryDetail>
-						<value text="NO-SQL"/>
-						<value function="assign(Detail, concatenate({CostCentreCode}, -))"/>
-						<value function="assign(Detail, concatenate({Detail}, {AccountCode}))"/>
-						<value function="conditionrow(1)"/>
-					</queryDetail>
-					<queryDetail condition="ge({GiftAmount}, 0)">
-						<value function="assign(Credits, {GiftAmount})"/>
-						<value function="assign(Debits, 0)"/>
-						<value function="assign(SumCreditAccount, add({SumCreditAccount}, {GiftAmount}))"/>
-					</queryDetail>
-					<queryDetail condition="lt({GiftAmount}, 0)">
-						<value function="assign(Debits, {GiftAmount})"/>
-						<value function="assign(Credits, 0)"/>
-						<value function="assign(SumDebitAccount, add({SumDebitAccount}, {GiftAmount}))"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="CleanUp" returns="automatic" returnsFormat="internal">
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value function="assign(Detail, concatenate({CostCentreCode}, -))"/>
+            <value function="assign(Detail, concatenate({Detail}, {AccountCode}))"/>
+            <value function="conditionrow(1)"/>
+          </queryDetail>
+          <queryDetail condition="ge({GiftAmount}, 0)">
+            <value function="assign(Credits, {GiftAmount})"/>
+            <value function="assign(Debits, 0)"/>
+            <value function="assign(SumCreditAccount, add({SumCreditAccount}, {GiftAmount}))"/>
+          </queryDetail>
+          <queryDetail condition="lt({GiftAmount}, 0)">
+            <value function="assign(Debits, {GiftAmount})"/>
+            <value function="assign(Credits, 0)"/>
+            <value function="assign(SumDebitAccount, add({SumDebitAccount}, {GiftAmount}))"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="CleanUp2" returns="automatic" returnsFormat="internal">
-				<query>
-					<queryDetail>
-						<value text="NO-SQL"/>
-						<value function="assign(MotivationGroup, )"/>
-						<value function="assign(MotivationDetail, )"/>
-						<value function="assign(PartnerKey, 0)"/>
-						<value function="assign(Detail, {TransactionDate})"/>
-						<value function="conditionrow(1)"/>
-					</queryDetail>
-					<queryDetail condition="eq({a_debit_credit_indicator_l}, false)">
-						<value function="assign(Credits, {GiftAmount})"/>
-						<value function="assign(Debits, 0)"/>
-						<value function="assign(SumCreditAccount, add({SumCreditAccount}, {GiftAmount}))"/>
-					</queryDetail>
-					<queryDetail condition="eq({a_debit_credit_indicator_l}, true)">
-						<value function="assign(Debits, mul({GiftAmount}, -1))"/>
-						<value function="assign(Credits, 0)"/>
-						<value function="assign(SumDebitAccount, add({SumDebitAccount}, {Debits}))"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="CleanUp2" returns="automatic" returnsFormat="internal">
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value function="assign(MotivationGroup, )"/>
+            <value function="assign(MotivationDetail, )"/>
+            <value function="assign(PartnerKey, 0)"/>
+            <value function="assign(Detail, {TransactionDate})"/>
+            <value function="conditionrow(1)"/>
+          </queryDetail>
+          <queryDetail condition="eq({a_debit_credit_indicator_l}, false)">
+            <value function="assign(Credits, {GiftAmount})"/>
+            <value function="assign(Debits, 0)"/>
+            <value function="assign(SumCreditAccount, add({SumCreditAccount}, {GiftAmount}))"/>
+          </queryDetail>
+          <queryDetail condition="eq({a_debit_credit_indicator_l}, true)">
+            <value function="assign(Debits, mul({GiftAmount}, -1))"/>
+            <value function="assign(Credits, 0)"/>
+            <value function="assign(SumDebitAccount, add({SumDebitAccount}, {Debits}))"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="CountTransactions" returns="TransactionCount" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value text="NO-SQL"/>
-						<value calculation="CountCurrentGifts"/>
-						<value function="assign(TransactionCount, CurrentCount)"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="CountTransactions" returns="TransactionCount" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value calculation="CountCurrentGifts"/>
+            <value function="assign(TransactionCount, CurrentCount)"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="CountAccountTransactions" returns="TransactionCountAccount" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value text="NO-SQL"/>
-						<value calculation="CountCurrentGiftsAccount"/>
-						<value function="assign(TransactionCountAccount, CurrentCountAccount)"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="CountAccountTransactions" returns="TransactionCountAccount" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value calculation="CountCurrentGiftsAccount"/>
+            <value function="assign(TransactionCountAccount, CurrentCountAccount)"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="ClearAccountTotals" returns="text" returnsFormat="internal">
-				<query>
-					<queryDetail>
-						<value text="NO-SQL"/>
-						<value function="assign(SumDebitAccount, 0)"/>
-						<value function="assign(SumCreditAccount, 0)"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="ClearAccountTotals" returns="text" returnsFormat="internal">
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value function="assign(SumDebitAccount, 0)"/>
+            <value function="assign(SumCreditAccount, 0)"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="ShowRow" returns="text" returnsFormat="internal">
-				<query>
-					<queryDetail>
-						<value text="NO-SQL"/>
-						<value function="conditionrow(1)"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="ShowRow" returns="text" returnsFormat="internal">
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value function="conditionrow(1)"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="HideRow" returns="text" returnsFormat="internal">
-				<query>
-					<queryDetail>
-						<value text="NO-SQL"/>
-						<value function="conditionrow(0)"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="HideRow" returns="text" returnsFormat="internal">
+        <query>
+          <queryDetail>
+            <value text="NO-SQL"/>
+            <value function="conditionrow(0)"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="Partner Key" returnsFormat="partnerkey" returns="text">
-				<caption><value text="Partner Key"/></caption>
-				<query>
-					<queryDetail><value variable="PartnerKey"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Partner Key" returnsFormat="partnerkey" returns="text">
+        <caption>
+          <value text="Partner Key"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="PartnerKey"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="Partner Name" returnsFormat="text" returns="text">
-				<caption><value text="Partner Name"/></caption>
-				<query>
-					<queryDetail><value variable="PartnerName"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Partner Name" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Partner Name"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="PartnerName"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="Partner Class" returnsFormat="text" returns="text">
-				<caption><value text="Partner Class"/></caption>
-				<query>
-					<queryDetail><value variable="PartnerClass"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Partner Class" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Partner Class"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="PartnerClass"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="Field" returnsFormat="partnerkey" returns="text">
-				<caption><value text="Field"/></caption>
-				<query>
-					<queryDetail><value variable="FieldKey"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Field" returnsFormat="partnerkey" returns="text">
+        <caption>
+          <value text="Field"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="FieldKey"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="Field Name" returnsFormat="text" returns="text">
-				<caption><value text="Field Name"/></caption>
-				<query>
-					<queryDetail><value variable="FieldName"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Field Name" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Field Name"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="FieldName"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="Gift Amount" returnsFormat="currency" returns="amount">
-				<caption><value text="GiftAmount"/></caption>
-				<query>
-					<queryDetail><value variable="GiftAmount"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Gift Amount" returnsFormat="currency" returns="amount">
+        <caption>
+          <value text="GiftAmount"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="GiftAmount"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="Debits" returnsFormat="currency" returns="amount">
-				<caption><value text="Debits"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="Debits"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Debits" returnsFormat="currency" returns="amount">
+        <caption>
+          <value text="Debits"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="Debits"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="Credits" returnsFormat="currency" returns="amount">
-				<caption><value text="Credits"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="Credits"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Credits" returnsFormat="currency" returns="amount">
+        <caption>
+          <value text="Credits"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="Credits"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="Motivation Detail" returnsFormat="text" returns="text">
-				<caption><value text="Motivation Detail"/></caption>
-				<query>
-					<queryDetail><value variable="MotivationDetail"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Motivation Detail" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Motivation Detail"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="MotivationDetail"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="Motivation Group" returnsFormat="text" returns="text">
-				<caption><value text="Motivation Group"/></caption>
-				<query>
-					<queryDetail><value variable="MotivationGroup"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Motivation Group" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Motivation Group"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="MotivationGroup"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="Cost Centre Code" returnsFormat="text" returns="text">
-				<caption><value text="Cost Centre Code"/></caption>
-				<query>
-					<queryDetail><value variable="CostCentreCode"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Cost Centre Code" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Cost Centre Code"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="CostCentreCode"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="Account Code" returnsFormat="text" returns="text">
-				<caption><value text="Account Code"/></caption>
-				<query>
-					<queryDetail><value variable="AccountCode"/>
-					</queryDetail>
-				</query>
-			</calculation>
+      <calculation id="Account Code" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Account Code"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="AccountCode"/>
+          </queryDetail>
+        </query>
+      </calculation>
 
-			<calculation id="Detail" returnsFormat="text" returns="text">
-				<caption><value text="Detail"/></caption>
-				<query>
-					<queryDetail><value variable="Detail"/>
-					</queryDetail>
-				</query>
-			</calculation>
-		</calculations>
+      <calculation id="Detail" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Detail"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="Detail"/>
+          </queryDetail>
+        </query>
+      </calculation>
+    </calculations>
 
-		<levels>
-			<level name="main">
-				<detail>
-					<lowerLevelReport level="AccountLevel0" calculation="SelectAccounts"></lowerLevelReport>
-				</detail>
-			</level>
+    <levels>
+      <level name="main">
+        <detail>
+          <lowerLevelReport level="AccountLevel0" calculation="SelectAccounts"></lowerLevelReport>
+        </detail>
+      </level>
 
-			<!-- Hide the results where there is no entry that matches this:
-			WHERE a_transaction.a_account_code_c = a_general_ledger_master.a_account_code_c
+      <!-- Hide the results where there is no entry that matches this:
+   WHERE a_transaction.a_account_code_c = a_general_ledger_master.a_account_code_c
             AND a_transaction.a_cost_centre_code_c = a_general_ledger_master.a_cost_centre_code_c
             AND a_transaction.a_ledger_number_i = lv_ledger_number_i 
             AND a_transaction.a_transaction_status_l = true
             AND NOT (a_transaction.a_narrative_c BEGINS "Year end re-allocation")
             AND a_transaction.a_transaction_date_d BETWEEN param_from_date AND param_to_date
 
-			That's the reason why we have AccountLevel0, AccountLevel1, AccountLevel2 and
-			CostCentreLevel0, CostCentreLevel1, CostCentreLevel2
-			-->
+   That's the reason why we have AccountLevel0, AccountLevel1, AccountLevel2 and
+   CostCentreLevel0, CostCentreLevel1, CostCentreLevel2
+   -->
 
-			<level name="AccountLevel0">
-				<detail>
-					<lowerLevelReport level="AccountLevel1" calculation="CountAccountTransactions"></lowerLevelReport>
-					<lowerLevelReport level="AccountLevel1"></lowerLevelReport>
-				</detail>
-			</level>
+      <level name="AccountLevel0">
+        <detail>
+          <lowerLevelReport level="AccountLevel1" calculation="CountAccountTransactions"></lowerLevelReport>
+          <lowerLevelReport level="AccountLevel1"></lowerLevelReport>
+        </detail>
+      </level>
 
-			<level name="AccountLevel1">
-				<detail>
-					<switch>
-						<case condition="gt({TransactionCountAccount}, 0)">
-							<lowerLevelReport level="AccountLevel2"></lowerLevelReport>
-						</case>
-					</switch>
-				</detail>
-				<footer>
-					<field whichfield="column 0" calculation="ClearAccountTotals"/>
-				</footer>
-			</level>
+      <level name="AccountLevel1">
+        <detail>
+          <switch>
+            <case condition="gt({TransactionCountAccount}, 0)">
+              <lowerLevelReport level="AccountLevel2"></lowerLevelReport>
+            </case>
+          </switch>
+        </detail>
+        <footer>
+          <field whichfield="column 0" calculation="ClearAccountTotals"/>
+        </footer>
+      </level>
 
-			<level name="AccountLevel2">
-				<detail>
-					<lowerLevelReport level="CostCentreLevel0" calculation="SelectCostCentres"></lowerLevelReport>
-				</detail>
-				<footer>
-					<switch>
-						<case condition="not(and(eq({{SumDebitAccount}}, 0), eq({{SumCreditAccount}}, 0)))">
-							<field whichfield="column 0" pos="0cm" width="5cm" calculation="ShowRow">
-								<value text="Account Total:"/>
-							</field>
-							<field whichfield="column {param_debit_column}" line="above">
-								<value variable="SumDebitAccount" format="currency"/>
-							</field>
-							<field whichfield="column {param_credit_column}" line="above">
-								<value variable="SumCreditAccount" format="currency"/>
-							</field>
-						</case>
-					</switch>
-				</footer>
-			</level>
+      <level name="AccountLevel2">
+        <detail>
+          <lowerLevelReport level="CostCentreLevel0" calculation="SelectCostCentres"></lowerLevelReport>
+        </detail>
+        <footer>
+          <switch>
+            <case condition="not(and(eq({{SumDebitAccount}}, 0), eq({{SumCreditAccount}}, 0)))">
+              <field whichfield="column 0" pos="0cm" width="5cm" calculation="ShowRow">
+                <value text="Account Total:"/>
+              </field>
+              <field whichfield="column {param_debit_column}" line="above">
+                <value variable="SumDebitAccount" format="currency"/>
+              </field>
+              <field whichfield="column {param_credit_column}" line="above">
+                <value variable="SumCreditAccount" format="currency"/>
+              </field>
+            </case>
+          </switch>
+        </footer>
+      </level>
 
-			<level name="CostCentreLevel0">
-				<detail>
-					<lowerLevelReport level="CostCentreLevel1" calculation="CountTransactions"></lowerLevelReport>
-					<lowerLevelReport level="CostCentreLevel1"></lowerLevelReport>
-				</detail>
-			</level>
+      <level name="CostCentreLevel0">
+        <detail>
+          <lowerLevelReport level="CostCentreLevel1" calculation="CountTransactions"></lowerLevelReport>
+          <lowerLevelReport level="CostCentreLevel1"></lowerLevelReport>
+        </detail>
+      </level>
 
-			<level name="CostCentreLevel1">
-				<detail>
-					<switch>
-						<case condition="gt({TransactionCount}, 0)">
-							<lowerLevelReport level="CostCentreLevel2"></lowerLevelReport>
-						</case>
-						<case condition="eq({{TransactionCount}}, 0)">
-							<lowerLevelReport level="DummyLevel" calculation="HideRow"></lowerLevelReport>
-						</case>
-					</switch>
-				</detail>
-			</level>
+      <level name="CostCentreLevel1">
+        <detail>
+          <switch>
+            <case condition="gt({TransactionCount}, 0)">
+              <lowerLevelReport level="CostCentreLevel2"></lowerLevelReport>
+            </case>
+            <case condition="eq({{TransactionCount}}, 0)">
+              <lowerLevelReport level="DummyLevel" calculation="HideRow"></lowerLevelReport>
+            </case>
+          </switch>
+        </detail>
+      </level>
 
-			<level name="CostCentreLevel2">
-				<header>
-					<field whichfield="header 0" pos="0cm" width="4cm">
-						<value variable="CostCentreCode"/>
-						<value text="-"/>
-						<value variable="AccountCode"/>
-					</field>
-					<field whichfield="header 1" pos="5cm" width="9cm">
-						<value variable="a_account_code_short_desc_c"/>
-						<value text=": "/>
-						<value variable="a_cost_centre_name_c"/>
-					</field>
-				</header>
-				<detail>
-					<lowerLevelReport level="GiftLevel1" calculation="SelectGifts"></lowerLevelReport>
-					<lowerLevelReport level="GiftLevel2" calculation="SelectCurrentTransactionGifts"></lowerLevelReport>
-				</detail>
-				<footer>
-					<field whichfield="left 0" pos="0cm" width="0.5cm">
-					</field>
-					<field whichfield="column {param_debit_column}" line="above">
-						<value function="getSumLowerReport({{lineId}}, {{param_debit_column}})"/>
-					</field>
-					<field whichfield="column {param_credit_column}" line="above">
-						<value function="getSumLowerReport({{lineId}}, {{param_credit_column}})"/>
-					</field>
-				</footer>
-			</level>
+      <level name="CostCentreLevel2">
+        <header>
+          <field whichfield="header 0" pos="0cm" width="4cm">
+            <value variable="CostCentreCode"/>
+            <value text="-"/>
+            <value variable="AccountCode"/>
+          </field>
+          <field whichfield="header 1" pos="5cm" width="9cm">
+            <value variable="a_account_code_short_desc_c"/>
+            <value text=": "/>
+            <value variable="a_cost_centre_name_c"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="GiftLevel1" calculation="SelectGifts"></lowerLevelReport>
+          <lowerLevelReport level="GiftLevel2" calculation="SelectCurrentTransactionGifts"></lowerLevelReport>
+        </detail>
+        <footer>
+          <field whichfield="left 0" pos="0cm" width="0.5cm">
+          </field>
+          <field whichfield="column {param_debit_column}" line="above">
+            <value function="getSumLowerReport({{lineId}}, {{param_debit_column}})"/>
+          </field>
+          <field whichfield="column {param_credit_column}" line="above">
+            <value function="getSumLowerReport({{lineId}}, {{param_credit_column}})"/>
+          </field>
+        </footer>
+      </level>
 
-			<level name="GiftLevel1">
-				<detail>
-					<field whichfield="columns" calculation="CleanUp"/>
-				</detail>
-			</level>
+      <level name="GiftLevel1">
+        <detail>
+          <field whichfield="columns" calculation="CleanUp"/>
+        </detail>
+      </level>
 
-			<level name="GiftLevel2">
-				<detail>
-					<field whichfield="columns" calculation="CleanUp2"/>
-				</detail>
-			</level>
+      <level name="GiftLevel2">
+        <detail>
+          <field whichfield="columns" calculation="CleanUp2"/>
+        </detail>
+      </level>
 
-			<level name="DummyLevel">
-				<detail>
-				</detail>
-			</level>
-		</levels>
+      <level name="DummyLevel">
+        <detail>
+        </detail>
+      </level>
+    </levels>
 
-	</report>
+  </report>
 
 </reports>
