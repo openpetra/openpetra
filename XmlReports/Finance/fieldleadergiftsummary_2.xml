@@ -285,16 +285,6 @@
         </query>
       </calculation>
 
-      <calculation id="CountTransactions" returns="TransactionCount" returnsFormat="row">
-        <query>
-          <queryDetail>
-            <value text="NO-SQL"/>
-            <value calculation="CountCurrentGifts"/>
-            <value function="assign(TransactionCount, CurrentCount)"/>
-          </queryDetail>
-        </query>
-      </calculation>
-
       <calculation id="CountAccountTransactions" returns="TransactionCountAccount" returnsFormat="row">
         <query>
           <queryDetail>
@@ -499,7 +489,6 @@
       <level name="AccountLevel0">
         <detail>
           <lowerLevelReport level="AccountLevel1" calculation="CountAccountTransactions"></lowerLevelReport>
-          <lowerLevelReport level="AccountLevel1"></lowerLevelReport>
         </detail>
       </level>
 
@@ -512,7 +501,8 @@
           </switch>
         </detail>
         <footer>
-          <field whichfield="column 0" calculation="ClearAccountTotals"/>
+          <field whichfield="column 0" calculation="ClearAccountTotals">
+          </field>
         </footer>
       </level>
 
@@ -539,19 +529,18 @@
 
       <level name="CostCentreLevel0">
         <detail>
-          <lowerLevelReport level="CostCentreLevel1" calculation="CountTransactions"></lowerLevelReport>
-          <lowerLevelReport level="CostCentreLevel1"></lowerLevelReport>
+          <lowerLevelReport level="CostCentreLevel1" calculation="CountCurrentGifts"></lowerLevelReport>
         </detail>
       </level>
 
       <level name="CostCentreLevel1">
         <detail>
           <switch>
-            <case condition="gt({TransactionCount}, 0)">
-              <lowerLevelReport level="CostCentreLevel2"></lowerLevelReport>
-            </case>
-            <case condition="eq({{TransactionCount}}, 0)">
+            <case condition="eq({CurrentCount}, 0)">
               <lowerLevelReport level="DummyLevel" calculation="HideRow"></lowerLevelReport>
+            </case>
+            <case condition="gt({CurrentCount}, 0)">
+              <lowerLevelReport level="CostCentreLevel2"></lowerLevelReport>
             </case>
           </switch>
         </detail>
