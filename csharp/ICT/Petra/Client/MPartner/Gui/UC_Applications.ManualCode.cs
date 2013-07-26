@@ -256,9 +256,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     Environment.NewLine,
                     ucoApplicationField.FieldLabelText,
                     ucoApplicationField.FieldValueCode,
-                    ucoApplicationField.FieldValueLabel);            
+                    ucoApplicationField.FieldValueLabel);
             }
-            
+
             return true;
         }
 

@@ -120,7 +120,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return cmbPSubscriptionPublicationCode.GetSelectedString();
             }
         }
-        
+
         /// <summary>todoComment</summary>
         public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
 

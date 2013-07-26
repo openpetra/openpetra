@@ -118,7 +118,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 txtLocation.Text,
                 lblRole.Text,
                 txtRole.Text);
-            return true;            
+            return true;
         }
 
         /// <summary>

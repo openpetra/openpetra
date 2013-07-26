@@ -127,16 +127,17 @@ namespace Ict.Petra.Client.MPartner
                     }
                 }
 
-                
                 // fill extra fields in PartnerRelationship table for description and reciprocal description
                 // so the expression can later on decide which value to use in each case
                 relationTable = (PRelationTable)TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.RelationList);
                 PRelationRow relationRow;
                 PartnerEditTDSPPartnerRelationshipRow relationshipRow;
+
                 foreach (DataRow row in FMainDS.PPartnerRelationship.Rows)
                 {
                     relationshipRow = (PartnerEditTDSPPartnerRelationshipRow)row;
                     relationRow = (PRelationRow)relationTable.Rows.Find(relationshipRow.RelationName);
+
                     if (relationRow != null)
                     {
                         relationshipRow.RelationDescription = relationRow.RelationDescription;
@@ -158,11 +159,11 @@ namespace Ict.Petra.Client.MPartner
                 FMainDS.PPartnerRelationship.Columns.Add(ForeignTableColumn);
 
                 // make sure that description column takes the correct description (normal or reciprocal)
-                FMainDS.PPartnerRelationship.ColumnDisplayRelationDescription.Expression = 
+                FMainDS.PPartnerRelationship.ColumnDisplayRelationDescription.Expression =
                     "IIF(" + PPartnerRelationshipTable.GetPartnerKeyDBName() + "=" +
                     ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey.ToString() +
                     "," + FMainDS.PPartnerRelationship.ColumnRelationDescription +
-                     "," + FMainDS.PPartnerRelationship.ColumnReciprocalRelationDescription + ")";
+                    "," + FMainDS.PPartnerRelationship.ColumnReciprocalRelationDescription + ")";
 
                 if (FMainDS.PPartnerRelationship.Rows.Count != 0)
                 {
@@ -195,6 +196,7 @@ namespace Ict.Petra.Client.MPartner
             if (ARow != null)
             {
                 relationRow = (PRelationRow)relationTable.Rows.Find(ANewRelationName);
+
                 if (relationRow != null)
                 {
                     ARow.RelationDescription = relationRow.RelationDescription;
@@ -206,7 +208,6 @@ namespace Ict.Petra.Client.MPartner
                     ARow.ReciprocalRelationDescription = "";
                 }
             }
-            
         }
     }
 }

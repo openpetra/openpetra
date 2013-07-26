@@ -118,7 +118,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ADeletionQuestion += String.Format("{0}{0}({1} {2})",
                 Environment.NewLine,
                 lblAccountName.Text,
-                txtAccountName.Text);            
+                txtAccountName.Text);
             return true;
         }
 
@@ -145,7 +145,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // disable buttons if no record in grid (first row for headings)
                 btnSetMainAccount.Enabled = false;
             }
-            
+
             if (ADeletionPerformed)
             {
                 DoRecalculateScreenParts();

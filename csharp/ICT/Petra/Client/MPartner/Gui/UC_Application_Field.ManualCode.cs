@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS = value;
             }
         }
-        
+
         /// return label text for "Field" field
         public String FieldLabelText
         {
@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return ucoField.FieldLabelText;
             }
         }
-    
+
         /// return code value for "Field"
         public String FieldValueCode
         {
@@ -89,7 +89,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return ucoField.FieldValueCode;
             }
         }
-    
+
         /// return label value for "Field"
         public String FieldValueLabel
         {

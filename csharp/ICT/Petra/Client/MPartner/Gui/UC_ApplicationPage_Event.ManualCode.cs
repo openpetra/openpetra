@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return lblEvent.Text;
             }
         }
-    
+
         /// return code value for "Event"
         public String EventValueCode
         {
@@ -76,7 +76,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return txtEvent.Text;
             }
         }
-    
+
         /// return label value for "Event"
         public String EventValueLabel
         {
@@ -86,7 +86,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
         #endregion
-        
+
         /// <summary>
         /// todoComment
         /// </summary>

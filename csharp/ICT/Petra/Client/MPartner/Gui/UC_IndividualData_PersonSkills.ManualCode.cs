@@ -125,7 +125,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 cmbSkillCode.GetSelectedString(),
                 lblDescriptEnglish.Text,
                 txtDescriptEnglish.Text);
-            return true;            
+            return true;
         }
 
         /// <summary>

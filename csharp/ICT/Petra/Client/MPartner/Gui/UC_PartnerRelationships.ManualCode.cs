@@ -265,11 +265,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             // update grid column for relation description
             if (FLogic != null)
             {
-                FLogic.UpdateRelationDescription(GetSelectedDetailRow(), 
-                                                 cmbPPartnerRelationshipRelationName.GetSelectedString());
+                FLogic.UpdateRelationDescription(GetSelectedDetailRow(),
+                    cmbPPartnerRelationshipRelationName.GetSelectedString());
             }
         }
-        
+
         /// <summary>
         /// adding a new partner relationship record
         /// </summary>
@@ -316,7 +316,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ADeletionQuestion += String.Format("{0}{0}({1} {2})",
                 Environment.NewLine,
                 lblPPartnerRelationshipRelationName.Text,
-                cmbPPartnerRelationshipRelationName.GetSelectedString());            
+                cmbPPartnerRelationshipRelationName.GetSelectedString());
             return true;
         }
 

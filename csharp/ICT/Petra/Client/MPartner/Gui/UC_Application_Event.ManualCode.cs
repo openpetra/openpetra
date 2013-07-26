@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return ucoEvent.EventLabelText;
             }
         }
-    
+
         /// return code value for "Event"
         public String EventValueCode
         {
@@ -89,7 +89,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return ucoEvent.EventValueCode;
             }
         }
-    
+
         /// return label value for "Event"
         public String EventValueLabel
         {
@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return ucoEvent.EventValueLabel;
             }
         }
-        
+
         #endregion
 
         #region Public Methods

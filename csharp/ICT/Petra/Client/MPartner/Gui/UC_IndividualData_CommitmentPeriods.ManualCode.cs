@@ -125,7 +125,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 txtReceivingField.Text,
                 txtReceivingField.LabelText,
                 lblStartDate.Text,
-                dtpStartDate.Date.Value.ToString("dd-MMM-yyyy").ToUpper());            
+                dtpStartDate.Date.Value.ToString("dd-MMM-yyyy").ToUpper());
             return true;
         }
 

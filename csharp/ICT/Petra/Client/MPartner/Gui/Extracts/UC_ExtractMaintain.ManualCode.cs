@@ -565,7 +565,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             ADeletionQuestion += String.Format("{0}{0}({1} {2})",
                 Environment.NewLine,
                 ARowToDelete.PartnerKey.ToString(),
-                ARowToDelete.PartnerShortName);            
+                ARowToDelete.PartnerShortName);
             return true;
         }
 

@@ -45,7 +45,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public event TDelegatePartnerChanged ApplicationFieldChanged;
 
         #region Properties
-        
+
         /// return label text for "Field" field
         public String FieldLabelText
         {
@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return lblField.Text;
             }
         }
-    
+
         /// return code value for "Field"
         public String FieldValueCode
         {
@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return txtField.Text;
             }
         }
-    
+
         /// return label value for "Field"
         public String FieldValueLabel
         {
@@ -72,9 +72,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return txtField.LabelText;
             }
         }
-        
+
         #endregion
-        
+
         #region Public Methods
 
         /// <summary>todoComment</summary>

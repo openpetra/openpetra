@@ -133,7 +133,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 txtUnitKey.LabelText,
                 lblPositionName.Text,
                 cmbPositionName.GetSelectedString());
-            
+
             return true;
         }
 

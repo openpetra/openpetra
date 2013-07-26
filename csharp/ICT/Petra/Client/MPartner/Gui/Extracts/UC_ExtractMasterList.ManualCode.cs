@@ -247,7 +247,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             ADeletionQuestion += String.Format("{0}{0}({1} {2})",
                 Environment.NewLine,
                 lblExtractName.Text,
-                txtExtractName.Text);             
+                txtExtractName.Text);
             return true;
         }
 
@@ -265,7 +265,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             UpdateButtonStatus();
         }
-        
+
         /// <summary>
         /// Open a new screen to show details and maintain the currently selected extract
         /// </summary>
