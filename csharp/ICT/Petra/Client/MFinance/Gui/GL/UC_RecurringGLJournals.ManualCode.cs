@@ -360,6 +360,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private bool DeleteRowManual(ARecurringJournalRow ARowToDelete, ref string ACompletionMessage)
         {
             int batchNumber = ARowToDelete.BatchNumber;
+            
+            int currentRow = grdDetails.GetFirstHighlightedRowIndex();
 
             FJournalNumberToDelete = ARowToDelete.JournalNumber;
             bool deletionSuccessful = false;
@@ -388,8 +390,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     {
                         throw new Exception("Unable to save after deleting a recurring journal!");
                     }
-                }
+                    else
+                    {
+						//Reload journals
+						FMainDS.ATransAnalAttrib.Clear();
+						FMainDS.ATransaction.Clear();
+						FMainDS.AJournal.Clear();
+						FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndContent(FLedgerNumber, FBatchNumber));
 
+		                SetJournalDefaultView();
+                    }
+                }
+                
                 deletionSuccessful = true;
             }
             catch (Exception ex)
@@ -423,7 +435,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 SetBatchLastJournalNumber();
                 UpdateHeaderTotals(GetBatchRow());
 
-                MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
+                if (!((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
+                {
+                    MessageBox.Show("Unable to save after deletion and renumbering remaining recurring journals! Try saving maually and closing and reopening the form.");
+                }
+                else
+                {
+					MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));                	
+                }
             }
 
             if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
@@ -475,7 +494,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 GLBatchTDSARecurringJournalRow newJrnlRow = FMainDS.ARecurringJournal.NewRowTyped(true);
 
                 newJrnlRow.ItemArray = jrnlRowCurrent.ItemArray;
-
+ 
                 //reduce journal number by 1 in the new row
                 newJrnlRow.JournalNumber--;
 
@@ -571,6 +590,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         MessageBoxIcon.Error);
                 }
             }
+            
+            //Need to refresh FPreviouslySelectedDetailRow
+            SelectRowInGrid(grdDetails.GetFirstHighlightedRowIndex());
         }
 
         private void SetBatchLastJournalNumber()

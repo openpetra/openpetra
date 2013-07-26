@@ -209,7 +209,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ARecurringTransactionTable.GetJournalNumberDBName(),
                     FJournalNumber);
 
-                FMainDS.ARecurringTransaction.DefaultView.Sort = String.Format("{0} DESC",
+                FMainDS.ARecurringTransaction.DefaultView.Sort = String.Format("{0} ASC",
                     ARecurringTransactionTable.GetTransactionNumberDBName()
                     );
             }

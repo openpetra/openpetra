@@ -13,8 +13,10 @@ RootNode:
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
+            ##Controls: [pnlDetails, pnlControls]
             Dock: Fill
         pnlGrid:
+        ##pnlDetails:
             Dock: Fill
             Controls: [pnlDetailTop, pnlButtons, grdDetails]
         pnlButtons:
@@ -32,6 +34,7 @@ RootNode:
             Columns: [AFreeformAnalysis.AnalysisValue, AFreeformAnalysis.Active]
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
+        ##pnlControls:
             Height: 70
             Dock: Bottom
             Controls:

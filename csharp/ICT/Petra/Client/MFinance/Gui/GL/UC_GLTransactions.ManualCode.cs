@@ -872,6 +872,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         MessageBox.Show(Catalog.GetString("The journal has been cleared successfully!"),
                             Catalog.GetString("Success"),
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+		                SetJournalLastTransNumber();
                     }
                     else
                     {
@@ -885,6 +887,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    FMainDS.RejectChanges();
                 }
 
                 //If some row(s) still exist after deletion
@@ -893,6 +896,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     UpdateChangeableStatus();
                     ClearControls();
                 }
+                
             }
         }
 
