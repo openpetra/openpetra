@@ -109,7 +109,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FLogic.LoadDataOnDemand();
 
             grdDetails.Columns.Clear();
-            grdDetails.AddTextColumn("Description", FMainDS.PPartnerRelationship.Columns["RelationDescription"]);
+            grdDetails.AddTextColumn("Description", FMainDS.PPartnerRelationship.ColumnDisplayRelationDescription);
             grdDetails.AddPartnerKeyColumn("Partner Key", FMainDS.PPartnerRelationship.Columns["OtherPartnerKey"]);
             grdDetails.AddTextColumn("Partner Name",
                 FMainDS.PPartnerRelationship.Columns[PartnerEditTDSPPartnerRelationshipTable.GetPartnerShortNameDBName()]);
@@ -129,6 +129,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
+                ShowDetails(1); // do this as for some reason details are not automatically show here at the moment
             }
             else
             {
@@ -259,6 +260,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private void RelationNameChanged(object sender, EventArgs e)
+        {
+            // update grid column for relation description
+            if (FLogic != null)
+            {
+                FLogic.UpdateRelationDescription(GetSelectedDetailRow(), 
+                                                 cmbPPartnerRelationshipRelationName.GetSelectedString());
+            }
+        }
+        
         /// <summary>
         /// adding a new partner relationship record
         /// </summary>
@@ -304,7 +315,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
             ADeletionQuestion += String.Format("{0}{0}({1} {2})",
                 Environment.NewLine,
-                lblPPartnerRelationshipRelationKey,
+                lblPPartnerRelationshipRelationName.Text,
                 cmbPPartnerRelationshipRelationName.GetSelectedString());            
             return true;
         }

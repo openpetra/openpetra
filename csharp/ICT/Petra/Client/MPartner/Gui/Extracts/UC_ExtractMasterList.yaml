@@ -9,10 +9,10 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actMaintain: {Label=&Maintain, ActionClick=MaintainExtract}      
-        actDelete: {Label=&Delete, ActionClick=DeleteRow}
+        actDelete: {Label=&Delete, SkipReferenceCheck=true, ActionClick=DeleteRecord}
         actRefreshGrid: {ActionClick=RefreshExtractList, Image: Refresh.ico}
     Controls:
-        pnlContent:
+        pnlContent: 
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
@@ -20,11 +20,12 @@ RootNode:
             Controls: [pnlButtons, grdDetails]
         pnlButtons:
             Dock: Bottom
-            Controls: [btnMaintain, btnDeleteExtract, btnRefreshGrid]
+            Controls: [btnMaintain, btnDelete, btnRefreshGrid]
             ControlsOrientation: horizontal
         btnMaintain: {Width=80}
             Action: actMaintain
-        btnDeleteExtract: {Width=80}
+        btnDelete: {Width=80}
+            Label: Delete
             Action: actDelete
         btnRefreshGrid: {NoLabel=true, Width=50}
             Action: actRefreshGrid

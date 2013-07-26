@@ -43,7 +43,7 @@ RootNode:
             Label: Partner
             Type: PartnerKey
             Validation: true
-        cmbPPartnerRelationshipRelationName: {Label=Relation, List=RelationList, Validation=true}
+        cmbPPartnerRelationshipRelationName: {Label=Relation, List=RelationList, OnChange=RelationNameChanged, Validation=true}
         txtPPartnerRelationshipRelationKey:
             Label: Another Partner
             Type: PartnerKey

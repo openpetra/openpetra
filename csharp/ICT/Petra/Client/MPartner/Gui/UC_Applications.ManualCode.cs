@@ -102,7 +102,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
 
             // enable grid to react to insert and delete keyboard keys
-            grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
+            //WB grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
 
             // enable grid to react to modified event or field key in details part
             ucoApplicationEvent.ApplicationEventChanged += new TUC_Application_Event.TDelegateApplicationEventChanged(
@@ -113,7 +113,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (grdDetails.Rows.Count <= 1)
             {
                 pnlDetails.Visible = false;
-                btnDelete.Enabled = false;
             }
         }
 
@@ -241,11 +240,25 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private bool PreDeleteManual(IndividualDataTDSPmGeneralApplicationRow ARowToDelete, ref String ADeletionQuestion)
         {
-            ADeletionQuestion = String.Format(
-                Catalog.GetString("You have choosen to delete the record for {0} {1}.{2}{2}Do you really want to delete it?"),
-                FPreviouslySelectedDetailRow.ApplicationForEventOrField,
-                FPreviouslySelectedDetailRow.EventOrFieldName,
-                Environment.NewLine);
+            if (IsEventApplication(ARowToDelete))
+            {
+                ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+                ADeletionQuestion += String.Format("{0}{0}({1} {2} {3})",
+                    Environment.NewLine,
+                    ucoApplicationEvent.EventLabelText,
+                    ucoApplicationEvent.EventValueCode,
+                    ucoApplicationEvent.EventValueLabel);
+            }
+            else
+            {
+                ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+                ADeletionQuestion += String.Format("{0}{0}({1} {2})",
+                    Environment.NewLine,
+                    ucoApplicationField.FieldLabelText,
+                    ucoApplicationField.FieldValueCode,
+                    ucoApplicationField.FieldValueLabel);            
+            }
+            
             return true;
         }
 
@@ -254,13 +267,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             ACompletionMessage = String.Empty;
 
             // along with the general application record the specific record needs to be deleted
-            if (IsEventApplication(FPreviouslySelectedDetailRow))
+            if (IsEventApplication(ARowToDelete))
             {
-                GetEventApplicationRow(FPreviouslySelectedDetailRow).Delete();
+                GetEventApplicationRow(ARowToDelete).Delete();
             }
             else
             {
-                GetFieldApplicationRow(FPreviouslySelectedDetailRow).Delete();
+                GetFieldApplicationRow(ARowToDelete).Delete();
             }
 
             ARowToDelete.Delete();
@@ -322,7 +335,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (ARow != null)
             {
-                btnDelete.Enabled = true;
                 pnlDetails.Visible = true;
 
                 if (IsEventApplication(ARow))
