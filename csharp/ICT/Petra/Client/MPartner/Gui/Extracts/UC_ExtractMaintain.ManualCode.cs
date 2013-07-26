@@ -105,13 +105,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
+                ShowDetails(1);
             }
             else
             {
                 btnEdit.Enabled = false;
-                btnDelete.Enabled = false;
             }
         }
 
@@ -352,9 +350,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             FMainDS = new ExtractTDS();
 
-            // enable grid to react to insert and delete keyboard keys
-            grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
-
             // hide field for "created by". This was only introduced in the yaml file so the mechanism
             // with the template for controlMaintainTable works as in this case there is no entry fields
             // in pnlDetails that allow changes to the MExtract record
@@ -416,13 +411,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void ShowDetailsManual(ExtractTDSMExtractRow ARow)
         {
             ucoPartnerInfo.ClearControls();
-            btnDelete.Enabled = false;
             btnEdit.Enabled = false;
 
             if (ARow != null)
             {
                 ucoPartnerInfo.PassPartnerDataNone(ARow.PartnerKey);
-                btnDelete.Enabled = true;
                 btnEdit.Enabled = true;
             }
         }
@@ -566,69 +559,33 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
         }
 
-        private void DeletePartner(System.Object sender, EventArgs e)
+        private bool PreDeleteManual(ExtractTDSMExtractRow ARowToDelete, ref string ADeletionQuestion)
         {
-            int CountRowsToDelete = CountSelectedRows();
+            ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            ADeletionQuestion += String.Format("{0}{0}({1} {2})",
+                Environment.NewLine,
+                ARowToDelete.PartnerKey.ToString(),
+                ARowToDelete.PartnerShortName);            
+            return true;
+        }
 
-            if (CountRowsToDelete == 0)
-            {
-                // nothing to delete
-                return;
-            }
-
-            // delete single selected record from extract
-            if (CountRowsToDelete == 1)
-            {
-                DeleteMExtract();
-            }
-            else if (CountRowsToDelete > 1)
-            {
-                // delete multiple selected records from extract
-                if (MessageBox.Show(Catalog.GetString("Do you want to delete the selected partner records from this extract?"),
-                        Catalog.GetString("Confirm Delete"),
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question,
-                        MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
-                {
-                    DataRowView RowView;
-                    int rowIndex = GetSelectedRowIndex();
-
-                    // build a collection of objects to be deleted before actually deleting them (as otherwise
-                    // indexes may not be valid any longer)
-                    int[] SelectedRowsIndexes = grdDetails.Selection.GetSelectionRegion().GetRowsIndex();
-                    List <ExtractTDSMExtractRow>RowList = new List <ExtractTDSMExtractRow>();
-
-                    foreach (int Index in SelectedRowsIndexes)
-                    {
-                        RowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(Index);
-                        RowList.Add((ExtractTDSMExtractRow)RowView.Row);
-                    }
-
-                    // now delete the actual rows
-                    foreach (ExtractTDSMExtractRow Row in RowList)
-                    {
-                        Row.Delete();
-                    }
-
-                    FPetraUtilsObject.SetChangedFlag();
-                    SelectRowInGrid(rowIndex);
-                }
-            }
-
+        /// <summary>
+        /// Code to be run after the deletion process
+        /// </summary>
+        /// <param name="ARowToDelete">the row that was/was to be deleted</param>
+        /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
+        /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        private void PostDeleteManual(ExtractTDSMExtractRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
+        {
             if (grdDetails.Rows.Count <= 1)
             {
                 // hide details part and disable buttons if no record in grid (first row for headings)
                 btnEdit.Enabled = false;
             }
-        }
-
-        private bool PreDeleteManual(ExtractTDSMExtractRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            ADeletionQuestion = String.Format(
-                Catalog.GetString("You have choosen to delete this partner record from the Extract ({0}).{1}{1}Do you really want to delete it?"),
-                FPreviouslySelectedDetailRow.PartnerKey.ToString(),
-                Environment.NewLine);
-            return true;
         }
 
         private void SelectByPartnerKey(Int64 APartnerKey, Int64 ASiteKey)
@@ -657,11 +614,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // reset grid selection as it is multiselect so the one record can be selected
             grdDetails.Selection.ResetSelection(true);
 
-            // temporarily reset selected row to avoid interference with validation
-            FPreviouslySelectedDetailRow = null;
             grdDetails.SelectRowInGrid(Index, true);
-            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-            ShowDetails(FPreviouslySelectedDetailRow);
+            ShowDetails(Index);
         }
 
         /// <summary>
@@ -671,18 +625,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private int CountSelectedRows()
         {
             return grdDetails.Selection.GetSelectionRegion().GetRowsIndex().Length;
-        }
-
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        /// <returns>void</returns>
-        private void grdDetails_DeleteKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
-        {
-            if (e.Row != -1)
-            {
-                this.DeletePartner(this, null);
-            }
         }
 
         #endregion

@@ -44,6 +44,37 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>event to signalize change in field applied for</summary>
         public event TDelegatePartnerChanged ApplicationFieldChanged;
 
+        #region Properties
+        
+        /// return label text for "Field" field
+        public String FieldLabelText
+        {
+            get
+            {
+                return lblField.Text;
+            }
+        }
+    
+        /// return code value for "Field"
+        public String FieldValueCode
+        {
+            get
+            {
+                return txtField.Text;
+            }
+        }
+    
+        /// return label value for "Field"
+        public String FieldValueLabel
+        {
+            get
+            {
+                return txtField.LabelText;
+            }
+        }
+        
+        #endregion
+        
         #region Public Methods
 
         /// <summary>todoComment</summary>

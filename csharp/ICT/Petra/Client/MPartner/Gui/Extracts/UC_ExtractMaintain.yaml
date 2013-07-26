@@ -7,10 +7,9 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation,Ict.Petra.Shared.MPartner.Partner.Data]
     FormType: edit
     Template: controlMaintainTable
-    #Template: window
     Actions:
         actAdd: {Label=&Add, ActionClick=AddPartner, Image=New_Record.ico}
-        actDelete: {Label=&Delete, ActionClick=DeletePartner}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
         actEdit: {Label=&Edit, ActionClick=EditPartner}
     Controls:
         pnlContent: {ControlsOrientation=vertical}

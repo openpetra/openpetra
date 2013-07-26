@@ -71,6 +71,33 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS = value;
             }
         }
+        
+        /// return label text for "Field" field
+        public String FieldLabelText
+        {
+            get
+            {
+                return ucoField.FieldLabelText;
+            }
+        }
+    
+        /// return code value for "Field"
+        public String FieldValueCode
+        {
+            get
+            {
+                return ucoField.FieldValueCode;
+            }
+        }
+    
+        /// return label value for "Field"
+        public String FieldValueLabel
+        {
+            get
+            {
+                return ucoField.FieldValueLabel;
+            }
+        }
 
         #endregion
 

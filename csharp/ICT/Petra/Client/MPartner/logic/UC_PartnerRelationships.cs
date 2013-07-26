@@ -127,16 +127,22 @@ namespace Ict.Petra.Client.MPartner
                     }
                 }
 
-                // Add relation table to data set
-                if (FMainDS.PRelation == null)
-                {
-                    FMainDS.Tables.Add(new PRelationTable());
-                }
-
+                
+                // fill extra fields in PartnerRelationship table for description and reciprocal description
+                // so the expression can later on decide which value to use in each case
                 relationTable = (PRelationTable)TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.RelationList);
-                // rename data table as otherwise the merge with the data set won't work; tables need to have same name
-                relationTable.TableName = "PRelation";
-                FMainDS.Merge(relationTable);
+                PRelationRow relationRow;
+                PartnerEditTDSPPartnerRelationshipRow relationshipRow;
+                foreach (DataRow row in FMainDS.PPartnerRelationship.Rows)
+                {
+                    relationshipRow = (PartnerEditTDSPPartnerRelationshipRow)row;
+                    relationRow = (PRelationRow)relationTable.Rows.Find(relationshipRow.RelationName);
+                    if (relationRow != null)
+                    {
+                        relationshipRow.RelationDescription = relationRow.RelationDescription;
+                        relationshipRow.ReciprocalRelationDescription = relationRow.ReciprocalDescription;
+                    }
+                }
 
                 // Relations are not automatically enabled. Need to enable them here in order to use for columns.
                 FMainDS.EnableRelations();
@@ -151,29 +157,12 @@ namespace Ict.Petra.Client.MPartner
                                                 PPartnerRelationshipTable.GetPartnerKeyDBName() + ")";
                 FMainDS.PPartnerRelationship.Columns.Add(ForeignTableColumn);
 
-                // add column for relation description
-                ForeignTableColumn = new DataColumn();
-                ForeignTableColumn.DataType = System.Type.GetType("System.String");
-                ForeignTableColumn.ColumnName = "Parent_" + PRelationTable.GetRelationDescriptionDBName();
-                ForeignTableColumn.Expression = "Parent." + PRelationTable.GetRelationDescriptionDBName();
-                FMainDS.PPartnerRelationship.Columns.Add(ForeignTableColumn);
-
-                // add column for reciprocal description
-                ForeignTableColumn = new DataColumn();
-                ForeignTableColumn.DataType = System.Type.GetType("System.String");
-                ForeignTableColumn.ColumnName = "Parent_" + PRelationTable.GetReciprocalDescriptionDBName();
-                ForeignTableColumn.Expression = "Parent." + PRelationTable.GetReciprocalDescriptionDBName();
-                FMainDS.PPartnerRelationship.Columns.Add(ForeignTableColumn);
-
-                // depending on relation use correct description (normal or reciprocal)
-                ForeignTableColumn = new DataColumn();
-                ForeignTableColumn.DataType = System.Type.GetType("System.String");
-                ForeignTableColumn.ColumnName = "RelationDescription";
-                ForeignTableColumn.Expression = "IIF(" + PPartnerRelationshipTable.GetPartnerKeyDBName() + "=" +
-                                                ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey.ToString() + ",Parent_" +
-                                                PRelationTable.GetRelationDescriptionDBName() +
-                                                ",Parent_" + PRelationTable.GetReciprocalDescriptionDBName() + ")";
-                FMainDS.PPartnerRelationship.Columns.Add(ForeignTableColumn);
+                // make sure that description column takes the correct description (normal or reciprocal)
+                FMainDS.PPartnerRelationship.ColumnDisplayRelationDescription.Expression = 
+                    "IIF(" + PPartnerRelationshipTable.GetPartnerKeyDBName() + "=" +
+                    ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey.ToString() +
+                    "," + FMainDS.PPartnerRelationship.ColumnRelationDescription +
+                     "," + FMainDS.PPartnerRelationship.ColumnReciprocalRelationDescription + ")";
 
                 if (FMainDS.PPartnerRelationship.Rows.Count != 0)
                 {
@@ -193,6 +182,31 @@ namespace Ict.Petra.Client.MPartner
                 throw;
             }
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// Updates Description (normal and reciprocal) for given relation name in row
+        /// </summary>
+        public void UpdateRelationDescription(PartnerEditTDSPPartnerRelationshipRow ARow, String ANewRelationName)
+        {
+            PRelationTable relationTable = (PRelationTable)TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.RelationList);
+            PRelationRow relationRow;
+
+            if (ARow != null)
+            {
+                relationRow = (PRelationRow)relationTable.Rows.Find(ANewRelationName);
+                if (relationRow != null)
+                {
+                    ARow.RelationDescription = relationRow.RelationDescription;
+                    ARow.ReciprocalRelationDescription = relationRow.ReciprocalDescription;
+                }
+                else
+                {
+                    ARow.RelationDescription = "";
+                    ARow.ReciprocalRelationDescription = "";
+                }
+            }
+            
         }
     }
 }
