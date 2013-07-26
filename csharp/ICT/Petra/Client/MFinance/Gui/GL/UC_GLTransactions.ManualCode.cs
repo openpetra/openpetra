@@ -47,6 +47,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FBatchNumber = -1;
         private Int32 FJournalNumber = -1;
         private Int32 FTransactionNumber = -1;
+        private bool FActiveOnly = true;
         private string FTransactionCurrency = string.Empty;
         private string FBatchStatus = string.Empty;
         private string FJournalStatus = string.Empty;
@@ -144,11 +145,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FMainDS.ATransAnalAttrib.DefaultView.AllowNew = false;
             grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
 
-            // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
-            bool ActiveOnly = this.Enabled;
+            // if this form is readonly or batch is posted, then we need all account and cost centre codes, because old codes might have been used
+            bool ActiveOnly = (this.Enabled && FBatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
-            if (requireControlSetup)
+            if (requireControlSetup || (FActiveOnly != ActiveOnly))
             {
+                FActiveOnly = ActiveOnly;
+
                 //Load all analysis attribute values
                 if (FCacheDS == null)
                 {
@@ -413,14 +416,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 lblBaseCurrency.Text = String.Format(Catalog.GetString("{0} (Base Currency)"), BaseCurrency);
                 lblTransactionCurrency.Text = String.Format(Catalog.GetString("{0} (Transaction Currency)"), TransactionCurrency);
-                txtDebitAmountBase.CurrencySymbol = BaseCurrency;
-                txtCreditAmountBase.CurrencySymbol = BaseCurrency;
-                txtDebitAmount.CurrencySymbol = TransactionCurrency;
-                txtCreditAmount.CurrencySymbol = TransactionCurrency;
-                txtCreditTotalAmountBase.CurrencySymbol = BaseCurrency;
-                txtDebitTotalAmountBase.CurrencySymbol = BaseCurrency;
-                txtCreditTotalAmount.CurrencySymbol = TransactionCurrency;
-                txtDebitTotalAmount.CurrencySymbol = TransactionCurrency;
+                txtDebitAmountBase.CurrencyCode = BaseCurrency;
+                txtCreditAmountBase.CurrencyCode = BaseCurrency;
+                txtDebitAmount.CurrencyCode = TransactionCurrency;
+                txtCreditAmount.CurrencyCode = TransactionCurrency;
+                txtCreditTotalAmountBase.CurrencyCode = BaseCurrency;
+                txtDebitTotalAmountBase.CurrencyCode = BaseCurrency;
+                txtCreditTotalAmount.CurrencyCode = TransactionCurrency;
+                txtDebitTotalAmount.CurrencyCode = TransactionCurrency;
 
                 // foreign currency accounts only get transactions in that currency
                 if (FTransactionCurrency != TransactionCurrency)
@@ -697,7 +700,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             decimal amtCreditTotal = 0.0M;
             decimal amtCreditTotalBase = 0.0M;
 
-            if ((FJournalNumber != -1) && (FBatchRow != null) && (FJournalRow != null) && (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED))         // && !pnlDetailsProtected)
+            if ((FJournalNumber != -1) && (FBatchRow != null) && (FJournalRow != null)) // && (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED))         // && !pnlDetailsProtected)
             {
                 if (FPreviouslySelectedDetailRow != null)
                 {
@@ -771,7 +774,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtCreditTotalAmount.NumberValueDecimal = FJournalRow.JournalCreditTotal;
                 txtDebitTotalAmount.NumberValueDecimal = FJournalRow.JournalDebitTotal;
 
-                // refresh the currency symbols
                 ShowDataManual();
             }
         }

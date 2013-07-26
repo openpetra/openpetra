@@ -40,6 +40,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MConference.Data;
 using Ict.Common.Remoting.Shared;
 
 namespace Ict.Petra.Client.App.PetraClient
@@ -64,6 +65,9 @@ namespace Ict.Petra.Client.App.PetraClient
         private static List <string>FLedgersAvailableToUser = null;
         TBreadcrumbTrail FBreadcrumbTrail;
 
+        private static bool FConferenceSelected = false;
+        private static Int64 FConferenceKey = 0;
+
         /// <summary>
         /// The currently selected Ledger
         /// </summary>
@@ -77,6 +81,21 @@ namespace Ict.Petra.Client.App.PetraClient
             set
             {
                 FCurrentLedger = value;
+            }
+        }
+
+        /// <summary>
+        /// The currently selected Conference
+        /// </summary>
+        public static Int64 SelectedConferenceKey
+        {
+            get
+            {
+                return FConferenceKey;
+            }
+            set
+            {
+                FConferenceKey = value;
             }
         }
 
@@ -223,6 +242,83 @@ namespace Ict.Petra.Client.App.PetraClient
             }
         }
 
+        // displays information about the currently selected conference in the navigation panel
+        private static void AddConferenceInformation(XmlNode AMenuNode)
+        {
+            FConferenceKey = TUserDefaults.GetInt64Default("LastConferenceWorkedWith");
+
+            XmlNode childNode = AMenuNode.FirstChild;
+            XmlAttribute enabledAttribute;
+
+            while (childNode != null)
+            {
+                if ((TXMLParser.GetAttribute(childNode, "DependsOnConference").ToLower() == "true") && (FConferenceKey != 0))
+                {
+                    FConferenceSelected = true; // node only displayed if this is true
+
+                    // Create 'Select Conference' Node
+                    XmlAttribute LabelAttributeConference = childNode.OwnerDocument.CreateAttribute("Label");
+                    XmlElement SelConferenceElmnt = childNode.OwnerDocument.CreateElement("ConferenceInfo");
+                    XmlNode SelectConferenceNode = childNode.AppendChild(SelConferenceElmnt);
+                    SelectConferenceNode.Attributes.Append(LabelAttributeConference);
+                    SelectConferenceNode.Attributes["Label"].Value = Catalog.GetString("Current Conference");
+
+                    // Create conference details Node
+                    XmlElement SpecificConferenceElmnt = childNode.OwnerDocument.CreateElement("Conference" + FConferenceKey);
+                    XmlNode SpecificConferenceNode = SelectConferenceNode.AppendChild(SpecificConferenceElmnt);
+                    XmlAttribute AttributeConferenceName = childNode.OwnerDocument.CreateAttribute("Label");
+                    SpecificConferenceNode.Attributes.Append(AttributeConferenceName);
+
+                    // Disable clicking on node
+                    enabledAttribute = childNode.OwnerDocument.CreateAttribute("Enabled");
+                    enabledAttribute.Value = "false";
+                    SpecificConferenceNode.Attributes.Append(enabledAttribute);
+
+                    // Get conference name
+                    string ConferenceName;
+                    TPartnerClass PartnerClass;
+                    TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(FConferenceKey, out ConferenceName, out PartnerClass);
+
+                    if (ConferenceName != String.Empty)
+                    {
+                        SpecificConferenceNode.Attributes["Label"].Value = ConferenceName;
+                    }
+                    else
+                    {
+                        SpecificConferenceNode.Attributes["Label"].Value = "Conference Key: " + FConferenceKey;
+                    }
+
+                    // Set node values
+                    SpecificConferenceNode.Attributes["Label"].Value = SpecificConferenceNode.Attributes["Label"].Value;
+
+                    // only dispay dates if they are valid
+                    DateTime StartDate = TRemote.MConference.Conference.WebConnectors.GetStartDate(FConferenceKey);
+                    DateTime EndDate = TRemote.MConference.Conference.WebConnectors.GetEndDate(FConferenceKey);
+
+                    if (StartDate != DateTime.MinValue)
+                    {
+                        SpecificConferenceNode.Attributes["Label"].Value = SpecificConferenceNode.Attributes["Label"].Value +
+                                                                           "\nStart: " + StartDate.ToLongDateString();
+                    }
+
+                    if (EndDate != DateTime.MinValue)
+                    {
+                        SpecificConferenceNode.Attributes["Label"].Value = SpecificConferenceNode.Attributes["Label"].Value +
+                                                                           "\nEnd: " + EndDate.ToLongDateString();
+                    }
+
+                    childNode = childNode.NextSibling;
+                }
+                else
+                {
+                    // Recurse into deeper levels!
+                    AddConferenceInformation(childNode);
+
+                    childNode = childNode.NextSibling;
+                }
+            }
+        }
+
         private static void AddNavigationForEachLedger(XmlNode AMenuNode, ALedgerTable AAvailableLedgers, bool ADontUseDefaultLedger)
         {
             XmlNode childNode = AMenuNode.FirstChild;
@@ -245,7 +341,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
                         FMultiLedgerSite = true;
 
-                        // Create 'Select Legdger' Node
+                        // Create 'Select Ledger' Node
                         XmlAttribute LabelAttributeLedger = childNode.OwnerDocument.CreateAttribute("Label");
                         XmlElement SelLedgerElmnt = childNode.OwnerDocument.CreateElement("SelectLedger");
                         XmlNode SelectLedgerNode = childNode.AppendChild(SelLedgerElmnt);
@@ -396,6 +492,8 @@ namespace Ict.Petra.Client.App.PetraClient
 
             AddNavigationForEachLedger(MainMenuNode, AvailableLedgers, ADontUseDefaultLedger);
 
+            AddConferenceInformation(MainMenuNode);
+
             return MainMenuNode;
         }
 
@@ -412,6 +510,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             lstFolders.MultiLedgerSite = FMultiLedgerSite;
             lstFolders.CurrentLedger = FCurrentLedger;
+            lstFolders.ConferenceSelected = FConferenceSelected;
 
             lstFolders.ClearFolders();
 
@@ -459,6 +558,14 @@ namespace Ict.Petra.Client.App.PetraClient
         public void SelectFinanceFolder()
         {
             lstFolders.SelectFolder(1);
+        }
+
+        /// <summary>
+        /// Keep Conference module in view after a new conference has been selected.
+        /// </summary>
+        public void SelectConferenceFolder()
+        {
+            lstFolders.SelectFolder(4);
         }
 
         /// <summary>
@@ -714,6 +821,14 @@ namespace Ict.Petra.Client.App.PetraClient
 
             // Remove any message that is shown in the Status Bar (e.g. the one that is put there when creating a new Ledger)
             this.stbMain.ShowMessage(String.Empty);
+        }
+
+        /// <summary>
+        /// Returns the Partner Key for the selected conference
+        /// </summary>
+        public Int64 GetSelectedConferenceKey()
+        {
+            return FConferenceKey;
         }
     }
 }

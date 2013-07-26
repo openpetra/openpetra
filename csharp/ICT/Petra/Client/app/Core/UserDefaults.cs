@@ -316,6 +316,13 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>todoComment</summary>
         public const String FINANCE_DEFAULT_LEDGERNUMBER = "a_default_ledger_number_i";
 
+        /*------------------------------------------------------------------------------
+         *  Conference Default Constants
+         * -------------------------------------------------------------------------------*/
+
+        /// <summary>todoComment</summary>
+        public const String CONFERENCE_LASTCONFERENCEWORKEDWITH = "LastConferenceWorkedWith";
+
 
         /// <summary>
         /// initialise static variables

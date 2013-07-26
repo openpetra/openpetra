@@ -1288,9 +1288,9 @@ namespace Ict.Common
             String columnformat;
             int Counter;
 
-            columnformat = AFormatString;
+            columnformat = AFormatString.ToLower();;
 
-            if (columnformat.ToLower().IndexOf("csvlistslash") == 0)
+            if (columnformat.IndexOf("csvlistslash") == 0)
             {
                 StringHelper.GetNextCSV(ref columnformat, ":");
 
@@ -1310,7 +1310,7 @@ namespace Ict.Common
                     return;
                 }
             }
-            else if (columnformat.ToLower().IndexOf("quotes") == 0)
+            else if (columnformat.IndexOf("quotes") == 0)
             {
                 // apply the quotes immediately
                 this.StringValue = "'" + this.ToFormattedString() + "'";
@@ -1330,7 +1330,7 @@ namespace Ict.Common
             }
             else
             {
-                if (columnformat.ToLower() == "partnerkey")
+                if (columnformat == "partnerkey")
                 {
                     // this value comes from the database as a decimal, and therefore is treated like a currency;
                     // that is not good for csv file export; so we convert it to Int64
@@ -1338,11 +1338,17 @@ namespace Ict.Common
                     this.TypeVariant = eVariantTypes.eInt64;
                     this.FormatString = columnformat;
                 }
-                else if (columnformat.ToLower() == "text")
+                else if (columnformat == "text")
                 {
                     // this value comes from the database as some type, but should really be treated as a text string, without formatting
                     // so we convert it to String
                     this.StringValue = ToString();
+                    this.TypeVariant = eVariantTypes.eString;
+                    this.FormatString = columnformat;
+                }
+                else if (columnformat.StartsWith("numberformat"))
+                {
+                    this.StringValue = this.DecimalValue.ToString(columnformat.Substring(12));
                     this.TypeVariant = eVariantTypes.eString;
                     this.FormatString = columnformat;
                 }

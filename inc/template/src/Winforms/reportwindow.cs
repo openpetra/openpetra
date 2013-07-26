@@ -373,7 +373,10 @@ else
 }
 
 {##COMBOBOXSETCONTROLS}
-{#CONTROLNAME}.SelectedValue = AParameters.Get("{#PARAMNAME}").ToString();
+if (AParameters.Exists("{#PARAMNAME}"))
+{
+    {#CONTROLNAME}.SelectedValue = AParameters.Get("{#PARAMNAME}").ToString();
+}
 
 {##TEXTBOXREADCONTROLS}
 ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.Text);

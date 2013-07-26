@@ -328,6 +328,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     object[] Args = new object[1];
                     Args[0] = FCalculator;
                     FPreviewForm.Invoke((System.Delegate) new TPreviewDelegate(FPreviewDelegate), Args);
+                    TLogging.Log("", TLoggingType.ToStatusBar);
                 }
                 else
                 {

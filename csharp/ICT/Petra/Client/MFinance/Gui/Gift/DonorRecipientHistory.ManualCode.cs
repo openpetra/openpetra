@@ -351,7 +351,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             txtGiftTotal.NumberValueDecimal = sum;
-            txtGiftTotal.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
+            txtGiftTotal.CurrencyCode = FMainDS.ALedger[0].BaseCurrency;
             txtGiftTotal.ReadOnly = true;
         }
 

@@ -362,7 +362,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void SetupPublicationCost(double APublicationCost, String ACurrencyCode)
         {
             this.txtPublicationCost.NumberValueDouble = APublicationCost;
-            this.txtPublicationCost.CurrencySymbol = ACurrencyCode;
+            this.txtPublicationCost.CurrencyCode = ACurrencyCode;
         }
 
         private void UpdatePublicationCost()

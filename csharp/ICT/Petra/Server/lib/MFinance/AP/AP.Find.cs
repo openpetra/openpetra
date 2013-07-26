@@ -207,7 +207,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                 String SqlQuery = "SELECT DISTINCT " +
                                   "0 as ApDocumentId, " +
                                   "PUB_a_ap_payment.a_payment_number_i as ApNum, " +
-                                  "'' as InvNum, " +
+                                  "to_char(PUB_a_ap_payment.a_payment_number_i, '99999') as InvNum, " +
                                   "true as CreditNote, " +
                                   "'Payment' as Type, " +
                                   "PUB_a_ap_payment.a_currency_code_c as Currency, " +

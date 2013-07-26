@@ -64,7 +64,7 @@ RootNode:
             Width: 400
         cmbCurrency:
             ParameterName: param_currency
-            OptionalValues: [Base, International]
+            OptionalValues: [=Base, International]
         
         tpgAdditionalSettings:
             Label: Additional Settings

@@ -23,6 +23,7 @@
 //
 using System;
 using System.Drawing;
+using System.Diagnostics;
 using System.Collections;
 using System.ComponentModel;
 using System.IO;
@@ -34,13 +35,13 @@ using System.Resources;
 using System.Collections.Specialized;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Data;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
-using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
@@ -67,10 +68,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 cmbDateFormat.Items.Insert(0, regionalDateString);
             }
 
+            btnBrowseFilename.Top = txtFilename.Top;
+            btnBrowseFilename.Height = txtFilename.Height;
+            btnBrowseFilename.Width -= 7;
+
             LoadUserDefaults();
         }
 
         private Int32 FLedgerNumber;
+        private BudgetTDS FBudgetDS = new BudgetTDS();
+        private String FExportFileName = string.Empty;
 
         /// the ledger that the user is currently working with
         public Int32 LedgerNumber
@@ -78,8 +85,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             set
             {
                 FLedgerNumber = value;
-                //TFinanceControls.InitialiseAccountList(ref cmbDontSummarizeAccount, FLedgerNumber, true, false, false, false);
+
+                LoadBudgets();
+
+                //TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbDetailYear, FLedgerNumber, true);
+
+                //TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
+
+                // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
+                //TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true);
             }
+        }
+
+        private void LoadBudgets()
+        {
+            FBudgetDS = TRemote.MFinance.Budget.WebConnectors.LoadBudget(FLedgerNumber);
         }
 
         const String sSpace = "[SPACE]";
@@ -101,38 +121,52 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private void LoadUserDefaults()
         {
             // This is for compatibility with old Petra
-            txtFilename.Text = TUserDefaults.GetStringDefault("Imp Filename",
-                TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "export.csv");
+            txtFilename.Text = TUserDefaults.GetStringDefault("Exp Filename",
+                TClientSettings.GetExportPath() + Path.DirectorySeparatorChar + "BudgetExport.csv");
 
-            //TODO: unrem when adding export behaviour
             //String expOptions = TUserDefaults.GetStringDefault("Exp Options", "DTrans");
+            String expOptions = TUserDefaults.GetStringDefault("Exp Options", ";American");
 
-            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
-
-            if (impOptions.Length > 0)
+            if (expOptions.Length > 0)
             {
-                cmbDelimiter.SetSelectedString(ConvertDelimiter(impOptions.Substring(0, 1), true));
+                cmbDelimiter.SetSelectedString(ConvertDelimiter(expOptions.Substring(0, 1), true));
             }
 
-            if (impOptions.Length > 1)
+            if (expOptions.Length > 1)
             {
-                cmbNumberFormat.SelectedIndex = impOptions.Substring(1) == "American" ? 0 : 1;
+                cmbNumberFormat.SelectedIndex = expOptions.Substring(1) == "American" ? 0 : 1;
             }
 
-            cmbDateFormat.SetSelectedString(TUserDefaults.GetStringDefault("Imp Date", "MDY"));
+            cmbDateFormat.SetSelectedString(TUserDefaults.GetStringDefault("Exp Date", "DMY"));
         }
 
         private void SaveUserDefaults()
         {
-            TUserDefaults.SetDefault("Imp Filename", txtFilename.Text);
+            String expOptions = ConvertDelimiter((String)cmbDelimiter.SelectedItem, false);
 
-            String expOptions = "";
+            expOptions += ConvertNumberFormat(cmbNumberFormat);
             TUserDefaults.SetDefault("Exp Options", expOptions);
-            String impOptions = ConvertDelimiter((String)cmbDelimiter.SelectedItem, false);
-            impOptions += ConvertNumberFormat(cmbNumberFormat);
-            TUserDefaults.SetDefault("Imp Options", impOptions);
-            TUserDefaults.SetDefault("Imp Date", (String)cmbDateFormat.SelectedItem);
+            TUserDefaults.SetDefault("Exp Filename", txtFilename.Text);
+            TUserDefaults.SetDefault("Exp Date", (String)cmbDateFormat.SelectedItem);
             TUserDefaults.SaveChangedUserDefaults();
+        }
+
+        private void ExportBudgetSelect(object sender, EventArgs e)
+        {
+            ExportBudget(null, null);
+
+            //Open file in explorer
+            if ((FExportFileName.Length > 0) && (Utilities.DetermineExecutingOS() != TExecutingOSEnum.oesUnsupportedPlatform))
+            {
+                if (Utilities.DetermineExecutingOS() == TExecutingOSEnum.eosLinux)
+                {
+                    //TODO: add code to select a file in Linux
+                }
+                else
+                {
+                    Process.Start("explorer", "/e,/select," + FExportFileName);
+                }
+            }
         }
 
         /// <summary>
@@ -141,14 +175,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         /// </summary>
         private void ExportBudget(object sender, EventArgs e)
         {
-            String fileName = txtFilename.Text;
+            FExportFileName = txtFilename.Text;
+            String fileContents = string.Empty;
 
-            if (!Directory.Exists(Path.GetDirectoryName(fileName)))
+            if (!Directory.Exists(Path.GetDirectoryName(FExportFileName)))
             {
                 MessageBox.Show(Catalog.GetString("Please select an existing directory for this file!"),
                     Catalog.GetString("Error"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
+
+                FExportFileName = string.Empty;
                 return;
             }
 
@@ -159,15 +196,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             requestParams.Add("DateFormatString", cmbDateFormat.GetSelectedString());
             requestParams.Add("NumberFormat", ConvertNumberFormat(cmbNumberFormat));
 
-            String exportString = string.Empty;
-            TVerificationResultCollection AMessages = null;
+            TVerificationResultCollection AMessages;
 
+            string[] delims = new string[1];
+            delims[0] = ConvertDelimiter(cmbDelimiter.GetSelectedString(), false);
 
-            Int32 BatchCount = 0; //TRemote.MFinance.Budget.WebConnectors.ExportBudgets(FLedgerNumber, fileName, ConvertDelimiter(cmbDelimiter.GetSelectedString()),
+            Int32 budgetCount = TRemote.MFinance.Budget.WebConnectors.ExportBudgets(FLedgerNumber,
+                FExportFileName,
+                delims,
+                ref fileContents,
+                ref FBudgetDS,
+                out AMessages);
 
-            //.ExportAllGiftBatchData(requestParams,out exportString,out AMessages);
-
-            if (AMessages.Count > 0)
+            if ((AMessages != null) && (AMessages.Count > 0))
             {
                 if (AMessages.HasCriticalErrors)
                 {
@@ -175,6 +216,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
 
+                    FExportFileName = string.Empty;
                     return;
                 }
                 else
@@ -185,12 +227,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 }
             }
 
-            if (BatchCount == 0)
+            if (budgetCount == 0)
             {
                 MessageBox.Show(Catalog.GetString("There are no Budgets matching your criteria"),
                     Catalog.GetString("Error"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
+
+                FExportFileName = string.Empty;
                 return;
             }
 
@@ -198,8 +242,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             try
             {
-                sw1 = new StreamWriter(fileName);
-                sw1.Write(exportString);
+                sw1 = new StreamWriter(FExportFileName);
+                sw1.Write(fileContents);
             }
             finally
             {
@@ -209,8 +253,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 }
             }
 
-            MessageBox.Show(Catalog.GetString("Data exported successfully!"),
-                Catalog.GetString("Success"),
+            MessageBox.Show(Catalog.GetString(String.Format("Exported successfully! {0} Budget rows exported as file:{1}{1}{2}",
+                        budgetCount.ToString(),
+                        Environment.NewLine,
+                        FExportFileName.ToUpper())),
+                Catalog.GetString("Budget Export"),
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
 
@@ -237,16 +284,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         }
 
         void BtnHelpClick(object sender, EventArgs e)
-        {
-            // TODO
-        }
-
-        void BtnRecipientClick(object sender, EventArgs e)
-        {
-            // TODO
-        }
-
-        void BtnFieldClick(object sender, EventArgs e)
         {
             // TODO
         }
