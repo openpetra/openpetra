@@ -399,14 +399,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     {
                         String strMessage =
                             String.Format(Catalog.GetString(
-                                    "Payment of {0:n2} {1} to {2} is more than the due amount.\r\nPress OK to accept this amount."),
-                                DocPaymentRow.Amount, PaymentRow.CurrencyCode, PaymentRow.SupplierName);
+                                    "Payment of {0} {1} to {2}: Payment cannot be more than the due amount."),
+                                StringHelper.FormatUsingCurrencyCode(DocPaymentRow.Amount, PaymentRow.CurrencyCode),
+                                PaymentRow.CurrencyCode, PaymentRow.SupplierName);
 
-                        if (System.Windows.Forms.MessageBox.Show(strMessage, Catalog.GetString("OverPayment"), MessageBoxButtons.OKCancel)
-                            == DialogResult.Cancel)
-                        {
-                            return;
-                        }
+                        System.Windows.Forms.MessageBox.Show(strMessage, Catalog.GetString("OverPayment"));
+                        return;
                     }
                 }
             }
