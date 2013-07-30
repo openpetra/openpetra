@@ -819,14 +819,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
             bool AllValidationsOK = true;
-
+            
             bool recurrGiftBatchTableInDataSet = (AInspectDS.ARecurringGiftBatch != null);
             bool recurrGiftTableInDataSet = (AInspectDS.ARecurringGift != null);
             bool recurrGiftDetailTableInDataSet = (AInspectDS.ARecurringGiftDetail != null);
 
             if (recurrGiftBatchTableInDataSet)
             {
-                ValidateRecurringGiftBatch(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
+	            ValidateRecurringGiftBatch(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
                 ValidateRecurringGiftBatchManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
 
                 if (AVerificationResult.HasCriticalErrors)
@@ -859,7 +859,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 if ((SubmissionResult == TSubmitChangesResult.scrOK) && recurrGiftTableInDataSet && (AInspectDS.ARecurringGift.Count > 0))
                 {
-                    if (recurrGiftDetailTableInDataSet)
+                    if (recurrGiftBatchTableInDataSet)
+                    {
+                    	AInspectDS.ARecurringGiftBatch.AcceptChanges();
+                    }
+                    
+                	if (recurrGiftDetailTableInDataSet)
                     {
                         AInspectDS.ARecurringGiftDetail.AcceptChanges();
                     }

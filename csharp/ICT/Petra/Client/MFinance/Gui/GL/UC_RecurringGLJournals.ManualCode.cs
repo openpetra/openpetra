@@ -361,8 +361,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             int batchNumber = ARowToDelete.BatchNumber;
             
-            int currentRow = grdDetails.GetFirstHighlightedRowIndex();
-
             FJournalNumberToDelete = ARowToDelete.JournalNumber;
             bool deletionSuccessful = false;
 
@@ -437,7 +435,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (!((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
                 {
-                    MessageBox.Show("Unable to save after deletion and renumbering remaining recurring journals! Try saving maually and closing and reopening the form.");
+                    MessageBox.Show("Unable to save after deletion and renumbering remaining recurring journals! Try saving manually and closing and reopening the form.");
                 }
                 else
                 {
@@ -573,25 +571,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (jrnlsRenumbered)
             {
-                try
-                {
-                    FPetraUtilsObject.SetChangedFlag();
-
-                    if (!((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
-                    {
-                        throw new Exception("Unable to save after deleting a recurring journal's related records!");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message,
-                        "Deletion Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                }
+                FPetraUtilsObject.SetChangedFlag();
             }
             
-            //Need to refresh FPreviouslySelectedDetailRow
+            //Need to refresh FPreviouslySelectedDetailRow else it points to a deleted row
             SelectRowInGrid(grdDetails.GetFirstHighlightedRowIndex());
         }
 

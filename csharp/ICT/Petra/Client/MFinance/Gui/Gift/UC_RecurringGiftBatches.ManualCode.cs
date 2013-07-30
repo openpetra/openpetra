@@ -208,56 +208,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             int batchNumber = ARowToDelete.BatchNumber;
 
+            bool newBatch = (ARowToDelete.RowState == DataRowState.Added);
+            
             try
             {
                 ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} deleted successfully."),
                     batchNumber);
 
+                    //clear any transactions currently being editied in the Transaction Tab
+                    ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
-                //Load the gift details first before deleting them
-                FMainDS.ARecurringGiftDetail.DefaultView.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
-                    ARecurringGiftDetailTable.GetLedgerNumberDBName(),
-                    FLedgerNumber,
-                    ARecurringGiftDetailTable.GetBatchNumberDBName(),
-                    batchNumber);
+                    //Clear transactions etc for current Journal
+                    FMainDS.AGiftDetail.Clear();
+                    FMainDS.AGift.Clear();
 
-                // only load from server if there are no transactions loaded yet for this batch
-                // otherwise we would overwrite transactions that have already been modified
-                if (FMainDS.ARecurringGiftDetail.DefaultView.Count == 0)
-                {
-                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(FLedgerNumber, batchNumber));
-                }
+                    if (!newBatch)
+                    {
+	                    //Load tables afresh
+	                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(FLedgerNumber, ARowToDelete.BatchNumber));
+                    }
+                                                                                                
+                    //Delete transactions
+                    for (int i = FMainDS.AGiftDetail.Count - 1; i >= 0; i--)
+                    {
+                        FMainDS.AGiftDetail[i].Delete();
+                    }
 
-                // Delete the associated recurring gift detail rows.
-                DataView viewGiftDetail = new DataView(FMainDS.ARecurringGiftDetail);
-                viewGiftDetail.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
-                    ARecurringGiftTable.GetLedgerNumberDBName(),
-                    FLedgerNumber,
-                    ARecurringGiftTable.GetBatchNumberDBName(),
-                    batchNumber);
+                    for (int i = FMainDS.AGift.Count - 1; i >= 0; i--)
+                    {
+                        FMainDS.AGift[i].Delete();
+                    }
 
-                foreach (DataRowView row in viewGiftDetail)
-                {
-                    row.Delete();
-                }
-
-                // Delete the associated recurring gift rows.
-                DataView viewGift = new DataView(FMainDS.ARecurringGift);
-                viewGift.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
-                    ARecurringGiftTable.GetLedgerNumberDBName(),
-                    FLedgerNumber,
-                    ARecurringGiftTable.GetBatchNumberDBName(),
-                    batchNumber);
-
-                foreach (DataRowView row in viewGift)
-                {
-                    row.Delete();
-                }
-
-                // Delete the recurring batch row.
-                ARowToDelete.Delete();
-
-                FPreviouslySelectedDetailRow = null;
+	                // Delete the recurring batch row.
+	                ARowToDelete.Delete();
+	                
+	                //FMainDS.AcceptChanges();
+	                FPreviouslySelectedDetailRow.AcceptChanges();
+	                FPreviouslySelectedDetailRow = null;
 
                 deletionSuccessful = true;
             }
@@ -288,14 +275,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             /*Code to execute after the delete has occurred*/
             if (ADeletionPerformed && (ACompletionMessage.Length > 0))
             {
-                MessageBox.Show(ACompletionMessage,
-                    "Deletion Completed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-
-                if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
+                if (!((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
                 {
-                    ShowDetails(null);
+                    MessageBox.Show("Unable to save after deletion of batch! Try saving manually and closing and reopening the form.");
+                }
+                else
+                {
+					MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));                	
                 }
             }
             else if (!AAllowDeletion)
@@ -316,6 +302,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                 ((TFrmRecurringGiftBatch)ParentForm).DisableTransactionsTab();
             }
+            
+            SelectRowInGrid(grdDetails.GetFirstHighlightedRowIndex());
         }
 
         private void Submit(System.Object sender, System.EventArgs e)
