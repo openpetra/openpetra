@@ -1948,6 +1948,33 @@ namespace Ict.Common
             return StringHelper.FormatCurrency(new TVariant(AValue), format);
         }
 
+        /// <summary></summary>
+        /// <param name="ACurrencyCode"></param>
+        /// <returns></returns>
+        public static int DecimalPlacesForCurrency(String ACurrencyCode)
+        {
+            int Ret = 2;
+            if (CurrencyFormats != null)
+            {
+                CurrencyFormats.DefaultView.RowFilter = String.Format("a_currency_code_c='{0}'", ACurrencyCode);
+
+                if (CurrencyFormats.DefaultView.Count > 0)
+                {
+                    String format = CurrencyFormats.DefaultView[0].Row["a_display_format_c"].ToString();
+                    int dotPos = format.LastIndexOf('.');
+                    if (dotPos > 0)
+                    {
+                        Ret = format.Length - 1 - dotPos;
+                    }
+                    else
+                    {
+                        Ret = 0;
+                    }
+                }
+            }
+            return Ret;
+        }
+
         /// <summary>
         /// If this is not given (during initialisation), a default format will be used.
         /// </summary>

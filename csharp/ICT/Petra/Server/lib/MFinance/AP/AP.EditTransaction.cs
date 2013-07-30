@@ -720,6 +720,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 journal.TransactionCurrency = CurrencyCode.Substring(0, CurrencyCode.IndexOf("|"));
                 journal.JournalDescription = "AP";
 
+                int baseCurrencyDecimalPlaces = 0; // This will not be used unless this is a foreign journal.
+                int intlCurrencyDecimalPlaces = 0;
+                if (journal.TransactionCurrency != GLDataset.ALedger[0].BaseCurrency)
+                {
+                    baseCurrencyDecimalPlaces = StringHelper.DecimalPlacesForCurrency(GLDataset.ALedger[0].BaseCurrency);
+                    intlCurrencyDecimalPlaces = StringHelper.DecimalPlacesForCurrency(GLDataset.ALedger[0].IntlCurrency);
+                }
+
                 if (Reversal)
                 {
                     journal.JournalDescription = "Reversal: AP";
@@ -803,13 +811,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         }
 
                         transaction.AmountInBaseCurrency = GLRoutines.Divide(transaction.TransactionAmount,
-                            journal.ExchangeRateToBase);
+                            journal.ExchangeRateToBase, baseCurrencyDecimalPlaces);
 
                         transaction.AmountInIntlCurrency = GLRoutines.Divide(transaction.AmountInBaseCurrency,
                             TExchangeRateTools.GetDailyExchangeRate(
                                 GLDataset.ALedger[0].BaseCurrency,
                                 GLDataset.ALedger[0].IntlCurrency,
-                                transaction.TransactionDate));
+                                transaction.TransactionDate),
+                            intlCurrencyDecimalPlaces);
 
                         transaction.AccountCode = documentDetail.AccountCode;
                         transaction.CostCentreCode = documentDetail.CostCentreCode;
@@ -859,10 +868,10 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         TExchangeRateTools.GetDailyExchangeRate(
                             journal.TransactionCurrency,
                             GLDataset.ALedger[0].IntlCurrency,
-                            transaction.TransactionDate));
+                            transaction.TransactionDate), intlCurrencyDecimalPlaces);
 
                     transaction.AmountInBaseCurrency = GLRoutines.Divide(transaction.TransactionAmount,
-                        journal.ExchangeRateToBase);
+                        journal.ExchangeRateToBase, baseCurrencyDecimalPlaces);
 
                     transaction.AccountCode = document.ApAccount;
                     transaction.CostCentreCode = TGLTransactionWebConnector.GetStandardCostCentre(ALedgerNumber);
@@ -1167,183 +1176,258 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             Int32 CounterJournals = 1;
 
-            // add journal for each currency/exchangeRate and the transactions
+            // Add a journal for each currency/exchangeRate, and the transactions.
+            // Most likely only one currency/exchangeRate will be used!
+
             foreach (string CurrencyCode in DocumentsByCurrency.Keys)
             {
-                AJournalRow journal = GLDataset.AJournal.NewRowTyped();
-                journal.LedgerNumber = batch.LedgerNumber;
-                journal.BatchNumber = batch.BatchNumber;
-                journal.JournalNumber = CounterJournals++;
-                journal.DateEffective = batch.DateEffective;
-                journal.TransactionCurrency = CurrencyCode.Substring(0, CurrencyCode.IndexOf("|"));
-                journal.JournalDescription = "AP";
-                journal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
-                journal.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
-                journal.DateOfEntry = DateTime.Now;
+                String StandardCostCentre = TLedgerInfo.GetStandardCostCentre(batch.LedgerNumber);
+                Dictionary<String, Decimal> ForexGain = new Dictionary<string, decimal>(); // ForexGain is recorded for each AP account in use.
 
+                AJournalRow journalRow = GLDataset.AJournal.NewRowTyped();
+                journalRow.LedgerNumber = batch.LedgerNumber;
+                journalRow.BatchNumber = batch.BatchNumber;
+                journalRow.JournalNumber = CounterJournals++;
+                journalRow.DateEffective = batch.DateEffective;
+                journalRow.TransactionCurrency = CurrencyCode.Substring(0, CurrencyCode.IndexOf("|"));
+                journalRow.JournalDescription = "AP";
+                journalRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.INV.ToString();
+                journalRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
+                journalRow.DateOfEntry = DateTime.Now;
+
+                int baseCurrencyDecimalPlaces = 0; // This will not be used unless this is a foreign journal.
+                int intlCurrencyDecimalPlaces = 0;
+                if (journalRow.TransactionCurrency != GLDataset.ALedger[0].BaseCurrency)
+                {
+                    baseCurrencyDecimalPlaces = StringHelper.DecimalPlacesForCurrency(GLDataset.ALedger[0].BaseCurrency);
+                    intlCurrencyDecimalPlaces = StringHelper.DecimalPlacesForCurrency(GLDataset.ALedger[0].IntlCurrency);
+                }
                 // I'm not using the Daily Exchange Rate, since the exchange rate has been specified by the user in the payment.
                 // using the exchange rate from the first payment in this set of payments with same currency and exchange rate
-                journal.ExchangeRateTime = 0;
+                journalRow.ExchangeRateTime = 0;
 
                 if (DocumentsByCurrency[CurrencyCode][0].IsExchangeRateToBaseNull())
                 {
-                    journal.ExchangeRateToBase = 1.0m;
+                    journalRow.ExchangeRateToBase = 1.0m;
                 }
                 else
                 {
-                    journal.ExchangeRateToBase = DocumentsByCurrency[CurrencyCode][0].ExchangeRateToBase;
+                    journalRow.ExchangeRateToBase = DocumentsByCurrency[CurrencyCode][0].ExchangeRateToBase;
                 }
 
-                GLDataset.AJournal.Rows.Add(journal);
+                GLDataset.AJournal.Rows.Add(journalRow);
 
                 Int32 TransactionCounter = 1;
 
-                foreach (AccountsPayableTDSAApPaymentRow payment in DocumentsByCurrency[CurrencyCode])
+                foreach (AccountsPayableTDSAApPaymentRow paymentRow in DocumentsByCurrency[CurrencyCode])
                 {
-                    ATransactionRow transaction = null;
                     DataView DocumentPaymentView = APDataset.AApDocumentPayment.DefaultView;
-                    DocumentPaymentView.RowFilter = AApDocumentPaymentTable.GetPaymentNumberDBName() + " = " + payment.PaymentNumber.ToString();
+                    DocumentPaymentView.RowFilter = AApDocumentPaymentTable.GetPaymentNumberDBName() + " = " + paymentRow.PaymentNumber.ToString();
 
-                    // at the moment, we create 2 transactions for each document; no summarising of documents with same AP account etc
                     foreach (DataRowView rowview in DocumentPaymentView)
                     {
-                        AApDocumentPaymentRow documentPayment = (AApDocumentPaymentRow)rowview.Row;
+                        AApDocumentPaymentRow documentPaymentRow = (AApDocumentPaymentRow)rowview.Row;
                         APDataset.AApDocument.DefaultView.RowFilter = AApDocumentTable.GetApDocumentIdDBName() + " = " +
-                                                                      documentPayment.ApDocumentId.ToString();
+                                                                      documentPaymentRow.ApDocumentId.ToString();
                         AApDocumentRow documentRow = (AApDocumentRow)APDataset.AApDocument.DefaultView[0].Row;
 
-                        // TODO: analysis attributes
+                        ATransactionRow transactionRowBank = null;
+                        GLDataset.ATransaction.DefaultView.RowFilter = 
+                            "a_account_code_c='" + paymentRow.BankAccount
+                            + "' AND a_journal_number_i=" + journalRow.JournalNumber.ToString();
 
-                        transaction = GLDataset.ATransaction.NewRowTyped();
-                        transaction.LedgerNumber = journal.LedgerNumber;
-                        transaction.BatchNumber = journal.BatchNumber;
-                        transaction.JournalNumber = journal.JournalNumber;
-                        transaction.TransactionNumber = TransactionCounter++;
-                        transaction.TransactionAmount = documentPayment.Amount;
-                        transaction.TransactionDate = batch.DateEffective;
-                        transaction.SystemGenerated = true;
-
-                        transaction.DebitCreditIndicator = (transaction.TransactionAmount < 0);
-
-                        if (transaction.TransactionAmount < 0)
+                        if (GLDataset.ATransaction.DefaultView.Count > 0)
                         {
-                            transaction.TransactionAmount *= -1;
+                            transactionRowBank = (ATransactionRow)GLDataset.ATransaction.DefaultView[0].Row;
+                            transactionRowBank.TransactionAmount -= documentPaymentRow.Amount; // This TransactionAmount is unsigned until later.
+                        }
+                        else
+                        {
+                            transactionRowBank = GLDataset.ATransaction.NewRowTyped();
+                            transactionRowBank.LedgerNumber = journalRow.LedgerNumber;
+                            transactionRowBank.BatchNumber = journalRow.BatchNumber;
+                            transactionRowBank.JournalNumber = journalRow.JournalNumber;
+                            transactionRowBank.TransactionNumber = TransactionCounter++;
+                            transactionRowBank.TransactionAmount = 0 - documentPaymentRow.Amount; // This TransactionAmount is unsigned until later.
+                            transactionRowBank.AmountInBaseCurrency = 0; // This will be corrected later, after this nested loop.
+                            transactionRowBank.TransactionDate = batch.DateEffective;
+                            transactionRowBank.SystemGenerated = true;
+                            transactionRowBank.AccountCode = paymentRow.BankAccount;
+                            transactionRowBank.CostCentreCode = StandardCostCentre;
+                            transactionRowBank.Narrative = "AP Payment: " + paymentRow.PaymentNumber.ToString() + " - " +
+                                                    Ict.Petra.Shared.MPartner.Calculations.FormatShortName(paymentRow.SupplierName,
+                                eShortNameFormat.eReverseWithoutTitle);
+                            transactionRowBank.Reference = paymentRow.Reference;
+                            GLDataset.ATransaction.Rows.Add(transactionRowBank);
                         }
 
-                        transaction.AmountInBaseCurrency = GLRoutines.Divide(transaction.TransactionAmount, journal.ExchangeRateToBase);
+                        ATransactionRow transactionRowAp = null;
+                        GLDataset.ATransaction.DefaultView.RowFilter = 
+                            "a_account_code_c='" + documentRow.ApAccount
+                            + "' AND a_journal_number_i=" + journalRow.JournalNumber.ToString();
 
-                        transaction.AmountInIntlCurrency = GLRoutines.Divide(transaction.AmountInBaseCurrency,
-                            TExchangeRateTools.GetDailyExchangeRate(
-                                GLDataset.ALedger[0].BaseCurrency,
-                                GLDataset.ALedger[0].IntlCurrency,
-                                transaction.TransactionDate));
+                        if (GLDataset.ATransaction.DefaultView.Count > 0)
+                        {
+                            transactionRowAp = (ATransactionRow)GLDataset.ATransaction.DefaultView[0].Row;
+                            transactionRowAp.TransactionAmount += documentPaymentRow.Amount; // This TransactionAmount is unsigned until later.
+                            transactionRowAp.Narrative += ", " + documentRow.ApNumber.ToString();
+                        }
+                        else
+                        {
+                            transactionRowAp = GLDataset.ATransaction.NewRowTyped();
+                            transactionRowAp.LedgerNumber = journalRow.LedgerNumber;
+                            transactionRowAp.BatchNumber = journalRow.BatchNumber;
+                            transactionRowAp.JournalNumber = journalRow.JournalNumber;
+                            transactionRowAp.TransactionNumber = TransactionCounter++;
+                            transactionRowAp.TransactionAmount = documentPaymentRow.Amount;  // This TransactionAmount is unsigned until later.
+                            transactionRowAp.TransactionDate = batch.DateEffective;
+                            transactionRowAp.SystemGenerated = true;
+                            transactionRowAp.AccountCode = documentRow.ApAccount;
+                            transactionRowAp.CostCentreCode = StandardCostCentre;
+                            transactionRowAp.Narrative = "AP Payment:" + paymentRow.PaymentNumber.ToString() + " AP: " +
+                                                                documentRow.ApNumber.ToString();
+                            transactionRowAp.Reference = paymentRow.Reference;
+                            transactionRowAp.AmountInBaseCurrency = 0; // This will be corrected later, after this nested loop.
+                            GLDataset.ATransaction.Rows.Add(transactionRowAp);
+                        }
 
-                        transaction.AccountCode = payment.BankAccount;
-                        transaction.CostCentreCode = TGLTransactionWebConnector.GetStandardCostCentre(
-                            payment.LedgerNumber);
-                        transaction.Narrative = "AP Payment: " + payment.PaymentNumber.ToString() + " - " +
-                                                Ict.Petra.Shared.MPartner.Calculations.FormatShortName(payment.SupplierName,
-                            eShortNameFormat.eReverseWithoutTitle);
-                        transaction.Reference = payment.Reference;
-
-                        // TODO transaction.DetailNumber
-
-                        GLDataset.ATransaction.Rows.Add(transaction);
-
-                        // At the moment: no summarising of documents with same AP account etc
-                        // create one transaction for the AP account
-                        ATransactionRow transactionAPAccount = GLDataset.ATransaction.NewRowTyped();
-                        transactionAPAccount.LedgerNumber = journal.LedgerNumber;
-                        transactionAPAccount.BatchNumber = journal.BatchNumber;
-                        transactionAPAccount.JournalNumber = journal.JournalNumber;
-                        transactionAPAccount.TransactionNumber = TransactionCounter++;
-                        transactionAPAccount.DebitCreditIndicator = !transaction.DebitCreditIndicator;
-                        transactionAPAccount.TransactionAmount = transaction.TransactionAmount;
-                        transactionAPAccount.AmountInBaseCurrency = transaction.AmountInBaseCurrency;
-                        transactionAPAccount.AmountInIntlCurrency = transaction.AmountInIntlCurrency;
-                        transactionAPAccount.TransactionDate = batch.DateEffective;
-                        transactionAPAccount.SystemGenerated = true;
-                        transactionAPAccount.AccountCode = documentRow.ApAccount;
-                        transactionAPAccount.CostCentreCode = TLedgerInfo.GetStandardCostCentre(payment.LedgerNumber);
-                        transactionAPAccount.Narrative = "AP Payment:" + payment.PaymentNumber.ToString() + " AP: " +
-                                                         documentRow.ApNumber.ToString();
-                        transactionAPAccount.Reference = payment.Reference;
-
-                        // TODO transactionAPAccount.DetailNumber
-
-                        GLDataset.ATransaction.Rows.Add(transactionAPAccount);
-
-                        // for other currencies a post to a_ledger.a_forex_gains_losses_account_c (AP REVAL)
-                        if (journal.TransactionCurrency != LedgerTbl[0].BaseCurrency)
+                        if (journalRow.TransactionCurrency != GLDataset.ALedger[0].BaseCurrency)
                         {
                             // This invoice is in a non-base currency, and the value of it in my base currency
                             // may have changed since it was first posted. To keep the ledger balanced,
-                            // an adjusting entry is made to the the ForexGainsLossesAccount account.
+                            // adjusting entries will made to the AP accounts,
+                            // and a single balancing entry will made to the ForexGainsLossesAccount account.
+                            // (Most often only one AP account per currency will be used.)
 
-                            Decimal OriginalBaseAmount = GLRoutines.Divide(documentPayment.Amount, documentRow.ExchangeRateToBase);
-                            Decimal NewBaseAmount = GLRoutines.Divide(documentPayment.Amount, payment.ExchangeRateToBase);
-                            Decimal ForexGain = NewBaseAmount - OriginalBaseAmount;
-
-                            if (ForexGain != 0)
+                            Decimal BaseAmountAtPosting = GLRoutines.Divide(documentPaymentRow.Amount, documentRow.ExchangeRateToBase, baseCurrencyDecimalPlaces);
+                            Decimal BaseAmountNow = GLRoutines.Divide(documentPaymentRow.Amount, paymentRow.ExchangeRateToBase, baseCurrencyDecimalPlaces);
+                            Decimal ForexDelta = (BaseAmountNow - BaseAmountAtPosting);
+                            if (ForexDelta != 0)  // There's a good chance this will be 0!
                             {
-                                // this goes into a separate REVAL journal
-
-                                AJournalRow RevalJournal = GLDataset.AJournal.NewRowTyped();
-                                RevalJournal.LedgerNumber = batch.LedgerNumber;
-                                RevalJournal.BatchNumber = batch.BatchNumber;
-                                RevalJournal.JournalNumber = CounterJournals++;
-                                RevalJournal.DateEffective = batch.DateEffective;
-                                RevalJournal.TransactionCurrency = LedgerTbl[0].BaseCurrency;
-                                RevalJournal.JournalDescription = "TODO"; // TODO: journal description for posting AP documents
-                                RevalJournal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.REVAL.ToString();
-                                RevalJournal.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
-                                RevalJournal.DateOfEntry = DateTime.Now;
-                                RevalJournal.ExchangeRateToBase = 1.0m;
-                                RevalJournal.ExchangeRateTime = 0;
-                                GLDataset.AJournal.Rows.Add(RevalJournal);
-
-                                ATransactionRow transactionReval = GLDataset.ATransaction.NewRowTyped();
-                                transactionReval.LedgerNumber = RevalJournal.LedgerNumber;
-                                transactionReval.BatchNumber = RevalJournal.BatchNumber;
-                                transactionReval.JournalNumber = RevalJournal.JournalNumber;
-                                transactionReval.TransactionNumber = 0;
-                                transactionReval.Narrative = "AP expense reval";
-                                transactionReval.Reference = payment.Reference;
-                                transactionReval.AccountCode = LedgerTbl[0].ForexGainsLossesAccount;
-                                transactionReval.CostCentreCode = transaction.CostCentreCode;
-                                transactionReval.TransactionDate = batch.DateEffective;
-                                transactionReval.SystemGenerated = true;
-                                transactionReval.TransactionAmount = 0; // no real value
-                                transactionReval.AmountInIntlCurrency = 0; // no real value
-                                transactionReval.DebitCreditIndicator = (ForexGain > 0);
-                                transactionReval.AmountInBaseCurrency = Math.Abs(ForexGain);
-
-                                GLDataset.ATransaction.Rows.Add(transactionReval);
-
-                                ATransactionRow transactionApReval = GLDataset.ATransaction.NewRowTyped();
-                                transactionApReval.LedgerNumber = RevalJournal.LedgerNumber;
-                                transactionApReval.BatchNumber = RevalJournal.BatchNumber;
-                                transactionApReval.JournalNumber = RevalJournal.JournalNumber;
-                                transactionApReval.TransactionNumber = 1;
-                                transactionApReval.Narrative = "AP expense reval";
-                                transactionApReval.Reference = payment.Reference;
-                                transactionApReval.AccountCode = documentRow.ApAccount;
-                                transactionApReval.CostCentreCode = transaction.CostCentreCode;
-                                transactionApReval.TransactionAmount = 0; // no real value
-                                transactionApReval.TransactionDate = batch.DateEffective;
-                                transactionApReval.SystemGenerated = true;
-                                transactionApReval.DebitCreditIndicator = !transactionReval.DebitCreditIndicator;
-                                transactionApReval.AmountInBaseCurrency = transactionReval.AmountInBaseCurrency;
-                                transactionApReval.AmountInIntlCurrency = transactionReval.AmountInIntlCurrency;
-
-                                GLDataset.ATransaction.Rows.Add(transactionApReval);
+                                if (ForexGain.ContainsKey(documentRow.ApAccount))
+                                {
+                                    ForexGain[documentRow.ApAccount] += ForexDelta;
+                                }
+                                else
+                                {
+                                    ForexGain.Add(documentRow.ApAccount, ForexDelta);
+                                }
                             }
+                        }
+
+                    } // foreach DocumentPayment
+                } // foreach Payment
+
+                journalRow.LastTransactionNumber = TransactionCounter - 1;
+
+                // So now I have one bank transaction per Bank Account credited
+                // (Which is likely to be one per currency, but it could be more...)
+                // and one AP transaction per AP account used
+                // (Probably also one per currency.)
+                // I need to set the international fields on the consolidated transaction rows:
+                GLDataset.ATransaction.DefaultView.RowFilter = "a_journal_number_i=" + journalRow.JournalNumber.ToString();
+                foreach(DataRowView rv in GLDataset.ATransaction.DefaultView)
+                {
+                    ATransactionRow tempTransRow = (ATransactionRow) rv.Row;
+                    if (tempTransRow.AmountInBaseCurrency == 0) // I left this blank earlier as a marker.
+                    {                                           // If any other rows have 0 here, (a) that's a fault, and (b) it's OK - it won't do any harm!
+
+                        tempTransRow.DebitCreditIndicator = (tempTransRow.TransactionAmount < 0);
+
+                        if (tempTransRow.TransactionAmount < 0)
+                        {
+                            tempTransRow.TransactionAmount *= -1;
+                        }
+
+                        if (journalRow.TransactionCurrency == GLDataset.ALedger[0].BaseCurrency)
+                        {
+                            tempTransRow.AmountInBaseCurrency = tempTransRow.TransactionAmount;
+                        }
+                        else
+                        {
+                            tempTransRow.AmountInBaseCurrency = GLRoutines.Divide(tempTransRow.TransactionAmount, journalRow.ExchangeRateToBase, baseCurrencyDecimalPlaces);
+
+                            tempTransRow.AmountInIntlCurrency = GLRoutines.Divide(tempTransRow.AmountInBaseCurrency,
+                                TExchangeRateTools.GetDailyExchangeRate(
+                                    GLDataset.ALedger[0].BaseCurrency,
+                                    GLDataset.ALedger[0].IntlCurrency,
+                                    tempTransRow.TransactionDate),
+                                intlCurrencyDecimalPlaces);
                         }
                     }
                 }
 
-                journal.LastTransactionNumber = TransactionCounter - 1;
-            }
+                // The'base value' of these invoices may have changed since they were posted -
+                // if this is the case I need a 'reval' journal to keep the books straight.
+                // NOTE if the payment is already in Base Currency, the ForexGain dictionary will be empty.
+
+                if (ForexGain.Count > 0) // One ForexGain per foreign currency would be normal, but there could be multiple AP accounts.
+                {
+                    Decimal TotalForexCorrection = 0;
+                    // this goes into a separate REVAL journal in Base Currency.
+
+                    AJournalRow RevalJournal = GLDataset.AJournal.NewRowTyped();
+                    RevalJournal.LedgerNumber = batch.LedgerNumber;
+                    RevalJournal.BatchNumber = batch.BatchNumber;
+                    RevalJournal.JournalNumber = CounterJournals++;
+                    RevalJournal.DateEffective = batch.DateEffective;
+                    RevalJournal.TransactionCurrency = GLDataset.ALedger[0].BaseCurrency;
+                    RevalJournal.JournalDescription = "AP Reval";
+                    RevalJournal.TransactionTypeCode = CommonAccountingTransactionTypesEnum.REVAL.ToString();
+                    RevalJournal.SubSystemCode = CommonAccountingSubSystemsEnum.GL.ToString();
+                    RevalJournal.DateOfEntry = DateTime.Now;
+                    RevalJournal.ExchangeRateToBase = 1.0m;
+                    RevalJournal.ExchangeRateTime = 0;
+                    GLDataset.AJournal.Rows.Add(RevalJournal);
+
+                    TransactionCounter = 1;
+
+                    foreach (String ApAccount in ForexGain.Keys)
+                    {
+                        // One transaction for each AP Account used:
+                        ATransactionRow transactionApReval = GLDataset.ATransaction.NewRowTyped();
+                        transactionApReval.LedgerNumber = RevalJournal.LedgerNumber;
+                        transactionApReval.BatchNumber = RevalJournal.BatchNumber;
+                        transactionApReval.JournalNumber = RevalJournal.JournalNumber;
+                        transactionApReval.TransactionNumber = TransactionCounter++;
+                        transactionApReval.Narrative = "AP expense reval";
+                        transactionApReval.Reference = "";
+                        transactionApReval.AccountCode = ApAccount;
+                        transactionApReval.CostCentreCode = StandardCostCentre;
+                        transactionApReval.TransactionAmount = 0; // no real value
+                        transactionApReval.AmountInIntlCurrency = 0; // no real value
+                        transactionApReval.TransactionDate = batch.DateEffective;
+                        transactionApReval.SystemGenerated = true;
+                        transactionApReval.DebitCreditIndicator = (ForexGain[ApAccount] > 0);
+                        transactionApReval.AmountInBaseCurrency = Math.Abs(ForexGain[ApAccount]);
+                        GLDataset.ATransaction.Rows.Add(transactionApReval);
+
+                        TotalForexCorrection += ForexGain[ApAccount];
+                    }
+
+
+                    // A single transaction to the ForexGainsLossesAccount:
+                    ATransactionRow transactionReval = GLDataset.ATransaction.NewRowTyped();
+                    transactionReval.LedgerNumber = RevalJournal.LedgerNumber;
+                    transactionReval.BatchNumber = RevalJournal.BatchNumber;
+                    transactionReval.JournalNumber = RevalJournal.JournalNumber;
+                    transactionReval.TransactionNumber = TransactionCounter++;
+                    transactionReval.Narrative = "AP expense reval";
+                    transactionReval.Reference = "";
+                    transactionReval.AccountCode = GLDataset.ALedger[0].ForexGainsLossesAccount;
+                    transactionReval.CostCentreCode = StandardCostCentre;
+                    transactionReval.TransactionDate = batch.DateEffective;
+                    transactionReval.SystemGenerated = true;
+                    transactionReval.TransactionAmount = 0; // no real value
+                    transactionReval.AmountInIntlCurrency = 0; // no real value
+                    transactionReval.DebitCreditIndicator = (TotalForexCorrection < 0); // Opposite sign to those used above
+                    transactionReval.AmountInBaseCurrency = Math.Abs(TotalForexCorrection);
+                    GLDataset.ATransaction.Rows.Add(transactionReval);
+
+                    RevalJournal.LastTransactionNumber = TransactionCounter - 1;
+                }
+
+            } // foreach currency
 
             batch.LastJournal = CounterJournals - 1;
 
