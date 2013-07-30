@@ -85,12 +85,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             LoadDataOnDemand();
 
             //FDocumentCodeDT = (PDocumentTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.DocumentCodeList);
-
-            if (grdDetails.Rows.Count <= 1)
-            {
-                pnlDetails.Visible = false;
-                btnDelete.Enabled = false;
-            }
         }
 
         /// <summary>
@@ -119,9 +113,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         private bool PreDeleteManual(PmDocumentRow ARowToDelete, ref string ADeletionQuestion)
         {
             /*Code to execute before the delete can take place*/
-            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Personal Document record: {0} {1}?"),
-                ARowToDelete.DocCode,
-                ARowToDelete.DocumentId);
+            ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            ADeletionQuestion += String.Format("{0}{0}({1} {2},{0} {3} {4})",
+                Environment.NewLine,
+                lblDocumentCode.Text,
+                cmbDocumentCode.GetSelectedString(),
+                lblDocumentID.Text,
+                txtDocumentID.Text);
             return true;
         }
 
@@ -152,12 +150,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ShowDetailsManual(PmDocumentRow ARow)
         {
-            if (ARow != null)
-            {
-                btnDelete.Enabled = true;
-                pnlDetails.Visible = true;
-            }
-
             // In theory, the next Method call could be done in Methods NewRowManual; however, NewRowManual runs before
             // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
             // of a non-existing 'AfterNewRowManual' Method....

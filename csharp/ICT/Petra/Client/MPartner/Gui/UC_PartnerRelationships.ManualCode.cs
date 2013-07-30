@@ -109,7 +109,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FLogic.LoadDataOnDemand();
 
             grdDetails.Columns.Clear();
-            grdDetails.AddTextColumn("Description", FMainDS.PPartnerRelationship.Columns["RelationDescription"]);
+            grdDetails.AddTextColumn("Description", FMainDS.PPartnerRelationship.ColumnDisplayRelationDescription);
             grdDetails.AddPartnerKeyColumn("Partner Key", FMainDS.PPartnerRelationship.Columns["OtherPartnerKey"]);
             grdDetails.AddTextColumn("Partner Name",
                 FMainDS.PPartnerRelationship.Columns[PartnerEditTDSPPartnerRelationshipTable.GetPartnerShortNameDBName()]);
@@ -129,11 +129,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
+                ShowDetails(1); // do this as for some reason details are not automatically show here at the moment
             }
             else
             {
-                MakeDetailsInvisible(true);
-                btnDelete.Enabled = false;
                 btnEditOtherPartner.Enabled = false;
             }
         }
@@ -171,10 +170,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             long RelationPartnerKey;
 
-            // show controls if not visible yet
-            MakeDetailsInvisible(false);
-
-            btnDelete.Enabled = false;
             btnEditOtherPartner.Enabled = false;
 
             if (ARow != null)
@@ -265,6 +260,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private void RelationNameChanged(object sender, EventArgs e)
+        {
+            // update grid column for relation description
+            if (FLogic != null)
+            {
+                FLogic.UpdateRelationDescription(GetSelectedDetailRow(),
+                    cmbPPartnerRelationshipRelationName.GetSelectedString());
+            }
+        }
+
         /// <summary>
         /// adding a new partner relationship record
         /// </summary>
@@ -307,8 +312,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         private bool PreDeleteManual(PartnerEditTDSPPartnerRelationshipRow ARowToDelete, ref string ADeletionQuestion)
         {
             /*Code to execute before the delete can take place*/
-            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Relationship record: '{0}'?"),
-                ARowToDelete.RelationName);
+            ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            ADeletionQuestion += String.Format("{0}{0}({1} {2})",
+                Environment.NewLine,
+                lblPPartnerRelationshipRelationName.Text,
+                cmbPPartnerRelationshipRelationName.GetSelectedString());
             return true;
         }
 
@@ -379,16 +387,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 this.Cursor = Cursors.Default;
             }
-        }
-
-        /// <summary>
-        /// Sets this Usercontrol visible or unvisile true = visible, false = invisible.
-        /// </summary>
-        /// <returns>void</returns>
-        private void MakeDetailsInvisible(Boolean value)
-        {
-            /* make the details part of this screen visible or invisible. */
-            this.pnlDetails.Visible = !value;
         }
 
         private void ValidateDataDetailsManual(PPartnerRelationshipRow ARow)
