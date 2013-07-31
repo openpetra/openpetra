@@ -460,7 +460,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             //
             // sgGridView
             //
-            this.sgGridView.AlternatingBackgroundColour = System.Drawing.Color.FromArgb(230, 230, 230);
             this.sgGridView.Anchor =
                 ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top |
                                                         System.Windows.Forms.AnchorStyles.Bottom) |

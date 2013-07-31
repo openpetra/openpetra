@@ -66,7 +66,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // grdPartnerTypes
             //
-            this.grdPartnerTypes.AlternatingBackgroundColour = System.Drawing.Color.FromArgb(230, 230, 230);
             this.grdPartnerTypes.Anchor =
                 ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top |
                                                         System.Windows.Forms.AnchorStyles.Bottom) |
