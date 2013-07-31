@@ -206,6 +206,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FSelectedBatchNumber = ARow.BatchNumber;
 
             UpdateChangeableStatus();
+            
+            if (FPetraUtilsObject.HasChanges)
+            {
+            	//May need this
+            	//((TFrmRecurringGLBatch) this.ParentForm).SaveChanges();
+            }
         }
 
         /// <summary>

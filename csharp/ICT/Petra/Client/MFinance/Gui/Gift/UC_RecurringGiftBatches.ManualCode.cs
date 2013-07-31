@@ -95,7 +95,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 ShowDetails(null);
-                ((TFrmRecurringGiftBatch) this.ParentForm).DisableTransactionsTab();
+                ((TFrmRecurringGiftBatch) this.ParentForm).EnableTransactionsTab(false);
             }
 
             ShowData();
@@ -218,32 +218,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     //clear any transactions currently being editied in the Transaction Tab
                     ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
-                    //Clear transactions etc for current Journal
-                    FMainDS.AGiftDetail.Clear();
-                    FMainDS.AGift.Clear();
-
                     if (!newBatch)
                     {
 	                    //Load tables afresh
-	                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(FLedgerNumber, ARowToDelete.BatchNumber));
+	                    FMainDS.ARecurringGiftDetail.Clear();
+	                    FMainDS.ARecurringGift.Clear();
+	                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(FLedgerNumber, batchNumber));
                     }
                                                                                                 
                     //Delete transactions
-                    for (int i = FMainDS.AGiftDetail.Count - 1; i >= 0; i--)
+                    for (int i = FMainDS.ARecurringGiftDetail.Count - 1; i >= 0; i--)
                     {
-                        FMainDS.AGiftDetail[i].Delete();
+                        FMainDS.ARecurringGiftDetail[i].Delete();
                     }
 
-                    for (int i = FMainDS.AGift.Count - 1; i >= 0; i--)
+                    for (int i = FMainDS.ARecurringGift.Count - 1; i >= 0; i--)
                     {
-                        FMainDS.AGift[i].Delete();
+                        FMainDS.ARecurringGift[i].Delete();
                     }
 
 	                // Delete the recurring batch row.
 	                ARowToDelete.Delete();
 	                
 	                //FMainDS.AcceptChanges();
-	                FPreviouslySelectedDetailRow.AcceptChanges();
 	                FPreviouslySelectedDetailRow = null;
 
                 deletionSuccessful = true;
@@ -275,13 +272,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             /*Code to execute after the delete has occurred*/
             if (ADeletionPerformed && (ACompletionMessage.Length > 0))
             {
-                if (!((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
+                if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
                 {
-                    MessageBox.Show("Unable to save after deletion of batch! Try saving manually and closing and reopening the form.");
+                    MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
                 }
                 else
                 {
-					MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));                	
+					MessageBox.Show("Unable to save after deletion of batch! Try saving manually and closing and reopening the form.");
                 }
             }
             else if (!AAllowDeletion)
@@ -293,16 +290,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //message to user
             }
 
-            if (grdDetails.Rows.Count > 1)
-            {
-                ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab();
-            }
-            else
-            {
-                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
-                ((TFrmRecurringGiftBatch)ParentForm).DisableTransactionsTab();
-            }
+            UpdateChangeableStatus();
             
+            ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab((grdDetails.Rows.Count > 1));
+
             SelectRowInGrid(grdDetails.GetFirstHighlightedRowIndex());
         }
 
