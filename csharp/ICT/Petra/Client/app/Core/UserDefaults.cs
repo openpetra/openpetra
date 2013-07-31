@@ -55,6 +55,21 @@ namespace Ict.Petra.Client.App.Core
             /// <summary>todoComment</summary>
             public const String WINDOW_POSITION_AND_SIZE_PREFIX = "WINDOW_POS_AND_SIZE_";
 
+            /// <summary>Colour of the background of all SourceGrid DataGrid instances.</summary>
+            public const String COLOUR_GRID_BACKGROUND = "COLOUR_GRID_BACKGROUND";
+
+            /// <summary>Colour of the background of every cell and row of all SourceGrid DataGrid instances.</summary>
+            public const String COLOUR_GRID_CELLBACKGROUND = "COLOUR_GRID_CELLBACKGROUND";
+
+            /// <summary>Alternating background colour of all SourceGrid DataGrid instances.</summary>
+            public const String COLOUR_GRID_ALTERNATE = "COLOUR_GRID_ALTERNATE";
+
+            /// <summary>Colour of the Selection of all SourceGrid DataGrid instances.</summary>
+            public const String COLOUR_GRID_SELECTION = "COLOUR_GRID_SELECTION";
+
+            /// <summary>Colour of the Grid Lines of all SourceGrid DataGrid instances.</summary>
+            public const String COLOUR_GRID_GRIDLINES = "COLOUR_GRID_GRIDLINES";
+            
             #region TUserDefaults.TNamedDefaults
 
             /// <summary>
