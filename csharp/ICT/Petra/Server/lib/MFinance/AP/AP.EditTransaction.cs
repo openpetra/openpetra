@@ -1415,7 +1415,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         transactionApReval.AmountInIntlCurrency = 0; // no real value
                         transactionApReval.TransactionDate = batch.DateEffective;
                         transactionApReval.SystemGenerated = true;
-                        transactionApReval.DebitCreditIndicator = (ForexGain[ApAccount] > 0);
+                        transactionApReval.DebitCreditIndicator = (ForexGain[ApAccount] < 0);
                         transactionApReval.AmountInBaseCurrency = Math.Abs(ForexGain[ApAccount]);
                         GLDataset.ATransaction.Rows.Add(transactionApReval);
 
@@ -1436,7 +1436,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     transactionReval.SystemGenerated = true;
                     transactionReval.TransactionAmount = 0; // no real value
                     transactionReval.AmountInIntlCurrency = 0; // no real value
-                    transactionReval.DebitCreditIndicator = (TotalForexCorrection < 0); // Opposite sign to those used above
+                    transactionReval.DebitCreditIndicator = (TotalForexCorrection > 0); // Opposite sign to those used above
                     transactionReval.AmountInBaseCurrency = Math.Abs(TotalForexCorrection);
                     GLDataset.ATransaction.Rows.Add(transactionReval);
 
