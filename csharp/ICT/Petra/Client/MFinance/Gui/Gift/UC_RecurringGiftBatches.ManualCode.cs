@@ -209,39 +209,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             int batchNumber = ARowToDelete.BatchNumber;
 
             bool newBatch = (ARowToDelete.RowState == DataRowState.Added);
-            
+
             try
             {
                 ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} deleted successfully."),
                     batchNumber);
 
-                    //clear any transactions currently being editied in the Transaction Tab
-                    ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+                //clear any transactions currently being editied in the Transaction Tab
+                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
-                    if (!newBatch)
-                    {
-	                    //Load tables afresh
-	                    FMainDS.ARecurringGiftDetail.Clear();
-	                    FMainDS.ARecurringGift.Clear();
-	                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(FLedgerNumber, batchNumber));
-                    }
-                                                                                                
-                    //Delete transactions
-                    for (int i = FMainDS.ARecurringGiftDetail.Count - 1; i >= 0; i--)
-                    {
-                        FMainDS.ARecurringGiftDetail[i].Delete();
-                    }
+                if (!newBatch)
+                {
+                    //Load tables afresh
+                    FMainDS.ARecurringGiftDetail.Clear();
+                    FMainDS.ARecurringGift.Clear();
+                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(FLedgerNumber, batchNumber));
+                }
 
-                    for (int i = FMainDS.ARecurringGift.Count - 1; i >= 0; i--)
-                    {
-                        FMainDS.ARecurringGift[i].Delete();
-                    }
+                //Delete transactions
+                for (int i = FMainDS.ARecurringGiftDetail.Count - 1; i >= 0; i--)
+                {
+                    FMainDS.ARecurringGiftDetail[i].Delete();
+                }
 
-	                // Delete the recurring batch row.
-	                ARowToDelete.Delete();
-	                
-	                //FMainDS.AcceptChanges();
-	                FPreviouslySelectedDetailRow = null;
+                for (int i = FMainDS.ARecurringGift.Count - 1; i >= 0; i--)
+                {
+                    FMainDS.ARecurringGift[i].Delete();
+                }
+
+                // Delete the recurring batch row.
+                ARowToDelete.Delete();
+
+                //FMainDS.AcceptChanges();
+                FPreviouslySelectedDetailRow = null;
 
                 deletionSuccessful = true;
             }
@@ -278,7 +278,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-					MessageBox.Show("Unable to save after deletion of batch! Try saving manually and closing and reopening the form.");
+                    MessageBox.Show("Unable to save after deletion of batch! Try saving manually and closing and reopening the form.");
                 }
             }
             else if (!AAllowDeletion)
@@ -291,7 +291,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             UpdateChangeableStatus();
-            
+
             ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab((grdDetails.Rows.Count > 1));
 
             SelectRowInGrid(grdDetails.GetFirstHighlightedRowIndex());

@@ -359,7 +359,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private bool DeleteRowManual(ARecurringJournalRow ARowToDelete, ref string ACompletionMessage)
         {
             int batchNumber = ARowToDelete.BatchNumber;
-            
+
             FJournalNumberToDelete = ARowToDelete.JournalNumber;
             bool deletionSuccessful = false;
 
@@ -377,40 +377,40 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //clear any transactions currently being editied in the Transaction Tab
                 ((TFrmRecurringGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
-	            // Delete the associated recurring transaction analysis attributes
-	            DataView viewRecurringTransAnalAttrib = new DataView(FMainDS.ARecurringTransAnalAttrib);
-	            viewRecurringTransAnalAttrib.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
-	                ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
-	                batchNumber,
-	                ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
-	                FJournalNumberToDelete
-	               );
-	
-	            foreach (DataRowView row in viewRecurringTransAnalAttrib)
-	            {
-	                row.Delete();
-	            }
-	
-	            // Delete the associated recurring transactions
-	            DataView viewRecurringTransaction = new DataView(FMainDS.ARecurringTransaction);
-	            viewRecurringTransaction.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
-	                ARecurringTransactionTable.GetBatchNumberDBName(),
-	                batchNumber,
-	                ARecurringTransactionTable.GetJournalNumberDBName(),
-	                FJournalNumberToDelete
-	               );
-	
-	            foreach (DataRowView row in viewRecurringTransaction)
-	            {
-	                row.Delete();
-	            }
+                // Delete the associated recurring transaction analysis attributes
+                DataView viewRecurringTransAnalAttrib = new DataView(FMainDS.ARecurringTransAnalAttrib);
+                viewRecurringTransAnalAttrib.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+                    ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                    batchNumber,
+                    ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                    FJournalNumberToDelete
+                    );
 
-	            // Delete the recurring batch row.
+                foreach (DataRowView row in viewRecurringTransAnalAttrib)
+                {
+                    row.Delete();
+                }
+
+                // Delete the associated recurring transactions
+                DataView viewRecurringTransaction = new DataView(FMainDS.ARecurringTransaction);
+                viewRecurringTransaction.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+                    ARecurringTransactionTable.GetBatchNumberDBName(),
+                    batchNumber,
+                    ARecurringTransactionTable.GetJournalNumberDBName(),
+                    FJournalNumberToDelete
+                    );
+
+                foreach (DataRowView row in viewRecurringTransaction)
+                {
+                    row.Delete();
+                }
+
+                // Delete the recurring batch row.
                 ARowToDelete.Delete();
-                
+
                 FPreviouslySelectedDetailRow = null;
 
-            	deletionSuccessful = true;
+                deletionSuccessful = true;
             }
             catch (Exception ex)
             {
@@ -445,11 +445,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
                 {
-                    MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));                	
+                    MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
                 }
                 else
                 {
-					MessageBox.Show("Unable to save after deletion and renumbering remaining recurring journals! Try saving manually and closing and reopening the form.");
+                    MessageBox.Show(
+                        "Unable to save after deletion and renumbering remaining recurring journals! Try saving manually and closing and reopening the form.");
                 }
             }
 
@@ -465,12 +466,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             // Delete the associated recurring transaction analysis attributes
             DataView viewRecurringTransAnalAttrib = new DataView(FMainDS.ARecurringTransAnalAttrib);
+
             viewRecurringTransAnalAttrib.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
                 ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
                 ABatchNumber,
                 ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
                 AJournalNumber
-               );
+                );
 
             foreach (DataRowView row in viewRecurringTransAnalAttrib)
             {
@@ -484,7 +486,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ABatchNumber,
                 ARecurringTransactionTable.GetJournalNumberDBName(),
                 AJournalNumber
-               );
+                );
 
             foreach (DataRowView row in viewRecurringTransaction)
             {
@@ -525,7 +527,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 GLBatchTDSARecurringJournalRow newJrnlRow = FMainDS.ARecurringJournal.NewRowTyped(true);
 
                 newJrnlRow.ItemArray = jrnlRowCurrent.ItemArray;
- 
+
                 //reduce journal number by 1 in the new row
                 newJrnlRow.JournalNumber--;
 
@@ -606,7 +608,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FPetraUtilsObject.SetChangedFlag();
             }
-            
+
             //Need to refresh FPreviouslySelectedDetailRow else it points to a deleted row
             SelectRowInGrid(grdDetails.GetFirstHighlightedRowIndex());
         }

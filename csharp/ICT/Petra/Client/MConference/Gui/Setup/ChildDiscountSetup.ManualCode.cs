@@ -187,15 +187,6 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
         private void ValidateDataDetailsManual(PcDiscountRow ARow)
         {
             EnableOrDisableCmb(ARow);
-
-            // this is used to compare with the row that is being validated
-
-            /*DataRowCollection GridData = FMainDS.PcEarlyLate.Rows;
-             *
-             * TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-             *
-             * TSharedConferenceValidation_Conference.ValidateEarlyLateRegistration(this, ARow, ref VerificationResultCollection,
-             *  FPetraUtilsObject.ValidationControlsDict, GridData);*/
         }
     }
 }

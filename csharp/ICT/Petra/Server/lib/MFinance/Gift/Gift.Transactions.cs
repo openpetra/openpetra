@@ -819,14 +819,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
             bool AllValidationsOK = true;
-            
+
             bool recurrGiftBatchTableInDataSet = (AInspectDS.ARecurringGiftBatch != null);
             bool recurrGiftTableInDataSet = (AInspectDS.ARecurringGift != null);
             bool recurrGiftDetailTableInDataSet = (AInspectDS.ARecurringGiftDetail != null);
 
             if (recurrGiftBatchTableInDataSet)
             {
-	            ValidateRecurringGiftBatch(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
+                ValidateRecurringGiftBatch(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
                 ValidateRecurringGiftBatchManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
 
                 if (AVerificationResult.HasCriticalErrors)
@@ -861,10 +861,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     if (recurrGiftBatchTableInDataSet)
                     {
-                    	AInspectDS.ARecurringGiftBatch.AcceptChanges();
+                        AInspectDS.ARecurringGiftBatch.AcceptChanges();
                     }
-                    
-                	if (recurrGiftDetailTableInDataSet)
+
+                    if (recurrGiftDetailTableInDataSet)
                     {
                         AInspectDS.ARecurringGiftDetail.AcceptChanges();
                     }
@@ -873,50 +873,50 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     if (AInspectDS.ARecurringGift.Count > 0)
                     {
-	                    ARecurringGiftRow tranR = (ARecurringGiftRow)AInspectDS.ARecurringGift.Rows[0];
-	
-	                    Int32 currentLedger = tranR.LedgerNumber;
-	                    Int32 currentBatch = tranR.BatchNumber;
-	                    Int32 giftToDelete = 0;
-	
-	                    try
-	                    {
-	                        DataRow[] foundGiftsForDeletion = AInspectDS.ARecurringGift.Select(String.Format("{0} = '{1}'",
-	                                ARecurringGiftTable.GetChargeStatusDBName(),
-	                                MFinanceConstants.MARKED_FOR_DELETION));
-	
-	                        if (foundGiftsForDeletion.Length > 0)
-	                        {
-	                            ARecurringGiftRow giftRowClient = null;
-	
-	                            for (int i = 0; i < foundGiftsForDeletion.Length; i++)
-	                            {
-	                                //A gift has been deleted
-	                                giftRowClient = (ARecurringGiftRow)foundGiftsForDeletion[i];
-	
-	                                giftToDelete = giftRowClient.GiftTransactionNumber;
-	                                TLogging.Log(String.Format("Gift to Delete: {0} from Batch: {1}",
-	                                        giftToDelete,
-	                                        currentBatch));
-	
-	                                giftRowClient.Delete();
-	                            }
-	                        }
-	
-	                        SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-	                    }
-	                    catch (Exception ex)
-	                    {
-	                        TLogging.Log("Saving DataSet: " + ex.Message);
-	
-	                        TLogging.Log(String.Format("Error trying to save changes: {0} in Batch: {1}",
-	                                giftToDelete,
-	                                currentBatch
-	                                ));
-	
-	                        SubmissionResult = TSubmitChangesResult.scrError;
-	                    }
-	                }
+                        ARecurringGiftRow tranR = (ARecurringGiftRow)AInspectDS.ARecurringGift.Rows[0];
+
+                        Int32 currentLedger = tranR.LedgerNumber;
+                        Int32 currentBatch = tranR.BatchNumber;
+                        Int32 giftToDelete = 0;
+
+                        try
+                        {
+                            DataRow[] foundGiftsForDeletion = AInspectDS.ARecurringGift.Select(String.Format("{0} = '{1}'",
+                                    ARecurringGiftTable.GetChargeStatusDBName(),
+                                    MFinanceConstants.MARKED_FOR_DELETION));
+
+                            if (foundGiftsForDeletion.Length > 0)
+                            {
+                                ARecurringGiftRow giftRowClient = null;
+
+                                for (int i = 0; i < foundGiftsForDeletion.Length; i++)
+                                {
+                                    //A gift has been deleted
+                                    giftRowClient = (ARecurringGiftRow)foundGiftsForDeletion[i];
+
+                                    giftToDelete = giftRowClient.GiftTransactionNumber;
+                                    TLogging.Log(String.Format("Gift to Delete: {0} from Batch: {1}",
+                                            giftToDelete,
+                                            currentBatch));
+
+                                    giftRowClient.Delete();
+                                }
+                            }
+
+                            SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                        }
+                        catch (Exception ex)
+                        {
+                            TLogging.Log("Saving DataSet: " + ex.Message);
+
+                            TLogging.Log(String.Format("Error trying to save changes: {0} in Batch: {1}",
+                                    giftToDelete,
+                                    currentBatch
+                                    ));
+
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
                 }
             }
 

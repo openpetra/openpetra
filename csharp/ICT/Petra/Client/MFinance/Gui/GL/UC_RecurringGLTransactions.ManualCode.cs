@@ -84,7 +84,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FJournalNumber == AJournalNumber)
                 && (FTransactionCurrency == AForeignCurrencyName) && (FBatchStatus == ABatchStatus) && (FJournalStatus == AJournalStatus)
-                && (FMainDS.ARecurringTransaction.DefaultView.Count > 0) && FPreviouslySelectedDetailRow != null)
+                && (FMainDS.ARecurringTransaction.DefaultView.Count > 0) && (FPreviouslySelectedDetailRow != null))
             {
                 FJournalRow = GetJournalRow();
 
@@ -383,7 +383,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             FPreviouslySelectedDetailRow = (GLBatchTDSARecurringTransactionRow)ANewRow;
-            
+
             btnDeleteAll.Enabled = true;
         }
 
@@ -838,8 +838,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         MessageBox.Show(Catalog.GetString("The recurring journal has been cleared successfully!"),
                             Catalog.GetString("Success"),
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    	
-                    	SetJournalLastTransNumber();
+
+                        SetJournalLastTransNumber();
                     }
                     else
                     {

@@ -100,7 +100,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 //          GetDataFromControls();
             this.CreateNewAAnalysisAttribute();
             pnlDetails.Enabled = true;
-            
+
             SelectRowInGrid(grdDetails.Rows.Count);
         }
 
@@ -135,9 +135,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (ARow != null)  // How can ARow ever be null!!
             {
                 LoadCmbAnalType();
-				cmbDetailAnalTypeCode.SelectedValueChanged -= OnDetailAnalysisTypeCodeChange;
-				cmbDetailAnalTypeCode.Text = ARow.AnalysisTypeCode;
-				cmbDetailAnalTypeCode.SelectedValueChanged += new System.EventHandler(OnDetailAnalysisTypeCodeChange);
+                cmbDetailAnalTypeCode.SelectedValueChanged -= OnDetailAnalysisTypeCodeChange;
+                cmbDetailAnalTypeCode.Text = ARow.AnalysisTypeCode;
+                cmbDetailAnalTypeCode.SelectedValueChanged += new System.EventHandler(OnDetailAnalysisTypeCodeChange);
             }
         }
 
@@ -154,22 +154,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private bool PreDeleteManual(AAnalysisAttributeRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if (FPreviouslySelectedDetailRow != null && FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted)
+            if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted))
             {
-	        	ADeletionQuestion = String.Format(
-	                Catalog.GetString("Confirm you want to Remove {0} from this account."),
-	                FPreviouslySelectedDetailRow.AnalysisTypeCode);
+                ADeletionQuestion = String.Format(
+                    Catalog.GetString("Confirm you want to Remove {0} from this account."),
+                    FPreviouslySelectedDetailRow.AnalysisTypeCode);
             }
-            
+
             return true;
         }
 
         private void OnDetailAnalysisTypeCodeChange(System.Object sender, EventArgs e)
         {
-        	if (FPreviouslySelectedDetailRow != null && FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted)
-        	{
-        		FPreviouslySelectedDetailRow.AnalysisTypeCode = cmbDetailAnalTypeCode.GetSelectedString(); //GetDataFromControls();
-        	}
+            if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted))
+            {
+                FPreviouslySelectedDetailRow.AnalysisTypeCode = cmbDetailAnalTypeCode.GetSelectedString();         //GetDataFromControls();
+            }
         }
 
         private void GetDetailDataFromControlsManual(AAnalysisAttributeRow ARow)

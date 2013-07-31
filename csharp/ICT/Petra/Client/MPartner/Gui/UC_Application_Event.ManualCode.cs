@@ -72,6 +72,33 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// return label text for "Event" field
+        public String EventLabelText
+        {
+            get
+            {
+                return ucoEvent.EventLabelText;
+            }
+        }
+
+        /// return code value for "Event"
+        public String EventValueCode
+        {
+            get
+            {
+                return ucoEvent.EventValueCode;
+            }
+        }
+
+        /// return label value for "Event"
+        public String EventValueLabel
+        {
+            get
+            {
+                return ucoEvent.EventValueLabel;
+            }
+        }
+
         #endregion
 
         #region Public Methods

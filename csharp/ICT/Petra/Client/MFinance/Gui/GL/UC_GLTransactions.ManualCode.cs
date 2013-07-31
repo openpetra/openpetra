@@ -873,7 +873,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             Catalog.GetString("Success"),
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-		                SetJournalLastTransNumber();
+                        SetJournalLastTransNumber();
                     }
                     else
                     {
@@ -896,7 +896,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     UpdateChangeableStatus();
                     ClearControls();
                 }
-                
             }
         }
 

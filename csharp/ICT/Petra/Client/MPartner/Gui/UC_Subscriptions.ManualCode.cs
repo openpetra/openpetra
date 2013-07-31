@@ -204,12 +204,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
+                ShowDetails(1); // do this as for some reason details are not automatically show here at the moment
             }
             else
             {
-                pnlDetails.Visible = false;
-                //ucoDetails.MakeScreenInvisible(true);
-                btnDelete.Enabled = false;
                 btnCancelAllSubscriptions.Enabled = false;
             }
 
@@ -262,15 +260,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (ARow != null)
             {
                 ucoDetails.AllowEditIssues = true;
-                pnlDetails.Visible = true;
                 ucoDetails.ShowDetails(ARow);
             }
 
-            btnDelete.Enabled = false;
-
             if (ARow != null)
             {
-                btnDelete.Enabled = true;
                 btnCancelAllSubscriptions.Enabled = true;
             }
         }
@@ -324,8 +318,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         private bool PreDeleteManual(PSubscriptionRow ARowToDelete, ref string ADeletionQuestion)
         {
             /*Code to execute before the delete can take place*/
-            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Subscription {0}?"),
-                ARowToDelete.PublicationCode);
+            ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            ADeletionQuestion += String.Format("{0}{0}({1} {2})",
+                Environment.NewLine,
+                ucoDetails.PublicationCodeLabel,
+                ucoDetails.PublicationCodeValue);
             return true;
         }
 

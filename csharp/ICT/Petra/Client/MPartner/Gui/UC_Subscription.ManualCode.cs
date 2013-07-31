@@ -99,6 +99,28 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        public String PublicationCodeLabel
+        {
+            get
+            {
+                return lblPSubscriptionPublicationCode.Text;
+            }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public String PublicationCodeValue
+        {
+            get
+            {
+                return cmbPSubscriptionPublicationCode.GetSelectedString();
+            }
+        }
+
         /// <summary>todoComment</summary>
         public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
 

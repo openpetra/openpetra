@@ -117,11 +117,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if (ARow == null)
             {
-            	txtDetailAnalysisValue.Clear();
-            	return;
+                txtDetailAnalysisValue.Clear();
+                return;
             }
-
-         }
+        }
 
         /// <summary>
         /// The number of values in the grid for the current Type

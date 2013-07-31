@@ -232,8 +232,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // grdResult
             //
-            this.grdResult.AlternatingBackgroundColour =
-                System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
             this.grdResult.AutoFindColumn = ((short)(-1));
             this.grdResult.BackColor = System.Drawing.SystemColors.ControlDark;
             this.grdResult.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
