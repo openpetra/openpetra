@@ -192,40 +192,42 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             {
                 Int64 PartnerKey = Convert.ToInt64(CriteriaRow["PartnerKey"]);
                 String SqlQuery = "SELECT DISTINCT " +
-                    "0 as ApDocumentId, " +
-                    "PUB_a_ap_payment.a_payment_number_i as ApNum, " +
-                    "to_char(PUB_a_ap_payment.a_payment_number_i, '99999') as InvNum, " +
-                    "true as CreditNote, " +
-                    "'Payment' as Type, " +
-                    "PUB_a_ap_payment.a_currency_code_c as Currency, " +
-                    "PUB_a_ap_payment.a_amount_n as Amount, " +
-                    "0 AS OutstandingAmount, " +
-                    "'' as Status, " +
-                    "0 as DiscountPercent, " +
-                    "0 as DiscountDays, " +
-                    "PUB_a_ap_payment.s_date_created_d as Date " +
-                    " FROM PUB_a_ap_payment LEFT JOIN PUB_a_ap_document_payment on PUB_a_ap_payment.a_payment_number_i = PUB_a_ap_document_payment.a_payment_number_i" +
-                    " LEFT JOIN PUB_a_ap_document on PUB_a_ap_document_payment.a_ap_document_id_i = PUB_a_ap_document.a_ap_document_id_i\n" +
-                    " WHERE PUB_a_ap_document_payment.a_ledger_number_i=" + ledgerNumber +
-                    " AND p_partner_key_n=" + PartnerKey +
-                    "\n UNION\n" +
-                    " SELECT " +
-                    "a_ap_document_id_i as ApDocumentId, " +
-                    "a_ap_number_i as ApNum, " +
-                    "a_document_code_c as InvNum, " +
-                    "a_credit_note_flag_l as CreditNote, " +
-                    "'Invoice' as Type, " +
-                    "a_currency_code_c AS Currency, " +
-                    "a_total_amount_n as Amount, " +
-                    "a_total_amount_n AS OutstandingAmount, " +
-                    "a_document_status_c as Status, " +
-                    "a_discount_percentage_n as DiscountPercent, " +
-                    "a_discount_days_i as DiscountDays, " +
-                    "a_date_issued_d as Date " +
-                    "FROM PUB_a_ap_document " +
-                    "WHERE a_ledger_number_i=" + ledgerNumber + " " +
-                    "AND p_partner_key_n=" + PartnerKey + " " +
-                    "ORDER BY Date DESC";
+                                  "0 as ApDocumentId, " +
+                                  "PUB_a_ap_payment.a_payment_number_i as ApNum, " +
+                                  "to_char(PUB_a_ap_payment.a_payment_number_i, '99999') as InvNum, " +
+                                  "true as CreditNote, " +
+                                  "'Payment' as Type, " +
+                                  "PUB_a_ap_payment.a_currency_code_c as Currency, " +
+                                  "PUB_a_ap_payment.a_amount_n as Amount, " +
+                                  "0 AS OutstandingAmount, " +
+                                  "'' as Status, " +
+                                  "0 as DiscountPercent, " +
+                                  "0 as DiscountDays, " +
+                                  "PUB_a_ap_payment.s_date_created_d as Date " +
+                                  " FROM PUB_a_ap_payment LEFT JOIN PUB_a_ap_document_payment on PUB_a_ap_payment.a_payment_number_i = PUB_a_ap_document_payment.a_payment_number_i"
+                                  +
+                                  " LEFT JOIN PUB_a_ap_document on PUB_a_ap_document_payment.a_ap_document_id_i = PUB_a_ap_document.a_ap_document_id_i\n"
+                                  +
+                                  " WHERE PUB_a_ap_document_payment.a_ledger_number_i=" + ledgerNumber +
+                                  " AND p_partner_key_n=" + PartnerKey +
+                                  "\n UNION\n" +
+                                  " SELECT " +
+                                  "a_ap_document_id_i as ApDocumentId, " +
+                                  "a_ap_number_i as ApNum, " +
+                                  "a_document_code_c as InvNum, " +
+                                  "a_credit_note_flag_l as CreditNote, " +
+                                  "'Invoice' as Type, " +
+                                  "a_currency_code_c AS Currency, " +
+                                  "a_total_amount_n as Amount, " +
+                                  "a_total_amount_n AS OutstandingAmount, " +
+                                  "a_document_status_c as Status, " +
+                                  "a_discount_percentage_n as DiscountPercent, " +
+                                  "a_discount_days_i as DiscountDays, " +
+                                  "a_date_issued_d as Date " +
+                                  "FROM PUB_a_ap_document " +
+                                  "WHERE a_ledger_number_i=" + ledgerNumber + " " +
+                                  "AND p_partner_key_n=" + PartnerKey + " " +
+                                  "ORDER BY Date DESC";
                 FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(SqlQuery);
                 FPagedDataSetObject.FindParameters.FSearchName = "Transactions";
             }
@@ -234,50 +236,50 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                 if (!FSearchSupplierOrInvoice)
                 {
                     String SqlQuery = "SELECT " +
-                        "PUB_a_ap_document.a_ap_number_i AS ApNumber, " + 
-                        "PUB_a_ap_document.a_document_code_c AS DocumentCode, " + 
-                        "PUB_p_partner.p_partner_short_name_c AS PartnerShortName, " +
-                        "PUB_a_ap_document.a_currency_code_c AS CurrencyCode, " +
-                        "PUB_a_ap_document.a_total_amount_n AS TotalAmount, " +
-                        "PUB_a_ap_document.a_total_amount_n AS OutstandingAmount, " +
-                        "PUB_a_ap_document.a_document_status_c AS DocumentStatus, " +
-                        "PUB_a_ap_document.a_date_issued_d AS DateIssued, " +
-                        "PUB_a_ap_document.a_date_issued_d AS DateDue, " +
-                        "PUB_a_ap_document.a_date_issued_d AS DateDiscountUntil, " +
-                        "PUB_a_ap_document.a_credit_terms_i AS CreditTerms, " +
-                        "PUB_a_ap_document.a_discount_percentage_n AS DiscountPercentage, " +
-                        "PUB_a_ap_document.a_discount_days_i AS DiscountDays, " +
-                        "'none' AS DiscountMsg, " +
-                        "false AS Selected, " +
-                        "PUB_a_ap_document.a_credit_note_flag_l AS CreditNoteFlag, " +
-                        "PUB_a_ap_document.a_ap_document_id_i AS ApDocumentId " + 
-                        "FROM PUB_a_ap_document, PUB_a_ap_supplier, PUB_p_partner " +
-                        "WHERE PUB_a_ap_document.a_ledger_number_i=" + ledgerNumber + " " +
-                        "AND PUB_a_ap_document.a_document_status_c <> 'CANCELLED' " +
-                        "AND PUB_a_ap_document.a_document_status_c <> 'PAID' " +
-                        "AND PUB_a_ap_supplier.p_partner_key_n = PUB_p_partner.p_partner_key_n " +
-                        "AND PUB_a_ap_document.p_partner_key_n = PUB_p_partner.p_partner_key_n " +
-                        "ORDER BY PUB_a_ap_document.a_ap_number_i DESC";
+                                      "PUB_a_ap_document.a_ap_number_i AS ApNumber, " +
+                                      "PUB_a_ap_document.a_document_code_c AS DocumentCode, " +
+                                      "PUB_p_partner.p_partner_short_name_c AS PartnerShortName, " +
+                                      "PUB_a_ap_document.a_currency_code_c AS CurrencyCode, " +
+                                      "PUB_a_ap_document.a_total_amount_n AS TotalAmount, " +
+                                      "PUB_a_ap_document.a_total_amount_n AS OutstandingAmount, " +
+                                      "PUB_a_ap_document.a_document_status_c AS DocumentStatus, " +
+                                      "PUB_a_ap_document.a_date_issued_d AS DateIssued, " +
+                                      "PUB_a_ap_document.a_date_issued_d AS DateDue, " +
+                                      "PUB_a_ap_document.a_date_issued_d AS DateDiscountUntil, " +
+                                      "PUB_a_ap_document.a_credit_terms_i AS CreditTerms, " +
+                                      "PUB_a_ap_document.a_discount_percentage_n AS DiscountPercentage, " +
+                                      "PUB_a_ap_document.a_discount_days_i AS DiscountDays, " +
+                                      "'none' AS DiscountMsg, " +
+                                      "false AS Selected, " +
+                                      "PUB_a_ap_document.a_credit_note_flag_l AS CreditNoteFlag, " +
+                                      "PUB_a_ap_document.a_ap_document_id_i AS ApDocumentId " +
+                                      "FROM PUB_a_ap_document, PUB_a_ap_supplier, PUB_p_partner " +
+                                      "WHERE PUB_a_ap_document.a_ledger_number_i=" + ledgerNumber + " " +
+                                      "AND PUB_a_ap_document.a_document_status_c <> 'CANCELLED' " +
+                                      "AND PUB_a_ap_document.a_document_status_c <> 'PAID' " +
+                                      "AND PUB_a_ap_supplier.p_partner_key_n = PUB_p_partner.p_partner_key_n " +
+                                      "AND PUB_a_ap_document.p_partner_key_n = PUB_p_partner.p_partner_key_n " +
+                                      "ORDER BY PUB_a_ap_document.a_ap_number_i DESC";
                     FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(SqlQuery);
                     FPagedDataSetObject.FindParameters.FSearchName = "Invoices";
                 }
                 else
                 {
-                     String SqlQuery = "SELECT " +
-                        "PUB_a_ap_supplier.p_partner_key_n AS PartnerKey, " +
-                        "PUB_p_partner.p_partner_short_name_c AS PartnerShortName, " +
-                        "PUB_a_ap_supplier.a_currency_code_c AS CurrencyCode, " +
-                        "PUB_p_partner.p_status_code_c AS StatusCode " +
-                        "FROM PUB_a_ap_supplier, PUB_p_partner " +
-                        "WHERE ";
+                    String SqlQuery = "SELECT " +
+                                      "PUB_a_ap_supplier.p_partner_key_n AS PartnerKey, " +
+                                      "PUB_p_partner.p_partner_short_name_c AS PartnerShortName, " +
+                                      "PUB_a_ap_supplier.a_currency_code_c AS CurrencyCode, " +
+                                      "PUB_p_partner.p_status_code_c AS StatusCode " +
+                                      "FROM PUB_a_ap_supplier, PUB_p_partner " +
+                                      "WHERE ";
 
-                     if (((String)CriteriaRow["SupplierId"]).Length > 0) // If the search box is empty, I'll not add this at all...
-                     {
-                         SqlQuery += String.Format("p_partner_short_name_c LIKE '{0}' AND ", (String)CriteriaRow["SupplierId"] + "%");
-                     }
+                    if (((String)CriteriaRow["SupplierId"]).Length > 0)  // If the search box is empty, I'll not add this at all...
+                    {
+                        SqlQuery += String.Format("p_partner_short_name_c LIKE '{0}' AND ", (String)CriteriaRow["SupplierId"] + "%");
+                    }
 
-                     SqlQuery += "PUB_a_ap_supplier.p_partner_key_n = PUB_p_partner.p_partner_key_n " +
-                        "ORDER BY PartnerShortName";
+                    SqlQuery += "PUB_a_ap_supplier.p_partner_key_n = PUB_p_partner.p_partner_key_n " +
+                                "ORDER BY PartnerShortName";
 
                     FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(SqlQuery);
                     FPagedDataSetObject.FindParameters.FSearchName = "Suppliers";

@@ -197,6 +197,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         AFreeformAnalysisRow referencedRow = (AFreeformAnalysisRow)Atds.AFreeformAnalysis.Rows.Find(
                             new Object[] { AttribValueRow.LedgerNumber, AttribValueRow.AnalysisTypeCode, AttribValueRow.AnalysisAttributeValue }
                             );
+
                         if ((referencedRow == null) || !referencedRow.Active)
                         {
                             IhaveAllMyAttributes = false;
@@ -543,6 +544,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         public static bool BatchBalancesOK(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
         {
             decimal DocumentBalance = AApDocument.TotalAmount;
+
             if (DocumentBalance == 0)
             {
                 System.Windows.Forms.MessageBox.Show(

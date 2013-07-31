@@ -1954,6 +1954,7 @@ namespace Ict.Common
         public static int DecimalPlacesForCurrency(String ACurrencyCode)
         {
             int Ret = 2;
+
             if (CurrencyFormats != null)
             {
                 CurrencyFormats.DefaultView.RowFilter = String.Format("a_currency_code_c='{0}'", ACurrencyCode);
@@ -1962,6 +1963,7 @@ namespace Ict.Common
                 {
                     String format = CurrencyFormats.DefaultView[0].Row["a_display_format_c"].ToString();
                     int dotPos = format.LastIndexOf('.');
+
                     if (dotPos > 0)
                     {
                         Ret = format.Length - 1 - dotPos;
@@ -1972,6 +1974,7 @@ namespace Ict.Common
                     }
                 }
             }
+
             return Ret;
         }
 

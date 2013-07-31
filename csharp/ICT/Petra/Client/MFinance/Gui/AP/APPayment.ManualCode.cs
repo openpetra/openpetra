@@ -169,6 +169,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 return false;
             }
+
             return true;
         }
 
@@ -393,7 +394,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     AccountsPayableTDSAApDocumentPaymentRow DocPaymentRow = (AccountsPayableTDSAApDocumentPaymentRow)rv.Row;
                     Boolean overPayment = (DocPaymentRow.DocType == "INVOICE") ?
-                        (DocPaymentRow.Amount > DocPaymentRow.InvoiceTotal) : (DocPaymentRow.Amount < DocPaymentRow.InvoiceTotal);
+                                          (DocPaymentRow.Amount > DocPaymentRow.InvoiceTotal) : (DocPaymentRow.Amount < DocPaymentRow.InvoiceTotal);
 
                     if (overPayment)
                     {

@@ -1306,6 +1306,7 @@ namespace Ict.Petra.Server.MFinance.Common
             else
             {
                 ABatchRow BatchRow = TempTDS.ABatch[0];
+
                 //
                 // If I'm deleting the most recent entry (which is almost certainly the case)
                 // I can wind back the Ledger's LastBatchNumber so as not to leave a gap.

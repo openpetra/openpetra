@@ -722,6 +722,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                 int baseCurrencyDecimalPlaces = 0; // This will not be used unless this is a foreign journal.
                 int intlCurrencyDecimalPlaces = 0;
+
                 if (journal.TransactionCurrency != GLDataset.ALedger[0].BaseCurrency)
                 {
                     baseCurrencyDecimalPlaces = StringHelper.DecimalPlacesForCurrency(GLDataset.ALedger[0].BaseCurrency);
@@ -1046,9 +1047,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 TVerificationResultCollection MoreResults;
 
                 TGLPosting.DeleteGLBatch(
-                            ALedgerNumber,
-                            GLDataset.ABatch[0].BatchNumber,
-                            out MoreResults);
+                    ALedgerNumber,
+                    GLDataset.ABatch[0].BatchNumber,
+                    out MoreResults);
                 AVerificationResult.AddCollection(MoreResults);
 
                 return false;
@@ -1182,7 +1183,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             foreach (string CurrencyCode in DocumentsByCurrency.Keys)
             {
                 String StandardCostCentre = TLedgerInfo.GetStandardCostCentre(batch.LedgerNumber);
-                Dictionary<String, Decimal> ForexGain = new Dictionary<string, decimal>(); // ForexGain is recorded for each AP account in use.
+                Dictionary <String, Decimal>ForexGain = new Dictionary <string, decimal>(); // ForexGain is recorded for each AP account in use.
 
                 AJournalRow journalRow = GLDataset.AJournal.NewRowTyped();
                 journalRow.LedgerNumber = batch.LedgerNumber;
@@ -1197,11 +1198,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                 int baseCurrencyDecimalPlaces = 0; // This will not be used unless this is a foreign journal.
                 int intlCurrencyDecimalPlaces = 0;
+
                 if (journalRow.TransactionCurrency != GLDataset.ALedger[0].BaseCurrency)
                 {
                     baseCurrencyDecimalPlaces = StringHelper.DecimalPlacesForCurrency(GLDataset.ALedger[0].BaseCurrency);
                     intlCurrencyDecimalPlaces = StringHelper.DecimalPlacesForCurrency(GLDataset.ALedger[0].IntlCurrency);
                 }
+
                 // I'm not using the Daily Exchange Rate, since the exchange rate has been specified by the user in the payment.
                 // using the exchange rate from the first payment in this set of payments with same currency and exchange rate
                 journalRow.ExchangeRateTime = 0;
@@ -1232,9 +1235,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         AApDocumentRow documentRow = (AApDocumentRow)APDataset.AApDocument.DefaultView[0].Row;
 
                         ATransactionRow transactionRowBank = null;
-                        GLDataset.ATransaction.DefaultView.RowFilter = 
-                            "a_account_code_c='" + paymentRow.BankAccount
-                            + "' AND a_journal_number_i=" + journalRow.JournalNumber.ToString();
+                        GLDataset.ATransaction.DefaultView.RowFilter =
+                            "a_account_code_c='" + paymentRow.BankAccount +
+                            "' AND a_journal_number_i=" + journalRow.JournalNumber.ToString();
 
                         if (GLDataset.ATransaction.DefaultView.Count > 0)
                         {
@@ -1255,16 +1258,16 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             transactionRowBank.AccountCode = paymentRow.BankAccount;
                             transactionRowBank.CostCentreCode = StandardCostCentre;
                             transactionRowBank.Narrative = "AP Payment: " + paymentRow.PaymentNumber.ToString() + " - " +
-                                                    Ict.Petra.Shared.MPartner.Calculations.FormatShortName(paymentRow.SupplierName,
+                                                           Ict.Petra.Shared.MPartner.Calculations.FormatShortName(paymentRow.SupplierName,
                                 eShortNameFormat.eReverseWithoutTitle);
                             transactionRowBank.Reference = paymentRow.Reference;
                             GLDataset.ATransaction.Rows.Add(transactionRowBank);
                         }
 
                         ATransactionRow transactionRowAp = null;
-                        GLDataset.ATransaction.DefaultView.RowFilter = 
-                            "a_account_code_c='" + documentRow.ApAccount
-                            + "' AND a_journal_number_i=" + journalRow.JournalNumber.ToString();
+                        GLDataset.ATransaction.DefaultView.RowFilter =
+                            "a_account_code_c='" + documentRow.ApAccount +
+                            "' AND a_journal_number_i=" + journalRow.JournalNumber.ToString();
 
                         if (GLDataset.ATransaction.DefaultView.Count > 0)
                         {
@@ -1285,7 +1288,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             transactionRowAp.AccountCode = documentRow.ApAccount;
                             transactionRowAp.CostCentreCode = StandardCostCentre;
                             transactionRowAp.Narrative = "AP Payment:" + paymentRow.PaymentNumber.ToString() + " AP: " +
-                                                                documentRow.ApNumber.ToString();
+                                                         documentRow.ApNumber.ToString();
                             transactionRowAp.Reference = paymentRow.Reference;
                             transactionRowAp.AmountInBaseCurrency = 0; // This will be corrected later, after this nested loop.
                             GLDataset.ATransaction.Rows.Add(transactionRowAp);
@@ -1299,9 +1302,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             // and a single balancing entry will made to the ForexGainsLossesAccount account.
                             // (Most often only one AP account per currency will be used.)
 
-                            Decimal BaseAmountAtPosting = GLRoutines.Divide(documentPaymentRow.Amount, documentRow.ExchangeRateToBase, baseCurrencyDecimalPlaces);
-                            Decimal BaseAmountNow = GLRoutines.Divide(documentPaymentRow.Amount, paymentRow.ExchangeRateToBase, baseCurrencyDecimalPlaces);
+                            Decimal BaseAmountAtPosting = GLRoutines.Divide(documentPaymentRow.Amount,
+                                documentRow.ExchangeRateToBase,
+                                baseCurrencyDecimalPlaces);
+                            Decimal BaseAmountNow = GLRoutines.Divide(documentPaymentRow.Amount,
+                                paymentRow.ExchangeRateToBase,
+                                baseCurrencyDecimalPlaces);
                             Decimal ForexDelta = (BaseAmountNow - BaseAmountAtPosting);
+
                             if (ForexDelta != 0)  // There's a good chance this will be 0!
                             {
                                 if (ForexGain.ContainsKey(documentRow.ApAccount))
@@ -1314,8 +1322,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                                 }
                             }
                         }
-
                     } // foreach DocumentPayment
+
                 } // foreach Payment
 
                 journalRow.LastTransactionNumber = TransactionCounter - 1;
@@ -1326,12 +1334,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 // (Probably also one per currency.)
                 // I need to set the international fields on the consolidated transaction rows:
                 GLDataset.ATransaction.DefaultView.RowFilter = "a_journal_number_i=" + journalRow.JournalNumber.ToString();
-                foreach(DataRowView rv in GLDataset.ATransaction.DefaultView)
+
+                foreach (DataRowView rv in GLDataset.ATransaction.DefaultView)
                 {
-                    ATransactionRow tempTransRow = (ATransactionRow) rv.Row;
+                    ATransactionRow tempTransRow = (ATransactionRow)rv.Row;
+
                     if (tempTransRow.AmountInBaseCurrency == 0) // I left this blank earlier as a marker.
                     {                                           // If any other rows have 0 here, (a) that's a fault, and (b) it's OK - it won't do any harm!
-
                         tempTransRow.DebitCreditIndicator = (tempTransRow.TransactionAmount < 0);
 
                         if (tempTransRow.TransactionAmount < 0)
@@ -1345,7 +1354,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         }
                         else
                         {
-                            tempTransRow.AmountInBaseCurrency = GLRoutines.Divide(tempTransRow.TransactionAmount, journalRow.ExchangeRateToBase, baseCurrencyDecimalPlaces);
+                            tempTransRow.AmountInBaseCurrency = GLRoutines.Divide(tempTransRow.TransactionAmount,
+                                journalRow.ExchangeRateToBase,
+                                baseCurrencyDecimalPlaces);
 
                             tempTransRow.AmountInIntlCurrency = GLRoutines.Divide(tempTransRow.AmountInBaseCurrency,
                                 TExchangeRateTools.GetDailyExchangeRate(
@@ -1405,7 +1416,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         TotalForexCorrection += ForexGain[ApAccount];
                     }
 
-
                     // A single transaction to the ForexGainsLossesAccount:
                     ATransactionRow transactionReval = GLDataset.ATransaction.NewRowTyped();
                     transactionReval.LedgerNumber = RevalJournal.LedgerNumber;
@@ -1426,7 +1436,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                     RevalJournal.LastTransactionNumber = TransactionCounter - 1;
                 }
-
             } // foreach currency
 
             batch.LastJournal = CounterJournals - 1;
@@ -1698,13 +1707,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                 // save the batch
                 Boolean PostingWorkedOk = (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
-                        out AVerificationResult) == TSubmitChangesResult.scrOK);
+                                               out AVerificationResult) == TSubmitChangesResult.scrOK);
 
                 if (PostingWorkedOk)
                 {
                     // post the batch
                     PostingWorkedOk = TGLPosting.PostGLBatch(MainDS.AApPayment[0].LedgerNumber, batch.BatchNumber,
-                            out AVerificationResult);
+                        out AVerificationResult);
                 }
 
                 if (!PostingWorkedOk)
@@ -1712,16 +1721,16 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     TVerificationResultCollection MoreResults;
 
                     TGLPosting.DeleteGLBatch(
-                                MainDS.AApPayment[0].LedgerNumber,
-                                batch.BatchNumber,
-                                out MoreResults);
+                        MainDS.AApPayment[0].LedgerNumber,
+                        batch.BatchNumber,
+                        out MoreResults);
                     AVerificationResult.AddCollection(MoreResults);
 
                     return false;
                 }
 
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                                (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
+                                               (IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
                 // store ApPayment and ApDocumentPayment to database
                 if (AApPaymentAccess.SubmitChanges(MainDS.AApPayment, SubmitChangesTransaction,
