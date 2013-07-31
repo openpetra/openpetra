@@ -265,11 +265,8 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                 MainDS.AApSupplier[0].DefaultExpAccount,
                 MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
 
-            // need rounding to avoid this error:
-            //  Expected: 83.33333333333333333333333333m
-            //  But was:  83.3333333333m
-            Assert.AreEqual(Math.Round(Amount / ExchangeRatePosting, 5), Math.Round(ExpAccountAfter - ExpAccountBefore,
-                    5), "after posting the invoice, the expense account should be debited the amount in base currency");
+            Assert.AreEqual(Math.Round(Amount / ExchangeRatePosting, 2), Math.Round(ExpAccountAfter - ExpAccountBefore,
+                    2), "after posting the invoice, the expense account should be debited the amount in base currency");
 
             // Pay the AP document
             int ApDocumentId = MainDS.AApDocument[0].ApDocumentId;

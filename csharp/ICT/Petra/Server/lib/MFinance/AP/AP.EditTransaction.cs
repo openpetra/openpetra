@@ -185,52 +185,58 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             NewDocumentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_OPEN;
             NewDocumentRow.LastDetailNumber = 0;
 
-            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
+            bool IsMyOwnTransaction = false; // If I create a transaction here, then I need to rollback when I'm done.
+            TDBTransaction Transaction = null;
+            try
+            {
+                Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
                                              (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
-            ALedgerTable LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            // get the supplier defaults
-            AApSupplierRow SupplierRow = AApSupplierAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
+                ALedgerTable LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                // get the supplier defaults
+                AApSupplierRow SupplierRow = AApSupplierAccess.LoadByPrimaryKey(MainDS, APartnerKey, Transaction);
 
-            if (SupplierRow != null)
+                if (SupplierRow != null)
+                {
+                    if (!SupplierRow.IsDefaultCreditTermsNull())
+                    {
+                        NewDocumentRow.CreditTerms = SupplierRow.DefaultCreditTerms;
+                    }
+
+                    if (!SupplierRow.IsDefaultDiscountDaysNull())
+                    {
+                        NewDocumentRow.DiscountDays = SupplierRow.DefaultDiscountDays;
+                        NewDocumentRow.DiscountPercentage = 0;
+                    }
+
+                    if (!SupplierRow.IsDefaultDiscountPercentageNull())
+                    {
+                        NewDocumentRow.DiscountPercentage = SupplierRow.DefaultDiscountPercentage;
+                    }
+
+                    if (!SupplierRow.IsDefaultApAccountNull())
+                    {
+                        NewDocumentRow.ApAccount = SupplierRow.DefaultApAccount;
+                    }
+
+                    NewDocumentRow.CurrencyCode = SupplierRow.CurrencyCode;
+                    NewDocumentRow.ExchangeRateToBase = TExchangeRateTools.GetDailyExchangeRate(NewDocumentRow.CurrencyCode,
+                        LedgerTbl[0].BaseCurrency,
+                        DateTime.Now);
+                }
+
+                MainDS.AApDocument.Rows.Add(NewDocumentRow);
+
+                // I also need a full list of analysis attributes that could apply to this document
+
+                LoadAnalysisAttributes(MainDS, ALedgerNumber, Transaction);
+            } // try
+            finally
             {
-                if (!SupplierRow.IsDefaultCreditTermsNull())
+                if ((Transaction != null) && IsMyOwnTransaction)
                 {
-                    NewDocumentRow.CreditTerms = SupplierRow.DefaultCreditTerms;
+                    DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-
-                if (!SupplierRow.IsDefaultDiscountDaysNull())
-                {
-                    NewDocumentRow.DiscountDays = SupplierRow.DefaultDiscountDays;
-                    NewDocumentRow.DiscountPercentage = 0;
-                }
-
-                if (!SupplierRow.IsDefaultDiscountPercentageNull())
-                {
-                    NewDocumentRow.DiscountPercentage = SupplierRow.DefaultDiscountPercentage;
-                }
-
-                if (!SupplierRow.IsDefaultApAccountNull())
-                {
-                    NewDocumentRow.ApAccount = SupplierRow.DefaultApAccount;
-                }
-            }
-
-            NewDocumentRow.CurrencyCode = SupplierRow.CurrencyCode;
-            NewDocumentRow.ExchangeRateToBase = TExchangeRateTools.GetDailyExchangeRate(NewDocumentRow.CurrencyCode,
-                LedgerTbl[0].BaseCurrency,
-                DateTime.Now);
-
-            MainDS.AApDocument.Rows.Add(NewDocumentRow);
-
-            // I also need a full list of analysis attributes that could apply to this document
-
-            LoadAnalysisAttributes(MainDS, ALedgerNumber, Transaction);
-
-            if (IsMyOwnTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
             return MainDS;
@@ -1242,7 +1248,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         if (GLDataset.ATransaction.DefaultView.Count > 0)
                         {
                             transactionRowBank = (ATransactionRow)GLDataset.ATransaction.DefaultView[0].Row;
-                            transactionRowBank.TransactionAmount -= documentPaymentRow.Amount; // This TransactionAmount is unsigned until later.
+                            transactionRowBank.TransactionAmount += documentPaymentRow.Amount; // This TransactionAmount is unsigned until later.
                         }
                         else
                         {
@@ -1251,7 +1257,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             transactionRowBank.BatchNumber = journalRow.BatchNumber;
                             transactionRowBank.JournalNumber = journalRow.JournalNumber;
                             transactionRowBank.TransactionNumber = TransactionCounter++;
-                            transactionRowBank.TransactionAmount = 0 - documentPaymentRow.Amount; // This TransactionAmount is unsigned until later.
+                            transactionRowBank.TransactionAmount = documentPaymentRow.Amount; // This TransactionAmount is unsigned until later.
                             transactionRowBank.AmountInBaseCurrency = 0; // This will be corrected later, after this nested loop.
                             transactionRowBank.TransactionDate = batch.DateEffective;
                             transactionRowBank.SystemGenerated = true;
@@ -1272,7 +1278,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         if (GLDataset.ATransaction.DefaultView.Count > 0)
                         {
                             transactionRowAp = (ATransactionRow)GLDataset.ATransaction.DefaultView[0].Row;
-                            transactionRowAp.TransactionAmount += documentPaymentRow.Amount; // This TransactionAmount is unsigned until later.
+                            transactionRowAp.TransactionAmount -= documentPaymentRow.Amount; // This TransactionAmount is unsigned until later.
                             transactionRowAp.Narrative += ", " + documentRow.ApNumber.ToString();
                         }
                         else
@@ -1282,7 +1288,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             transactionRowAp.BatchNumber = journalRow.BatchNumber;
                             transactionRowAp.JournalNumber = journalRow.JournalNumber;
                             transactionRowAp.TransactionNumber = TransactionCounter++;
-                            transactionRowAp.TransactionAmount = documentPaymentRow.Amount;  // This TransactionAmount is unsigned until later.
+                            transactionRowAp.TransactionAmount = 0 - documentPaymentRow.Amount;  // This TransactionAmount is unsigned until later.
                             transactionRowAp.TransactionDate = batch.DateEffective;
                             transactionRowAp.SystemGenerated = true;
                             transactionRowAp.AccountCode = documentRow.ApAccount;
