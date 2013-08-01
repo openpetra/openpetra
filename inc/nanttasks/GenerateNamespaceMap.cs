@@ -309,6 +309,24 @@ namespace Ict.Tools.NAntTasks
                                     filename);
                             }
 
+                            if (Namespace.StartsWith("Ict.Petra.Server")
+                                && Path.GetDirectoryName(filename).Replace("\\", "/").Contains("ICT/Petra/Client"))
+                            {
+                                Console.WriteLine(
+                                    "Error: we must not reference a Server namespace (" + Namespace + ") from the client side in "
+                                    +
+                                    filename);
+                            }
+
+                            if (Namespace.StartsWith("Ict.Petra.Server")
+                                && Path.GetDirectoryName(filename).Replace("\\", "/").Contains("ICT/Petra/Shared"))
+                            {
+                                Console.WriteLine(
+                                    "Error: we must not reference a Server namespace (" + Namespace + ") from the shared directory in "
+                                    +
+                                    filename);
+                            }
+
                             if (!DetailsOfDll.UsedNamespaces.Contains(Namespace))
                             {
                                 DetailsOfDll.UsedNamespaces.Add(Namespace);
