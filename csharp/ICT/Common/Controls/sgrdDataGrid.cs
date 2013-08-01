@@ -63,11 +63,11 @@ namespace Ict.Common.Controls
         public struct ColourInformation
         {
             private Color FBackColour;
-            private Color FCellBackgroundColour;    
+            private Color FCellBackgroundColour;
             private Color FAlternatingBackgroundColour;
             private Color FSelectionColour;
             private Color FGridLinesColour;
-                        
+
             /// <summary>
             /// Colour of the background of the Grid.
             /// </summary>
@@ -77,7 +77,7 @@ namespace Ict.Common.Controls
                 {
                     return FBackColour;
                 }
-                
+
                 set
                 {
                     FBackColour = value;
@@ -86,82 +86,82 @@ namespace Ict.Common.Controls
 
             /// <summary>
             /// Colour of the background of every cell and row.
-            /// </summary>            
-            public Color CellBackgroundColour 
+            /// </summary>
+            public Color CellBackgroundColour
             {
-                get 
-                { 
-                    return FCellBackgroundColour; 
+                get
+                {
+                    return FCellBackgroundColour;
                 }
-                
-                set 
-                { 
+
+                set
+                {
                     FCellBackgroundColour = value;
                 }
-            }            
-            
+            }
+
             /// <summary>
             /// Used to colour the background of every odd numbered row differently to
             /// generate a 'banding' effect (works only with columns defined in
             /// sgrdDataGrid.Columns!).
-            /// </summary>            
-            public Color AlternatingBackgroundColour 
+            /// </summary>
+            public Color AlternatingBackgroundColour
             {
-                get 
-                { 
-                    return FAlternatingBackgroundColour; 
+                get
+                {
+                    return FAlternatingBackgroundColour;
                 }
-                
-                set 
-                { 
+
+                set
+                {
                     FAlternatingBackgroundColour = value;
                 }
-            }            
-            
+            }
+
             /// <summary>
             /// Colour of the Selection.
-            /// </summary>            
-            public Color SelectionColour 
+            /// </summary>
+            public Color SelectionColour
             {
-                get 
-                { 
-                    return FSelectionColour; 
+                get
+                {
+                    return FSelectionColour;
                 }
-                
-                set 
-                { 
+
+                set
+                {
                     FSelectionColour = value;
                 }
             }
-            
+
             /// <summary>
             /// Colour of the Grid Lines (works only with columns defined in
             /// sgrdDataGrid.Columns!).
-            /// </summary>            
-            public Color GridLinesColour 
+            /// </summary>
+            public Color GridLinesColour
             {
-                get 
-                { 
-                    return FGridLinesColour; 
+                get
+                {
+                    return FGridLinesColour;
                 }
-                
-                set 
-                { 
+
+                set
+                {
                     FGridLinesColour = value;
                 }
-            }                        
+            }
         }
-        
+
         /// <summary>
         /// Used for passing Colour information to the Grid. Re-used by all instances of the Grid!
         /// </summary>
-        public static Func<ColourInformation>SetColourInformation;
-        
+        public static Func <ColourInformation>SetColourInformation;
+
         private const Int32 WM_KEYDOWN = 0x100;
 
         private static ColourInformation FColourInfo;
         private static bool FColourInfoSetup = false;
-               
+
         /// <summary> Required designer variable. </summary>
         private System.ComponentModel.IContainer components = null;
 
@@ -186,18 +186,18 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Colour of the background of every cell and row.
         /// </summary>
-        private Color FCellBackgroundColour; 
-        
+        private Color FCellBackgroundColour;
+
         /// <summary>
         /// Used to colour the background of every odd numbered row differently to
         /// generate a 'banding' effect (works only with columns defined in
         /// sgrdDataGrid.Columns!).
         /// </summary>
         private Color FAlternateBackColour;
-        
+
         /// <summary>
         /// Colour of the Selection.
-        /// </summary>            
+        /// </summary>
         private Color FSelectionColour;
 
         /// <summary>
@@ -431,7 +431,7 @@ namespace Ict.Common.Controls
         /*
          * Custom properties follow
          */
-        
+
         /// <summary>
         /// Colour of the background of the Grid. This is only seen in a space inside the Grid that is not covered by Rows!
         /// </summary>
@@ -475,7 +475,7 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// Alternating background colour of the Grid. This is the colour that is used to set 
+        /// Alternating background colour of the Grid. This is the colour that is used to set
         /// the background colour of every second line.
         /// </summary>
         [Category("Appearance"),
@@ -516,7 +516,7 @@ namespace Ict.Common.Controls
                 this.Refresh();
             }
         }
-        
+
         /// <summary>
         /// Colour of the Grid Lines.
         /// </summary>
@@ -537,7 +537,7 @@ namespace Ict.Common.Controls
                 this.Refresh();
             }
         }
-        
+
         /**
          * This property determines whether the column headers should support sorting
          * by clicking on them.
@@ -778,13 +778,13 @@ namespace Ict.Common.Controls
             this.Height = 100;
             this.Width = 400;
 
-            if (SetColourInformation != null) 
+            if (SetColourInformation != null)
             {
-                if (!FColourInfoSetup) 
+                if (!FColourInfoSetup)
                 {
-                    FColourInfo = SetColourInformation();    
+                    FColourInfo = SetColourInformation();
                     FColourInfoSetup = true;
-                }               
+                }
             }
             else
             {
@@ -794,10 +794,10 @@ namespace Ict.Common.Controls
                 FColourInfo.SelectionColour = Color.FromArgb(150, Color.FromKnownColor(KnownColor.Highlight));
                 FColourInfo.GridLinesColour = System.Drawing.SystemColors.ControlDark;
             }
-            
+
             // Default look
             this.BackColor = FColourInfo.BackColour;
-            this.CellBackgroundColour = FColourInfo.CellBackgroundColour;           
+            this.CellBackgroundColour = FColourInfo.CellBackgroundColour;
             this.AlternatingBackgroundColour = FColourInfo.AlternatingBackgroundColour;
             this.GridLinesColour = FColourInfo.GridLinesColour;
             this.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;

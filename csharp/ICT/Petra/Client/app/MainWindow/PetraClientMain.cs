@@ -671,7 +671,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             // Set up Delegate for the set-up of various Colours of all SourceGrid DataGrid instances from UserDefaults
             Ict.Common.Controls.TSgrdDataGrid.SetColourInformation = @SetDataGridColoursFromUserDefaults;
-                
+
             // Set up Data Validation Delegates
             TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;
             TSharedValidationControlHelper.SharedGetDateVerificationResultDelegate = @TtxtPetraDate.GetDateVerificationResult;
@@ -707,43 +707,45 @@ namespace Ict.Petra.Client.App.PetraClient
         private static TSgrdDataGrid.ColourInformation SetDataGridColoursFromUserDefaults()
         {
             string SelectionColourUserDefault;
-            
+
             TSgrdDataGrid.ColourInformation ReturnValue = new TSgrdDataGrid.ColourInformation();
-           
+
             // Note: The UserDefaults store the colours as HTML representations of colours. Example: "#FFFFFF" = System.Drawing.Color.White
             ReturnValue.BackColour = System.Drawing.ColorTranslator.FromHtml(
-                TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_GRID_BACKGROUND, 
-                                               System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.White)));
+                TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_GRID_BACKGROUND,
+                    System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.White)));
             ReturnValue.CellBackgroundColour = System.Drawing.ColorTranslator.FromHtml(
-                TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_GRID_CELLBACKGROUND, 
-                                               System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.White)));
-            
+                TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_GRID_CELLBACKGROUND,
+                    System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.White)));
+
             ReturnValue.AlternatingBackgroundColour = System.Drawing.ColorTranslator.FromHtml(
-                TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_GRID_ALTERNATE, 
-                                              System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(230, 230, 230))));
+                TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_GRID_ALTERNATE,
+                    System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(230, 230, 230))));
             ReturnValue.GridLinesColour = System.Drawing.ColorTranslator.FromHtml(
-                TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_GRID_GRIDLINES, 
-                                              System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(211, 211, 211))));
+                TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_GRID_GRIDLINES,
+                    System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(211, 211, 211))));
 
             // The UserDefault for the Selection colour stores a decimal Alpha value appended to the HTML representation of the colour
             // because the Selection needs to be transparent to a certain degree in order to let the data of a selected Grid Row shine through!
             // Example: "#00FFAA;50": A=140 (decimal 140), R=15 (hex 0F), G=255 (hex FF), B=170 (hex AA)
             SelectionColourUserDefault = TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_GRID_SELECTION, String.Empty);
-            
-            if (SelectionColourUserDefault.Length > 0) 
+
+            if (SelectionColourUserDefault.Length > 0)
             {
                 ReturnValue.SelectionColour = System.Drawing.ColorTranslator.FromHtml(SelectionColourUserDefault.Split(';')[0]);
-                ReturnValue.SelectionColour = System.Drawing.Color.FromArgb(Convert.ToInt32(SelectionColourUserDefault.Split(';')[1]), ReturnValue.SelectionColour);
+                ReturnValue.SelectionColour = System.Drawing.Color.FromArgb(Convert.ToInt32(SelectionColourUserDefault.Split(
+                            ';')[1]), ReturnValue.SelectionColour);
             }
             else
             {
                 // No UserDefault for the Selection in the DB; use a hard-coded default
-                ReturnValue.SelectionColour = System.Drawing.Color.FromArgb(120, System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Highlight));
+                ReturnValue.SelectionColour =
+                    System.Drawing.Color.FromArgb(120, System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Highlight));
             }
-            
+
             return ReturnValue;
         }
-        
+
         /// <summary>
         /// Minimize the command window that starts the PostgreSql database.
         /// </summary>

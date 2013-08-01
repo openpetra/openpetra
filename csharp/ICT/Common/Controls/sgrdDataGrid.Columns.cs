@@ -139,7 +139,7 @@ namespace Ict.Common.Controls
             SourceGrid.Cells.ICellVirtual BaseDataCell = base.GetDataCell(AGridRow);
             SourceGrid.Cells.ICellVirtual AlternatingDataCellSelected;
             TSgrdDataGrid GridWrapper = (TSgrdDataGrid)FGrid;
-            
+
             int Reminder;
 
             HeaderCell.View = ((TSgrdDataGrid)FGrid).ColumnHeaderView;

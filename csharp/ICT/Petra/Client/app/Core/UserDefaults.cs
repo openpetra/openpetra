@@ -69,7 +69,7 @@ namespace Ict.Petra.Client.App.Core
 
             /// <summary>Colour of the Grid Lines of all SourceGrid DataGrid instances.</summary>
             public const String COLOUR_GRID_GRIDLINES = "COLOUR_GRID_GRIDLINES";
-            
+
             #region TUserDefaults.TNamedDefaults
 
             /// <summary>
