@@ -67,6 +67,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     }
                 }
             }
+            
+            btnDelete.Enabled = (grdDetails.Rows.Count > 1);
         }
 
         /// <summary>
@@ -154,17 +156,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private bool PreDeleteManual(AAnalysisAttributeRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted))
+            if ((ARowToDelete != null) && (ARowToDelete.RowState != DataRowState.Deleted))
             {
                 ADeletionQuestion = String.Format(
                     Catalog.GetString("Confirm you want to Remove {0} from this account."),
-                    FPreviouslySelectedDetailRow.AnalysisTypeCode);
+                    ARowToDelete.AnalysisTypeCode);
             }
 
             return true;
         }
+        
+        private bool DeleteRowManual(AAnalysisAttributeRow ARowToDelete, ref string ACompletionMessage)
+        {
+        	bool success = false;
+        	
+        	try
+        	{
+        		ARowToDelete.Delete();
+        		success = true;
+        	}
+        	catch (Exception ex)
+        	{
+        		MessageBox.Show("Error trying to delete current row:" + Environment.NewLine + Environment.NewLine + ex.Message);
+        	}
+        	
+        	return success;
+        }
 
-        private void OnDetailAnalysisTypeCodeChange(System.Object sender, EventArgs e)
+        private void PostDeleteManual(AAnalysisAttributeRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
+        {
+        	btnDelete.Enabled = (grdDetails.Rows.Count > 1);
+        }
+
+       	private void OnDetailAnalysisTypeCodeChange(System.Object sender, EventArgs e)
         {
             if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted))
             {
