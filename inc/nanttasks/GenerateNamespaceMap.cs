@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -313,7 +313,7 @@ namespace Ict.Tools.NAntTasks
                                 && Path.GetDirectoryName(filename).Replace("\\", "/").Contains("ICT/Petra/Client"))
                             {
                                 Console.WriteLine(
-                                    "Error: we must not reference a Server namespace (" + Namespace + ") from the client side in "
+                                    "Warning: we must not reference a Server namespace (" + Namespace + ") from the client side in "
                                     +
                                     filename);
                             }
@@ -322,7 +322,7 @@ namespace Ict.Tools.NAntTasks
                                 && Path.GetDirectoryName(filename).Replace("\\", "/").Contains("ICT/Petra/Shared"))
                             {
                                 Console.WriteLine(
-                                    "Error: we must not reference a Server namespace (" + Namespace + ") from the shared directory in "
+                                    "Warning: we must not reference a Server namespace (" + Namespace + ") from the shared directory in "
                                     +
                                     filename);
                             }
