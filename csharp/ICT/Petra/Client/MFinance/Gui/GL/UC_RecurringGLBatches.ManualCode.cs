@@ -127,8 +127,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void UpdateChangeableStatus()
         {
             Boolean allowSubmit = (FPreviouslySelectedDetailRow != null)
-            	&& (FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
-            	&& (grdDetails.Rows.Count > 1);
+                                  && (FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+                                  && (grdDetails.Rows.Count > 1);
 
             FPetraUtilsObject.EnableAction("actSubmitBatch", allowSubmit);
             FPetraUtilsObject.EnableAction("actDelete", allowSubmit);
@@ -471,7 +471,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             UpdateChangeableStatus();
-            
+
             if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
             {
                 ClearControls();
