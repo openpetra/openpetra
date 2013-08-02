@@ -142,9 +142,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// disable the transactions tab if we have no active journal
         /// </summary>
-        public void EnableTransactions()
+        public void EnableTransactions(bool AEnable = true)
         {
-            this.tpgTransactions.Enabled = true;
+            this.tpgTransactions.Enabled = AEnable;
             this.Refresh();
         }
 
@@ -160,11 +160,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Enable the journal tab if we have an active batch
         /// </summary>
-        public void EnableJournals()
+        public void EnableJournals(bool AEnable = true)
         {
-            if (!this.tpgJournals.Enabled)
+            if (this.tpgJournals.Enabled != AEnable)
             {
-                this.tpgJournals.Enabled = true;
+                this.tpgJournals.Enabled = AEnable;
                 this.Refresh();
             }
         }

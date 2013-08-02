@@ -199,8 +199,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FMainDS.ATransaction.DefaultView.RowFilter = String.Empty;
         }
 
-        private void SetTransactionDefaultView()
+        private void SetTransactionDefaultView(bool AAscendingOrder = true)
         {
+            string sort = AAscendingOrder ? "ASC" : "DESC";
+
             if (FBatchNumber != -1)
             {
                 ClearTransactionDefaultView();
@@ -211,7 +213,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ATransactionTable.GetJournalNumberDBName(),
                     FJournalNumber);
 
-                FMainDS.ATransaction.DefaultView.Sort = String.Format("{0} ASC",
+                FMainDS.ATransaction.DefaultView.Sort = String.Format("{0} " + sort,
                     ATransactionTable.GetTransactionNumberDBName()
                     );
             }
@@ -872,6 +874,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         MessageBox.Show(Catalog.GetString("The journal has been cleared successfully!"),
                             Catalog.GetString("Success"),
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        SetJournalLastTransNumber();
                     }
                     else
                     {
@@ -885,6 +889,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
+                    FMainDS.RejectChanges();
                 }
 
                 //If some row(s) still exist after deletion
@@ -1130,7 +1135,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void SetJournalLastTransNumber()
         {
-            SetTransactionDefaultView();
+            SetTransactionDefaultView(false);
 
             if (FMainDS.ATransaction.DefaultView.Count > 0)
             {
@@ -1141,6 +1146,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FJournalRow.LastTransactionNumber = 0;
             }
+
+            SetTransactionDefaultView(true);
         }
 
         /// <summary>

@@ -84,7 +84,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FJournalNumber == AJournalNumber)
                 && (FTransactionCurrency == AForeignCurrencyName) && (FBatchStatus == ABatchStatus) && (FJournalStatus == AJournalStatus)
-                && (FMainDS.ARecurringTransaction.DefaultView.Count > 0))
+                && (FMainDS.ARecurringTransaction.DefaultView.Count > 0) && (FPreviouslySelectedDetailRow != null))
             {
                 FJournalRow = GetJournalRow();
 
@@ -197,8 +197,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FMainDS.ARecurringTransaction.DefaultView.RowFilter = String.Empty;
         }
 
-        private void SetTransactionDefaultView()
+        private void SetTransactionDefaultView(bool AAscendingOrder = true)
         {
+            string sort = AAscendingOrder ? "ASC" : "DESC";
+
             if (FBatchNumber != -1)
             {
                 ClearTransactionDefaultView();
@@ -209,7 +211,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ARecurringTransactionTable.GetJournalNumberDBName(),
                     FJournalNumber);
 
-                FMainDS.ARecurringTransaction.DefaultView.Sort = String.Format("{0} DESC",
+                FMainDS.ARecurringTransaction.DefaultView.Sort = String.Format("{0} " + sort,
                     ARecurringTransactionTable.GetTransactionNumberDBName()
                     );
             }
@@ -383,6 +385,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             FPreviouslySelectedDetailRow = (GLBatchTDSARecurringTransactionRow)ANewRow;
+
+            btnDeleteAll.Enabled = true;
         }
 
         /// <summary>
@@ -786,6 +790,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // pnlDetailsProtected must be changed first: when the enabled property of the control is changed, the focus changes, which triggers validation
             pnlDetailsProtected = !changeable;
             pnlDetails.Enabled = (changeable && grdDetails.Rows.Count > 1);
+            btnDelete.Enabled = (changeable && grdDetails.Rows.Count > 1);
+            btnDeleteAll.Enabled = (changeable && grdDetails.Rows.Count > 1);
             pnlTransAnalysisAttributes.Enabled = changeable;
             lblAnalAttributes.Enabled = (changeable && grdDetails.Rows.Count > 1);
         }
@@ -834,6 +840,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         MessageBox.Show(Catalog.GetString("The recurring journal has been cleared successfully!"),
                             Catalog.GetString("Success"),
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        SetJournalLastTransNumber();
                     }
                     else
                     {
@@ -945,7 +953,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (!newRecord && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
             {
-                MessageBox.Show("Error in trying to save prior to deleting current transaction!");
+                MessageBox.Show("Error in trying to save prior to deleting current recurring transaction!");
                 return deletionSuccessful;
             }
 
@@ -1060,22 +1068,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Try to save changes
                 if (!newRecord)
                 {
-                    if (((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
-                    {
-                        //Reload from server
-                        FMainDS.ARecurringTransAnalAttrib.Clear();
-                        FMainDS.ARecurringTransaction.Clear();
-
-                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionWithAttributes(FLedgerNumber, FBatchNumber,
-                                FJournalNumber));
-                    }
-                    else
+                    if (!((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
                     {
                         throw new Exception("Unable to save after deleting a recurring transaction!");
                     }
                 }
-
-                SetTransactionDefaultView();
 
                 ACompletionMessage = String.Format(Catalog.GetString("Recurring transaction no.: {0} deleted successfully."),
                     transactionNumberToDelete);
@@ -1103,7 +1100,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void SetJournalLastTransNumber()
         {
-            SetTransactionDefaultView();
+            SetTransactionDefaultView(false);
 
             //Reverse Order
             if (FMainDS.ARecurringTransaction.DefaultView.Count > 0)
@@ -1115,6 +1112,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FJournalRow.LastTransactionNumber = 0;
             }
+
+            SetTransactionDefaultView(true);
         }
 
         /// <summary>

@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             btnNewGift.Enabled = !FPetraUtilsObject.DetailProtectedMode;
 
             //Check if the same batch is selected, so no need to apply filter
-            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber))
+            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FPreviouslySelectedDetailRow != null))
             {
                 //Same as previously selected
                 if (GetSelectedRowIndex() > 0)

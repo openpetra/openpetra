@@ -80,7 +80,7 @@ RootNode:
         dtpStartDonations: {Label=Don. Period From}
         dtpEndDonations: {Label=To}
         chkDetailActive: {Label=Active Gift}
-        txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=yes, Unbound=true}
+        txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=true, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=2, Unbound=true, OnChange=DonorKeyChanged}
         txtDetailReference: {Label=Reference, Width=170}
         cmbDetailReceiptLetterCode:
