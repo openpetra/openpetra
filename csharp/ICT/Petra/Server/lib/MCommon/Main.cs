@@ -339,7 +339,11 @@ namespace Ict.Petra.Server.MCommon
         /// <returns>void</returns>
         public TPagedDataSet(DataTable ATypedTable) : base()
         {
-            if (ATypedTable != null)
+            if (ATypedTable == null)
+            {
+                FTmpDataTable = new DataTable();
+            }
+            else
             {
                 FTmpDataTable = ATypedTable.Clone();
             }
@@ -420,23 +424,10 @@ namespace Ict.Petra.Server.MCommon
                 FSelectSQL = FFindParameters.FSqlQuery;
             }
 
-/*
- *          if (TLogging.DL >= 9)
- *          {
- *              TDataBase.LogSqlStatement(this.GetType().FullName + ".GetData", FSelectSQL, FFindParameters.FParametersArray);
- *          }
- */
-            // use temp table
             FTmpDataTable.TableName = FFindParameters.FSearchName;
             try
             {
                 // Fill temporary table with query results (all records)
-//                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-//                    TEnforceIsolationLevel.eilMinimum,
-//                    out NewTransaction);
-
-//                FDataAdapter = (DbDataAdapter)DBAccess.GDBAccessObj.SelectDA(FSelectSQL, null, FFindParameters.FParametersArray);
-
                 FDataAdapter = null;
                 DBAccess.GDBAccessObj.PrepareNextCommand();
                 DBAccess.GDBAccessObj.SetTimeoutForNextCommand(60);
@@ -447,21 +438,10 @@ namespace Ict.Petra.Server.MCommon
             }
             finally
             {
-//                if (NewTransaction)
-//                {
-//                    DBAccess.GDBAccessObj.CommitTransaction();
-//                }
             }
 
-/*
- *          if ((FFindParameters.FColumNameMapping != null) && (FDataAdapter != null))
- *          {
- *              PerformColumnNameMapping();
- *          }
- */
             try
             {
-//              FTotalRecords = FDataAdapter.Fill(FTmpDataTable);
                 FTotalRecords = FTmpDataTable.Rows.Count;
             }
             catch (System.InvalidOperationException)

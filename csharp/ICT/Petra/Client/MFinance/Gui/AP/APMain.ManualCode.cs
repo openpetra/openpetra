@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         /// <summary>DataTables that holds all Pages of data (also empty ones that are not retrieved yet!)</summary>
         private DataTable FSupplierTable;
-        private AccountsPayableGUITDSInvoiceListTable FInvoiceTable;
+        private DataTable FInvoiceTable;
         private ALedgerRow FLedgerInfo;
 
         private Int32 FLedgerNumber;
@@ -234,17 +234,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             else
             {
                 grdInvoiceResult.Columns.Clear();
-                grdInvoiceResult.AddCheckBoxColumn("", FInvoiceTable.ColumnSelected, 20, false);
-                grdInvoiceResult.AddTextColumn("AP#", FInvoiceTable.ColumnApNumber, 55);
-                grdInvoiceResult.AddTextColumn("Inv#", FInvoiceTable.ColumnDocumentCode, 90);
-                grdInvoiceResult.AddTextColumn("Supplier", FInvoiceTable.ColumnPartnerShortName, 150);
-                grdInvoiceResult.AddCurrencyColumn("Amount", FInvoiceTable.ColumnTotalAmount, 2);
-                grdInvoiceResult.AddCurrencyColumn("Outstanding", FInvoiceTable.ColumnOutstandingAmount, 2);
-                grdInvoiceResult.AddTextColumn("Currency", FInvoiceTable.ColumnCurrencyCode, 70);
-                grdInvoiceResult.AddDateColumn("Due Date", FInvoiceTable.ColumnDateDue);
-                grdInvoiceResult.AddTextColumn("Status", FInvoiceTable.ColumnDocumentStatus, 100);
-                grdInvoiceResult.AddDateColumn("Issued", FInvoiceTable.ColumnDateIssued);
-//              grdInvoiceResult.AddTextColumn("Discount", FInvoiceTable.ColumnDiscountMsg, 150);
+                grdInvoiceResult.AddCheckBoxColumn("", FInvoiceTable.Columns["Selected"], 20, false);
+                grdInvoiceResult.AddTextColumn("AP#", FInvoiceTable.Columns["ApNumber"], 55);
+                grdInvoiceResult.AddTextColumn("Inv#", FInvoiceTable.Columns["DocumentCode"], 90);
+                grdInvoiceResult.AddTextColumn("Supplier", FInvoiceTable.Columns["PartnerShortName"], 150);
+                grdInvoiceResult.AddCurrencyColumn("Amount", FInvoiceTable.Columns["TotalAmount"], 2);
+                grdInvoiceResult.AddCurrencyColumn("Outstanding", FInvoiceTable.Columns["OutstandingAmount"], 2);
+                grdInvoiceResult.AddTextColumn("Currency", FInvoiceTable.Columns["CurrencyCode"], 70);
+                grdInvoiceResult.AddDateColumn("Due Date", FInvoiceTable.Columns["DateDue"]);
+                grdInvoiceResult.AddTextColumn("Status", FInvoiceTable.Columns["DocumentStatus"], 100);
+                grdInvoiceResult.AddDateColumn("Issued", FInvoiceTable.Columns["DateIssued"]);
+//              grdInvoiceResult.AddTextColumn("Discount", FInvoiceTable.Columns["DiscountMsg"], 150);
 
                 grdInvoiceResult.Columns[4].Width = 90;  // Only the text columns can have their widths set while
                 grdInvoiceResult.Columns[5].Width = 90;  // they're being added.
@@ -276,7 +276,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             Decimal TotalSelected = 0;
             bool ListHasItems = false;
 
-            //grdInvoiceResult.PagedDataTable
             if (grdInvoiceResult.IsInitialised) // I may be called before the first search.
             {
                 if (grdInvoiceResult.PagedDataTable.Rows.Count > 0)
@@ -319,7 +318,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                             TaggedInvoicesDeletable = true;
                         }
 
-                        if ("|POSTED" == BarStatus)
+                        if ("|POSTED|" == BarStatus)
                         {
                             TaggedInvoicesReversable = true;
                         }
@@ -459,7 +458,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                     if (FInvoiceTable == null)
                     {
-                        FInvoiceTable = (AccountsPayableGUITDSInvoiceListTable)NewPage;
+                        FInvoiceTable = NewPage;
                     }
 
                     return NewPage;
@@ -514,19 +513,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private Int32 GetCurrentlySelectedDocumentId()
         {
             DataRowView[] SelectedGridRow = grdInvoiceResult.SelectedDataRowsAsDataRowView;
-            Int32 InvoiceNum = -1;
+            Int32 ApDocumentId = -1;
 
             if (SelectedGridRow.Length >= 1)
             {
-                Object Cell = SelectedGridRow[0].Row[0];
+                Object Cell = SelectedGridRow[0]["ApDocumentId"];
 
                 if (Cell.GetType() == typeof(Int32))
                 {
-                    InvoiceNum = Convert.ToInt32(Cell);
+                    ApDocumentId = Convert.ToInt32(Cell);
                 }
             }
 
-            return InvoiceNum;
+            return ApDocumentId;
         }
 
         /// <summary>
@@ -718,7 +717,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 if (Row["Selected"].Equals(true))
                 {
-                    LoadDs.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, (int)Row["DocumentId"]));
+                    LoadDs.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, (int)Row["ApDocumentId"]));
                 }
             }
 
@@ -736,7 +735,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     if ("POSTED" == Row["DocumentStatus"].ToString())
                     {
-                        ReverseTheseDocs.Add((int)Row["DocumentId"]);
+                        ReverseTheseDocs.Add((int)Row["ApDocumentId"]);
                     }
                     else
                     {
@@ -793,7 +792,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + Row["DocumentStatus"].ToString()) < 0)
                     {
-                        DeleteTheseDocs.Add((int)Row["DocumentId"]);
+                        DeleteTheseDocs.Add((int)Row["ApDocumentId"]);
                     }
                     else
                     {
@@ -832,7 +831,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
 
-                    if (frm.LoadAApDocument(FLedgerNumber, (int)Row["DocumentId"]))
+                    if (frm.LoadAApDocument(FLedgerNumber, (int)Row["ApDocumentId"]))
                     {
                         frm.Show();
                     }
@@ -852,7 +851,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 if ((Row["Selected"].Equals(true)
                      && ("|POSTED|PARTPAID|".IndexOf("|" + Row["DocumentStatus"].ToString() + "|") >= 0)))
                 {
-                    PayTheseDocs.Add((int)Row["DocumentId"]);
+                    PayTheseDocs.Add((int)Row["ApDocumentId"]);
                 }
             }
 
@@ -876,7 +875,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 if ((Row["Selected"].Equals(true) && ("|POSTED|PARTPAID|PAID|".IndexOf(Row["DocumentStatus"].ToString()) < 0)))
                 {
-                    int DocId = (int)Row["DocumentId"];
+                    int DocId = (int)Row["ApDocumentId"];
 
                     int RowIdx = TempDS.AApDocument.DefaultView.Find(DocId);
 
