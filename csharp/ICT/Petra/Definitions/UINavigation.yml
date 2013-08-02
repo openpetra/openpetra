@@ -116,6 +116,8 @@ OpenPetra:
                         AddreseeTypes: {Label=Addressee Types, Description=Maintain Addressee Types, ActionOpenScreen=TFrmAddresseeTypeSetup}
                         LocationTypes: {Label=Location Types, Description=Maintain Location Types, ActionOpenScreen=TFrmLocationTypeSetup}
                         InternationalPostalTypes: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=International Postal Types, Description=Maintain International Postal Types, ActionOpenScreen=TFrmInternationalPostalTypeSetup}
+                        PostcodeRanges: {Label=Postcode Ranges, Description=Maintain Postcode Ranges, ActionOpenScreen=TFrmPostcodeRangeSetup}
+                        PostcodeRegions: {Label=Postcode Regions, Description=Maintain Postcode Regions, ActionOpenScreen=TFrmPostcodeRegionSetup}
                     
                     LocalDataRelated: {Label=Local Data-related}
                         LocalDataOptionListNames: {Label=Local Data Option List Names, Description=Maintain Local Data Option List names, ActionOpenScreen=TFrmLocalDataOptionListNameSetup}
@@ -380,6 +382,7 @@ OpenPetra:
                         ConferenceStandardCost: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Conference Standard Costs, Description=Maintain Conference Standard Costs, ActionClick=TConferenceMain.StandardCostsForSelectedConference}
                         EarlyLateRegistration: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Early and Late Registrations, Description=Maintain Early and Late Registrations, ActionClick=TConferenceMain.EarlyLateRegistrationsForSelectedConference}
                         ChildDiscount: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Child Discounts, Description=Maintain Child Discounts, ActionClick=TConferenceMain.ChildDiscountsForSelectedConference}
+                        MasterSettings: {Label=Conference Master Settings, Description=Maintain Conference Master Settings, ActionOpenScreen=TFrmConferenceMasterSettings}
                     General:
                         ConferenceCostType: {Label=Conference Cost Types, Description=Maintain Conference Cost Types, ActionOpenScreen=TFrmConferenceCostTypeSetup}
         FinancialDevelopment: {Icon=develope.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=Financial Development, DependsOnLedger=true, PermissionsRequired=DEVUSER}

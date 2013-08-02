@@ -1,0 +1,43 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Postcode Ranges
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DetailTable: PPostcodeRange
+    CacheableTable: PostcodeRangeList
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 660
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlButtons, grdDetails]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
+        btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailRange, DetailFrom, DetailTo]
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailRange]
+                Row1: [txtDetailFrom, txtDetailTo]
+        txtDetailRange: {Label=Range Name, Width=200}
+        txtDetailFrom: {Label=From, Width=120}
+        txtDetailTo: {Label=To, Width=120}
