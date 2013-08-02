@@ -113,6 +113,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FMainDS.AFreeformAnalysis.DefaultView.Sort = AFreeformAnalysisTable.GetAnalysisValueDBName();
         }
 
+        private void ShowDetailsManual(AFreeformAnalysisRow ARow)
+        {
+            if (ARow == null)
+            {
+                txtDetailAnalysisValue.Clear();
+                return;
+            }
+        }
+
         /// <summary>
         /// The number of values in the grid for the current Type
         /// </summary>

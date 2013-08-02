@@ -77,7 +77,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (grdDetails.Rows.Count <= 1)
             {
-                btnDelete.Enabled = false;
+                btnSetMainAccount.Enabled = false;
                 pnlDetails.Visible = false;
             }
 
@@ -108,14 +108,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             partnerBankingDetails.BankingDetailsKey = ARow.BankingDetailsKey;
             partnerBankingDetails.PartnerKey = FMainDS.PPartner[0].PartnerKey;
             FMainDS.PPartnerBankingDetails.Rows.Add(partnerBankingDetails);
+
+            btnSetMainAccount.Enabled = true;
         }
 
         private bool PreDeleteManual(PartnerEditTDSPBankingDetailsRow ARowToDelete, ref String ADeletionQuestion)
         {
-            ADeletionQuestion = String.Format(
-                Catalog.GetString("You have choosen to delete the bank account {0}.{1}{1}Do you really want to delete it?"),
-                FPreviouslySelectedDetailRow.AccountName,
-                Environment.NewLine);
+            ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            ADeletionQuestion += String.Format("{0}{0}({1} {2})",
+                Environment.NewLine,
+                lblAccountName.Text,
+                txtAccountName.Text);
             return true;
         }
 
@@ -125,7 +128,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // TODO what if several people are using the same bank account?
             FMainDS.PPartnerBankingDetails.DefaultView.Sort = PPartnerBankingDetailsTable.GetBankingDetailsKeyDBName();
-            FMainDS.PPartnerBankingDetails.DefaultView.FindRows(FPreviouslySelectedDetailRow.BankingDetailsKey)[0].Row.Delete();
+            FMainDS.PPartnerBankingDetails.DefaultView.FindRows(ARowToDelete.BankingDetailsKey)[0].Row.Delete();
 
             ARowToDelete.Delete();
 
@@ -137,6 +140,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             Boolean ADeletionPerformed,
             String ACompletionMessage)
         {
+            if (grdDetails.Rows.Count <= 1)
+            {
+                // disable buttons if no record in grid (first row for headings)
+                btnSetMainAccount.Enabled = false;
+            }
+
             if (ADeletionPerformed)
             {
                 DoRecalculateScreenParts();

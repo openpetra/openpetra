@@ -101,7 +101,7 @@ RootNode:
         txtVolunteerAttendance: {NoLabel=true, Width=60, Format=PercentInteger}
         txtVolunteerAccommodation: {NoLabel=true, Width=60, Format=PercentInteger, ReadOnly=true}
         txtSpecialRoleCampaignAttendance: {NoLabel=true, Width=60, Format=PercentInteger}
-        txtSpecialRoleCampaignAccommodation: {NoLabel=true, Width=60, Format=PercentInteger, ReadOnly=true}s
+        txtSpecialRoleCampaignAccommodation: {NoLabel=true, Width=60, Format=PercentInteger, ReadOnly=true}
         dtpStartDate: {ReadOnly=true}
         dtpEndDate: {ReadOnly=true}
         cmbCurrency: {List=CurrencyCodeList, ColSpan=2}

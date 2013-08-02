@@ -216,24 +216,24 @@ namespace Ict.Petra.Shared.MFinance
             }
         }
 
-        private static int DECIMALS = 10;
+        private const int DECIMALS = 10;
 
         /// <summary>
         /// use this method to calculate the new amount, using an exchange rate.
         /// This will round the result to the defined limit of decimal places
         /// </summary>
-        public static decimal Multiply(decimal AAmount, decimal AExchangeRate)
+        public static decimal Multiply(decimal AAmount, decimal AExchangeRate, int ADecimals = DECIMALS)
         {
             decimal Result = AAmount * AExchangeRate;
 
-            return Math.Round(Result, DECIMALS);
+            return Math.Round(Result, ADecimals);
         }
 
         /// <summary>
         /// use this method to calculate the new amount, using an exchange rate.
         /// This will round the result to the defined limit of decimal places
         /// </summary>
-        public static decimal Divide(decimal AAmount, decimal AExchangeRate)
+        public static decimal Divide(decimal AAmount, decimal AExchangeRate, int ADecimals = DECIMALS)
         {
             if (AExchangeRate == 0.0m)
             {
@@ -242,7 +242,7 @@ namespace Ict.Petra.Shared.MFinance
 
             decimal Result = AAmount / AExchangeRate;
 
-            return Math.Round(Result, DECIMALS);
+            return Math.Round(Result, ADecimals);
         }
     }
 }

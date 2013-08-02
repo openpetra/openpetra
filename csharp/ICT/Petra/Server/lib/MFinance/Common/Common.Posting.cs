@@ -1317,6 +1317,16 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
 
                 BatchRow.Delete();
+                //
+                // If this batch has journals and transactions, they need to be deleted too,
+                // along with any trans_anal_attrib records.
+                //
+                // The call to GLBatchCanBeCancelled will have loaded all these records for me.
+
+                TempTDS.AJournal.Rows.Clear();
+                TempTDS.ATransaction.Rows.Clear();
+                TempTDS.ATransAnalAttrib.Rows.Clear();
+
                 return GLBatchTDSAccess.SubmitChanges(TempTDS, out AVerifications) == TSubmitChangesResult.scrOK;
             }
         }

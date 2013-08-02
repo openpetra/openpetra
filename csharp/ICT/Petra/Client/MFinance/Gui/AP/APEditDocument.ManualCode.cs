@@ -154,7 +154,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private static bool DetailLineAttributesRequired(ref bool AllPresent, AccountsPayableTDS Atds, AApDocumentDetailRow DetailRow)
         {
             Atds.AAnalysisAttribute.DefaultView.RowFilter =
-                String.Format("{0}='{1}'", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode);         // Do I need Cost Centre in here too?
+                String.Format("{0}='{1}'", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode);
 
             if (Atds.AAnalysisAttribute.DefaultView.Count > 0)
             {
@@ -188,6 +188,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         AApAnalAttribRow AttribValueRow = (AApAnalAttribRow)rv2.Row;
 
                         if (AttribValueRow.AnalysisAttributeValue == "")
+                        {
+                            IhaveAllMyAttributes = false;
+                            break;
+                        }
+
+                        // Is the referenced AttribValue active?
+                        AFreeformAnalysisRow referencedRow = (AFreeformAnalysisRow)Atds.AFreeformAnalysis.Rows.Find(
+                            new Object[] { AttribValueRow.LedgerNumber, AttribValueRow.AnalysisTypeCode, AttribValueRow.AnalysisAttributeValue }
+                            );
+
+                        if ((referencedRow == null) || !referencedRow.Active)
                         {
                             IhaveAllMyAttributes = false;
                             break;
@@ -498,8 +509,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdDetails.Columns[2].Width = 200;
             grdDetails.Columns[3].Width = 90;
 
-            // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
-            bool ActiveOnly = this.Enabled;
+            // if this document was already posted, then we need all account and cost centre codes, because old codes might have been used
+            bool ActiveOnly = ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) < 0);
 
             TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
@@ -533,6 +544,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         public static bool BatchBalancesOK(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
         {
             decimal DocumentBalance = AApDocument.TotalAmount;
+
+            if (DocumentBalance == 0)
+            {
+                System.Windows.Forms.MessageBox.Show(
+                    String.Format(Catalog.GetString("The document {0} is empty."), AApDocument.DocumentCode),
+                    Catalog.GetString("Balance Problem"));
+                return false;
+            }
 
             foreach (AApDocumentDetailRow Row in Atds.AApDocumentDetail.Rows)
             {
