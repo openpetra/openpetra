@@ -36,7 +36,6 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MConference;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MConference.Validation;
-using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 
 namespace Ict.Petra.Client.MConference.Gui.Setup
 {

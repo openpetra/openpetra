@@ -132,6 +132,11 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "There is a late registration surcharge which has a date earlier than this early registration discount.")]
         public const String ERR_LATE_APPLICABLE_DATE_EARLIER_THAN_EARLY_APPLICABLE_DATE = "CON.00004V";
 
+        /// <summary>PcDiscount discount percentage greater than 100</summary>
+        [ErrCodeAttribute("Invalid discount percentage.",
+             ErrorMessageText = "Discount percentages cannot be greater than 100%")]
+        public const String ERR_DISCOUNT_PERCENTAGE_GREATER_THAN_100 = "CON.00005V";
+
         #endregion
 
         #region Finance Module-specific error codes
