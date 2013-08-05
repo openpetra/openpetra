@@ -346,9 +346,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             // Now we set some default settings that apply when the screen is MODELESS
             //  (If the screen will be MODAL one of the ShowDialog methods will be called below)
-            btnClose.Visible = false;           // Do not show the modal buttons
-            btnCancel.Visible = false;
-            btnDelete.Top = btnClose.Top + btnClose.Height / 2;
+            pnlModalButtons.Visible = false;
             mniImport.Enabled = true;           // Allow imports
             tbbImport.Enabled = true;
             blnIsInModalMode = false;
@@ -606,16 +604,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void DefineModalSettings()
         {
-            // We need the accept/cancel buttons when MODAL.  It looks better if they are at the top and New is beneath
-            btnClose.Visible = true;
-            btnCancel.Visible = true;
-            int pos1 = btnNew.Top;
-            int pos2 = btnClose.Top;
-            int spacing = pos2 - pos1;
-            btnClose.Top = pos1;
-            btnCancel.Top = pos2;
-            btnNew.Top = btnCancel.Top + spacing + (btnNew.Height / 2);
-            btnDelete.Top = btnNew.Top + spacing;
+            pnlModalButtons.Visible = true;
 
             // Import not allowed when MODAL
             mniImport.Enabled = false;

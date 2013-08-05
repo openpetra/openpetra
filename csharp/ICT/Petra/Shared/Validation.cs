@@ -194,6 +194,32 @@ namespace Ict.Petra.Shared
             return false;
         }
 
+        /// <summary>
+        /// True if the dictionary contains at least one entry and all the controls are null.  False if the dictionary is empty or there is at least one screen control.
+        /// If the dictionary was compiled on the server side this property will be true.  If on the client-side it will be false.
+        /// </summary>
+        public bool AllControlsAreNull
+        {
+            get
+            {
+                if (this.Count == 0)
+                {
+                    return false;
+                }
+
+                foreach (TValidationControlsData controlData in this.Values)
+                {
+                    if (controlData.ValidationControl != null)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+
+
         /// create a dictionary that contains all columns
         static public TValidationControlsDict PopulateDictionaryWithAllColumns(TTypedDataTable ATable)
         {

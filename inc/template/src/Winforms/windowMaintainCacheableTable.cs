@@ -181,14 +181,9 @@ namespace {#NAMESPACE}
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
-      // Ensure that the Details Panel is disabled if there are no records
-      if (FMainDS.{#DETAILTABLE}.Rows.Count == 0) 
-      {
-        ShowDetails(null);
-      }
-      
       {#INITACTIONSTATE}            
       {#DISPLAYFILTERINFORMTITLE}
+      SelectRowInGrid(1);
     }
     
     private void TFrmPetra_Closed(object sender, EventArgs e)
