@@ -198,5 +198,38 @@ namespace Ict.Petra.Shared.MConference.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
+
+        /// <summary>
+        /// Validates the MConference Conference Master Settings screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ADiscountTable">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateConferenceMasterSettings(object AContext, PcDiscountTable ADiscountTable,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            TValidationControlsData ValidationControlsData;
+            TScreenVerificationResult VerificationResult = null;
+            DataColumn ValidationColumn;
+
+            foreach (PcDiscountRow Row in ADiscountTable.Rows)
+            {
+                if ((Row.RowState != DataRowState.Deleted) && (Row.Discount > 100))
+                {
+                    ValidationColumn = Row.Table.Columns[PcDiscountTable.ColumnDiscountId];
+
+                    // displays a warning message
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
+                                PetraErrorCodes.ERR_DISCOUNT_PERCENTAGE_GREATER_THAN_100)),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
+            }
+        }
     }
 }

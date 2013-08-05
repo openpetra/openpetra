@@ -4,8 +4,19 @@
   <ImportUnit name="Ict.Petra.Shared.MPartner.Partner.Data"/>
   
     <DataSet name="SelectConferenceTDS">
-        <Table sqltable="p_partner" sqlfield="p_partner_short_name_c" />
+        <Table sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
         <Table sqltable="pc_conference"/>
+    </DataSet>
+    
+    <DataSet name="ConferenceSetupTDS">
+        <Table sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
+        <Table sqltable="p_partner_location"/>
+        <Table sqltable="pc_conference"/>
+        <Table sqltable="pc_conference_option"/>
+        <Table sqltable="pc_conference_venue">
+          <Field name="VenueName" sqltable="p_venue" sqlfield="p_venue_name_c"/>
+        </Table>
+        <Table sqltable="pc_discount"/>
     </DataSet>
 
     <DataSet name="ConferenceApplicationTDS">

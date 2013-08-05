@@ -78,53 +78,52 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Opens the Partner Find screen (or activates it in case a non-modal instance was already open and 
+        /// Opens the Partner Find screen (or activates it in case a non-modal instance was already open and
         /// ARestrictToPartnerClasses is null). If ARestrictToPartnerClasses isn't null then the screen is opened modally.
         /// </summary>
         /// <returns>void</returns>
-        public static void FindPartnerOfClass(Form AParentForm, string ARestrictToPartnerClasses = null) 
+        public static void FindPartnerOfClass(Form AParentForm, string ARestrictToPartnerClasses = null)
         {
-            if (ARestrictToPartnerClasses == null) 
+            if (ARestrictToPartnerClasses == null)
             {
-                        
                 AParentForm.Cursor = Cursors.WaitCursor;
-    
+
                 TPartnerFindScreen PartnerFindForm = new TPartnerFindScreen(AParentForm);
-                PartnerFindForm.SetParameters(false, -1);    
+                PartnerFindForm.SetParameters(false, -1);
                 PartnerFindForm.Show();
-                
-                AParentForm.Cursor = Cursors.Default; 
+
+                AParentForm.Cursor = Cursors.Default;
             }
             else
             {
                 long PartnerKey;
                 string ShortName;
                 TLocationPK LocationPK;
-                
-                if(TPartnerFindScreenManager.OpenModalForm(ARestrictToPartnerClasses, out PartnerKey, out ShortName, out LocationPK, 
-                   AParentForm))
+
+                if (TPartnerFindScreenManager.OpenModalForm(ARestrictToPartnerClasses, out PartnerKey, out ShortName, out LocationPK,
+                        AParentForm))
                 {
                     // Open the Partner Edit screen
                     TFrmPartnerEdit PartnerEditForm;
-        
+
                     AParentForm.Cursor = Cursors.WaitCursor;
-        
+
                     PartnerEditForm = new TFrmPartnerEdit(AParentForm);
                     PartnerEditForm.SetParameters(TScreenMode.smEdit, PartnerKey, LocationPK.SiteKey, LocationPK.LocationKey);
                     PartnerEditForm.Show();
-        
+
                     if (ARestrictToPartnerClasses.Split(new Char[] { (',') })[0] == "PERSON")
                     {
                         TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL, PartnerKey);
-                    }           
+                    }
                     else
                     {
                         TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, PartnerKey);
                     }
-                    
-                    AParentForm.Cursor = Cursors.Default;            
+
+                    AParentForm.Cursor = Cursors.Default;
                 }
-            }           
+            }
         }
 
         /// <summary>
@@ -379,19 +378,19 @@ namespace Ict.Petra.Client.MPartner.Gui
         public static void OpenLastUsedPartnerEditScreenByContext(Form AParentForm, string AContext = null)
         {
             string ValidContexts;
-            string Context;              
+            string Context;
             long MergedPartnerKey = 0;
             long LastPartnerKey;
             string NoPartnerAvailableStr = Catalog.GetString("You have not edited a Partner yet.");
-            
-            if (AContext != null) 
+
+            if (AContext != null)
             {
                 ValidContexts = TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM + ";" + TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL + ";" +
-                    TUserDefaults.USERDEFAULT_LASTUNITPERSONNEL + ";" + TUserDefaults.USERDEFAULT_LASTPERSONCONFERENCE + ";";
+                                TUserDefaults.USERDEFAULT_LASTUNITPERSONNEL + ";" + TUserDefaults.USERDEFAULT_LASTPERSONCONFERENCE + ";";
 
                 if (!ValidContexts.Contains(AContext + ";"))
                 {
-                        throw new ArgumentException("AContext \"" + AContext + "\" is not a valid context. Valid contexts: " + ValidContexts);
+                    throw new ArgumentException("AContext \"" + AContext + "\" is not a valid context. Valid contexts: " + ValidContexts);
                 }
                 else
                 {
@@ -401,8 +400,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 Context = TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM;
-            }                
-            
+            }
+
             LastPartnerKey = TUserDefaults.GetInt64Default(Context, 0);
 
             // we don't need to validate the partner key
@@ -412,11 +411,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             // now that this function is called from the main menu, we need to check for LastPartnerKey != 0
             if (LastPartnerKey == 0)
             {
-                if (AContext == TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL) 
+                if (AContext == TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL)
                 {
                     NoPartnerAvailableStr = Catalog.GetString("You have not yet worked with a Person in the Personnel Module.");
                 }
-                
+
                 MessageBox.Show(Catalog.GetString(NoPartnerAvailableStr),
                     Catalog.GetString("No Last Partner"),
                     MessageBoxButtons.OK,
@@ -444,9 +443,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             frmPEDS.SetParameters(TScreenMode.smEdit, LastPartnerKey);
             frmPEDS.Show();
 
-            AParentForm.Cursor = Cursors.Default;            
+            AParentForm.Cursor = Cursors.Default;
         }
-        
+
         /// <summary>
         /// Opens the partner edit screen with the last partner worked on.
         /// Checks if the partner is merged.
@@ -455,7 +454,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             OpenLastUsedPartnerEditScreenByContext(AParentForm, null);
         }
-        
+
         /// <summary>
         /// Opens the partner edit screen with the last partner worked on from within the Personnel Module.
         /// Checks if the partner is merged.
@@ -463,6 +462,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         public static void OpenLastUsedPartnerEditScreenPersonnelModule(Form AParentForm)
         {
             OpenLastUsedPartnerEditScreenByContext(AParentForm, "PersonnelLastPerson");
-        }        
+        }
     }
 }
