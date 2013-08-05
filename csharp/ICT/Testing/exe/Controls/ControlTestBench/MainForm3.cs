@@ -51,6 +51,8 @@ public partial class MainForm3 : Form
         //
         // TODO: Add constructor code after the InitializeComponent() call.
         //
+        
+        tabControlTypes.SelectedIndex = 1;
     }
 
     void TestShepherd(object sender, EventArgs e)
@@ -104,6 +106,21 @@ public partial class MainForm3 : Form
         TVisualStylesEnum EnumStyle = Helper.GetVisualStylesEnumFromString(cmbVisualStyle.Text.ToString());
 
         new CollapsiblePanelHosterTest(UINavigation.FirstChild.NextSibling.FirstChild, EnumStyle).Show();
+    }
+    
+    void BtnOpenFilterFindUCTestFormClick(object sender, EventArgs e)
+    {
+        FilterFindTest FFTest = new FilterFindTest();
+        
+        FFTest.Show();
+    }
+    
+    void TabControlTypesSelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (tabControlTypes.SelectedIndex == 1) 
+        {
+            btnOpenFilterFindUCTestForm.Focus();
+        }
     }
 }
 }

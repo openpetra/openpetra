@@ -87,6 +87,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 LoadCmbAnalType();
                 pnlDetails.Enabled = false;
+                
+                UpdateRecordNumberDisplay();
             }
         }
 

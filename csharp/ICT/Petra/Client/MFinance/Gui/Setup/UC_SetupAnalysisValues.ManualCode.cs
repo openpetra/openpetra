@@ -65,6 +65,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
                     FTypeCode);
                 SelectRowInGrid(rowIndex);
+                
+                UpdateRecordNumberDisplay();
             }
         }
         private void NewRow(System.Object sender, EventArgs e)

@@ -94,6 +94,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddControlGenerator(new ButtonGenerator());
                 AddControlGenerator(new RangeGenerator());
                 AddControlGenerator(new PanelGenerator());
+                AddControlGenerator(new ExtendedPanelGenerator());                
                 AddControlGenerator(new CheckBoxReportGenerator());
                 AddControlGenerator(new TClbVersatileReportGenerator());
                 AddControlGenerator(new DateTimePickerReportGenerator());
@@ -127,6 +128,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddControlGenerator(new GroupBoxGenerator());
                 AddControlGenerator(new RangeGenerator());
                 AddControlGenerator(new PanelGenerator());
+                AddControlGenerator(new ExtendedPanelGenerator());
                 AddControlGenerator(new SplitContainerGenerator());
                 AddControlGenerator(new UserControlGenerator());
                 AddControlGenerator(new LabelGenerator());
@@ -1000,6 +1002,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("MULTIDELETEDELETABLE", "");
             FTemplate.AddToCodelet("SELECTTABMANUAL", "");
             FTemplate.AddToCodelet("STOREMANUALCODE", "");
+            FTemplate.AddToCodelet("FINDANDFILTERHOOKUPEVENTS", "");
             FTemplate.AddToCodelet("ACTIONENABLINGDISABLEMISSINGFUNCS", "");
             FTemplate.AddToCodelet("PRIMARYKEYCONTROLSREADONLY", "");
             FTemplate.AddToCodelet("SHOWDETAILSMANUAL", "");
@@ -1085,6 +1088,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "SubmissionResult = StoreManualCode(ref SubmitDS, out VerificationResult);" + Environment.NewLine);
             }
 
+            if (FCodeStorage.ManualFileExistsAndContains("FindAndFilterHookUpEvents"))
+            {
+                FTemplate.AddToCodelet("FINDANDFILTERHOOKUPEVENTS", "FindAndFilterHookUpEvents();" + Environment.NewLine);
+            }
+            
             if (FCodeStorage.HasAttribute("DatasetType"))
             {
                 FTemplate.SetCodelet("DATASETTYPE", FCodeStorage.GetAttribute("DatasetType"));
