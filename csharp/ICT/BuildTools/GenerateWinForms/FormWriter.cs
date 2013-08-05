@@ -94,7 +94,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddControlGenerator(new ButtonGenerator());
                 AddControlGenerator(new RangeGenerator());
                 AddControlGenerator(new PanelGenerator());
-                AddControlGenerator(new ExtendedPanelGenerator());                
+                AddControlGenerator(new ExtendedPanelGenerator());
                 AddControlGenerator(new CheckBoxReportGenerator());
                 AddControlGenerator(new TClbVersatileReportGenerator());
                 AddControlGenerator(new DateTimePickerReportGenerator());
@@ -1092,7 +1092,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 FTemplate.AddToCodelet("FINDANDFILTERHOOKUPEVENTS", "FindAndFilterHookUpEvents();" + Environment.NewLine);
             }
-            
+
             if (FCodeStorage.HasAttribute("DatasetType"))
             {
                 FTemplate.SetCodelet("DATASETTYPE", FCodeStorage.GetAttribute("DatasetType"));

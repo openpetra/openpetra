@@ -75,15 +75,14 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 txtDetailCurrencyName.Text);
             return true;
         }
-        
-        
+
         #region Filter and Find Event Handling
-        
+
         private void FindAndFilter_ArgumentCtrlValueChanged(object AUcoEventSender, TUcoFilterAndFind.TContextEventExtControlValueArgs AUcoEventArgs)
         {
             // TODO
-        } 
-        
-        #endregion        
+        }
+
+        #endregion
     }
 }

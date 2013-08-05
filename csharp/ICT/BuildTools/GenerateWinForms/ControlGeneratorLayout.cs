@@ -394,7 +394,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (LayoutCtrl.IsHorizontalGridButtonPanel)
                 {
-Console.WriteLine("Setting CurrentTopPosition to 3 for all Controls on Control '" + LayoutCtrl.controlName + "' as it is a horizontal Grid Button Panel (used for Buttons).");
+                    Console.WriteLine(
+                        "Setting CurrentTopPosition to 3 for all Controls on Control '" + LayoutCtrl.controlName +
+                        "' as it is a horizontal Grid Button Panel (used for Buttons).");
                     CurrentTopPosition = 3;
                 }
                 else
@@ -461,7 +463,9 @@ Console.WriteLine("Setting CurrentTopPosition to 3 for all Controls on Control '
                             && !((childctrl.HasAttribute("StartNewButtonGroup"))
                                  && (childctrl.GetAttribute("StartNewButtonGroup").ToLower() == "true")))
                         {
-Console.WriteLine("Adjusted ControlLeftPosition for Control '" + childctrl.controlName + "' as it is on a horizontal Grid Button Panel.");
+                            Console.WriteLine(
+                                "Adjusted ControlLeftPosition for Control '" + childctrl.controlName +
+                                "' as it is on a horizontal Grid Button Panel.");
                             ControlLeftPosition -= 8;
                         }
 

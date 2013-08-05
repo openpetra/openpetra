@@ -208,7 +208,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             }
 
             FPetraUtilsObject.EnableDataChangedEvent();
-            
+
             UpdateRecordNumberDisplay();
         }
 

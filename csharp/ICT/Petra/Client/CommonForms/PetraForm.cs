@@ -685,19 +685,19 @@ namespace Ict.Petra.Client.CommonForms
         {
             return FWinForm;
         }
-        
+
         /// <summary>
         /// Sets the tooltip for a Control.
         /// </summary>
         public void SetToolTip(Control AControl, string AToolTipText)
         {
-            if (FtipForm == null) 
+            if (FtipForm == null)
             {
                 FtipForm = new ToolTip();
             }
-            
-            FtipForm.SetToolTip(AControl, AToolTipText);            
-        }        
+
+            FtipForm.SetToolTip(AControl, AToolTipText);
+        }
     }
 
     /// <summary>todoComment</summary>

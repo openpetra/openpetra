@@ -163,12 +163,12 @@ namespace Ict.Common
         /// <returns>the translation, or <c>null</c> if none is found</returns>
         public static string GetPluralString(String msgid, String msgidPlural, long n, bool treatZeroAsPlural = false)
         {
-            bool Plural = treatZeroAsPlural ? (n !=1) : (n > 0);
-            
+            bool Plural = treatZeroAsPlural ? (n != 1) : (n > 0);
+
             if (catalog == null)
             {
                 if (Plural)
-                {                    
+                {
                     return msgidPlural;
                 }
                 else

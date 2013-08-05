@@ -65,9 +65,9 @@ namespace Ict.Common.Controls
             this.tipGeneral = new System.Windows.Forms.ToolTip(this.components);
             this.pnlTitle.SuspendLayout();
             this.SuspendLayout();
-            // 
+            //
             // pnlTitle
-            // 
+            //
             this.pnlTitle.BackColor = System.Drawing.SystemColors.ButtonHighlight;
             this.pnlTitle.Controls.Add(this.btnCloseFilter);
             this.pnlTitle.Controls.Add(this.lblTitle);
@@ -76,12 +76,14 @@ namespace Ict.Common.Controls
             this.pnlTitle.Name = "pnlTitle";
             this.pnlTitle.Size = new System.Drawing.Size(150, 22);
             this.pnlTitle.TabIndex = 0;
-            // 
+            //
             // btnCloseFilter
-            // 
-            this.btnCloseFilter.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            this.btnCloseFilter.Anchor =
+                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCloseFilter.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.btnCloseFilter.Font = new System.Drawing.Font("Verdana", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnCloseFilter.Font =
+                new System.Drawing.Font("Verdana", 6F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCloseFilter.Location = new System.Drawing.Point(130, 3);
             this.btnCloseFilter.Name = "btnCloseFilter";
             this.btnCloseFilter.Size = new System.Drawing.Size(18, 18);
@@ -92,20 +94,21 @@ namespace Ict.Common.Controls
             this.tipGeneral.SetToolTip(this.btnCloseFilter, "Closes this panel");
             this.btnCloseFilter.UseVisualStyleBackColor = true;
             this.btnCloseFilter.Click += new System.EventHandler(this.BtnCloseFilterClick);
-            // 
+            //
             // lblTitle
-            // 
+            //
             this.lblTitle.AutoSize = true;
             this.lblTitle.Location = new System.Drawing.Point(3, 4);
             this.lblTitle.Name = "lblTitle";
             this.lblTitle.Size = new System.Drawing.Size(48, 13);
             this.lblTitle.TabIndex = 0;
             this.lblTitle.Text = "List Filter";
-            // 
+            //
             // pnlFilterControls
-            // 
-            this.pnlFilterControls.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-                                    | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            this.pnlFilterControls.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
             this.pnlFilterControls.BorderColor = System.Drawing.Color.PapayaWhip;
             this.pnlFilterControls.GradientEndColor = System.Drawing.Color.LightSkyBlue;
             this.pnlFilterControls.GradientStartColor = System.Drawing.Color.LightBlue;
@@ -116,11 +119,12 @@ namespace Ict.Common.Controls
             this.pnlFilterControls.ShadowOffSet = 4;
             this.pnlFilterControls.Size = new System.Drawing.Size(139, 124);
             this.pnlFilterControls.TabIndex = 1;
-            // 
+            //
             // pnlExtraFilterControls
-            // 
-            this.pnlExtraFilterControls.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-                                    | System.Windows.Forms.AnchorStyles.Right)));
+            //
+            this.pnlExtraFilterControls.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
             this.pnlExtraFilterControls.BorderColor = System.Drawing.Color.CadetBlue;
             this.pnlExtraFilterControls.GradientEndColor = System.Drawing.Color.LightSkyBlue;
             this.pnlExtraFilterControls.GradientStartColor = System.Drawing.Color.LightBlue;
@@ -131,18 +135,18 @@ namespace Ict.Common.Controls
             this.pnlExtraFilterControls.ShadowOffSet = 4;
             this.pnlExtraFilterControls.Size = new System.Drawing.Size(139, 124);
             this.pnlExtraFilterControls.TabIndex = 2;
-            // 
+            //
             // imlButtonIcons
-            // 
+            //
             this.imlButtonIcons.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imlButtonIcons.ImageStream")));
             this.imlButtonIcons.TransparentColor = System.Drawing.Color.Transparent;
             this.imlButtonIcons.Images.SetKeyName(0, "X.ico");
             this.imlButtonIcons.Images.SetKeyName(1, "X_red.ico");
             this.imlButtonIcons.Images.SetKeyName(2, "Go.ico");
             this.imlButtonIcons.Images.SetKeyName(3, "Find.ico");
-            // 
+            //
             // TUcoFilterAndFind
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightSteelBlue;
@@ -155,6 +159,7 @@ namespace Ict.Common.Controls
             this.pnlTitle.PerformLayout();
             this.ResumeLayout(false);
         }
+
         private System.Windows.Forms.ToolTip tipGeneral;
         private System.Windows.Forms.ImageList imlButtonIcons;
         private System.Windows.Forms.Button btnCloseFilter;

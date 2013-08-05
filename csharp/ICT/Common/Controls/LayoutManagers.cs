@@ -38,7 +38,7 @@ namespace Ict.Common.Controls.Formatting
         /// Indicator for starting a new 'group' of Controls (who are set off from the previous layed out Controls by SpacerDistance).
         /// </summary>
         public const String BeginGroupIndicator = "BeginGroup";
-        
+
         private Control FContainer;
         private int FMargin;
         private int FLeftMargin;

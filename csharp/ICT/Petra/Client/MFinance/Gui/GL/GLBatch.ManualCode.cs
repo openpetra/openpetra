@@ -66,9 +66,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             ucoBatches.ShowFindPanel();
         }
-        
+
         private int standardTabIndex = 0;
-        
+
         private void TFrmGLBatch_Load(object sender, EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);

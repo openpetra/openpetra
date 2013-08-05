@@ -177,19 +177,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             return true;
         }
- 
+
         #region Filter and Find Event Handling
-        
+
         private void FindAndFilterHookUpEvents()
         {
             // TODO
         }
-        
+
         private void FindAndFilter_ArgumentCtrlValueChanged(object AUcoEventSender, TUcoFilterAndFind.TContextEventExtControlValueArgs AUcoEventArgs)
         {
             // TODO
-        } 
-        
+        }
+
         #endregion
     }
 }

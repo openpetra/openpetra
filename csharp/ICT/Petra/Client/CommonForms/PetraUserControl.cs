@@ -47,7 +47,7 @@ namespace Ict.Petra.Client.CommonForms
     {
         /// <summary>
         /// ToolTip instance for the UserControl.
-        /// </summary>        
+        /// </summary>
         private System.Windows.Forms.ToolTip FtipUC;
 
         /// <summary>Holds the DataSet that contains most data that is used in the UserControl</summary>
@@ -151,20 +151,20 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         #region Helper functions
-        
+
         /// <summary>
         /// Sets the tooltip for a Control.
         /// </summary>
         public void SetToolTip(Control AControl, string AToolTipText)
         {
-            if (FtipUC == null) 
+            if (FtipUC == null)
             {
                 FtipUC = new ToolTip();
             }
-            
-            FtipUC.SetToolTip(AControl, AToolTipText);            
-        }        
-    
+
+            FtipUC.SetToolTip(AControl, AToolTipText);
+        }
+
         /// <summary>
         /// todoComment
         /// </summary>

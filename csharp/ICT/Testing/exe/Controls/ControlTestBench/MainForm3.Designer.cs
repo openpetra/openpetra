@@ -81,9 +81,9 @@ partial class MainForm3
         this.tabPage3.SuspendLayout();
         this.tabPage4.SuspendLayout();
         this.SuspendLayout();
-        // 
+        //
         // tabControlTypes
-        // 
+        //
         this.tabControlTypes.Controls.Add(this.tabPage3);
         this.tabControlTypes.Controls.Add(this.tabPage4);
         this.tabControlTypes.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -93,9 +93,9 @@ partial class MainForm3
         this.tabControlTypes.Size = new System.Drawing.Size(294, 274);
         this.tabControlTypes.TabIndex = 11;
         this.tabControlTypes.SelectedIndexChanged += new System.EventHandler(this.TabControlTypesSelectedIndexChanged);
-        // 
+        //
         // tabPage3
-        // 
+        //
         this.tabPage3.Controls.Add(this.button5);
         this.tabPage3.Controls.Add(this.button4);
         this.tabPage3.Controls.Add(this.btnCollapsibleHosterTest);
@@ -121,173 +121,175 @@ partial class MainForm3
         this.tabPage3.TabIndex = 0;
         this.tabPage3.Text = "Collapsible Panels";
         this.tabPage3.UseVisualStyleBackColor = true;
-        // 
+        //
         // button5
-        // 
+        //
         this.button5.Location = new System.Drawing.Point(52, 94);
         this.button5.Name = "button5";
         this.button5.Size = new System.Drawing.Size(182, 23);
         this.button5.TabIndex = 25;
         this.button5.Text = "CollapsiblePanelHoster Test";
         this.button5.UseVisualStyleBackColor = true;
-        // 
+        //
         // button4
-        // 
+        //
         this.button4.Location = new System.Drawing.Point(52, 36);
         this.button4.Name = "button4";
         this.button4.Size = new System.Drawing.Size(182, 23);
         this.button4.TabIndex = 24;
         this.button4.Text = "CollapsiblePanel Test";
         this.button4.UseVisualStyleBackColor = true;
-        // 
+        //
         // btnCollapsibleHosterTest
-        // 
+        //
         this.btnCollapsibleHosterTest.Location = new System.Drawing.Point(52, 94);
         this.btnCollapsibleHosterTest.Name = "btnCollapsibleHosterTest";
         this.btnCollapsibleHosterTest.Size = new System.Drawing.Size(182, 23);
         this.btnCollapsibleHosterTest.TabIndex = 23;
         this.btnCollapsibleHosterTest.Text = "CollapsiblePanelHoster Test";
         this.btnCollapsibleHosterTest.UseVisualStyleBackColor = true;
-        // 
+        //
         // button3
-        // 
+        //
         this.button3.Location = new System.Drawing.Point(52, 129);
         this.button3.Name = "button3";
         this.button3.Size = new System.Drawing.Size(182, 23);
         this.button3.TabIndex = 20;
         this.button3.Text = "Test All";
         this.button3.UseVisualStyleBackColor = true;
-        // 
+        //
         // btnCollapsibleTest
-        // 
+        //
         this.btnCollapsibleTest.Location = new System.Drawing.Point(52, 36);
         this.btnCollapsibleTest.Name = "btnCollapsibleTest";
         this.btnCollapsibleTest.Size = new System.Drawing.Size(182, 23);
         this.btnCollapsibleTest.TabIndex = 26;
         this.btnCollapsibleTest.Text = "CollapsiblePanel Test";
         this.btnCollapsibleTest.UseVisualStyleBackColor = true;
-        // 
+        //
         // button2
-        // 
+        //
         this.button2.Location = new System.Drawing.Point(52, 65);
         this.button2.Name = "button2";
         this.button2.Size = new System.Drawing.Size(182, 23);
         this.button2.TabIndex = 21;
         this.button2.Text = "Shepherd Test";
         this.button2.UseVisualStyleBackColor = true;
-        // 
+        //
         // btnTestAll
-        // 
+        //
         this.btnTestAll.Location = new System.Drawing.Point(52, 129);
         this.btnTestAll.Name = "btnTestAll";
         this.btnTestAll.Size = new System.Drawing.Size(182, 23);
         this.btnTestAll.TabIndex = 22;
         this.btnTestAll.Text = "Test All";
         this.btnTestAll.UseVisualStyleBackColor = true;
-        // 
+        //
         // label4
-        // 
+        //
         this.label4.Location = new System.Drawing.Point(6, 191);
         this.label4.Name = "label4";
         this.label4.Size = new System.Drawing.Size(136, 44);
         this.label4.TabIndex = 17;
         this.label4.Text = "Visual Style (ignored for \'Shepherd Test\' and \'Test All\'):";
-        // 
+        //
         // btnShepherdTest
-        // 
+        //
         this.btnShepherdTest.Location = new System.Drawing.Point(52, 65);
         this.btnShepherdTest.Name = "btnShepherdTest";
         this.btnShepherdTest.Size = new System.Drawing.Size(182, 23);
         this.btnShepherdTest.TabIndex = 19;
         this.btnShepherdTest.Text = "Shepherd Test";
         this.btnShepherdTest.UseVisualStyleBackColor = true;
-        // 
+        //
         // comboBox1
-        // 
+        //
         this.comboBox1.FormattingEnabled = true;
         this.comboBox1.Items.AddRange(new object[] {
-                        "AccordionPanel",
-                        "TaskPanel",
-                        "Dashboard",
-                        "Shepherd",
-                        "HorizontalCollapse"});
+                "AccordionPanel",
+                "TaskPanel",
+                "Dashboard",
+                "Shepherd",
+                "HorizontalCollapse"
+            });
         this.comboBox1.Location = new System.Drawing.Point(148, 191);
         this.comboBox1.Name = "comboBox1";
         this.comboBox1.Size = new System.Drawing.Size(121, 21);
         this.comboBox1.TabIndex = 15;
-        // 
+        //
         // label2
-        // 
+        //
         this.label2.Location = new System.Drawing.Point(6, 191);
         this.label2.Name = "label2";
         this.label2.Size = new System.Drawing.Size(136, 44);
         this.label2.TabIndex = 18;
         this.label2.Text = "Visual Style (ignored for \'Shepherd Test\' and \'Test All\'):";
-        // 
+        //
         // label3
-        // 
+        //
         this.label3.Location = new System.Drawing.Point(6, 164);
         this.label3.Name = "label3";
         this.label3.Size = new System.Drawing.Size(136, 23);
         this.label3.TabIndex = 13;
         this.label3.Text = "YAML File for Tests:";
-        // 
+        //
         // cmbVisualStyle
-        // 
+        //
         this.cmbVisualStyle.FormattingEnabled = true;
         this.cmbVisualStyle.Items.AddRange(new object[] {
-                        "AccordionPanel",
-                        "TaskPanel",
-                        "Dashboard",
-                        "Shepherd",
-                        "HorizontalCollapse"});
+                "AccordionPanel",
+                "TaskPanel",
+                "Dashboard",
+                "Shepherd",
+                "HorizontalCollapse"
+            });
         this.cmbVisualStyle.Location = new System.Drawing.Point(148, 191);
         this.cmbVisualStyle.Name = "cmbVisualStyle";
         this.cmbVisualStyle.Size = new System.Drawing.Size(121, 21);
         this.cmbVisualStyle.TabIndex = 16;
-        // 
+        //
         // textBox1
-        // 
+        //
         this.textBox1.Location = new System.Drawing.Point(148, 164);
         this.textBox1.Name = "textBox1";
         this.textBox1.Size = new System.Drawing.Size(100, 20);
         this.textBox1.TabIndex = 12;
         this.textBox1.Text = "testYaml_LedgerNew.yaml";
-        // 
+        //
         // label1
-        // 
+        //
         this.label1.Location = new System.Drawing.Point(6, 164);
         this.label1.Name = "label1";
         this.label1.Size = new System.Drawing.Size(136, 23);
         this.label1.TabIndex = 14;
         this.label1.Text = "YAML File for Tests:";
-        // 
+        //
         // button1
-        // 
+        //
         this.button1.Location = new System.Drawing.Point(52, 7);
         this.button1.Name = "button1";
         this.button1.Size = new System.Drawing.Size(182, 23);
         this.button1.TabIndex = 28;
         this.button1.Text = "Test TaskList";
-        // 
+        //
         // txtYaml
-        // 
+        //
         this.txtYaml.Location = new System.Drawing.Point(148, 164);
         this.txtYaml.Name = "txtYaml";
         this.txtYaml.Size = new System.Drawing.Size(100, 20);
         this.txtYaml.TabIndex = 11;
         this.txtYaml.Text = "testYaml_LedgerNew.yaml";
-        // 
+        //
         // btnTaskListTest
-        // 
+        //
         this.btnTaskListTest.Location = new System.Drawing.Point(52, 7);
         this.btnTaskListTest.Name = "btnTaskListTest";
         this.btnTaskListTest.Size = new System.Drawing.Size(182, 23);
         this.btnTaskListTest.TabIndex = 27;
         this.btnTaskListTest.Text = "Test TaskList";
-        // 
+        //
         // tabPage4
-        // 
+        //
         this.tabPage4.Controls.Add(this.btnOpenFilterFindUCTestForm);
         this.tabPage4.Location = new System.Drawing.Point(4, 22);
         this.tabPage4.Name = "tabPage4";
@@ -296,9 +298,9 @@ partial class MainForm3
         this.tabPage4.TabIndex = 1;
         this.tabPage4.Text = "Filter/Find UserControl";
         this.tabPage4.UseVisualStyleBackColor = true;
-        // 
+        //
         // btnOpenFilterFindUCTestForm
-        // 
+        //
         this.btnOpenFilterFindUCTestForm.Location = new System.Drawing.Point(40, 44);
         this.btnOpenFilterFindUCTestForm.Name = "btnOpenFilterFindUCTestForm";
         this.btnOpenFilterFindUCTestForm.Size = new System.Drawing.Size(189, 23);
@@ -306,9 +308,9 @@ partial class MainForm3
         this.btnOpenFilterFindUCTestForm.Text = "Filter/Find UC Test Form";
         this.btnOpenFilterFindUCTestForm.UseVisualStyleBackColor = true;
         this.btnOpenFilterFindUCTestForm.Click += new System.EventHandler(this.BtnOpenFilterFindUCTestFormClick);
-        // 
+        //
         // MainForm3
-        // 
+        //
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
         this.AutoSize = true;
@@ -323,6 +325,7 @@ partial class MainForm3
         this.tabPage4.ResumeLayout(false);
         this.ResumeLayout(false);
     }
+
     private System.Windows.Forms.Button btnOpenFilterFindUCTestForm;
     private System.Windows.Forms.TabPage tabPage4;
     private System.Windows.Forms.Button button1;

@@ -162,9 +162,9 @@ partial class FilterFindTest
         this.groupBox4.SuspendLayout();
         this.groupBox9.SuspendLayout();
         this.SuspendLayout();
-        // 
+        //
         // btnTestDefaultConstructor
-        // 
+        //
         this.btnTestDefaultConstructor.Location = new System.Drawing.Point(191, 12);
         this.btnTestDefaultConstructor.Name = "btnTestDefaultConstructor";
         this.btnTestDefaultConstructor.Size = new System.Drawing.Size(147, 23);
@@ -172,10 +172,14 @@ partial class FilterFindTest
         this.btnTestDefaultConstructor.Text = "Test Default Constructor";
         this.btnTestDefaultConstructor.UseVisualStyleBackColor = true;
         this.btnTestDefaultConstructor.Click += new System.EventHandler(this.TestDefaultConstructor);
-        // 
+        //
         // btnTestFullConstructor
-        // 
-        this.btnTestFullConstructor.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        //
+        this.btnTestFullConstructor.Font = new System.Drawing.Font("Microsoft Sans Serif",
+            8.25F,
+            System.Drawing.FontStyle.Bold,
+            System.Drawing.GraphicsUnit.Point,
+            ((byte)(0)));
         this.btnTestFullConstructor.Location = new System.Drawing.Point(6, 213);
         this.btnTestFullConstructor.Name = "btnTestFullConstructor";
         this.btnTestFullConstructor.Size = new System.Drawing.Size(147, 23);
@@ -183,9 +187,9 @@ partial class FilterFindTest
         this.btnTestFullConstructor.Text = "Test Full Constructor";
         this.btnTestFullConstructor.UseVisualStyleBackColor = true;
         this.btnTestFullConstructor.Click += new System.EventHandler(this.TestFullConstructor);
-        // 
+        //
         // btnHideShowAFBtnStd
-        // 
+        //
         this.btnHideShowAFBtnStd.Location = new System.Drawing.Point(6, 17);
         this.btnHideShowAFBtnStd.Name = "btnHideShowAFBtnStd";
         this.btnHideShowAFBtnStd.Size = new System.Drawing.Size(188, 23);
@@ -193,9 +197,9 @@ partial class FilterFindTest
         this.btnHideShowAFBtnStd.Text = "Hide/Show AF-Button";
         this.btnHideShowAFBtnStd.UseVisualStyleBackColor = true;
         this.btnHideShowAFBtnStd.Click += new System.EventHandler(this.BtnHideShowAFBtnClick);
-        // 
+        //
         // btnHideShowKFTOBtnStd
-        // 
+        //
         this.btnHideShowKFTOBtnStd.Location = new System.Drawing.Point(6, 46);
         this.btnHideShowKFTOBtnStd.Name = "btnHideShowKFTOBtnStd";
         this.btnHideShowKFTOBtnStd.Size = new System.Drawing.Size(188, 23);
@@ -203,9 +207,9 @@ partial class FilterFindTest
         this.btnHideShowKFTOBtnStd.Text = "Hide/Show KFTO-Button";
         this.btnHideShowKFTOBtnStd.UseVisualStyleBackColor = true;
         this.btnHideShowKFTOBtnStd.Click += new System.EventHandler(this.BtnHideShowKFTOBtnClick);
-        // 
+        //
         // btnHideShowFIAOLblStd
-        // 
+        //
         this.btnHideShowFIAOLblStd.Location = new System.Drawing.Point(6, 76);
         this.btnHideShowFIAOLblStd.Name = "btnHideShowFIAOLblStd";
         this.btnHideShowFIAOLblStd.Size = new System.Drawing.Size(188, 23);
@@ -213,9 +217,9 @@ partial class FilterFindTest
         this.btnHideShowFIAOLblStd.Text = "Hide/Show FIAO-Label";
         this.btnHideShowFIAOLblStd.UseVisualStyleBackColor = true;
         this.btnHideShowFIAOLblStd.Click += new System.EventHandler(this.BtnHideShowFIAOLblClick);
-        // 
+        //
         // FUcoFilterAndFind
-        // 
+        //
         this.FUcoFilterAndFind.BackColor = System.Drawing.Color.LightSteelBlue;
         this.FUcoFilterAndFind.Dock = System.Windows.Forms.DockStyle.Left;
         this.FUcoFilterAndFind.Location = new System.Drawing.Point(0, 0);
@@ -225,9 +229,9 @@ partial class FilterFindTest
         this.FUcoFilterAndFind.ShowKeepFilterTurnedOnButton = Ict.Common.Controls.TUcoFilterAndFind.FilterContext.None;
         this.FUcoFilterAndFind.Size = new System.Drawing.Size(150, 500);
         this.FUcoFilterAndFind.TabIndex = 8;
-        // 
+        //
         // groupBox2
-        // 
+        //
         this.groupBox2.Controls.Add(this.groupBox5);
         this.groupBox2.Controls.Add(this.label2);
         this.groupBox2.Controls.Add(this.txtControlWidth);
@@ -240,9 +244,9 @@ partial class FilterFindTest
         this.groupBox2.TabIndex = 9;
         this.groupBox2.TabStop = false;
         this.groupBox2.Text = "Full Constructor Options";
-        // 
+        //
         // groupBox5
-        // 
+        //
         this.groupBox5.Controls.Add(this.tabControl1);
         this.groupBox5.Location = new System.Drawing.Point(476, 16);
         this.groupBox5.Name = "groupBox5";
@@ -250,9 +254,9 @@ partial class FilterFindTest
         this.groupBox5.TabIndex = 7;
         this.groupBox5.TabStop = false;
         this.groupBox5.Text = "Controls for Panels";
-        // 
+        //
         // tabControl1
-        // 
+        //
         this.tabControl1.Controls.Add(this.tabPage1);
         this.tabControl1.Controls.Add(this.tabPage2);
         this.tabControl1.Controls.Add(this.tabPage3);
@@ -261,9 +265,9 @@ partial class FilterFindTest
         this.tabControl1.SelectedIndex = 0;
         this.tabControl1.Size = new System.Drawing.Size(288, 194);
         this.tabControl1.TabIndex = 16;
-        // 
+        //
         // tabPage1
-        // 
+        //
         this.tabPage1.Controls.Add(this.chkYearExtra);
         this.tabPage1.Controls.Add(this.chkYearFind);
         this.tabPage1.Controls.Add(this.chkYearStd);
@@ -287,9 +291,9 @@ partial class FilterFindTest
         this.tabPage1.TabIndex = 0;
         this.tabPage1.Text = "Panel Instances";
         this.tabPage1.UseVisualStyleBackColor = true;
-        // 
+        //
         // chkYearExtra
-        // 
+        //
         this.chkYearExtra.Checked = true;
         this.chkYearExtra.CheckState = System.Windows.Forms.CheckState.Checked;
         this.chkYearExtra.Location = new System.Drawing.Point(209, 142);
@@ -297,25 +301,25 @@ partial class FilterFindTest
         this.chkYearExtra.Size = new System.Drawing.Size(18, 18);
         this.chkYearExtra.TabIndex = 31;
         this.chkYearExtra.UseVisualStyleBackColor = true;
-        // 
+        //
         // chkYearFind
-        // 
+        //
         this.chkYearFind.Location = new System.Drawing.Point(249, 142);
         this.chkYearFind.Name = "chkYearFind";
         this.chkYearFind.Size = new System.Drawing.Size(18, 18);
         this.chkYearFind.TabIndex = 30;
         this.chkYearFind.UseVisualStyleBackColor = true;
-        // 
+        //
         // chkYearStd
-        // 
+        //
         this.chkYearStd.Location = new System.Drawing.Point(165, 142);
         this.chkYearStd.Name = "chkYearStd";
         this.chkYearStd.Size = new System.Drawing.Size(18, 18);
         this.chkYearStd.TabIndex = 29;
         this.chkYearStd.UseVisualStyleBackColor = true;
-        // 
+        //
         // pnlYear
-        // 
+        //
         this.pnlYear.BackColor = System.Drawing.Color.Gold;
         this.pnlYear.Controls.Add(this.cmbYear);
         this.pnlYear.Controls.Add(this.lblYear);
@@ -324,24 +328,25 @@ partial class FilterFindTest
         this.pnlYear.Size = new System.Drawing.Size(133, 43);
         this.pnlYear.TabIndex = 22;
         this.pnlYear.Tag = "NoAutomaticArgumentClearButton";
-        // 
+        //
         // cmbYear
-        // 
+        //
         this.cmbYear.Font = new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.cmbYear.FormattingEnabled = true;
         this.cmbYear.Items.AddRange(new object[] {
-                        "",
-                        "2012",
-                        "2013"});
+                "",
+                "2012",
+                "2013"
+            });
         this.cmbYear.Location = new System.Drawing.Point(3, 19);
         this.cmbYear.Name = "cmbYear";
         this.cmbYear.Size = new System.Drawing.Size(127, 21);
         this.cmbYear.TabIndex = 1;
         this.cmbYear.Tag = "ClearValue=2";
         this.cmbYear.Text = "2012";
-        // 
+        //
         // lblYear
-        // 
+        //
         this.lblYear.AutoSize = true;
         this.lblYear.Font = new System.Drawing.Font("Verdana", 7F);
         this.lblYear.Location = new System.Drawing.Point(3, 0);
@@ -349,25 +354,25 @@ partial class FilterFindTest
         this.lblYear.Size = new System.Drawing.Size(35, 12);
         this.lblYear.TabIndex = 0;
         this.lblYear.Text = "&Year:";
-        // 
+        //
         // chkCurrencyNameExtra
-        // 
+        //
         this.chkCurrencyNameExtra.Location = new System.Drawing.Point(209, 91);
         this.chkCurrencyNameExtra.Name = "chkCurrencyNameExtra";
         this.chkCurrencyNameExtra.Size = new System.Drawing.Size(18, 18);
         this.chkCurrencyNameExtra.TabIndex = 28;
         this.chkCurrencyNameExtra.UseVisualStyleBackColor = true;
-        // 
+        //
         // chkCurrencyNameFind
-        // 
+        //
         this.chkCurrencyNameFind.Location = new System.Drawing.Point(249, 91);
         this.chkCurrencyNameFind.Name = "chkCurrencyNameFind";
         this.chkCurrencyNameFind.Size = new System.Drawing.Size(18, 18);
         this.chkCurrencyNameFind.TabIndex = 27;
         this.chkCurrencyNameFind.UseVisualStyleBackColor = true;
-        // 
+        //
         // chkCurrencyNameStd
-        // 
+        //
         this.chkCurrencyNameStd.Checked = true;
         this.chkCurrencyNameStd.CheckState = System.Windows.Forms.CheckState.Checked;
         this.chkCurrencyNameStd.Location = new System.Drawing.Point(165, 91);
@@ -375,9 +380,9 @@ partial class FilterFindTest
         this.chkCurrencyNameStd.Size = new System.Drawing.Size(18, 18);
         this.chkCurrencyNameStd.TabIndex = 26;
         this.chkCurrencyNameStd.UseVisualStyleBackColor = true;
-        // 
+        //
         // pnlCurrencyName
-        // 
+        //
         this.pnlCurrencyName.BackColor = System.Drawing.Color.DarkSalmon;
         this.pnlCurrencyName.Controls.Add(this.txtCurrencyName);
         this.pnlCurrencyName.Controls.Add(this.lblCurrencyName);
@@ -386,17 +391,17 @@ partial class FilterFindTest
         this.pnlCurrencyName.Size = new System.Drawing.Size(133, 43);
         this.pnlCurrencyName.TabIndex = 19;
         this.pnlCurrencyName.Tag = "KeepBackColour";
-        // 
+        //
         // txtCurrencyName
-        // 
+        //
         this.txtCurrencyName.Font = new System.Drawing.Font("Verdana", 8F);
         this.txtCurrencyName.Location = new System.Drawing.Point(3, 17);
         this.txtCurrencyName.Name = "txtCurrencyName";
         this.txtCurrencyName.Size = new System.Drawing.Size(79, 20);
         this.txtCurrencyName.TabIndex = 1;
-        // 
+        //
         // lblCurrencyName
-        // 
+        //
         this.lblCurrencyName.AutoSize = true;
         this.lblCurrencyName.Font = new System.Drawing.Font("Verdana", 7F);
         this.lblCurrencyName.Location = new System.Drawing.Point(3, 0);
@@ -404,62 +409,66 @@ partial class FilterFindTest
         this.lblCurrencyName.Size = new System.Drawing.Size(94, 12);
         this.lblCurrencyName.TabIndex = 0;
         this.lblCurrencyName.Text = "Cu&rrency Name:";
-        // 
+        //
         // label8
-        // 
-        this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        //
+        this.label8.Font =
+            new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.label8.Location = new System.Drawing.Point(239, 16);
         this.label8.Name = "label8";
         this.label8.Size = new System.Drawing.Size(37, 23);
         this.label8.TabIndex = 25;
         this.label8.Text = "Find";
-        // 
+        //
         // label7
-        // 
-        this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        //
+        this.label7.Font =
+            new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.label7.Location = new System.Drawing.Point(194, 16);
         this.label7.Name = "label7";
         this.label7.Size = new System.Drawing.Size(48, 23);
         this.label7.TabIndex = 24;
         this.label7.Text = "Extra";
-        // 
+        //
         // label4
-        // 
-        this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        //
+        this.label4.Font =
+            new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.label4.Location = new System.Drawing.Point(161, 16);
         this.label4.Name = "label4";
         this.label4.Size = new System.Drawing.Size(27, 23);
         this.label4.TabIndex = 23;
         this.label4.Text = "Std.";
-        // 
+        //
         // label3
-        // 
-        this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        //
+        this.label3.Font =
+            new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.label3.Location = new System.Drawing.Point(157, 0);
         this.label3.Name = "label3";
         this.label3.Size = new System.Drawing.Size(120, 23);
         this.label3.TabIndex = 21;
         this.label3.Text = "Should Appear On...";
         this.label3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-        // 
+        //
         // chkCurrencyCodeExtra
-        // 
+        //
         this.chkCurrencyCodeExtra.Location = new System.Drawing.Point(209, 42);
         this.chkCurrencyCodeExtra.Name = "chkCurrencyCodeExtra";
         this.chkCurrencyCodeExtra.Size = new System.Drawing.Size(18, 18);
         this.chkCurrencyCodeExtra.TabIndex = 20;
         this.chkCurrencyCodeExtra.UseVisualStyleBackColor = true;
-        // 
+        //
         // chkCurrencyCodeFind
-        // 
+        //
         this.chkCurrencyCodeFind.Location = new System.Drawing.Point(249, 42);
         this.chkCurrencyCodeFind.Name = "chkCurrencyCodeFind";
         this.chkCurrencyCodeFind.Size = new System.Drawing.Size(18, 18);
         this.chkCurrencyCodeFind.TabIndex = 18;
         this.chkCurrencyCodeFind.UseVisualStyleBackColor = true;
-        // 
+        //
         // chkCurrencyCodeStd
-        // 
+        //
         this.chkCurrencyCodeStd.Checked = true;
         this.chkCurrencyCodeStd.CheckState = System.Windows.Forms.CheckState.Checked;
         this.chkCurrencyCodeStd.Location = new System.Drawing.Point(165, 42);
@@ -467,9 +476,9 @@ partial class FilterFindTest
         this.chkCurrencyCodeStd.Size = new System.Drawing.Size(18, 18);
         this.chkCurrencyCodeStd.TabIndex = 17;
         this.chkCurrencyCodeStd.UseVisualStyleBackColor = true;
-        // 
+        //
         // pnlCurrencyCode
-        // 
+        //
         this.pnlCurrencyCode.BackColor = System.Drawing.Color.DarkGray;
         this.pnlCurrencyCode.Controls.Add(this.txtCurrencyCode);
         this.pnlCurrencyCode.Controls.Add(this.lblCurrencyCode);
@@ -478,17 +487,17 @@ partial class FilterFindTest
         this.pnlCurrencyCode.Size = new System.Drawing.Size(133, 43);
         this.pnlCurrencyCode.TabIndex = 16;
         this.pnlCurrencyCode.Tag = "KeepBackColour";
-        // 
+        //
         // txtCurrencyCode
-        // 
+        //
         this.txtCurrencyCode.Font = new System.Drawing.Font("Verdana", 8F);
         this.txtCurrencyCode.Location = new System.Drawing.Point(3, 17);
         this.txtCurrencyCode.Name = "txtCurrencyCode";
         this.txtCurrencyCode.Size = new System.Drawing.Size(79, 20);
         this.txtCurrencyCode.TabIndex = 1;
-        // 
+        //
         // lblCurrencyCode
-        // 
+        //
         this.lblCurrencyCode.AutoSize = true;
         this.lblCurrencyCode.Font = new System.Drawing.Font("Verdana", 7F);
         this.lblCurrencyCode.Location = new System.Drawing.Point(3, 0);
@@ -496,9 +505,9 @@ partial class FilterFindTest
         this.lblCurrencyCode.Size = new System.Drawing.Size(91, 12);
         this.lblCurrencyCode.TabIndex = 0;
         this.lblCurrencyCode.Text = "C&urrency Code:";
-        // 
+        //
         // tabPage2
-        // 
+        //
         this.tabPage2.Controls.Add(this.groupBox7);
         this.tabPage2.Controls.Add(this.groupBox6);
         this.tabPage2.Controls.Add(this.chkDynamicCtrl2Extra);
@@ -518,9 +527,9 @@ partial class FilterFindTest
         this.tabPage2.TabIndex = 1;
         this.tabPage2.Text = "Control Instances #1";
         this.tabPage2.UseVisualStyleBackColor = true;
-        // 
+        //
         // groupBox7
-        // 
+        //
         this.groupBox7.BackColor = System.Drawing.Color.YellowGreen;
         this.groupBox7.Controls.Add(this.chkDynCtrl2);
         this.groupBox7.Controls.Add(this.txtLblDynCtrl2);
@@ -530,9 +539,9 @@ partial class FilterFindTest
         this.groupBox7.TabIndex = 46;
         this.groupBox7.TabStop = false;
         this.groupBox7.Text = "DynamicCtrl2";
-        // 
+        //
         // chkDynCtrl2
-        // 
+        //
         this.chkDynCtrl2.AutoSize = true;
         this.chkDynCtrl2.Location = new System.Drawing.Point(6, 34);
         this.chkDynCtrl2.Name = "chkDynCtrl2";
@@ -541,17 +550,17 @@ partial class FilterFindTest
         this.chkDynCtrl2.Tag = "ClearValue=true";
         this.chkDynCtrl2.Text = "ChkDynCtrl2";
         this.chkDynCtrl2.UseVisualStyleBackColor = true;
-        // 
+        //
         // txtLblDynCtrl2
-        // 
+        //
         this.txtLblDynCtrl2.Location = new System.Drawing.Point(43, 17);
         this.txtLblDynCtrl2.Name = "txtLblDynCtrl2";
         this.txtLblDynCtrl2.Size = new System.Drawing.Size(100, 20);
         this.txtLblDynCtrl2.TabIndex = 0;
         this.txtLblDynCtrl2.Text = "DynCtrlLabe&l2:";
-        // 
+        //
         // groupBox6
-        // 
+        //
         this.groupBox6.BackColor = System.Drawing.Color.Violet;
         this.groupBox6.Controls.Add(this.lblDynCtrl1);
         this.groupBox6.Controls.Add(this.txtDynCtrl1);
@@ -561,24 +570,25 @@ partial class FilterFindTest
         this.groupBox6.TabIndex = 45;
         this.groupBox6.TabStop = false;
         this.groupBox6.Text = "DynamicCtrl1";
-        // 
+        //
         // lblDynCtrl1
-        // 
+        //
         this.lblDynCtrl1.Location = new System.Drawing.Point(37, 34);
         this.lblDynCtrl1.Name = "lblDynCtrl1";
         this.lblDynCtrl1.Size = new System.Drawing.Size(90, 23);
         this.lblDynCtrl1.TabIndex = 1;
         this.lblDynCtrl1.Text = "DynCtrlLabel&1:";
-        // 
+        //
         // txtDynCtrl1
-        // 
+        //
         this.txtDynCtrl1.AutoCompleteCustomSource.AddRange(new string[] {
-                        "MYTEXT",
-                        "ALEX",
-                        "PIA",
-                        "JOSEPH",
-                        "JOHN",
-                        "MELISSA"});
+                "MYTEXT",
+                "ALEX",
+                "PIA",
+                "JOSEPH",
+                "JOHN",
+                "MELISSA"
+            });
         this.txtDynCtrl1.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
         this.txtDynCtrl1.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.CustomSource;
         this.txtDynCtrl1.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper;
@@ -587,9 +597,9 @@ partial class FilterFindTest
         this.txtDynCtrl1.Size = new System.Drawing.Size(59, 20);
         this.txtDynCtrl1.TabIndex = 0;
         this.txtDynCtrl1.Text = "MYTEXT";
-        // 
+        //
         // chkDynamicCtrl2Extra
-        // 
+        //
         this.chkDynamicCtrl2Extra.Checked = true;
         this.chkDynamicCtrl2Extra.CheckState = System.Windows.Forms.CheckState.Checked;
         this.chkDynamicCtrl2Extra.Location = new System.Drawing.Point(209, 118);
@@ -597,78 +607,82 @@ partial class FilterFindTest
         this.chkDynamicCtrl2Extra.Size = new System.Drawing.Size(18, 18);
         this.chkDynamicCtrl2Extra.TabIndex = 41;
         this.chkDynamicCtrl2Extra.UseVisualStyleBackColor = true;
-        // 
+        //
         // chkDynamicCtrl2Find
-        // 
+        //
         this.chkDynamicCtrl2Find.Location = new System.Drawing.Point(249, 118);
         this.chkDynamicCtrl2Find.Name = "chkDynamicCtrl2Find";
         this.chkDynamicCtrl2Find.Size = new System.Drawing.Size(18, 18);
         this.chkDynamicCtrl2Find.TabIndex = 40;
         this.chkDynamicCtrl2Find.UseVisualStyleBackColor = true;
-        // 
+        //
         // chkDynamicCtrl2Std
-        // 
+        //
         this.chkDynamicCtrl2Std.Location = new System.Drawing.Point(165, 118);
         this.chkDynamicCtrl2Std.Name = "chkDynamicCtrl2Std";
         this.chkDynamicCtrl2Std.Size = new System.Drawing.Size(18, 18);
         this.chkDynamicCtrl2Std.TabIndex = 39;
         this.chkDynamicCtrl2Std.UseVisualStyleBackColor = true;
-        // 
+        //
         // label5
-        // 
-        this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        //
+        this.label5.Font =
+            new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.label5.Location = new System.Drawing.Point(239, 16);
         this.label5.Name = "label5";
         this.label5.Size = new System.Drawing.Size(37, 23);
         this.label5.TabIndex = 38;
         this.label5.Text = "Find";
-        // 
+        //
         // label6
-        // 
-        this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        //
+        this.label6.Font =
+            new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.label6.Location = new System.Drawing.Point(194, 16);
         this.label6.Name = "label6";
         this.label6.Size = new System.Drawing.Size(48, 23);
         this.label6.TabIndex = 37;
         this.label6.Text = "Extra";
-        // 
+        //
         // label9
-        // 
-        this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        //
+        this.label9.Font =
+            new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.label9.Location = new System.Drawing.Point(161, 16);
         this.label9.Name = "label9";
         this.label9.Size = new System.Drawing.Size(27, 23);
         this.label9.TabIndex = 36;
         this.label9.Text = "Std.";
-        // 
+        //
         // label10
-        // 
-        this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        //
+        this.label10.Font =
+            new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.label10.Location = new System.Drawing.Point(157, 0);
         this.label10.Name = "label10";
         this.label10.Size = new System.Drawing.Size(120, 23);
         this.label10.TabIndex = 35;
         this.label10.Text = "Should Appear On...";
         this.label10.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-        // 
+        //
         // chkDynamicCtrl1Extra
-        // 
+        //
         this.chkDynamicCtrl1Extra.Location = new System.Drawing.Point(209, 47);
         this.chkDynamicCtrl1Extra.Name = "chkDynamicCtrl1Extra";
         this.chkDynamicCtrl1Extra.Size = new System.Drawing.Size(18, 18);
         this.chkDynamicCtrl1Extra.TabIndex = 34;
         this.chkDynamicCtrl1Extra.UseVisualStyleBackColor = true;
-        // 
+        //
         // chkDynamicCtrl1Find
-        // 
+        //
         this.chkDynamicCtrl1Find.Location = new System.Drawing.Point(249, 47);
         this.chkDynamicCtrl1Find.Name = "chkDynamicCtrl1Find";
         this.chkDynamicCtrl1Find.Size = new System.Drawing.Size(18, 18);
         this.chkDynamicCtrl1Find.TabIndex = 33;
         this.chkDynamicCtrl1Find.UseVisualStyleBackColor = true;
-        // 
+        //
         // chkDynamicCtrl1Std
-        // 
+        //
         this.chkDynamicCtrl1Std.Checked = true;
         this.chkDynamicCtrl1Std.CheckState = System.Windows.Forms.CheckState.Checked;
         this.chkDynamicCtrl1Std.Location = new System.Drawing.Point(165, 47);
@@ -676,9 +690,9 @@ partial class FilterFindTest
         this.chkDynamicCtrl1Std.Size = new System.Drawing.Size(18, 18);
         this.chkDynamicCtrl1Std.TabIndex = 32;
         this.chkDynamicCtrl1Std.UseVisualStyleBackColor = true;
-        // 
+        //
         // tabPage3
-        // 
+        //
         this.tabPage3.Controls.Add(this.groupBox8);
         this.tabPage3.Controls.Add(this.label12);
         this.tabPage3.Controls.Add(this.label13);
@@ -693,9 +707,9 @@ partial class FilterFindTest
         this.tabPage3.TabIndex = 2;
         this.tabPage3.Text = "Control Instances #2";
         this.tabPage3.UseVisualStyleBackColor = true;
-        // 
+        //
         // groupBox8
-        // 
+        //
         this.groupBox8.BackColor = System.Drawing.Color.Tomato;
         this.groupBox8.Controls.Add(this.cmbDynCtrl3);
         this.groupBox8.Controls.Add(this.lblDynCtrl3);
@@ -705,22 +719,23 @@ partial class FilterFindTest
         this.groupBox8.TabIndex = 53;
         this.groupBox8.TabStop = false;
         this.groupBox8.Text = "DynamicCtrl3";
-        // 
+        //
         // cmbDynCtrl3
-        // 
+        //
         this.cmbDynCtrl3.AcceptNewValues = true;
         this.cmbDynCtrl3.CaseSensitiveSearch = true;
         this.cmbDynCtrl3.ColumnsToSearch = "#VALUE#, #DISPLAY#";
         this.cmbDynCtrl3.DescriptionMember = null;
         this.cmbDynCtrl3.FormattingEnabled = true;
         this.cmbDynCtrl3.Items.AddRange(new object[] {
-                        "One",
-                        "Two",
-                        "Three",
-                        "Four",
-                        "Five",
-                        "Six",
-                        " "});
+                "One",
+                "Two",
+                "Three",
+                "Four",
+                "Five",
+                "Six",
+                " "
+            });
         this.cmbDynCtrl3.Location = new System.Drawing.Point(6, 37);
         this.cmbDynCtrl3.MaxDropDownItems = 3;
         this.cmbDynCtrl3.Name = "cmbDynCtrl3";
@@ -728,70 +743,74 @@ partial class FilterFindTest
         this.cmbDynCtrl3.SuppressSelectionColor = true;
         this.cmbDynCtrl3.TabIndex = 2;
         this.cmbDynCtrl3.Tag = "ClearValue=6";
-        // 
+        //
         // lblDynCtrl3
-        // 
+        //
         this.lblDynCtrl3.Location = new System.Drawing.Point(37, 16);
         this.lblDynCtrl3.Name = "lblDynCtrl3";
         this.lblDynCtrl3.Size = new System.Drawing.Size(90, 23);
         this.lblDynCtrl3.TabIndex = 1;
         this.lblDynCtrl3.Text = "DynCtrlLabel&3:";
-        // 
+        //
         // label12
-        // 
-        this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        //
+        this.label12.Font =
+            new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.label12.Location = new System.Drawing.Point(239, 16);
         this.label12.Name = "label12";
         this.label12.Size = new System.Drawing.Size(37, 23);
         this.label12.TabIndex = 52;
         this.label12.Text = "Find";
-        // 
+        //
         // label13
-        // 
-        this.label13.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        //
+        this.label13.Font =
+            new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.label13.Location = new System.Drawing.Point(194, 16);
         this.label13.Name = "label13";
         this.label13.Size = new System.Drawing.Size(48, 23);
         this.label13.TabIndex = 51;
         this.label13.Text = "Extra";
-        // 
+        //
         // label14
-        // 
-        this.label14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        //
+        this.label14.Font =
+            new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.label14.Location = new System.Drawing.Point(161, 16);
         this.label14.Name = "label14";
         this.label14.Size = new System.Drawing.Size(27, 23);
         this.label14.TabIndex = 50;
         this.label14.Text = "Std.";
-        // 
+        //
         // label15
-        // 
-        this.label15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        //
+        this.label15.Font =
+            new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
         this.label15.Location = new System.Drawing.Point(157, 0);
         this.label15.Name = "label15";
         this.label15.Size = new System.Drawing.Size(120, 23);
         this.label15.TabIndex = 49;
         this.label15.Text = "Should Appear On...";
         this.label15.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-        // 
+        //
         // chkDynamicCtrl3Extra
-        // 
+        //
         this.chkDynamicCtrl3Extra.Location = new System.Drawing.Point(209, 47);
         this.chkDynamicCtrl3Extra.Name = "chkDynamicCtrl3Extra";
         this.chkDynamicCtrl3Extra.Size = new System.Drawing.Size(18, 18);
         this.chkDynamicCtrl3Extra.TabIndex = 48;
         this.chkDynamicCtrl3Extra.UseVisualStyleBackColor = true;
-        // 
+        //
         // chkDynamicCtrl3Find
-        // 
+        //
         this.chkDynamicCtrl3Find.Location = new System.Drawing.Point(249, 47);
         this.chkDynamicCtrl3Find.Name = "chkDynamicCtrl3Find";
         this.chkDynamicCtrl3Find.Size = new System.Drawing.Size(18, 18);
         this.chkDynamicCtrl3Find.TabIndex = 47;
         this.chkDynamicCtrl3Find.UseVisualStyleBackColor = true;
-        // 
+        //
         // chkDynamicCtrl3Std
-        // 
+        //
         this.chkDynamicCtrl3Std.Checked = true;
         this.chkDynamicCtrl3Std.CheckState = System.Windows.Forms.CheckState.Checked;
         this.chkDynamicCtrl3Std.Location = new System.Drawing.Point(165, 47);
@@ -799,36 +818,40 @@ partial class FilterFindTest
         this.chkDynamicCtrl3Std.Size = new System.Drawing.Size(18, 18);
         this.chkDynamicCtrl3Std.TabIndex = 46;
         this.chkDynamicCtrl3Std.UseVisualStyleBackColor = true;
-        // 
+        //
         // label2
-        // 
+        //
         this.label2.Location = new System.Drawing.Point(304, 180);
         this.label2.Name = "label2";
         this.label2.Size = new System.Drawing.Size(32, 23);
         this.label2.TabIndex = 6;
         this.label2.Text = "(px)";
-        // 
+        //
         // txtControlWidth
-        // 
-        this.txtControlWidth.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+        //
+        this.txtControlWidth.Font = new System.Drawing.Font("Microsoft Sans Serif",
+            8.25F,
+            System.Drawing.FontStyle.Bold,
+            System.Drawing.GraphicsUnit.Point,
+            ((byte)(0)));
         this.txtControlWidth.Location = new System.Drawing.Point(254, 178);
         this.txtControlWidth.Name = "txtControlWidth";
         this.txtControlWidth.Size = new System.Drawing.Size(44, 20);
         this.txtControlWidth.TabIndex = 5;
         this.txtControlWidth.Text = "175";
         this.txtControlWidth.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-        // 
+        //
         // label1
-        // 
+        //
         this.label1.Location = new System.Drawing.Point(148, 181);
         this.label1.Name = "label1";
         this.label1.Size = new System.Drawing.Size(100, 23);
         this.label1.TabIndex = 4;
         this.label1.Text = "Control Width:";
         this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
-        // 
+        //
         // panel1
-        // 
+        //
         this.panel1.Controls.Add(this.grpExtraFilterPanel);
         this.panel1.Controls.Add(this.grpStandardFilterPanel);
         this.panel1.Controls.Add(this.rbtTwoFilterPanels);
@@ -837,9 +860,9 @@ partial class FilterFindTest
         this.panel1.Name = "panel1";
         this.panel1.Size = new System.Drawing.Size(454, 157);
         this.panel1.TabIndex = 0;
-        // 
+        //
         // grpExtraFilterPanel
-        // 
+        //
         this.grpExtraFilterPanel.Controls.Add(this.btnFilterIsAlwaysOnLabelExtra);
         this.grpExtraFilterPanel.Controls.Add(this.btnKeepFilterTurnedOnButtonExtra);
         this.grpExtraFilterPanel.Controls.Add(this.btnApplyFilterButtonExtra);
@@ -850,9 +873,9 @@ partial class FilterFindTest
         this.grpExtraFilterPanel.TabIndex = 5;
         this.grpExtraFilterPanel.TabStop = false;
         this.grpExtraFilterPanel.Text = "\'Extra\' Filter Panel";
-        // 
+        //
         // btnFilterIsAlwaysOnLabelExtra
-        // 
+        //
         this.btnFilterIsAlwaysOnLabelExtra.Appearance = System.Windows.Forms.Appearance.Button;
         this.btnFilterIsAlwaysOnLabelExtra.Location = new System.Drawing.Point(6, 79);
         this.btnFilterIsAlwaysOnLabelExtra.Name = "btnFilterIsAlwaysOnLabelExtra";
@@ -861,9 +884,9 @@ partial class FilterFindTest
         this.btnFilterIsAlwaysOnLabelExtra.Text = "\'Filter Is Always On\' Label";
         this.btnFilterIsAlwaysOnLabelExtra.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
         this.btnFilterIsAlwaysOnLabelExtra.UseVisualStyleBackColor = true;
-        // 
+        //
         // btnKeepFilterTurnedOnButtonExtra
-        // 
+        //
         this.btnKeepFilterTurnedOnButtonExtra.Appearance = System.Windows.Forms.Appearance.Button;
         this.btnKeepFilterTurnedOnButtonExtra.Location = new System.Drawing.Point(6, 49);
         this.btnKeepFilterTurnedOnButtonExtra.Name = "btnKeepFilterTurnedOnButtonExtra";
@@ -872,9 +895,9 @@ partial class FilterFindTest
         this.btnKeepFilterTurnedOnButtonExtra.Text = "\'Keep Filter Turned On\' Button";
         this.btnKeepFilterTurnedOnButtonExtra.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
         this.btnKeepFilterTurnedOnButtonExtra.UseVisualStyleBackColor = true;
-        // 
+        //
         // btnApplyFilterButtonExtra
-        // 
+        //
         this.btnApplyFilterButtonExtra.Appearance = System.Windows.Forms.Appearance.Button;
         this.btnApplyFilterButtonExtra.Location = new System.Drawing.Point(6, 19);
         this.btnApplyFilterButtonExtra.Name = "btnApplyFilterButtonExtra";
@@ -883,9 +906,9 @@ partial class FilterFindTest
         this.btnApplyFilterButtonExtra.Text = "\'Apply Filter\' Button";
         this.btnApplyFilterButtonExtra.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
         this.btnApplyFilterButtonExtra.UseVisualStyleBackColor = true;
-        // 
+        //
         // grpStandardFilterPanel
-        // 
+        //
         this.grpStandardFilterPanel.Controls.Add(this.btnFilterIsAlwaysOnLabelStd);
         this.grpStandardFilterPanel.Controls.Add(this.btnKeepFilterTurnedOnButtonStd);
         this.grpStandardFilterPanel.Controls.Add(this.btnApplyFilterButtonStd);
@@ -895,9 +918,9 @@ partial class FilterFindTest
         this.grpStandardFilterPanel.TabIndex = 3;
         this.grpStandardFilterPanel.TabStop = false;
         this.grpStandardFilterPanel.Text = "\'Standard\' Filter Panel";
-        // 
+        //
         // btnFilterIsAlwaysOnLabelStd
-        // 
+        //
         this.btnFilterIsAlwaysOnLabelStd.Appearance = System.Windows.Forms.Appearance.Button;
         this.btnFilterIsAlwaysOnLabelStd.Location = new System.Drawing.Point(6, 79);
         this.btnFilterIsAlwaysOnLabelStd.Name = "btnFilterIsAlwaysOnLabelStd";
@@ -906,9 +929,9 @@ partial class FilterFindTest
         this.btnFilterIsAlwaysOnLabelStd.Text = "\'Filter Is Always On\' Label";
         this.btnFilterIsAlwaysOnLabelStd.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
         this.btnFilterIsAlwaysOnLabelStd.UseVisualStyleBackColor = true;
-        // 
+        //
         // btnKeepFilterTurnedOnButtonStd
-        // 
+        //
         this.btnKeepFilterTurnedOnButtonStd.Appearance = System.Windows.Forms.Appearance.Button;
         this.btnKeepFilterTurnedOnButtonStd.Location = new System.Drawing.Point(6, 49);
         this.btnKeepFilterTurnedOnButtonStd.Name = "btnKeepFilterTurnedOnButtonStd";
@@ -917,9 +940,9 @@ partial class FilterFindTest
         this.btnKeepFilterTurnedOnButtonStd.Text = "\'Keep Filter Turned On\' Button";
         this.btnKeepFilterTurnedOnButtonStd.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
         this.btnKeepFilterTurnedOnButtonStd.UseVisualStyleBackColor = true;
-        // 
+        //
         // btnApplyFilterButtonStd
-        // 
+        //
         this.btnApplyFilterButtonStd.Appearance = System.Windows.Forms.Appearance.Button;
         this.btnApplyFilterButtonStd.Location = new System.Drawing.Point(6, 19);
         this.btnApplyFilterButtonStd.Name = "btnApplyFilterButtonStd";
@@ -928,9 +951,9 @@ partial class FilterFindTest
         this.btnApplyFilterButtonStd.Text = "\'Apply Filter\' Button";
         this.btnApplyFilterButtonStd.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
         this.btnApplyFilterButtonStd.UseVisualStyleBackColor = true;
-        // 
+        //
         // rbtTwoFilterPanels
-        // 
+        //
         this.rbtTwoFilterPanels.Location = new System.Drawing.Point(245, 8);
         this.rbtTwoFilterPanels.Name = "rbtTwoFilterPanels";
         this.rbtTwoFilterPanels.Size = new System.Drawing.Size(118, 24);
@@ -938,9 +961,9 @@ partial class FilterFindTest
         this.rbtTwoFilterPanels.Text = "&Two Filter Panels";
         this.rbtTwoFilterPanels.UseVisualStyleBackColor = true;
         this.rbtTwoFilterPanels.CheckedChanged += new System.EventHandler(this.RbtTwoFilterPanelsCheckedChanged);
-        // 
+        //
         // rbtOneFilterPanel
-        // 
+        //
         this.rbtOneFilterPanel.Checked = true;
         this.rbtOneFilterPanel.Location = new System.Drawing.Point(14, 8);
         this.rbtOneFilterPanel.Name = "rbtOneFilterPanel";
@@ -950,9 +973,9 @@ partial class FilterFindTest
         this.rbtOneFilterPanel.Text = "&One Filter Panel";
         this.rbtOneFilterPanel.UseVisualStyleBackColor = true;
         this.rbtOneFilterPanel.CheckedChanged += new System.EventHandler(this.RbtOneFilterPanelCheckedChanged);
-        // 
+        //
         // groupBox3
-        // 
+        //
         this.groupBox3.Controls.Add(this.btnAllowedToSetFilterToInactive);
         this.groupBox3.Controls.Add(this.button1);
         this.groupBox3.Controls.Add(this.btnFocusFirstArgumentControl);
@@ -965,9 +988,9 @@ partial class FilterFindTest
         this.groupBox3.TabIndex = 10;
         this.groupBox3.TabStop = false;
         this.groupBox3.Text = "Manipulations on the running instance";
-        // 
+        //
         // btnAllowedToSetFilterToInactive
-        // 
+        //
         this.btnAllowedToSetFilterToInactive.Location = new System.Drawing.Point(254, 155);
         this.btnAllowedToSetFilterToInactive.Name = "btnAllowedToSetFilterToInactive";
         this.btnAllowedToSetFilterToInactive.Size = new System.Drawing.Size(188, 23);
@@ -975,9 +998,9 @@ partial class FilterFindTest
         this.btnAllowedToSetFilterToInactive.Text = "Filter Allowed to be Inactive?";
         this.btnAllowedToSetFilterToInactive.UseVisualStyleBackColor = true;
         this.btnAllowedToSetFilterToInactive.Click += new System.EventHandler(this.BtnAllowedToSetFilterToInactiveClick);
-        // 
+        //
         // button1
-        // 
+        //
         this.button1.Location = new System.Drawing.Point(254, 132);
         this.button1.Name = "button1";
         this.button1.Size = new System.Drawing.Size(188, 23);
@@ -985,9 +1008,9 @@ partial class FilterFindTest
         this.button1.Text = "Show Find Tab";
         this.button1.UseVisualStyleBackColor = true;
         this.button1.Click += new System.EventHandler(this.Button1Click);
-        // 
+        //
         // btnFocusFirstArgumentControl
-        // 
+        //
         this.btnFocusFirstArgumentControl.Location = new System.Drawing.Point(23, 155);
         this.btnFocusFirstArgumentControl.Name = "btnFocusFirstArgumentControl";
         this.btnFocusFirstArgumentControl.Size = new System.Drawing.Size(188, 23);
@@ -995,9 +1018,9 @@ partial class FilterFindTest
         this.btnFocusFirstArgumentControl.Text = "Focus First ArgumentControl";
         this.btnFocusFirstArgumentControl.UseVisualStyleBackColor = true;
         this.btnFocusFirstArgumentControl.Click += new System.EventHandler(this.BtnFocusFirstArgumentControlClick);
-        // 
+        //
         // btnCollapseExpandPanel
-        // 
+        //
         this.btnCollapseExpandPanel.Location = new System.Drawing.Point(23, 132);
         this.btnCollapseExpandPanel.Name = "btnCollapseExpandPanel";
         this.btnCollapseExpandPanel.Size = new System.Drawing.Size(188, 23);
@@ -1005,9 +1028,9 @@ partial class FilterFindTest
         this.btnCollapseExpandPanel.Text = "Collapse/Expand Panel";
         this.btnCollapseExpandPanel.UseVisualStyleBackColor = true;
         this.btnCollapseExpandPanel.Click += new System.EventHandler(this.BtnCollapseExpandPanelClick);
-        // 
+        //
         // groupBox1
-        // 
+        //
         this.groupBox1.Controls.Add(this.btnHideShowFIAOLblExtra);
         this.groupBox1.Controls.Add(this.btnHideShowAFBtnExtra);
         this.groupBox1.Controls.Add(this.btnHideShowKFTOBtnExtra);
@@ -1017,9 +1040,9 @@ partial class FilterFindTest
         this.groupBox1.TabIndex = 7;
         this.groupBox1.TabStop = false;
         this.groupBox1.Text = "\'Extra\' Filter Panel";
-        // 
+        //
         // btnHideShowFIAOLblExtra
-        // 
+        //
         this.btnHideShowFIAOLblExtra.Location = new System.Drawing.Point(6, 76);
         this.btnHideShowFIAOLblExtra.Name = "btnHideShowFIAOLblExtra";
         this.btnHideShowFIAOLblExtra.Size = new System.Drawing.Size(188, 23);
@@ -1027,9 +1050,9 @@ partial class FilterFindTest
         this.btnHideShowFIAOLblExtra.Text = "Hide/Show FIAO-Label";
         this.btnHideShowFIAOLblExtra.UseVisualStyleBackColor = true;
         this.btnHideShowFIAOLblExtra.Click += new System.EventHandler(this.BtnHideShowFIAOLblClick);
-        // 
+        //
         // btnHideShowAFBtnExtra
-        // 
+        //
         this.btnHideShowAFBtnExtra.Location = new System.Drawing.Point(6, 17);
         this.btnHideShowAFBtnExtra.Name = "btnHideShowAFBtnExtra";
         this.btnHideShowAFBtnExtra.Size = new System.Drawing.Size(188, 23);
@@ -1037,9 +1060,9 @@ partial class FilterFindTest
         this.btnHideShowAFBtnExtra.Text = "Hide/Show AF-Button";
         this.btnHideShowAFBtnExtra.UseVisualStyleBackColor = true;
         this.btnHideShowAFBtnExtra.Click += new System.EventHandler(this.BtnHideShowAFBtnClick);
-        // 
+        //
         // btnHideShowKFTOBtnExtra
-        // 
+        //
         this.btnHideShowKFTOBtnExtra.Location = new System.Drawing.Point(6, 46);
         this.btnHideShowKFTOBtnExtra.Name = "btnHideShowKFTOBtnExtra";
         this.btnHideShowKFTOBtnExtra.Size = new System.Drawing.Size(188, 23);
@@ -1047,9 +1070,9 @@ partial class FilterFindTest
         this.btnHideShowKFTOBtnExtra.Text = "Hide/Show KFTO-Button";
         this.btnHideShowKFTOBtnExtra.UseVisualStyleBackColor = true;
         this.btnHideShowKFTOBtnExtra.Click += new System.EventHandler(this.BtnHideShowKFTOBtnClick);
-        // 
+        //
         // groupBox4
-        // 
+        //
         this.groupBox4.Controls.Add(this.btnHideShowFIAOLblStd);
         this.groupBox4.Controls.Add(this.btnHideShowAFBtnStd);
         this.groupBox4.Controls.Add(this.btnHideShowKFTOBtnStd);
@@ -1059,9 +1082,9 @@ partial class FilterFindTest
         this.groupBox4.TabIndex = 0;
         this.groupBox4.TabStop = false;
         this.groupBox4.Text = "\'Standard\' Filter Panel";
-        // 
+        //
         // groupBox9
-        // 
+        //
         this.groupBox9.Controls.Add(this.txtEventsLog);
         this.groupBox9.Location = new System.Drawing.Point(667, 304);
         this.groupBox9.Name = "groupBox9";
@@ -1069,9 +1092,9 @@ partial class FilterFindTest
         this.groupBox9.TabIndex = 11;
         this.groupBox9.TabStop = false;
         this.groupBox9.Text = "Events Log";
-        // 
+        //
         // txtEventsLog
-        // 
+        //
         this.txtEventsLog.Dock = System.Windows.Forms.DockStyle.Fill;
         this.txtEventsLog.Location = new System.Drawing.Point(3, 16);
         this.txtEventsLog.Multiline = true;
@@ -1079,9 +1102,9 @@ partial class FilterFindTest
         this.txtEventsLog.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
         this.txtEventsLog.Size = new System.Drawing.Size(294, 165);
         this.txtEventsLog.TabIndex = 0;
-        // 
+        //
         // FilterFindTest
-        // 
+        //
         this.AcceptButton = this.btnTestFullConstructor;
         this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
         this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -1122,6 +1145,7 @@ partial class FilterFindTest
         this.groupBox9.PerformLayout();
         this.ResumeLayout(false);
     }
+
     private System.Windows.Forms.Button btnAllowedToSetFilterToInactive;
     private System.Windows.Forms.TextBox txtEventsLog;
     private System.Windows.Forms.GroupBox groupBox9;
