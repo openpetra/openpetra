@@ -1143,8 +1143,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
                                              (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
-            ALedgerTable LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-
             foreach (AccountsPayableTDSAApPaymentRow row in APDataset.AApPayment.Rows)
             {
                 // Get the currency from the supplier, from the first documentpayment of this payment; we need the currency

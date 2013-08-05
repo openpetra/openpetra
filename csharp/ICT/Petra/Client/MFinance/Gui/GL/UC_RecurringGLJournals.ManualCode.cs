@@ -363,8 +363,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FJournalNumberToDelete = ARowToDelete.JournalNumber;
             bool deletionSuccessful = false;
 
-            bool newRecord = (ARowToDelete.RowState == DataRowState.Added);
-
             // Delete on client side data through views that is already loaded. Data that is not
             // loaded yet will be deleted with cascading delete on server side so we don't have
             // to worry about this here.
