@@ -1264,7 +1264,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Cursor = Cursors.WaitCursor;
 
             // Set Partner to be the "Last Used Partner"
-            TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, APartnerKey);
+            if (ucoPartnerFindCriteria.RestrictedPartnerClass.Length == 0)
+            {
+                TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, APartnerKey);
+            }
+            else if (ucoPartnerFindCriteria.RestrictedPartnerClass[0] == "PERSON")
+            {
+                TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL, APartnerKey);
+            }
 
             try
             {

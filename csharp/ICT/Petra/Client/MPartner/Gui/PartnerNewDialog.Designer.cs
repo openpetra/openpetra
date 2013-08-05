@@ -143,8 +143,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // grdInstalledSites
             //
-            this.grdInstalledSites.AlternatingBackgroundColour =
-                System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(230)))), ((int)(((byte)(230)))));
             this.grdInstalledSites.AutoFindColumn = ((short)(-1));
             this.grdInstalledSites.BackColor = System.Drawing.SystemColors.ControlDark;
             this.grdInstalledSites.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;

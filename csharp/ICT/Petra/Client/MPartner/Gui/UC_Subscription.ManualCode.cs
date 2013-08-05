@@ -99,6 +99,28 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        public String PublicationCodeLabel
+        {
+            get
+            {
+                return lblPSubscriptionPublicationCode.Text;
+            }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public String PublicationCodeValue
+        {
+            get
+            {
+                return cmbPSubscriptionPublicationCode.GetSelectedString();
+            }
+        }
+
         /// <summary>todoComment</summary>
         public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
 
@@ -340,7 +362,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void SetupPublicationCost(double APublicationCost, String ACurrencyCode)
         {
             this.txtPublicationCost.NumberValueDouble = APublicationCost;
-            this.txtPublicationCost.CurrencySymbol = ACurrencyCode;
+            this.txtPublicationCost.CurrencyCode = ACurrencyCode;
         }
 
         private void UpdatePublicationCost()

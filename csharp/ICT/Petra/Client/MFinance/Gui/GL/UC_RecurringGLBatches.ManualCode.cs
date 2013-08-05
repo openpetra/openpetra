@@ -127,7 +127,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void UpdateChangeableStatus()
         {
             Boolean allowSubmit = (FPreviouslySelectedDetailRow != null)
-                                  && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
+                                  && (FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+                                  && (grdDetails.Rows.Count > 1);
 
             FPetraUtilsObject.EnableAction("actSubmitBatch", allowSubmit);
             FPetraUtilsObject.EnableAction("actDelete", allowSubmit);
@@ -206,6 +207,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FSelectedBatchNumber = ARow.BatchNumber;
 
             UpdateChangeableStatus();
+
+            if (FPetraUtilsObject.HasChanges)
+            {
+                //May need this
+                //((TFrmRecurringGLBatch) this.ParentForm).SaveChanges();
+            }
         }
 
         /// <summary>
@@ -235,14 +242,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             btnSubmitBatch.Enabled = AEnable;
             btnDelete.Enabled = AEnable;
-        }
-
-        private void ClearDetailControls()
-        {
-            FPetraUtilsObject.DisableDataChangedEvent();
-            txtDetailBatchDescription.Text = string.Empty;
-            txtDetailBatchControlTotal.NumberValueDecimal = 0;
-            FPetraUtilsObject.EnableDataChangedEvent();
         }
 
         /// <summary>
@@ -470,6 +469,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
             }
+
+            UpdateChangeableStatus();
 
             if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
             {
@@ -706,10 +707,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringBatch.DefaultView);
 
+            UpdateChangeableStatus();
+
             if (grdDetails.Rows.Count < 2)
             {
-                ClearDetailControls();
-                pnlDetails.Enabled = false;
+                ClearControls();
                 ((TFrmRecurringGLBatch) this.ParentForm).DisableJournals();
                 ((TFrmRecurringGLBatch) this.ParentForm).DisableTransactions();
             }
@@ -717,7 +719,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 SelectRowInGrid(newRowToSelectAfterFilter);
 
-                UpdateChangeableStatus();
                 ((TFrmRecurringGLBatch) this.ParentForm).EnableJournals();
             }
         }

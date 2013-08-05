@@ -109,7 +109,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 if (newApeo.JobSize != 0)
                 {
-                    // Critical Problem beause now there shall nothing to do anymore ...
+                    // Critical Problem because there should be nothing left to do.
                     String strTitle = Catalog.GetString("Problem occurs in module [{0}]");
                     strTitle = String.Format(strTitle, AOperationName);
                     String strMessage = Catalog.GetString(
@@ -395,19 +395,18 @@ namespace Ict.Petra.Server.MFinance.Common
         }
     }
     /// <summary>
-    /// This object handles the transformation of the accouting interval parameters into the
+    /// This object handles the transformation of the accounting interval parameters into the
     /// next year
     /// </summary>
     public class TAccountPeriodToNewYear : AbstractPeriodEndOperation
     {
         const int NOT_INITIALIZED = -1;
-        int intLedgerNumber;
-        int intActualYear = NOT_INITIALIZED;
-        AAccountingPeriodTable accountingPeriodTable = null;
-        AAccountingPeriodRow accountingPeriodRow = null;
+        int FLedgerNumber;
+        int FActualYear = NOT_INITIALIZED;
+        AAccountingPeriodTable FaccountingPeriodTable = null;
 
         /// <summary>
-        /// Constructor to define and load the complete table defined by the same ledger number
+        /// Constructor to define and load the complete table defined by ledger number
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AActualYear">This parameter is important for the
@@ -415,8 +414,8 @@ namespace Ict.Petra.Server.MFinance.Common
         /// been done or not.</param>
         public TAccountPeriodToNewYear(int ALedgerNumber, int AActualYear)
         {
-            intActualYear = AActualYear;
-            intLedgerNumber = ALedgerNumber;
+            FActualYear = AActualYear;
+            FLedgerNumber = ALedgerNumber;
             LoadData();
         }
 
@@ -426,7 +425,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ALedgerNumber"></param>
         public TAccountPeriodToNewYear(int ALedgerNumber)
         {
-            intLedgerNumber = ALedgerNumber;
+            FLedgerNumber = ALedgerNumber;
             LoadData();
         }
 
@@ -437,7 +436,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                accountingPeriodRow = accountingPeriodTable[0];
+                AAccountingPeriodRow accountingPeriodRow = FaccountingPeriodTable[0];
                 return accountingPeriodRow.PeriodStartDate.Year;
             }
         }
@@ -448,7 +447,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                accountingPeriodTable = AAccountingPeriodAccess.LoadViaALedger(intLedgerNumber, transaction);
+                FaccountingPeriodTable = AAccountingPeriodAccess.LoadViaALedger(FLedgerNumber, transaction);
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
             catch (Exception)
@@ -465,17 +464,17 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <returns></returns>
         public override AbstractPeriodEndOperation GetActualizedClone()
         {
-            if (intActualYear == NOT_INITIALIZED)
+            if (FActualYear == NOT_INITIALIZED)
             {
                 throw new ApplicationException(
                     "Actual Year is not initialized - you cannot test for the succes of RunEndOfPeriodOperation()");
             }
 
-            return new TAccountPeriodToNewYear(intLedgerNumber, intActualYear);
+            return new TAccountPeriodToNewYear(FLedgerNumber, FActualYear);
         }
 
         /// <summary>
-        /// This is the number of data base record holding the date values of the
+        /// This is the number of database records holding the date values of the
         /// just ending year.
         /// </summary>
         public override int JobSize {
@@ -483,24 +482,26 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 int cnt = 0;
 
-                for (int i = 0; i < accountingPeriodTable.Rows.Count; ++i)
+                if (DoExecuteableCode)
                 {
-                    bool blnFound = false;
-                    accountingPeriodRow = accountingPeriodTable[i];
-
-                    if (accountingPeriodRow.PeriodStartDate.Year == intActualYear)
+                    foreach (AAccountingPeriodRow accountingPeriodRow in FaccountingPeriodTable.Rows)
                     {
-                        blnFound = true;
-                    }
+                        bool blnFound = false;
 
-                    if (accountingPeriodRow.PeriodEndDate.Year == intActualYear)
-                    {
-                        blnFound = true;
-                    }
+                        if (accountingPeriodRow.PeriodStartDate.Year == FActualYear)
+                        {
+                            blnFound = true;
+                        }
 
-                    if (blnFound)
-                    {
-                        ++cnt;
+                        if (accountingPeriodRow.PeriodEndDate.Year == FActualYear)
+                        {
+                            blnFound = true;
+                        }
+
+                        if (blnFound)
+                        {
+                            ++cnt;
+                        }
                     }
                 }
 
@@ -515,9 +516,9 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             if (DoExecuteableCode)
             {
-                for (int i = 0; i < accountingPeriodTable.Rows.Count; ++i)
+                for (int i = 0; i < FaccountingPeriodTable.Rows.Count; ++i)
                 {
-                    accountingPeriodRow = accountingPeriodTable[i];
+                    AAccountingPeriodRow accountingPeriodRow = FaccountingPeriodTable[i];
 
                     accountingPeriodRow.PeriodStartDate =
                         accountingPeriodRow.PeriodStartDate.AddDays(1).AddYears(1).AddDays(-1);
@@ -529,7 +530,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 try
                 {
                     AAccountingPeriodAccess.SubmitChanges(
-                        accountingPeriodTable, transaction,
+                        FaccountingPeriodTable, transaction,
                         out verificationResults);
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }

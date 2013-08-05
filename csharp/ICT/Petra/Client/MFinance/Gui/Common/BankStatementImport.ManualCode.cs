@@ -64,9 +64,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
                 ALedgerRow Ledger =
                     ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
-                txtCreditSum.CurrencySymbol = Ledger.BaseCurrency;
-                txtDebitSum.CurrencySymbol = Ledger.BaseCurrency;
-                txtAmount.CurrencySymbol = Ledger.BaseCurrency;
+                txtCreditSum.CurrencyCode = Ledger.BaseCurrency;
+                txtDebitSum.CurrencyCode = Ledger.BaseCurrency;
+                txtAmount.CurrencyCode = Ledger.BaseCurrency;
 
                 pnlDetails.Visible = false;
             }

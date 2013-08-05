@@ -661,8 +661,10 @@ namespace Ict.Petra.Server.MFinance.Common
 
                     APostingLevel[key].baseAmount += SignBaseAmount;
 
-                    // Only foreign currency accounts store a value in the transaction currency
-                    if (Account.ForeignCurrencyFlag)
+                    // Only foreign currency accounts store a value in the transaction currency,
+                    // if the transaction was actually in the foreign currency.
+
+                    if (Account.ForeignCurrencyFlag && (journal.TransactionCurrency == Account.ForeignCurrencyCode))
                     {
                         APostingLevel[key].transAmount += SignTransAmount;
                     }
@@ -1315,6 +1317,16 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
 
                 BatchRow.Delete();
+                //
+                // If this batch has journals and transactions, they need to be deleted too,
+                // along with any trans_anal_attrib records.
+                //
+                // The call to GLBatchCanBeCancelled will have loaded all these records for me.
+
+                TempTDS.AJournal.Rows.Clear();
+                TempTDS.ATransaction.Rows.Clear();
+                TempTDS.ATransAnalAttrib.Rows.Clear();
+
                 return GLBatchTDSAccess.SubmitChanges(TempTDS, out AVerifications) == TSubmitChangesResult.scrOK;
             }
         }

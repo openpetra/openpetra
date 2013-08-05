@@ -80,8 +80,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void BtnOKClick(object sender, EventArgs e)
         {
-            if ((dtpDateEffective.Date < FStartDateCurrentPeriod)
-                || (dtpDateEffective.Date > FEndDateLastForwardingPeriod))
+            if (!(dtpDateEffective.ValidDate()))
+            {
+                return;
+
+/* // The method above has already displayed an error.
+ *              MessageBox.Show(Catalog.GetString(
+ *                      "Date format not recognised. Please use dd-mmm-yy."),
+ *                  Catalog.GetString("Invalid date"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+ */
+            }
+            else if ((dtpDateEffective.Date < FStartDateCurrentPeriod)
+                     || (dtpDateEffective.Date > FEndDateLastForwardingPeriod))
             {
                 MessageBox.Show(Catalog.GetString(
                         "Please select a date which is in the valid posting range of your ledger!"),

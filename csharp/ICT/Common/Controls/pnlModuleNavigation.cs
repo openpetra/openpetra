@@ -47,6 +47,7 @@ namespace Ict.Common.Controls
         private int FCurrentLedger = -1;
         private bool FIsLedgerBasedModule = false;
         private bool FSuppressLedgerChangedEvent = false;
+        private bool FIsConferenceBasedModule = false;
 
         /// Constructor.
         public TPnlModuleNavigation()
@@ -132,7 +133,8 @@ namespace Ict.Common.Controls
         /// <param name="ADashboard"></param>
         /// <param name="AExpandedWidth"></param>
         /// <param name="AMultiLedgerSite"></param>
-        public TPnlModuleNavigation(XmlNode AFolderNode, TDashboard ADashboard, int AExpandedWidth, bool AMultiLedgerSite)
+        /// <param name="AConferenceSelected"></param>
+        public TPnlModuleNavigation(XmlNode AFolderNode, TDashboard ADashboard, int AExpandedWidth, bool AMultiLedgerSite, bool AConferenceSelected)
         {
             this.FDashboard = ADashboard;
             this.Dock = DockStyle.Top;
@@ -163,8 +165,13 @@ namespace Ict.Common.Controls
             {
                 FIsLedgerBasedModule = true;
             }
+            else if (AConferenceSelected
+                     && (TXMLParser.GetAttribute(AFolderNode, "DependsOnConference").ToLower() == "true"))
+            {
+                FIsConferenceBasedModule = true;
+            }
 
-            if (FIsLedgerBasedModule
+            if (FIsLedgerBasedModule || FIsConferenceBasedModule
                 || (TXMLParser.GetAttribute(AFolderNode, "ShowAsCollapsiblePanels").ToLower() == "true"))
             {
                 FCollapsibleNavigation.HostedControlKind = Ict.Common.Controls.THostedControlKind.hckCollapsiblePanelHoster;

@@ -112,6 +112,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             myAT.Merge(AT);
             //FMainDS.AFreeformAnalysis.Merge(TRemote.MFinance.Setup.WebConnectors.LoadValues(FLedgerNumber).AFreeformAnalysis);
+            FMainDS.AFreeformAnalysis.DefaultView.Sort = AFreeformAnalysisTable.GetAnalysisValueDBName();
+        }
+
+        private void ShowDetailsManual(AFreeformAnalysisRow ARow)
+        {
+            if (ARow == null)
+            {
+                txtDetailAnalysisValue.Clear();
+                return;
+            }
         }
 
         /// <summary>

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -164,17 +164,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, ConsolidateAll, out VerificationResult);
 
                 string CheckItemsList = clbCostCentreAccountCodes.GetCheckedStringList();
+
                 string[] CheckedItems = CheckItemsList.Split(',');
 
                 string ForecastType;
 
                 if (rbtThisYearsBudgets.Checked)
                 {
-                    ForecastType = "Budget";
+                    ForecastType = MFinanceConstants.FORECAST_TYPE_BUDGET;
                 }
                 else
                 {
-                    ForecastType = "Actuals";
+                    ForecastType = MFinanceConstants.FORECAST_TYPE_ACTUALS;
                 }
 
                 if (rbtSelectedBudgets.Checked && (CheckItemsList.Length > 0)
@@ -201,14 +202,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             {
                 MessageBox.Show(ex.Message);
             }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
+            catch (Exception ex)
             {
                 Cursor.Current = Cursors.Default;
+                throw ex;
             }
+
+            Cursor.Current = Cursors.Default;
         }
 
         //This flag is needed to stop the event occuring twice for each

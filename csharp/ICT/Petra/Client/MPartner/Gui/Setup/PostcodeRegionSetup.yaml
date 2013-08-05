@@ -1,0 +1,63 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Postcode Regions
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DetailTable: PPostcodeRegion
+    CacheableTable: PostCodeRegionList
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 660
+    WindowHeight: 650
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDeleteRegion: {Label=&Delete}
+        actAdd: {Label=&Add}
+        actDelete: {Label=&Remove, ActionClick=DeleteRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlRegionGrid, pnlDetails, pnlRangeGrid]
+            Dock: Fill
+        pnlRegionGrid:
+            Height: 250
+            Stretch: horizontally
+            Controls: [pnlRegionButtons, grdRegions]
+        pnlRegionButtons:
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
+        pnlDetails:
+            Stretch: horizontally
+            Controls:
+                Row0: [txtDetailRegion]
+        pnlRangeGrid:
+            Stretch: horizontally
+            Height: 250
+            Controls: [pnlRangeButtons, grdDetails]
+        pnlRangeButtons:
+            Dock: Bottom
+            Controls: [btnAdd, btnRemove]
+            ControlsOrientation: horizontal
+        btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDeleteRegion
+            Width: 80
+        btnAdd:
+            Action: actAdd
+            Width: 80
+        btnRemove:
+            Action: actDelete
+            Width: 80
+        grdRegions:
+            Dock: Fill
+            Columns: [DetailRegion]
+            ActionFocusRow: RegionsFocusedRowChanged
+            EnableMultiSelection: false
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailRange]
+            ActionFocusRow: FocusedRowChanged
+
+        txtDetailRegion: {Label=Region Name, Width=200}

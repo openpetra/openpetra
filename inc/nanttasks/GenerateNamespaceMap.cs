@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -305,6 +305,24 @@ namespace Ict.Tools.NAntTasks
                             {
                                 Console.WriteLine(
                                     "Warning: we should not reference System.Runtime.Caching since that is not part of the client profile of .net 4.0! in "
+                                    +
+                                    filename);
+                            }
+
+                            if (Namespace.StartsWith("Ict.Petra.Server")
+                                && Path.GetDirectoryName(filename).Replace("\\", "/").Contains("ICT/Petra/Client"))
+                            {
+                                Console.WriteLine(
+                                    "Warning: we must not reference a Server namespace (" + Namespace + ") from the client side in "
+                                    +
+                                    filename);
+                            }
+
+                            if (Namespace.StartsWith("Ict.Petra.Server")
+                                && Path.GetDirectoryName(filename).Replace("\\", "/").Contains("ICT/Petra/Shared"))
+                            {
+                                Console.WriteLine(
+                                    "Warning: we must not reference a Server namespace (" + Namespace + ") from the shared directory in "
                                     +
                                     filename);
                             }

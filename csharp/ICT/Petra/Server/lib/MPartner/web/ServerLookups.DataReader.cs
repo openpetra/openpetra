@@ -32,9 +32,11 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.App.Core.Security;
 
@@ -367,6 +369,45 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             return UnitTable;
+        }
+
+        /// <summary>
+        /// Create a new default Range
+        /// </summary>
+        /// <param name="ADefaultRangeName">new Range name</param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static void CreateNewDefaultRange(string ADefaultRangeName)
+        {
+            TDBTransaction Transaction;
+            TVerificationResultCollection VerificationResult;
+            PPostcodeRangeTable RangeTable;
+
+            Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            try
+            {
+                RangeTable = PPostcodeRangeAccess.LoadByPrimaryKey(ADefaultRangeName, Transaction);
+
+                if (RangeTable.Rows.Count == 0)
+                {
+                    PPostcodeRangeRow AddRow = RangeTable.NewRowTyped(true);
+                    AddRow.Range = ADefaultRangeName;
+
+                    // add new row to database table
+                    RangeTable.Rows.Add(AddRow);
+                    PPostcodeRangeAccess.SubmitChanges(RangeTable, Transaction, out VerificationResult);
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+                TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.CreateNewDefaultRangee: commit own transaction.");
+            }
         }
     }
 }

@@ -64,7 +64,6 @@ namespace Ict.Petra.Client.CommonControls
             //
             // clbMotivations
             //
-            this.clbMotivations.AlternatingBackgroundColour = System.Drawing.Color.FromArgb(230, 230, 230);
             this.clbMotivations.Anchor = System.Windows.Forms.AnchorStyles.Top |
                                          System.Windows.Forms.AnchorStyles.Bottom |
                                          System.Windows.Forms.AnchorStyles.Left |

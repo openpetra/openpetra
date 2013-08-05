@@ -100,6 +100,9 @@ namespace Ict.Common
         /// Win7
         eosWin7,
 
+        /// Win8
+        eosWin8,
+
         /// <summary>
         /// unknown and unsupported
         /// </summary>

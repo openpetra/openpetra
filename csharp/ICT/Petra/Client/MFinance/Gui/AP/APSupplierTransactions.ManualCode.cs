@@ -498,7 +498,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 if (SelectedGridRow[0]["Status"].ToString().Length > 0) // invoices have status, and payments don't.
                 {
-                    Int32 DocumentId = Convert.ToInt32(SelectedGridRow[0]["DocumentId"]);
+                    Int32 DocumentId = Convert.ToInt32(SelectedGridRow[0]["ApDocumentId"]);
                     TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
 
                     if (frm.LoadAApDocument(FLedgerNumber, DocumentId))
@@ -529,7 +529,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     if (barstatus == "|POSTED")
                     {
                         TVerificationResultCollection Verifications;
-                        Int32 DocumentId = Convert.ToInt32(SelectedGridRow[0]["DocumentId"]);
+                        Int32 DocumentId = Convert.ToInt32(SelectedGridRow[0]["ApDocumentId"]);
                         List <Int32>ApDocumentIds = new List <Int32>();
                         ApDocumentIds.Add(DocumentId);
 
@@ -554,7 +554,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                                 true,
                                 out Verifications))
                         {
-                            System.Windows.Forms.MessageBox.Show("Ivoice reversed to Approved status.", Catalog.GetString("Reversal"));
+                            System.Windows.Forms.MessageBox.Show("Invoice reversed to Approved status.", Catalog.GetString("Reversal"));
+                            Reload();
                             return;
                         }
                         else
@@ -576,7 +577,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                     if ("|PAID|PARTPAID".IndexOf(barstatus) >= 0)
                     {
-                        MessageBox.Show("Can't reverse paid a invoice. Reverse the payment instead.", "Reverse");
+                        MessageBox.Show("Can't reverse a paid invoice. Reverse the payment instead.", "Reverse");
                     }
                 }
                 else // Reverse payment
@@ -630,7 +631,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     && (row["Currency"].ToString() == txtSupplierCurrency.Text)
                     )
                 {
-                    Int32 DocumentId = Convert.ToInt32(row["DocumentId"]);
+                    Int32 DocumentId = Convert.ToInt32(row["ApDocumentId"]);
                     TempDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, DocumentId));
 
                     // I've loaded this record in my DS, but I was not given a handle to it, so I need to find it!
@@ -669,10 +670,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             foreach (DataRow row in FPagedDataTable.Rows)
             {
-                if ((row["Tagged"].Equals(true)) && (!row["InvNum"].Equals("Payment")) && (row["Currency"].ToString() == txtSupplierCurrency.Text))
+                if (
+                    (row["Tagged"].Equals(true))
+                    && (row["Currency"].ToString() == txtSupplierCurrency.Text)
+                    && ("|POSTED|PARTPAID|".IndexOf("|" + row["Status"].ToString()) >= 0)
+                    )
                 {
-                    // TODO: only use tagged rows that can be paid
-                    Int32 DocumentId = Convert.ToInt32(row["DocumentId"]);
+                    Int32 DocumentId = Convert.ToInt32(row["ApDocumentId"]);
                     TempDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, DocumentId));
 
                     // I've loaded this record in my DS, but I was not given a handle to it, so I need to find it!

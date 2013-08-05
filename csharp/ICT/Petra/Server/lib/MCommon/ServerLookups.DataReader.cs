@@ -45,6 +45,8 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Shared.MConference.Data;
+using Ict.Petra.Server.MConference.Data.Access;
 
 namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
 {
@@ -149,6 +151,18 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                     {
                         tempTable = MExtractAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
                     }
+                }
+                else if (ATablename == PcConferenceCostTable.GetTableDBName())
+                {
+                    tempTable = PcConferenceCostAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
+                }
+                else if (ATablename == PcEarlyLateTable.GetTableDBName())
+                {
+                    tempTable = PcEarlyLateAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
+                }
+                else if (ATablename == PcDiscountTable.GetTableDBName())
+                {
+                    tempTable = PcDiscountAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
                 }
                 else if (ATablename == PInternationalPostalTypeTable.GetTableDBName())
                 {
@@ -381,6 +395,54 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                             TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                                 TCacheableFinanceTablesEnum.SuspenseAccountList.ToString());
 
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == PcConferenceTable.GetTableDBName())
+                    {
+                        if (PcConferenceAccess.SubmitChanges((PcConferenceTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == PcConferenceCostTable.GetTableDBName())
+                    {
+                        if (PcConferenceCostAccess.SubmitChanges((PcConferenceCostTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == PcEarlyLateTable.GetTableDBName())
+                    {
+                        if (PcEarlyLateAccess.SubmitChanges((PcEarlyLateTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == PcDiscountTable.GetTableDBName())
+                    {
+                        if (PcDiscountAccess.SubmitChanges((PcDiscountTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                         else
