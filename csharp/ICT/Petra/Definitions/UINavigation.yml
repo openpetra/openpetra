@@ -278,6 +278,14 @@ OpenPetra:
             # Module
             Main: {SkipThisLevel=true}
                 # Sub Module
+                Partners: {DontShowNestedTasksAsLinks=true, Namespace=Ict.Petra.Client.MPartner.Gui}
+                    SearchBoxes: [Partner]
+                    MaintainPartners:                
+                        FindPERSONPartners: {Label=Find a Person, ActionClick=TPartnerMain.FindPartnerOfClassPERSON, Description=Search for and work with a Person}
+                        WorkWithLastPERSON: {Label=Work with Last Person, ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreenPersonnelModule, Description=Open last Person worked with}
+                    CreatePartner:
+                        AddNewPerson: {ActionClick=TPartnerMain.NewPartner_Person, Description=Create a new Partner of Class PERSON}
+
                 Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, DontShowNestedTasksAsLinks=true}
                     Administration:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
