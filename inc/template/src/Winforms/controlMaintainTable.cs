@@ -116,10 +116,8 @@ namespace {#NAMESPACE}
 
             ShowData();
         }
-{#IFDEF ENABLEDELETEBUTTON}
 
-        btnDelete.Enabled = pnlDetails.Enabled;
-{#ENDIF ENABLEDELETEBUTTON}
+        SelectRowInGrid(1);
     }
     
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -334,7 +332,6 @@ namespace {#NAMESPACE}
             if (myDataView.Count > 0)
             {
                 pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
-                SelectRowInGrid(1);
             }
         }
         FPetraUtilsObject.EnableDataChangedEvent();

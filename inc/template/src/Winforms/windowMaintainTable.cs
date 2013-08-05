@@ -110,12 +110,6 @@ namespace {#NAMESPACE}
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
-      // Ensure that the Details Panel is disabled if there are no records
-      if (FMainDS.{#DETAILTABLE}.Rows.Count == 0) 
-      {
-        ShowDetails(null);
-      }
-      
       {#INITACTIONSTATE}
       
       /*
@@ -135,6 +129,7 @@ namespace {#NAMESPACE}
 {#IFDEF SHOWDETAILS}       
       SetPrimaryKeyControl();
 {#ENDIF SHOWDETAILS}
+      SelectRowInGrid(1);
    }
 
     #region Show Method overrides
