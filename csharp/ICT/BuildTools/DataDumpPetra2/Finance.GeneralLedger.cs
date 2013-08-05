@@ -128,14 +128,14 @@ namespace Ict.Tools.DataDumpPetra2
 
             return true;
         }
-        
+
         /// <summary>
         /// fixing table a_budget_type
         /// </summary>
         public static bool FixABudgetType(StringCollection AColumnNames, ref string[] ANewRow)
         {
             string BudgetTypeCode = GetValue(AColumnNames, ANewRow, "a_budget_type_code_c");
-            
+
             if (BudgetTypeCode == "Same")
             {
                 BudgetTypeCode = "SAME";

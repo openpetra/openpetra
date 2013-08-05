@@ -451,7 +451,7 @@ namespace Ict.Tools.DataDumpPetra2
             {
                 return TFinanceGeneralLedgerUpgrader.FixABatch(AColumnNames, ref ANewRow);
             }
-            
+
             if (ATableName == "a_budget_type")
             {
                 return TFinanceGeneralLedgerUpgrader.FixABudgetType(AColumnNames, ref ANewRow);
