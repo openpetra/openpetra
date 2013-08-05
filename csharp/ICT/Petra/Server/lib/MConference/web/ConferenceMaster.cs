@@ -60,16 +60,20 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("CONFERENCE")]
         public static ConferenceSetupTDS LoadConferenceSettings(long AConferenceKey, out string AConferenceName)
         {
+            Boolean NewTransaction;
+
             ConferenceSetupTDS MainDS = new ConferenceSetupTDS();
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
-            PPartnerLocationAccess.LoadViaPPartner(MainDS, AConferenceKey, null);
-            PcConferenceAccess.LoadByPrimaryKey(MainDS, AConferenceKey, null);
-            PcConferenceOptionAccess.LoadViaPcConference(MainDS, AConferenceKey, null);
-            PcDiscountAccess.LoadViaPcConference(MainDS, AConferenceKey, null);
-            PcConferenceVenueAccess.LoadViaPcConference(MainDS, AConferenceKey, null);
-            AConferenceName = PPartnerAccess.LoadByPrimaryKey(MainDS, AConferenceKey, null).PartnerShortName;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+            
+            PPartnerLocationAccess.LoadViaPPartner(MainDS, AConferenceKey, Transaction);
+            PcConferenceAccess.LoadByPrimaryKey(MainDS, AConferenceKey, Transaction);
+            PcConferenceOptionAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
+            PcDiscountAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
+            PcConferenceVenueAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
+            AConferenceName = PPartnerAccess.LoadByPrimaryKey(MainDS, AConferenceKey, Transaction).PartnerShortName;
 
             foreach (ConferenceSetupTDSPcConferenceVenueRow VenueRow in MainDS.PcConferenceVenue.Rows)
             {
@@ -86,8 +90,11 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
 
             // Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
 
             return MainDS;
         }
