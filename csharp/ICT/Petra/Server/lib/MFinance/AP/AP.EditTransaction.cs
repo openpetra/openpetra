@@ -1139,9 +1139,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             // since the list of documents can be for several suppliers, there could be more than one currency; group by currency first
             SortedList <string,
                         List <AccountsPayableTDSAApPaymentRow>>DocumentsByCurrency = new SortedList <string, List <AccountsPayableTDSAApPaymentRow>>();
-            bool IsMyOwnTransaction; // If I create a transaction here, then I need to rollback when I'm done.
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction
-                                             (IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out IsMyOwnTransaction);
 
             foreach (AccountsPayableTDSAApPaymentRow row in APDataset.AApPayment.Rows)
             {
@@ -1443,11 +1440,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             } // foreach currency
 
             batch.LastJournal = CounterJournals - 1;
-
-            if (IsMyOwnTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
 
             return GLDataset;
         }

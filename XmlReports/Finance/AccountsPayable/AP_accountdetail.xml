@@ -143,12 +143,14 @@
             <value function="assign(Debits, {Amount})"/>
             <value function="assign(Credits, 0)"/>
             <value function="assign(CostCentreDebit, add({{CostCentreDebit}}, {{Amount}}))"/>
+            <value function="assign(AccountCodeDebit, add({{AccountCodeDebit}}, {{Amount}}))"/>
           </queryDetail>
           <queryDetail condition="not({a_debit_credit_indicator_l})">
             <value text="NO-SQL"/>
             <value function="assign(Credits, {Amount})"/>
             <value function="assign(Debits, 0)"/>
             <value function="assign(CostCentreCredit, add({{CostCentreCredit}}, {{Amount}}))"/>
+            <value function="assign(AccountCodeCredit, add({{AccountCodeCredit}}, {{Amount}}))"/>
           </queryDetail>
         </query>
       </calculation>
@@ -165,12 +167,10 @@
         </query>
       </calculation>
       
-      <calculation id="AssignAccountCodeAmount" returns="automatic" returnsFormat="text">
+      <calculation id="ClearCostCentreAmount" returns="automatic" returnsFormat="text">
         <query>
           <queryDetail>
             <value text="NO-SQL"/>
-            <value function="assign(AccountCodeCredit, add({{AccountCodeCredit}}, {{CostCentreCredit}}))"/>
-            <value function="assign(AccountCodeDebit, add({{AccountCodeDebit}}, {{CostCentreDebit}}))"/>
             <value function="assign(CostCentreDebit, 0)"/>
             <value function="assign(CostCentreCredit, 0)"/>
           </queryDetail>
@@ -274,7 +274,6 @@
 
     <level name="AccountLevel1">
       <detail>
-        <lowerLevelReport level="AccountLevel2"/>
         <lowerLevelReport level="AccountLevel2" calculation="ClearAccountCodeAmount"/>
       </detail>
     </level>
@@ -310,8 +309,7 @@
 
     <level name="CostCentreLevel1">
       <detail>
-        <lowerLevelReport level="CostCentreLevel2"/>
-        <lowerLevelReport level="CostCentreLevel2" calculation="AssignAccountCodeAmount"/>
+        <lowerLevelReport level="CostCentreLevel2" calculation="ClearCostCentreAmount"/>
       </detail>
       <footer>
         <field whichfield="column 0">
@@ -343,6 +341,9 @@
         <lowerLevelReport level="DetailLevel" calculation="SelectCurrentDetails"/>
       </detail>
       <footer>
+        <field whichfield="column 0">
+          <value text="CC Total: "/>
+        </field>
         <field whichfield="column {param_column_Credits}" line="above">
           <value variable="CostCentreCredit"/>
         </field>
