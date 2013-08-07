@@ -50,8 +50,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         
         private string FDefaultContactType = String.Empty;
         
-        #region Public Methods
-
+        #region Properties
+        
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
         public IPartnerUIConnectorsPartnerEdit PartnerEditUIConnector
         {
@@ -66,10 +66,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        #endregion
+        
+        #region Events
+        
         /// <summary>todoComment</summary>
         public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
 
+        #endregion
+        
         /// <summary>todoComment</summary>
+
         public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
 
         private void RethrowRecalculateScreenParts(System.Object sender, TRecalculateScreenPartsEventArgs e)
@@ -110,6 +117,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 //   to handle the consequences of a failed validation.         
 //            GetDetailsFromControls(GetSelectedDetailRow());
         }
+
+        #region Public Methods
 
         /// <summary>todoComment</summary>
         public void PostInitUserControl(PartnerEditTDS AMainDS)
