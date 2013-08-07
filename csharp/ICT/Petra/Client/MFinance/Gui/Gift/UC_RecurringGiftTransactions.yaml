@@ -10,7 +10,7 @@ RootNode:
     Actions:
         actNewGift: {Label=&Add Gift, ActionClick=NewGift}
         actNewDetail: {Label=Add Detai&l, ActionClick=NewGiftDetail}
-        actDelete: {Label=&Delete Detail, ActionClick=DeleteRecord}
+        actDelete: {Label=&Delete Detail, SkipReferenceCheck=true, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
@@ -28,17 +28,17 @@ RootNode:
         txtHashTotal: {Format=Currency, ReadOnly=true,  Unbound=true}
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNewGift, btnNewDetail, btnDelete]
-        btnNewGift: {Action=actNewGift, Stretch=horizontally}
-        btnNewDetail: {Action=actNewDetail, Stretch=horizontally}
-        btnDelete: {Action=actDelete, Stretch=horizontally}
+            ControlsOrientation: horizontal
+        btnNewGift: {Action=actNewGift, Width=120}
+        btnNewDetail: {Action=actNewDetail, Width=120, StartNewButtonGroup=true}
+        btnDelete: {Action=actDelete, Width=120}
         grdDetails:
             TableName: ARecurringGiftDetail
             Dock: Fill
-            #TODO: support split gifts, and deal with gift details properly
             Columns: [GiftTransactionNumber, DetailNumber, DonorName, DonorClass, ConfidentialGiftFlag, GiftAmount, RecipientDescription, RecipientField, MotivationGroupCode, MotivationDetailCode, MethodOfGivingCode, MethodOfPaymentCode, MailingCode]
             CustomColumns:
                 GiftTransactionNumber: {Label=Gift No., Type=Int32}
@@ -55,9 +55,10 @@ RootNode:
             ActionFocusRow: FocusedRowChanged
             SortOrder: GiftTransactionNumber ASC
             RowFilter: AGiftDetail.BatchNumber
+            EnableMultiSelection: false
         pnlDetails:
             Dock: Bottom
-            # TODO: split gifts
+            Scrollbars: true
             Controls:
                 Row0: [lblReceipt, chkDetailActive]
                 Row1: [txtDetailDonorKey]
@@ -79,7 +80,7 @@ RootNode:
         dtpStartDonations: {Label=Don. Period From}
         dtpEndDonations: {Label=To}
         chkDetailActive: {Label=Active Gift}
-        txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=yes, Unbound=true}
+        txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=true, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=2, Unbound=true, OnChange=DonorKeyChanged}
         txtDetailReference: {Label=Reference, Width=170}
         cmbDetailReceiptLetterCode:

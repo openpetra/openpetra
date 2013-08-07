@@ -82,6 +82,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// Load the journals for the current batch in the background
+        /// </summary>
+        public void LoadJournals()
+        {
+            int batchNumber = ucoBatches.GetSelectedDetailRow().BatchNumber;
+
+            FMainDS.AJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
+                AJournalTable.GetBatchNumberDBName(),
+                batchNumber);
+
+            // only load from server if there are no journals loaded yet for this batch
+            // otherwise we would overwrite journals that have already been modified
+            if (FMainDS.AJournal.DefaultView.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, batchNumber));
+            }
+        }
+
+        /// <summary>
         /// activate the journal tab and load the journals of the batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -134,33 +153,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Load the journals for the current batch in the background
-        /// </summary>
-        public void LoadJournals()
-        {
-            int batchNumber = ucoBatches.GetSelectedDetailRow().BatchNumber;
-
-            FMainDS.AJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
-                AJournalTable.GetBatchNumberDBName(),
-                batchNumber);
-
-            // only load from server if there are no journals loaded yet for this batch
-            // otherwise we would overwrite journals that have already been modified
-            if (FMainDS.AJournal.DefaultView.Count == 0)
-            {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, batchNumber));
-            }
-        }
-
-        /// <summary>
-        /// Unload transactions from the form
-        /// </summary>
-        public void UnloadJournals()
-        {
-            this.ucoJournals.UnloadJournals();
-        }
-
-        /// <summary>
         /// disable the journal tab if we have no active batch
         /// </summary>
         public void DisableJournals()
@@ -195,7 +187,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         };
 
 
+        //Might need this later
         private eGLTabs FPreviousTab = eGLTabs.Batches;
+
         /// <summary>
         /// Switch to the given tab
         /// </summary>
@@ -211,8 +205,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     this.ucoTransactions.CancelChangesToFixedBatches();
                     this.ucoJournals.CancelChangesToFixedBatches();
-                    SaveChanges();
-                    this.tpgTransactions.Enabled = false;
+                    ucoBatches.EnableTransactionTabForBatch();
                 }
 
                 this.ucoBatches.FocusGrid();
@@ -228,16 +221,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoBatches.GetSelectedDetailRow().BatchNumber,
                         ucoBatches.GetSelectedDetailRow().BatchStatus);
 
-                    this.tpgTransactions.Enabled = (ucoJournals.GetSelectedDetailRow() != null);
+                    this.tpgTransactions.Enabled =
+                        (ucoJournals.GetSelectedDetailRow() != null && ucoJournals.GetSelectedDetailRow().JournalStatus !=
+                         MFinanceConstants.BATCH_CANCELLED);
 
-                    if (this.tpgTransactions.Enabled && (FPreviousTab == eGLTabs.Transactions))
-                    {
-                        //Reconcile dataset tables
-                        this.ucoJournals.UpdateTotals(ucoBatches.GetSelectedDetailRow());
-                    }
+                    this.ucoJournals.UpdateHeaderTotals(ucoBatches.GetSelectedDetailRow());
 
                     this.ucoJournals.FocusGrid();
-
                     FPreviousTab = eGLTabs.Journals;
                 }
             }
@@ -245,6 +235,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (this.tpgTransactions.Enabled)
                 {
+                    bool fromBatchTab = false;
+
+                    if (FPreviousTab == eGLTabs.Batches)
+                    {
+                        fromBatchTab = true;
+                        //This only happens when the user clicks from Batch to Transactions,
+                        //  which is only allowed when one journal exists
+
+                        //Need to make sure that the Journal is loaded
+                        this.ucoJournals.LoadJournals(FLedgerNumber,
+                            ucoBatches.GetSelectedDetailRow().BatchNumber,
+                            ucoBatches.GetSelectedDetailRow().BatchStatus);
+                    }
+
                     this.tabGLBatch.SelectedTab = this.tpgTransactions;
 
                     this.ucoTransactions.LoadTransactions(
@@ -253,7 +257,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoJournals.GetSelectedDetailRow().JournalNumber,
                         ucoJournals.GetSelectedDetailRow().TransactionCurrency,
                         ucoBatches.GetSelectedDetailRow().BatchStatus,
-                        ucoJournals.GetSelectedDetailRow().JournalStatus);
+                        ucoJournals.GetSelectedDetailRow().JournalStatus,
+                        fromBatchTab);
 
                     FPreviousTab = eGLTabs.Transactions;
                 }
@@ -266,7 +271,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!SaveChanges())
+            if (!ValidateAllData(true, true))
             {
                 e.Cancel = true;
 

@@ -108,6 +108,37 @@ namespace Ict.Petra.Shared
 
         #endregion
 
+        #region Conference Module-specific error codes
+
+
+        /// <summary>Standard cost inconsistency</summary>
+        [ErrCodeAttribute("Standard cost inconsistency.",
+             ErrorMessageText = "{0} day/s at the conference costs more than {1} days!\r\n" + "Are you sure this is correct?",
+             ErrorMessageTitle = "Standard cost inconsistency")]
+        public const String ERR_STANDARD_COST_INCONSISTENCY = "CON.00001N";
+
+        /// <summary>Applicable date after conference end date</summary>
+        [ErrCodeAttribute("Applicable date after conference end date.",
+             ErrorMessageText = "Applicable date cannot be after the end of the conference.")]
+        public const String ERR_APPLICABLE_DATE_AFTER_CONFERENCE_END_DATE = "CON.00002V";
+
+        /// <summary>Early applicable date later than a late applicable date</summary>
+        [ErrCodeAttribute("Early applicable date later than a late applicable date.",
+             ErrorMessageText = "There is an early registration discount which has a date later than this late registration surcharge.")]
+        public const String ERR_EARLY_APPLICABLE_DATE_LATER_THAN_LATE_APPLICABLE_DATE = "CON.00003V";
+
+        /// <summary>Late applicable date earlier than an early applicable date</summary>
+        [ErrCodeAttribute("Late applicable date earlier than an early applicable date.",
+             ErrorMessageText = "There is a late registration surcharge which has a date earlier than this early registration discount.")]
+        public const String ERR_LATE_APPLICABLE_DATE_EARLIER_THAN_EARLY_APPLICABLE_DATE = "CON.00004V";
+
+        /// <summary>PcDiscount discount percentage greater than 100</summary>
+        [ErrCodeAttribute("Invalid discount percentage.",
+             ErrorMessageText = "Discount percentages cannot be greater than 100%")]
+        public const String ERR_DISCOUNT_PERCENTAGE_GREATER_THAN_100 = "CON.00005V";
+
+        #endregion
+
         #region Finance Module-specific error codes
 
         /// <summary>Suspense accounts exist despite disabling suspense accounts for a ledger.</summary>

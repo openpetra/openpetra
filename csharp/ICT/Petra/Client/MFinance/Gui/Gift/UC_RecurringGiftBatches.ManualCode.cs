@@ -95,14 +95,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 ShowDetails(null);
-                ((TFrmRecurringGiftBatch) this.ParentForm).DisableTransactionsTab();
+                ((TFrmRecurringGiftBatch) this.ParentForm).EnableTransactionsTab(false);
             }
 
             ShowData();
-
             FBatchLoaded = true;
 
-            ShowDetails(GetCurrentRecurringBatchRow());
+            UpdateChangeableStatus();
         }
 
         /// <summary>
@@ -168,23 +167,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FLedgerNumber = ARow.LedgerNumber;
-//            FSelectedBatchNumber = ARow.BatchNumber;
 
             FPetraUtilsObject.DetailProtectedMode = false;
 
             ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab();
 
             UpdateChangeableStatus();
-
-//            FPetraUtilsObject.DetailProtectedMode = false;
-//            ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab();
-//            UpdateChangeableStatus();
-//            FPetraUtilsObject.DetailProtectedMode = false;
-//            ((TFrmRecurringGiftBatch)ParentForm).LoadTransactions(
-//                ARow.LedgerNumber,
-//                ARow.BatchNumber);
-
-            // FSelectedBatchNumber = ARow.BatchNumber;
         }
 
         private void ShowTransactionTab(Object sender, EventArgs e)
@@ -220,55 +208,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             int batchNumber = ARowToDelete.BatchNumber;
 
+            bool newBatch = (ARowToDelete.RowState == DataRowState.Added);
+
             try
             {
                 ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} deleted successfully."),
                     batchNumber);
 
+                //clear any transactions currently being editied in the Transaction Tab
+                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
-                //Load the gift details first before deleting them
-                FMainDS.ARecurringGiftDetail.DefaultView.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
-                    ARecurringGiftDetailTable.GetLedgerNumberDBName(),
-                    FLedgerNumber,
-                    ARecurringGiftDetailTable.GetBatchNumberDBName(),
-                    batchNumber);
-
-                // only load from server if there are no transactions loaded yet for this batch
-                // otherwise we would overwrite transactions that have already been modified
-                if (FMainDS.ARecurringGiftDetail.DefaultView.Count == 0)
+                if (!newBatch)
                 {
+                    //Load tables afresh
+                    FMainDS.ARecurringGiftDetail.Clear();
+                    FMainDS.ARecurringGift.Clear();
                     FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(FLedgerNumber, batchNumber));
                 }
 
-                // Delete the associated recurring gift detail rows.
-                DataView viewGiftDetail = new DataView(FMainDS.ARecurringGiftDetail);
-                viewGiftDetail.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
-                    ARecurringGiftTable.GetLedgerNumberDBName(),
-                    FLedgerNumber,
-                    ARecurringGiftTable.GetBatchNumberDBName(),
-                    batchNumber);
-
-                foreach (DataRowView row in viewGiftDetail)
+                //Delete transactions
+                for (int i = FMainDS.ARecurringGiftDetail.Count - 1; i >= 0; i--)
                 {
-                    row.Delete();
+                    FMainDS.ARecurringGiftDetail[i].Delete();
                 }
 
-                // Delete the associated recurring gift rows.
-                DataView viewGift = new DataView(FMainDS.ARecurringGift);
-                viewGift.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
-                    ARecurringGiftTable.GetLedgerNumberDBName(),
-                    FLedgerNumber,
-                    ARecurringGiftTable.GetBatchNumberDBName(),
-                    batchNumber);
-
-                foreach (DataRowView row in viewGift)
+                for (int i = FMainDS.ARecurringGift.Count - 1; i >= 0; i--)
                 {
-                    row.Delete();
+                    FMainDS.ARecurringGift[i].Delete();
                 }
 
                 // Delete the recurring batch row.
                 ARowToDelete.Delete();
 
+                //FMainDS.AcceptChanges();
                 FPreviouslySelectedDetailRow = null;
 
                 deletionSuccessful = true;
@@ -300,14 +272,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             /*Code to execute after the delete has occurred*/
             if (ADeletionPerformed && (ACompletionMessage.Length > 0))
             {
-                MessageBox.Show(ACompletionMessage,
-                    "Deletion Completed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-
-                if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
+                if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
                 {
-                    ShowDetails(null);
+                    MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
+                }
+                else
+                {
+                    MessageBox.Show("Unable to save after deletion of batch! Try saving manually and closing and reopening the form.");
                 }
             }
             else if (!AAllowDeletion)
@@ -319,15 +290,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //message to user
             }
 
-            if (grdDetails.Rows.Count > 1)
-            {
-                ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab();
-            }
-            else
-            {
-                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
-                ((TFrmRecurringGiftBatch)ParentForm).DisableTransactionsTab();
-            }
+            UpdateChangeableStatus();
+
+            ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab((grdDetails.Rows.Count > 1));
+
+            SelectRowInGrid(grdDetails.GetFirstHighlightedRowIndex());
         }
 
         private void Submit(System.Object sender, System.EventArgs e)
@@ -355,9 +322,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 MessageBox.Show(String.Format(Catalog.GetString(
                             "The recurring gift batch total ({0}) for batch {1} does not equal the hash total ({2})."),
-                        FPreviouslySelectedDetailRow.BatchTotal.ToString("C"),
+                        StringHelper.FormatUsingCurrencyCode(FPreviouslySelectedDetailRow.BatchTotal, FPreviouslySelectedDetailRow.CurrencyCode),
                         FPreviouslySelectedDetailRow.BatchNumber,
-                        FPreviouslySelectedDetailRow.HashTotal.ToString("C")), "Submit Recurring Gift Batch");
+                        StringHelper.FormatUsingCurrencyCode(FPreviouslySelectedDetailRow.HashTotal, FPreviouslySelectedDetailRow.CurrencyCode)),
+                    "Submit Recurring Gift Batch");
 
                 txtDetailHashTotal.Focus();
                 txtDetailHashTotal.SelectAll();
@@ -387,6 +355,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Boolean changeable = (FPreviouslySelectedDetailRow != null);
 
             this.btnDelete.Enabled = changeable;
+            this.btnSubmit.Enabled = changeable;
             pnlDetails.Enabled = changeable;
         }
 
@@ -414,7 +383,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             String ACurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
 
-            txtDetailHashTotal.CurrencySymbol = ACurrencyCode;
+            txtDetailHashTotal.CurrencyCode = ACurrencyCode;
             ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
         }
 

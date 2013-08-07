@@ -377,7 +377,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
 
                         // for every value row: check if the label exists in the requested 'use' section
                         // loop counts down, otherwise access violations when elements are deleted
-                        for (Counter = FOfficeSpecificDataLabelsTDS.PDataLabelValuePartner.Rows.Count - 1; Counter < 0; Counter -= 1)
+                        for (Counter = FOfficeSpecificDataLabelsTDS.PDataLabelValuePartner.Rows.Count - 1; Counter >= 0; Counter--)
                         {
                             DataLabelValueRow = FOfficeSpecificDataLabelsTDS.PDataLabelValuePartner[Counter];
                             DataLabelUseRow = (PDataLabelUseRow)DataLabelUseDT.Rows.Find(new Object[] { DataLabelValueRow.DataLabelKey, LabelUse });

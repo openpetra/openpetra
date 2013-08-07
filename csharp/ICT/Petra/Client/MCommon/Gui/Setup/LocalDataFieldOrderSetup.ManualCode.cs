@@ -145,33 +145,31 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         private void DataFieldPromote(System.Object sender, System.EventArgs e)
         {
             // Move down in the list, i.e. the current row needs a bigger number
-            PDataLabelUseRow currentRow = this.GetSelectedDetailRow();
-            int nSelectedRow = grdDetails.DataSourceRowToIndex2(grdDetails.SelectedDataRowsAsDataRowView[0]);
+            int nSelectedRow = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
 
-            DevAge.ComponentModel.BoundDataView dv = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView);
-            PDataLabelUseRow otherRow = (PDataLabelUseRow)dv.DataView[nSelectedRow + 1].Row;
+            PDataLabelUseRow currentRow = (PDataLabelUseRow)((DataRowView)grdDetails.Rows.IndexToDataSourceRow(nSelectedRow)).Row;
+            PDataLabelUseRow otherRow = (PDataLabelUseRow)((DataRowView)grdDetails.Rows.IndexToDataSourceRow(nSelectedRow + 1)).Row;
 
             DoSwap(currentRow, otherRow);
 
             // Move the selection so it tracks the current row (grid rows start at 1)
-            // This will automatically fire the FocusedRowChanged event which will update our up/down buttons
-            grdDetails.SelectRowInGrid(nSelectedRow + 2);
+            grdDetails.SelectRowInGrid(nSelectedRow + 1);
+            UpdateButtons(nSelectedRow + 1);
         }
 
         private void DataFieldDemote(System.Object sender, System.EventArgs e)
         {
             // Move up in the list, i.e. the current row needs a smaller number
-            PDataLabelUseRow currentRow = this.GetSelectedDetailRow();
-            int nSelectedRow = grdDetails.DataSourceRowToIndex2(grdDetails.SelectedDataRowsAsDataRowView[0]);
+            int nSelectedRow = grdDetails.Selection.GetSelectionRegion().GetRowsIndex()[0];
 
-            DevAge.ComponentModel.BoundDataView dv = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView);
-            PDataLabelUseRow otherRow = (PDataLabelUseRow)dv.DataView[nSelectedRow - 1].Row;
+            PDataLabelUseRow currentRow = (PDataLabelUseRow)((DataRowView)grdDetails.Rows.IndexToDataSourceRow(nSelectedRow)).Row;
+            PDataLabelUseRow otherRow = (PDataLabelUseRow)((DataRowView)grdDetails.Rows.IndexToDataSourceRow(nSelectedRow - 1)).Row;
 
             DoSwap(currentRow, otherRow);
 
             // Move the selection so it tracks the current row (grid rows start at 1)
-            // This will automatically fire the FocusedRowChanged event which will update our up/down buttons
-            grdDetails.SelectRowInGrid(nSelectedRow);
+            grdDetails.SelectRowInGrid(nSelectedRow - 1);
+            UpdateButtons(nSelectedRow - 1);
         }
 
         private void DoSwap(PDataLabelUseRow Row1, PDataLabelUseRow Row2)

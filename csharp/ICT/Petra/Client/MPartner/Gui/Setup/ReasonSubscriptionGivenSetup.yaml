@@ -18,16 +18,17 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailCode, DetailDescription]
@@ -37,7 +38,4 @@ RootNode:
             Controls:
                 Row0: [txtDetailCode, txtDetailDescription]
         txtDetailCode: {Label=Reason Given Code, CharacterCasing=Upper}
-        txtDetailDescription: {Width=206}
-    Toolbar:
-        tbbNew:
-            Label: New Reason Given Code
+        txtDetailDescription: {Width=256}

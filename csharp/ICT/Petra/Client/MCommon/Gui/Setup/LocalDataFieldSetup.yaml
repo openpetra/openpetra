@@ -13,23 +13,24 @@ RootNode:
     WindowHeight: 450
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
-        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecordManual, SkipReferenceCheck=true}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailGroup, DetailText, DetailDataType, DetailDisplayed]
@@ -53,7 +54,7 @@ RootNode:
             Width: 190
             Height: 170
         txtDetailGroup: {Label=Group heading (optional)}
-        txtDetailDescription: {Label=Help description, Multiline=true, Height=60, Width=360}
+        txtDetailDescription: {Label=Help description, Multiline=true, Height=60, Width=400}
         chkDetailDisplayed: {Label=Display}
         cmbDetailDataType: {Label=Data type, OnChange=OnDataTypeChange}
             OptionalValues: [=Text, Number, Currency, Yes/No, Date, Time, Option List, Partner Key]
@@ -87,6 +88,3 @@ RootNode:
         txtDetailNumDecimalPlaces: {NoLabel=true, Width=70, Format=Integer}
         cmbDetailCurrencyCode: {NoLabel=true, List=CurrencyCodeList, ComboBoxWidth=70, Width=330}
         cmbDetailLookupCategoryCode: {NoLabel=true, List=DataLabelLookupCategoryList, ComboBoxWidth=160, Width=330, Validation=True}
-    Toolbar:
-        tbbNew:
-            Label: New Field

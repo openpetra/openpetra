@@ -18,16 +18,17 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailLanguageCode, DetailLanguageDescription, DetailCongressLanguage, DetailDeletable]
@@ -38,10 +39,7 @@ RootNode:
                 Row0: [txtDetailLanguageCode, txtDetailLanguageDescription]
                 Row1: [chkDetailCongressLanguage]
                 Row2: [chkDetailDeletable]
-        txtDetailLanguageCode: {Label=Language Code}
-        txtDetailLanguageDescription: {Width=145}
+        txtDetailLanguageCode: {Label=Language Code, Width=100}
+        txtDetailLanguageDescription: {Width=245}
         chkDetailCongressLanguage: 
         chkDetailDeletable:
-    Toolbar:
-        tbbNew:
-            Label: New Language Code

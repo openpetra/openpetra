@@ -4,7 +4,7 @@
 // @Authors:
 //       AlanP
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -79,8 +79,8 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// behaviour of the dialog itself.
         ///
         /// There are some things you need to know about coding this dialog handler:
-        /// * You need to call the Activate method using the FormTester.Properties.Activate().  If you do not do this the dialog constructor
-        ///     will run but you will not get the RunOnceOnActivation code to run, which may contain important initialisation actions.
+        /// * Problems with the Activation Event (RunOnceOnActivation). On Windows Jenkins, this is not run at the right time.
+        ///     We are now calling the method RunBeforeActivation() before ShowDialog inside the dialog.
         /// * You need to be sure that you close the dialog so that control returns to the [Test] method.
         ///     If the dialog does not close the whole Unit Test will hang indefinitely.  The effect of this requirement is that, if any of
         ///     your Assert tests fail the dialog remains open and needs you to manually close it.  (Possibly this is a Debug build behaviour
@@ -185,7 +185,12 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Open the screen modally on our test ledger using a 'from' currency of GBP
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
-            CreateModalFormHandler(FModalFormName, LoadModalEmptyTableHandler);
+
+            DialogBoxHandler = delegate(string name, IntPtr hWnd)
+            {
+                LoadModalEmptyTableHandler();
+            };
+
             DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
                 FStandardEffectiveDate,
                 "GBP",
@@ -220,11 +225,6 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// </summary>
         public void LoadModalEmptyTableHandler()
         {
-            // Call Activate() on the form
-            FormTester formTester = new FormTester(FModalFormName);
-
-            formTester.Properties.Activate();
-
             // Controls
             ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
             ButtonTester btnCloseTester = new ButtonTester("btnClose", FModalFormName);
@@ -308,7 +308,12 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Open the screen modally on our test ledger and a from currency of GBP
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
-            CreateModalFormHandler(FModalFormName, LoadModalTableHandler);
+
+            DialogBoxHandler = delegate(string name, IntPtr hWnd)
+            {
+                LoadModalTableHandler();
+            };
+
             DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
                 FStandardEffectiveDate,
                 "GBP",
@@ -332,11 +337,6 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// </summary>
         public void LoadModalTableHandler()
         {
-            // Call Activate() on the form
-            FormTester formTester = new FormTester(FModalFormName);
-
-            formTester.Properties.Activate();
-
             // Controls
             ButtonTester btnCloseTester = new ButtonTester("btnClose", FModalFormName);
             ButtonTester btnCancelTester = new ButtonTester("btnCancel", FModalFormName);
@@ -404,7 +404,12 @@ namespace Tests.MFinance.Client.ExchangeRates
             // Open the screen modally on our test ledger and a from currency of GBP
             // This test sets up a date range
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
-            CreateModalFormHandler(FModalFormName, ModalValidationHandler);
+
+            DialogBoxHandler = delegate(string name, IntPtr hWnd)
+            {
+                ModalValidationHandler();
+            };
+
             DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER, FStandardEffectiveDate.AddDays(
                     -10), FStandardEffectiveDate, "GBP", 1.0m, out selectedRate, out selectedDate, out selectedTime);
 
@@ -425,11 +430,6 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// </summary>
         public void ModalValidationHandler()
         {
-            // Call Activate() on the form
-            FormTester formTester = new FormTester(FModalFormName);
-
-            formTester.Properties.Activate();
-
             // Controls
             ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
             ButtonTester btnCloseTester = new ButtonTester("btnClose", FModalFormName);
@@ -513,7 +513,12 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Open the screen modally on our test ledger and a from currency of GBP
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
-            CreateModalFormHandler(FModalFormName, ExchangeRateUsage1Handler);
+
+            DialogBoxHandler = delegate(string name, IntPtr hWnd)
+            {
+                ExchangeRateUsage1Handler();
+            };
+
             DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
                 FStandardEffectiveDate,
                 "GBP",
@@ -535,10 +540,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// </summary>
         public void ExchangeRateUsage1Handler()
         {
-            // Call Activate() on the form
             FormTester formTester = new FormTester(FModalFormName);
-
-            formTester.Properties.Activate();
 
             // Controls
             ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
@@ -589,20 +591,20 @@ namespace Tests.MFinance.Client.ExchangeRates
                     switch (i)
                     {
                         case 1:             // 0.5225
-                            Assert.IsTrue(Usage.Contains("2 row(s)"), "Expected 2 rows in Gift Table");
-                            Assert.IsTrue(Usage.Contains("3 unposted"), "Expected 3 unposted rows in Journal table");
-                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997");
-                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table");
-                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table");
+                            Assert.IsTrue(Usage.Contains("2 row(s)"), "Expected 2 rows in Gift Table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("3 unposted"), "Expected 3 unposted rows in Journal table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
                             break;
 
                         case 3:             // 0.5155
-                            Assert.IsTrue(Usage.Contains("1 row"), "Expected 1 rows in Gift Table");
-                            Assert.IsTrue(Usage.Contains("2 posted"), "Expected 2 posted rows in Journal table");
-                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997");
-                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table");
-                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table");
-                            Assert.IsFalse(Usage.Contains("unposted"), "Expected no unposted references");
+                            Assert.IsTrue(Usage.Contains("1 row"), "Expected 1 rows in Gift Table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("2 posted"), "Expected 2 posted rows in Journal table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
+                            Assert.IsFalse(Usage.Contains("unposted"), "Expected no unposted references, but was: " + Usage);
                             break;
 
                         default:
@@ -635,6 +637,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             FMainDS.DeleteAllRows();
             FMainDS.InsertStandardModalRows();
             FMainDS.SaveChanges();
+            FLedgerDS.CreateTestLedger();
 
             FGiftAndJournal.InitialiseData("load-data.sql");
 
@@ -644,7 +647,12 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Open the screen modally on our test ledger and a from currency of GBP
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
-            CreateModalFormHandler(FModalFormName, ExchangeRateUsage2Handler);
+
+            DialogBoxHandler = delegate(string name, IntPtr hWnd)
+            {
+                ExchangeRateUsage2Handler();
+            };
+
             DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
                 FStandardEffectiveDate,
                 "GBP",
@@ -666,10 +674,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// </summary>
         public void ExchangeRateUsage2Handler()
         {
-            // Call Activate() on the form
             FormTester formTester = new FormTester(FModalFormName);
-
-            formTester.Properties.Activate();
 
             // Controls
             ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
@@ -711,20 +716,20 @@ namespace Tests.MFinance.Client.ExchangeRates
                     switch (i)
                     {
                         case 1:             // 0.5225
-                            Assert.IsTrue(Usage.Contains("3 row(s)"), "Expected 3 rows in Gift Table");
-                            Assert.IsTrue(Usage.Contains("3 unposted"), "Expected 3 unposted rows in Journal table");
-                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997");
-                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table");
-                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table");
+                            Assert.IsTrue(Usage.Contains("3 row(s)"), "Expected 3 rows in Gift Table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("3 unposted"), "Expected 3 unposted rows in Journal table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
                             break;
 
                         case 2:             // 0.5155
-                            Assert.IsTrue(Usage.Contains("1 row"), "Expected 1 rows in Gift Table");
-                            Assert.IsTrue(Usage.Contains("3 posted"), "Expected 3 posted rows in Journal table");
-                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997");
-                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table");
-                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table");
-                            Assert.IsFalse(Usage.Contains("unposted"), "Expected no unposted references");
+                            Assert.IsTrue(Usage.Contains("1 row"), "Expected 1 rows in Gift Table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("3 posted"), "Expected 3 posted rows in Journal table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
+                            Assert.IsFalse(Usage.Contains("unposted"), "Expected no unposted references, but was: " + Usage);
                             break;
 
                         default:
@@ -757,6 +762,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             FMainDS.DeleteAllRows();
             FMainDS.InsertStandardModalRows();
             FMainDS.SaveChanges();
+            FLedgerDS.CreateTestLedger();
 
             FGiftAndJournal.InitialiseData("load-data.sql");
 
@@ -766,7 +772,12 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Open the screen modally on our test ledger and a from currency of GBP
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
-            CreateModalFormHandler(FModalFormName, ExchangeRateUsage3Handler);
+
+            DialogBoxHandler = delegate(string name, IntPtr hWnd)
+            {
+                ExchangeRateUsage3Handler();
+            };
+
             DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
                 FStandardEffectiveDate,
                 "GBP",
@@ -788,10 +799,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// </summary>
         public void ExchangeRateUsage3Handler()
         {
-            // Call Activate() on the form
             FormTester formTester = new FormTester(FModalFormName);
-
-            formTester.Properties.Activate();
 
             // Controls
             ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
@@ -833,20 +841,20 @@ namespace Tests.MFinance.Client.ExchangeRates
                     switch (i)
                     {
                         case 1:             // 0.5225
-                            Assert.IsTrue(Usage.Contains("1 unposted"), "Expected 1 unposted rows in Journal table");
-                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997");
-                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table");
-                            Assert.IsFalse(Usage.Contains("Batch table"), "Expected no references to the Gift Batch table");
-                            Assert.IsFalse(Usage.Contains(" posted"), "Expected no posted references");
+                            Assert.IsTrue(Usage.Contains("1 unposted"), "Expected 1 unposted rows in Journal table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
+                            Assert.IsFalse(Usage.Contains("Batch table"), "Expected no references to the Gift Batch table, but was: " + Usage);
+                            Assert.IsFalse(Usage.Contains(" posted"), "Expected no posted references, but was: " + Usage);
                             break;
 
                         case 2:             // 0.5155
-                            Assert.IsTrue(Usage.Contains("1 row"), "Expected 1 rows in Gift Table");
-                            Assert.IsTrue(Usage.Contains("1 posted"), "Expected 1 posted rows in Journal table");
-                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997");
-                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table");
-                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table");
-                            Assert.IsFalse(Usage.Contains("unposted"), "Expected no unposted references");
+                            Assert.IsTrue(Usage.Contains("1 row"), "Expected 1 rows in Gift Table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("1 posted"), "Expected 1 posted rows in Journal table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
+                            Assert.IsFalse(Usage.Contains("unposted"), "Expected no unposted references, but was: " + Usage);
                             break;
 
                         default:
@@ -879,6 +887,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             FMainDS.DeleteAllRows();
             FMainDS.InsertStandardModalRows();
             FMainDS.SaveChanges();
+            FLedgerDS.CreateTestLedger();
 
             FGiftAndJournal.InitialiseData("load-data.sql");
 
@@ -888,7 +897,12 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Open the screen modally on our test ledger and a from currency of GBP
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
-            CreateModalFormHandler(FModalFormName, ExchangeRateUsage4Handler);
+
+            DialogBoxHandler = delegate(string name, IntPtr hWnd)
+            {
+                ExchangeRateUsage4Handler();
+            };
+
             DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
                 FStandardEffectiveDate,
                 "GBP",
@@ -910,10 +924,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// </summary>
         public void ExchangeRateUsage4Handler()
         {
-            // Call Activate() on the form
             FormTester formTester = new FormTester(FModalFormName);
-
-            formTester.Properties.Activate();
 
             // Controls
             ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
@@ -955,12 +966,12 @@ namespace Tests.MFinance.Client.ExchangeRates
                     switch (i)
                     {
                         case 2:             // 0.5155
-                            Assert.IsTrue(Usage.Contains("1 row"), "Expected 1 posted rows in Journal table");
-                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997");
-                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table");
-                            Assert.IsFalse(Usage.Contains("Journal table"), "Expected no references to the Journal table");
-                            Assert.IsFalse(Usage.Contains("unposted"), "Expected no unposted references");
-                            Assert.IsFalse(Usage.Contains(" posted"), "Expected no posted references");
+                            Assert.IsTrue(Usage.Contains("1 row"), "Expected 1 posted rows in Journal table, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997, but was: " + Usage);
+                            Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
+                            Assert.IsFalse(Usage.Contains("Journal table"), "Expected no references to the Journal table, but was: " + Usage);
+                            Assert.IsFalse(Usage.Contains("unposted"), "Expected no unposted references, but was: " + Usage);
+                            Assert.IsFalse(Usage.Contains(" posted"), "Expected no posted references, but was: " + Usage);
                             break;
 
                         default:
@@ -993,6 +1004,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             FMainDS.DeleteAllRows();
             FMainDS.InsertStandardModalRows();
             FMainDS.SaveChanges();
+            FLedgerDS.CreateTestLedger();
 
             FGiftAndJournal.InitialiseData("load-data.sql");
 
@@ -1002,7 +1014,12 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Open the screen modally on our test ledger and a from currency of GBP
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
-            CreateModalFormHandler(FModalFormName, ExchangeRateUsage5Handler);
+
+            DialogBoxHandler = delegate(string name, IntPtr hWnd)
+            {
+                ExchangeRateUsage5Handler();
+            };
+
             DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
                 FStandardEffectiveDate,
                 "GBP",
@@ -1024,10 +1041,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// </summary>
         public void ExchangeRateUsage5Handler()
         {
-            // Call Activate() on the form
             FormTester formTester = new FormTester(FModalFormName);
-
-            formTester.Properties.Activate();
 
             // Controls
             ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
@@ -1092,6 +1106,7 @@ namespace Tests.MFinance.Client.ExchangeRates
             FMainDS.DeleteAllRows();
             FMainDS.InsertStandardModalRows();
             FMainDS.SaveChanges();
+            FLedgerDS.CreateTestLedger();
 
             FGiftAndJournal.InitialiseData("load-data.sql");
 
@@ -1101,7 +1116,13 @@ namespace Tests.MFinance.Client.ExchangeRates
 
             // Open the screen modally on our test ledger and a from currency of GBP
             TFrmSetupDailyExchangeRate mainScreen = new TFrmSetupDailyExchangeRate(null);
-            CreateModalFormHandler(FModalFormName, EditUsedRateHandler);
+
+            DialogBoxHandler = delegate(string name, IntPtr hWnd)
+            {
+                EditUsedRateHandler();
+            };
+
+
             DialogResult dlgResult = mainScreen.ShowDialog(STANDARD_TEST_LEDGER_NUMBER,
                 FStandardEffectiveDate,
                 "GBP",
@@ -1116,17 +1137,14 @@ namespace Tests.MFinance.Client.ExchangeRates
             }
 
             Assert.AreEqual(DialogResult.OK, dlgResult);
+            Assert.AreEqual(0.5444m, selectedRate, "Expected the selected rate from the dialog to be 0.5444");
+            Assert.AreEqual(7200, selectedTime, "Expected the selected time from the dialog to be 7200");
+            Assert.AreEqual(FStandardEffectiveDate,
+                selectedDate,
+                "Expected the selected date from the dialog to be " + FStandardEffectiveDate.ToShortDateString());
 
             // So did we actually save things all the way??
-            FMainDS.LoadAll();
-            FJournalDS.LoadAll();
-            FGiftBatchDS.LoadAll();
-
-            DataView dvJournal = new DataView(FJournalDS.AJournal, "a_exchange_rate_to_base_n=0.5335", null, DataViewRowState.CurrentRows);
-            Assert.AreEqual(3, dvJournal.Count, "Expected to find 3 modified journal rows");
-
-            DataView dvGift = new DataView(FGiftBatchDS.AGiftBatch, "a_exchange_rate_to_base_n=0.5335", null, DataViewRowState.CurrentRows);
-            Assert.AreEqual(2, dvGift.Count, "Expected to find 2 modified gift rows");
+            // Since May 2013 the modal dialog does not make a change to the Journal/Gift tables - it is up to theses screens to save the returned values
         }
 
         /// <summary>
@@ -1134,10 +1152,7 @@ namespace Tests.MFinance.Client.ExchangeRates
         /// </summary>
         public void EditUsedRateHandler()
         {
-            // Call Activate() on the form
             FormTester formTester = new FormTester(FModalFormName);
-
-            formTester.Properties.Activate();
 
             // Controls
             ButtonTester btnNewTester = new ButtonTester("btnNew", FModalFormName);
@@ -1173,8 +1188,8 @@ namespace Tests.MFinance.Client.ExchangeRates
 
                 // Check usage on row 1
                 string Usage = ((TFrmSetupDailyExchangeRate)formTester.Properties).Usage;
-                Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table");
-                Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table");
+                Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
+                Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
                 Assert.AreEqual(0.5225m, txtRateOfExchange.NumberValueDecimal);
 
                 // This row should be editable but not deleteable
@@ -1189,24 +1204,24 @@ namespace Tests.MFinance.Client.ExchangeRates
 
                 // We should still have the same usage
                 Assert.AreEqual(0.5335m, txtRateOfExchange.NumberValueDecimal);
-                Assert.IsTrue(Usage.Contains("2 row(s)"), "Expected 2 rows in Gift Table");
-                Assert.IsTrue(Usage.Contains("3 unposted"), "Expected 3 unposted rows in Journal table");
-                Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997");
-                Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table");
-                Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table");
+                Assert.IsTrue(Usage.Contains("2 row(s)"), "Expected 2 rows in Gift Table, but was: " + Usage);
+                Assert.IsTrue(Usage.Contains("3 unposted"), "Expected 3 unposted rows in Journal table, but was: " + Usage);
+                Assert.IsTrue(Usage.Contains("#9997"), "Expected a reference to Ledger #9997, but was: " + Usage);
+                Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
+                Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
 
                 // Do the same on row 2
                 SelectRowInGrid(2);
                 Usage = ((TFrmSetupDailyExchangeRate)formTester.Properties).Usage;
-                Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table");
-                Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table");
+                Assert.IsTrue(Usage.Contains("Journal table"), "Expected a reference to the Journal table, but was: " + Usage);
+                Assert.IsTrue(Usage.Contains("Batch table"), "Expected a reference to the Gift Batch table, but was: " + Usage);
                 Assert.AreEqual(0.5155m, txtRateOfExchange.NumberValueDecimal);
 
                 // This row has been posted so should not be editable or deleteable
                 Assert.IsFalse(btnDelete.Enabled, "This row has been used and cannot be deleted");
                 Assert.IsFalse(txtRateOfExchange.Enabled, "This row cannot be edited because the rate has been posted");
 
-                // Create a new rate for today
+                // Create a new rate for the latest date possible
                 btnNewTester.Click();
                 txtRateOfExchange.NumberValueDecimal = 0.5444m;
                 Assert.IsTrue(tbbSaveTester.Properties.Enabled);
@@ -1250,14 +1265,6 @@ namespace Tests.MFinance.Client.ExchangeRates
                 Console.WriteLine(ex.StackTrace);
             }
         }
-
-#pragma warning disable
-        private void CreateModalFormHandler(String AModalFormName, ModalFormActivated AHandlerMethod)
-        {
-            ExpectModal(AModalFormName, AHandlerMethod);
-        }
-
-#pragma warning restore
 
         #endregion
     }

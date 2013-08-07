@@ -49,7 +49,7 @@ RootNode:
             Controls: [txtMinAmount, txtMaxAmount, cmbCurrency]
         cmbReportType:
             ParameterName: param_report_type
-            OptionalValues: [Complete, Summary, Tax Claim]
+            OptionalValues: [=Complete, Summary, Tax Claim]
         dtpFromDate:
             Label: From
             ParameterName: param_from_date
@@ -85,7 +85,7 @@ RootNode:
             ParameterName: param_max_amount
         cmbCurrency:
             ParameterName: param_currency
-            OptionalValues: [Base, International]
+            OptionalValues: [=Base, International]
         
         tpgAdditionalSettings:
             Label: Additional Settings

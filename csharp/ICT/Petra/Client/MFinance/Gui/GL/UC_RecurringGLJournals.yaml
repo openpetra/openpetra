@@ -9,7 +9,7 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add Journal, ActionClick=NewRow}
-        actDelete: {Label=&Delete Journal, ActionClick=DeleteRecord}
+        actDelete: {Label=&Delete Journal, SkipReferenceCheck=true, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
@@ -28,12 +28,13 @@ RootNode:
         txtControl: {ReadOnly=true, Label=Hash, Unbound=true, Format=Decimal, Width=147}
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnAdd, btnDelete]
-        btnAdd: {Action=actNew, Stretch=horizontally}
-        btnDelete: {Action=actDelete, Stretch=horizontally}
+            ControlsOrientation: horizontal
+        btnAdd: {Action=actNew, Width=120}
+        btnDelete: {Action=actDelete, Width=120}
         grdDetails:
             Dock: Fill
             Columns: [JournalNumber, JournalDebitTotal, JournalCreditTotal, TransactionCurrency, JournalDescription, SubSystemCode, TransactionTypeCode]
@@ -48,8 +49,9 @@ RootNode:
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: ShowTransactionTab
             ActionEnterKeyPressed: ShowTransactionTab
-            SortOrder: ARecurringJournal.JournalNumber ASC
+            SortOrder: ARecurringJournal.JournalNumber DESC
             RowFilter: ARecurringJournal.BatchNumber
+            EnableMultiSelection: false
         pnlDetails:
             Dock: Bottom
             Controls: 

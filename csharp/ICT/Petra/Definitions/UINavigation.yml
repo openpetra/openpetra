@@ -117,6 +117,8 @@ OpenPetra:
                         AddreseeTypes: {Label=Addressee Types, Description=Maintain Addressee Types, ActionOpenScreen=TFrmAddresseeTypeSetup}
                         LocationTypes: {Label=Location Types, Description=Maintain Location Types, ActionOpenScreen=TFrmLocationTypeSetup}
                         InternationalPostalTypes: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=International Postal Types, Description=Maintain International Postal Types, ActionOpenScreen=TFrmInternationalPostalTypeSetup}
+                        PostcodeRanges: {Label=Postcode Ranges, Description=Maintain Postcode Ranges, ActionOpenScreen=TFrmPostcodeRangeSetup}
+                        PostcodeRegions: {Label=Postcode Regions, Description=Maintain Postcode Regions, ActionOpenScreen=TFrmPostcodeRegionSetup}
                     
                     LocalDataRelated: {Label=Local Data-related}
                         LocalDataOptionListNames: {Label=Local Data Option List Names, Description=Maintain Local Data Option List names, ActionOpenScreen=TFrmLocalDataOptionListNameSetup}
@@ -268,7 +270,7 @@ OpenPetra:
                     CreateLedger: {Description=Create a new Ledger, ActionOpenScreen=TFrmGLCreateLedger, PermissionsRequired="FINANCE-3", Singleton=true}
                 Setup: {Label="Finance Setup (Cross-Ledger)", DontShowNestedTasksAsLinks=true}
                     SetupEmailDestinations: {Description=Maintain Email Destinations, ActionOpenScreen=TFrmEmailDestinationSetup, PermissionsRequired=FINANCE-3}
-                    SetupCurrencies: {Description=Maintain Currencies, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmSetupCurrency, PermissionsRequired=FINANCE-3}
+                    SetupCurrencies: {Description=Maintain Currencies, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmCurrencySetup, PermissionsRequired=FINANCE-3}
                     SetupCurrencyLanguages: {Description=Maintain Currency Languages, ActionOpenScreen=TFrmCurrencyLanguageSetup, PermissionsRequired=FINANCE-3}
                     SetupMethodsOfGiving: {Description=Maintain Methods of Giving,ActionOpenScreen=TFrmSetupMethodOfGiving, PermissionsRequired=FINANCE-3}
                     SetupMethodsOfPayment: {Description=Maintain Methods of Payment, ActionOpenScreen=TFrmSetupMethodOfPayment, PermissionsRequired=FINANCE-3}
@@ -279,6 +281,14 @@ OpenPetra:
             # Module
             Main: {SkipThisLevel=true}
                 # Sub Module
+                Partners: {DontShowNestedTasksAsLinks=true, Namespace=Ict.Petra.Client.MPartner.Gui}
+                    SearchBoxes: [Partner]
+                    MaintainPartners:                
+                        FindPERSONPartners: {Label=Find a Person, ActionClick=TPartnerMain.FindPartnerOfClassPERSON, Description=Search for and work with a Person}
+                        WorkWithLastPERSON: {Label=Work with Last Person, ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreenPersonnelModule, Description=Open last Person worked with}
+                    CreatePartner:
+                        AddNewPerson: {ActionClick=TPartnerMain.NewPartner_Person, Description=Create a new Partner of Class PERSON}
+
                 Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, DontShowNestedTasksAsLinks=true}
                     Administration:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
@@ -309,7 +319,7 @@ OpenPetra:
                     ShortTermerReports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm}
                         GeneralShortTermerReport: {ActionOpenScreen=TFrmShortTermerReport}
                         AbilitiesReport: {ActionOpenScreen=TFrmAbilitiesReport}
-                        EmergencyContactReport: {ActionOpenScreen=TFrmEmergencyContactInformationReport}
+                        EmergencyContactReport: {ActionOpenScreen=TFrmEmergContInfReport}
                         LanguagesReport: {ActionOpenScreen=TFrmLanguagesReport}
 
                 Setup: {Namespace=Ict.Petra.Client.MPersonnel.Gui.Setup, DontShowNestedTasksAsLinks=true}
@@ -322,7 +332,6 @@ OpenPetra:
                         JobAssignmentType: {Label=Job Assignment Types, Description=Maintain Job Assignment Types, ActionOpenScreen=TFrmJobAssignmentTypeSetup}
                         LanguageLevel: {Label=Language Levels, Description=Maintain Language Levels, ActionOpenScreen=TFrmLanguageLevelSetup}
                         LeadershipRating: {Label=Leadership Ratings, Description=Maintain Leadership Ratings, ActionOpenScreen=TFrmLeadershipRatingSetup}
-                        LeavingCode: {Label=Leaving Codes, Description=Maintain Leaving Codes, ActionOpenScreen=TFrmLeavingCodeSetup}
                         PassportType: {Label=Passport Types, Description=Maintain Passport Types, ActionOpenScreen=TFrmPassportTypeSetup}
                         Position: {Label=Positions, Description=Maintain Positions, ActionOpenScreen=TFrmPositionSetup}
                         ProfessionalArea: {Label=Professional Areas, Description=Maintain Professional Areas, ActionOpenScreen=TFrmProfessionalAreaSetup}
@@ -346,10 +355,12 @@ OpenPetra:
                         #LocalDataFieldOrderShortTermApp: {Label=Field Order for Short Term Applications, Description=Maintain Field Order for Short Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=ShortTermApp}
                         LocalDataFieldOrderPersonnel: {Label=Field Order for Personnel, Description=Maintain Field Order for Personnel, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Personnel}
                         
-        ConferenceManagement: {Icon=conference.ico, PermissionsRequired=CONFERENCE}
+        ConferenceManagement: {Icon=conference.ico, PermissionsRequired=CONFERENCE, DependsOnConference=true}
             Main: {SkipThisLevel=true}
                 Find: {Namespace=Ict.Petra.Client.MConference.Gui, DontShowNestedTasksAsLinks=true}
-                    FindConference: {ActionOpenScreen=TFrmConferenceFindForm}
+                    Find:    
+                        SelectConference: {Description=Select a Conference to work on, ActionOpenScreen=TFrmConferenceFindForm}
+                        NewConference: {Namespace=Ict.Petra.Client.MConference.Gui, Description=Create a new Conference, ActionClick=TConferenceMain.NewConference}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MConference, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
                     Reports:
                         AbsenteeReport: {ActionOpenScreen=TFrmAbsenteeReport}
@@ -376,8 +387,13 @@ OpenPetra:
                         RegisteringFieldReport: {ActionOpenScreen=TFrmRegisteringFieldReport}
                         OutreachReport: {ActionOpenScreen=TFrmOutreachReport}
                 Setup: {Namespace=Ict.Petra.Client.MConference.Gui.Setup, DontShowNestedTasksAsLinks=true}
+                    CurrentConference:
+                        ConferenceStandardCost: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Conference Standard Costs, Description=Maintain Conference Standard Costs, ActionClick=TConferenceMain.StandardCostsForSelectedConference}
+                        EarlyLateRegistration: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Early and Late Registrations, Description=Maintain Early and Late Registrations, ActionClick=TConferenceMain.EarlyLateRegistrationsForSelectedConference}
+                        ChildDiscount: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Child Discounts, Description=Maintain Child Discounts, ActionClick=TConferenceMain.ChildDiscountsForSelectedConference}
+                        MasterSettings: {Label=Conference Master Settings, Description=Maintain Conference Master Settings, ActionOpenScreen=TFrmConferenceMasterSettings}
                     General:
-                        ConferenceCostType: {Label= Conference Cost Types, Description=Maintain Conference Cost Types, ActionOpenScreen=TFrmConferenceCostTypeSetup}
+                        ConferenceCostType: {Label=Conference Cost Types, Description=Maintain Conference Cost Types, ActionOpenScreen=TFrmConferenceCostTypeSetup}
         FinancialDevelopment: {Icon=develope.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=Financial Development, DependsOnLedger=true, PermissionsRequired=DEVUSER}
             Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}  # Icon=Print.ico
                 GeneralReports: {DontShowNestedTasksAsLinks=true}

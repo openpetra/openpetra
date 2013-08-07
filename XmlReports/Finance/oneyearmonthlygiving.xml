@@ -993,7 +993,7 @@
 					<field whichfield="column 0" pos="0cm" width="6cm" format="text" calculation="SelectTotalCount">
 						<value text="Average number of gifts per month: "/>
 					</field>
-					<field whichfield="column 1" pos="6cm" width="1.5cm" format="text">
+					<field whichfield="column 1" pos="6cm" width="1.5cm"  format="numberformatg3">
 						<value function="div({{TotalCount}}, {{param_months}})"/>
 					</field>
 					<field whichfield="column 2" pos="8.5cm" width="7cm" format="text">

@@ -88,5 +88,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             CreateNewPPublicationCost();
         }
+
+        private bool PreDeleteManual(PPublicationCostRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            ADeletionQuestion += String.Format("{0}{0}({1} {2}, {3} {4})",
+                Environment.NewLine,
+                lblDetailPublicationCode.Text,
+                cmbDetailPublicationCode.GetSelectedString(),
+                lblDetailDateEffective.Text,
+                dtpDetailDateEffective.Date.Value.ToString("dd-MMM-yyyy").ToUpper());
+            return true;
+        }
     }
 }

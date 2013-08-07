@@ -18,16 +18,17 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailRelationName, DetailRelationDescription, DetailRelationCategory, DetailReciprocalDescription, DetailValidRelation, DetailDeletable]
@@ -45,12 +46,8 @@ RootNode:
                 Row2: [chkDetailValidRelation]
                 Row3: [chkDetailDeletable]
         txtDetailRelationName: {Label=Relationship, CharacterCasing=Upper}
-        txtDetailRelationDescription: {Label=Description, Width=237}
+        txtDetailRelationDescription: {Label=Description, Width=250}
         cmbDetailRelationCategory: {List=RelationCategoryList}
-        txtDetailReciprocalDescription: {Width=237}
+        txtDetailReciprocalDescription: {Width=250}
         chkDetailValidRelation: {Label=Assignable}
         chkDetailDeletable: 
-
-    Toolbar:
-        tbbNew: 
-            Label: New Relationship

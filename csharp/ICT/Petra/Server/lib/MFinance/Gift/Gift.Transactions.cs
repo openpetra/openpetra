@@ -738,7 +738,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
-                if ((SubmissionResult == TSubmitChangesResult.scrOK) && giftTableInDataSet && (AInspectDS.AGift.Count > 0))
+                if ((SubmissionResult == TSubmitChangesResult.scrOK) && giftTableInDataSet)
                 {
                     if (giftDetailTableInDataSet)
                     {
@@ -747,48 +747,51 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     AInspectDS.AGift.AcceptChanges();
 
-                    AGiftRow tranR = (AGiftRow)AInspectDS.AGift.Rows[0];
-
-                    Int32 currentLedger = tranR.LedgerNumber;
-                    Int32 currentBatch = tranR.BatchNumber;
-                    Int32 giftToDelete = 0;
-
-                    try
+                    if (AInspectDS.AGift.Count > 0)
                     {
-                        DataRow[] foundGiftsForDeletion = AInspectDS.AGift.Select(String.Format("{0} = '{1}'",
-                                AGiftTable.GetGiftStatusDBName(),
-                                MFinanceConstants.MARKED_FOR_DELETION));
+                        AGiftRow tranR = (AGiftRow)AInspectDS.AGift.Rows[0];
 
-                        if (foundGiftsForDeletion.Length > 0)
+                        Int32 currentLedger = tranR.LedgerNumber;
+                        Int32 currentBatch = tranR.BatchNumber;
+                        Int32 giftToDelete = 0;
+
+                        try
                         {
-                            AGiftRow giftRowClient = null;
+                            DataRow[] foundGiftsForDeletion = AInspectDS.AGift.Select(String.Format("{0} = '{1}'",
+                                    AGiftTable.GetGiftStatusDBName(),
+                                    MFinanceConstants.MARKED_FOR_DELETION));
 
-                            for (int i = 0; i < foundGiftsForDeletion.Length; i++)
+                            if (foundGiftsForDeletion.Length > 0)
                             {
-                                //A gift has been deleted
-                                giftRowClient = (AGiftRow)foundGiftsForDeletion[i];
+                                AGiftRow giftRowClient = null;
 
-                                giftToDelete = giftRowClient.GiftTransactionNumber;
-                                TLogging.Log(String.Format("Gift to Delete: {0} from Batch: {1}",
-                                        giftToDelete,
-                                        currentBatch));
+                                for (int i = 0; i < foundGiftsForDeletion.Length; i++)
+                                {
+                                    //A gift has been deleted
+                                    giftRowClient = (AGiftRow)foundGiftsForDeletion[i];
 
-                                giftRowClient.Delete();
+                                    giftToDelete = giftRowClient.GiftTransactionNumber;
+                                    TLogging.Log(String.Format("Gift to Delete: {0} from Batch: {1}",
+                                            giftToDelete,
+                                            currentBatch));
+
+                                    giftRowClient.Delete();
+                                }
                             }
+
+                            SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
                         }
+                        catch (Exception ex)
+                        {
+                            TLogging.Log("Saving DataSet: " + ex.Message);
 
-                        SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-                    }
-                    catch (Exception ex)
-                    {
-                        TLogging.Log("Saving DataSet: " + ex.Message);
+                            TLogging.Log(String.Format("Error trying to save changes: {0} in Batch: {1}",
+                                    giftToDelete,
+                                    currentBatch
+                                    ));
 
-                        TLogging.Log(String.Format("Error trying to save changes: {0} in Batch: {1}",
-                                giftToDelete,
-                                currentBatch
-                                ));
-
-                        SubmissionResult = TSubmitChangesResult.scrError;
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
                     }
                 }
             }
@@ -856,6 +859,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 if ((SubmissionResult == TSubmitChangesResult.scrOK) && recurrGiftTableInDataSet && (AInspectDS.ARecurringGift.Count > 0))
                 {
+                    if (recurrGiftBatchTableInDataSet)
+                    {
+                        AInspectDS.ARecurringGiftBatch.AcceptChanges();
+                    }
+
                     if (recurrGiftDetailTableInDataSet)
                     {
                         AInspectDS.ARecurringGiftDetail.AcceptChanges();
@@ -863,48 +871,51 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     AInspectDS.ARecurringGift.AcceptChanges();
 
-                    ARecurringGiftRow tranR = (ARecurringGiftRow)AInspectDS.ARecurringGift.Rows[0];
-
-                    Int32 currentLedger = tranR.LedgerNumber;
-                    Int32 currentBatch = tranR.BatchNumber;
-                    Int32 giftToDelete = 0;
-
-                    try
+                    if (AInspectDS.ARecurringGift.Count > 0)
                     {
-                        DataRow[] foundGiftsForDeletion = AInspectDS.ARecurringGift.Select(String.Format("{0} = '{1}'",
-                                ARecurringGiftTable.GetChargeStatusDBName(),
-                                MFinanceConstants.MARKED_FOR_DELETION));
+                        ARecurringGiftRow tranR = (ARecurringGiftRow)AInspectDS.ARecurringGift.Rows[0];
 
-                        if (foundGiftsForDeletion.Length > 0)
+                        Int32 currentLedger = tranR.LedgerNumber;
+                        Int32 currentBatch = tranR.BatchNumber;
+                        Int32 giftToDelete = 0;
+
+                        try
                         {
-                            ARecurringGiftRow giftRowClient = null;
+                            DataRow[] foundGiftsForDeletion = AInspectDS.ARecurringGift.Select(String.Format("{0} = '{1}'",
+                                    ARecurringGiftTable.GetChargeStatusDBName(),
+                                    MFinanceConstants.MARKED_FOR_DELETION));
 
-                            for (int i = 0; i < foundGiftsForDeletion.Length; i++)
+                            if (foundGiftsForDeletion.Length > 0)
                             {
-                                //A gift has been deleted
-                                giftRowClient = (ARecurringGiftRow)foundGiftsForDeletion[i];
+                                ARecurringGiftRow giftRowClient = null;
 
-                                giftToDelete = giftRowClient.GiftTransactionNumber;
-                                TLogging.Log(String.Format("Gift to Delete: {0} from Batch: {1}",
-                                        giftToDelete,
-                                        currentBatch));
+                                for (int i = 0; i < foundGiftsForDeletion.Length; i++)
+                                {
+                                    //A gift has been deleted
+                                    giftRowClient = (ARecurringGiftRow)foundGiftsForDeletion[i];
 
-                                giftRowClient.Delete();
+                                    giftToDelete = giftRowClient.GiftTransactionNumber;
+                                    TLogging.Log(String.Format("Gift to Delete: {0} from Batch: {1}",
+                                            giftToDelete,
+                                            currentBatch));
+
+                                    giftRowClient.Delete();
+                                }
                             }
+
+                            SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
                         }
+                        catch (Exception ex)
+                        {
+                            TLogging.Log("Saving DataSet: " + ex.Message);
 
-                        SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-                    }
-                    catch (Exception ex)
-                    {
-                        TLogging.Log("Saving DataSet: " + ex.Message);
+                            TLogging.Log(String.Format("Error trying to save changes: {0} in Batch: {1}",
+                                    giftToDelete,
+                                    currentBatch
+                                    ));
 
-                        TLogging.Log(String.Format("Error trying to save changes: {0} in Batch: {1}",
-                                giftToDelete,
-                                currentBatch
-                                ));
-
-                        SubmissionResult = TSubmitChangesResult.scrError;
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
                     }
                 }
             }
@@ -1537,8 +1548,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     new TVerificationResult(
                         "Posting Gift Batch",
                         String.Format("The gift batch total ({0}) does not equal the hash total ({1}).",
-                            MainDS.AGiftBatch[0].BatchTotal.ToString("C"),
-                            MainDS.AGiftBatch[0].HashTotal.ToString("C")),
+                            StringHelper.FormatUsingCurrencyCode(MainDS.AGiftBatch[0].BatchTotal, MainDS.AGiftBatch[0].CurrencyCode),
+                            StringHelper.FormatUsingCurrencyCode(MainDS.AGiftBatch[0].HashTotal, MainDS.AGiftBatch[0].CurrencyCode)),
                         TResultSeverity.Resv_Critical));
                 return null;
             }

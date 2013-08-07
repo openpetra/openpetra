@@ -3,9 +3,10 @@ RootNode:
     FormTitle: Currency List
     Namespace: Ict.Petra.Client.MCommon.Gui.Setup
     DetailTable: ACurrency
+    CacheableTable: CurrencyCodeList
     UsingNamespaces: [Ict.Petra.Shared.MCommon.Data,Ict.Petra.Shared.MCommon.Validation]
     FormType: edit
-    Template: windowMaintainTable
+    Template: windowMaintainCacheableTable
     WindowWidth: 660
     WindowHeight: 500
     Actions:
@@ -17,16 +18,17 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [ACurrency.CurrencyCode, ACurrency.CurrencyName, ACurrency.CurrencySymbol, ACurrency.CountryCode, ACurrency.DisplayFormat]

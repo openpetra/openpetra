@@ -28,6 +28,8 @@ using System.Collections.Specialized;
 using Ict.Common;
 using System.Globalization;
 using System.Security.Cryptography;
+using System.Data;
+using System.Threading;
 
 namespace Ict.Common
 {
@@ -1438,17 +1440,14 @@ namespace Ict.Common
         /// <returns>true if greater or equals 0</returns>
         public static bool IsStringPositiveInteger(String APositiveInteger)
         {
-            bool ReturnValue;
+            Int64 Res64;
+            bool ReturnValue = Int64.TryParse(APositiveInteger, out Res64);
 
-            ReturnValue = true;
-            try
+            if (ReturnValue)
             {
-                System.Int64.Parse(APositiveInteger, System.Globalization.NumberStyles.None);
+                ReturnValue = (Res64 >= 0);
             }
-            catch (Exception)
-            {
-                ReturnValue = false;
-            }
+
             return ReturnValue;
         }
 
@@ -1820,10 +1819,6 @@ namespace Ict.Common
             String ReturnValue;
             decimal d;
             DateTime ThisYearDate;
-            String formatNegative;
-            String formatPositive;
-            String formatZero;
-            String formatNil;
 
             // for partnerkey
             String OrigFormat;
@@ -1868,10 +1863,10 @@ namespace Ict.Common
                     return value.ToString();
                 }
 
-                formatPositive = GetNextCSV(ref format, ";");
-                formatNegative = GetNextCSV(ref format, ";");
-                formatZero = GetNextCSV(ref format, ";");
-                formatNil = GetNextCSV(ref format, ";");
+                String formatPositive = GetNextCSV(ref format, ";");
+                String formatNegative = GetNextCSV(ref format, ";");
+                String formatZero = GetNextCSV(ref format, ";");
+                String formatNil = GetNextCSV(ref format, ";");
 
                 if ((OrigFormat.ToLower() == "partnerkey") || (value.FormatString == "partnerkey"))
                 {
@@ -1926,6 +1921,72 @@ namespace Ict.Common
         public static String FormatCurrency(decimal value, String format)
         {
             return FormatCurrency(new TVariant(value), format);
+        }
+
+        private static DataTable CurrencyFormats = null;
+
+        /// <summary>
+        /// Use this for displaying currency-sensitive amounts.
+        /// </summary>
+        /// <param name="AValue"></param>
+        /// <param name="ACurrencyCode"></param>
+        /// <returns></returns>
+        public static String FormatUsingCurrencyCode(decimal AValue, String ACurrencyCode)
+        {
+            String format = "->>>,>>>,>>>,>>9.99";
+
+            if (CurrencyFormats != null)
+            {
+                CurrencyFormats.DefaultView.RowFilter = String.Format("a_currency_code_c='{0}'", ACurrencyCode);
+
+                if (CurrencyFormats.DefaultView.Count > 0)
+                {
+                    format = CurrencyFormats.DefaultView[0].Row["a_display_format_c"].ToString();
+                }
+            }
+
+            return StringHelper.FormatCurrency(new TVariant(AValue), format);
+        }
+
+        /// <summary></summary>
+        /// <param name="ACurrencyCode"></param>
+        /// <returns></returns>
+        public static int DecimalPlacesForCurrency(String ACurrencyCode)
+        {
+            int Ret = 2;
+
+            if (CurrencyFormats != null)
+            {
+                CurrencyFormats.DefaultView.RowFilter = String.Format("a_currency_code_c='{0}'", ACurrencyCode);
+
+                if (CurrencyFormats.DefaultView.Count > 0)
+                {
+                    String format = CurrencyFormats.DefaultView[0].Row["a_display_format_c"].ToString();
+                    int dotPos = format.LastIndexOf('.');
+
+                    if (dotPos > 0)
+                    {
+                        Ret = format.Length - 1 - dotPos;
+                    }
+                    else
+                    {
+                        Ret = 0;
+                    }
+                }
+            }
+
+            return Ret;
+        }
+
+        /// <summary>
+        /// If this is not given (during initialisation), a default format will be used.
+        /// </summary>
+        public static DataTable CurrencyFormatTable
+        {
+            set
+            {
+                CurrencyFormats = value;
+            }
         }
 
         /// <summary>
@@ -2017,23 +2078,23 @@ namespace Ict.Common
             return ReturnValue;
         }
 
-        private static ArrayList months = new ArrayList();
-
-        /// <summary>
-        /// initialize the localized month names
-        /// not used at the moment; using .net localisation instead
-        /// </summary>
-        /// <param name="monthNames">an array of the month names</param>
-        public static void SetLocalizedMonthNames(ArrayList monthNames)
-        {
-            months = new ArrayList();
-
-            foreach (string s in monthNames)
-            {
-                months.Add(s);
-            }
-        }
-
+/*
+ *      private static ArrayList months = new ArrayList();
+ *      /// <summary>
+ *      /// initialize the localized month names
+ *      /// not used at the moment; using .net localisation instead
+ *      /// </summary>
+ *      /// <param name="monthNames">an array of the month names</param>
+ *      public static void SetLocalizedMonthNames(ArrayList monthNames)
+ *      {
+ *          months = new ArrayList();
+ *
+ *          foreach (string s in monthNames)
+ *          {
+ *              months.Add(s);
+ *          }
+ *      }
+ */
         /// <summary>
         /// Finds a matching closing bracket in a String.
         /// </summary>

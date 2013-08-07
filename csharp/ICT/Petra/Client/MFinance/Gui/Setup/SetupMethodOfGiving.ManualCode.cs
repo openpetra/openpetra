@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Common;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -48,6 +49,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ARow.MethodOfGivingCode = newName;
+            ARow.MethodOfGivingDesc = Catalog.GetString("PLEASE ENTER DESCRIPTION");
         }
     }
 }

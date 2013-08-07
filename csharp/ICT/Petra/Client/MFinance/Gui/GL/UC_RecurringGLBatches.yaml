@@ -9,7 +9,7 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add Batch, ActionClick=NewRow}
-        actDelete: {Label=&Delete Batch, ActionClick=DeleteRecord}
+        actDelete: {Label=&Delete Batch, SkipReferenceCheck=true, ActionClick=DeleteRecord}
         actSubmitBatch: {Label=&Submit Batch, ActionClick=SubmitBatch}
     Controls:
         pnlContent:
@@ -17,13 +17,14 @@ RootNode:
             Controls: [pnlDetailGrid, pnlDetails]
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete, btnSubmitBatch]
-        btnNew: {Action=actNew, Stretch=horizontally}
-        btnDelete: {Action=actDelete, Stretch=horizontally}
-        btnSubmitBatch: {Action=actSubmitBatch, Stretch=horizontally}
+            ControlsOrientation: horizontal
+        btnNew: {Action=actNew, Width=120}
+        btnDelete: {Action=actDelete, Width=120}
+        btnSubmitBatch: {Action=actSubmitBatch, Width=120, StartNewButtonGroup=true}
         grdDetails:
             Dock: Fill
             Columns: [BatchNumber, BatchDebitTotal, BatchCreditTotal, BatchControlTotal, BatchDescription]
@@ -37,6 +38,7 @@ RootNode:
             ActionDoubleClick: ShowJournalTab
             ActionEnterKeyPressed: ShowJournalTab
             SortOrder: ARecurringBatch.BatchNumber DESC
+            EnableMultiSelection: false
         pnlDetails:
             Dock: Bottom
             Controls:

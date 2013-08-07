@@ -112,6 +112,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("param_recipient_key", txtRecipient.Text);
             ACalc.AddParameter("param_extract_name", txtExtract.Text);
 
+            if (this.cmbCurrency.SelectedItem == null)
+            {
+                this.cmbCurrency.SelectedIndex = 0;  // I don't mind what you select - just don't select nothing!
+            }
 
             int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
 

@@ -48,8 +48,11 @@
     <Table sqltable="p_partner_relationship">
       <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
       <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>
+      <Field sqltable="p_relation" sqlfield="p_relation_description_c" name="RelationDescription"/>
+      <Field sqltable="p_relation" sqlfield="p_reciprocal_description_c" name="ReciprocalRelationDescription"/>
+      <CustomField name="DisplayRelationDescription" type="String"/>
     </Table>
-    <Table sqltable="p_relation"/>
+    <!-- <Table sqltable="p_relation"/> -->
     <Table sqltable="p_partner_contact"/>
     <!-- not in use yet! -->
     <Table sqltable="p_data_label_value_application"/>
@@ -117,10 +120,6 @@
     <CustomRelation name="PartnerInterestCategory"
             childTable="PPartnerInterest" childFields="Interest"
             parentTable="PInterest" parentFields="Interest"
-            createConstraints="false"/>
-    <CustomRelation name="PartnerRelation"
-            parentTable="PRelation" parentFields="RelationName"
-            childTable="PPartnerRelationship" childFields="RelationName"
             createConstraints="false"/>
   </DataSet>
 

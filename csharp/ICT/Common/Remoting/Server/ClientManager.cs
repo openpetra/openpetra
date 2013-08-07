@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1620,6 +1620,8 @@ namespace Ict.Common.Remoting.Server
 
             ((TRunningAppDomain)UClientObjects[(object)AClientID]).AppDomainStatus = TAppDomainStatus.adsActive;
             ((TRunningAppDomain)UClientObjects[(object)AClientID]).FClientConnectionFinishedTime = DateTime.Now;
+
+
             #region Logging
 
             //
@@ -1630,10 +1632,7 @@ namespace Ict.Common.Remoting.Server
                 TLogging.Log(
                     "Client '" + AUserName + "' successfully connected (took " +
                     ((TRunningAppDomain)UClientObjects[(object)AClientID]).FClientConnectionFinishedTime.Subtract(
-                        ((TRunningAppDomain)UClientObjects[(
-                                                               object)
-                                                           AClientID
-                         ]).FClientConnectionStartTime).
+                        ((TRunningAppDomain)UClientObjects[(object)AClientID]).FClientConnectionStartTime).
                     TotalSeconds.ToString() + " sec). ClientID: " + AClientID.ToString(),
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
             }

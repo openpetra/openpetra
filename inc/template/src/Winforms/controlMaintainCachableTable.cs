@@ -121,6 +121,7 @@ namespace {#NAMESPACE}
       grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
       {#GRIDMULTISELECTION}
 {#ENDIF SAVEDETAILS}
+      pnlDetails.Enabled = false;
       
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
       myDataView.AllowNew = false;
@@ -133,6 +134,7 @@ namespace {#NAMESPACE}
 {#ENDIF SHOWDETAILS}
 
       ShowData();
+      SelectRowInGrid(1);
     }
     
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -177,7 +179,7 @@ namespace {#NAMESPACE}
 
                     if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Descr") && detailsCtrl.Text == string.Empty)
                     {
-                        detailsCtrl.Text = "PLEASE ENTER DESCRIPTION";
+                        detailsCtrl.Text = Catalog.GetString("PLEASE ENTER DESCRIPTION");
                         break;
                     }
                 }
@@ -322,7 +324,6 @@ namespace {#NAMESPACE}
     private void ShowData()
     {
         FPetraUtilsObject.DisableDataChangedEvent();
-        pnlDetails.Enabled = false;
 {#IFDEF SHOWDATA}        
         {#SHOWDATA}
 {#ENDIF SHOWDATA}        
@@ -339,7 +340,6 @@ namespace {#NAMESPACE}
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             if (myDataView.Count > 0)
             {
-                SelectRowInGrid(1);
                 pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
             }
         }
@@ -574,6 +574,7 @@ namespace {#NAMESPACE}
             //Console.WriteLine("{0}: GridFocus - setting Selection.Focus to {1},0", DateTime.Now.Millisecond, FPrevRowChangedRow);
         }
     }
+{#SELECTIONCHANGEDHANDLER}
 
     /// <summary>
     /// Used for determining the time elapsed between FocusRowLeaving Events.
@@ -895,8 +896,8 @@ namespace {#NAMESPACE}
                             MessageBoxButtons.OKCancel,
                             MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.OK)
                     {
-                        ReviewMultiDeleteResults(listConflicts, Catalog.GetString("Foreign Key Conflicts"));
-                        ReviewMultiDeleteResults(listExceptions, Catalog.GetString("Exceptions"));
+                        ReviewMultiDeleteResults(listConflicts, Catalog.GetString("Rows in this table that are referenced by other tables"));
+                        ReviewMultiDeleteResults(listExceptions, Catalog.GetString("Unexpected Exceptions"));
                     }
                 }
                 else
@@ -974,14 +975,14 @@ namespace {#NAMESPACE}
             if (item < allItemsCount)
             {
                 details += String.Format(Catalog.GetString("{0}{0}Click OK to review the next detail or Cancel to finish."), Environment.NewLine);
-                if (MessageBox.Show(details, Catalog.GetString("Deletion Error Details"), MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.Cancel)
+                if (MessageBox.Show(details, Catalog.GetString("More Details About Rows Not Deleted"), MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.Cancel)
                 {
                     break;
                 }
             }
             else
             {
-                MessageBox.Show(details, Catalog.GetString("Deletion Error Details"), MessageBoxButtons.OK);
+                MessageBox.Show(details, Catalog.GetString("More Details About Rows Not Deleted"), MessageBoxButtons.OK);
             }
         }
     }
@@ -1387,3 +1388,23 @@ if (!rowToDelete.{#DELETEABLEFLAG})
     recordsUndeletable++;
     continue;
 }
+
+{##SNIPSELECTIONCHANGEDHANDLER}
+
+    /// <summary>
+    /// This method is required where the table has a deletable_flag column
+    /// It ensures the correct enabled/disabled state of the delete button by calling ShowDetails() on the current row
+    /// </summary>
+        private void Selection_SelectionChanged(object sender, RangeRegionChangedEventArgs e)
+    {
+        if (e.RemovedRange != null && e.RemovedRange.GetRowsIndex().Length > 0 && e.RemovedRange.GetColumnsIndex().Length > 1 && grdDetails.Selection.EnableMultiSelection == true)
+        {
+            // This is called when the user CTRL+clicks the mouse to un-highlight a row
+            ShowDetails();
+        }
+        else if (e.AddedRange != null && e.AddedRange.GetRowsIndex().Length > 0 && grdDetails.Selection.EnableMultiSelection == true)
+        {
+            // This is called (possibly several times) and is required for handling the case where the user is using SHIFT+up/down 
+            ShowDetails();
+        }
+    }

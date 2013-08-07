@@ -8,9 +8,9 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actNewShortTerm: {ActionClick=NewRowShortTermApp}
-        actNewLongTerm: {ActionClick=NewRowLongTermApp}
-        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+        actNewShortTerm: {ActionClick=NewRowShortTermApp, Image=New_Record.ico}
+        actNewLongTerm: {ActionClick=NewRowLongTermApp, Image=New_Record.ico}
+        actDelete: {Label=&Delete, SkipReferenceCheck=true, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Dock: Fill
@@ -18,13 +18,14 @@ RootNode:
         pnlDetailGrid:
             Dock: Fill
             Controls:
-                Row0: [grdDetails, pnlDetailButtons]
+                Row0: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNewShortTerm, btnNewLongTerm, btnDelete]
-        btnNewShortTerm: {Label=New (for Event), Stretch=horizontally, Action=actNewShortTerm}
-        btnNewLongTerm: {Label=New (for Field), Stretch=horizontally, Action=actNewLongTerm}
-        btnDelete: {Action=actDelete, Stretch=horizontally}
+            ControlsOrientation: horizontal
+        btnNewShortTerm: {Label=New (for Event), Width=120, Action=actNewShortTerm}
+        btnNewLongTerm: {Label=New (for Field), Width=120, Action=actNewLongTerm}
+        btnDelete: {Action=actDelete, Width=120}
         grdDetails:
             Dock: Fill
             Columns: []

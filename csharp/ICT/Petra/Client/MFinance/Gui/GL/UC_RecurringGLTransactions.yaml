@@ -10,6 +10,7 @@ RootNode:
     Actions:
         actNew: {Label=&Add, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}
+        actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllTrans}        
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlDetailGrid, pnlDetailsSection]
@@ -23,7 +24,7 @@ RootNode:
         txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlDetailButtons, grdDetails]
             Height: 200
             Width: 600
         pnlDetailsSection:
@@ -31,10 +32,12 @@ RootNode:
             Controls: [pnlDetails, pnlTransAnalysisAttributes]
             Height: 320
         pnlDetailButtons:
-            Dock: Right
-            Controls: [btnNew, btnDelete]
-        btnNew: {Action=actNew, Stretch=horizontally}
-        btnDelete: {Action=actDelete, Stretch=horizontally}
+            Dock: Bottom
+            Controls: [btnNew, btnDelete, btnDeleteAll]
+            ControlsOrientation: horizontal
+        btnNew: {Action=actNew, Width=120}
+        btnDelete: {Action=actDelete, Width=120}
+        btnDeleteAll: {Action=actDeleteAll, Width=120, StartNewButtonGroup=true}
 
         pnlTransAnalysisAttributes:
             Dock: Right
@@ -69,6 +72,7 @@ RootNode:
             ActionFocusRow: FocusedRowChanged
             SortOrder: ARecurringTransaction.TransactionNumber ASC
             RowFilter: ARecurringTransaction.BatchNumber, ARecurringTransaction.JournalNumber
+            EnableMultiSelection: false
         pnlDetails:
             Dock: Left
             Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, cmbDetailKeyMinistryKey, pnlDetailAmounts]

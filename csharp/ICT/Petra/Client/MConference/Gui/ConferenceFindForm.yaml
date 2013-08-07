@@ -14,8 +14,10 @@ RootNode:
     WindowHeight: 404
     Actions:
         actSearch: {ActionClick=Search}
+        actNew: {ActionClick=NewConference}
         actAccept: {ActionClick=Accept}
         actCancel: {ActionClick=Cancel}
+        actDelete: {ActionClick=RemoveRecord}
     Controls: 
         pnlContent:
             Dock: Fill
@@ -36,19 +38,26 @@ RootNode:
         grdConferences:
             Dock: Fill
             Columns: [PPartner.PartnerShortName, PcConference.ConferenceKey, PcConference.OutreachPrefix, PcConference.Start, PcConference.End]
+            EnableMultiSelection: false
             CustomColumns:
-                PartnerShortName: {Label=Conference Name}
-                ConferenceKey: {Label=Conference Key}
-                OutreachPrefix: {Label=Outreach Code Prefix}
+                PPartner.PartnerShortName: {Label=Conference Name}
+                PcConference.ConferenceKey: {Label=Conference Key}
+                PcConference.OutreachPrefix: {Label=Outreach Code Prefix}
             Width: 500
             Height: 200
         pnlButtons:
             Dock: Bottom
             Controls:
-                Row1: [btnAccept, btnCancel]
+                Row1: [btnNew, btnRemove, btnAccept, btnCancel]
+        btnNew:
+            Label: &New
+            Action: actNew
+        btnRemove:
+            Label: &Delete
+            Action: actDelete
         btnAccept:
-            Label: Accept
+            Label: &Accept
             Action: actAccept
         btnCancel:
-            Label: Cancel
+            Label: &Cancel
             Action: actCancel

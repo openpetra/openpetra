@@ -9,23 +9,25 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actMaintain: {Label=&Maintain, ActionClick=MaintainExtract}      
-        actDelete: {Label=&Delete, ActionClick=DeleteRow}
+        actDelete: {Label=&Delete, SkipReferenceCheck=true, ActionClick=DeleteRecord}
         actRefreshGrid: {ActionClick=RefreshExtractList, Image: Refresh.ico}
     Controls:
-        pnlContent:
+        pnlContent: 
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
-            Controls: [btnMaintain, btnDeleteExtract, btnRefreshGrid]
-        btnMaintain: {Stretch=horizontally}
+            Dock: Bottom
+            Controls: [btnMaintain, btnDelete, btnRefreshGrid]
+            ControlsOrientation: horizontal
+        btnMaintain: {Width=80}
             Action: actMaintain
-        btnDeleteExtract: {Stretch=horizontally}
+        btnDelete: {Width=80}
+            Label: Delete
             Action: actDelete
-        btnRefreshGrid: {NoLabel=true, Stretch=horizontally}
+        btnRefreshGrid: {NoLabel=true, Width=50}
             Action: actRefreshGrid
             Help: Refresh Extract List (e.g. after a new extract has been created)
         grdDetails:

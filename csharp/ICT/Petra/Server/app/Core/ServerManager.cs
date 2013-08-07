@@ -243,8 +243,8 @@ namespace Ict.Petra.Server.App.Core
         public override void RefreshAllCachedTables()
         {
             TCacheableTablesManager.GCacheableTablesManager.MarkAllCachedTableNeedsRefreshing();
-        }        
-        
+        }
+
         /// <summary>
         /// AddUser
         /// </summary>

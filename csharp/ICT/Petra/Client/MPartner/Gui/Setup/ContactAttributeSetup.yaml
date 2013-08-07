@@ -7,7 +7,7 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation,Ict.Petra.Shared.MPartner.Partner.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
-    WindowWidth: 660
+    WindowWidth: 640
     WindowHeight: 750
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
@@ -18,16 +18,17 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailContactAttributeCode, DetailContactAttributeDescr, DetailActive]
@@ -52,7 +53,3 @@ RootNode:
             Type: Ict.Petra.Client.MPartner.Gui.Setup.TUC_ContactAttributeDetail
             Width: 600
             Height: 400
-
-    Toolbar:
-        tbbNew: 
-            Label: New Contact Attribute

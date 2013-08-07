@@ -211,7 +211,7 @@ namespace {#NAMESPACE}
 
                     if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Descr") && detailsCtrl.Text == string.Empty)
                     {
-                        detailsCtrl.Text = "PLEASE ENTER DESCRIPTION";
+                        detailsCtrl.Text = Catalog.GetString("PLEASE ENTER DESCRIPTION");
                         break;
                     }
                 }
@@ -475,11 +475,18 @@ namespace {#NAMESPACE}
     private void ShowDetails({#DETAILTABLETYPE}Row ARow)
     {
         FPetraUtilsObject.DisableDataChangedEvent();
-        
-        pnlDetails.Enabled = (ARow != null);
-        
-        {#SHOWDETAILS}
-        
+
+        if (ARow == null)
+        {
+            pnlDetails.Enabled = false;
+            {#CLEARDETAILS}
+        }
+        else
+        {
+            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode;
+            {#SHOWDETAILS}
+        }
+
         {#ENABLEDELETEBUTTON}FPetraUtilsObject.EnableDataChangedEvent();
     }
 
@@ -825,8 +832,8 @@ namespace {#NAMESPACE}
                             MessageBoxButtons.OKCancel,
                             MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.OK)
                     {
-                        ReviewMultiDeleteResults(listConflicts, Catalog.GetString("Foreign Key Conflicts"));
-                        ReviewMultiDeleteResults(listExceptions, Catalog.GetString("Exceptions"));
+                        ReviewMultiDeleteResults(listConflicts, Catalog.GetString("Rows in this table that are referenced by other tables"));
+                        ReviewMultiDeleteResults(listExceptions, Catalog.GetString("Unexpected Exceptions"));
                     }
                 }
                 else
@@ -904,14 +911,14 @@ namespace {#NAMESPACE}
             if (item < allItemsCount)
             {
                 details += String.Format(Catalog.GetString("{0}{0}Click OK to review the next detail or Cancel to finish."), Environment.NewLine);
-                if (MessageBox.Show(details, Catalog.GetString("Deletion Error Details"), MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.Cancel)
+                if (MessageBox.Show(details, Catalog.GetString("More Details About Rows Not Deleted"), MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.Cancel)
                 {
                     break;
                 }
             }
             else
             {
-                MessageBox.Show(details, Catalog.GetString("Deletion Error Details"), MessageBoxButtons.OK);
+                MessageBox.Show(details, Catalog.GetString("More Details About Rows Not Deleted"), MessageBoxButtons.OK);
             }
         }
     }
@@ -1195,7 +1202,7 @@ namespace {#NAMESPACE}
     public bool SaveChanges()
     {
         bool ReturnValue = false;
-        
+
         FPetraUtilsObject.OnDataSavingStart(this, new System.EventArgs());
 
         // Clear any validation errors so that the following call to ValidateAllData starts with a 'clean slate'.
@@ -1220,7 +1227,7 @@ namespace {#NAMESPACE}
                 TVerificationResultCollection VerificationResult;
 
                 {#DATASETTYPE} SubmitDS = FMainDS.GetChangesTyped(true);
-                
+
                 if (SubmitDS == null)
                 {
                     // There is nothing to be saved.
@@ -1245,7 +1252,7 @@ namespace {#NAMESPACE}
                     this.Cursor = Cursors.Default;
 
                     TMessages.MsgSecurityException(Exp, this.GetType());
-                    
+
                     ReturnValue = false;
                     FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
                     return ReturnValue;
@@ -1349,7 +1356,7 @@ namespace {#NAMESPACE}
 
                 ReturnValue = true;
                 FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
-            }                
+            }
         }
 
         return ReturnValue;

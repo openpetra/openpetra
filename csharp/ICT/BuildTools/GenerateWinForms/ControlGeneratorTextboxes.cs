@@ -872,7 +872,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             writer.SetControlProperty(ctrl, "DecimalPlaces", FDecimalPrecision.ToString());
             writer.SetControlProperty(ctrl, "NullValueAllowed", FNullValueAllowed.ToString().ToLower());
-            writer.SetControlProperty(ctrl, "CurrencySymbol", "\"###\"");
+            writer.SetControlProperty(ctrl, "CurrencyCode", "\"###\"");
 
             return writer.FTemplate;
         }

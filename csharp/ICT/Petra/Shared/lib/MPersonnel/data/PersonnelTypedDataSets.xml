@@ -22,11 +22,15 @@
         <Table sqltable="pm_short_term_application"/>      <!-- Short Term Application Data -->
         <Table sqltable="pm_year_program_application"/>   <!-- Long Term Application Data -->
         <Table sqltable="pm_personal_data"/>              <!-- Personal Data -->
-        <Table sqltable="pm_passport_details"/>           <!-- Passport Details -->
+        <Table sqltable="pm_passport_details">            <!-- Passport Details -->
+          <Field name="PassportNationalityName" sqltable="p_country" sqlfield="p_country_name_c"/>
+        </Table>
         <Table sqltable="pm_document"/>                   <!-- Personal Documents -->
         <Table sqltable="pm_special_need"/>               <!-- Special Needs -->
         <Table sqltable="pm_person_qualification"/>       <!-- Professional Areas (should be merged with Personal Abilities) -->
-        <Table sqltable="pm_person_language"/>            <!-- Personal Languages -->
+        <Table sqltable="pm_person_language">             <!-- Personal Languages -->
+          <Field name="LanguageDescription" sqltable="p_language" sqlfield="p_language_description_c"/>
+        </Table>
         <Table sqltable="pm_person_ability"/>             <!-- Personal Abilities (should be merged with Professional Areas)-->
         <Table sqltable="pm_past_experience"/>            <!-- Previous Experience -->
         <Table sqltable="pm_staff_data"/>                 <!-- Commitment Periods -->
@@ -36,9 +40,6 @@
         <Table sqltable="p_data_label_value_application"/><!-- Local Application Data -->
         <Table sqltable="p_data_label_value_partner"/>    <!-- Local Personnel Data -->
 
-        <Table sqltable="p_language"/>   <!-- Not filled on server but used from cached table. Needed for retrieval of Language Name in Language Grid -->
-        <Table sqltable="p_country"/>    <!-- Not filled on server but used from cached table. Needed for retrieval of Country Name in Passport Grid -->
-          
         <CustomTable name="SummaryData">
             <Field sqltable="p_person" sqlfield="p_partner_key_n"/>
             <Field sqltable="p_person" sqlfield="p_date_of_birth_d"/>
@@ -86,14 +87,6 @@
             <PrimaryKey thisFields="PartnerKey"/>
         </CustomTable>                    
         
-        <CustomRelation name="PersonLanguage"
-                childTable="PmPersonLanguage" childFields="LanguageCode"
-                parentTable="PLanguage" parentFields="LanguageCode"
-                createConstraints="false"/>
-        <CustomRelation name="PersonPassportCountry"
-                childTable="PmPassportDetails" childFields="PassportNationalityCode"
-                parentTable="PCountry" parentFields="CountryCode"
-                createConstraints="false"/>
         <CustomRelation name="ShortTermApp"
                 childTable="PmShortTermApplication" childFields="PartnerKey,ApplicationKey,RegistrationOffice"
                 parentTable="PmGeneralApplication" parentFields="PartnerKey,ApplicationKey,RegistrationOffice"

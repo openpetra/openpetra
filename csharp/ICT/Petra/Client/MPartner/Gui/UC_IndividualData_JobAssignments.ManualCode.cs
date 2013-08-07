@@ -84,12 +84,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS = AMainDS;
 
             LoadDataOnDemand();
-
-            if (grdDetails.Rows.Count <= 1)
-            {
-                pnlDetails.Visible = false;
-                btnDelete.Enabled = false;
-            }
         }
 
         /// <summary>
@@ -129,11 +123,17 @@ namespace Ict.Petra.Client.MPartner.Gui
         private bool PreDeleteManual(PmJobAssignmentRow ARowToDelete, ref string ADeletionQuestion)
         {
             /*Code to execute before the delete can take place*/
-            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Job Assignment record:{0}{1} at {2} started {3}?"),
+            ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            ADeletionQuestion += String.Format("{0}{0}({1} {2},{0} {3} {4} {5},{0} {6} {7})",
                 Environment.NewLine,
-                ARowToDelete.PositionName,
-                ARowToDelete.UnitKey.ToString(),
-                DataBinding.DateTimeToLongDateString2(ARowToDelete.FromDate));
+                lblFromDate.Text,
+                dtpFromDate.Date.Value.ToString("dd-MMM-yyyy").ToUpper(),
+                lblUnitKey.Text,
+                txtUnitKey.Text,
+                txtUnitKey.LabelText,
+                lblPositionName.Text,
+                cmbPositionName.GetSelectedString());
+
             return true;
         }
 
@@ -164,12 +164,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ShowDetailsManual(PmJobAssignmentRow ARow)
         {
-            if (ARow != null)
-            {
-                btnDelete.Enabled = true;
-                pnlDetails.Visible = true;
-            }
-
             // In theory, the next Method call could be done in Methods NewRowManual; however, NewRowManual runs before
             // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
             // of a non-existing 'AfterNewRowManual' Method....

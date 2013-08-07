@@ -345,7 +345,22 @@ namespace Ict.Petra.Client.CommonControls
             }
         }
 
-        
+        /// <summary>
+        /// Gets or sets the object that contains data about the control's underlying cmbCombobox.
+        /// </summary>
+        public new object Tag
+        {
+            get
+            {
+                return cmbCombobox.Tag;
+            }
+
+            set
+            {
+                cmbCombobox.Tag = value;
+            }
+        }
+
         /**
          * This Event is thrown when the internal ComboBox throws the SelectedValueChanged Event.
          */

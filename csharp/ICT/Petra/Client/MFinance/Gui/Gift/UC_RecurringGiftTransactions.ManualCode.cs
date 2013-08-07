@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             btnNewGift.Enabled = !FPetraUtilsObject.DetailProtectedMode;
 
             //Check if the same batch is selected, so no need to apply filter
-            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber))
+            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FPreviouslySelectedDetailRow != null))
             {
                 //Same as previously selected
                 if (GetSelectedRowIndex() > 0)
@@ -358,8 +358,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             RetrieveMotivationDetailAccountCode();
 
-            if (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
+            if ((txtDetailRecipientKey.Text == string.Empty) || (Convert.ToInt64(txtDetailRecipientKey.Text) == 0))
             {
+                txtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
                 RetrieveMotivationDetailCostCentreCode();
             }
         }
@@ -525,7 +526,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 txtGiftTotal.NumberValueDecimal = sum;
-                txtGiftTotal.CurrencySymbol = txtDetailGiftAmount.CurrencySymbol;
+                txtGiftTotal.CurrencyCode = txtDetailGiftAmount.CurrencyCode;
                 txtGiftTotal.ReadOnly = true;
                 //this is here because at the moment the generator does not generate this
                 txtBatchTotal.NumberValueDecimal = sumBatch;
@@ -600,6 +601,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FGiftDetailView = new DataView(FMainDS.ARecurringGiftDetail);
             FGiftDetailView.RowFilter = FFilterAllDetailsOfGift;
             FGiftDetailView.Sort = ARecurringGiftDetailTable.GetDetailNumberDBName() + " ASC";
+            String formattedDetailAmount = StringHelper.FormatUsingCurrencyCode(ARowToDelete.GiftAmount, GetBatchRow().CurrencyCode);
 
             if (FGiftDetailView.Count == 1)
             {
@@ -612,7 +614,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ARowToDelete.BatchNumber,
                     ARowToDelete.DonorName,
                     ARowToDelete.RecipientDescription,
-                    ARowToDelete.GiftAmount.ToString("C"));
+                    formattedDetailAmount);
             }
             else if (FGiftDetailView.Count > 1)
             {
@@ -626,7 +628,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         ARowToDelete.BatchNumber,
                         ARowToDelete.DonorName,
                         ARowToDelete.RecipientDescription,
-                        ARowToDelete.GiftAmount.ToString("C"));
+                        formattedDetailAmount);
             }
             else //this should never happen
             {
@@ -1074,7 +1076,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FBatchRow != null)
             {
-                txtDetailGiftAmount.CurrencySymbol = FBatchRow.CurrencyCode;
+                txtDetailGiftAmount.CurrencyCode = FBatchRow.CurrencyCode;
             }
 
             if (grdDetails.Rows.Count == 1)
@@ -1207,10 +1209,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateCurrencySymbols(String ACurrencyCode)
         {
-            txtDetailGiftAmount.CurrencySymbol = ACurrencyCode;
-            txtGiftTotal.CurrencySymbol = ACurrencyCode;
-            txtBatchTotal.CurrencySymbol = ACurrencyCode;
-            txtHashTotal.CurrencySymbol = ACurrencyCode;
+            txtDetailGiftAmount.CurrencyCode = ACurrencyCode;
+            txtGiftTotal.CurrencyCode = ACurrencyCode;
+            txtBatchTotal.CurrencyCode = ACurrencyCode;
+            txtHashTotal.CurrencyCode = ACurrencyCode;
         }
 
         /// <summary>

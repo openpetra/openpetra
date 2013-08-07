@@ -18,16 +18,17 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailStatusCode, DetailPartnerStatusDescription, DetailPartnerIsActive, DetailIncludePartnerOnReport, DetailDeletable]
@@ -42,10 +43,7 @@ RootNode:
                 Row2: [chkDetailPartnerIsActive, chkDetailIncludePartnerOnReport]
                 Row3: [chkDetailDeletable]
         txtDetailStatusCode: {Label=Status Code, CharacterCasing=Upper}
-        txtDetailPartnerStatusDescription: {Label=Description, Width: 260}
+        txtDetailPartnerStatusDescription: {Label=Description, Width: 310}
         chkDetailPartnerIsActive: {Label=Active Partner}
         chkDetailIncludePartnerOnReport: {Label=Include Partners on Reports}
         chkDetailDeletable:
-    Toolbar:
-        tbbNew:
-            Label: New Partner Status

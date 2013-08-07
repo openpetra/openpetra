@@ -247,15 +247,60 @@ namespace Ict.Tools.DevelopersAssistant
             return LaunchExe("nant.bat", String.Format("previewWinform  -D:file={0}", YAMLPath), initialDir, false);
         }
 
+        /// <summary>
+        /// Specific call to run the previewWinform task
+        /// </summary>
+        /// <param name="BranchLocation">The path to the openPetra branch for which the task is to be run</param>
+        /// <param name="CommandArgs">The admin console command args (if any)</param>
+        /// <returns>True if nant.bat was launched successfully.  Check the log file to see if the command actually succeeded.</returns>
+        public static bool RunServerAdminConsole(string BranchLocation, string CommandArgs)
+        {
+            string initialDir = System.IO.Path.Combine(BranchLocation, "delivery\\bin");
+
+            // We have to ensure there is a config file
+            string cfgFile = initialDir + "PetraServerAdminConsole.exe.config";
+
+            if (!System.IO.File.Exists(cfgFile))
+            {
+                using (System.IO.StreamWriter sw = new System.IO.StreamWriter(cfgFile))
+                {
+                    sw.WriteLine("<?xml version=\"1.0\"?>");
+                    sw.WriteLine("<configuration>");
+                    sw.WriteLine(" <appSettings>");
+                    sw.WriteLine("  <add key=\"Server.Port\" value=\"9000\" />");
+                    sw.WriteLine(" </appSettings>");
+                    sw.WriteLine("</configuration>");
+                    sw.Close();
+                }
+            }
+
+            // Start the server
+            if (!IsServerRunning())
+            {
+                StartServer(BranchLocation, true);
+            }
+
+            // This is one of the tasks where we don't wait for exit - so we write a dummy output file
+            using (System.IO.StreamWriter sw = new System.IO.StreamWriter(System.IO.Path.Combine(BranchLocation, "opda.txt"), true))
+            {
+                sw.WriteLine("The task to launch the server Admin Console does not generate a log file.");
+                sw.Close();
+            }
+
+            bool bWaitForExit = (CommandArgs != String.Empty);
+            bool bHideWindow = (CommandArgs != String.Empty);
+            return LaunchExe("PetraServerAdminConsole.exe", CommandArgs, initialDir, bWaitForExit, bHideWindow);
+        }
+
         //  Helper function to launch an executable file.
         //  Returns true if the executable is launched successfully.
-        private static bool LaunchExe(string ExeName, string Params, string StartDirectory, bool WaitForExit = true)
+        private static bool LaunchExe(string ExeName, string Params, string StartDirectory, bool WaitForExit = true, bool HideWindow = true)
         {
             bool ret = true;
             ProcessStartInfo si = new ProcessStartInfo(ExeName, Params);
 
             si.WorkingDirectory = StartDirectory;
-            si.WindowStyle = ProcessWindowStyle.Hidden;
+            si.WindowStyle = (HideWindow) ? ProcessWindowStyle.Hidden : ProcessWindowStyle.Normal;
 
             try
             {
