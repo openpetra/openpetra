@@ -126,7 +126,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 	                    ABudgetTable.GetLedgerNumberDBName(),
 	                    FLedgerNumber);
 	                DataTable ABdgTable2 = view.ToTable(true, new string[] { BudgetSeqDBN, AccountDBN, CostCentreDBN });
-	                //DataTable ABdgTable2 = view.ToTable(true, new string[] { AccountDBN, CostCentreDBN });
+
 	                ABdgTable2.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 	                ABdgTable2.Columns.Add(new DataColumn(BudgetSeqKey, typeof(string), BudgetSeqDBN));
 	                ABdgTable2.Columns.Add(new DataColumn(CCAccDesc, typeof(string),
@@ -137,7 +137,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 	                clbCostCentreAccountCodes.AddTextColumn("Key", ABdgTable2.Columns[BudgetSeqKey], 0);
 	                clbCostCentreAccountCodes.AddTextColumn("Cost Centre-Account", ABdgTable2.Columns[CCAccDesc], 200);
 	                clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, BudgetSeqKey, CheckedMember, BudgetSeqKey, CCAccDesc, false, true, false);
-	                //clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, CCAccDesc, CheckedMember, CCAccDesc, CCAccDesc, false, true, false);
 	
 	                clbCostCentreAccountCodes.SetCheckedStringList("");
 	            }
@@ -175,16 +174,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 string[] CheckedItems = CheckItemsList.Split(',');
 
-                string ForecastType;
-
-                if (rbtThisYearsBudgets.Checked)
-                {
-                    ForecastType = MFinanceConstants.FORECAST_TYPE_BUDGET;
-                }
-                else
-                {
-                    ForecastType = MFinanceConstants.FORECAST_TYPE_ACTUALS;
-                }
+                string ForecastType = rbtThisYearsBudgets.Checked ? MFinanceConstants.FORECAST_TYPE_BUDGET: MFinanceConstants.FORECAST_TYPE_ACTUALS;
 
                 if (rbtSelectedBudgets.Checked && (CheckItemsList.Length > 0)
                     || (rbtAllBudgets.Checked == true))
