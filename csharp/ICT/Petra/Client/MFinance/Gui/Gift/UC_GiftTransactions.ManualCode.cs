@@ -1193,7 +1193,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 newRow.MethodOfGivingCode = giftRow.MethodOfGivingCode;
                 newRow.DonorKey = ACurrentRow.DonorKey;
                 newRow.DonorName = ACurrentRow.DonorName;
-                newRow.DateEntered = ACurrentRow.DateEntered;
+                newRow.DateEntered = giftRow.DateEntered;
                 cmbDetailMotivationGroupCode.SelectedIndex = 0;
                 newRow.MotivationGroupCode = cmbDetailMotivationGroupCode.GetSelectedString();
                 newRow.MotivationDetailCode = cmbDetailMotivationDetailCode.GetSelectedString();
