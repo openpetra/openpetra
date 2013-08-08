@@ -401,6 +401,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         // (and then put it back again afterwards)
         private void CancelBtn_MouseEnter(Object sender, EventArgs e)
         {
+            FormCursor = FWinForm.Cursor;
             FWinForm.Cursor = Cursors.Default;
         }
 
@@ -622,7 +623,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             else
             {
                 FWinForm.Cursor = Cursors.Default;
-                ((IFrmReporting) this.FTheForm).EnableBusy(false);
+                FormCursor = FWinForm.Cursor;
+                ((IFrmReporting)this.FTheForm).EnableBusy(false);
             }
         }
 
