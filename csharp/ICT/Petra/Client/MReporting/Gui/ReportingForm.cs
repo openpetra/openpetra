@@ -395,6 +395,44 @@ namespace Ict.Petra.Client.MReporting.Gui
             return ReturnValue;
         }
 
+
+        private Cursor FormCursor = Cursors.Default;
+        // while the cursor is over the cancel button, I'll change it to default
+        // (and then put it back again afterwards)
+        private void CancelBtn_MouseEnter(Object sender, EventArgs e)
+        {
+            FWinForm.Cursor = Cursors.Default;
+        }
+
+        private void CancelBtn_MouseLeave(Object sender, EventArgs e)
+        {
+            FWinForm.Cursor = FormCursor;
+        }
+
+        /// <summary>
+        /// I want to keep the cancel button available while the report is being generated,
+        /// so I'll change the cursor when the mouse goes onto it.
+        /// </summary>
+        ///
+        private void MakeCancelButtonAvailable()
+        {
+            ToolStrip tbrMain = (ToolStrip) (this.FWinForm.Controls.Find("tbrMain", false)[0]);
+            ToolStripItem[] CancelBtns = tbrMain.Items.Find("tbbGenerateReport", true);
+            FormCursor = FWinForm.Cursor;
+            if (CancelBtns.Length > 0)
+            {
+                CancelBtns[0].MouseEnter += new EventHandler(CancelBtn_MouseEnter);
+                CancelBtns[0].MouseLeave += new EventHandler(CancelBtn_MouseLeave);
+            }
+
+            CancelBtns = tbrMain.Items.Find("tbbGenerateExtract", true);
+            if (CancelBtns.Length > 0)
+            {
+                CancelBtns[0].MouseEnter += new EventHandler(CancelBtn_MouseEnter);
+                CancelBtns[0].MouseLeave += new EventHandler(CancelBtn_MouseLeave);
+            }
+        }
+
         /// <summary>
         /// Generate a report, called by menu item or toolbar button.
         /// Can also cancel a currently running report thread.
@@ -439,6 +477,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             this.FWinForm.Cursor = Cursors.WaitCursor;
+            MakeCancelButtonAvailable();
             TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
 
             if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
