@@ -1330,7 +1330,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             if ((FLoadCompleted == false) || (FPreviouslySelectedDetailRow == null) || (cmbDetailAccountCode.GetSelectedString() == String.Empty)
                 || (cmbDetailAccountCode.SelectedIndex == -1))
             {
-                return;
+            	ShowComboActiveStatus(cmbDetailAccountCode, true);
+            	return;
             }
 
             currentAccount = cmbDetailAccountCode.GetSelectedString();
@@ -1346,20 +1347,49 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             cmbDetailCostCentreCode.GetSelectedString(),
                             cmbDetailAccountCode.GetSelectedString()));
                     cmbDetailAccountCode.SelectedIndex = -1;
+                    ShowComboActiveStatus(cmbDetailAccountCode, true);
                 }
-                else if (!accountActive
-                         && (MessageBox.Show(String.Format(Catalog.GetString("Account Code {0} is set to Inactive. Do you want to select it?"),
+                else if (!accountActive)
+                {
+                	if (MessageBox.Show(String.Format(Catalog.GetString("Account Code {0} is set to Inactive. Do you want to select it?"),
                                      currentAccount),
                                  Catalog.GetString("Confirm Account"),
                                  MessageBoxButtons.YesNo,
                                  MessageBoxIcon.Question,
-                                 MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes))
-                {
-                    cmbDetailAccountCode.SelectedIndex = -1;
+                                 MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes)
+			        {
+			        	cmbDetailAccountCode.SelectedIndex = -1;
+			        	ShowComboActiveStatus(cmbDetailAccountCode, true);
+			        }
+                	else
+                	{
+                		ShowComboActiveStatus(cmbDetailAccountCode, false);
+                	}
                 }
+                else if (accountActive)
+                {
+                	//Put it bsack to any textbox colour
+                	ShowComboActiveStatus(cmbDetailAccountCode, true);
+                }
+            }
+            else
+            {
+            	ShowComboActiveStatus(cmbDetailAccountCode, accountActive);
             }
 
             UpdateCurrencyCode();
+        }
+        
+        private void ShowComboActiveStatus(Ict.Petra.Client.CommonControls.TCmbAutoPopulated AControl, bool AIsActive)
+        {
+        	if (AIsActive)
+        	{
+        		AControl.BackColor = txtAmount.BackColor;
+        	}
+        	else
+        	{
+        		AControl.BackColor = System.Drawing.Color.PaleVioletRed;
+        	}
         }
 
         private bool CostCentreAccountCombinationIsUnique()

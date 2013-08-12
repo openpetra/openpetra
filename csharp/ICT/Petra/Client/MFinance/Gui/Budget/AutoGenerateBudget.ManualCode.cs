@@ -155,7 +155,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             msg += " or just those that have changed since the last consolidation." + "\n\r\n\r";
             msg += "Do you want to consolidate all of your budgets?";
 
-            bool ConsolidateAll =
+            bool consolidateAll =
                 (MessageBox.Show(msg, "Consolidate Budgets", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2,
                      MessageBoxOptions.DefaultDesktopOnly, false) == DialogResult.Yes);
 
@@ -168,7 +168,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 TRemote.MFinance.Budget.WebConnectors.LoadBudgetForConsolidate(FLedgerNumber);
 
-                TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, ConsolidateAll, out VerificationResult);
+                TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, consolidateAll, out VerificationResult);
 
                 string CheckItemsList = clbCostCentreAccountCodes.GetCheckedStringList();
 
@@ -211,7 +211,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         //This flag is needed to stop the event occuring twice for each
         //change of the option
-        private bool AllBudgetsWasLastSelected = false;
+        private bool FAllBudgetsWasLastSelected = false;
         private void NewBudgetScope(Object sender, EventArgs e)
         {
             if (!FBudgetsExist)
@@ -219,9 +219,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             	return;
             }
             
-            if (rbtAllBudgets.Checked && !AllBudgetsWasLastSelected)
+            if (rbtAllBudgets.Checked && !FAllBudgetsWasLastSelected)
             {
-                AllBudgetsWasLastSelected = true;
+                FAllBudgetsWasLastSelected = true;
                 CurrentCheckedList = clbCostCentreAccountCodes.GetCheckedStringList();
 
                 SelectAll();
@@ -230,9 +230,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 btnUnselectAllBudgets.Enabled = false;
                 clbCostCentreAccountCodes.Enabled = false;
             }
-            else if (!rbtAllBudgets.Checked && AllBudgetsWasLastSelected)
+            else if (!rbtAllBudgets.Checked && FAllBudgetsWasLastSelected)
             {
-                AllBudgetsWasLastSelected = false;
+                FAllBudgetsWasLastSelected = false;
                 btnSelectAllBudgets.Enabled = true;
                 btnUnselectAllBudgets.Enabled = true;
                 clbCostCentreAccountCodes.Enabled = true;

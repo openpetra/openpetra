@@ -394,11 +394,23 @@ namespace Ict.Petra.Client.MFinance.Logic
             emptyRow[AAccountTable.ColumnAccountCodeShortDescId] = Catalog.GetString("Select a valid account");
             Table.Rows.Add(emptyRow);
 
+            //Highlight inactive Accounts
+            if (!AActiveOnly)
+            {
+            	foreach (DataRow rw in Table.Rows)
+            	{
+            		if (rw[AAccountTable.ColumnAccountActiveFlagId] != null && rw[AAccountTable.ColumnAccountActiveFlagId].ToString() == "False")
+            		{
+            			rw[AAccountTable.ColumnAccountCodeShortDescId] = "<I> " + rw[AAccountTable.ColumnAccountCodeShortDescId];
+            		}
+            	}
+            }
+            	
             AControl.InitialiseUserControl(Table,
                 AAccountTable.GetAccountCodeDBName(),
                 AAccountTable.GetAccountCodeShortDescDBName(),
                 null);
-            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+            AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
 
             AControl.Filter = PrepareAccountFilter(APostingOnly, AExcludePosting, AActiveOnly,
                 ABankAccountOnly, AForeignCurrencyName);

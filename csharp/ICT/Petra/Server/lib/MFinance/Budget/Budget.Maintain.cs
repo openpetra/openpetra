@@ -664,8 +664,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         {
             decimal retVal = 0;
 
-            decimal CurrencyAmount = 0;
-            bool IncExpAccountFwdPeriod = false;
+            decimal currencyAmount = 0;
+            bool incExpAccountFwdPeriod = false;
 
             //DEFINE BUFFER a_glm_period FOR a_general_ledger_master_period.
             //DEFINE BUFFER a_glm FOR a_general_ledger_master.
@@ -676,14 +676,14 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 return retVal;
             }
 
-            bool NewTransaction = false;
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            bool newTransaction = false;
+            TDBTransaction dBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
 
-            AGeneralLedgerMasterTable GeneralLedgerMasterTable = null;
-            AGeneralLedgerMasterRow GeneralLedgerMasterRow = null;
+            AGeneralLedgerMasterTable generalLedgerMasterTable = null;
+            AGeneralLedgerMasterRow generalLedgerMasterRow = null;
 
-            AGeneralLedgerMasterPeriodTable GeneralLedgerMasterPeriodTable = null;
-            AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow = null;
+            AGeneralLedgerMasterPeriodTable generalLedgerMasterPeriodTable = null;
+            AGeneralLedgerMasterPeriodRow generalLedgerMasterPeriodRow = null;
 
             AAccountTable AccountTable = null;
             AAccountRow AccountRow = null;
@@ -692,21 +692,21 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             {
                 if (APeriodNumber == 0)             /* start balance */
                 {
-                    GeneralLedgerMasterTable = AGeneralLedgerMasterAccess.LoadByPrimaryKey(AGLMSeqThisYear, DBTransaction);
-                    GeneralLedgerMasterRow = (AGeneralLedgerMasterRow)GeneralLedgerMasterTable.Rows[0];
+                    generalLedgerMasterTable = AGeneralLedgerMasterAccess.LoadByPrimaryKey(AGLMSeqThisYear, dBTransaction);
+                    generalLedgerMasterRow = (AGeneralLedgerMasterRow)generalLedgerMasterTable.Rows[0];
 
                     switch (ACurrencySelect)
                     {
                         case MFinanceConstants.CURRENCY_BASE:
-                            CurrencyAmount = GeneralLedgerMasterRow.StartBalanceBase;
+                            currencyAmount = generalLedgerMasterRow.StartBalanceBase;
                             break;
 
                         case MFinanceConstants.CURRENCY_INTERNATIONAL:
-                            CurrencyAmount = GeneralLedgerMasterRow.StartBalanceIntl;
+                            currencyAmount = generalLedgerMasterRow.StartBalanceIntl;
                             break;
 
                         default:
-                            CurrencyAmount = GeneralLedgerMasterRow.StartBalanceForeign;
+                            currencyAmount = generalLedgerMasterRow.StartBalanceForeign;
                             break;
                     }
                 }
@@ -714,58 +714,58 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 {
                     if (ACurrentFinancialYear == AThisYear)
                     {
-                        GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSeqThisYear,
+                        generalLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSeqThisYear,
                             APeriodNumber,
-                            DBTransaction);
-                        GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
+                            dBTransaction);
+                        generalLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)generalLedgerMasterPeriodTable.Rows[0];
                     }
                     else
                     {
-                        GeneralLedgerMasterPeriodTable =
+                        generalLedgerMasterPeriodTable =
                             AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSeqNextYear,
                                 (APeriodNumber - ANumberAccountingPeriods),
-                                DBTransaction);
-                        GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
+                                dBTransaction);
+                        generalLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)generalLedgerMasterPeriodTable.Rows[0];
                     }
                 }
                 else             /* normal period */
                 {
-                    GeneralLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSeqThisYear, APeriodNumber, DBTransaction);
-                    GeneralLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)GeneralLedgerMasterPeriodTable.Rows[0];
+                    generalLedgerMasterPeriodTable = AGeneralLedgerMasterPeriodAccess.LoadByPrimaryKey(AGLMSeqThisYear, APeriodNumber, dBTransaction);
+                    generalLedgerMasterPeriodRow = (AGeneralLedgerMasterPeriodRow)generalLedgerMasterPeriodTable.Rows[0];
                 }
 
-                if (GeneralLedgerMasterPeriodRow != null)
+                if (generalLedgerMasterPeriodRow != null)
                 {
                     switch (ACurrencySelect)
                     {
                         case MFinanceConstants.CURRENCY_BASE:
-                            CurrencyAmount = GeneralLedgerMasterPeriodRow.ActualBase;
+                            currencyAmount = generalLedgerMasterPeriodRow.ActualBase;
                             break;
 
                         case MFinanceConstants.CURRENCY_INTERNATIONAL:
-                            CurrencyAmount = GeneralLedgerMasterPeriodRow.ActualIntl;
+                            currencyAmount = generalLedgerMasterPeriodRow.ActualIntl;
                             break;
 
                         default:
-                            CurrencyAmount = GeneralLedgerMasterPeriodRow.ActualForeign;
+                            currencyAmount = generalLedgerMasterPeriodRow.ActualForeign;
                             break;
                     }
                 }
 
                 if ((APeriodNumber > ANumberAccountingPeriods) && (ACurrentFinancialYear == AThisYear))
                 {
-                    GeneralLedgerMasterTable = AGeneralLedgerMasterAccess.LoadByPrimaryKey(AGLMSeqThisYear, DBTransaction);
-                    GeneralLedgerMasterRow = (AGeneralLedgerMasterRow)GeneralLedgerMasterTable.Rows[0];
+                    generalLedgerMasterTable = AGeneralLedgerMasterAccess.LoadByPrimaryKey(AGLMSeqThisYear, dBTransaction);
+                    generalLedgerMasterRow = (AGeneralLedgerMasterRow)generalLedgerMasterTable.Rows[0];
 
-                    AccountTable = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, GeneralLedgerMasterRow.AccountCode, DBTransaction);
+                    AccountTable = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, generalLedgerMasterRow.AccountCode, dBTransaction);
                     AccountRow = (AAccountRow)AccountTable.Rows[0];
 
                     if ((AccountRow.AccountCode.ToUpper() == MFinanceConstants.ACCOUNT_TYPE_INCOME.ToUpper())
                         || (AccountRow.AccountCode.ToUpper() == MFinanceConstants.ACCOUNT_TYPE_EXPENSE.ToUpper())
                         && !ABalSheetForwardPeriods)
                     {
-                        IncExpAccountFwdPeriod = true;
-                        CurrencyAmount -= GetActualInternal(ALedgerNumber,
+                        incExpAccountFwdPeriod = true;
+                        currencyAmount -= GetActualInternal(ALedgerNumber,
                             AGLMSeqThisYear,
                             AGLMSeqNextYear,
                             ANumberAccountingPeriods,
@@ -780,14 +780,14 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                 if (!AYTD)
                 {
-                    if (!((APeriodNumber == (ANumberAccountingPeriods + 1)) && IncExpAccountFwdPeriod)
+                    if (!((APeriodNumber == (ANumberAccountingPeriods + 1)) && incExpAccountFwdPeriod)
                         && !((APeriodNumber == (ANumberAccountingPeriods + 1)) && (ACurrentFinancialYear > AThisYear)))
                     {
                         /* if it is an income expense acount, and we are in a forward period, nothing needs to be subtracted,
                          * because that was done in correcting the amount in the block above;
                          * if we are in a previous year, in a forward period, don't worry about subtracting.
                          */
-                        CurrencyAmount -= GetActualInternal(ALedgerNumber,
+                        currencyAmount -= GetActualInternal(ALedgerNumber,
                             AGLMSeqThisYear,
                             AGLMSeqNextYear,
                             (APeriodNumber - 1),
@@ -800,11 +800,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     }
                 }
 
-                retVal = CurrencyAmount;
+                retVal = currencyAmount;
             }
             finally
             {
-                if (NewTransaction)
+                if (newTransaction)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
