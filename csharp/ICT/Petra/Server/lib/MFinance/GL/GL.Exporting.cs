@@ -445,6 +445,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         void WriteStringQuoted(String theString, bool bLineEnd)
         {
+            theString = theString.Replace(quote, "\\" + quote);
             FStringWriter.Write(quote);
             FStringWriter.Write(theString);
             FStringWriter.Write(quote);
