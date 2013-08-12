@@ -69,7 +69,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 FdlgSeparator = new TDlgSelectCSVSeparator(false);
-                FdlgSeparator.CSVFileName = dialog.FileName;
+                Boolean fileCanOpen = FdlgSeparator.OpenCsvFile(dialog.FileName);
+                if (!fileCanOpen)
+                {
+                    MessageBox.Show(Catalog.GetString("Unable to open file."),
+                        Catalog.GetString("Gift Import"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Stop);
+                    return;
+                }
 
                 FdlgSeparator.DateFormat = dateFormatString;
 
@@ -110,7 +118,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (ok)
                 {
                     MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
-                        Catalog.GetString("Success"),
+                        Catalog.GetString("Gift Import"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
 

@@ -164,7 +164,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // select separator, make sure there is a header line with the column captions/names
                     TDlgSelectCSVSeparator dlgSeparator = new TDlgSelectCSVSeparator(true);
-                    dlgSeparator.CSVFileName = DialogOpen.FileName;
+                    Boolean fileCanOpen = dlgSeparator.OpenCsvFile(DialogOpen.FileName);
+                    if (!fileCanOpen)
+                    {
+                        MessageBox.Show(Catalog.GetString("Unable to open file."),
+                            Catalog.GetString("Import Partners"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
+                        return;
+                    }
 
                     if (dlgSeparator.ShowDialog() == DialogResult.OK)
                     {

@@ -68,7 +68,15 @@ namespace Ict.Petra.Client.MFinance.Logic
                 String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
                 TDlgSelectCSVSeparator DlgSeparator = new TDlgSelectCSVSeparator(false);
-                DlgSeparator.CSVFileName = DialogBox.FileName;
+                Boolean fileCanOpen = DlgSeparator.OpenCsvFile(DialogBox.FileName);
+                if (!fileCanOpen)
+                {
+                    MessageBox.Show(Catalog.GetString("Unable to open file."),
+                        Catalog.GetString("Import Exchange Rates"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Stop);
+                    return;
+                }
 
                 DlgSeparator.DateFormat = dateFormatString;
 

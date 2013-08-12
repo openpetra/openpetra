@@ -70,6 +70,24 @@ namespace Ict.Petra.Server.MFinance.Gift
         private String FImportLine;
         private String FNewLine;
 
+        private String InferCostCentre(AGiftDetailRow AgiftDetails)
+        {
+            String costCentre = "";
+            if (!Common.Common.HasPartnerCostCentreLink(AgiftDetails.RecipientKey, out costCentre))
+            {
+                // There's no helpful entry in a_valid_ledger_number - I'll see about using the MotivationDetail.
+                AMotivationDetailRow mdRow = FMainDS.AMotivationDetail.NewRowTyped(false);
+                mdRow.LedgerNumber = AgiftDetails.LedgerNumber;
+                mdRow.MotivationGroupCode = AgiftDetails.MotivationGroupCode;
+                mdRow.MotivationDetailCode = AgiftDetails.MotivationDetailCode;
+                AMotivationDetailTable tempTbl = AMotivationDetailAccess.LoadUsingTemplate(mdRow, null);
+                if (tempTbl.Rows.Count > 0)
+                {
+                    costCentre = tempTbl[0].CostCentreCode;
+                }
+            }
+            return costCentre;
+        }
 
         /// <summary>
         /// Import Gift batch data
@@ -299,7 +317,18 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftDetails.ConfidentialGiftFlag = ImportBoolean(Catalog.GetString("confidential gift"));
                             giftDetails.MotivationGroupCode = ImportString(Catalog.GetString("motivation group code"));
                             giftDetails.MotivationDetailCode = ImportString(Catalog.GetString("motivation detail"));
-                            giftDetails.CostCentreCode = ImportString(Catalog.GetString("cost centre code"));
+
+                            if (FExtraColumns)
+                            {
+                                giftDetails.CostCentreCode = ImportString(Catalog.GetString("cost centre code"));
+                            }
+                            else
+                            {
+                                //
+                                // "In Petra Cost Centre is always inferred from recipient field and motivation detail so is not needed in the import."
+                                giftDetails.CostCentreCode = InferCostCentre(giftDetails);
+                            }
+
                             giftDetails.GiftCommentOne = ImportString(Catalog.GetString("comment one"));
                             giftDetails.CommentOneType = ImportString(Catalog.GetString("comment one type"));
 
@@ -312,11 +341,15 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftDetails.CommentThreeType = ImportString(Catalog.GetString("comment three type"));
                             giftDetails.TaxDeductable = ImportBoolean(Catalog.GetString("tax deductable"));
 
+/*
+ * This isn't a useful thing - if the date is not in the current period, the batch fails validation.
+ * 
                             if (FImportLine.Length > 0)
                             {
                                 gift.DateEntered = ImportDate(Catalog.GetString("date entered"));
                             }
                             else
+ */
                             {
                                 gift.DateEntered = giftBatch.GlEffectiveDate;
                             }
@@ -374,8 +407,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                         {
                             throw new Exception(Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"));
                         }
-                    }
-                }
+                    }  // if the CSV line qualifies
+                }  // while CSV lines
 
                 //Update batch total for the last batch entered.
                 if (giftBatch != null)

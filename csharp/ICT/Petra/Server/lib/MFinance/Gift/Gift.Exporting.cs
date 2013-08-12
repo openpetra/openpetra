@@ -406,7 +406,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteBoolean(giftDetails.ConfidentialGiftFlag);
             WriteStringQuoted(giftDetails.MotivationGroupCode);
             WriteStringQuoted(giftDetails.MotivationDetailCode);
-
+            //
+            // "In Petra Cost Centre is always inferred from recipient field and motivation detail so is not needed in the import."
             if (FExtraColumns)
             {
                 WriteStringQuoted(giftDetails.CostCentreCode);
@@ -429,7 +430,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteStringQuoted(giftDetails.GiftCommentThree);
             WriteStringQuoted(giftDetails.CommentThreeType);
             WriteBoolean(giftDetails.TaxDeductable);
-            WriteLineDate(gift.DateEntered);
+//            WriteLineDate(gift.DateEntered);  //Don't write this - it can't be used by import.
         }
 
         private Boolean confidentialMessageGiven = false;
@@ -487,6 +488,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
         void WriteStringQuoted(String theString, bool bLineEnd)
         {
+            theString = theString.Replace(quote, "\\" + quote);
             FStringWriter.Write(quote);
             FStringWriter.Write(theString);
             FStringWriter.Write(quote);

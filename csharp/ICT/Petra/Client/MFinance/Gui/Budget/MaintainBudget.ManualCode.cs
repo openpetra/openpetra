@@ -397,7 +397,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 try
                 {
-                    FdlgSeparator.CSVFileName = dialog.FileName;
+                    Boolean fileCanOpen = FdlgSeparator.OpenCsvFile(dialog.FileName);
+                    if (!fileCanOpen)
+                    {
+                        throw new Exception(String.Format(Catalog.GetString("File {0} Cannot be opened."), dialog.FileName));
+                    }
 
                     FdlgSeparator.DateFormat = dateFormatString;
 

@@ -239,8 +239,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             Hashtable requestParams = new Hashtable();
 
+            String numberFormat = ConvertNumberFormat(cmbNumberFormat);
+            String delimiter = ConvertDelimiter(cmbDelimiter.GetSelectedString(), false);
+
+            if ((numberFormat == "European" && delimiter == ",") || (numberFormat == "American" && delimiter == "."))
+            {
+                MessageBox.Show(Catalog.GetString("Numeric Decimal cannot be the same as the delimiter."),
+                    Catalog.GetString("Error"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return;
+            }
+
             requestParams.Add("ALedgerNumber", FLedgerNumber);
-            requestParams.Add("Delimiter", ConvertDelimiter(cmbDelimiter.GetSelectedString(), false));
+            requestParams.Add("Delimiter", delimiter);
             requestParams.Add("DateFormatString", cmbDateFormat.GetSelectedString());
             requestParams.Add("Summary", rbtSummary.Checked);
             requestParams.Add("IncludeUnposted", chkIncludeUnposted.Checked);
@@ -249,7 +261,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             requestParams.Add("RecipientNumber", Convert.ToInt64(txtDetailRecipientKey.Text));
             requestParams.Add("FieldNumber", Convert.ToInt64(txtDetailFieldKey.Text));
             requestParams.Add("DateForSummary", dtpDateSummary.Date);
-            requestParams.Add("NumberFormat", ConvertNumberFormat(cmbNumberFormat));
+            requestParams.Add("NumberFormat", numberFormat);
             requestParams.Add("ExtraColumns", chkExtraColumns.Checked);
 
             if (rbtBatchNumberSelection.Checked)
