@@ -343,11 +343,23 @@ namespace Ict.Petra.Client.MFinance.Logic
             emptyRow[ACostCentreTable.ColumnCostCentreNameId] = Catalog.GetString("Select a valid cost centre");
             Table.Rows.Add(emptyRow);
 
+            //Highlight inactive Accounts
+            if (!AActiveOnly)
+            {
+            	foreach (DataRow rw in Table.Rows)
+            	{
+            		if (rw[ACostCentreTable.ColumnCostCentreActiveFlagId] != null && rw[ACostCentreTable.ColumnCostCentreActiveFlagId].ToString() == "False")
+            		{
+            			rw[ACostCentreTable.ColumnCostCentreNameId] = "<I> " + rw[ACostCentreTable.ColumnCostCentreNameId];
+            		}
+            	}
+            }
+            	
             AControl.InitialiseUserControl(Table,
                 ACostCentreTable.GetCostCentreCodeDBName(),
                 ACostCentreTable.GetCostCentreNameDBName(),
                 null);
-            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+            AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
 
             AControl.Filter = PrepareCostCentreFilter(APostingOnly, AExcludePosting, AActiveOnly, ALocalOnly);
         }

@@ -1289,7 +1289,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             if ((FLoadCompleted == false) || (FPreviouslySelectedDetailRow == null)
                 || (cmbDetailCostCentreCode.GetSelectedString() == String.Empty) || (cmbDetailCostCentreCode.SelectedIndex == -1))
             {
-                return;
+                ShowComboActiveStatus(cmbDetailCostCentreCode, true);
+            	return;
             }
 
             currentCostCentre = cmbDetailCostCentreCode.GetSelectedString();
@@ -1305,17 +1306,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             currentCostCentre,
                             cmbDetailAccountCode.GetSelectedString()));
                     cmbDetailCostCentreCode.SelectedIndex = -1;
+                    ShowComboActiveStatus(cmbDetailCostCentreCode, true);
                 }
-                else if (!costCentreActive
-                         && (MessageBox.Show(String.Format(Catalog.GetString("Cost Centre Code {0} is set to Inactive. Do you want to select it?"),
-                                     currentCostCentre),
-                                 Catalog.GetString("Confirm Cost Centre"),
-                                 MessageBoxButtons.YesNo,
-                                 MessageBoxIcon.Question,
-                                 MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes))
+                else if (!costCentreActive)
                 {
-                    cmbDetailCostCentreCode.SelectedIndex = -1;
+	                 if(MessageBox.Show(String.Format(Catalog.GetString("Cost Centre Code {0} is set to Inactive. Do you want to select it?"),
+	                             currentCostCentre),
+	                         Catalog.GetString("Confirm Cost Centre"),
+	                         MessageBoxButtons.YesNo,
+	                         MessageBoxIcon.Question,
+	                         MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes)
+			        {
+			        	cmbDetailCostCentreCode.SelectedIndex = -1;
+			        	ShowComboActiveStatus(cmbDetailCostCentreCode, true);
+			        }
+                	else
+                	{
+                		ShowComboActiveStatus(cmbDetailCostCentreCode, false);
+                	}
                 }
+                else if (costCentreActive)
+                {
+                	//Put it bsack to any textbox colour
+                	ShowComboActiveStatus(cmbDetailCostCentreCode, true);
+                }
+            }
+            else
+            {
+				ShowComboActiveStatus(cmbDetailCostCentreCode, costCentreActive);
             }
         }
 
