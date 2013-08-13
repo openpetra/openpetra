@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void InitialiseBudgetList(ABudgetTable ABdgTable)
         {
-        	string CheckedMember = "CHECKED";
+            string CheckedMember = "CHECKED";
             string AccountDBN = ABudgetTable.GetAccountCodeDBName();
             string CostCentreDBN = ABudgetTable.GetCostCentreCodeDBName();
             string BudgetSeqDBN = ABudgetTable.GetBudgetSequenceDBName();
@@ -101,47 +101,47 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             if (ABdgTable != null)
             {
-            	if (ABdgTable.Count > 0)
-            	{
-	            	FBudgetsExist = true;
-	            	
-	                for (int i = 0; i < ABdgTable.Count; i++)
-	                {
-	                    BudgetRow = (ABudgetRow)ABdgTable.Rows[i];
-	                    CostCentreCodeLength = BudgetRow.CostCentreCode.Length;
-	
-	                    if (CostCentreCodeLength > CostCentrePadding)
-	                    {
-	                        CostCentrePadding = CostCentreCodeLength;
-	                    }
-	                }
-	
-	                BudgetRow = null;
-	
-	                // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first cost centre etc)
-	                //ABudgetRow emptyRow = (ABudgetRow)ABdgTable.NewRow();
-	
-	                DataView view = new DataView(ABdgTable);
-	                view.RowFilter = String.Format("{0}={1}",
-	                    ABudgetTable.GetLedgerNumberDBName(),
-	                    FLedgerNumber);
-	                DataTable ABdgTable2 = view.ToTable(true, new string[] { BudgetSeqDBN, AccountDBN, CostCentreDBN });
+                if (ABdgTable.Count > 0)
+                {
+                    FBudgetsExist = true;
 
-	                ABdgTable2.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
-	                ABdgTable2.Columns.Add(new DataColumn(BudgetSeqKey, typeof(string), BudgetSeqDBN));
-	                ABdgTable2.Columns.Add(new DataColumn(CCAccDesc, typeof(string),
-	                        CostCentreDBN.PadRight(CostCentrePadding + 2, ' ') + " + '-' + " + AccountDBN));
-	
-	                clbCostCentreAccountCodes.Columns.Clear();
-	                clbCostCentreAccountCodes.AddCheckBoxColumn("", ABdgTable2.Columns[CheckedMember], 17, false);
-	                clbCostCentreAccountCodes.AddTextColumn("Key", ABdgTable2.Columns[BudgetSeqKey], 0);
-	                clbCostCentreAccountCodes.AddTextColumn("Cost Centre-Account", ABdgTable2.Columns[CCAccDesc], 200);
-	                clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, BudgetSeqKey, CheckedMember, BudgetSeqKey, CCAccDesc, false, true, false);
-	
-	                clbCostCentreAccountCodes.SetCheckedStringList("");
-	            }
+                    for (int i = 0; i < ABdgTable.Count; i++)
+                    {
+                        BudgetRow = (ABudgetRow)ABdgTable.Rows[i];
+                        CostCentreCodeLength = BudgetRow.CostCentreCode.Length;
+
+                        if (CostCentreCodeLength > CostCentrePadding)
+                        {
+                            CostCentrePadding = CostCentreCodeLength;
+                        }
+                    }
+
+                    BudgetRow = null;
+
+                    // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first cost centre etc)
+                    //ABudgetRow emptyRow = (ABudgetRow)ABdgTable.NewRow();
+
+                    DataView view = new DataView(ABdgTable);
+                    view.RowFilter = String.Format("{0}={1}",
+                        ABudgetTable.GetLedgerNumberDBName(),
+                        FLedgerNumber);
+                    DataTable ABdgTable2 = view.ToTable(true, new string[] { BudgetSeqDBN, AccountDBN, CostCentreDBN });
+
+                    ABdgTable2.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+                    ABdgTable2.Columns.Add(new DataColumn(BudgetSeqKey, typeof(string), BudgetSeqDBN));
+                    ABdgTable2.Columns.Add(new DataColumn(CCAccDesc, typeof(string),
+                            CostCentreDBN.PadRight(CostCentrePadding + 2, ' ') + " + '-' + " + AccountDBN));
+
+                    clbCostCentreAccountCodes.Columns.Clear();
+                    clbCostCentreAccountCodes.AddCheckBoxColumn("", ABdgTable2.Columns[CheckedMember], 17, false);
+                    clbCostCentreAccountCodes.AddTextColumn("Key", ABdgTable2.Columns[BudgetSeqKey], 0);
+                    clbCostCentreAccountCodes.AddTextColumn("Cost Centre-Account", ABdgTable2.Columns[CCAccDesc], 200);
+                    clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, BudgetSeqKey, CheckedMember, BudgetSeqKey, CCAccDesc, false, true, false);
+
+                    clbCostCentreAccountCodes.SetCheckedStringList("");
+                }
             }
-            
+
             btnGenerate.Enabled = FBudgetsExist;
             btnSelectAllBudgets.Enabled = FBudgetsExist;
             btnUnselectAllBudgets.Enabled = FBudgetsExist;
@@ -174,7 +174,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 string[] CheckedItems = CheckItemsList.Split(',');
 
-                string ForecastType = rbtThisYearsBudgets.Checked ? MFinanceConstants.FORECAST_TYPE_BUDGET: MFinanceConstants.FORECAST_TYPE_ACTUALS;
+                string ForecastType = rbtThisYearsBudgets.Checked ? MFinanceConstants.FORECAST_TYPE_BUDGET : MFinanceConstants.FORECAST_TYPE_ACTUALS;
 
                 if (rbtSelectedBudgets.Checked && (CheckItemsList.Length > 0)
                     || (rbtAllBudgets.Checked == true))
@@ -216,9 +216,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             if (!FBudgetsExist)
             {
-            	return;
+                return;
             }
-            
+
             if (rbtAllBudgets.Checked && !FAllBudgetsWasLastSelected)
             {
                 FAllBudgetsWasLastSelected = true;
@@ -257,7 +257,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void SelectAllBudgets(System.Object sender, EventArgs e)
         {
-           	SelectAll();
+            SelectAll();
         }
 
         private void SelectAll()

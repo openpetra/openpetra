@@ -117,7 +117,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 FCurrentBudgetYear = TFinanceControls.GetLedgerCurrentFinancialYear(FLedgerNumber);
             }
 
-			SetGridCheckActiveFieldsColumns();
+            SetGridCheckActiveFieldsColumns();
 
             SetBudgetDefaultView();
             grdDetails.AutoSizeCells();
@@ -129,33 +129,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void SetGridCheckActiveFieldsColumns()
         {
-			//Prepare grid to highlight inactive accounts/cost centres
-			// Create a cell view for special conditions
-			SourceGrid.Cells.Views.Cell italicCell = new SourceGrid.Cells.Views.Cell();
-			italicCell.Font = new System.Drawing.Font(grdDetails.Font, FontStyle.Italic);
-			italicCell.ForeColor = Color.Crimson;
-			
-			// Create a condition, apply the view when true, and assign a delegate to handle it
-			SourceGrid.Conditions.ConditionView conditionAccountCodeActive = new SourceGrid.Conditions.ConditionView(italicCell);
-			conditionAccountCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
-			{
-				DataRowView row = (DataRowView)itemRow;
-				string accountCode = row[ABudgetTable.ColumnAccountCodeId].ToString();
-				return !AccountIsActive(accountCode);
-			};
-			
-			SourceGrid.Conditions.ConditionView conditionCostCentreCodeActive = new SourceGrid.Conditions.ConditionView(italicCell);
-			conditionCostCentreCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
-			{
-				DataRowView row = (DataRowView)itemRow;
-				string costCentreCode = row[ABudgetTable.ColumnCostCentreCodeId].ToString();
-				return !CostCentreIsActive(costCentreCode);
-			};
+            //Prepare grid to highlight inactive accounts/cost centres
+            // Create a cell view for special conditions
+            SourceGrid.Cells.Views.Cell italicCell = new SourceGrid.Cells.Views.Cell();
+            italicCell.Font = new System.Drawing.Font(grdDetails.Font, FontStyle.Italic);
+            italicCell.ForeColor = Color.Crimson;
 
-			// Add the condition to the columns that it should apply to
-			grdDetails.Columns[0].Conditions.Add(conditionCostCentreCodeActive);
-			grdDetails.Columns[1].Conditions.Add(conditionAccountCodeActive);
+            // Create a condition, apply the view when true, and assign a delegate to handle it
+            SourceGrid.Conditions.ConditionView conditionAccountCodeActive = new SourceGrid.Conditions.ConditionView(italicCell);
+            conditionAccountCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
+            {
+                DataRowView row = (DataRowView)itemRow;
+                string accountCode = row[ABudgetTable.ColumnAccountCodeId].ToString();
+                return !AccountIsActive(accountCode);
+            };
 
+            SourceGrid.Conditions.ConditionView conditionCostCentreCodeActive = new SourceGrid.Conditions.ConditionView(italicCell);
+            conditionCostCentreCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
+            {
+                DataRowView row = (DataRowView)itemRow;
+                string costCentreCode = row[ABudgetTable.ColumnCostCentreCodeId].ToString();
+                return !CostCentreIsActive(costCentreCode);
+            };
+
+            // Add the condition to the columns that it should apply to
+            grdDetails.Columns[0].Conditions.Add(conditionCostCentreCodeActive);
+            grdDetails.Columns[1].Conditions.Add(conditionAccountCodeActive);
         }
 
         private void SetBudgetDefaultView()
@@ -1323,7 +1322,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 || (cmbDetailCostCentreCode.GetSelectedString() == String.Empty) || (cmbDetailCostCentreCode.SelectedIndex == -1))
             {
                 ShowComboActiveStatus(cmbDetailCostCentreCode, true);
-            	return;
+                return;
             }
 
             currentCostCentre = cmbDetailCostCentreCode.GetSelectedString();
@@ -1343,30 +1342,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 }
                 else if (!costCentreActive)
                 {
-	                 if(MessageBox.Show(String.Format(Catalog.GetString("Cost Centre Code {0} is set to Inactive. Do you want to select it?"),
-	                             currentCostCentre),
-	                         Catalog.GetString("Confirm Cost Centre"),
-	                         MessageBoxButtons.YesNo,
-	                         MessageBoxIcon.Question,
-	                         MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes)
-			        {
-			        	cmbDetailCostCentreCode.SelectedIndex = -1;
-			        	ShowComboActiveStatus(cmbDetailCostCentreCode, true);
-			        }
-                	else
-                	{
-                		ShowComboActiveStatus(cmbDetailCostCentreCode, false);
-                	}
+                    if (MessageBox.Show(String.Format(Catalog.GetString("Cost Centre Code {0} is set to Inactive. Do you want to select it?"),
+                                currentCostCentre),
+                            Catalog.GetString("Confirm Cost Centre"),
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question,
+                            MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes)
+                    {
+                        cmbDetailCostCentreCode.SelectedIndex = -1;
+                        ShowComboActiveStatus(cmbDetailCostCentreCode, true);
+                    }
+                    else
+                    {
+                        ShowComboActiveStatus(cmbDetailCostCentreCode, false);
+                    }
                 }
                 else if (costCentreActive)
                 {
-                	//Put it bsack to any textbox colour
-                	ShowComboActiveStatus(cmbDetailCostCentreCode, true);
+                    //Put it bsack to any textbox colour
+                    ShowComboActiveStatus(cmbDetailCostCentreCode, true);
                 }
             }
             else
             {
-				ShowComboActiveStatus(cmbDetailCostCentreCode, costCentreActive);
+                ShowComboActiveStatus(cmbDetailCostCentreCode, costCentreActive);
             }
         }
 
@@ -1381,8 +1380,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             if ((FLoadCompleted == false) || (FPreviouslySelectedDetailRow == null) || (cmbDetailAccountCode.GetSelectedString() == String.Empty)
                 || (cmbDetailAccountCode.SelectedIndex == -1))
             {
-            	ShowComboActiveStatus(cmbDetailAccountCode, true);
-            	return;
+                ShowComboActiveStatus(cmbDetailAccountCode, true);
+                return;
             }
 
             currentAccount = cmbDetailAccountCode.GetSelectedString();
@@ -1402,45 +1401,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 }
                 else if (!accountActive)
                 {
-                	if (MessageBox.Show(String.Format(Catalog.GetString("Account Code {0} is set to Inactive. Do you want to select it?"),
-                                     currentAccount),
-                                 Catalog.GetString("Confirm Account"),
-                                 MessageBoxButtons.YesNo,
-                                 MessageBoxIcon.Question,
-                                 MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes)
-			        {
-			        	cmbDetailAccountCode.SelectedIndex = -1;
-			        	ShowComboActiveStatus(cmbDetailAccountCode, true);
-			        }
-                	else
-                	{
-                		ShowComboActiveStatus(cmbDetailAccountCode, false);
-                	}
+                    if (MessageBox.Show(String.Format(Catalog.GetString("Account Code {0} is set to Inactive. Do you want to select it?"),
+                                currentAccount),
+                            Catalog.GetString("Confirm Account"),
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Question,
+                            MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes)
+                    {
+                        cmbDetailAccountCode.SelectedIndex = -1;
+                        ShowComboActiveStatus(cmbDetailAccountCode, true);
+                    }
+                    else
+                    {
+                        ShowComboActiveStatus(cmbDetailAccountCode, false);
+                    }
                 }
                 else if (accountActive)
                 {
-                	//Put it bsack to any textbox colour
-                	ShowComboActiveStatus(cmbDetailAccountCode, true);
+                    //Put it bsack to any textbox colour
+                    ShowComboActiveStatus(cmbDetailAccountCode, true);
                 }
             }
             else
             {
-            	ShowComboActiveStatus(cmbDetailAccountCode, accountActive);
+                ShowComboActiveStatus(cmbDetailAccountCode, accountActive);
             }
 
             UpdateCurrencyCode();
         }
-        
+
         private void ShowComboActiveStatus(Ict.Petra.Client.CommonControls.TCmbAutoPopulated AControl, bool AIsActive)
         {
-        	if (AIsActive)
-        	{
-        		AControl.BackColor = txtAmount.BackColor;
-        	}
-        	else
-        	{
-        		AControl.BackColor = System.Drawing.Color.PaleVioletRed;
-        	}
+            if (AIsActive)
+            {
+                AControl.BackColor = txtAmount.BackColor;
+            }
+            else
+            {
+                AControl.BackColor = System.Drawing.Color.PaleVioletRed;
+            }
         }
 
         private bool CostCentreAccountCombinationIsUnique()
@@ -1471,19 +1470,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             //If empty, read value from combo
             if (AAccountCode == string.Empty)
             {
-	            if ((FAccountTable != null) && (cmbDetailAccountCode.SelectedIndex != -1) && (cmbDetailAccountCode.Count > 0)
-	            	&& (cmbDetailAccountCode.GetSelectedString() != null))
-				{
-            		AAccountCode = cmbDetailAccountCode.GetSelectedString();
-		        }
+                if ((FAccountTable != null) && (cmbDetailAccountCode.SelectedIndex != -1) && (cmbDetailAccountCode.Count > 0)
+                    && (cmbDetailAccountCode.GetSelectedString() != null))
+                {
+                    AAccountCode = cmbDetailAccountCode.GetSelectedString();
+                }
             }
 
             currentAccountRow = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, AAccountCode });
+
             if (currentAccountRow != null)
             {
                 retVal = currentAccountRow.AccountActiveFlag;
             }
-            
+
             return retVal;
         }
 
@@ -1496,14 +1496,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             //If empty, read value from combo
             if (ACostCentreCode == string.Empty)
             {
-	            if ((FCostCentreTable != null) && (cmbDetailCostCentreCode.SelectedIndex != -1) && (cmbDetailCostCentreCode.Count > 0)
-	                && (cmbDetailCostCentreCode.GetSelectedString() != null))
-	            {
-            		ACostCentreCode = cmbDetailCostCentreCode.GetSelectedString();
-            	}
-           	}
+                if ((FCostCentreTable != null) && (cmbDetailCostCentreCode.SelectedIndex != -1) && (cmbDetailCostCentreCode.Count > 0)
+                    && (cmbDetailCostCentreCode.GetSelectedString() != null))
+                {
+                    ACostCentreCode = cmbDetailCostCentreCode.GetSelectedString();
+                }
+            }
 
             currentCostCentreRow = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber, ACostCentreCode });
+
             if (currentCostCentreRow != null)
             {
                 retVal = currentCostCentreRow.CostCentreActiveFlag;
@@ -1511,6 +1512,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             return retVal;
         }
-        
     }
 }

@@ -349,15 +349,16 @@ namespace Ict.Petra.Client.MFinance.Logic
             //Highlight inactive Accounts
             if (!AActiveOnly && AIndicateInactive)
             {
-            	foreach (DataRow rw in Table.Rows)
-            	{
-            		if (rw[ACostCentreTable.ColumnCostCentreActiveFlagId] != null && rw[ACostCentreTable.ColumnCostCentreActiveFlagId].ToString() == "False")
-            		{
-            			rw[ACostCentreTable.ColumnCostCentreNameId] = "<I> " + rw[ACostCentreTable.ColumnCostCentreNameId];
-            		}
-            	}
+                foreach (DataRow rw in Table.Rows)
+                {
+                    if ((rw[ACostCentreTable.ColumnCostCentreActiveFlagId] != null)
+                        && (rw[ACostCentreTable.ColumnCostCentreActiveFlagId].ToString() == "False"))
+                    {
+                        rw[ACostCentreTable.ColumnCostCentreNameId] = "<I> " + rw[ACostCentreTable.ColumnCostCentreNameId];
+                    }
+                }
             }
-            	
+
             AControl.InitialiseUserControl(Table,
                 ACostCentreTable.GetCostCentreCodeDBName(),
                 ACostCentreTable.GetCostCentreNameDBName(),
@@ -415,15 +416,15 @@ namespace Ict.Petra.Client.MFinance.Logic
             //Highlight inactive Accounts
             if (!AActiveOnly && AIndicateInactive)
             {
-            	foreach (DataRow rw in Table.Rows)
-            	{
-            		if (rw[AAccountTable.ColumnAccountActiveFlagId] != null && rw[AAccountTable.ColumnAccountActiveFlagId].ToString() == "False")
-            		{
-            			rw[AAccountTable.ColumnAccountCodeShortDescId] = "<I> " + rw[AAccountTable.ColumnAccountCodeShortDescId];
-            		}
-            	}
+                foreach (DataRow rw in Table.Rows)
+                {
+                    if ((rw[AAccountTable.ColumnAccountActiveFlagId] != null) && (rw[AAccountTable.ColumnAccountActiveFlagId].ToString() == "False"))
+                    {
+                        rw[AAccountTable.ColumnAccountCodeShortDescId] = "<I> " + rw[AAccountTable.ColumnAccountCodeShortDescId];
+                    }
+                }
             }
-            	
+
             AControl.InitialiseUserControl(Table,
                 AAccountTable.GetAccountCodeDBName(),
                 AAccountTable.GetAccountCodeShortDescDBName(),

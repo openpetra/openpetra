@@ -67,7 +67,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
-            
+
             PPartnerLocationAccess.LoadViaPPartner(MainDS, AConferenceKey, Transaction);
             PcConferenceAccess.LoadByPrimaryKey(MainDS, AConferenceKey, Transaction);
             PcConferenceOptionAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
@@ -90,7 +90,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
 
             // Remove all Tables that were not filled with data before remoting them.
             MainDS.RemoveEmptyTables();
-            
+
             if (NewTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
