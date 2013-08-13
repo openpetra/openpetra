@@ -226,18 +226,44 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void ExportBatches(object sender, EventArgs e)
         {
-            String fileName = txtFilename.Text;
-
-            if (!Directory.Exists(Path.GetDirectoryName(fileName)))
+            StreamWriter sw1 = null;
+            try
             {
-                MessageBox.Show(Catalog.GetString("Please select an existing directory for this file!"),
-                    Catalog.GetString("Error"),
+                sw1 = new StreamWriter(txtFilename.Text,
+                    false,
+                    Encoding.GetEncoding(TAppSettingsManager.GetInt32("ExportGiftBatchEncoding", 1252)));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message,
+                    Catalog.GetString("Failed to open file"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
                 return;
             }
 
-            Hashtable requestParams = new Hashtable();
+            if (rbtBatchNumberSelection.Checked)
+            {
+                if (!txtBatchNumberStart.NumberValueInt.HasValue)
+                {
+                    txtBatchNumberStart.NumberValueInt = 0;
+                }
+                if (!txtBatchNumberEnd.NumberValueInt.HasValue)
+                {
+                    txtBatchNumberEnd.NumberValueInt = 999999;
+                }
+            }
+            else
+            {
+                if ((!dtpDateFrom.ValidDate()) || (!dtpDateTo.ValidDate()))
+                {
+                    MessageBox.Show(Catalog.GetString("Date Format invalid"),
+                        Catalog.GetString("Error"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
+            }
 
             String numberFormat = ConvertNumberFormat(cmbNumberFormat);
             String delimiter = ConvertDelimiter(cmbDelimiter.GetSelectedString(), false);
@@ -251,6 +277,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            Hashtable requestParams = new Hashtable();
             requestParams.Add("ALedgerNumber", FLedgerNumber);
             requestParams.Add("Delimiter", delimiter);
             requestParams.Add("DateFormatString", cmbDateFormat.GetSelectedString());
@@ -297,7 +324,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MessageBox.Show(AMessages.BuildVerificationResultString(), Catalog.GetString("Error"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error);
-
                     return;
                 }
                 else
@@ -317,25 +343,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            StreamWriter sw1 = null;
+            sw1.Write(exportString);
+            sw1.Close();
 
-            try
-            {
-                sw1 = new StreamWriter(fileName,
-                    false,
-                    Encoding.GetEncoding(TAppSettingsManager.GetInt32("ExportGiftBatchEncoding", 1252)));
-                sw1.Write(exportString);
-            }
-            finally
-            {
-                if (sw1 != null)
-                {
-                    sw1.Close();
-                }
-            }
-
-            MessageBox.Show(Catalog.GetString("Your data was exported successfully!") + Environment.NewLine +
-                fileName,
+            MessageBox.Show(Catalog.GetString("Your data was exported successfully!"),
                 Catalog.GetString("Success"),
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);

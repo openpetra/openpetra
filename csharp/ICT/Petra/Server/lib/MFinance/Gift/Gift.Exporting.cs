@@ -234,12 +234,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 counter++;
                                 String DictionaryKey = FCurrencyCode + ";" + giftBatch.BankCostCentre + ";" + giftBatch.BankAccountCode + ";" +
                                                        giftDetail.RecipientKey + ";" + giftDetail.MotivationGroupCode + ";" +
-                                                       giftDetail.MotivationGroupCode;
+                                                       giftDetail.MotivationDetailCode;
 
                                 if (sdSummary.TryGetValue(DictionaryKey, out giftSummary))
                                 {
                                     giftSummary.GiftTransactionAmount += giftDetail.GiftTransactionAmount;
-                                    giftSummary.GiftTransactionAmount += giftDetail.GiftAmount;
+                                    giftSummary.GiftAmount += giftDetail.GiftAmount;
                                 }
                                 else
                                 {
@@ -257,9 +257,11 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     giftSummary.CurrencyCode = FCurrencyCode;
                                     giftSummary.BankCostCentre = giftBatch.BankCostCentre;
                                     giftSummary.BankAccountCode = giftBatch.BankAccountCode;
+                                    giftSummary.RecipientKey = giftDetail.RecipientKey;
+                                    giftSummary.MotivationGroupCode = giftDetail.MotivationGroupCode;
+                                    giftSummary.MotivationDetailCode = giftDetail.MotivationDetailCode;
                                     giftSummary.GiftTransactionAmount = giftDetail.GiftTransactionAmount;
                                     giftSummary.GiftAmount = giftDetail.GiftAmount;
-
 
                                     sdSummary.Add(DictionaryKey, giftSummary);
                                 }
@@ -267,7 +269,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 //overwrite always because we want to have the last
                                 giftSummary.ExchangeRateToBase = mapExchangeRateToBase;
                             }
-                            else
+                            else  // not summary
                             {
                                 WriteGiftLine(gift, giftDetail);
                             }
@@ -455,22 +457,22 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             Int64 tempKey = FLedgerNumber * 1000000;
-            WriteGeneralNumber(tempKey);                        //is this the right Ledger Number?
+            WriteGeneralNumber(tempKey);               //is this the right Ledger Number?
             WriteStringQuoted(PartnerShortName(tempKey));
             WriteStringQuoted("");
             WriteStringQuoted("");
             WriteStringQuoted("");
             WriteStringQuoted("");
             WriteGeneralNumber(giftSummary.RecipientKey);
-            WriteStringQuoted(PartnerShortName(giftSummary.RecipientKey));                        //TODO: Replaces this by p_partner.short_name
+            WriteStringQuoted(PartnerShortName(giftSummary.RecipientKey));
 
             if (FUseBaseCurrency)
             {
-                WriteCurrency(giftSummary.GiftAmount);
+                WriteCurrency(giftSummary.GiftAmount, true);
             }
             else
             {
-                WriteCurrency(giftSummary.GiftTransactionAmount);
+                WriteCurrency(giftSummary.GiftTransactionAmount, true);
             }
         }
 
@@ -488,7 +490,10 @@ namespace Ict.Petra.Server.MFinance.Gift
 
         void WriteStringQuoted(String theString, bool bLineEnd=false)
         {
-            theString = theString.Replace(quote, "\\" + quote);
+            if (theString != null)
+            {
+                theString = theString.Replace(quote, "\\" + quote);
+            }
             FStringWriter.Write(quote);
             FStringWriter.Write(theString);
             FStringWriter.Write(quote);
