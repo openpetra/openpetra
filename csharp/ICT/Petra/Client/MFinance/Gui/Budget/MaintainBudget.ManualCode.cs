@@ -117,12 +117,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 FCurrentBudgetYear = TFinanceControls.GetLedgerCurrentFinancialYear(FLedgerNumber);
             }
 
+			SetGridCheckActiveFieldsColumns();
+
             SetBudgetDefaultView();
             grdDetails.AutoSizeCells();
 
             SelectRowInGrid(1);
 
             FLoadCompleted = true;
+        }
+
+        private void SetGridCheckActiveFieldsColumns()
+        {
+			//Prepare grid to highlight inactive accounts/cost centres
+			// Create a cell view for special conditions
+			SourceGrid.Cells.Views.Cell italicCell = new SourceGrid.Cells.Views.Cell();
+			italicCell.Font = new System.Drawing.Font(grdDetails.Font, FontStyle.Italic);
+			italicCell.ForeColor = Color.Crimson;
+			
+			// Create a condition, apply the view when true, and assign a delegate to handle it
+			SourceGrid.Conditions.ConditionView conditionAccountCodeActive = new SourceGrid.Conditions.ConditionView(italicCell);
+			conditionAccountCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
+			{
+				DataRowView row = (DataRowView)itemRow;
+				string accountCode = row[ABudgetTable.ColumnAccountCodeId].ToString();
+				return !AccountIsActive(accountCode);
+			};
+			
+			SourceGrid.Conditions.ConditionView conditionCostCentreCodeActive = new SourceGrid.Conditions.ConditionView(italicCell);
+			conditionCostCentreCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
+			{
+				DataRowView row = (DataRowView)itemRow;
+				string costCentreCode = row[ABudgetTable.ColumnCostCentreCodeId].ToString();
+				return !CostCentreIsActive(costCentreCode);
+			};
+
+			// Add the condition to the columns that it should apply to
+			grdDetails.Columns[0].Conditions.Add(conditionCostCentreCodeActive);
+			grdDetails.Columns[1].Conditions.Add(conditionAccountCodeActive);
+
         }
 
         private void SetBudgetDefaultView()
@@ -141,10 +174,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbSelectBudgetYear, FLedgerNumber, true);
 
-            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
+            TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false, true);
 
             // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
-            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true);
+            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true, true);
 
             if (FNumberOfPeriods == 12)
             {
@@ -1186,8 +1219,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             FBudgetSequence = ARow.BudgetSequence;
 
-            AccountIsActive();
-            CostCentreIsActive();
+            //AccountIsActive();
+            //CostCentreIsActive();
 
             pnlBudgetTypeAdhoc.Visible = rbtAdHoc.Checked;
             pnlBudgetTypeSame.Visible = rbtSame.Checked;
@@ -1353,7 +1386,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
 
             currentAccount = cmbDetailAccountCode.GetSelectedString();
-            accountActive = AccountIsActive();
+            accountActive = AccountIsActive(currentAccount);
 
             //If change from combo action as opposed to moving rows
             if (FPreviouslySelectedDetailRow.BudgetSequence == FBudgetSequence)
@@ -1429,45 +1462,55 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             return foundRows.Length == 0;
         }
 
-        private bool AccountIsActive()
+        private bool AccountIsActive(string AAccountCode = "")
         {
             bool retVal = false;
 
             AAccountRow currentAccountRow = null;
 
-            if ((FAccountTable != null) && (cmbDetailAccountCode.SelectedIndex != -1) && (cmbDetailAccountCode.Count > 0)
-                && (cmbDetailAccountCode.GetSelectedString() != null))
+            //If empty, read value from combo
+            if (AAccountCode == string.Empty)
             {
-                currentAccountRow = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, cmbDetailAccountCode.GetSelectedString() });
-
-                if (currentAccountRow != null)
-                {
-                    retVal = currentAccountRow.AccountActiveFlag;
-                }
+	            if ((FAccountTable != null) && (cmbDetailAccountCode.SelectedIndex != -1) && (cmbDetailAccountCode.Count > 0)
+	            	&& (cmbDetailAccountCode.GetSelectedString() != null))
+				{
+            		AAccountCode = cmbDetailAccountCode.GetSelectedString();
+		        }
             }
 
+            currentAccountRow = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, AAccountCode });
+            if (currentAccountRow != null)
+            {
+                retVal = currentAccountRow.AccountActiveFlag;
+            }
+            
             return retVal;
         }
 
-        private bool CostCentreIsActive()
+        private bool CostCentreIsActive(string ACostCentreCode = "")
         {
             bool retVal = true;
 
             ACostCentreRow currentCostCentreRow = null;
 
-            if ((FCostCentreTable != null) && (cmbDetailCostCentreCode.SelectedIndex != -1) && (cmbDetailCostCentreCode.Count > 0)
-                && (cmbDetailCostCentreCode.GetSelectedString() != null))
+            //If empty, read value from combo
+            if (ACostCentreCode == string.Empty)
             {
-                currentCostCentreRow = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber,
-                                                                                                 cmbDetailCostCentreCode.GetSelectedString() });
+	            if ((FCostCentreTable != null) && (cmbDetailCostCentreCode.SelectedIndex != -1) && (cmbDetailCostCentreCode.Count > 0)
+	                && (cmbDetailCostCentreCode.GetSelectedString() != null))
+	            {
+            		ACostCentreCode = cmbDetailCostCentreCode.GetSelectedString();
+            	}
+           	}
 
-                if (currentCostCentreRow != null)
-                {
-                    retVal = currentCostCentreRow.CostCentreActiveFlag;
-                }
+            currentCostCentreRow = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber, ACostCentreCode });
+            if (currentCostCentreRow != null)
+            {
+                retVal = currentCostCentreRow.CostCentreActiveFlag;
             }
 
             return retVal;
         }
+        
     }
 }

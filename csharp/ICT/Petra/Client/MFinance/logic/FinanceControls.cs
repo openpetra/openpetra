@@ -165,7 +165,8 @@ namespace Ict.Petra.Client.MFinance.Logic
             bool APostingOnly,
             bool AExcludePosting,
             bool AActiveOnly,
-            bool ALocalOnly)
+            bool ALocalOnly,
+            bool AIndicateInactive = false)
         {
             string CheckedMember = "CHECKED";
             string DisplayMember = ACostCentreTable.GetCostCentreNameDBName();
@@ -326,12 +327,14 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AExcludePosting"></param>
         /// <param name="AActiveOnly"></param>
         /// <param name="ALocalOnly">Local Costcentres only; otherwise foreign costcentres (ie from other legal entities) are included)</param>
+        /// <param name="AIndicateInactive">Determines wether or not to indicate a cost centre as inactive</param>
         public static void InitialiseCostCentreList(ref TCmbAutoPopulated AControl,
             Int32 ALedgerNumber,
             bool APostingOnly,
             bool AExcludePosting,
             bool AActiveOnly,
-            bool ALocalOnly)
+            bool ALocalOnly,
+            bool AIndicateInactive = false)
         {
             DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, ALedgerNumber);
 
@@ -344,7 +347,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             Table.Rows.Add(emptyRow);
 
             //Highlight inactive Accounts
-            if (!AActiveOnly)
+            if (!AActiveOnly && AIndicateInactive)
             {
             	foreach (DataRow rw in Table.Rows)
             	{
@@ -371,11 +374,12 @@ namespace Ict.Petra.Client.MFinance.Logic
             bool APostingOnly,
             bool AExcludePosting,
             bool AActiveOnly,
-            bool ABankAccountOnly)
+            bool ABankAccountOnly,
+            bool AIndicateInactive = false)
         {
             InitialiseAccountList(
                 ref AControl, ALedgerNumber, APostingOnly,
-                AExcludePosting, AActiveOnly, ABankAccountOnly, "");
+                AExcludePosting, AActiveOnly, ABankAccountOnly, "", AIndicateInactive);
         }
 
         /// <summary>
@@ -388,13 +392,15 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AActiveOnly"></param>
         /// <param name="ABankAccountOnly"></param>
         /// <param name="AForeignCurrencyName">If a value is defined, only base curreny or the defined currency are filtered</param>
+        /// <param name="AIndicateInactive">Determines wether or not to indicate an account code as inactive</param>
         public static void InitialiseAccountList(ref TCmbAutoPopulated AControl,
             Int32 ALedgerNumber,
             bool APostingOnly,
             bool AExcludePosting,
             bool AActiveOnly,
             bool ABankAccountOnly,
-            string AForeignCurrencyName)
+            string AForeignCurrencyName,
+            bool AIndicateInactive = false)
         {
             DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, ALedgerNumber);
 
@@ -407,7 +413,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             Table.Rows.Add(emptyRow);
 
             //Highlight inactive Accounts
-            if (!AActiveOnly)
+            if (!AActiveOnly && AIndicateInactive)
             {
             	foreach (DataRow rw in Table.Rows)
             	{
