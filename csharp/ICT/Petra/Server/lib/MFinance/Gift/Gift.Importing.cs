@@ -182,7 +182,9 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     return false;
                                 }
 
-                                FMainDS.AGiftBatch.AcceptChanges();
+//                              FMainDS.AGiftBatch.AcceptChanges();  // changed to use a new TDS for each batch.
+                                FMainDS = new GiftBatchTDS();
+
                                 previousGift = null;
                             }
 

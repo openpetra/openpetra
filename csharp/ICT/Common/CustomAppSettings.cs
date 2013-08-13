@@ -376,7 +376,7 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// return the Integer value of a parameter or its default value
+        /// Return the Integer value of a parameter or its default value
         /// </summary>
         /// <param name="AKey">the name of the parameter</param>
         /// <param name="ADefaultValue">the default value in case the parameter cannot be found</param>
@@ -385,11 +385,7 @@ namespace Ict.Common
         {
             System.Int32 ReturnValue;
             ReturnValue = ADefaultValue;
-            try
-            {
-                ReturnValue = Convert.ToInt32(GetValue(AKey, (ADefaultValue == -1)));
-            }
-            catch (Exception)
+            if (!Int32.TryParse(GetValue(AKey, (ADefaultValue == -1)), out ReturnValue))
             {
                 if (ADefaultValue == -1)
                 {
@@ -420,11 +416,7 @@ namespace Ict.Common
         {
             System.Int64 ReturnValue;
             ReturnValue = ADefaultValue;
-            try
-            {
-                ReturnValue = Convert.ToInt64(GetValue(AKey, (ADefaultValue == -1)));
-            }
-            catch (Exception)
+            if (!Int64.TryParse(GetValue(AKey, (ADefaultValue == -1)), out ReturnValue))
             {
                 if (ADefaultValue == -1)
                 {
@@ -454,11 +446,7 @@ namespace Ict.Common
         {
             float ReturnValue = -1.0f;
 
-            try
-            {
-                ReturnValue = (float)Convert.ToDouble(GetValue(AKey));
-            }
-            catch (Exception)
+            if (!float.TryParse(GetValue(AKey), out ReturnValue))
             {
                 // Caller wanted the Value and didn't specify a Default: log that
                 TLogging.Log("Problem reading Double value from key " + AKey + " from config file.", TLoggingType.ToLogfile);
@@ -473,12 +461,7 @@ namespace Ict.Common
         public static double GetDouble(String AKey, double ADefault)
         {
             double ReturnValue = -1.0f;
-
-            try
-            {
-                ReturnValue = Convert.ToDouble(GetValue(AKey, false));
-            }
-            catch (Exception)
+            if (!double.TryParse(GetValue(AKey), out ReturnValue))
             {
                 ReturnValue = ADefault;
             }

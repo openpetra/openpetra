@@ -334,7 +334,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteStringQuoted(giftSummary.CurrencyCode);
             WriteGeneralNumber(giftSummary.ExchangeRateToBase);
             WriteStringQuoted(giftSummary.BankCostCentre);
-            WriteLineStringQuoted(giftSummary.GiftType);
+            WriteStringQuoted(giftSummary.GiftType, true);
         }
 
         void WriteGiftBatchLine(AGiftBatchRow giftBatch)
@@ -347,7 +347,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteStringQuoted(giftBatch.CurrencyCode);
             WriteGeneralNumber(giftBatch.ExchangeRateToBase);
             WriteStringQuoted(giftBatch.BankCostCentre);
-            WriteLineStringQuoted(giftBatch.GiftType);
+            WriteStringQuoted(giftBatch.GiftType, true);
         }
 
         void WriteGiftLine(AGiftRow gift, AGiftDetailRow giftDetails)
@@ -429,7 +429,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteStringQuoted(giftDetails.CommentTwoType);
             WriteStringQuoted(giftDetails.GiftCommentThree);
             WriteStringQuoted(giftDetails.CommentThreeType);
-            WriteBoolean(giftDetails.TaxDeductable);
+            WriteBoolean(giftDetails.TaxDeductable, true);
 //            WriteLineDate(gift.DateEntered);  //Don't write this - it can't be used by import.
         }
 
@@ -474,7 +474,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
         }
 
-        void WriteDelimiter(bool bLineEnd)
+        void WriteDelimiter(bool bLineEnd=false)
         {
             if (bLineEnd)
             {
@@ -486,7 +486,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
         }
 
-        void WriteStringQuoted(String theString, bool bLineEnd)
+        void WriteStringQuoted(String theString, bool bLineEnd=false)
         {
             theString = theString.Replace(quote, "\\" + quote);
             FStringWriter.Write(quote);
@@ -495,7 +495,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteCurrency(decimal currencyField, bool bLineEnd)
+        void WriteCurrency(decimal currencyField, bool bLineEnd=false)
         {
             Int64 integerNumber = Convert.ToInt64(currencyField);
 
@@ -511,74 +511,25 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteGeneralNumber(decimal generalNumberField, bool bLineEnd)
+        void WriteGeneralNumber(decimal generalNumberField, bool bLineEnd=false)
         {
             FStringWriter.Write(String.Format(FCultureInfo, "{0:g}", generalNumberField));
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteBoolean(bool aBool, bool bLineEnd)
+        void WriteBoolean(bool aBool, bool bLineEnd=false)
         {
             FStringWriter.Write(aBool ? "yes" : "no");
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteDate(DateTime dateField, bool bLineEnd)
+        void WriteDate(DateTime dateField, bool bLineEnd=false)
         {
             FStringWriter.Write(dateField.ToString(FDateFormatString));
             WriteDelimiter(bLineEnd);
         }
-
-        void WriteStringQuoted(String theString)
-        {
-            WriteStringQuoted(theString, false);
-        }
-
-        void WriteCurrency(decimal currencyField)
-        {
-            WriteGeneralNumber(currencyField, false);
-        }
-
-        void WriteGeneralNumber(decimal generalNumberField)
-        {
-            WriteGeneralNumber(generalNumberField, false);
-        }
-
-        void WriteBoolean(bool aBool)
-        {
-            WriteBoolean(aBool, false);
-        }
-
-        void WriteDate(DateTime dateField)
-        {
-            WriteDate(dateField, false);
-        }
-
-        void WriteLineStringQuoted(String theString)
-        {
-            WriteStringQuoted(theString, true);
-        }
-
-        void WriteLineCurrency(decimal currencyField)
-        {
-            WriteGeneralNumber(currencyField, true);
-        }
-
-        void WriteLineGeneralNumber(decimal generalNumberField)
-        {
-            WriteGeneralNumber(generalNumberField, true);
-        }
-
-        void WriteLineBoolean(bool aBool)
-        {
-            WriteBoolean(aBool, true);
-        }
-
-        void WriteLineDate(DateTime dateField)
-        {
-            WriteDate(dateField, true);
-        }
     }
+
     /// <summary>
     /// provides the (outer and inner) structure for summarizing gifts
     /// </summary>
