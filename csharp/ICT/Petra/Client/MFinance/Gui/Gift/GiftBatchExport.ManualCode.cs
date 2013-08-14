@@ -68,6 +68,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbDateFormat.Items.Insert(0, regionalDateString);
             }
 
+            txtDetailFieldKey.PartnerClass = "UNIT";
             LoadUserDefaults();
         }
 
@@ -413,16 +414,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         void BtnHelpClick(object sender, EventArgs e)
-        {
-            // TODO
-        }
-
-        void BtnRecipientClick(object sender, EventArgs e)
-        {
-            // TODO
-        }
-
-        void BtnFieldClick(object sender, EventArgs e)
         {
             // TODO
         }
