@@ -123,6 +123,25 @@ namespace Ict.Petra.Server.MFinance.Gift
                 param.Value = FLedgerNumber;
                 parameters.Add(param);
 
+                Int64 recipientNumber = (Int64) requestParams["RecipientNumber"];
+                Int64 fieldNumber = (Int64) requestParams["FieldNumber"];
+
+                if (recipientNumber != 0)
+                {
+                    SQLCommandDefines.Add("BYRECIPIENT", string.Empty);
+                    param = new OdbcParameter("RecipientNumber", OdbcType.Int);
+                    param.Value = recipientNumber;
+                    parameters.Add(param);
+                }
+
+                if (fieldNumber != 0)
+                {
+                    SQLCommandDefines.Add("BYFIELD", string.Empty);
+                    param = new OdbcParameter("fieldNumber", OdbcType.Int);
+                    param.Value = fieldNumber;
+                    parameters.Add(param);
+                }
+
                 if (requestParams.ContainsKey("BatchNumberStart"))
                 {
                     SQLCommandDefines.Add("BYBATCHNUMBER", string.Empty);
@@ -143,7 +162,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                     param.Value = (DateTime)requestParams["BatchDateTo"];
                     parameters.Add(param);
                 }
-
                 string sqlStatement = TDataBase.ReadSqlFile("Gift.GetGiftsToExport.sql", SQLCommandDefines);
 
                 DBAccess.GDBAccessObj.Select(MainDS,
@@ -193,8 +211,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             MainDS.AGiftDetail.DefaultView.Sort =
                 AGiftDetailTable.GetLedgerNumberDBName() + "," +
                 AGiftDetailTable.GetBatchNumberDBName() + "," +
-                AGiftDetailTable.GetGiftTransactionNumberDBName() + "," +
-                AGiftDetailTable.GetDetailNumberDBName();
+                AGiftDetailTable.GetGiftTransactionNumberDBName();
 
             foreach (AGiftBatchRow giftBatch in MainDS.AGiftBatch.Rows)
             {
@@ -220,11 +237,11 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 (GiftCounter / 25 + 4) * 5 > 90 ? 90 : (GiftCounter / 25 + 4) * 5);
                         }
 
-                        for (int detailNumber = 1; detailNumber <= gift.LastDetailNumber; detailNumber++)
+                        DataRowView[] selectedRowViews = MainDS.AGiftDetail.DefaultView.FindRows(
+                                new object[] { gift.LedgerNumber, gift.BatchNumber, gift.GiftTransactionNumber });
+                        foreach (DataRowView rv in selectedRowViews)
                         {
-                            AGiftDetailRow giftDetail = (AGiftDetailRow)MainDS.AGiftDetail.DefaultView.FindRows(
-                                new object[] { gift.LedgerNumber, gift.BatchNumber, gift.GiftTransactionNumber, detailNumber })[0].Row;
-
+                            AGiftDetailRow giftDetail = (AGiftDetailRow)rv.Row;
                             if (Summary)
                             {
                                 FCurrencyCode = FUseBaseCurrency ? BaseCurrency : giftBatch.CurrencyCode;
