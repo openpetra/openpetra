@@ -1218,9 +1218,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             FBudgetSequence = ARow.BudgetSequence;
 
-            //AccountIsActive();
-            //CostCentreIsActive();
-
             pnlBudgetTypeAdhoc.Visible = rbtAdHoc.Checked;
             pnlBudgetTypeSame.Visible = rbtSame.Checked;
             pnlBudgetTypeSplit.Visible = rbtSplit.Checked;
@@ -1321,7 +1318,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             if ((FLoadCompleted == false) || (FPreviouslySelectedDetailRow == null)
                 || (cmbDetailCostCentreCode.GetSelectedString() == String.Empty) || (cmbDetailCostCentreCode.SelectedIndex == -1))
             {
-                ShowComboActiveStatus(cmbDetailCostCentreCode, true);
                 return;
             }
 
@@ -1338,7 +1334,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             currentCostCentre,
                             cmbDetailAccountCode.GetSelectedString()));
                     cmbDetailCostCentreCode.SelectedIndex = -1;
-                    ShowComboActiveStatus(cmbDetailCostCentreCode, true);
                 }
                 else if (!costCentreActive)
                 {
@@ -1350,22 +1345,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes)
                     {
                         cmbDetailCostCentreCode.SelectedIndex = -1;
-                        ShowComboActiveStatus(cmbDetailCostCentreCode, true);
-                    }
-                    else
-                    {
-                        ShowComboActiveStatus(cmbDetailCostCentreCode, false);
                     }
                 }
-                else if (costCentreActive)
-                {
-                    //Put it bsack to any textbox colour
-                    ShowComboActiveStatus(cmbDetailCostCentreCode, true);
-                }
-            }
-            else
-            {
-                ShowComboActiveStatus(cmbDetailCostCentreCode, costCentreActive);
             }
         }
 
@@ -1380,7 +1361,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             if ((FLoadCompleted == false) || (FPreviouslySelectedDetailRow == null) || (cmbDetailAccountCode.GetSelectedString() == String.Empty)
                 || (cmbDetailAccountCode.SelectedIndex == -1))
             {
-                ShowComboActiveStatus(cmbDetailAccountCode, true);
                 return;
             }
 
@@ -1397,7 +1377,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             cmbDetailCostCentreCode.GetSelectedString(),
                             cmbDetailAccountCode.GetSelectedString()));
                     cmbDetailAccountCode.SelectedIndex = -1;
-                    ShowComboActiveStatus(cmbDetailAccountCode, true);
                 }
                 else if (!accountActive)
                 {
@@ -1409,37 +1388,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes)
                     {
                         cmbDetailAccountCode.SelectedIndex = -1;
-                        ShowComboActiveStatus(cmbDetailAccountCode, true);
-                    }
-                    else
-                    {
-                        ShowComboActiveStatus(cmbDetailAccountCode, false);
                     }
                 }
-                else if (accountActive)
-                {
-                    //Put it bsack to any textbox colour
-                    ShowComboActiveStatus(cmbDetailAccountCode, true);
-                }
-            }
-            else
-            {
-                ShowComboActiveStatus(cmbDetailAccountCode, accountActive);
             }
 
             UpdateCurrencyCode();
-        }
-
-        private void ShowComboActiveStatus(Ict.Petra.Client.CommonControls.TCmbAutoPopulated AControl, bool AIsActive)
-        {
-            if (AIsActive)
-            {
-                AControl.BackColor = txtAmount.BackColor;
-            }
-            else
-            {
-                AControl.BackColor = System.Drawing.Color.PaleVioletRed;
-            }
         }
 
         private bool CostCentreAccountCombinationIsUnique()
