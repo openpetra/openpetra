@@ -430,9 +430,9 @@ namespace Ict.Common.Controls
             {
                 string labelText = this.lblDescription.Text;
 
-                if (labelText.StartsWith("<I> "))
+                if (labelText.StartsWith("<INACTIVE> "))
                 {
-                    labelText = labelText.Substring(4);
+                    labelText = labelText.Substring(11);
                 }
 
                 return labelText;
@@ -704,7 +704,7 @@ namespace Ict.Common.Controls
 
         private void HighlightLabelForInactiveItems(string AItemDescription)
         {
-            bool itemIsActive = !(AItemDescription.StartsWith("<I> "));
+            bool itemIsActive = !(AItemDescription.StartsWith("<INACTIVE> "));
 
             if (itemIsActive && (this.lblDescription.BackColor != System.Drawing.SystemColors.Control))
             {

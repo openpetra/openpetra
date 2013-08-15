@@ -73,8 +73,62 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
+		
+        //private GridToolTipFunctionality FGridToolTip;
+        
+	    private class GridToolTipFunctionality : SourceGrid.Cells.Models.IToolTipText
+	    {
+	    	public static readonly GridToolTipFunctionality Default = new GridToolTipFunctionality();
+	    	
+	    	private TFrmMaintainBudget IFMaintainBudgetForm;
+	        
+	        public GridToolTipFunctionality()
+	        {
+	        	
+	        }
 
-        /// <summary>
+	        public GridToolTipFunctionality(TFrmMaintainBudget AMaintainBudgetForm)
+	        {
+	        	IFMaintainBudgetForm = AMaintainBudgetForm;
+	        }
+	        
+	        // This method will be called when a Tooltip is required
+	        // Return either a string or an empty string if no tooltip required
+	        public string GetToolTipText(SourceGrid.CellContext cellContext)
+	        {
+	            string toolTipMessage = string.Empty;
+				bool costCentreCodeIsInactive = false;
+	            bool accountCodeIsInactive = false;
+	        	
+	            SourceGrid.DataGrid grid = (SourceGrid.DataGrid)cellContext.Grid;
+	            
+	        	DataRowView row = (DataRowView)grid.Rows.IndexToDataSourceRow(cellContext.Position.Row);
+	            
+	        	if (row != null && IFMaintainBudgetForm != null)
+	        	{
+	        		costCentreCodeIsInactive =  !IFMaintainBudgetForm.CostCentreIsActive(row[0].ToString());
+		            accountCodeIsInactive =  !IFMaintainBudgetForm.AccountIsActive(row[1].ToString());
+		            
+		            if (costCentreCodeIsInactive && !accountCodeIsInactive)
+		            {
+		                toolTipMessage = "This row contains an inactive cost centre code";
+		            }
+		            else if (costCentreCodeIsInactive && accountCodeIsInactive)
+		            {
+		            	toolTipMessage = "This row contains an inactive cost centre code and an inactive account code";
+		            }
+		            else if (accountCodeIsInactive)
+		            {
+		            	toolTipMessage = "This row contains an inactive account code";
+		            }
+	        	}
+	        	
+	        	return "This row contains an inactive account code"; //toolTipMessage;
+	        }
+	        
+	    }
+
+	    /// <summary>
         /// AP is opened in this ledger
         /// </summary>
         public Int32 LedgerNumber
@@ -117,8 +171,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 FCurrentBudgetYear = TFinanceControls.GetLedgerCurrentFinancialYear(FLedgerNumber);
             }
 
-            SetGridCheckActiveFieldsColumns();
-
             SetBudgetDefaultView();
             grdDetails.AutoSizeCells();
 
@@ -127,16 +179,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             FLoadCompleted = true;
         }
 
-        private void SetGridCheckActiveFieldsColumns()
+        private void SetupExtraGridFunctionality()
         {
-            //Prepare grid to highlight inactive accounts/cost centres
+        	//Prepare grid to highlight inactive accounts/cost centres
             // Create a cell view for special conditions
-            SourceGrid.Cells.Views.Cell italicCell = new SourceGrid.Cells.Views.Cell();
-            italicCell.Font = new System.Drawing.Font(grdDetails.Font, FontStyle.Italic);
-            italicCell.ForeColor = Color.Crimson;
+            SourceGrid.Cells.Views.Cell strikeoutCell = new SourceGrid.Cells.Views.Cell();
+            strikeoutCell.Font = new System.Drawing.Font(grdDetails.Font, FontStyle.Strikeout);
+            //strikeoutCell.ForeColor = Color.Crimson;
 
             // Create a condition, apply the view when true, and assign a delegate to handle it
-            SourceGrid.Conditions.ConditionView conditionAccountCodeActive = new SourceGrid.Conditions.ConditionView(italicCell);
+            SourceGrid.Conditions.ConditionView conditionAccountCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell);
             conditionAccountCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
             {
                 DataRowView row = (DataRowView)itemRow;
@@ -144,7 +196,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 return !AccountIsActive(accountCode);
             };
 
-            SourceGrid.Conditions.ConditionView conditionCostCentreCodeActive = new SourceGrid.Conditions.ConditionView(italicCell);
+            SourceGrid.Conditions.ConditionView conditionCostCentreCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell);
             conditionCostCentreCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
             {
                 DataRowView row = (DataRowView)itemRow;
@@ -155,6 +207,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             // Add the condition to the columns that it should apply to
             grdDetails.Columns[0].Conditions.Add(conditionCostCentreCodeActive);
             grdDetails.Columns[1].Conditions.Add(conditionAccountCodeActive);
+
+			// Tooltips
+			grdDetails.ToolTipText = "";
+			
+			// Create a Tooltip Controller
+			SourceGrid.Cells.Controllers.ToolTipText defaultTTController = SourceGrid.Cells.Controllers.ToolTipText.Default;
+			defaultTTController.IsBalloon = true;
+			defaultTTController.ToolTipTitle = "Active Status";
+			defaultTTController.ToolTipIcon = ToolTipIcon.Info;
+			
+			// Add the controller and the model to the data columns that need it
+			grdDetails.Columns[0].DataCell.AddController(defaultTTController);
+			grdDetails.Columns[0].DataCell.Model.AddModel(GridToolTipFunctionality.Default);
+			grdDetails.Columns[1].DataCell.AddController(defaultTTController);
+			grdDetails.Columns[1].DataCell.Model.AddModel(GridToolTipFunctionality.Default);
         }
 
         private void SetBudgetDefaultView()
@@ -170,6 +237,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private void InitialiseControls()
         {
             ClearBudgetTextboxCurrencyFormat();
+
+            SetupExtraGridFunctionality();
 
             TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbSelectBudgetYear, FLedgerNumber, true);
 
