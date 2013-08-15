@@ -160,12 +160,14 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AExcludePosting"></param>
         /// <param name="AActiveOnly"></param>
         /// <param name="ALocalOnly">Local Costcentres only; otherwise foreign costcentres (ie from other legal entities) are included)</param>
+        /// <param name="AIndicateInactive">Determines wether or not to indicate an account code as inactive</param>
         public static void InitialiseCostCentreList(ref TClbVersatile AControl,
             Int32 ALedgerNumber,
             bool APostingOnly,
             bool AExcludePosting,
             bool AActiveOnly,
-            bool ALocalOnly)
+            bool ALocalOnly,
+            bool AIndicateInactive = false)
         {
             string CheckedMember = "CHECKED";
             string DisplayMember = ACostCentreTable.GetCostCentreNameDBName();
@@ -326,12 +328,14 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AExcludePosting"></param>
         /// <param name="AActiveOnly"></param>
         /// <param name="ALocalOnly">Local Costcentres only; otherwise foreign costcentres (ie from other legal entities) are included)</param>
+        /// <param name="AIndicateInactive">Determines wether or not to indicate a cost centre as inactive</param>
         public static void InitialiseCostCentreList(ref TCmbAutoPopulated AControl,
             Int32 ALedgerNumber,
             bool APostingOnly,
             bool AExcludePosting,
             bool AActiveOnly,
-            bool ALocalOnly)
+            bool ALocalOnly,
+            bool AIndicateInactive = false)
         {
             DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, ALedgerNumber);
 
@@ -343,11 +347,24 @@ namespace Ict.Petra.Client.MFinance.Logic
             emptyRow[ACostCentreTable.ColumnCostCentreNameId] = Catalog.GetString("Select a valid cost centre");
             Table.Rows.Add(emptyRow);
 
+            //Highlight inactive Accounts
+            if (!AActiveOnly && AIndicateInactive)
+            {
+                foreach (DataRow rw in Table.Rows)
+                {
+                    if ((rw[ACostCentreTable.ColumnCostCentreActiveFlagId] != null)
+                        && (rw[ACostCentreTable.ColumnCostCentreActiveFlagId].ToString() == "False"))
+                    {
+                        rw[ACostCentreTable.ColumnCostCentreNameId] = "<INACTIVE> " + rw[ACostCentreTable.ColumnCostCentreNameId];
+                    }
+                }
+            }
+
             AControl.InitialiseUserControl(Table,
                 ACostCentreTable.GetCostCentreCodeDBName(),
                 ACostCentreTable.GetCostCentreNameDBName(),
                 null);
-            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+            AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
 
             AControl.Filter = PrepareCostCentreFilter(APostingOnly, AExcludePosting, AActiveOnly, ALocalOnly);
         }
@@ -359,11 +376,12 @@ namespace Ict.Petra.Client.MFinance.Logic
             bool APostingOnly,
             bool AExcludePosting,
             bool AActiveOnly,
-            bool ABankAccountOnly)
+            bool ABankAccountOnly,
+            bool AIndicateInactive = false)
         {
             InitialiseAccountList(
                 ref AControl, ALedgerNumber, APostingOnly,
-                AExcludePosting, AActiveOnly, ABankAccountOnly, "");
+                AExcludePosting, AActiveOnly, ABankAccountOnly, "", AIndicateInactive);
         }
 
         /// <summary>
@@ -376,13 +394,15 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AActiveOnly"></param>
         /// <param name="ABankAccountOnly"></param>
         /// <param name="AForeignCurrencyName">If a value is defined, only base curreny or the defined currency are filtered</param>
+        /// <param name="AIndicateInactive">Determines wether or not to indicate an account code as inactive</param>
         public static void InitialiseAccountList(ref TCmbAutoPopulated AControl,
             Int32 ALedgerNumber,
             bool APostingOnly,
             bool AExcludePosting,
             bool AActiveOnly,
             bool ABankAccountOnly,
-            string AForeignCurrencyName)
+            string AForeignCurrencyName,
+            bool AIndicateInactive = false)
         {
             DataTable Table = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, ALedgerNumber);
 
@@ -394,11 +414,23 @@ namespace Ict.Petra.Client.MFinance.Logic
             emptyRow[AAccountTable.ColumnAccountCodeShortDescId] = Catalog.GetString("Select a valid account");
             Table.Rows.Add(emptyRow);
 
+            //Highlight inactive Accounts
+            if (!AActiveOnly && AIndicateInactive)
+            {
+                foreach (DataRow rw in Table.Rows)
+                {
+                    if ((rw[AAccountTable.ColumnAccountActiveFlagId] != null) && (rw[AAccountTable.ColumnAccountActiveFlagId].ToString() == "False"))
+                    {
+                        rw[AAccountTable.ColumnAccountCodeShortDescId] = "<INACTIVE> " + rw[AAccountTable.ColumnAccountCodeShortDescId];
+                    }
+                }
+            }
+
             AControl.InitialiseUserControl(Table,
                 AAccountTable.GetAccountCodeDBName(),
                 AAccountTable.GetAccountCodeShortDescDBName(),
                 null);
-            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+            AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
 
             AControl.Filter = PrepareAccountFilter(APostingOnly, AExcludePosting, AActiveOnly,
                 ABankAccountOnly, AForeignCurrencyName);
