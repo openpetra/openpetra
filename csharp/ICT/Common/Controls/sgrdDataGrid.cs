@@ -1250,7 +1250,14 @@ namespace Ict.Common.Controls
                 object value,
                 Type destinationType)
             {
-                return String.Format("{0:0000000000}", (Int64)value);
+                if (value != null)
+                {
+                    return String.Format("{0:0000000000}", (Int64)value);
+                }
+                else
+                {
+                    return String.Format("{0:0000000000}", 0);
+                }
             }
         }
 

@@ -708,7 +708,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (ClickedMenuItemName == "mniMaintainInterests")
             {
-                throw new NotImplementedException();
+                OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpInterests);
             }
             else if (ClickedMenuItemName == "mniMaintainReminders")
             {

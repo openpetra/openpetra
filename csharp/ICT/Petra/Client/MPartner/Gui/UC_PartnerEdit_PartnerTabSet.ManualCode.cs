@@ -73,7 +73,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private static readonly string StrFamilyTabHeader = Catalog.GetString("Family");
 
-// TODO        private static readonly string StrInterestsTabHeader = Catalog.GetString("Interests");
+        private static readonly string StrInterestsTabHeader = Catalog.GetString("Interests");
 
         private static readonly string StrNotesTabHeader = Catalog.GetString("Notes");
 
@@ -889,6 +889,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // see PreInitUserControl below
                     FUcoFinanceDetails.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
                 }
+                else if (ATabPageEventArgs.Tab == tpgInterests)
+                {
+                    FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpInterests;
+
+                    // Hook up RecalculateScreenParts Event
+                    FUcoInterests.RecalculateScreenParts += new TRecalculateScreenPartsEventHandler(RecalculateTabHeaderCounters);
+
+                    FUcoInterests.PartnerEditUIConnector = FPartnerEditUIConnector;
+                    FUcoInterests.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupPartnerEditDataChange);
+
+                    FUcoInterests.SpecialInitUserControl();
+
+                    CorrectDataGridWidthsAfterDataChange();
+                }
             }
         }
 
@@ -1058,7 +1072,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-#if TODO
             if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUCPartnerInterests))
             {
                 if (FMainDS.Tables.Contains(PPartnerInterestTable.GetTableName()))
@@ -1071,7 +1084,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     tpgInterests.Text = StrInterestsTabHeader + " (" + FMainDS.MiscellaneousData[0].ItemsCountInterests.ToString() + ')';
                 }
             }
-#endif
 
             if ((ASender is TUC_PartnerEdit_PartnerTabSet) || (ASender is TUC_PartnerNotes))
             {
@@ -1275,11 +1287,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                         tabPartners.SelectedTab = tpgOfficeSpecific;
                         break;
 
-#if TODO
                     case TPartnerEditTabPageEnum.petpInterests:
                         tabPartners.SelectedTab = tpgInterests;
                         break;
 
+#if TODO
                     case TPartnerEditTabPageEnum.petpReminders:
                         tabPartners.SelectedTab = tpgReminders;
                         break;

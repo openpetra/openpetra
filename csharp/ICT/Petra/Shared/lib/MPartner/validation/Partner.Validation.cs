@@ -871,7 +871,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.MailingDate,
                     ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
-
+                
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
@@ -955,6 +955,132 @@ namespace Ict.Petra.Shared.MPartner.Validation
                         ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnMainAccount,
                         ValidationControlsData.ValidationControl
                         ));
+            }
+        }
+
+        /// <summary>
+        /// Validates the Partner Interest screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <param name="AInterestCategory">The chosen interest category.</param>
+        public static void ValidatePartnerInterestManual(object AContext, PPartnerInterestRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
+            string AInterestCategory)
+        {
+            DataColumn ValidationColumn;
+            DataColumn ValidationColumn2;
+            DataColumn ValidationColumn3;
+            TValidationControlsData ValidationControlsData;
+            TValidationControlsData ValidationControlsData2;
+            TValidationControlsData ValidationControlsData3;
+            TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // remove possible previous columns from result collection
+            ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnLevelId];
+            AVerificationResultCollection.Remove(ValidationColumn);
+            ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnInterestId];
+            AVerificationResultCollection.Remove(ValidationColumn);
+            
+            // check that level is entered within valid range (depending on interest category)
+            ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnLevelId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                PInterestCategoryTable CategoryTable;
+                PInterestCategoryRow CategoryRow;
+                int LevelRangeLow;
+                int LevelRangeHigh;
+                
+                // check if level is within valid range (retrieve valid range from cached tables)
+                CategoryTable = (PInterestCategoryTable)TSharedDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.InterestCategoryList);
+                CategoryRow = (PInterestCategoryRow)CategoryTable.Rows.Find(new object[] {AInterestCategory});
+                if (   CategoryRow != null
+                    && !ARow.IsLevelNull())
+                {
+                    LevelRangeLow = 0;
+                    LevelRangeHigh = 0;
+                    if (!CategoryRow.IsLevelRangeLowNull())
+                    {
+                        LevelRangeLow = CategoryRow.LevelRangeLow;
+                    }
+                    if (!CategoryRow.IsLevelRangeHighNull())
+                    {
+                        LevelRangeHigh = CategoryRow.LevelRangeHigh;
+                    }
+                    
+                    if (   (   !CategoryRow.IsLevelRangeLowNull() 
+                            && ARow.Level < CategoryRow.LevelRangeLow)
+                        || (   !CategoryRow.IsLevelRangeHighNull() 
+                            && ARow.Level > CategoryRow.LevelRangeHigh))
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUE_OUTSIDE_OF_RANGE, 
+                                    new string[] { ValidationControlsData.ValidationControlLabel, LevelRangeLow.ToString(), LevelRangeHigh.ToString() })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);    
+        
+                        // Handle addition to/removal from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    }
+                }
+            }
+            
+            // check that at least one of interest, country or field is filled
+            ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnInterestId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                ValidationColumn2 = ARow.Table.Columns[PPartnerInterestTable.ColumnCountryId];
+    
+                if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                {
+                    ValidationColumn3 = ARow.Table.Columns[PPartnerInterestTable.ColumnFieldKeyId];
+        
+                    if (AValidationControlsDict.TryGetValue(ValidationColumn3, out ValidationControlsData3))
+                    {
+                        if (   (ARow.IsInterestNull() || ARow.Interest == String.Empty)
+                            && (ARow.IsCountryNull()  || ARow.Country  == String.Empty)
+                            && (ARow.IsFieldKeyNull() || ARow.FieldKey == 0))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INTEREST_NO_DATA_SET_AT_ALL, new string[] { })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);    
+            
+                            // Handle addition to/removal from TVerificationResultCollection
+                            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                        }
+                    }
+                }
+            }
+            
+            // check that interest is filled if a category is set
+            if (AInterestCategory != "")
+            {
+                ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnInterestId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    if (   ARow.IsInterestNull()
+                        || (ARow.Interest == String.Empty))
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INTEREST_NOT_SET, new string[] { AInterestCategory })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);    
+        
+                        // Handle addition to/removal from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    }
+                }
             }
         }
     }

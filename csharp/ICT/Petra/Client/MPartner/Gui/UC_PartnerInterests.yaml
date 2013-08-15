@@ -1,0 +1,47 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MPartner.Gui   
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    DetailTable: PPartnerInterest
+    FormType: edit
+    Template: controlMaintainTable
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlButtons, grdDetails]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnNew,btnDelete]
+            ControlsOrientation: horizontal
+        btnNew: {Width=80}
+            Action: actNew
+        btnDelete: {Width=80}
+            Action: actDelete
+        grdDetails:
+            Dock: Fill
+            Columns: []
+            ActionFocusRow: FocusedRowChanged
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [cmbPPartnerInterestInterestCategory]
+                Row1: [cmbPPartnerInterestInterest]
+                Row2: [cmbPPartnerInterestCountry]
+                Row3: [txtPPartnerInterestFieldKey]
+                Row4: [txtPPartnerInterestLevel, lblInterestLevelExplanation]
+                Row5: [txtPPartnerInterestComment]
+        cmbPPartnerInterestInterestCategory: {ColSpan=2, Label=Interest Category, List=InterestCategoryList, OnChange=FilterInterestCombo, Validation=true}
+        cmbPPartnerInterestInterest: {ColSpan=2, Label=Interest, List=InterestList, Validation=Pair(cmbPPartnerInterestInterestCategory)}
+        cmbPPartnerInterestCountry: {ColSpan=2, Label=Country, List=CountryList, Validation=true}
+        txtPPartnerInterestFieldKey: {ColSpan=2, Label=Field, Type=PartnerKey}
+        txtPPartnerInterestLevel: {Label=Level, Format=Integer, Width=30, Validation=true}
+        lblInterestLevelExplanation:
+        txtPPartnerInterestComment: {ColSpan=2, Label=Comment, Multiline=true, Stretch=fully}
