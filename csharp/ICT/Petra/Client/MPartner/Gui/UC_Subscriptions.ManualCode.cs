@@ -125,10 +125,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Loads Partner Types Data from Petra Server into FMainDS.
+        /// Loads Partner Subscription Data from Petra Server into FMainDS.
         /// </summary>
         /// <returns>true if successful, otherwise false.</returns>
-        public Boolean LoadDataOnDemand()
+        private Boolean LoadDataOnDemand()
         {
             Boolean ReturnValue;
 

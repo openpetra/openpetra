@@ -67,4 +67,9 @@ RootNode:
             Label: Local Data
             Image: OfficeSpecific.ico            
             DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_LocalPartnerData
+
+        tpgInterests: {LoadPageDynamically=true}
+            Label: Interests ({0})
+            Image: Types.ico
+            DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_PartnerInterests
             
