@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -634,6 +634,18 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         detail.RecipientKey = match.RecipientKey;
                         detail.RecipientLedgerNumber = match.RecipientLedgerNumber;
 
+                        AMotivationDetailRow motivation = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
+                            new object[] { ALedgerNumber, detail.MotivationGroupCode, detail.MotivationDetailCode });
+
+                        if (motivation == null)
+                        {
+                            AVerificationResult.Add(new TVerificationResult(
+                                    String.Format(Catalog.GetString("creating gift for match {0}"), transactionRow.Description),
+                                    String.Format(Catalog.GetString("Cannot find motivation group '{0}' and motivation detail '{1}'"),
+                                        detail.MotivationGroupCode, detail.MotivationDetailCode),
+                                    TResultSeverity.Resv_Critical));
+                        }
+
                         if (detail.CostCentreCode.Length == 0)
                         {
                             // try to retrieve the current costcentre for this recipient
@@ -646,9 +658,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                             }
                             else
                             {
-                                AMotivationDetailRow motivation = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
-                                    new object[] { ALedgerNumber, detail.MotivationGroupCode, detail.MotivationDetailCode });
-
                                 if (motivation != null)
                                 {
                                     detail.CostCentreCode = motivation.CostCentreCode;
