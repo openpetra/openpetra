@@ -273,6 +273,10 @@ namespace Ict.Petra.Server.MFinance.Common
                 // Set to the first month of the "next year".
                 SetProvisionalYearEndFlag(false);
                 SetNewFwdPeriodValue(1);
+                ledgerInfo.CurrentFinancialYear = ledgerInfo.CurrentFinancialYear + 1;
+                TAccountPeriodToNewYear accountPeriod = new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber);
+                accountPeriod.IsInInfoMode = false;
+                accountPeriod.RunEndOfPeriodOperation();
             }
             else if (ledgerInfo.CurrentPeriod == ledgerInfo.NumberOfAccountingPeriods)
             {
@@ -486,7 +490,7 @@ namespace Ict.Petra.Server.MFinance.Common
             if (FActualYear == NOT_INITIALIZED)
             {
                 throw new ApplicationException(
-                    "Actual Year is not initialized - you cannot test for the succes of RunEndOfPeriodOperation()");
+                    "Actual Year is not initialized - you cannot test for the success of RunEndOfPeriodOperation()");
             }
 
             return new TAccountPeriodToNewYear(FLedgerNumber, FActualYear);
@@ -667,6 +671,12 @@ namespace Ict.Petra.Server.MFinance.Common
             Int32 TempGLMSequence = -1;
 
             intEntryCount = 0;
+
+            if (!FInfoMode)
+            {
+                TCarryForward carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
+                carryForward.SetNextPeriod();
+            }
 
             if (PostingFromDS.AGeneralLedgerMaster.Rows.Count > 0)
             {

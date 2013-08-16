@@ -183,6 +183,30 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 return row.CurrentFinancialYear;
             }
+            set
+            {
+                OdbcParameter[] ParametersArray;
+                ParametersArray = new OdbcParameter[2];
+                ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
+                ParametersArray[0].Value = value;
+                ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
+                ParametersArray[1].Value = ledgerNumber;
+
+                bool NewTransaction;
+                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+                string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName() + " ";
+                strSQL += "SET " + ALedgerTable.GetCurrentFinancialYearDBName() + " = ? ";
+                strSQL += "WHERE " + ALedgerTable.GetLedgerNumberDBName() + " = ? ";
+                DBAccess.GDBAccessObj.ExecuteNonQuery(
+                    strSQL, transaction, ParametersArray);
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+
+                LoadInfoLine();
+            }
         }
 
 
