@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -265,7 +265,7 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 TVerificationResult tvr = new TVerificationResult(
                     Catalog.GetString("Ledger revaluation"),
-                    Catalog.GetString("Please run a ledger revalution first."), "",
+                    Catalog.GetString("Please run a ledger revaluation first."), "",
                     TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
                 // Error is critical but additional checks shall be done
                 verificationResults.Add(tvr);
@@ -468,7 +468,7 @@ namespace Ict.Petra.Server.MFinance.GL
             }
             else
             {
-                int ih = (int)dataTable.Rows[0][AGiftBatchTable.GetBatchNumberDBName()];
+                int ih = Convert.ToInt32(dataTable.Rows[0][AGiftBatchTable.GetBatchNumberDBName()]);
                 strH = ih.ToString();
 
                 if (Rows > 1)
