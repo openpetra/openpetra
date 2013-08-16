@@ -2041,7 +2041,7 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// print a date to string, optionally with time and even seconds
+        /// Print a date to string, optionally with time and even seconds
         /// </summary>
         /// <param name="ADateTime">the date to print</param>
         /// <param name="AIncludeTime">want to print time</param>
@@ -2053,22 +2053,16 @@ namespace Ict.Common
 
             ReturnValue = ADateTime.ToString("dd-MMM-yyyy").ToUpper();
 
-            // need to do something about german, Month March, should be rather M&Auml;R than MRZ?
-            // see also http:www.codeproject.com/csharp/csdatetimelibrary.asp?df=100&forumid=157955&exp=0&select=1387944
-            // and http:www.nntp.perl.org/group/perl.datetime/2003/05/msg2250.html
-            // better solution has been implemented: for export to CSV/Excel, the date should not be formatted as text, but formatted by the export/print program...
+            // For export to CSV/Excel, the date should not be formatted as text, but formatted by the export/print program...
 
-            // Mono and .Net return different strings for month of March in german culture
-            if (CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "de")
+            // Mono and .Net return different strings for month of March in German culture
+            if ((CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "de") && (ADateTime.Month == 3))
             {
-                if (ADateTime.Month == 3)
-                {
-                    ReturnValue = ReturnValue.Replace("MRZ", "MÄR");
-                }
+                ReturnValue = ReturnValue.Replace("MRZ", "MÄR");
             }
 
             // todo use short month names from local array, similar to GetLongMonthName
-            if (ATimeWithSeconds)
+            if (AIncludeTime)
             {
                 if (ATimeWithSeconds)
                 {
@@ -2079,7 +2073,6 @@ namespace Ict.Common
                     ReturnValue = ReturnValue + ' ' + ADateTime.ToShortTimeString();
                 }
             }
-
             return ReturnValue;
         }
 
