@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -308,10 +308,17 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             try
             {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                bool NewTransaction;
+                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
                 propertyCodeTable = AAccountPropertyAccess.LoadViaALedger(
                     ledgerInfo.LedgerNumber, transaction);
-                DBAccess.GDBAccessObj.CommitTransaction();
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
             }
             catch (Exception)
             {
@@ -421,10 +428,17 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             try
             {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                bool NewTransaction;
+                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
                 accountTable = AAccountAccess.LoadViaALedger(
                     ledgerInfo.LedgerNumber, transaction);
-                DBAccess.GDBAccessObj.CommitTransaction();
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
             }
             catch (Exception)
             {
@@ -666,12 +680,19 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private void LoadData()
         {
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            bool NewTransaction;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
 
             try
             {
                 periodTable = AAccountingPeriodAccess.LoadViaALedger(intLedgerNumber, transaction);
-                DBAccess.GDBAccessObj.CommitTransaction();
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
             }
             catch (Exception)
             {

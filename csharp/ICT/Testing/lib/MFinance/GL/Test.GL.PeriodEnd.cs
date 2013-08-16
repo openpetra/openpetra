@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -147,7 +147,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// Test_TCarryForwardYear
         /// </summary>
         [Test]
-        [Ignore("still fails and needs a review")]
         public void Test_TCarryForwardYear()
         {
             CommonNUnitFunctions.ResetDatabase();
@@ -162,15 +161,15 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 carryForward.SetNextPeriod();
             }
 
-            Assert.AreEqual(2010, carryForward.Year, "Standard");
+            Assert.AreEqual(DateTime.Now.Year, carryForward.Year, "Standard");
             TAccountPeriodToNewYear accountPeriodToNewYear =
-                new TAccountPeriodToNewYear(intLedgerNumber, 2010);
+                new TAccountPeriodToNewYear(intLedgerNumber, DateTime.Now.Year);
             accountPeriodToNewYear.IsInInfoMode = false;
             accountPeriodToNewYear.VerificationResultCollection = tvr;
             accountPeriodToNewYear.RunEndOfPeriodOperation();
 
             carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
-            Assert.AreEqual(2010, carryForward.Year, "Non standard ...");
+            Assert.AreEqual(DateTime.Now.Year, carryForward.Year, "Non standard ...");
             carryForward.SetNextPeriod();
 
             carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
@@ -178,7 +177,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             TLedgerInitFlagHandler ledgerInitFlag =
                 new TLedgerInitFlagHandler(intLedgerNumber, TLedgerInitFlagEnum.ActualYear);
-            ledgerInitFlag.AddMarker("2010");
+            ledgerInitFlag.AddMarker(DateTime.Now.Year.ToString());
             Assert.IsFalse(ledgerInitFlag.Flag, "Should be deleted ...");
         }
 
