@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash,timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -184,7 +184,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             try
             {
-                String fileName = txtFilename.Text;
+                String fileName = Path.GetFullPath(txtFilename.Text);
+
+                if (!Directory.Exists(Path.GetDirectoryName(fileName)))
+                {
+                    MessageBox.Show(Catalog.GetString("Please select an existing directory for this file!") + Environment.NewLine +
+                        String.Format(Catalog.GetString("Directory '{0}' does not exist"),
+                            Path.GetDirectoryName(fileName)),
+                        Catalog.GetString("Error"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
+
                 String dateFormatString = cmbDateFormat.GetSelectedString();
 
                 // might be called from the main navigation window (FMainDS is null), or from the GL Batch screen (reusing MainDS)
