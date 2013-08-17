@@ -150,8 +150,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TVerificationResultCollection VerificationResult;
 
             importer.ImportGiftBatches(parameters, FileContent, out VerificationResult);
-
-            int BatchNumber = importer.GetLastGiftBatchNumber();
         }
 
         /// <summary>

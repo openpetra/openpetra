@@ -65,9 +65,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_01_GL_Import()
         {
-            // reset database because period July has to be open
-            CommonNUnitFunctions.ResetDatabase();
-
             Hashtable requestParams = new Hashtable();
 
             requestParams.Add("ALedgerNumber", intLedgerNumber);
@@ -107,6 +104,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
         private void PrepareTestCaseData()
         {
+            // reset database because period July has to be open
+            CommonNUnitFunctions.ResetDatabase();
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
             // Check if some special test data are available - otherwise load ...
