@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -68,15 +68,41 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool AIsInInfoMode,
             out TVerificationResultCollection AVerificationResult)
         {
-            bool res = new TYearEnd().RunYearEnd(ALedgerNum, AIsInInfoMode,
-                out AVerificationResult);
+            bool NewTransaction;
 
-            if (!res)
+            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+
+            try
             {
-                AVerificationResult.Add(new TVerificationResult("Year End", "Success", "Success", TResultSeverity.Resv_Status));
-            }
+                bool res = new TYearEnd().RunYearEnd(ALedgerNum, AIsInInfoMode,
+                    out AVerificationResult);
 
-            return res;
+                if (!res)
+                {
+                    AVerificationResult.Add(new TVerificationResult("Year End", "Success", "Success", TResultSeverity.Resv_Status));
+                }
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+
+                return res;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("TPeriodIntervallConnector.TPeriodYearEnd() throws " + e.ToString());
+                AVerificationResult = new TVerificationResultCollection();
+                AVerificationResult.Add(
+                    new TVerificationResult(
+                        Catalog.GetString("Year End"),
+                        Catalog.GetString("Uncaught Exception: ") + e.Message,
+                        TResultSeverity.Resv_Critical));
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                return false;
+            }
         }
     }
 }

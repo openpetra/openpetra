@@ -277,6 +277,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 TAccountPeriodToNewYear accountPeriod = new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber);
                 accountPeriod.IsInInfoMode = false;
                 accountPeriod.RunEndOfPeriodOperation();
+                // SetYearMark always uses the next year. so to remove the mark from last year, we need -2
+                SetYearMark(-2, false);
             }
             else if (ledgerInfo.CurrentPeriod == ledgerInfo.NumberOfAccountingPeriods)
             {
@@ -288,7 +290,6 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 // Conventional Month->Month Switch ...
                 SetNewFwdPeriodValue(ledgerInfo.CurrentPeriod + 1);
-                SetYearMark(-1, false);
             }
 
             new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
