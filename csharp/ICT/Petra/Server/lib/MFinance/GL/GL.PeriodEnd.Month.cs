@@ -70,7 +70,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
 
             bool NewTransaction;
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             try
             {
