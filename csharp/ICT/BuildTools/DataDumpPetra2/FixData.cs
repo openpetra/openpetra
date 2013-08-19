@@ -39,7 +39,7 @@ namespace Ict.Tools.DataDumpPetra2
     public class TFixData
     {
         private static int FormSequence = 1;
-        private static List<string> PostcodeRegionsList = new List<string>();
+        private static List <string>PostcodeRegionsList = new List <string>();
 
         /// <summary>
         /// set a value of a row, position given by AColumnNames
@@ -601,11 +601,11 @@ namespace Ict.Tools.DataDumpPetra2
                     FormSequence++;
                 }
             }
-            
+
             if (ATableName == "p_postcode_region")
             {
                 string CurrentRegion = ANewRow[0];
-                
+
                 foreach (string OldRegion in PostcodeRegionsList)
                 {
                     if (CurrentRegion == OldRegion)
@@ -613,7 +613,7 @@ namespace Ict.Tools.DataDumpPetra2
                         return false;
                     }
                 }
-                    
+
                 PostcodeRegionsList.Add(CurrentRegion);
             }
 
