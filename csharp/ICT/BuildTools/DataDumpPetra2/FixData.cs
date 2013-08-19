@@ -28,6 +28,7 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using Ict.Common;
 using Ict.Tools.DBXML;
+using ICSharpCode.SharpZipLib.GZip;
 
 namespace Ict.Tools.DataDumpPetra2
 {
@@ -38,6 +39,7 @@ namespace Ict.Tools.DataDumpPetra2
     public class TFixData
     {
         private static int FormSequence = 1;
+        private static List<string> PostcodeRegionsList = new List<string>();
 
         /// <summary>
         /// set a value of a row, position given by AColumnNames
@@ -598,6 +600,21 @@ namespace Ict.Tools.DataDumpPetra2
                     SetValue(AColumnNames, ref ANewRow, "a_form_sequence_i", FormSequence.ToString());
                     FormSequence++;
                 }
+            }
+            
+            if (ATableName == "p_postcode_region")
+            {
+                string CurrentRegion = ANewRow[0];
+                
+                foreach (string OldRegion in PostcodeRegionsList)
+                {
+                    if (CurrentRegion == OldRegion)
+                    {
+                        return false;
+                    }
+                }
+                    
+                PostcodeRegionsList.Add(CurrentRegion);
             }
 
             return true;

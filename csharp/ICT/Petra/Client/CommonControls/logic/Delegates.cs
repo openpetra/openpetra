@@ -53,4 +53,11 @@ namespace Ict.Petra.Client.CommonControls.Logic
         out String AExtractName,
         out String AExtractDesc,
         Form AParentForm);
+
+    /// <summary>Delegate for a call to open a Modal Range Find screen</summary>
+    public delegate bool TDelegateOpenRangeFindScreen(String ARegionName,
+        out String[] ARangeName,
+        out String[] RangeFrom,
+        out String[] RangeTo,
+        Form AParentForm);
 }

@@ -43,8 +43,8 @@ CachedTables:
                 PMergeField:
                 PMailing:
                 PPostcodeRange:
-            CalculatedLists:
-                PostCodeRegionList: {Comment=Postcode regions and the ranges they contain}
+                PPostcodeRegion:
+                PPostcodeRegionRange:
         Subscriptions:
             DatabaseTables:
                 PPublication:
