@@ -49,7 +49,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
     public partial class TFrmPostcodeRegionSetup
     {
         private PPostcodeRegionRangeRow FPreviouslySelectedRangeRow = null;
-        
+
         private void InitializeManualCode()
         {
             PostcodeRegionsTDS MainDS = new PostcodeRegionsTDS();
@@ -60,21 +60,21 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             DataTable CacheRegionRangeDT =
                 TDataCache.GetCacheableDataTableFromCache("PostcodeRegionRangeList", String.Empty, null, out DataTableType);
             PPostcodeRangeTable RangeTable =
-                (PPostcodeRangeTable) TDataCache.GetCacheableDataTableFromCache("PostcodeRangeList", String.Empty, null, out DataTableType);
-            
+                (PPostcodeRangeTable)TDataCache.GetCacheableDataTableFromCache("PostcodeRangeList", String.Empty, null, out DataTableType);
+
             FMainDS.PPostcodeRegion.Merge(CacheRegionDT);
             FMainDS.PPostcodeRegionRange.Merge(CacheRegionRangeDT);
-            
+
             foreach (PostcodeRegionsTDSPPostcodeRegionRangeRow Row in FMainDS.PPostcodeRegionRange.Rows)
             {
-                PPostcodeRangeRow RangeRow = (PPostcodeRangeRow) RangeTable.Rows.Find(new object[] { Row.Range });
+                PPostcodeRangeRow RangeRow = (PPostcodeRangeRow)RangeTable.Rows.Find(new object[] { Row.Range });
                 Row.From = RangeRow.From;
                 Row.To = RangeRow.To;
             }
-            
+
             FMainDS.AcceptChanges();
         }
-        
+
         private void ShowDetailsManual(PPostcodeRegionRow ARow)
         {
             grdRanges.Columns.Clear();
@@ -82,7 +82,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             grdRanges.AddTextColumn(Catalog.GetString("From"), FMainDS.PPostcodeRegionRange.ColumnFrom, 140);
             grdRanges.AddTextColumn(Catalog.GetString("To"), FMainDS.PPostcodeRegionRange.ColumnTo, 140);
             grdRanges.Selection.EnableMultiSelection = true;
-            
+
             DataView MyDataView = FMainDS.PPostcodeRegionRange.DefaultView;
             MyDataView.RowFilter = PPostcodeRegionRangeTable.GetRegionDBName() + " = " + "'" + ARow.Region + "'";
             MyDataView.AllowNew = false;
@@ -113,9 +113,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             ARow.Region = NewName;
         }
-        
+
         // Deal with change of focus on grdRanges
-        private int FPrevRangeRowChangedRow = -1;  
+        private int FPrevRangeRowChangedRow = -1;
         private void FocusedRangeRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
         {
             DataRowView rowView = (DataRowView)grdRanges.Rows.IndexToDataSourceRow(e.Row);
@@ -124,17 +124,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 FPreviouslySelectedRangeRow = (PPostcodeRegionRangeRow)(rowView.Row);
             }
-            
+
             FPrevRangeRowChangedRow = e.Row;
         }
 
         private bool DeleteRowManual(PPostcodeRegionRow ARowToDelete, ref String ACompletionMessage)
         {
             ACompletionMessage = String.Empty;
-            
+
             FMainDS.PPostcodeRegionRange.DefaultView.Sort = PPostcodeRegionRangeTable.GetRegionDBName();
             DataRowView[] RangeRowsToDelete = FMainDS.PPostcodeRegionRange.DefaultView.FindRows(ARowToDelete.Region);
-            
+
             foreach (DataRowView RangeRowToDelete in RangeRowsToDelete)
             {
                 RangeRowToDelete.Row.Delete();
@@ -144,12 +144,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             return true;
         }
-        
+
         private void AddRangeRecord(Object sender, EventArgs e)
         {
             Form MainWindow = FPetraUtilsObject.GetCallerForm();
 
-            String RegionName = ((PPostcodeRegionRow) GetSelectedDetailRow()).Region;
+            String RegionName = ((PPostcodeRegionRow)GetSelectedDetailRow()).Region;
+
             String[] RangeName;
             String[] RangeFrom;
             String[] RangeTo;
@@ -162,21 +163,22 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 {
                     TCommonScreensForwarding.OpenRangeFindScreen.Invoke
                         (RegionName,
-                         out RangeName,
-                         out RangeFrom,
-                         out RangeTo,
-                         MainWindow);
+                        out RangeName,
+                        out RangeFrom,
+                        out RangeTo,
+                        MainWindow);
 
                     for (int i = 0; i < RangeName.Length; i++)
                     {
                         // check if this range already exists for region
                         Boolean RangeExists = false;
+
                         if (FMainDS.PPostcodeRegionRange.Rows.Find(new object[] { RegionName, RangeName[i] }) != null)
                         {
                             RangeExists = true;
                         }
 
-                        if (!RangeExists && RangeName[i].Length > 0)
+                        if (!RangeExists && (RangeName[i].Length > 0))
                         {
                             PostcodeRegionsTDSPPostcodeRegionRangeRow NewRow = FMainDS.PPostcodeRegionRange.NewRowTyped(true);
                             NewRow.Region = RegionName;
@@ -205,24 +207,25 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private TSubmitChangesResult StoreManualCode(ref PostcodeRegionsTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult Result = TRemote.MPartner.Mailroom.WebConnectors.SavePostcodeRegionsTDS(ref ASubmitDS, out AVerificationResult);
-            
+
             if (ASubmitDS.PPostcodeRegion != null)
             {
                 ASubmitDS.PPostcodeRegion.AcceptChanges();
             }
+
             if (ASubmitDS.PPostcodeRegionRange != null)
             {
                 ASubmitDS.PPostcodeRegionRange.AcceptChanges();
             }
-            
+
             return Result;
         }
-        
+
         private void DeleteRangeRecord(Object sender, EventArgs e)
         {
             DeletePPostcodeRegionRange();
         }
-        
+
         /// <summary>
         /// Standard method to delete the Data Row whose Details are currently displayed.
         /// There is full support for multi-row deletion.
@@ -263,11 +266,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                             Environment.NewLine +
                             Catalog.GetPluralString("Reason:", "Reasons:", VerificationResults.Count),
                             VerificationResults),
-                            Catalog.GetString("Record Deletion"));
+                        Catalog.GetString("Record Deletion"));
                     return;
                 }
 
                 string DeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+
                 if ((FPrimaryKeyControl != null) && (FPrimaryKeyLabel != null))
                 {
                     DeletionQuestion += String.Format("{0}{0}({1} {2})",
@@ -279,13 +283,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 bool AllowDeletion = true;
                 bool DeletionPerformed = false;
 
-                if(AllowDeletion)
+                if (AllowDeletion)
                 {
                     if ((MessageBox.Show(DeletionQuestion,
-                            Catalog.GetString("Confirm Delete"),
-                            MessageBoxButtons.YesNo,
-                            MessageBoxIcon.Question,
-                            MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
+                             Catalog.GetString("Confirm Delete"),
+                             MessageBoxButtons.YesNo,
+                             MessageBoxIcon.Question,
+                             MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
                     {
                         try
                         {
@@ -295,7 +299,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                         catch (Exception ex)
                         {
                             MessageBox.Show(String.Format(Catalog.GetString("An error occurred while deleting this record.{0}{0}{1}"),
-                                Environment.NewLine, ex.Message),
+                                    Environment.NewLine, ex.Message),
                                 Catalog.GetString("Error"),
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Warning);
@@ -314,16 +318,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                     }
                 }
 
-                if(DeletionPerformed && CompletionMessage.Length > 0)
+                if (DeletionPerformed && (CompletionMessage.Length > 0))
                 {
                     MessageBox.Show(CompletionMessage,
-                                 Catalog.GetString("Deletion Completed"));
+                        Catalog.GetString("Deletion Completed"));
                 }
             }
             else
             {
-                string DeletionQuestion = String.Format(Catalog.GetString("Do you want to delete the {0} highlighted rows?{1}{1}"), HighlightedRows.Length, Environment.NewLine);
+                string DeletionQuestion = String.Format(Catalog.GetString(
+                        "Do you want to delete the {0} highlighted rows?{1}{1}"), HighlightedRows.Length, Environment.NewLine);
                 DeletionQuestion += Catalog.GetString("Each record will be checked to confirm that it can be deleted.");
+
                 if (MessageBox.Show(DeletionQuestion,
                         Catalog.GetString("Confirm Delete"),
                         MessageBoxButtons.YesNo,
@@ -333,8 +339,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                     int recordsDeleted = 0;
                     int recordsUndeletable = 0;
                     int recordsDeleteDisallowed = 0;
-                    List<TMultiDeleteResult> listConflicts = new List<TMultiDeleteResult>();
-                    List<TMultiDeleteResult> listExceptions = new List<TMultiDeleteResult>();
+                    List <TMultiDeleteResult>listConflicts = new List <TMultiDeleteResult>();
+                    List <TMultiDeleteResult>listExceptions = new List <TMultiDeleteResult>();
 
                     this.Cursor = Cursors.WaitCursor;
 
@@ -386,14 +392,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                     }
 
                     this.Cursor = Cursors.Default;
-                    
+
                     // Select and display the details of the nearest row to the one previously selected
                     grdRanges.SelectRowInGrid(FPrevRangeRowChangedRow, true);
 
-                    if (recordsDeleted > 0 && CompletionMessage.Length > 0)
+                    if ((recordsDeleted > 0) && (CompletionMessage.Length > 0))
                     {
                         MessageBox.Show(CompletionMessage,
-                                     Catalog.GetString("Deletion Completed"));
+                            Catalog.GetString("Deletion Completed"));
                     }
 
                     //  Show the results of the multi-deletion
@@ -454,8 +460,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
                     if (showCancel)
                     {
-                        results += String.Format(Catalog.GetString("{0}{0}Click OK to review the details, or Cancel to return direct to the data screen"),
-                            Environment.NewLine);
+                        results +=
+                            String.Format(Catalog.GetString("{0}{0}Click OK to review the details, or Cancel to return direct to the data screen"),
+                                Environment.NewLine);
 
                         if (MessageBox.Show(results,
                                 Catalog.GetString("Delete Action Summary"),
@@ -476,10 +483,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 }
             }
         }
-        
+
         private string MakePKValuesStringManual(PPostcodeRegionRangeRow ARow)
         {
             string ReturnValue = String.Empty;
+
             object[] items = DataUtilities.GetPKValuesFromDataRow(ARow);
 
             for (int i = 0; i < items.Length; i++)

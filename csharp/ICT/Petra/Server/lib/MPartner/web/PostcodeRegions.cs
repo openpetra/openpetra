@@ -62,17 +62,18 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult Result = PostcodeRegionsTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-            
+
             // If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
             // Cache and inform all other Clients that they need to reload this Cacheable DataTable
             // the next time something in the Client accesses it.
             if (Result == TSubmitChangesResult.scrOK)
             {
-                
-                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheableMailingTablesEnum.PostcodeRegionList.ToString());
-                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheableMailingTablesEnum.PostcodeRegionRangeList.ToString());
+                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                    TCacheableMailingTablesEnum.PostcodeRegionList.ToString());
+                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                    TCacheableMailingTablesEnum.PostcodeRegionRangeList.ToString());
             }
-            
+
             return Result;
         }
     }

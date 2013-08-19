@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             CreateNewPPostcodeRange();
         }
-        
+
         /// <summary>
         /// Returns all the rows selected in the grid.
         /// </summary>
@@ -84,7 +84,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.Close();
         }
-        
+
         /// <summary>
         /// Used for passing parameters to the screen before it is actually shown.
         ///
@@ -95,12 +95,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         public void SetParameters(String ARegionName)
         {
             txtRegionName.Text = ARegionName;
-            
+
             pnlRegionName.Visible = true;
             pnlAcceptCancelButtons.Visible = true;
         }
     }
-    
+
     /// <summary>
     /// Manages the opening of a new/showing of an existing Instance of the Partner Find Screen.
     /// </summary>
@@ -130,25 +130,25 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             TFrmPostcodeRangeSetup SelectRange = new TFrmPostcodeRangeSetup(AParentForm);
             SelectRange.SetParameters(ARegionName);
-            
+
             dlgResult = SelectRange.ShowDialog();
 
             if (dlgResult == DialogResult.OK)
             {
                 DataRowView[] HighlightedRows = SelectRange.GetSelectedRows();
                 int NumberOfRows = HighlightedRows.Length;
-                
+
                 ARangeName = new string[NumberOfRows];
                 AFrom = new string[NumberOfRows];
                 ATo = new string[NumberOfRows];
-                
+
                 for (int i = 0; i < NumberOfRows; i++)
                 {
-                    ARangeName[i] = ((PPostcodeRangeRow) HighlightedRows[i].Row).Range;
-                    AFrom[i] = ((PPostcodeRangeRow) HighlightedRows[i].Row).From;
-                    ATo[i] = ((PPostcodeRangeRow) HighlightedRows[i].Row).To;
+                    ARangeName[i] = ((PPostcodeRangeRow)HighlightedRows[i].Row).Range;
+                    AFrom[i] = ((PPostcodeRangeRow)HighlightedRows[i].Row).From;
+                    ATo[i] = ((PPostcodeRangeRow)HighlightedRows[i].Row).To;
                 }
-                
+
                 return true;
             }
 
