@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using Ict.Common;
 using NUnit.Framework;
 using Ict.Testing.NUnitTools;
 using Ict.Testing.NUnitPetraServer;
@@ -147,7 +148,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// Test_TCarryForwardYear
         /// </summary>
         [Test]
-        [Ignore("still fails and needs a review")]
         public void Test_TCarryForwardYear()
         {
             CommonNUnitFunctions.ResetDatabase();
@@ -162,24 +162,30 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 carryForward.SetNextPeriod();
             }
 
-            Assert.AreEqual(2010, carryForward.Year, "Standard");
+            Assert.AreEqual(DateTime.Now.Year, carryForward.Year, "Standard");
             TAccountPeriodToNewYear accountPeriodToNewYear =
-                new TAccountPeriodToNewYear(intLedgerNumber, 2010);
+                new TAccountPeriodToNewYear(intLedgerNumber, DateTime.Now.Year);
             accountPeriodToNewYear.IsInInfoMode = false;
             accountPeriodToNewYear.VerificationResultCollection = tvr;
             accountPeriodToNewYear.RunEndOfPeriodOperation();
 
             carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
-            Assert.AreEqual(2010, carryForward.Year, "Non standard ...");
+            Assert.AreEqual(DateTime.Now.Year, carryForward.Year, "Non standard ...");
             carryForward.SetNextPeriod();
 
-            carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
-            carryForward.SetNextPeriod();
+            TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber);
+            Assert.AreEqual(1, LedgerInfo.CurrentFinancialYear, "after year end, we are in a new financial year");
+            Assert.AreEqual(1, LedgerInfo.CurrentPeriod, "after year end, we are in Period 1");
 
             TLedgerInitFlagHandler ledgerInitFlag =
                 new TLedgerInitFlagHandler(intLedgerNumber, TLedgerInitFlagEnum.ActualYear);
-            ledgerInitFlag.AddMarker("2010");
+            ledgerInitFlag.AddMarker(DateTime.Now.Year.ToString());
             Assert.IsFalse(ledgerInitFlag.Flag, "Should be deleted ...");
+
+            carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
+            carryForward.SetNextPeriod();
+            LedgerInfo = new TLedgerInfo(intLedgerNumber);
+            Assert.AreEqual(2, LedgerInfo.CurrentPeriod, "new month, period 2");
         }
 
         /// <summary>

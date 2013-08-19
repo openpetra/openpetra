@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -69,25 +69,51 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
 
-            bool res = new TMonthEnd().RunMonthEnd(ALedgerNumber, AInfoMode,
-                out AVerificationResults);
+            bool NewTransaction;
 
-            if (!res && !AInfoMode)
+            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+
+            try
             {
-                AAccountingPeriodTable PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, ledgerInfo.CurrentPeriod, null);
+                bool res = new TMonthEnd().RunMonthEnd(ALedgerNumber, AInfoMode,
+                    out AVerificationResults);
 
-                if (PeriodTbl.Rows.Count > 0)
+                if (!res && !AInfoMode)
                 {
-                    AVerificationResults.Add(
-                        new TVerificationResult(
-                            Catalog.GetString("Month End"),
-                            String.Format(Catalog.GetString("The period {0} - {1} has been closed."),
-                                PeriodTbl[0].PeriodStartDate.ToShortDateString(), PeriodTbl[0].PeriodEndDate.ToShortDateString()),
-                            TResultSeverity.Resv_Status));
-                }
-            }
+                    AAccountingPeriodTable PeriodTbl = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, ledgerInfo.CurrentPeriod, null);
 
-            return res;
+                    if (PeriodTbl.Rows.Count > 0)
+                    {
+                        AVerificationResults.Add(
+                            new TVerificationResult(
+                                Catalog.GetString("Month End"),
+                                String.Format(Catalog.GetString("The period {0} - {1} has been closed."),
+                                    PeriodTbl[0].PeriodStartDate.ToShortDateString(), PeriodTbl[0].PeriodEndDate.ToShortDateString()),
+                                TResultSeverity.Resv_Status));
+                    }
+                }
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+
+                return res;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("TPeriodIntervallConnector.TPeriodMonthEnd() throws " + e.ToString());
+                AVerificationResults = new TVerificationResultCollection();
+                AVerificationResults.Add(
+                    new TVerificationResult(
+                        Catalog.GetString("Month End"),
+                        Catalog.GetString("Uncaught Exception: ") + e.Message,
+                        TResultSeverity.Resv_Critical));
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                return false;
+            }
         }
     }
 }
@@ -254,7 +280,12 @@ namespace Ict.Petra.Server.MFinance.GL
                     ledgerInfo.LedgerNumber,
                     AAccountTable.GetForeignCurrencyFlagDBName());
 
-            if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, IsolationLevel.ReadCommitted)) == 0)
+            bool NewTransaction;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, transaction)) == 0)
             {
                 // no revaluation is needed
                 return;
@@ -265,7 +296,7 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 TVerificationResult tvr = new TVerificationResult(
                     Catalog.GetString("Ledger revaluation"),
-                    Catalog.GetString("Please run a ledger revalution first."), "",
+                    Catalog.GetString("Please run a ledger revaluation first."), "",
                     TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
                 // Error is critical but additional checks shall be done
                 verificationResults.Add(tvr);
@@ -433,14 +464,21 @@ namespace Ict.Petra.Server.MFinance.GL
             ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar);
             ParametersArray[2].Value = MFinanceConstants.BATCH_UNPOSTED;
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            bool NewTransaction;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
             string strSQL = "SELECT * FROM PUB_" + AGiftBatchTable.GetTableDBName() + " ";
             strSQL += "WHERE " + AGiftBatchTable.GetLedgerNumberDBName() + " = ? ";
             strSQL += "AND " + AGiftBatchTable.GetGlEffectiveDateDBName() + " <= ? ";
             strSQL += "AND " + AGiftBatchTable.GetBatchStatusDBName() + " = ? ";
             dataTable = DBAccess.GDBAccessObj.SelectDT(
                 strSQL, AAccountingPeriodTable.GetTableDBName(), transaction, ParametersArray);
-            DBAccess.GDBAccessObj.CommitTransaction();
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
         }
 
         /// <summary>
@@ -468,7 +506,7 @@ namespace Ict.Petra.Server.MFinance.GL
             }
             else
             {
-                int ih = (int)dataTable.Rows[0][AGiftBatchTable.GetBatchNumberDBName()];
+                int ih = Convert.ToInt32(dataTable.Rows[0][AGiftBatchTable.GetBatchNumberDBName()]);
                 strH = ih.ToString();
 
                 if (Rows > 1)
@@ -497,10 +535,17 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="ALedgerNumber">the ledger Number</param>
         public GetSuspenseAccountInfo(int ALedgerNumber)
         {
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            bool NewTransaction;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
 
             table = ASuspenseAccountAccess.LoadViaALedger(ALedgerNumber, transaction);
-            DBAccess.GDBAccessObj.CommitTransaction();
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
         }
 
         /// <summary>
@@ -580,7 +625,10 @@ namespace Ict.Petra.Server.MFinance.GL
             ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar);
             ParametersArray[3].Value = MFinanceConstants.BATCH_CANCELLED;
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            bool NewTransaction;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
             string strSQL = "SELECT * FROM PUB_" + ABatchTable.GetTableDBName() + " ";
             strSQL += "WHERE " + ABatchTable.GetLedgerNumberDBName() + " = ? ";
             strSQL += "AND " + ABatchTable.GetBatchPeriodDBName() + " = ? ";
@@ -588,7 +636,11 @@ namespace Ict.Petra.Server.MFinance.GL
             strSQL += "AND " + ABatchTable.GetBatchStatusDBName() + " <> ? ";
             batches = DBAccess.GDBAccessObj.SelectDT(
                 strSQL, ABatchTable.GetTableDBName(), transaction, ParametersArray);
-            DBAccess.GDBAccessObj.CommitTransaction();
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
         }
 
         /// <summary>

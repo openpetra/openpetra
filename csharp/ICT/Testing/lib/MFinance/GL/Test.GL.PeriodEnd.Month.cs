@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangu
+//       wolfgangu, timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 
 using System;
+using System.IO;
+using System.Collections;
 using System.Data.Odbc;
 using NUnit.Framework;
 using Ict.Testing.NUnitTools;
@@ -37,6 +39,7 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
 
 
+using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -45,6 +48,8 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Server.MFinance.Gift.WebConnectors;
+using Ict.Petra.Server.MFinance.Gift;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
@@ -52,7 +57,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     /// Test of the GL.PeriodEnd.Month routines ...
     /// </summary>
     [TestFixture]
-    [Ignore("still fails and needs a review")]
     public class TestGLPeriodicEndMonth
     {
         private const int intLedgerNumber = 43;
@@ -77,7 +81,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             //UnloadTestData_GetBatchInfo();
 
             TVerificationResultCollection verificationResult;
-            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+            bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
                 intLedgerNumber, true, out verificationResult);
             bool blnStatusArrived = false;
 
@@ -93,7 +97,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
 
             Assert.IsTrue(blnStatusArrived, "Status message hase been shown");
-            Assert.IsTrue(blnHaseErrors, "This is a Critital Message");
+            Assert.IsTrue(blnHasErrors, "This is a Critital Message");
             UnloadTestData_GetBatchInfo();
         }
 
@@ -106,7 +110,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Suspense();
 
             TVerificationResultCollection verificationResult;
-            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+            bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
                 intLedgerNumber, true, out verificationResult);
             bool blnStatusArrived = false;
 
@@ -122,8 +126,30 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
 
             Assert.IsTrue(blnStatusArrived, "Status message has been shown");
-            Assert.IsTrue(blnHaseErrors, "This is a Critital Message");
+            Assert.IsTrue(blnHasErrors, "This is a Critital Message");
             new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Unsuspense();
+        }
+
+        private void ImportGiftBatch()
+        {
+            TGiftImporting importer = new TGiftImporting();
+
+            string testFile = TAppSettingsManager.GetValue("GiftBatch.file", "../../csharp/ICT/Testing/lib/MFinance/SampleData/sampleGiftBatch.csv");
+            StreamReader sr = new StreamReader(testFile);
+            string FileContent = sr.ReadToEnd();
+
+            sr.Close();
+
+            Hashtable parameters = new Hashtable();
+            parameters.Add("Delimiter", ",");
+            parameters.Add("ALedgerNumber", intLedgerNumber);
+            parameters.Add("DateFormatString", "yyyy-MM-dd");
+            parameters.Add("NumberFormat", "American");
+            parameters.Add("NewLine", Environment.NewLine);
+
+            TVerificationResultCollection VerificationResult;
+
+            importer.ImportGiftBatches(parameters, FileContent, out VerificationResult);
         }
 
         /// <summary>
@@ -132,11 +158,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_04_UnpostedGifts()
         {
-            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                "test-sql\\gl-test-gift-batch-data.sql");
+            ImportGiftBatch();
 
             TVerificationResultCollection verificationResult;
-            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+            bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
                 intLedgerNumber, true, out verificationResult);
             bool blnStatusArrived = false;
 
@@ -152,7 +177,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
 
             Assert.IsTrue(blnStatusArrived, "Message has not been shown");
-            Assert.IsTrue(blnHaseErrors, "This is a Critital Message");
+            Assert.IsTrue(blnHasErrors, "This is a Critical Message");
         }
 
         /// <summary>
@@ -162,7 +187,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_PEMM_05_Revaluation()
         {
             TVerificationResultCollection verificationResult;
-            bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+            bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
                 intLedgerNumber, true, out verificationResult);
             bool blnStatusArrived = false;
 
@@ -178,7 +203,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
 
             Assert.IsTrue(blnStatusArrived, "Status message has been shown");
-            Assert.IsTrue(blnHaseErrors, "This is a Critital Message");
+            Assert.IsTrue(blnHasErrors, "This is a Critital Message");
             new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Unsuspense();
         }
 
@@ -205,7 +230,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 ledgerInfo1 = new TLedgerInfo(intLedgerNumber);
                 // Period end now shall run ...
                 TVerificationResultCollection verificationResult;
-                bool blnHaseErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+                bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
                     intLedgerNumber, false, out verificationResult);
 
                 ledgerInfo2 = new TLedgerInfo(intLedgerNumber);
@@ -216,7 +241,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                         ledgerInfo2.CurrentPeriod, "counter ok");
                 }
 
-                Assert.IsFalse(blnHaseErrors, "Month end without any error");
+                Assert.IsFalse(blnHasErrors, "Month end without any error");
                 System.Diagnostics.Debug.WriteLine("Counter: " + counter.ToString());
             } while (!ledgerInfo2.ProvisionalYearEndFlag);
         }
