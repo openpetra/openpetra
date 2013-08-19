@@ -12,23 +12,35 @@ RootNode:
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+        actAccept: {ActionClick=BtnAccept_Click}
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlDetails]
+            Controls: [pnlRegionName, pnlGrid, pnlDetails]
             Dock: Fill
+        pnlRegionName:
+            Dock: Top
+            Controls: [txtRegionName]
+            Visible: false
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlButtons, grdDetails, pnlAcceptCancelButtons]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
             ControlsOrientation: horizontal
+        pnlAcceptCancelButtons:
+            Dock: Right
+            Controls: [btnAccept, btnCancel]
+            ControlsOrientation: vertical
+            Visible: false
         btnNew:
             Action: actNew
             Width: 80
         btnDelete:
             Action: actDelete
             Width: 80
+        btnAccept: {Label=&Accept, Enabled=true}
+        btnCancel: {Label=&Cancel}
         grdDetails:
             Dock: Fill
             Columns: [DetailRange, DetailFrom, DetailTo]
@@ -38,6 +50,7 @@ RootNode:
             Controls:
                 Row0: [txtDetailRange]
                 Row1: [txtDetailFrom, txtDetailTo]
+        txtRegionName: {ReadOnly=true, Stretch=horizontally}
         txtDetailRange: {Label=Range Name, Width=200}
         txtDetailFrom: {Label=From, Width=120}
         txtDetailTo: {Label=To, Width=120}

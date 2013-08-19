@@ -62,6 +62,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             CreateNewPPostcodeRange();
         }
+        
+        /// <summary>
+        /// Returns all the rows selected in the grid.
+        /// </summary>
+        public DataRowView[] GetSelectedRows()
+        {
+            return grdDetails.SelectedDataRowsAsDataRowView;
+        }
 
         private void ValidateDataDetailsManual(PPostcodeRangeRow ARow)
         {
@@ -69,6 +77,82 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
              *
              * TSharedPartnerValidation_Partner.ValidatePostcodeRangesSetup(this, ARow, ref VerificationResultCollection,
              *  FPetraUtilsObject.ValidationControlsDict);*/
+        }
+
+        private void BtnAccept_Click(System.Object sender, System.EventArgs e)
+        {
+            this.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.Close();
+        }
+        
+        /// <summary>
+        /// Used for passing parameters to the screen before it is actually shown.
+        ///
+        /// </summary>
+        /// <param name="ARegionName">Pass in the selected Region's name.
+        /// </param>
+        /// <returns>void</returns>
+        public void SetParameters(String ARegionName)
+        {
+            txtRegionName.Text = ARegionName;
+            
+            pnlRegionName.Visible = true;
+            pnlAcceptCancelButtons.Visible = true;
+        }
+    }
+    
+    /// <summary>
+    /// Manages the opening of a new/showing of an existing Instance of the Partner Find Screen.
+    /// </summary>
+    public static class TPostcodeRangeSetupManager
+    {
+        /// <summary>
+        /// Opens a Modal instance of the Partner Find screen.
+        /// </summary>
+        /// <param name="ARegionName">Pass in the selected Region's name.</param>
+        /// <param name="ARangeName">Name of the found Range.</param>
+        /// <param name="AFrom">'From' field of the found Partner.</param>
+        /// <param name="ATo">'To' field of the found Partner.</param>
+        /// <param name="AParentForm"></param>
+        /// <returns>True if a Partner was found and accepted by the user,
+        /// otherwise false.</returns>
+        public static bool OpenModalForm(String ARegionName,
+            out String[] ARangeName,
+            out String[] AFrom,
+            out String[] ATo,
+            Form AParentForm)
+        {
+            DialogResult dlgResult;
+
+            ARangeName = null;
+            AFrom = null;
+            ATo = null;
+
+            TFrmPostcodeRangeSetup SelectRange = new TFrmPostcodeRangeSetup(AParentForm);
+            SelectRange.SetParameters(ARegionName);
+            
+            dlgResult = SelectRange.ShowDialog();
+
+            if (dlgResult == DialogResult.OK)
+            {
+                DataRowView[] HighlightedRows = SelectRange.GetSelectedRows();
+                int NumberOfRows = HighlightedRows.Length;
+                
+                ARangeName = new string[NumberOfRows];
+                AFrom = new string[NumberOfRows];
+                ATo = new string[NumberOfRows];
+                
+                for (int i = 0; i < NumberOfRows; i++)
+                {
+                    ARangeName[i] = ((PPostcodeRangeRow) HighlightedRows[i].Row).Range;
+                    AFrom[i] = ((PPostcodeRangeRow) HighlightedRows[i].Row).From;
+                    ATo[i] = ((PPostcodeRangeRow) HighlightedRows[i].Row).To;
+                }
+                
+                return true;
+            }
+
+            return false;
         }
     }
 }

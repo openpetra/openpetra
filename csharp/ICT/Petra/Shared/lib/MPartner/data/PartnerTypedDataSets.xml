@@ -487,5 +487,13 @@
     <Table sqltable="p_contact_attribute"/>
     <Table sqltable="p_contact_attribute_detail"/>
   </DataSet>   
+
+  <DataSet name="PostcodeRegionsTDS">
+    <Table sqltable="p_postcode_region"/>
+    <Table sqltable="p_postcode_region_range">
+      <Field name="From" sqltable="p_postcode_range" sqlfield="p_from_c"/>
+      <Field name="To" sqltable="p_postcode_range" sqlfield="p_to_c"/>
+    </Table>
+  </DataSet>
   
 </PetraDataSets>

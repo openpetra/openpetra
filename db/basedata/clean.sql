@@ -249,6 +249,7 @@ DELETE FROM p_reason_subscription_cancelled;
 DELETE FROM p_reason_subscription_given;
 DELETE FROM p_publication_cost;
 DELETE FROM p_publication;
+DELETE FROM p_postcode_region_range;
 DELETE FROM p_postcode_region;
 DELETE FROM p_postcode_range;
 DELETE FROM p_merge_field;

@@ -64,15 +64,5 @@ namespace Ict.Petra.Server.MPartner.Mailing.Cacheable
             System.Type TmpType;
             return GetCacheableTable(ACacheableTable, "", false, out TmpType);
         }
-
-        private DataTable GetPostCodeRegionListTable(TDBTransaction AReadTransaction, string ATableName)
-        {
-            // sort table by region as this is needed by autopopulated combobox to filter regions
-            StringCollection OrderFields = new StringCollection();
-
-            OrderFields.Add(PPostcodeRegionTable.GetRegionDBName());
-
-            return PPostcodeRegionAccess.LoadAll(null, AReadTransaction, OrderFields, 0, 0);
-        }
     }
 }
