@@ -5,7 +5,7 @@
 //       timop
 //		 cthomas
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,6 +30,7 @@ using System.Data.Odbc;
 using System.Xml;
 using System.IO;
 using System.Text;
+using System.Globalization;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.IO;
@@ -142,6 +143,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             return 0;
         }
 
+        private static CultureInfo FCultureInfoNumberFormat;
+
         /// <summary>
         /// Import the budget from a CSV file
         /// </summary>
@@ -162,11 +165,12 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             StreamReader DataFile = new StreamReader(ACSVFileName, System.Text.Encoding.Default);
 
             string Separator = AFdlgSeparator[0];
-            //string DateFormat = AFdlgSeparator[1];
-            //string NumberFormat = AFdlgSeparator[2];
+            string DateFormat = AFdlgSeparator[1];
+            string NumberFormat = AFdlgSeparator[2];
 
-            //CultureInfo MyCultureInfoDate = new CultureInfo("en-GB");
-            //MyCultureInfoDate.DateTimeFormat.ShortDatePattern = DateFormat;
+            FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
+            CultureInfo MyCultureInfoDate = new CultureInfo("en-GB");
+            MyCultureInfoDate.DateTimeFormat.ShortDatePattern = DateFormat;
 
             // To store the From and To currencies
             // Use an array to store these to make for easy
@@ -448,7 +452,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     case MFinanceConstants.BUDGET_SAME:
 
                         string periodAmountString = StringHelper.GetNextCSV(ref Line, Separator, false);
-                        decimal periodAmount = Convert.ToDecimal(periodAmountString);
+                        decimal periodAmount = Convert.ToDecimal(periodAmountString, FCultureInfoNumberFormat);
 
                         for (int i = 0; i < numPeriods; i++)
                         {
@@ -460,7 +464,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     case MFinanceConstants.BUDGET_SPLIT:
 
                         string totalAmountString = StringHelper.GetNextCSV(ref Line, Separator, false);
-                        decimal totalAmount = Convert.ToDecimal(totalAmountString);
+                        decimal totalAmount = Convert.ToDecimal(totalAmountString, FCultureInfoNumberFormat);
                         decimal perPeriodAmount = Math.Truncate(totalAmount / numPeriods);
                         decimal lastPeriodAmount = totalAmount - perPeriodAmount * (numPeriods - 1);
 
@@ -482,7 +486,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     case MFinanceConstants.BUDGET_INFLATE_BASE:
 
                         string period1AmountString = StringHelper.GetNextCSV(ref Line, Separator, false);
-                        decimal period1Amount = Convert.ToDecimal(period1AmountString);
+                        decimal period1Amount = Convert.ToDecimal(period1AmountString, FCultureInfoNumberFormat);
                         string periodNPercentString = string.Empty;
 
                         ABudgetPeriods[0] = period1Amount;
@@ -490,7 +494,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         for (int i = 1; i < numPeriods; i++)
                         {
                             periodNPercentString = StringHelper.GetNextCSV(ref Line, Separator, false);
-                            ABudgetPeriods[i] = ABudgetPeriods[i - 1] * (1 + (Convert.ToDecimal(periodNPercentString) / 100));
+                            ABudgetPeriods[i] = ABudgetPeriods[i - 1] * (1 + (Convert.ToDecimal(periodNPercentString, FCultureInfoNumberFormat) / 100));
                         }
 
                         break;
@@ -498,13 +502,13 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     case MFinanceConstants.BUDGET_INFLATE_N:
 
                         string periodStartAmountString = StringHelper.GetNextCSV(ref Line, Separator, false);
-                        decimal periodStartAmount = Convert.ToDecimal(periodStartAmountString);
+                        decimal periodStartAmount = Convert.ToDecimal(periodStartAmountString, FCultureInfoNumberFormat);
 
                         string inflateAfterPeriodString = StringHelper.GetNextCSV(ref Line, Separator, false);
-                        decimal inflateAfterPeriod = Convert.ToDecimal(inflateAfterPeriodString);
+                        decimal inflateAfterPeriod = Convert.ToDecimal(inflateAfterPeriodString, FCultureInfoNumberFormat);
 
                         string inflationRateString = StringHelper.GetNextCSV(ref Line, Separator, false);
-                        decimal inflationRate = Convert.ToDecimal(inflationRateString);
+                        decimal inflationRate = Convert.ToDecimal(inflationRateString, FCultureInfoNumberFormat);
 
                         decimal subsequentPeriodsAmount = periodStartAmount * (1 + inflationRate);
 
@@ -540,7 +544,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         for (int i = 0; i < numPeriods; i++)
                         {
                             periodNAmount = StringHelper.GetNextCSV(ref Line, Separator, false);
-                            ABudgetPeriods[i] = Convert.ToDecimal(periodNAmount);
+                            ABudgetPeriods[i] = Convert.ToDecimal(periodNAmount, FCultureInfoNumberFormat);
                         }
 
                         break;

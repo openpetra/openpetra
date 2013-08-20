@@ -101,6 +101,7 @@ namespace Ict.Petra.Shared
             list.Add("p_merge_field");
             list.Add("p_postcode_range");
             list.Add("p_postcode_region");
+            list.Add("p_postcode_region_range");
             list.Add("p_publication");
             list.Add("p_publication_cost");
             list.Add("p_reason_subscription_given");

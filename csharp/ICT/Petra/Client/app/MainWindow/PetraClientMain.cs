@@ -54,6 +54,7 @@ using Ict.Petra.Client.MCommon.Gui;
 using Ict.Petra.Client.MConference.Gui;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Client.MPartner.Gui.Extracts;
+using Ict.Petra.Client.MPartner.Gui.Setup;
 using Ict.Petra.Client.MPersonnel.Gui;
 using Ict.Petra.Client.MFinance.Gui;
 using Ict.Petra.Client.MSysMan.Gui;
@@ -662,6 +663,7 @@ namespace Ict.Petra.Client.App.PetraClient
             TCommonScreensForwarding.OpenConferenceFindScreen = @TConferenceFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenEventFindScreen = @TEventFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenExtractFindScreen = @TExtractFindScreenManager.OpenModalForm;
+            TCommonScreensForwarding.OpenRangeFindScreen = @TPostcodeRangeSetupManager.OpenModalForm;
 
             // Set up Delegate for the opening of Forms from the Main Menu
             Ict.Common.Controls.TLstTasks.OpenNewOrExistingForm = @Ict.Petra.Client.CommonForms.TFormsList.OpenNewOrExistingForm;

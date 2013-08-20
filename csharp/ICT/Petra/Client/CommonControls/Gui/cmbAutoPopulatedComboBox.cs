@@ -797,32 +797,8 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.PostCodeRegionList:
 
-                    /* Region table contains several records per actual region, depending on how many
-                    * postcode ranges there are in a region. Therefore it is important to remove "duplicate"
-                    * rows and just have one row per actual region code in the combobox. It is important
-                    *                     that region rows arrive in "order by Region" from server */
-                    PPostcodeRegionTable RegionTable = (PPostcodeRegionTable)TDataCache.TMPartner.GetCacheableMailingTable(
-                    TCacheableMailingTablesEnum.PostCodeRegionList);
-                    PPostcodeRegionRow RegionRow;
-                    int CountRegionRows = RegionTable.Rows.Count;
-                    string CurrentRegion = "";
-
-                    // go through table in reverse order so rows can be deleted and only one row per region code remains
-                    for (int Index = CountRegionRows - 1; Index >= 0; Index--)
-                    {
-                        RegionRow = (PPostcodeRegionRow)RegionTable.Rows[Index];
-
-                        if (RegionRow.Region != CurrentRegion)
-                        {
-                            CurrentRegion = RegionRow.Region;
-                        }
-                        else
-                        {
-                            RegionRow.Delete();
-                        }
-                    }
-
-                    InitialiseUserControl(RegionTable,
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.PostcodeRegionList),
                     PPostcodeRegionTable.GetRegionDBName(),
                     null,
                     null);

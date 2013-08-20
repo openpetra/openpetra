@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash,timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -195,11 +195,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if ((!dtpDateFrom.ValidDate()) || (!dtpDateTo.ValidDate()))
                 {
-                MessageBox.Show(Catalog.GetString("Date Format invalid"),
-                    Catalog.GetString("Error"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-                return;
+                    MessageBox.Show(Catalog.GetString("Date Format invalid"),
+                        Catalog.GetString("Error"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
                 }
             }
 
@@ -232,7 +232,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ArrayList batches = new ArrayList();
 
 
-            foreach (ABatchRow batch  in FMainDS.ABatch.Rows)
+            foreach (ABatchRow batch in FMainDS.ABatch.Rows)
             {
                 // check conditions for exporting this batch
                 // Batch Status

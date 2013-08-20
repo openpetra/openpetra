@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -62,10 +62,18 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         /// Test_YearEnd
         /// </summary>
         [Test]
-        [Ignore("still fails and needs a review")]
         public void Test_YearEnd()
         {
             CommonNUnitFunctions.ResetDatabase();
+
+            TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber);
+            Assert.AreEqual(0, LedgerInfo.CurrentFinancialYear, "before the year end, we should be in year 0");
+
+            TAccountPeriodInfo periodInfo = new TAccountPeriodInfo(intLedgerNumber, 1);
+            Assert.AreEqual(new DateTime(DateTime.Now.Year,
+                    1,
+                    1), periodInfo.PeriodStartDate, "Calendar from base database should start with January 1st of this year");
+
             CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end.sql");
             CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end-account-property.sql");
 
@@ -132,6 +140,23 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 }
             }
 
+            // check before year end that income and expense accounts are not 0
+            int intYear = 0;
+            CheckGLMEntry(intLedgerNumber, intYear, strAccountBank,
+                -50, 0, 50, 0, 100, 0);
+            CheckGLMEntry(intLedgerNumber, intYear, strAccountExpense,
+                150, 0, 150, 0, 200, 0);
+            CheckGLMEntry(intLedgerNumber, intYear, strAccountGift,
+                100, 0, 200, 0, 300, 0);
+
+            // test that we cannot post to period 12 anymore, all periods are closed?
+            LedgerInfo = new TLedgerInfo(intLedgerNumber);
+            Assert.AreEqual(true, LedgerInfo.ProvisionalYearEndFlag, "provisional year end flag should be set");
+            Assert.AreEqual(false, LedgerInfo.YearEndFlag, "year end has not been run yet");
+            Assert.AreEqual(TYearEndProcessStatus.RESET_STATUS,
+                (TYearEndProcessStatus)LedgerInfo.YearEndProcessStatus,
+                "year end process status should be still on RESET");
+
             TReallocation reallocation = new TReallocation(new TLedgerInfo(intLedgerNumber));
             reallocation.VerificationResultCollection = verificationResult;
             reallocation.IsInInfoMode = false;
@@ -143,7 +168,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             reallocation.IsInInfoMode = true;
             Assert.AreEqual(0, reallocation.JobSize, "Check the number of reallocation jobs ...");
 
-            int intYear = 0;
+            // check amounts after reallocation
             CheckGLMEntry(intLedgerNumber, intYear, strAccountBank,
                 -50, 0, 50, 0, 100, 0);
             CheckGLMEntry(intLedgerNumber, intYear, strAccountExpense,
@@ -154,7 +179,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TGlmNewYearInit glmNewYearInit = new TGlmNewYearInit(intLedgerNumber, intYear);
             glmNewYearInit.VerificationResultCollection = verificationResult;
             glmNewYearInit.IsInInfoMode = false;
-            Assert.AreEqual(10, glmNewYearInit.JobSize, "Check the number of reallocation jobs ...");
+            Assert.Greater(glmNewYearInit.JobSize, 0, "Check the number of reallocation jobs ...");
             glmNewYearInit.RunEndOfPeriodOperation();
             glmNewYearInit = new TGlmNewYearInit(intLedgerNumber, intYear);
             glmNewYearInit.VerificationResultCollection = verificationResult;
@@ -162,6 +187,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.AreEqual(0, glmNewYearInit.JobSize, "Check the number of reallocation jobs ...");
 
             ++intYear;
+            // check after year end that income and expense accounts are 0, bank account remains
             CheckGLMEntry(intLedgerNumber, intYear, strAccountBank,
                 -50, 0, 50, 0, 100, 0);
             CheckGLMEntry(intLedgerNumber, intYear, strAccountExpense,
@@ -169,12 +195,27 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             CheckGLMEntry(intLedgerNumber, intYear, strAccountGift,
                 0, 0, 0, 0, 0, 0);
 
+            // 8200 is the account that the expenses and income from last year is moved to
             TGlmInfo glmInfo = new TGlmInfo(intLedgerNumber, intYear, "8200");
             glmInfo.Reset();
             glmInfo.MoveNext();
 
             Assert.AreEqual(100, glmInfo.YtdActualBase);
             Assert.AreEqual(0, glmInfo.ClosingPeriodActualBase);
+
+            LedgerInfo = new TLedgerInfo(intLedgerNumber);
+            Assert.AreEqual(1, LedgerInfo.CurrentFinancialYear, "after year end, we are in a new financial year");
+            Assert.AreEqual(1, LedgerInfo.CurrentPeriod, "after year end, we are in Period 1");
+            Assert.AreEqual(true, LedgerInfo.YearEndFlag, "after year end, year end flag should be set, because it has been run");
+            Assert.AreEqual(false, LedgerInfo.ProvisionalYearEndFlag, "after year end, provisional year end flag should not be set");
+            Assert.AreEqual(TYearEndProcessStatus.RESET_STATUS,
+                (TYearEndProcessStatus)LedgerInfo.YearEndProcessStatus,
+                "after year end, year end process status should be RESET");
+
+            periodInfo = new TAccountPeriodInfo(intLedgerNumber, 1);
+            Assert.AreEqual(new DateTime(DateTime.Now.Year + 1,
+                    1,
+                    1), periodInfo.PeriodStartDate, "new Calendar should start with January 1st of next year");
         }
 
         void CheckGLMEntry(int ALedgerNumber, int AYear, string AAccount,

@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash,timop,dougm
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -282,7 +282,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 Hashtable requestParams = new Hashtable();
                 requestParams.Add("ALedgerNumber", FLedgerNumber);
-                requestParams.Add("Delimiter", delimiter);
+                requestParams.Add("Delimiter", ConvertDelimiter(cmbDelimiter.GetSelectedString(), false));
                 requestParams.Add("DateFormatString", cmbDateFormat.GetSelectedString());
                 requestParams.Add("Summary", rbtSummary.Checked);
                 requestParams.Add("IncludeUnposted", chkIncludeUnposted.Checked);
@@ -291,7 +291,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 requestParams.Add("RecipientNumber", Convert.ToInt64(txtDetailRecipientKey.Text));
                 requestParams.Add("FieldNumber", Convert.ToInt64(txtDetailFieldKey.Text));
                 requestParams.Add("DateForSummary", dtpDateSummary.Date);
-                requestParams.Add("NumberFormat", numberFormat);
+                requestParams.Add("NumberFormat", ConvertNumberFormat(cmbNumberFormat));
                 requestParams.Add("ExtraColumns", chkExtraColumns.Checked);
 
                 if (rbtBatchNumberSelection.Checked)

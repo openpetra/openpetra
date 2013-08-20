@@ -2,26 +2,31 @@ RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
     FormTitle: Maintain Postcode Regions
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PostcodeRegionsTDS
     DetailTable: PPostcodeRegion
-    CacheableTable: PostCodeRegionList
+    CacheableTable: PostcodeRegionList
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
     FormType: edit
-    Template: windowMaintainCacheableTable
-    WindowWidth: 660
+    Template: windowEdit
+    WindowWidth: 550
     WindowHeight: 650
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
-        actDeleteRegion: {Label=&Delete}
-        actAdd: {Label=&Add}
-        actDelete: {Label=&Remove, ActionClick=DeleteRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}
+        actAdd: {Label=&Add, ActionClick=AddRangeRecord}
+        actDeleteRange: {Label=&Remove, ActionClick=DeleteRangeRecord}
     Controls:
         pnlContent:
-            Controls: [pnlRegionGrid, pnlDetails, pnlRangeGrid]
+            Controls: [pnlRegionData, grpRangeGrid]
             Dock: Fill
+        pnlRegionData:
+            #Stretch: horizontally
+            Dock: Fill
+            Controls: [pnlRegionGrid, pnlDetails]
         pnlRegionGrid:
             Height: 250
             Stretch: horizontally
-            Controls: [pnlRegionButtons, grdRegions]
+            Controls: [pnlRegionButtons, grdDetails]
         pnlRegionButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -30,34 +35,36 @@ RootNode:
             Stretch: horizontally
             Controls:
                 Row0: [txtDetailRegion]
-        pnlRangeGrid:
-            Stretch: horizontally
-            Height: 250
-            Controls: [pnlRangeButtons, grdDetails]
         pnlRangeButtons:
             Dock: Bottom
             Controls: [btnAdd, btnRemove]
             ControlsOrientation: horizontal
+        grpRangeGrid:
+            Stretch: horizontally
+            Dock: Bottom
+            Height: 250
+            Controls: [pnlRangeButtons, grdRanges]
+            Label: Selected Region's Ranges
         btnNew:
             Action: actNew
             Width: 80
         btnDelete:
-            Action: actDeleteRegion
+            Action: actDelete
             Width: 80
         btnAdd:
             Action: actAdd
             Width: 80
         btnRemove:
-            Action: actDelete
+            Action: actDeleteRange
             Width: 80
-        grdRegions:
-            Dock: Fill
-            Columns: [DetailRegion]
-            ActionFocusRow: RegionsFocusedRowChanged
-            EnableMultiSelection: false
         grdDetails:
             Dock: Fill
-            Columns: [DetailRange]
+            Columns: [DetailRegion]
             ActionFocusRow: FocusedRowChanged
+            SortOrder: DetailRegion ASC
+            EnableMultiSelection: false
+        grdRanges:
+            Dock: Fill
+            ActionFocusRow: FocusedRangeRowChanged
 
         txtDetailRegion: {Label=Region Name, Width=200}

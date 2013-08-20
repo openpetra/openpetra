@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -323,7 +323,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return (string)glmRow[AGeneralLedgerMasterTable.GetAccountCodeDBName()];
+                return glmRow[AGeneralLedgerMasterTable.GetAccountCodeDBName()].ToString();
             }
         }
 
@@ -334,7 +334,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return (string)glmRow[AGeneralLedgerMasterTable.GetCostCentreCodeDBName()];
+                return glmRow[AGeneralLedgerMasterTable.GetCostCentreCodeDBName()].ToString();
             }
         }
 
@@ -345,7 +345,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return (int)glmRow[AGeneralLedgerMasterTable.GetGlmSequenceDBName()];
+                return Convert.ToInt32(glmRow[AGeneralLedgerMasterTable.GetGlmSequenceDBName()]);
             }
         }
 
@@ -356,7 +356,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return (decimal)glmRow[AGeneralLedgerMasterTable.GetYtdActualBaseDBName()];
+                return Convert.ToDecimal(glmRow[AGeneralLedgerMasterTable.GetYtdActualBaseDBName()]);
             }
         }
 
@@ -367,7 +367,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return (decimal)glmRow[AGeneralLedgerMasterTable.GetClosingPeriodActualBaseDBName()];
+                return Convert.ToDecimal(glmRow[AGeneralLedgerMasterTable.GetClosingPeriodActualBaseDBName()]);
             }
         }
     }

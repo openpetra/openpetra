@@ -106,6 +106,12 @@ namespace Ict.Petra.Shared
              ErrorMessageTitle = "Invalid Data Entered")]
         public const String ERR_VALUESIDENTICAL_ERROR = "GEN.00008V";
 
+        /// <summary>Values must not be the same.</summary>
+        [ErrCodeAttribute("Value outside of range.",
+             ErrorMessageText = "Value for '{0}' must be between {1} and {2}",
+             ErrorMessageTitle = "Invalid Data Entered")]
+        public const String ERR_VALUE_OUTSIDE_OF_RANGE = "GEN.00009V";
+
         #endregion
 
         #region Conference Module-specific error codes
@@ -210,6 +216,18 @@ namespace Ict.Petra.Shared
              FullDescription = "The International Postal Code entered is not a valid International Postal Type.")]
         public const String ERR_INVALIDINTERNATIONALPOSTALCODE = "PARTN.00008V";
 
+        /// <summary>Interest must not be empty if category is set.</summary>
+        [ErrCodeAttribute("Interest not set.",
+             ErrorMessageText = "Interest must be selected since category '{0}' is set.",
+             ErrorMessageTitle = "Interest not set")]
+        public const String ERR_INTEREST_NOT_SET = "PARTN.00016V";
+
+        /// <summary>One of Interest, Country or Field must be set for Partner Interest record.</summary>
+        [ErrCodeAttribute("Insufficient Data.",
+             ErrorMessageText = "At least one of Interest, Country or Field must be set.",
+             ErrorMessageTitle = "Insufficient Data")]
+        public const String ERR_INTEREST_NO_DATA_SET_AT_ALL = "PARTN.00017V";
+
         #region Subscriptions
 
         /// <summary>Subscription Status Mandatory.</summary>
@@ -256,6 +274,11 @@ namespace Ict.Petra.Shared
         public const String ERR_BANKINGDETAILS_ATLEASTONEMAINACCOUNT = "PARTN.00014V";
 
         #endregion
+
+        /// <summary>Partner Interest: Level needs to be within valid range.</summary>
+        [ErrCodeAttribute("Level must be within valid range.",
+             ErrorMessageText = "Level must be between {0} and {1}.")]
+        public const String ERR_INTEREST_LEVEL_NOT_WITHIN_RANGE = "PARTN.00015V";
 
         #endregion
 
