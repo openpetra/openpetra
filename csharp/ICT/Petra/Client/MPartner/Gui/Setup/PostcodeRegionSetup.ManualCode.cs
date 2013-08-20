@@ -52,7 +52,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         private void InitializeManualCode()
         {
-            PostcodeRegionsTDS MainDS = new PostcodeRegionsTDS();
             Type DataTableType;
 
             DataTable CacheRegionDT =
