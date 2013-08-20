@@ -228,6 +228,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void ExportBatches(object sender, EventArgs e)
         {
             StreamWriter sw1 = null;
+
             try
             {
                 sw1 = new StreamWriter(txtFilename.Text,
@@ -251,6 +252,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         txtBatchNumberStart.NumberValueInt = 0;
                     }
+
                     if (!txtBatchNumberEnd.NumberValueInt.HasValue)
                     {
                         txtBatchNumberEnd.NumberValueInt = 999999;
@@ -271,7 +273,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 String numberFormat = ConvertNumberFormat(cmbNumberFormat);
                 String delimiter = ConvertDelimiter(cmbDelimiter.GetSelectedString(), false);
 
-                if ((numberFormat == "European" && delimiter == ",") || (numberFormat == "American" && delimiter == "."))
+                if (((numberFormat == "European") && (delimiter == ",")) || ((numberFormat == "American") && (delimiter == ".")))
                 {
                     MessageBox.Show(Catalog.GetString("Numeric Decimal cannot be the same as the delimiter."),
                         Catalog.GetString("Error"),

@@ -69,6 +69,7 @@ namespace Ict.Petra.Client.MFinance.Logic
 
                 TDlgSelectCSVSeparator DlgSeparator = new TDlgSelectCSVSeparator(false);
                 Boolean fileCanOpen = DlgSeparator.OpenCsvFile(DialogBox.FileName);
+
                 if (!fileCanOpen)
                 {
                     MessageBox.Show(Catalog.GetString("Unable to open file."),

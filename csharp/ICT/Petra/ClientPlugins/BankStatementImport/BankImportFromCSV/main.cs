@@ -73,6 +73,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromCSV
             TDlgSelectCSVSeparator DlgSeparator = new TDlgSelectCSVSeparator(false);
 
             Boolean fileCanOpen = DlgSeparator.OpenCsvFile(DialogOpen.FileName);
+
             if (!fileCanOpen)
             {
                 MessageBox.Show(Catalog.GetString("Unable to open file."),

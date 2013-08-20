@@ -449,6 +449,7 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 theString = theString.Replace(quote, "\\" + quote);
             }
+
             FStringWriter.Write(quote);
             FStringWriter.Write(theString);
             FStringWriter.Write(quote);

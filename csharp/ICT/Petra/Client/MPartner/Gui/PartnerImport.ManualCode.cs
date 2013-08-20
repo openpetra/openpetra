@@ -165,6 +165,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // select separator, make sure there is a header line with the column captions/names
                     TDlgSelectCSVSeparator dlgSeparator = new TDlgSelectCSVSeparator(true);
                     Boolean fileCanOpen = dlgSeparator.OpenCsvFile(DialogOpen.FileName);
+
                     if (!fileCanOpen)
                     {
                         MessageBox.Show(Catalog.GetString("Unable to open file."),

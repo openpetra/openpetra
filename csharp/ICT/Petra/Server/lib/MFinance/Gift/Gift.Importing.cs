@@ -73,6 +73,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         private String InferCostCentre(AGiftDetailRow AgiftDetails)
         {
             String costCentre = "";
+
             if (!Common.Common.HasPartnerCostCentreLink(AgiftDetails.RecipientKey, out costCentre))
             {
                 // There's no helpful entry in a_valid_ledger_number - I'll see about using the MotivationDetail.
@@ -81,11 +82,13 @@ namespace Ict.Petra.Server.MFinance.Gift
                 mdRow.MotivationGroupCode = AgiftDetails.MotivationGroupCode;
                 mdRow.MotivationDetailCode = AgiftDetails.MotivationDetailCode;
                 AMotivationDetailTable tempTbl = AMotivationDetailAccess.LoadUsingTemplate(mdRow, null);
+
                 if (tempTbl.Rows.Count > 0)
                 {
                     costCentre = tempTbl[0].CostCentreCode;
                 }
             }
+
             return costCentre;
         }
 
@@ -205,11 +208,13 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             if (giftBatch.ExchangeRateToBase > 10000000)  // Huge numbers here indicate that the decimal comma/point is incorrect.
                             {
-                                AMessages.Add(new TVerificationResult(Catalog.GetString("Gift Batch Import"), 
-                                    String.Format(Catalog.GetString("Error: huge exchange rate of {0} suggest decimal point format problem."), giftBatch.ExchangeRateToBase),
-                                    TResultSeverity.Resv_Critical));
+                                AMessages.Add(new TVerificationResult(Catalog.GetString("Gift Batch Import"),
+                                        String.Format(Catalog.GetString("Error: huge exchange rate of {0} suggest decimal point format problem."),
+                                            giftBatch.ExchangeRateToBase),
+                                        TResultSeverity.Resv_Critical));
                                 return false;
                             }
+
                             giftBatch.BankCostCentre = ImportString(Catalog.GetString("bank cost centre"));
                             giftBatch.GiftType = ImportString(Catalog.GetString("gift type"));
                             FImportMessage = Catalog.GetString("Saving gift batch");
@@ -238,11 +243,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                         else if (RowType == "T")
                         {
                             int numberOfElements = StringHelper.GetCSVList(FImportLine, FDelimiter).Count;
+
                             if (numberOfElements < 12) // Perhaps this CSV file is a summary, and can't be imported?
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Gift Batch Import"),
-                                    Catalog.GetString("CSV Format problem: Not enough fields in gift row\n(This may be a summary?)"),
-                                    TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("CSV Format problem: Not enough fields in gift row\n(This may be a summary?)"),
+                                        TResultSeverity.Resv_Critical));
                                 return false;
                             }
 
@@ -331,10 +337,11 @@ namespace Ict.Petra.Server.MFinance.Gift
                             if (giftDetails.MotivationGroupCode == "") // Perhaps this CSV file is a summary, and can't be imported?
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Gift Batch Import"),
-                                    Catalog.GetString("CSV Format problem: No Motivation Group code."),
-                                    TResultSeverity.Resv_Critical));
+                                        Catalog.GetString("CSV Format problem: No Motivation Group code."),
+                                        TResultSeverity.Resv_Critical));
                                 return false;
                             }
+
                             if (FExtraColumns)
                             {
                                 giftDetails.CostCentreCode = ImportString(Catalog.GetString("cost centre code"));
@@ -408,6 +415,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             throw new Exception(Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"));
                         }
                     }  // if the CSV line qualifies
+
                 }  // while CSV lines
 
                 //Update batch total for the last batch entered.

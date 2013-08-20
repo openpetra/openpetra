@@ -186,6 +186,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     txtBatchNumberStart.NumberValueInt = 0;
                 }
+
                 if (!txtBatchNumberEnd.NumberValueInt.HasValue)
                 {
                     txtBatchNumberEnd.NumberValueInt = 999999;
@@ -226,18 +227,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, -1, -1));
             }
 
-
             Int32 ALedgerNumber = 0;
 
             ArrayList batches = new ArrayList();
-
 
             foreach (ABatchRow batch in FMainDS.ABatch.Rows)
             {
                 // check conditions for exporting this batch
                 // Batch Status
                 bool exportThisBatch = batch.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED)
-                                        || (chkIncludeUnposted.Checked && batch.BatchStatus.Equals(MFinanceConstants.BATCH_UNPOSTED));
+                                       || (chkIncludeUnposted.Checked && batch.BatchStatus.Equals(MFinanceConstants.BATCH_UNPOSTED));
 
                 if (rbtBatchNumberSelection.Checked)
                 {

@@ -556,11 +556,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             RefreshCurrencyAndExchangeRate();
             Boolean ComboSetsOk = cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1);
             ComboSetsOk &= cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
+
             if (!ComboSetsOk)
             {
                 MessageBox.Show("Can't set combo box with row details.");
             }
-
         }
 
         private Boolean ViewMode
@@ -953,7 +953,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     ((TFrmGiftBatch)ParentForm).SaveChanges();
                 }
-
             }
         }
 

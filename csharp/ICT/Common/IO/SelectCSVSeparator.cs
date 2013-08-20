@@ -181,11 +181,12 @@ namespace Ict.Common.IO
             set
             {
                 System.Text.Encoding FileEncoding = TTextFile.GetFileEncoding(value);
+
                 //
                 // If it failed to open the file, GetFileEncoding returned null.
                 if (FileEncoding == null)
                 {
-                    return;     // This prevents an exception at this point. 
+                    return;     // This prevents an exception at this point.
                 }               // If any client code expected an exception, you should call OpenCsvFile instead.
 
                 StreamReader reader = new StreamReader(value, FileEncoding, false);
@@ -205,6 +206,7 @@ namespace Ict.Common.IO
         public Boolean OpenCsvFile(String AfileName)
         {
             System.Text.Encoding FileEncoding = TTextFile.GetFileEncoding(AfileName);
+
             //
             // If it failed to open the file, GetFileEncoding returned null.
             if (FileEncoding == null)
@@ -214,7 +216,7 @@ namespace Ict.Common.IO
 
             StreamReader reader = new StreamReader(AfileName, FileEncoding, false);
 
-            FCSVRows = new List<string>();
+            FCSVRows = new List <string>();
 
             while (!reader.EndOfStream && FCSVRows.Count < 6)
             {

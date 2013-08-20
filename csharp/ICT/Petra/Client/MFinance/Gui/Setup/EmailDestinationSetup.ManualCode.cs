@@ -121,6 +121,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void GetDetailDataFromControlsManual(AEmailDestinationRow ARow)
         {
             ARow.EmailAddress = txtDetailEmailAddress.Text.Replace(Environment.NewLine, ",");
+
             if (!txtDetailConditionalValue.Enabled)
             {
                 ARow.ConditionalValue = "NOT SET";

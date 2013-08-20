@@ -270,7 +270,8 @@ namespace Ict.Common.IO
                 {
                     // select separator, make sure there is a header line with the column captions/names
                     TDlgSelectCSVSeparator dlgSeparator = new TDlgSelectCSVSeparator(true);
-                    Boolean fileCanOpen =  dlgSeparator.OpenCsvFile(DialogOpen.FileName);
+                    Boolean fileCanOpen = dlgSeparator.OpenCsvFile(DialogOpen.FileName);
+
                     if (!fileCanOpen)
                     {
                         throw new Exception(String.Format(Catalog.GetString("File {0} Cannot be opened."), DialogOpen.FileName));

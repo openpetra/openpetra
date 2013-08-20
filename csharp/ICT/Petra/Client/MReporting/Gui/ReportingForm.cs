@@ -395,7 +395,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             return ReturnValue;
         }
 
-
         private Cursor FormCursor = Cursors.Default;
         // while the cursor is over the cancel button, I'll change it to default
         // (and then put it back again afterwards)
@@ -417,9 +416,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         ///
         private void MakeCancelButtonAvailable()
         {
-            ToolStrip tbrMain = (ToolStrip) (this.FWinForm.Controls.Find("tbrMain", false)[0]);
+            ToolStrip tbrMain = (ToolStrip)(this.FWinForm.Controls.Find("tbrMain", false)[0]);
+
             ToolStripItem[] CancelBtns = tbrMain.Items.Find("tbbGenerateReport", true);
             FormCursor = FWinForm.Cursor;
+
             if (CancelBtns.Length > 0)
             {
                 CancelBtns[0].MouseEnter += new EventHandler(CancelBtn_MouseEnter);
@@ -427,6 +428,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             CancelBtns = tbrMain.Items.Find("tbbGenerateExtract", true);
+
             if (CancelBtns.Length > 0)
             {
                 CancelBtns[0].MouseEnter += new EventHandler(CancelBtn_MouseEnter);
@@ -624,7 +626,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 FWinForm.Cursor = Cursors.Default;
                 FormCursor = FWinForm.Cursor;
-                ((IFrmReporting)this.FTheForm).EnableBusy(false);
+                ((IFrmReporting) this.FTheForm).EnableBusy(false);
             }
         }
 

@@ -123,8 +123,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                 param.Value = FLedgerNumber;
                 parameters.Add(param);
 
-                Int64 recipientNumber = (Int64) requestParams["RecipientNumber"];
-                Int64 fieldNumber = (Int64) requestParams["FieldNumber"];
+                Int64 recipientNumber = (Int64)requestParams["RecipientNumber"];
+                Int64 fieldNumber = (Int64)requestParams["FieldNumber"];
 
                 if (recipientNumber != 0)
                 {
@@ -162,6 +162,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                     param.Value = (DateTime)requestParams["BatchDateTo"];
                     parameters.Add(param);
                 }
+
                 string sqlStatement = TDataBase.ReadSqlFile("Gift.GetGiftsToExport.sql", SQLCommandDefines);
 
                 DBAccess.GDBAccessObj.Select(MainDS,
@@ -238,10 +239,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                         }
 
                         DataRowView[] selectedRowViews = MainDS.AGiftDetail.DefaultView.FindRows(
-                                new object[] { gift.LedgerNumber, gift.BatchNumber, gift.GiftTransactionNumber });
+                            new object[] { gift.LedgerNumber, gift.BatchNumber, gift.GiftTransactionNumber });
+
                         foreach (DataRowView rv in selectedRowViews)
                         {
                             AGiftDetailRow giftDetail = (AGiftDetailRow)rv.Row;
+
                             if (Summary)
                             {
                                 FCurrencyCode = FUseBaseCurrency ? BaseCurrency : giftBatch.CurrencyCode;
@@ -425,6 +428,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteBoolean(giftDetails.ConfidentialGiftFlag);
             WriteStringQuoted(giftDetails.MotivationGroupCode);
             WriteStringQuoted(giftDetails.MotivationDetailCode);
+
             //
             // "In Petra Cost Centre is always inferred from recipient field and motivation detail so is not needed in the import."
             if (FExtraColumns)
@@ -493,7 +497,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
         }
 
-        void WriteDelimiter(bool bLineEnd=false)
+        void WriteDelimiter(bool bLineEnd = false)
         {
             if (bLineEnd)
             {
@@ -505,19 +509,20 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
         }
 
-        void WriteStringQuoted(String theString, bool bLineEnd=false)
+        void WriteStringQuoted(String theString, bool bLineEnd = false)
         {
             if (theString != null)
             {
                 theString = theString.Replace(quote, "\\" + quote);
             }
+
             FStringWriter.Write(quote);
             FStringWriter.Write(theString);
             FStringWriter.Write(quote);
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteCurrency(decimal currencyField, bool bLineEnd=false)
+        void WriteCurrency(decimal currencyField, bool bLineEnd = false)
         {
             Int64 integerNumber = Convert.ToInt64(currencyField);
 
@@ -533,19 +538,19 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteGeneralNumber(decimal generalNumberField, bool bLineEnd=false)
+        void WriteGeneralNumber(decimal generalNumberField, bool bLineEnd = false)
         {
             FStringWriter.Write(String.Format(FCultureInfo, "{0:g}", generalNumberField));
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteBoolean(bool aBool, bool bLineEnd=false)
+        void WriteBoolean(bool aBool, bool bLineEnd = false)
         {
             FStringWriter.Write(aBool ? "yes" : "no");
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteDate(DateTime dateField, bool bLineEnd=false)
+        void WriteDate(DateTime dateField, bool bLineEnd = false)
         {
             FStringWriter.Write(dateField.ToString(FDateFormatString));
             WriteDelimiter(bLineEnd);

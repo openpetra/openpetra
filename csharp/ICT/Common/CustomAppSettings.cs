@@ -385,6 +385,7 @@ namespace Ict.Common
         {
             System.Int32 ReturnValue;
             ReturnValue = ADefaultValue;
+
             if (!Int32.TryParse(GetValue(AKey, (ADefaultValue == -1)), out ReturnValue))
             {
                 if (ADefaultValue == -1)
@@ -393,6 +394,7 @@ namespace Ict.Common
                     TLogging.Log("Problem reading Int32 value from key " + AKey + " from config file.", TLoggingType.ToLogfile);
                 }
             }
+
             return ReturnValue;
         }
 
@@ -416,6 +418,7 @@ namespace Ict.Common
         {
             System.Int64 ReturnValue;
             ReturnValue = ADefaultValue;
+
             if (!Int64.TryParse(GetValue(AKey, (ADefaultValue == -1)), out ReturnValue))
             {
                 if (ADefaultValue == -1)
@@ -424,6 +427,7 @@ namespace Ict.Common
                     TLogging.Log("Problem reading Int64 value from key " + AKey + " from config file.", TLoggingType.ToLogfile);
                 }
             }
+
             return ReturnValue;
         }
 
@@ -451,6 +455,7 @@ namespace Ict.Common
                 // Caller wanted the Value and didn't specify a Default: log that
                 TLogging.Log("Problem reading Double value from key " + AKey + " from config file.", TLoggingType.ToLogfile);
             }
+
             return ReturnValue;
         }
 
@@ -461,10 +466,12 @@ namespace Ict.Common
         public static double GetDouble(String AKey, double ADefault)
         {
             double ReturnValue = -1.0f;
+
             if (!double.TryParse(GetValue(AKey), out ReturnValue))
             {
                 ReturnValue = ADefault;
             }
+
             return ReturnValue;
         }
 
