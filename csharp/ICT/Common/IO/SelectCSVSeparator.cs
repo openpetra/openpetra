@@ -247,7 +247,7 @@ namespace Ict.Common.IO
                 FSeparator = txtOtherSeparator.Text;
             }
 
-            if ((FSeparator.Length > 0) && (FCSVRows != null))
+            if ((FSeparator.Length > 0) && (FCSVRows != null) && (FCSVRows.Count > 0))
             {
                 DataTable table = new DataTable();
                 string line = FCSVRows[0];

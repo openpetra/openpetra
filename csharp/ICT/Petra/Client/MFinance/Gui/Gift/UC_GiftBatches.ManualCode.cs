@@ -554,6 +554,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateChangeableStatus();
 
             RefreshCurrencyAndExchangeRate();
+            Boolean ComboSetsOk = cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1);
+            ComboSetsOk &= cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
+            if (!ComboSetsOk)
+            {
+                MessageBox.Show("Can't set combo box with row details.");
+            }
+
         }
 
         private Boolean ViewMode
@@ -940,16 +947,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 PrintGiftBatchReceipts(PostedGiftTDS);
 
                 RefreshAll();
+                RefreshGridData(currentBatchNo, true);
 
                 if (FPetraUtilsObject.HasChanges)
                 {
                     ((TFrmGiftBatch)ParentForm).SaveChanges();
                 }
 
-                if (currentBatchNo > 0)
-                {
-                    RefreshGridData(currentBatchNo, true);
-                }
             }
         }
 
