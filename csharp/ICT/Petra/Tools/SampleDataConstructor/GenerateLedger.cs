@@ -101,6 +101,33 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         }
 
         /// <summary>
+        /// init the exchange rate, to avoid messages "Cannot find exchange rate for EUR USD"
+        /// </summary>
+        public static void InitExchangeRate()
+        {
+            TAccountPeriodInfo AccountingPeriodInfo =
+                new TAccountPeriodInfo(FLedgerNumber, 1);
+            ADailyExchangeRateTable dailyrates = new ADailyExchangeRateTable();
+            ADailyExchangeRateRow row = dailyrates.NewRowTyped(true);
+
+            row.DateEffectiveFrom = AccountingPeriodInfo.PeriodStartDate;
+            row.TimeEffectiveFrom = 100;
+            row.FromCurrencyCode = "USD";
+            row.ToCurrencyCode = "EUR";
+            row.RateOfExchange = 1.34m;
+            dailyrates.Rows.Add(row);
+            row = dailyrates.NewRowTyped(true);
+            row.DateEffectiveFrom = AccountingPeriodInfo.PeriodStartDate;
+            row.TimeEffectiveFrom = 100;
+            row.FromCurrencyCode = "USD";
+            row.ToCurrencyCode = "GBP";
+            row.RateOfExchange = 1.57m;
+            dailyrates.Rows.Add(row);
+            TVerificationResultCollection VerificationResult;
+            ADailyExchangeRateAccess.SubmitChanges(dailyrates, null, out VerificationResult);
+        }
+
+        /// <summary>
         /// populate ledger with gifts and invoices, post batches, close periods and years, according to FNumberOfClosedPeriods
         /// </summary>
         /// <param name="datadirectory"></param>
@@ -122,6 +149,10 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
                 if (periodOverall < FNumberOfClosedPeriods)
                 {
+                    TAccountPeriodInfo AccountingPeriodInfo =
+                        new TAccountPeriodInfo(FLedgerNumber, period);
+                    TLogging.Log("closing period at " + AccountingPeriodInfo.PeriodEndDate.ToShortDateString());
+
                     // run month end
                     TCarryForward carryForward = new TCarryForward(new TLedgerInfo(FLedgerNumber));
                     carryForward.SetNextPeriod();

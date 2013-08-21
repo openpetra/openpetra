@@ -120,6 +120,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                     SampleDataLedger.FLedgerNumber = 43;
                     SampleDataLedger.FNumberOfClosedPeriods = TAppSettingsManager.GetInt32("NumberOfClosedPeriods", 26);
                     SampleDataLedger.InitCalendar();
+                    SampleDataLedger.InitExchangeRate();
                     SampleDataLedger.PopulateData(datadirectory);
                 }
 
@@ -130,6 +131,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                     SampleDataLedger.FLedgerNumber = 44;
                     SampleDataLedger.FNumberOfClosedPeriods = 6;
                     SampleDataLedger.CreateNewLedger();
+                    SampleDataLedger.InitExchangeRate();
 
                     SampleDataUnitPartners.FLedgerNumber = SampleDataLedger.FLedgerNumber;
                     SampleDataUnitPartners.GenerateFieldsFinanceOnly(

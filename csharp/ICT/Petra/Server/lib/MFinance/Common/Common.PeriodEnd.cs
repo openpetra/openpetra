@@ -598,7 +598,7 @@ namespace Ict.Petra.Server.MFinance.Common
         public TGlmNewYearInit(int ALedgerNumber, int AYear)
         {
             intThisYear = AYear;
-            intNextYear = intNextYear + 1;
+            intNextYear = intThisYear + 1;
             intLedgerNumber = ALedgerNumber;
             PostingFromDS = LoadTable(ALedgerNumber, AYear);
             PostingToDS = LoadTable(ALedgerNumber, ++AYear);
