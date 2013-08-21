@@ -101,8 +101,9 @@ namespace Ict.Petra.Server.MFinance.Common
                         TResultSeverity.Resv_Noncritical);
                 verificationResults.Add(tvt);
             }
-            else
+            else if (FInfoMode == false)
             {
+                // now we actually run the operation
                 Apeo.RunEndOfPeriodOperation();
                 AbstractPeriodEndOperation newApeo = Apeo.GetActualizedClone();
                 newApeo.IsInInfoMode = true;
@@ -597,7 +598,7 @@ namespace Ict.Petra.Server.MFinance.Common
         public TGlmNewYearInit(int ALedgerNumber, int AYear)
         {
             intThisYear = AYear;
-            intNextYear = intNextYear + 1;
+            intNextYear = intThisYear + 1;
             intLedgerNumber = ALedgerNumber;
             PostingFromDS = LoadTable(ALedgerNumber, AYear);
             PostingToDS = LoadTable(ALedgerNumber, ++AYear);

@@ -250,22 +250,17 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 accountList.Add(accountInfo.AccountCode);
             }
+            else
+            {
+                TVerificationResult tvt =
+                    new TVerificationResult(Catalog.GetString("No ICH_ACCT Account defined"),
+                        Catalog.GetString("You need to define this account"), "",
+                        TPeriodEndErrorAndStatusCodes.PEEC_11.ToString(),
+                        TResultSeverity.Resv_Critical);
+                verificationResults.Add(tvt);
+                FHasCriticalErrors = true;
+            }
 
-/*
- * Until any evidence shows otherwise, I'm going to assume that it's OK to operate OpenPetra
- * WITHOUT an ICH Account.
- *
- *          else
- *          {
- *              TVerificationResult tvt =
- *                  new TVerificationResult(Catalog.GetString("No ICH_ACCT Account defined"),
- *                      Catalog.GetString("You need to define this account"), "",
- *                      TPeriodEndErrorAndStatusCodes.PEEC_11.ToString(),
- *                      TResultSeverity.Resv_Critical);
- *              verificationResults.Add(tvt);
- *              FHasCriticalErrors = true;
- *          }
- */
             costCentres = ACostCentreAccess.LoadViaALedger(ledgerInfo.LedgerNumber, null);
         }
 

@@ -187,9 +187,10 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (carryForward.GetPeriodType != TCarryForwardENum.Month)
             {
+                // we want to run a month end, but the provisional year end flag has been set
                 TVerificationResult tvt =
-                    new TVerificationResult(Catalog.GetString("Next Month is expected ..."),
-                        Catalog.GetString("In this situation you cannot run a year end routine"), "",
+                    new TVerificationResult(Catalog.GetString("Year End is required!"),
+                        Catalog.GetString("In this situation you cannot run a month end routine"), "",
                         TPeriodEndErrorAndStatusCodes.PEEC_03.ToString(),
                         TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvt);

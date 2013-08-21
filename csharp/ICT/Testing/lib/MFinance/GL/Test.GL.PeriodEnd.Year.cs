@@ -218,6 +218,75 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     1), periodInfo.PeriodStartDate, "new Calendar should start with January 1st of next year");
         }
 
+        /// <summary>
+        /// test 2 consecutive year ends
+        /// </summary>
+        [Test]
+        public void Test_2YearEnds()
+        {
+            CommonNUnitFunctions.ResetDatabase();
+            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end.sql");
+            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end-account-property.sql");
+
+            for (int countYear = 0; countYear < 2; countYear++)
+            {
+                TLogging.Log("preparing year number " + countYear.ToString());
+
+                // accounting one gift
+                string strAccountGift = "0200";
+                string strAccountBank = "6200";
+                TCommonAccountingTool commonAccountingTool =
+                    new TCommonAccountingTool(intLedgerNumber, "NUNIT");
+                commonAccountingTool.AddBaseCurrencyJournal();
+                commonAccountingTool.JournalDescription = "Test Data accounts";
+                commonAccountingTool.AddBaseCurrencyTransaction(
+                    strAccountBank, "4301", "Gift Example", "Debit", MFinanceConstants.IS_DEBIT, 100);
+                commonAccountingTool.AddBaseCurrencyTransaction(
+                    strAccountGift, "4301", "Gift Example", "Credit", MFinanceConstants.IS_CREDIT, 100);
+                commonAccountingTool.CloseSaveAndPost();
+
+                TCarryForward carryForward;
+
+                bool blnLoop = true;
+
+                while (blnLoop)
+                {
+                    carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
+
+                    if (carryForward.GetPeriodType == TCarryForwardENum.Year)
+                    {
+                        blnLoop = false;
+                    }
+                    else
+                    {
+                        carryForward.SetNextPeriod();
+                    }
+                }
+
+                TLogging.Log("closing year number " + countYear.ToString());
+                TReallocation reallocation = new TReallocation(new TLedgerInfo(intLedgerNumber));
+                TVerificationResultCollection verificationResult = new TVerificationResultCollection();
+                reallocation.VerificationResultCollection = verificationResult;
+                reallocation.IsInInfoMode = false;
+                Assert.AreEqual(1, reallocation.JobSize, "Check the number of reallocation jobs ...");
+                reallocation.RunEndOfPeriodOperation();
+
+                TGlmNewYearInit glmNewYearInit = new TGlmNewYearInit(intLedgerNumber, countYear);
+                glmNewYearInit.VerificationResultCollection = verificationResult;
+                glmNewYearInit.IsInInfoMode = false;
+                Assert.Greater(glmNewYearInit.JobSize, 0, "Check the number of reallocation jobs ...");
+                glmNewYearInit.RunEndOfPeriodOperation();
+            }
+
+            TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber);
+            Assert.AreEqual(2, LedgerInfo.CurrentFinancialYear, "after year end, we are in a new financial year");
+
+            TAccountPeriodInfo periodInfo = new TAccountPeriodInfo(intLedgerNumber, 1);
+            Assert.AreEqual(new DateTime(DateTime.Now.Year + 2,
+                    1,
+                    1), periodInfo.PeriodStartDate, "new Calendar should start with January 1st of next year");
+        }
+
         void CheckGLMEntry(int ALedgerNumber, int AYear, string AAccount,
             decimal cc1Base, decimal cc1Closing,
             decimal cc2Base, decimal cc2Closing,

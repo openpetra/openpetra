@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, christophert, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -90,7 +90,9 @@ namespace Ict.Petra.Server.MFinance.Common
             intForeignCurrencyDigits = DIGIT_INIT_VALUE;
 
             bool NewTransaction;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
 
             currencyTable = ACurrencyAccess.LoadAll(transaction);
 
