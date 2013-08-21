@@ -101,8 +101,9 @@ namespace Ict.Petra.Server.MFinance.Common
                         TResultSeverity.Resv_Noncritical);
                 verificationResults.Add(tvt);
             }
-            else
+            else if (FInfoMode == false)
             {
+                // now we actually run the operation
                 Apeo.RunEndOfPeriodOperation();
                 AbstractPeriodEndOperation newApeo = Apeo.GetActualizedClone();
                 newApeo.IsInInfoMode = true;
