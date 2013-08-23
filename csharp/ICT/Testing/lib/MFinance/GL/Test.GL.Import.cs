@@ -56,8 +56,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     [TestFixture]
     public class TestGLImport
     {
-        private const int intLedgerNumber = 43;
-
+        private int intLedgerNumber = 43;
 
         /// <summary>
         /// Test_01_GL_Import
@@ -104,8 +103,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
         private void PrepareTestCaseData()
         {
-            // reset database because period July has to be open
-            CommonNUnitFunctions.ResetDatabase();
+            // new database because period July has to be open
+            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 

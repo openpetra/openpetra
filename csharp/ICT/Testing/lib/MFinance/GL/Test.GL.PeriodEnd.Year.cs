@@ -56,7 +56,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     [TestFixture]
     public class TestGLPeriodicEndYear
     {
-        private const int intLedgerNumber = 43;
+        private int intLedgerNumber = 43;
 
         /// <summary>
         /// Test_YearEnd
@@ -64,7 +64,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_YearEnd()
         {
-            CommonNUnitFunctions.ResetDatabase();
+            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
 
             TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber);
             Assert.AreEqual(0, LedgerInfo.CurrentFinancialYear, "before the year end, we should be in year 0");
@@ -224,7 +224,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_2YearEnds()
         {
-            CommonNUnitFunctions.ResetDatabase();
+            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
             CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end.sql");
             CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end-account-property.sql");
 
@@ -351,20 +351,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_TAccountPeriodToNewYear()
         {
-            CommonNUnitFunctions.ResetDatabase();
-
-            TVerificationResultCollection verificationResult = new TVerificationResultCollection();
-
-            int intLedgerNumber2010 = 2010;
-
-            // create new ledger 2010 which is in year 2010
-            TGLSetupWebConnector.CreateNewLedger(intLedgerNumber2010, "NUnit test 2010", "99", "EUR", "USD", new DateTime(2010,
-                    1,
-                    1), 12, 1, 8, true, 1, true, out verificationResult);
+            // create new ledger which is in year 2010
+            int intLedgerNumber2010 = CommonNUnitFunctions.CreateNewLedger(new DateTime(2010, 1, 1));
 
             // We are in 2010 and this and 2011 is not a leap year
+            TVerificationResultCollection verificationResult = new TVerificationResultCollection();
             TAccountPeriodToNewYear accountPeriodToNewYear =
                 new TAccountPeriodToNewYear(intLedgerNumber2010, 2010);
+
             accountPeriodToNewYear.VerificationResultCollection = verificationResult;
             accountPeriodToNewYear.IsInInfoMode = false;
 
@@ -402,7 +396,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Init()
         {
             TPetraServerConnector.Connect();
-            //ResetDatabase();
             System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
 

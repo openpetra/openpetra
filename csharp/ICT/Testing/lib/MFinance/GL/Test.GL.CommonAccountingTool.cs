@@ -239,7 +239,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Init()
         {
             TPetraServerConnector.Connect();
-            // ResetDatabase();
         }
 
         /// <summary>

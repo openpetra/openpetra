@@ -59,7 +59,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     [TestFixture]
     public class TestGLPeriodicEndMonth
     {
-        private const int intLedgerNumber = 43;
+        private int intLedgerNumber = 43;
 
         /// <summary>
         /// Tests if unposted batches are detected correctly
@@ -67,6 +67,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_02_UnpostedBatches()
         {
+            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
             TLedgerInfo ledgerInfo = new TLedgerInfo(intLedgerNumber);
 
             // System.Diagnostics.Debug.WriteLine(
@@ -107,6 +108,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_03_SuspensedAccounts()
         {
+            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
             new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Suspense();
 
             TVerificationResultCollection verificationResult;
@@ -158,6 +160,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_04_UnpostedGifts()
         {
+            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
             ImportGiftBatch();
 
             TVerificationResultCollection verificationResult;
@@ -186,6 +189,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_05_Revaluation()
         {
+            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
             TVerificationResultCollection verificationResult;
             bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
                 intLedgerNumber, true, out verificationResult);
@@ -213,7 +217,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_SwitchToNextMonth()
         {
-            CommonNUnitFunctions.ResetDatabase();
+            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
             TLedgerInfo ledgerInfo1;
             TLedgerInfo ledgerInfo2;
             int counter = 0;
@@ -253,7 +257,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Init()
         {
             TPetraServerConnector.Connect();
-            CommonNUnitFunctions.ResetDatabase();
             System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
 

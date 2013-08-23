@@ -103,7 +103,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     [TestFixture]
     public partial class TestGLPeriodicEnd
     {
-        private const int intLedgerNumber = 43;
+        private int intLedgerNumber = 43;
 
         /// <summary>
         /// Some very basic tests of TPeriodEndOperations and AbstractPeriodEndOperation
@@ -124,7 +124,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_TCarryForward()
         {
-            CommonNUnitFunctions.ResetDatabase();
+            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
             TCarryForward carryForward;
 
             for (int i = 1; i < 13; ++i)  // 12 Months
@@ -152,7 +152,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_TCarryForwardYear()
         {
-            CommonNUnitFunctions.ResetDatabase();
+            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
             TCarryForward carryForward = null;
             TVerificationResultCollection tvr = new TVerificationResultCollection();
 
@@ -208,7 +208,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Init()
         {
             TPetraServerConnector.Connect();
-            //ResetDatabase();
+
             System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
 

@@ -22,16 +22,22 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.IO;
+using System.Data;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.IO;
+using Ict.Common.Data;
+using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
+using Ict.Petra.Server.MFinance.Setup.WebConnectors;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace Ict.Testing.NUnitTools
 {
@@ -134,6 +140,41 @@ namespace Ict.Testing.NUnitTools
                     TSrvSetting.PostgreSQLDatabaseName,
                     TSrvSetting.DBUsername, TSrvSetting.DBPassword, "");
             }
+        }
+
+        /// <summary>
+        /// create a new ledger, with new ledgernumber
+        /// </summary>
+        /// <returns>ledgernumber of new ledger</returns>
+        public static int CreateNewLedger(DateTime? AStartDate = null)
+        {
+            ALedgerTable ledgers = ALedgerAccess.LoadAll(null);
+
+            ledgers.DefaultView.Sort = ALedgerTable.GetLedgerNameDBName() + " DESC";
+            int newLedgerNumber = ((ALedgerRow)ledgers.DefaultView[0].Row).LedgerNumber + 1;
+
+            if (AStartDate == null)
+            {
+                AStartDate = new DateTime(DateTime.Now.Year, 1, 1);
+            }
+
+            TLogging.Log("CommonNUnitFunctions.CreateNewLedger " + newLedgerNumber.ToString());
+
+            TVerificationResultCollection VerificationResult;
+            TGLSetupWebConnector.CreateNewLedger(newLedgerNumber,
+                "NUnit Test Ledger " + newLedgerNumber.ToString(),
+                "99",
+                "EUR",
+                "USD",
+                AStartDate.Value,
+                12,
+                1,
+                8,
+                true,
+                1,
+                true,
+                out VerificationResult);
+            return newLedgerNumber;
         }
 
         /// <summary>
