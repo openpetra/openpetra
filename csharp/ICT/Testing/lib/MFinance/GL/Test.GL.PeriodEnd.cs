@@ -129,7 +129,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             for (int i = 1; i < 13; ++i)  // 12 Months
             {
-                carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
+                TLedgerInfo ledgerInfo = new TLedgerInfo(intLedgerNumber);
+                Assert.AreEqual(i, ledgerInfo.CurrentPeriod, "Current period should be " + i.ToString());
+                carryForward = new TCarryForward(ledgerInfo);
                 Assert.AreEqual(carryForward.GetPeriodType, TCarryForwardENum.Month,
                     "Month: " + i.ToString());
                 carryForward.SetNextPeriod();
@@ -155,39 +157,48 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TVerificationResultCollection tvr = new TVerificationResultCollection();
 
             int CurrentYear = new TAccountPeriodInfo(intLedgerNumber, 1).PeriodStartDate.Year;
+            TLedgerInfo ledgerInfo = null;
 
             for (int i = 1; i < 13; ++i)  // 12 Months
             {
-                carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
+                ledgerInfo = new TLedgerInfo(intLedgerNumber);
+                Assert.AreEqual(i, ledgerInfo.CurrentPeriod, "Current period should be " + i.ToString());
+                carryForward = new TCarryForward(ledgerInfo);
                 Assert.AreEqual(carryForward.GetPeriodType, TCarryForwardENum.Month,
                     "Month: " + i.ToString());
                 carryForward.SetNextPeriod();
             }
 
-            Assert.AreEqual(CurrentYear, carryForward.Year, "Standard");
-            TAccountPeriodToNewYear accountPeriodToNewYear =
-                new TAccountPeriodToNewYear(intLedgerNumber, CurrentYear);
-            accountPeriodToNewYear.IsInInfoMode = false;
-            accountPeriodToNewYear.VerificationResultCollection = tvr;
-            accountPeriodToNewYear.RunEndOfPeriodOperation();
+            ledgerInfo = new TLedgerInfo(intLedgerNumber);
+            Assert.AreEqual(true, ledgerInfo.ProvisionalYearEndFlag, "provisional year end flag should be set");
+            Assert.AreEqual(false, ledgerInfo.YearEndFlag, "year end has not been run yet");
+            Assert.AreEqual(TYearEndProcessStatus.RESET_STATUS,
+                (TYearEndProcessStatus)ledgerInfo.YearEndProcessStatus,
+                "year end process status should be still on RESET");
 
+            Assert.AreEqual(CurrentYear, carryForward.Year, "old carryForward object");
             carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
-            Assert.AreEqual(CurrentYear, carryForward.Year, "Non standard ...");
+            Assert.AreEqual(CurrentYear, carryForward.Year, "new carryForward object");
             carryForward.SetNextPeriod();
 
             TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber);
             Assert.AreEqual(1, LedgerInfo.CurrentFinancialYear, "after year end, we are in a new financial year");
             Assert.AreEqual(1, LedgerInfo.CurrentPeriod, "after year end, we are in Period 1");
-
-            TLedgerInitFlagHandler ledgerInitFlag =
-                new TLedgerInitFlagHandler(intLedgerNumber, TLedgerInitFlagEnum.ActualYear);
-            ledgerInitFlag.AddMarker(CurrentYear.ToString());
-            Assert.IsFalse(ledgerInitFlag.Flag, "Should be deleted ...");
+            Assert.AreEqual(true, LedgerInfo.YearEndFlag, "after year end, year end flag should be set, because it has been run");
+            Assert.AreEqual(false, LedgerInfo.ProvisionalYearEndFlag, "after year end, provisional year end flag should not be set");
+            Assert.AreEqual(TYearEndProcessStatus.RESET_STATUS,
+                (TYearEndProcessStatus)LedgerInfo.YearEndProcessStatus,
+                "after year end, year end process status should be RESET");
 
             carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
             carryForward.SetNextPeriod();
             LedgerInfo = new TLedgerInfo(intLedgerNumber);
             Assert.AreEqual(2, LedgerInfo.CurrentPeriod, "new month, period 2");
+
+            TAccountPeriodInfo periodInfo = new TAccountPeriodInfo(intLedgerNumber, 1);
+            Assert.AreEqual(new DateTime(CurrentYear + 1,
+                    1,
+                    1), periodInfo.PeriodStartDate, "new Calendar should start with January 1st of next year");
         }
 
         /// <summary>
