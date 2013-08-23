@@ -154,6 +154,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TCarryForward carryForward = null;
             TVerificationResultCollection tvr = new TVerificationResultCollection();
 
+            int CurrentYear = new TAccountPeriodInfo(intLedgerNumber, 1).PeriodStartDate.Year;
+
             for (int i = 1; i < 13; ++i)  // 12 Months
             {
                 carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
@@ -162,15 +164,15 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 carryForward.SetNextPeriod();
             }
 
-            Assert.AreEqual(DateTime.Now.Year, carryForward.Year, "Standard");
+            Assert.AreEqual(CurrentYear, carryForward.Year, "Standard");
             TAccountPeriodToNewYear accountPeriodToNewYear =
-                new TAccountPeriodToNewYear(intLedgerNumber, DateTime.Now.Year);
+                new TAccountPeriodToNewYear(intLedgerNumber, CurrentYear);
             accountPeriodToNewYear.IsInInfoMode = false;
             accountPeriodToNewYear.VerificationResultCollection = tvr;
             accountPeriodToNewYear.RunEndOfPeriodOperation();
 
             carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
-            Assert.AreEqual(DateTime.Now.Year, carryForward.Year, "Non standard ...");
+            Assert.AreEqual(CurrentYear, carryForward.Year, "Non standard ...");
             carryForward.SetNextPeriod();
 
             TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber);
@@ -179,7 +181,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             TLedgerInitFlagHandler ledgerInitFlag =
                 new TLedgerInitFlagHandler(intLedgerNumber, TLedgerInitFlagEnum.ActualYear);
-            ledgerInitFlag.AddMarker(DateTime.Now.Year.ToString());
+            ledgerInitFlag.AddMarker(CurrentYear.ToString());
             Assert.IsFalse(ledgerInitFlag.Flag, "Should be deleted ...");
 
             carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
