@@ -59,7 +59,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     [TestFixture]
     public class TestGLPeriodicEndMonth
     {
-        private const int intLedgerNumber = 43;
+        private int intLedgerNumber = 43;
 
         /// <summary>
         /// Tests if unposted batches are detected correctly
@@ -74,7 +74,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.AreEqual(0, new GetBatchInfo(
                     intLedgerNumber, ledgerInfo.CurrentPeriod).NumberOfBatches, "No unposted batch shall be found");
 
-            LoadTestTata_GetBatchInfo();
+            LoadTestData_GetBatchInfo();
 
             Assert.AreEqual(2, new GetBatchInfo(
                     intLedgerNumber, ledgerInfo.CurrentPeriod).NumberOfBatches, "Two of the four batches shall be found");
@@ -97,7 +97,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
 
             Assert.IsTrue(blnStatusArrived, "Status message hase been shown");
-            Assert.IsTrue(blnHasErrors, "This is a Critital Message");
+            Assert.IsTrue(blnHasErrors, "This is a Critical Message");
             UnloadTestData_GetBatchInfo();
         }
 
@@ -107,11 +107,24 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_03_SuspensedAccounts()
         {
-            new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Suspense();
+            TCommonAccountingTool commonAccountingTool =
+                new TCommonAccountingTool(intLedgerNumber, "NUNIT");
+
+            commonAccountingTool.AddBaseCurrencyJournal();
+            commonAccountingTool.JournalDescription = "Test Data accounts";
+            string strAccountBank = "6000";
+            // Accounting of some gifts ...
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                strAccountBank, "7300", "Gift Example", "Debit", MFinanceConstants.IS_DEBIT, 100);
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                "0100", "7300", "Gift Example", "Credit", MFinanceConstants.IS_CREDIT, 100);
+            commonAccountingTool.CloseSaveAndPost();
+
+            new ChangeSuspenseAccount(intLedgerNumber, strAccountBank).Suspense();
 
             TVerificationResultCollection verificationResult;
             bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
-                intLedgerNumber, true, out verificationResult);
+                intLedgerNumber, false, out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
@@ -120,14 +133,45 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                         TPeriodEndErrorAndStatusCodes.PEEC_07.ToString()))
                 {
                     blnStatusArrived = true;
-                    Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Status,
+                    Assert.AreEqual(TResultSeverity.Resv_Status, verificationResult[i].ResultSeverity,
                         "Value shall be status only ...");
                 }
             }
 
             Assert.IsTrue(blnStatusArrived, "Status message has been shown");
-            Assert.IsTrue(blnHasErrors, "This is a Critital Message");
-            new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Unsuspense();
+            Assert.IsFalse(blnHasErrors, "there should not be an error for closing the first period");
+
+            int periodCounter = 2;
+
+            while (!blnHasErrors && periodCounter < 12)
+            {
+                blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+                    intLedgerNumber, false, out verificationResult);
+
+                Assert.IsFalse(blnHasErrors, "there was an error closing period " + periodCounter.ToString());
+                periodCounter++;
+                Assert.AreEqual(periodCounter, new TLedgerInfo(intLedgerNumber).CurrentPeriod, "should be in new period");
+            }
+
+            blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+                intLedgerNumber, false, out verificationResult);
+
+            blnStatusArrived = false;
+
+            for (int i = 0; i < verificationResult.Count; ++i)
+            {
+                if (verificationResult[i].ResultCode.Equals(
+                        TPeriodEndErrorAndStatusCodes.PEEC_07.ToString())
+                    && (TResultSeverity.Resv_Critical == verificationResult[i].ResultSeverity))
+                {
+                    blnStatusArrived = true;
+                }
+            }
+
+            Assert.IsTrue(blnStatusArrived, "there should be  a critical error PEEC_07 for the suspense account");
+            Assert.IsTrue(blnHasErrors, "there should be an error because we cannot close the last period due to suspense account with a balance");
+
+            new ChangeSuspenseAccount(intLedgerNumber, strAccountBank).Unsuspense();
         }
 
         private void ImportGiftBatch()
@@ -137,6 +181,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             string testFile = TAppSettingsManager.GetValue("GiftBatch.file", "../../csharp/ICT/Testing/lib/MFinance/SampleData/sampleGiftBatch.csv");
             StreamReader sr = new StreamReader(testFile);
             string FileContent = sr.ReadToEnd();
+
+            FileContent = FileContent.Replace("{ledgernumber}", intLedgerNumber.ToString());
 
             sr.Close();
 
@@ -186,6 +232,29 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_PEMM_05_Revaluation()
         {
+            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
+            // load foreign currency account 6001
+            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                "test-sql\\gl-test-account-data.sql", intLedgerNumber);
+
+            // post a batch for foreign currency account 6001
+            TCommonAccountingTool commonAccountingTool =
+                new TCommonAccountingTool(intLedgerNumber, "NUNIT");
+            commonAccountingTool.AddForeignCurrencyJournal("GBP", 1.1m);
+            commonAccountingTool.JournalDescription = "Test foreign currency account";
+            string strAccountGift = "0200";
+            string strAccountBank = "6001";
+
+            // Accounting of some gifts ...
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                strAccountBank, (intLedgerNumber * 100).ToString(), "Gift Example", "Debit", MFinanceConstants.IS_DEBIT, 100);
+
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                strAccountGift, (intLedgerNumber * 100).ToString(), "Gift Example", "Credit", MFinanceConstants.IS_CREDIT, 100);
+
+            commonAccountingTool.CloseSaveAndPost();
+
+
             TVerificationResultCollection verificationResult;
             bool blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
                 intLedgerNumber, true, out verificationResult);
@@ -198,13 +267,23 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 {
                     blnStatusArrived = true;
                     Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Critical,
-                        "Value shall be of type critical ...");
+                        "we need a critical error: need to run revaluation first ...");
                 }
             }
 
             Assert.IsTrue(blnStatusArrived, "Status message has been shown");
-            Assert.IsTrue(blnHasErrors, "This is a Critital Message");
-            new SetDeleteSuspenseAccount(intLedgerNumber, "6000").Unsuspense();
+            Assert.IsTrue(blnHasErrors, "should fail because revaluation needs to be run first");
+
+            // run revaluation
+            blnHasErrors = TRevaluationWebConnector.Revaluate(intLedgerNumber, new TLedgerInfo(
+                    intLedgerNumber).CurrentPeriod, new string[] { "GBP" }, new decimal[] { 1.2m }, out verificationResult);
+
+            TLogging.Log(verificationResult.BuildVerificationResultString());
+            Assert.IsFalse(blnHasErrors, "Problem running the revaluation");
+
+            blnHasErrors = TPeriodIntervallConnector.TPeriodMonthEnd(
+                intLedgerNumber, true, out verificationResult);
+            Assert.IsFalse(blnHasErrors, "should now be able to close the month now that the revaluation has been run");
         }
 
         /// <summary>
@@ -213,7 +292,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_SwitchToNextMonth()
         {
-            CommonNUnitFunctions.ResetDatabase();
+            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
             TLedgerInfo ledgerInfo1;
             TLedgerInfo ledgerInfo2;
             int counter = 0;
@@ -253,7 +332,22 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Init()
         {
             TPetraServerConnector.Connect();
-            CommonNUnitFunctions.ResetDatabase();
+            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
+
+            // add costcentre 7300 for gift batch
+            ACostCentreTable CostCentres = new ACostCentreTable();
+            ACostCentreRow CCRow = CostCentres.NewRowTyped();
+            CCRow.LedgerNumber = intLedgerNumber;
+            CCRow.CostCentreCode = "7300";
+            CCRow.CostCentreName = "7300";
+            CCRow.CostCentreType = MFinanceConstants.FOREIGN_CC_TYPE;
+            CCRow.CostCentreToReportTo = MFinanceConstants.INTER_LEDGER_HEADING;
+            CCRow.PostingCostCentreFlag = true;
+            CCRow.CostCentreActiveFlag = true;
+            CostCentres.Rows.Add(CCRow);
+            TVerificationResultCollection verification;
+            ACostCentreAccess.SubmitChanges(CostCentres, null, out verification);
+
             System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
 
@@ -269,11 +363,12 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
         private const string strTestDataBatchDescription = "TestGLPeriodicEndMonth-TESTDATA";
 
-        private void LoadTestTata_GetBatchInfo()
+        private void LoadTestData_GetBatchInfo()
         {
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
             ABatchRow template = new ABatchTable().NewRowTyped(false);
 
+            template.LedgerNumber = intLedgerNumber;
             template.BatchDescription = strTestDataBatchDescription;
             ABatchTable batches = ABatchAccess.LoadUsingTemplate(template, transaction);
             DBAccess.GDBAccessObj.CommitTransaction();
@@ -281,32 +376,34 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             if (batches.Rows.Count == 0)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-batch-data.sql");
+                    "test-sql\\gl-test-batch-data.sql", intLedgerNumber);
             }
         }
 
         private void UnloadTestData_GetBatchInfo()
         {
             OdbcParameter[] ParametersArray;
-            ParametersArray = new OdbcParameter[1];
-            ParametersArray[0] = new OdbcParameter("", OdbcType.VarChar);
-            ParametersArray[0].Value = strTestDataBatchDescription;
+            ParametersArray = new OdbcParameter[2];
+            ParametersArray[0] = new OdbcParameter("", OdbcType.Int);
+            ParametersArray[0].Value = intLedgerNumber;
+            ParametersArray[1] = new OdbcParameter("", OdbcType.VarChar);
+            ParametersArray[1].Value = strTestDataBatchDescription;
 
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
             string strSQL = "DELETE FROM PUB_" + ABatchTable.GetTableDBName() + " ";
-            strSQL += "WHERE " + ABatchTable.GetBatchDescriptionDBName() + " = ? ";
+            strSQL += "WHERE " + ABatchTable.GetLedgerNumberDBName() + " = ? " +
+                      "AND " + ABatchTable.GetBatchDescriptionDBName() + " = ? ";
             DBAccess.GDBAccessObj.ExecuteNonQuery(
                 strSQL, transaction, ParametersArray);
             DBAccess.GDBAccessObj.CommitTransaction();
         }
     }
 
-
-    class SetDeleteSuspenseAccount
+    class ChangeSuspenseAccount
     {
         int ledgerNumber;
         string strAcount;
-        public SetDeleteSuspenseAccount(int ALedgerNumber, string AAccount)
+        public ChangeSuspenseAccount(int ALedgerNumber, string AAccount)
         {
             ledgerNumber = ALedgerNumber;
             strAcount = AAccount;

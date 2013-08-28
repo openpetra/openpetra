@@ -218,7 +218,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 try
                 {
-                    return (decimal)aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetYtdActualBaseDBName()];
+                    return Convert.ToDecimal(aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetYtdActualBaseDBName()]);
                 }
                 catch (IndexOutOfRangeException)
                 {
@@ -236,7 +236,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 try
                 {
-                    return (decimal)aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetYtdActualForeignDBName()];
+                    return Convert.ToDecimal(aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetYtdActualForeignDBName()]);
                 }
                 catch (IndexOutOfRangeException)
                 {
@@ -256,7 +256,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return (int)aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetGlmSequenceDBName()];
+                return Convert.ToInt32(aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetGlmSequenceDBName()]);
             }
         }
 
@@ -267,7 +267,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return (string)aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetCostCentreCodeDBName()];
+                return aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetCostCentreCodeDBName()].ToString();
             }
         }
     }

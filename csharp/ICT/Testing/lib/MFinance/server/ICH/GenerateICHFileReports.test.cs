@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -99,7 +99,7 @@ namespace Tests.MFinance.Server.ICH
             if (FeesPayableTable.Count == 0)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-feespayable-data.sql");
+                    "test-sql\\gl-test-feespayable-data.sql", FLedgerNumber);
             }
 
             AFeesReceivableRow template1 = new AFeesReceivableTable().NewRowTyped(false);

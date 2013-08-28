@@ -278,14 +278,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 TAccountPeriodToNewYear accountPeriod = new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber);
                 accountPeriod.IsInInfoMode = false;
                 accountPeriod.RunEndOfPeriodOperation();
-                // SetYearMark always uses the next year. so to remove the mark from last year, we need -2
-                SetYearMark(-2, false);
             }
             else if (ledgerInfo.CurrentPeriod == ledgerInfo.NumberOfAccountingPeriods)
             {
                 // Set the YearEndFlag to "Switch between the months ...
                 SetProvisionalYearEndFlag(true);
-                SetYearMark(0, true);
             }
             else
             {
@@ -295,19 +292,6 @@ namespace Ict.Petra.Server.MFinance.Common
 
             new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
                 TLedgerInitFlagEnum.Revaluation).Flag = false;
-        }
-
-        private void SetYearMark(int AYearOffset, bool AValue)
-        {
-            TAccountPeriodToNewYear accountPeriod = new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber);
-
-            int intYear = accountPeriod.ActualYear;
-            TLedgerInitFlagHandler ledgerInitFlagHandler =
-                new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
-                    TLedgerInitFlagEnum.ActualYear);
-
-            ledgerInitFlagHandler.AddMarker((intYear + AYearOffset).ToString());
-            ledgerInitFlagHandler.Flag = AValue;
         }
 
         /// <summary>
@@ -325,40 +309,6 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     return TCarryForwardENum.Month;
                 }
-            }
-        }
-
-        /// <summary>
-        /// This value is only defined if the TCarryForwardENum holds the value "year". In normal cases you can
-        /// get the value of the actual accounting year from the table a_accounting_period,
-        /// but this value is changed in the year end routine and in order
-        /// to make sure I get always the same value, the year is stored in a_ledger_init_flag from the
-        /// entrance to the TCarryForwardENum.Year-Period to the next TCarryForwardENum.Month-Period.
-        /// </summary>
-        public int Year
-        {
-            get
-            {
-                TAccountPeriodToNewYear accountPeriod = new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber);
-                int intYear = accountPeriod.ActualYear;
-                TLedgerInitFlagHandler ledgerInitFlagHandler =
-                    new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
-                        TLedgerInitFlagEnum.ActualYear);
-                ledgerInitFlagHandler.AddMarker((intYear).ToString());
-
-                if (ledgerInitFlagHandler.Flag)
-                {
-                    return intYear;
-                }
-
-                ledgerInitFlagHandler.AddMarker((intYear - 1).ToString());
-
-                if (ledgerInitFlagHandler.Flag)
-                {
-                    return intYear - 1;
-                }
-
-                throw new ApplicationException("Undefined TCarryForwardENum.Year Request");
             }
         }
 
@@ -418,33 +368,35 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public class TAccountPeriodToNewYear : AbstractPeriodEndOperation
     {
-        const int NOT_INITIALIZED = -1;
         int FLedgerNumber;
-        int FActualYear = NOT_INITIALIZED;
         AAccountingPeriodTable FaccountingPeriodTable = null;
 
         /// <summary>
         /// Constructor to define and load the complete table defined by ledger number
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="AActualYear">This parameter is important for the
-        /// JobSize-Routine to decide if the RunEndOfPeriodOperation has
-        /// been done or not.</param>
-        public TAccountPeriodToNewYear(int ALedgerNumber, int AActualYear)
+        public TAccountPeriodToNewYear(int ALedgerNumber)
         {
-            FActualYear = AActualYear;
             FLedgerNumber = ALedgerNumber;
             LoadData();
         }
 
         /// <summary>
-        /// Constructor to define and load the complete table defined by the same ledger number
+        ///
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        public TAccountPeriodToNewYear(int ALedgerNumber)
+        public override AbstractPeriodEndOperation GetActualizedClone()
         {
-            FLedgerNumber = ALedgerNumber;
-            LoadData();
+            return new TAccountPeriodToNewYear(FLedgerNumber);
+        }
+
+        /// <summary>
+        /// not implemented
+        /// </summary>
+        public override int JobSize {
+            get
+            {
+                return -1;
+            }
         }
 
         /// <summary>
@@ -479,58 +431,6 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 throw;
-            }
-        }
-
-        /// <summary>
-        /// Gets the control instance and throws an error if the
-        /// Actual year is not set (other Constructor is used).
-        /// </summary>
-        /// <returns></returns>
-        public override AbstractPeriodEndOperation GetActualizedClone()
-        {
-            if (FActualYear == NOT_INITIALIZED)
-            {
-                throw new ApplicationException(
-                    "Actual Year is not initialized - you cannot test for the success of RunEndOfPeriodOperation()");
-            }
-
-            return new TAccountPeriodToNewYear(FLedgerNumber, FActualYear);
-        }
-
-        /// <summary>
-        /// This is the number of database records holding the date values of the
-        /// just ending year.
-        /// </summary>
-        public override int JobSize {
-            get
-            {
-                int cnt = 0;
-
-                if (DoExecuteableCode)
-                {
-                    foreach (AAccountingPeriodRow accountingPeriodRow in FaccountingPeriodTable.Rows)
-                    {
-                        bool blnFound = false;
-
-                        if (accountingPeriodRow.PeriodStartDate.Year == FActualYear)
-                        {
-                            blnFound = true;
-                        }
-
-                        if (accountingPeriodRow.PeriodEndDate.Year == FActualYear)
-                        {
-                            blnFound = true;
-                        }
-
-                        if (blnFound)
-                        {
-                            ++cnt;
-                        }
-                    }
-                }
-
-                return cnt;
             }
         }
 
@@ -806,7 +706,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>Unposted batches prevent period close.</summary>
             PEEC_06,
 
-        /// <summary>Suspensed accountes prevent period close.</summary>
+        /// <summary>Suspense accounts prevent period close.</summary>
             PEEC_07,
 
         /// <summary>Unposted gift batches are found prevent period close.</summary>
