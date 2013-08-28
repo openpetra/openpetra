@@ -154,7 +154,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
             TCarryForward carryForward = null;
-            TVerificationResultCollection tvr = new TVerificationResultCollection();
 
             int CurrentYear = new TAccountPeriodInfo(intLedgerNumber, 1).PeriodStartDate.Year;
             Assert.AreEqual(DateTime.Now.Year, CurrentYear, "new ledger should be in current year");

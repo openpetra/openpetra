@@ -168,13 +168,13 @@ namespace Tests.MFinance.Server.ICH
             if (FeesPayableTable.Count == 0)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-feespayable-data.sql");
+                    "test-sql\\gl-test-feespayable-data.sql", FLedgerNumber);
             }
 
             if (FeesReceivableTable.Count == 0)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-feesreceivable-data.sql");
+                    "test-sql\\gl-test-feesreceivable-data.sql", FLedgerNumber);
             }
         }
 
