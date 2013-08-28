@@ -178,9 +178,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 (TYearEndProcessStatus)ledgerInfo.YearEndProcessStatus,
                 "year end process status should be still on RESET");
 
-            Assert.AreEqual(CurrentYear + 1, carryForward.Year, "old carryForward object");
             carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
-            Assert.AreEqual(CurrentYear + 1, carryForward.Year, "new carryForward object");
             carryForward.SetNextPeriod();
 
             TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber);

@@ -131,7 +131,6 @@ namespace Ict.Petra.Server.MFinance.GL
             verificationResults = new TVerificationResultCollection();
 
             TCarryForward carryForward = new TCarryForward(ledgerInfo);
-            int intYear = 0;
 
             if (carryForward.GetPeriodType != TCarryForwardENum.Year)
             {
@@ -143,18 +142,14 @@ namespace Ict.Petra.Server.MFinance.GL
                 verificationResults.Add(tvt);
                 FHasCriticalErrors = true;
             }
-            else
-            {
-                intYear = carryForward.Year;
-            }
 
             RunPeriodEndSequence(new TReallocation(ledgerInfo),
                 Catalog.GetString("Reallocation of all income and expense accounts"));
 
-            RunPeriodEndSequence(new TGlmNewYearInit(ledgerInfo.LedgerNumber, intYear),
+            RunPeriodEndSequence(new TGlmNewYearInit(ledgerInfo.LedgerNumber, ledgerInfo.CurrentFinancialYear),
                 Catalog.GetString("Initialize the glm-entries of the next year"));
 
-            RunPeriodEndSequence(new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber, intYear),
+            RunPeriodEndSequence(new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber),
                 Catalog.GetString("Set the account period values to the New Year"));
 
             if (!FInfoMode)

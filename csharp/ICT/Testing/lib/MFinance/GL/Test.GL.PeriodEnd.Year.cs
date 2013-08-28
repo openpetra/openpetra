@@ -362,21 +362,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             // We are in 2010 and this and 2011 is not a leap year
             TVerificationResultCollection verificationResult = new TVerificationResultCollection();
-            TAccountPeriodToNewYear accountPeriodToNewYear =
-                new TAccountPeriodToNewYear(intLedgerNumber2010, 2010);
+            TAccountPeriodToNewYear accountPeriodToNewYear = new TAccountPeriodToNewYear(intLedgerNumber2010);
 
             accountPeriodToNewYear.VerificationResultCollection = verificationResult;
             accountPeriodToNewYear.IsInInfoMode = false;
 
             // RunEndOfPeriodOperation ...
-            Assert.AreEqual(12, accountPeriodToNewYear.JobSize, "JobSize before switching to 2011");
             accountPeriodToNewYear.RunEndOfPeriodOperation();
-
-            // JobSize-Check ...
-            TAccountPeriodToNewYear accountPeriodToNewYear2 =
-                new TAccountPeriodToNewYear(intLedgerNumber2010, 2010);
-            accountPeriodToNewYear2.IsInInfoMode = false;
-            Assert.AreEqual(0, accountPeriodToNewYear2.JobSize, "JobSize after switching to 2011");
 
             TAccountPeriodInfo accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber2010);
             accountPeriodInfo.AccountingPeriodNumber = 2;
@@ -384,11 +376,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.AreEqual(28, accountPeriodInfo.PeriodEndDate.Day, "Test of the Feb. 28th");
 
             // Switch to 2012 - this is a leap year ...
-            accountPeriodToNewYear = new TAccountPeriodToNewYear(intLedgerNumber2010, 2011);
+            accountPeriodToNewYear = new TAccountPeriodToNewYear(intLedgerNumber2010);
             accountPeriodToNewYear.IsInInfoMode = false;
-            Assert.AreEqual(12, accountPeriodToNewYear.JobSize, "JobSize before switching to 2012");
             accountPeriodToNewYear.RunEndOfPeriodOperation();
-            Assert.AreEqual(0, accountPeriodToNewYear.JobSize, "JobSize after switching to 2012");
 
             accountPeriodInfo = new TAccountPeriodInfo(intLedgerNumber2010);
             accountPeriodInfo.AccountingPeriodNumber = 2;
