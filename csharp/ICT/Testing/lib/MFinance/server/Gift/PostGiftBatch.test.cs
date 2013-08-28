@@ -86,6 +86,8 @@ namespace Tests.MFinance.Server.Gift
             StreamReader sr = new StreamReader(testFile);
             string FileContent = sr.ReadToEnd();
 
+            FileContent = FileContent.Replace("{ledgernumber}", FLedgerNumber.ToString());
+
             sr.Close();
 
             Hashtable parameters = new Hashtable();
@@ -138,13 +140,13 @@ namespace Tests.MFinance.Server.Gift
             if (FeesPayableTable.Count == 0)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-feespayable-data.sql");
+                    "test-sql\\gl-test-feespayable-data.sql", FLedgerNumber);
             }
 
             if (FeesReceivableTable.Count == 0)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-feesreceivable-data.sql");
+                    "test-sql\\gl-test-feesreceivable-data.sql", FLedgerNumber);
             }
 
             GiftBatchTDS MainDS = new GiftBatchTDS();

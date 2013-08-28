@@ -92,6 +92,7 @@ namespace Tests.MFinance.Server.ICH
 
             sr.Close();
 
+            FileContent = FileContent.Replace("{ledgernumber}", FLedgerNumber.ToString());
             FileContent = FileContent.Replace("2010-09-30", AGiftDateEffective.ToString("yyyy-MM-dd"));
 
             Hashtable parameters = new Hashtable();
