@@ -112,7 +112,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                 DBAccess.GDBAccessObj.RollbackTransaction();
 
-                return false;
+                return true;
             }
         }
     }
@@ -268,13 +268,13 @@ namespace Ict.Petra.Server.MFinance.GL
             CheckIfRevaluationIsDone();
             CheckForUnpostedBatches();
             CheckForUnpostedGiftBatches();
-            CheckForSuspenseAcountsZero();
-            CheckForSuspenseAcounts();
+            CheckForSuspenseAccountsZero();
+            CheckForSuspenseAccounts();
         }
 
         private void CheckIfRevaluationIsDone()
         {
-            // TODO: could also check for the balance in this month. if balance is zero, no revalulation is needed.
+            // TODO: could also check for the balance in this month of the foreign currency account. if balance is zero, no revaluation is needed.
             string testForForeignKeyAccount =
                 String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
                     AAccountTable.GetLedgerNumberDBName(),
@@ -323,7 +323,7 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
-        private void CheckForSuspenseAcounts()
+        private void CheckForSuspenseAccounts()
         {
             if (getSuspenseAccountInfo == null)
             {
@@ -334,7 +334,7 @@ namespace Ict.Petra.Server.MFinance.GL
             if (getSuspenseAccountInfo.RowCount != 0)
             {
                 TVerificationResult tvr = new TVerificationResult(
-                    Catalog.GetString("Suspended Accounts found"),
+                    Catalog.GetString("Suspense Accounts found"),
                     String.Format(
                         Catalog.GetString(
                             "Have you checked the details of suspense account {0}?"),
@@ -364,7 +364,7 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
-        private void CheckForSuspenseAcountsZero()
+        private void CheckForSuspenseAccountsZero()
         {
             if (ledgerInfo.CurrentPeriod == ledgerInfo.NumberOfAccountingPeriods)
             {
@@ -399,9 +399,11 @@ namespace Ict.Petra.Server.MFinance.GL
                         {
                             TVerificationResult tvr = new TVerificationResult(
                                 Catalog.GetString("Non Zero Suspense Account found"),
-                                String.Format(strMessage, ledgerInfo.LedgerNumber,
+                                String.Format(strMessage, getSuspenseAccountInfo.ToString(),
                                     get_GLMp_Info.ActualBase), "",
-                                "GL.CAT.08", TResultSeverity.Resv_Critical);
+                                TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Critical);
+                            verificationResults.Add(tvr);
+
                             FHasCriticalErrors = true;
                             verificationResults.Add(tvr);
                         }

@@ -77,8 +77,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             strContent = strContent.Replace("31/07/2010", "31/07/" + DateTime.Now.Year.ToString());
             strContent = strContent.Replace("02/07/2010", "02/07/" + DateTime.Now.Year.ToString());
+            strContent = strContent.Replace("{ledgernumber}", intLedgerNumber.ToString());
 
-            // Console.WriteLine(strContent);
             TVerificationResultCollection verificationResult;
 
             bool importSuccess = TGLTransactionWebConnector.ImportGLBatches(requestParams, strContent, out verificationResult);
@@ -116,7 +116,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             if (!CostCentreTestCasesAvailable)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-costcentre-data.sql");
+                    "test-sql\\gl-test-costcentre-data.sql", intLedgerNumber);
             }
         }
 

@@ -124,8 +124,30 @@ namespace Ict.Testing.NUnitTools
         /// </summary>
         /// <param name="strSqlFilePathFromCSharpName">A filename starting from the root.
         /// (csharp\\ICT\\Testing\\...\\filename.sql)</param>
-        public static void LoadTestDataBase(string strSqlFilePathFromCSharpName)
+        /// <param name="ALedgerNumber">ledger that we are using currently</param>
+        public static void LoadTestDataBase(string strSqlFilePathFromCSharpName, int ALedgerNumber = -1)
         {
+            string tempfile = string.Empty;
+
+            if (ALedgerNumber != -1)
+            {
+                // we need to replace the ledgernumber variable in the sql file
+                string sqlfileContent = LoadCSVFileToString(strSqlFilePathFromCSharpName);
+
+                if (sqlfileContent.IndexOf("{ledgernumber}") == -1)
+                {
+                    throw new Exception("LoadTestDatabase: expecting variable ledgernumber in file " + strSqlFilePathFromCSharpName);
+                }
+
+                sqlfileContent = sqlfileContent.Replace("{ledgernumber}", ALedgerNumber.ToString());
+
+                tempfile = Path.GetTempFileName();
+                StreamWriter sw = new StreamWriter(tempfile);
+                sw.WriteLine(sqlfileContent);
+                sw.Close();
+                strSqlFilePathFromCSharpName = tempfile;
+            }
+
             if (TSrvSetting.RDMBSType == TDBType.SQLite)
             {
                 DBAccess.GDBAccessObj.CloseDBConnection();
@@ -140,6 +162,11 @@ namespace Ict.Testing.NUnitTools
                     TSrvSetting.PostgreSQLDatabaseName,
                     TSrvSetting.DBUsername, TSrvSetting.DBPassword, "");
             }
+
+            if (tempfile.Length > 0)
+            {
+                File.Delete(tempfile);
+            }
         }
 
         /// <summary>
@@ -150,8 +177,14 @@ namespace Ict.Testing.NUnitTools
         {
             ALedgerTable ledgers = ALedgerAccess.LoadAll(null);
 
-            ledgers.DefaultView.Sort = ALedgerTable.GetLedgerNameDBName() + " DESC";
+            ledgers.DefaultView.Sort = ALedgerTable.GetLedgerNumberDBName() + " DESC";
             int newLedgerNumber = ((ALedgerRow)ledgers.DefaultView[0].Row).LedgerNumber + 1;
+
+            if (newLedgerNumber < 500)
+            {
+                // avoiding conflicts with foreign ledgers
+                newLedgerNumber = 500;
+            }
 
             if (AStartDate == null)
             {
@@ -174,6 +207,7 @@ namespace Ict.Testing.NUnitTools
                 1,
                 true,
                 out VerificationResult);
+
             return newLedgerNumber;
         }
 

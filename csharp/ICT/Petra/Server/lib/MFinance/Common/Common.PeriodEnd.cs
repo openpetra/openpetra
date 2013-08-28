@@ -806,7 +806,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>Unposted batches prevent period close.</summary>
             PEEC_06,
 
-        /// <summary>Suspensed accountes prevent period close.</summary>
+        /// <summary>Suspense accounts prevent period close.</summary>
             PEEC_07,
 
         /// <summary>Unposted gift batches are found prevent period close.</summary>

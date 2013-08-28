@@ -74,8 +74,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     1,
                     1), periodInfo.PeriodStartDate, "Calendar from base database should start with January 1st of this year");
 
-            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end.sql");
-            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end-account-property.sql");
+            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end.sql", intLedgerNumber);
+            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end-account-property.sql",
+                intLedgerNumber);
 
             TCommonAccountingTool commonAccountingTool =
                 new TCommonAccountingTool(intLedgerNumber, "NUNIT");
@@ -136,7 +137,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 }
                 else
                 {
-                    carryForward.SetNextPeriod();
+                    TVerificationResultCollection VerificationResult;
+                    TPeriodIntervallConnector.TPeriodMonthEnd(intLedgerNumber, false, out VerificationResult);
+                    Assert.AreEqual(false, VerificationResult.HasCriticalErrors, "running the month end should not give critical error");
                 }
             }
 
@@ -225,8 +228,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_2YearEnds()
         {
             intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
-            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end.sql");
-            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end-account-property.sql");
+            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end.sql", intLedgerNumber);
+            CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\test-sql\\gl-test-year-end-account-property.sql",
+                intLedgerNumber);
 
             for (int countYear = 0; countYear < 2; countYear++)
             {
@@ -259,7 +263,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     }
                     else
                     {
-                        carryForward.SetNextPeriod();
+                        TVerificationResultCollection VerificationResult;
+                        TPeriodIntervallConnector.TPeriodMonthEnd(intLedgerNumber, false, out VerificationResult);
+                        Assert.AreEqual(false, VerificationResult.HasCriticalErrors, "running the month end should not give critical error");
                     }
                 }
 
@@ -423,7 +429,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             if (batches.Rows.Count == 0)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-batch-data.sql");
+                    "test-sql\\gl-test-batch-data.sql", intLedgerNumber);
             }
         }
 
