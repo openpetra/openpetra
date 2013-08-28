@@ -157,6 +157,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             TVerificationResultCollection tvr = new TVerificationResultCollection();
 
             int CurrentYear = new TAccountPeriodInfo(intLedgerNumber, 1).PeriodStartDate.Year;
+            Assert.AreEqual(DateTime.Now.Year, CurrentYear, "new ledger should be in current year");
+
             TLedgerInfo ledgerInfo = null;
 
             for (int i = 1; i < 13; ++i)  // 12 Months
@@ -176,9 +178,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 (TYearEndProcessStatus)ledgerInfo.YearEndProcessStatus,
                 "year end process status should be still on RESET");
 
-            Assert.AreEqual(CurrentYear, carryForward.Year, "old carryForward object");
+            Assert.AreEqual(CurrentYear + 1, carryForward.Year, "old carryForward object");
             carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
-            Assert.AreEqual(CurrentYear, carryForward.Year, "new carryForward object");
+            Assert.AreEqual(CurrentYear + 1, carryForward.Year, "new carryForward object");
             carryForward.SetNextPeriod();
 
             TLedgerInfo LedgerInfo = new TLedgerInfo(intLedgerNumber);
