@@ -153,7 +153,7 @@ namespace Ict.Testing.NUnitTools
                 DBAccess.GDBAccessObj.CloseDBConnection();
             }
 
-            nant("loadDatabaseIncrement -D:file=" + strSqlFilePathFromCSharpName, false);
+            nant("loadDatabaseIncrement -D:file=\"" + strSqlFilePathFromCSharpName + "\"", false);
 
             if (TSrvSetting.RDMBSType == TDBType.SQLite)
             {
