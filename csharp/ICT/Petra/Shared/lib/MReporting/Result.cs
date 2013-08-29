@@ -27,6 +27,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using Ict.Common;
 using System.Text;
 using System.Globalization;
@@ -808,9 +809,49 @@ namespace Ict.Petra.Shared.MReporting
             Boolean ADebugging = false,
             Boolean AExportOnlyLowestLevel = false)
         {
+            StreamWriter csvStream;
+
+            try
+            {
+                // don't append; use the local encoding, e.g. to support Umlauts
+                csvStream = new StreamWriter(csvfilename, false, System.Text.Encoding.Default);
+            }
+            catch (System.Exception)
+            {
+                return false;
+            }
+
+            List <string>lines = WriteCSVInternal(AParameters, separator, ADebugging, AExportOnlyLowestLevel);
+
+            foreach (string line in lines)
+            {
+                csvStream.WriteLine(line);
+            }
+
+            csvStream.Close();
+
+            return true;
+        }
+
+        /// <summary>
+        /// This returns the resultlist as lines for a CSV file
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="separator">if this has the value FIND_BEST_SEPARATOR,
+        /// then first the parameters will be checked for CSV_separator, and if that parameter does not exist,
+        /// then the CurrentCulture is checked, for the local language settings</param>
+        /// <param name="ADebugging">if true, thent the currency and date values are written encoded, not localized</param>
+        /// <param name="AExportOnlyLowestLevel">if true, only the lowest level of AParameters are exported (level with higest depth)
+        /// otherwise all levels in AParameter are exported</param>
+        /// <returns>the lines to be written to the CSV file</returns>
+        public List <string>WriteCSVInternal(TParameterList AParameters,
+            string separator = "FIND_BEST_SEPARATOR",
+            Boolean ADebugging = false,
+            Boolean AExportOnlyLowestLevel = false)
+        {
+            List <string>lines = new List <string>();
             int i;
             string strLine;
-            StreamWriter csvStream;
             ArrayList sortedList;
             bool display;
             bool useIndented;
@@ -838,16 +879,6 @@ namespace Ict.Petra.Shared.MReporting
                 {
                     separator = CultureInfo.CurrentCulture.TextInfo.ListSeparator;
                 }
-            }
-
-            try
-            {
-                // don't append; use the local encoding, e.g. to support Umlauts
-                csvStream = new StreamWriter(csvfilename, false, System.Text.Encoding.Default);
-            }
-            catch (System.Exception)
-            {
-                return false;
             }
 
             if (ADebugging == false)
@@ -925,7 +956,7 @@ namespace Ict.Petra.Shared.MReporting
                 }
             }
 
-            csvStream.WriteLine(strLine);
+            lines.Add(strLine);
             FormattedResult.SortChildren();
             sortedList = new ArrayList();
             FormattedResult.CreateSortedListByMaster(sortedList, 0);
@@ -1049,14 +1080,13 @@ namespace Ict.Petra.Shared.MReporting
 
                     if (display)
                     {
-                        csvStream.WriteLine(strLine);
+                        lines.Add(strLine);
                     }
                 }
             }
 
-            csvStream.Close();
             sortedList = null;
-            return true;
+            return lines;
         }
 
         /// <summary>
@@ -1080,16 +1110,9 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>the XmlDocument</returns>
         public XmlDocument WriteXmlDocument(TParameterList AParameters, Boolean AExportOnlyLowestLevel = false)
         {
-            string tempfile = Path.GetTempFileName();
+            List <string>lines = WriteCSVInternal(AParameters, ";", false, AExportOnlyLowestLevel);
 
-            if (WriteCSV(AParameters, tempfile, ";", false, AExportOnlyLowestLevel))
-            {
-                XmlDocument doc = TCsv2Xml.ParseCSV2Xml(tempfile, ";", Encoding.UTF8);
-                File.Delete(tempfile);
-                return doc;
-            }
-
-            return null;
+            return TCsv2Xml.ParseCSV2Xml(lines, ";");
         }
 
         /// <summary>
