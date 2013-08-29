@@ -158,7 +158,7 @@ namespace Ict.Petra.Server.MCommon.Processing
                     TAppSettingsManager.GetValue("DataChecks.Email.Recipient"),
                     "Data Check",
                     "there are " + AErrors.Rows.Count.ToString() + " errors. Please see attachment!",
-                    excelfile);
+                    new string[] { excelfile });
             }
             else
             {
@@ -225,7 +225,7 @@ namespace Ict.Petra.Server.MCommon.Processing
                     recipientEmail,
                     "Data Check for " + AUserId,
                     "there are " + v.Count.ToString() + " errors. Please see attachment!",
-                    excelfile);
+                    new string[] { excelfile });
             }
             else
             {

@@ -510,7 +510,7 @@ namespace Ict.Common.IO.Testing
                     {
                         ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("test");
 
-                        worksheet.Cells[1,1].Value = "test1";
+                        worksheet.Cells[1, 1].Value = "test1";
                         worksheet.Cells["B3"].Value = "test2";
                         worksheet.Cells["B7"].Value = "test2";
 
@@ -530,7 +530,7 @@ namespace Ict.Common.IO.Testing
             FileInfo f = new FileInfo(PathToTestData + "testUnzip/xl/sharedStrings.xml");
             Assert.AreNotEqual(0, f.Length, "file sharedStrings.xml should not be empty");
 
-            // System.MethodAccessException : Attempt by security transparent method 'OfficeOpenXml.Utils.EncryptedPackageHandler.IsStorageFile(System.String)' to call native code 
+            // System.MethodAccessException : Attempt by security transparent method 'OfficeOpenXml.Utils.EncryptedPackageHandler.IsStorageFile(System.String)' to call native code
             // through method 'OfficeOpenXml.Utils.EncryptedPackageHandler.StgIsStorageFile(System.String)' failed.
             // Methods must be security critical or security safe-critical to call native code.
             //Assert.IsInstanceOf(typeof(ExcelPackage), new ExcelPackage(new FileInfo(filename)), "cannot open excel file");

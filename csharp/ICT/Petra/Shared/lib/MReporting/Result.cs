@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -32,6 +32,8 @@ using System.Text;
 using System.Globalization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
+using System.Xml;
+using Ict.Common.IO;
 
 namespace Ict.Petra.Shared.MReporting
 {
@@ -800,7 +802,11 @@ namespace Ict.Petra.Shared.MReporting
         /// <param name="AExportOnlyLowestLevel">if true, only the lowest level of AParameters are exported (level with higest depth)
         /// otherwise all levels in AParameter are exported</param>
         /// <returns>true for success</returns>
-        public bool WriteCSV(TParameterList AParameters, string csvfilename, string separator, Boolean ADebugging, Boolean AExportOnlyLowestLevel)
+        public bool WriteCSV(TParameterList AParameters,
+            string csvfilename,
+            string separator = "FIND_BEST_SEPARATOR",
+            Boolean ADebugging = false,
+            Boolean AExportOnlyLowestLevel = false)
         {
             int i;
             string strLine;
@@ -1054,43 +1060,7 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
-        /// overload; export all levels
-        /// </summary>
-        /// <param name="AParameters"></param>
-        /// <param name="csvfilename"></param>
-        /// <param name="separator"></param>
-        /// <param name="ADebugging"></param>
-        /// <returns></returns>
-        public bool WriteCSV(TParameterList AParameters, string csvfilename, string separator, Boolean ADebugging)
-        {
-            return WriteCSV(AParameters, csvfilename, separator, ADebugging, false);
-        }
-
-        /// <summary>
-        /// overload; no debugging
-        /// </summary>
-        /// <param name="AParameters"></param>
-        /// <param name="csvfilename"></param>
-        /// <param name="separator"></param>
-        /// <returns></returns>
-        public bool WriteCSV(TParameterList AParameters, string csvfilename, string separator)
-        {
-            return WriteCSV(AParameters, csvfilename, separator, false, false);
-        }
-
-        /// <summary>
         /// overload; no specific separator, find the best for the current localisation
-        /// </summary>
-        /// <param name="AParameters"></param>
-        /// <param name="csvfilename"></param>
-        /// <returns></returns>
-        public bool WriteCSV(TParameterList AParameters, string csvfilename)
-        {
-            return WriteCSV(AParameters, csvfilename, "FIND_BEST_SEPARATOR", false, false);
-        }
-
-        /// <summary>
-        /// overlaod; no specific separator, find the best for the current localisation
         /// </summary>
         /// <param name="AParameters"></param>
         /// <param name="csvfilename"></param>
@@ -1101,7 +1071,26 @@ namespace Ict.Petra.Shared.MReporting
             return WriteCSV(AParameters, csvfilename, "FIND_BEST_SEPARATOR", false, AExportOnlyLowestLevel);
         }
 
-        // needed for TRptSituation.processAllRows
+        /// <summary>
+        /// This stores the resultlist into a XmlDocument (to be saved as Excel file)
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="AExportOnlyLowestLevel">if true, only the lowest level of AParameters are exported (level with higest depth)
+        /// otherwise all levels in AParameter are exported</param>
+        /// <returns>the XmlDocument</returns>
+        public XmlDocument WriteXmlDocument(TParameterList AParameters, Boolean AExportOnlyLowestLevel = false)
+        {
+            string tempfile = Path.GetTempFileName();
+
+            if (WriteCSV(AParameters, tempfile, ";", false, AExportOnlyLowestLevel))
+            {
+                XmlDocument doc = TCsv2Xml.ParseCSV2Xml(tempfile, ";", Encoding.UTF8);
+                File.Delete(tempfile);
+                return doc;
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// needed for TRptSituation.processAllRows
