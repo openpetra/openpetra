@@ -22,16 +22,22 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.IO;
+using System.Data;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.IO;
+using Ict.Common.Data;
+using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
+using Ict.Petra.Server.MFinance.Setup.WebConnectors;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace Ict.Testing.NUnitTools
 {
@@ -118,14 +124,36 @@ namespace Ict.Testing.NUnitTools
         /// </summary>
         /// <param name="strSqlFilePathFromCSharpName">A filename starting from the root.
         /// (csharp\\ICT\\Testing\\...\\filename.sql)</param>
-        public static void LoadTestDataBase(string strSqlFilePathFromCSharpName)
+        /// <param name="ALedgerNumber">ledger that we are using currently</param>
+        public static void LoadTestDataBase(string strSqlFilePathFromCSharpName, int ALedgerNumber = -1)
         {
+            string tempfile = string.Empty;
+
+            if (ALedgerNumber != -1)
+            {
+                // we need to replace the ledgernumber variable in the sql file
+                string sqlfileContent = LoadCSVFileToString(strSqlFilePathFromCSharpName);
+
+                if (sqlfileContent.IndexOf("{ledgernumber}") == -1)
+                {
+                    throw new Exception("LoadTestDatabase: expecting variable ledgernumber in file " + strSqlFilePathFromCSharpName);
+                }
+
+                sqlfileContent = sqlfileContent.Replace("{ledgernumber}", ALedgerNumber.ToString());
+
+                tempfile = Path.GetTempFileName();
+                StreamWriter sw = new StreamWriter(tempfile);
+                sw.WriteLine(sqlfileContent);
+                sw.Close();
+                strSqlFilePathFromCSharpName = tempfile;
+            }
+
             if (TSrvSetting.RDMBSType == TDBType.SQLite)
             {
                 DBAccess.GDBAccessObj.CloseDBConnection();
             }
 
-            nant("loadDatabaseIncrement -D:file=" + strSqlFilePathFromCSharpName, false);
+            nant("loadDatabaseIncrement -D:file=\"" + strSqlFilePathFromCSharpName + "\"", false);
 
             if (TSrvSetting.RDMBSType == TDBType.SQLite)
             {
@@ -134,6 +162,53 @@ namespace Ict.Testing.NUnitTools
                     TSrvSetting.PostgreSQLDatabaseName,
                     TSrvSetting.DBUsername, TSrvSetting.DBPassword, "");
             }
+
+            if (tempfile.Length > 0)
+            {
+                File.Delete(tempfile);
+            }
+        }
+
+        /// <summary>
+        /// create a new ledger, with new ledgernumber
+        /// </summary>
+        /// <returns>ledgernumber of new ledger</returns>
+        public static int CreateNewLedger(DateTime? AStartDate = null)
+        {
+            ALedgerTable ledgers = ALedgerAccess.LoadAll(null);
+
+            ledgers.DefaultView.Sort = ALedgerTable.GetLedgerNumberDBName() + " DESC";
+            int newLedgerNumber = ((ALedgerRow)ledgers.DefaultView[0].Row).LedgerNumber + 1;
+
+            if (newLedgerNumber < 500)
+            {
+                // avoiding conflicts with foreign ledgers
+                newLedgerNumber = 500;
+            }
+
+            if (AStartDate == null)
+            {
+                AStartDate = new DateTime(DateTime.Now.Year, 1, 1);
+            }
+
+            TLogging.Log("CommonNUnitFunctions.CreateNewLedger " + newLedgerNumber.ToString());
+
+            TVerificationResultCollection VerificationResult;
+            TGLSetupWebConnector.CreateNewLedger(newLedgerNumber,
+                "NUnit Test Ledger " + newLedgerNumber.ToString(),
+                "99",
+                "EUR",
+                "USD",
+                AStartDate.Value,
+                12,
+                1,
+                8,
+                true,
+                1,
+                true,
+                out VerificationResult);
+
+            return newLedgerNumber;
         }
 
         /// <summary>
@@ -152,7 +227,7 @@ namespace Ict.Testing.NUnitTools
 
             NantProcess.EnableRaisingEvents = false;
 
-            if (Ict.Common.Utilities.DetermineExecutingOS() == TExecutingOSEnum.eosWinNTOrLater)
+            if (Ict.Common.Utilities.DetermineExecutingOS() >= TExecutingOSEnum.eosWinNTOrLater)
             {
                 NantProcess.StartInfo.FileName = "cmd";
                 NantProcess.StartInfo.Arguments = "/c " + pathAndFileNameToNantExe + " " + argument + " -logfile:nant.txt";

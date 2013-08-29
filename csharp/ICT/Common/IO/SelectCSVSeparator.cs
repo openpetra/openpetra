@@ -203,6 +203,11 @@ namespace Ict.Common.IO
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="AfileName"></param>
+        /// <returns></returns>
         public Boolean OpenCsvFile(String AfileName)
         {
             System.Text.Encoding FileEncoding = TTextFile.GetFileEncoding(AfileName);

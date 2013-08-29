@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -328,6 +328,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 terminate.Context = "Common Accountig";
                 terminate.ErrorCode = "GL.CAT.06";
                 throw terminate;
+            }
+
+            if (AAccount.Trim().Length == 0)
+            {
+                throw new Exception("account code is empty");
             }
 
             if (blnJournalIsInForeign)

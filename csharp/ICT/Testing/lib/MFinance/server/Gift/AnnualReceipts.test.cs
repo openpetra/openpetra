@@ -73,8 +73,11 @@ namespace Tests.MFinance.Server.Gift
             TGiftImporting importer = new TGiftImporting();
 
             string testFile = TAppSettingsManager.GetValue("GiftBatch.file", "../../csharp/ICT/Testing/lib/MFinance/SampleData/sampleGiftBatch.csv");
+
             StreamReader sr = new StreamReader(testFile);
             string FileContent = sr.ReadToEnd();
+
+            FileContent = FileContent.Replace("{ledgernumber}", FLedgerNumber.ToString());
 
             sr.Close();
 

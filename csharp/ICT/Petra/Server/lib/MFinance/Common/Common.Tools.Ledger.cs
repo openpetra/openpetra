@@ -456,12 +456,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         ///
         /// </summary>
-        DatabaseAllocation,
-
-        /// <summary>
-        /// Used for the period end year as a marker for the year ...
-        /// </summary>
-        ActualYear
+        DatabaseAllocation
     }
 
     /// <summary>

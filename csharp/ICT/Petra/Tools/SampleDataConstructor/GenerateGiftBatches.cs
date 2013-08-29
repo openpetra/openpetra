@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -48,17 +48,26 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         /// LedgerNumber to be set from outside
         public static int FLedgerNumber = 43;
 
+        private static SortedList <DateTime, List <XmlNode>>GiftsPerDate;
+
         /// <summary>
-        /// generate the gift batches from a text file that was generated with Benerator
+        /// load the gift batches from a text file that was generated with Benerator
         /// </summary>
         /// <param name="AInputBeneratorFile"></param>
-        public static void GenerateBatches(string AInputBeneratorFile)
+        public static void LoadBatches(string AInputBeneratorFile)
         {
-            SortedList <DateTime, List <XmlNode>>GiftsPerDate = SortGiftsByDate(AInputBeneratorFile);
+            GiftsPerDate = SortGiftsByDate(AInputBeneratorFile);
+        }
 
-            GiftBatchTDS MainDS = CreateGiftBatches(GiftsPerDate);
+        /// <summary>
+        /// generate the gift batches from a text file that was generated with Benerator, for a specific period
+        /// </summary>
+        public static void CreateGiftBatches(int APeriodNumber)
+        {
+            GiftBatchTDS MainDS = CreateGiftBatches(GiftsPerDate, APeriodNumber);
 
             TVerificationResultCollection VerificationResult;
+
             MainDS.ThrowAwayAfterSubmitChanges = true;
             GiftBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult);
 
@@ -152,9 +161,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                     GiftsPerDate[dateForGift].Add(RecordNode);
 
                     dateForGift = dateForGift.AddMonths(monthStep);
-
-                    // TODO support more than just one year?
-                } while (monthStep > 0 && startdate.Year == dateForGift.Year);
+                } while (monthStep > 0 && dateForGift.Year <= startdate.Year + 3);
 
                 RecordNode = RecordNode.NextSibling;
             }
@@ -162,7 +169,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             return GiftsPerDate;
         }
 
-        private static GiftBatchTDS CreateGiftBatches(SortedList <DateTime, List <XmlNode>>AGiftsPerDate)
+        private static GiftBatchTDS CreateGiftBatches(SortedList <DateTime, List <XmlNode>>AGiftsPerDate, int APeriodNumber)
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
             ALedgerTable LedgerTable = null;
@@ -199,10 +206,19 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
                 LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, ReadTransaction);
 
+                AAccountingPeriodRow AccountingPeriodRow = AAccountingPeriodAccess.LoadByPrimaryKey(FLedgerNumber, APeriodNumber, ReadTransaction)[0];
+
                 // create a gift batch for each day.
                 // TODO: could create one batch per month, if there are not so many gifts (less than 100 per month)
                 foreach (DateTime GlEffectiveDate in AGiftsPerDate.Keys)
                 {
+                    if ((GlEffectiveDate.CompareTo(AccountingPeriodRow.PeriodStartDate) < 0)
+                        || (GlEffectiveDate.CompareTo(AccountingPeriodRow.PeriodEndDate) > 0))
+                    {
+                        // only create gifts in that period
+                        continue;
+                    }
+
                     AGiftBatchRow giftBatch = TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS,
                         ref ReadTransaction,
                         ref LedgerTable,

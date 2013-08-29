@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -410,6 +410,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 txtDonorKey.Text = StringHelper.FormatStrToPartnerKeyString(match.DonorKey.ToString());
 
                 grdGiftDetails.SelectRowInGrid(1);
+                // grdGiftDetails.SelectRowInGrid does not seem to update the gift details, so we call that manually
+                GiftDetailsFocusedRowChanged(null, null);
                 grdAllTransactions.Focus();
             }
             else if (match.Action == MFinanceConstants.BANK_STMT_STATUS_MATCHED_GL)
