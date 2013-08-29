@@ -254,7 +254,7 @@ namespace Ict.Common.Controls
 
             // add our name suffix
             instance.Name = AControlToClone.Name + ANameSuffix;
-            instance.Tag = "SuppressChangeDetection";
+            instance.Tag = CommonTagString.SUPPRESS_CHANGE_DETECTION;
 
             // our controls are always enabled and have a standard width (which usually gets reduced to fit)
             instance.Width = 280;
@@ -336,7 +336,7 @@ namespace Ict.Common.Controls
 
             // add our name suffix
             instance.Name = AControlToClone.Name + ANameSuffix;
-            instance.Tag = "SuppressChangeDetection";
+            instance.Tag = CommonTagString.SUPPRESS_CHANGE_DETECTION;
 
             // our controls are always enabled and have a standard width (which usually gets reduced to fit)
             instance.Width = 280;

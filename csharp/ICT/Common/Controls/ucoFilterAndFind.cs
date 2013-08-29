@@ -1046,7 +1046,7 @@ namespace Ict.Common.Controls
                 BtnKeepFilterTurnedOn.Height = 22;
                 BtnKeepFilterTurnedOn.Font = new System.Drawing.Font("Verdana", 8.0f);
                 BtnKeepFilterTurnedOn.Text = Catalog.GetString("Kee&p Filter Turned On");
-                BtnKeepFilterTurnedOn.Tag = "SuppressChangeDetection" + ";" + TSingleLineFlow.BeginGroupIndicator;
+                BtnKeepFilterTurnedOn.Tag = CommonTagString.SUPPRESS_CHANGE_DETECTION + ";" + TSingleLineFlow.BeginGroupIndicator;
                 BtnKeepFilterTurnedOn.FlatStyle = FlatStyle.System;               // this is set so that the Button doesn't let the background colour shine through, but uses the system's colours and uses a gradient!
                 BtnKeepFilterTurnedOn.Appearance = Appearance.Button;
                 BtnKeepFilterTurnedOn.TextAlign = ContentAlignment.MiddleCenter;  // Same as 'real' Button
@@ -1410,7 +1410,7 @@ namespace Ict.Common.Controls
             rbtFindDirUp.AutoSize = true;
             rbtFindDirUp.Name = "rbtFindDirUp";
             rbtFindDirUp.Text = Catalog.GetString("&Up");
-            rbtFindDirUp.Tag = "SuppressChangeDetection";
+            rbtFindDirUp.Tag = CommonTagString.SUPPRESS_CHANGE_DETECTION;
 
             rbtFindDirDown.Top = 14;
             rbtFindDirDown.Left = 60;
@@ -1418,7 +1418,7 @@ namespace Ict.Common.Controls
             rbtFindDirDown.Checked = true;
             rbtFindDirDown.Name = "rbtFindDirDown";
             rbtFindDirDown.Text = Catalog.GetString("D&own");
-            rbtFindDirDown.Tag = "SuppressChangeDetection";
+            rbtFindDirDown.Tag = CommonTagString.SUPPRESS_CHANGE_DETECTION;
 
             grpFindDirection.Top = 30;
             grpFindDirection.Left = 3;
@@ -1671,7 +1671,7 @@ namespace Ict.Common.Controls
                             ClearArgumentCtrlButton.ImageIndex = 0;
                             ClearArgumentCtrlButton.Cursor = System.Windows.Forms.Cursors.Default;
                         };  // Turn the button back to 'normal' appearance
-                        ClearArgumentCtrlButton.Tag = "SuppressChangeDetection" + ";" + ArgumentPanelCtrl.Name;
+                        ClearArgumentCtrlButton.Tag = CommonTagString.SUPPRESS_CHANGE_DETECTION + ";" + ArgumentPanelCtrl.Name;
 
                         ClearArgumentCtrlButton.Click += delegate(object sender, EventArgs e)
                         {
