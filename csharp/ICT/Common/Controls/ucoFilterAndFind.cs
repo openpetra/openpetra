@@ -1837,7 +1837,7 @@ namespace Ict.Common.Controls
                 //
                 ControlToClearAsAutoComplete = ControlToClearInstance as TCmbAutoComplete;
 
-                if (ControlToClearAsAutoComplete != null && ControlToClearAsAutoComplete.IgnoreNewValues == true)
+                if ((ControlToClearAsAutoComplete != null) && (ControlToClearAsAutoComplete.IgnoreNewValues == true))
                 {
                     ControlToClearAsAutoComplete.Text = String.Empty;
 

@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void LoadBatches(Int32 ALedgerNumber)
         {
             FLedgerNumber = ALedgerNumber;
-            
+
             RadioButton rbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
             TCmbAutoComplete cmbYearFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearFilter");
 
@@ -1336,6 +1336,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             TCmbAutoComplete cmbYearFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearFilter");
             TCmbAutoComplete cmbPeriodFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriodFilter");
+
             TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref cmbPeriodFilter, FLedgerNumber, cmbYearFilter.GetSelectedInt32());
         }
 

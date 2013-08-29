@@ -692,7 +692,7 @@ namespace Ict.Common.Controls
             else
             {
                 // Text could not be found.
-                if (this.FAcceptNewValues == true || this.FIgnoreNewValues == true)
+                if ((this.FAcceptNewValues == true) || (this.FIgnoreNewValues == true))
                 {
                     // User may enter new values.
                     if (AcceptNewEntries != null)

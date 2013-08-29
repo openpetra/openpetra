@@ -227,16 +227,19 @@ namespace Ict.Common.Controls
 
                     if (ctrl is RadioButton)
                     {
-                        instance.Controls.Add(TCloneFilterFindControl.ShallowClone <RadioButton>((RadioButton)ctrl, TFilterPanelControls.FILTER_NAME_SUFFIX,
+                        instance.Controls.Add(TCloneFilterFindControl.ShallowClone <RadioButton>((RadioButton)ctrl,
+                                TFilterPanelControls.FILTER_NAME_SUFFIX,
                                 instance));
                     }
                     else if (ctrl is CheckBox)
                     {
-                        instance.Controls.Add(TCloneFilterFindControl.ShallowClone<CheckBox>((CheckBox)ctrl, TFilterPanelControls.FILTER_NAME_SUFFIX, instance));
+                        instance.Controls.Add(TCloneFilterFindControl.ShallowClone <CheckBox>((CheckBox)ctrl, TFilterPanelControls.FILTER_NAME_SUFFIX,
+                                instance));
                     }
                     else if (ctrl is TextBox)
                     {
-                        instance.Controls.Add(TCloneFilterFindControl.ShallowClone<TextBox>((TextBox)ctrl, TFilterPanelControls.FILTER_NAME_SUFFIX, instance));
+                        instance.Controls.Add(TCloneFilterFindControl.ShallowClone <TextBox>((TextBox)ctrl, TFilterPanelControls.FILTER_NAME_SUFFIX,
+                                instance));
                     }
                     else
                     {
@@ -300,6 +303,7 @@ namespace Ict.Common.Controls
             TCmbAutoComplete instance = new TCmbAutoComplete();
 
             ComboBox clonedFrom = null;
+
             if (AControlToClone is TCmbLabelled)
             {
                 clonedFrom = ((TCmbLabelled)(object)AControlToClone).cmbCombobox;

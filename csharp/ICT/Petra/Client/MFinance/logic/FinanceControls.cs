@@ -761,6 +761,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.DisplayMember = DisplayMember;
             AControl.ValueMember = ValueMember;
             AControl.DataSource = Table.DefaultView;
+
             if (Table.DefaultView.Count > 0)
             {
                 AControl.SelectedIndex = 0;
@@ -776,6 +777,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             System.Int32 AYear)
         {
             DataTable periods = InitialiseAvailableFinancialPeriodsList(ALedgerNr, AYear);
+
             AControl.DisplayMember = "display";
             AControl.ValueMember = "value";
             AControl.DataSource = periods.DefaultView;
@@ -795,6 +797,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             System.Int32 AYear)
         {
             DataTable periods = InitialiseAvailableFinancialPeriodsList(ALedgerNr, AYear);
+
             AControl.InitialiseUserControl(periods, "value", "display", null, null);
             AControl.AppearanceSetup(new int[] { AControl.ComboBoxWidth }, -1);
         }

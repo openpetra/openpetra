@@ -191,7 +191,7 @@ namespace Ict.Common.Controls
                 ((CheckBox)FPanelControl).CheckState = CheckState.Indeterminate;
                 ((CheckBox)FPanelControl).ThreeState = true;
 
-                if (FPanelLabel != null && FPanelLabel.Text != String.Empty && FPanelControl.Text == String.Empty)
+                if ((FPanelLabel != null) && (FPanelLabel.Text != String.Empty) && (FPanelControl.Text == String.Empty))
                 {
                     FPanelControl.Text = FPanelLabel.Text;
                     FPanelLabel = null;
@@ -213,7 +213,7 @@ namespace Ict.Common.Controls
         /// <returns>A format string such as LIKE '%{0}%'</returns>
         private static string GetFilterComparison(string ADBColumnName, string ADBColumnDataType)
         {
-            if (ADBColumnName == null || ADBColumnDataType == null)
+            if ((ADBColumnName == null) || (ADBColumnDataType == null))
             {
                 return null;
             }
@@ -223,7 +223,7 @@ namespace Ict.Common.Controls
                 // Boolean
                 return "={0}";
             }
-            else if (ADBColumnDataType == "integer" || ADBColumnDataType == "number")
+            else if ((ADBColumnDataType == "integer") || (ADBColumnDataType == "number"))
             {
                 // numbers
                 return "_text LIKE '%{0}%'";
@@ -256,6 +256,7 @@ namespace Ict.Common.Controls
             {
                 // Clear Value??
                 string strClearValue = TUcoFilterAndFind.ArgumentPanelHelper.ARGUMENTCONTROLTAG_CLEARVALUE;
+
                 if (ATag.Contains(strClearValue))
                 {
                     // A Clear Value has been specified
@@ -296,12 +297,12 @@ namespace Ict.Common.Controls
         /// <summary>
         /// A list of all the individual standard filter panels
         /// </summary>
-        public List<TIndividualFilterFindPanel> FStandardFilterPanels = new List<TIndividualFilterFindPanel>();
+        public List <TIndividualFilterFindPanel>FStandardFilterPanels = new List <TIndividualFilterFindPanel>();
 
         /// <summary>
         /// A list of all the individual Extra filter panels
         /// </summary>
-        public List<TIndividualFilterFindPanel> FExtraFilterPanels = new List<TIndividualFilterFindPanel>();
+        public List <TIndividualFilterFindPanel>FExtraFilterPanels = new List <TIndividualFilterFindPanel>();
 
         /// <summary>
         /// The suffix to be appended to the control name when it is on the filter panel
@@ -344,13 +345,13 @@ namespace Ict.Common.Controls
         /// Returns a list of panels and their controls on the standard filter panel ready to be passed to the Filter/Find user control
         /// </summary>
         /// <returns>A list of panels and their controls ready to be passed to the Filter/Find user control</returns>
-        public List<Panel> GetFilterPanels()
+        public List <Panel>GetFilterPanels()
         {
-            List<Panel> standardPanels = null;
+            List <Panel>standardPanels = null;
 
             if (FStandardFilterPanels.Count > 0)
             {
-                standardPanels = new List<Panel>();
+                standardPanels = new List <Panel>();
 
                 for (int i = 0; i < FStandardFilterPanels.Count; i++)
                 {
@@ -366,13 +367,13 @@ namespace Ict.Common.Controls
         /// Returns a list of panels and their controls on the Extra filter panel ready to be passed to the Filter/Find user control
         /// </summary>
         /// <returns>A list of panels and their controls ready to be passed to the Filter/Find user control</returns>
-        public List<Panel> GetExtraFilterPanels()
+        public List <Panel>GetExtraFilterPanels()
         {
-            List<Panel> extraPanels = null;
+            List <Panel>extraPanels = null;
 
             if (FExtraFilterPanels.Count > 0)
             {
-                extraPanels = new List<Panel>();
+                extraPanels = new List <Panel>();
 
                 for (int i = 0; i < FExtraFilterPanels.Count; i++)
                 {
@@ -389,7 +390,7 @@ namespace Ict.Common.Controls
         /// </summary>
         /// <param name="AFilterPanelControls">The panel set (standard or extra)</param>
         /// <returns></returns>
-        private string GetCurrentFilter(List<TIndividualFilterFindPanel> AFilterPanelControls)
+        private string GetCurrentFilter(List <TIndividualFilterFindPanel>AFilterPanelControls)
         {
             string filter = String.Empty;
 
@@ -528,7 +529,7 @@ namespace Ict.Common.Controls
         {
             string LookFor = AFromControl.Name + TFilterPanelControls.FILTER_NAME_SUFFIX;
 
-            List<TIndividualFilterFindPanel> SearchList;
+            List <TIndividualFilterFindPanel>SearchList;
 
             for (int i = 0; i < 2; i++)
             {
@@ -543,7 +544,7 @@ namespace Ict.Common.Controls
 
                 foreach (TIndividualFilterFindPanel iffp in SearchList)
                 {
-                    if ((iffp.PanelControl.Name == LookFor) || (iffp.PanelLabel != null && iffp.PanelLabel.Name == LookFor))
+                    if ((iffp.PanelControl.Name == LookFor) || ((iffp.PanelLabel != null) && (iffp.PanelLabel.Name == LookFor)))
                     {
                         return iffp;
                     }
@@ -560,7 +561,7 @@ namespace Ict.Common.Controls
         /// <returns>The panel</returns>
         public TIndividualFilterFindPanel FindPanelByColumnName(string AColumnName)
         {
-            List<TIndividualFilterFindPanel> SearchList;
+            List <TIndividualFilterFindPanel>SearchList;
 
             for (int i = 0; i < 2; i++)
             {
@@ -602,7 +603,7 @@ namespace Ict.Common.Controls
         /// <returns>The control</returns>
         public Control FindControlByName(string AControlName)
         {
-            List<TIndividualFilterFindPanel> SearchList;
+            List <TIndividualFilterFindPanel>SearchList;
             string SearchName = AControlName + TFilterPanelControls.FILTER_NAME_SUFFIX;
 
             for (int i = 0; i < 2; i++)
@@ -634,7 +635,7 @@ namespace Ict.Common.Controls
                         {
                             return iffp.PanelControl;
                         }
-                        else if (iffp.PanelLabel != null && iffp.PanelLabel.Name == SearchName)
+                        else if ((iffp.PanelLabel != null) && (iffp.PanelLabel.Name == SearchName))
                         {
                             return iffp.PanelLabel;
                         }
@@ -657,6 +658,7 @@ namespace Ict.Common.Controls
                     }
                 }
             }
+
             foreach (TIndividualFilterFindPanel iffp in FExtraFilterPanels)
             {
                 if (iffp.PanelControl is TCmbAutoComplete)
@@ -678,7 +680,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// A list of all the individual find panels
         /// </summary>
-        public List<TIndividualFilterFindPanel> FFindPanels = new List<TIndividualFilterFindPanel>();
+        public List <TIndividualFilterFindPanel>FFindPanels = new List <TIndividualFilterFindPanel>();
 
         /// <summary>
         /// The suffix to be appended to the control name when it is on the find panel
@@ -689,13 +691,13 @@ namespace Ict.Common.Controls
         /// Returns a list of panels and their controls on the find panel ready to be passed to the Filter/Find user control
         /// </summary>
         /// <returns>A list of panels and their controls ready to be passed to the Filter/Find user control</returns>
-        public List<Panel> GetFindPanels()
+        public List <Panel>GetFindPanels()
         {
-            List<Panel> findPanels = null;
+            List <Panel>findPanels = null;
 
             if (FFindPanels.Count > 0)
             {
-                findPanels = new List<Panel>();
+                findPanels = new List <Panel>();
 
                 for (int i = 0; i < FFindPanels.Count; i++)
                 {
@@ -722,7 +724,7 @@ namespace Ict.Common.Controls
                 {
                     return iffp.PanelControl;
                 }
-                else if (iffp.PanelLabel != null && iffp.PanelLabel.Name == LookFor)
+                else if ((iffp.PanelLabel != null) && (iffp.PanelLabel.Name == LookFor))
                 {
                     return iffp.PanelLabel;
                 }
@@ -758,7 +760,7 @@ namespace Ict.Common.Controls
                     {
                         return iffp.PanelControl;
                     }
-                    else if (iffp.PanelLabel != null && iffp.PanelLabel.Name == SearchName)
+                    else if ((iffp.PanelLabel != null) && (iffp.PanelLabel.Name == SearchName))
                     {
                         return iffp.PanelLabel;
                     }
@@ -779,7 +781,7 @@ namespace Ict.Common.Controls
 
             foreach (TIndividualFilterFindPanel iffp in this.FFindPanels)
             {
-                if ((iffp.PanelControl.Name == LookFor) || (iffp.PanelLabel != null && iffp.PanelLabel.Name == LookFor))
+                if ((iffp.PanelControl.Name == LookFor) || ((iffp.PanelLabel != null) && (iffp.PanelLabel.Name == LookFor)))
                 {
                     return iffp;
                 }
@@ -854,5 +856,4 @@ namespace Ict.Common.Controls
     }
 
     #endregion
-
 }
