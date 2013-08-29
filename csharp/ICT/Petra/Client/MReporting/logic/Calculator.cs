@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -438,6 +438,14 @@ namespace Ict.Petra.Client.MReporting.Logic
         public TimeSpan GetDuration()
         {
             return Duration;
+        }
+
+        /// <summary>
+        /// send report as email
+        /// </summary>
+        public Boolean SendEmail(string AEmailAddresses, bool AAttachExcelFile, bool AAttachCSVFile, bool AAttachPDF)
+        {
+            return FReportingGenerator.SendEmail(AEmailAddresses, AAttachExcelFile, AAttachCSVFile, AAttachPDF);
         }
 
         /// <summary>

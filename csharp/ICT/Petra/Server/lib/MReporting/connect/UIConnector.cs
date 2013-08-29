@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,9 @@
 //
 using System;
 using System.Data;
+using System.IO;
+using System.Xml;
+using System.Collections.Generic;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
@@ -35,6 +38,7 @@ using Ict.Petra.Server.MReporting.MFinance;
 using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.IO;
 using Ict.Petra.Shared.MCommon;
 
 namespace Ict.Petra.Server.MReporting.UIConnectors
@@ -192,6 +196,78 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         private void WriteToStatusBar(String s)
         {
             FAsyncExecProgress.ProgressInformation = s;
+        }
+
+        private bool ExportToExcelFile(string AFilename)
+        {
+            bool ExportOnlyLowestLevel = false;
+
+            // Add the parameter export_only_lowest_level to the Parameters if you don't want to export the
+            // higher levels. In some reports (Supporting Churches Report or Partner Contact Report) the csv
+            // output looks much nicer if it doesn't contain the unnecessary higher levels.
+            if (FParameterList.Exists("csv_export_only_lowest_level"))
+            {
+                ExportOnlyLowestLevel = FParameterList.Get("csv_export_only_lowest_level").ToBool();
+            }
+
+            XmlDocument doc = FResultList.WriteXmlDocument(FParameterList, ExportOnlyLowestLevel);
+
+            if (doc != null)
+            {
+                using (FileStream fs = new FileStream(AFilename, FileMode.Create))
+                {
+                    if (TCsv2Xml.Xml2ExcelStream(doc, fs, false))
+                    {
+                        fs.Close();
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// send report as email
+        /// </summary>
+        public Boolean SendEmail(string AEmailAddresses, bool AAttachExcelFile, bool AAttachCSVFile, bool AAttachPDF)
+        {
+            List <string>FilesToAttach = new List <string>();
+
+            if (AAttachExcelFile)
+            {
+                string ExcelFile = TFileHelper.GetTempFileName(
+                    FParameterList.Get("currentReport").ToString(),
+                    ".xlsx");
+
+                if (ExportToExcelFile(ExcelFile))
+                {
+                    FilesToAttach.Add(ExcelFile);
+                }
+            }
+
+            // TODO attachCSVFile, attachPDF
+
+            TSmtpSender EmailSender = new TSmtpSender();
+
+            // TODO use the email address of the user, from s_user
+            if (EmailSender.SendEmail("<" + TAppSettingsManager.GetValue("Reports.Email.Sender") + ">",
+                    "OpenPetra Reports",
+                    AEmailAddresses,
+                    FParameterList.Get("currentReport").ToString(),
+                    Catalog.GetString("Please see attachment!"),
+                    FilesToAttach.ToArray()))
+            {
+                foreach (string file in FilesToAttach)
+                {
+                    File.Delete(file);
+                }
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

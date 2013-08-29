@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,6 +29,9 @@ using System.Drawing;
 using System.Resources;
 using System.Windows.Forms;
 using System.Threading;
+using System.IO;
+using System.Xml;
+using System.Collections.Generic;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
@@ -61,6 +64,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         private TPrintChartCallbackProcedure PrintChartProcedure;
         private bool PrintChartProcedureValid;
         private TFrmPetraUtils FPetraUtilsObject;
+        private TRptCalculator FCalculator;
         private bool FWrapColumn;
 
         #endregion
@@ -74,11 +78,13 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="results"></param>
         /// <param name="parameters"></param>
         /// <param name="AWrapColumn">True: Wrap the text in the column. False: Cut the text that is too long for the column</param>
+        /// <param name="ACalculator"></param>
         public TFrmPrintPreview(Form ACallerForm, String caption, TimeSpan duration, TResultList results,
-            TParameterList parameters, bool AWrapColumn)
+            TParameterList parameters, bool AWrapColumn, TRptCalculator ACalculator)
             : base()
         {
             FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(ACallerForm, this, stbMain);
+            FCalculator = ACalculator;
 
             //
             // Required for Windows Form Designer support
@@ -303,15 +309,52 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        ///
+        /// open the file directly in Excel, or save as Excel file
+        /// </summary>
+        protected void tbtExportExcelFileClick(System.Object sender, System.EventArgs e)
+        {
+            if (!OpenInExcel())
+            {
+                ExportToExcelFile();
+            }
+        }
+
+        /// <summary>
+        /// export to csv file, and open it
+        /// </summary>
+        protected void tbtExportCSVClick(System.Object sender, System.EventArgs e)
+        {
+            ExportToCSV();
+        }
+
+        /// <summary>
+        /// send email with Excel Attachment
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        protected void tbtExportCSVClick(System.Object sender, System.EventArgs e)
+        protected void tbtSendEmailClick(System.Object sender, System.EventArgs e)
         {
-            if (!ExportToExcel())
+            TFrmSendEmailOptions options = new TFrmSendEmailOptions(this);
+
+            if (options.ShowDialog() == DialogResult.OK)
             {
-                ExportToCSV();
+                if (!options.AttachExcelFile && !options.AttachCSVFile && !options.AttachPDF)
+                {
+                    MessageBox.Show(Catalog.GetString("No Email has been sent because there are no attachments"),
+                        Catalog.GetString("No Email has been sent"));
+                    return;
+                }
+
+                if (FCalculator.SendEmail(options.EmailAddresses, options.AttachExcelFile, options.AttachCSVFile, options.AttachPDF))
+                {
+                    MessageBox.Show(Catalog.GetString("Email has been sent successfully"),
+                        Catalog.GetString("Success"));
+                }
+                else
+                {
+                    MessageBox.Show(Catalog.GetString("Email was not sent."),
+                        Catalog.GetString("Failure"));
+                }
             }
         }
 
@@ -389,7 +432,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             // show a print window with all kinds of output options
             printWindow = new TFrmPrintPreview(this, ACalculator.GetParameters().Get("currentReport").ToString(),
                 ACalculator.GetDuration(), ACalculator.GetResults(
-                    ), ACalculator.GetParameters(), FWrapColumn);
+                    ), ACalculator.GetParameters(), FWrapColumn, ACalculator);
             this.AddOwnedForm(printWindow);
             printWindow.Owner = this;
 
@@ -514,7 +557,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         /// <returns>false if Excel is not available
         /// </returns>
-        public bool ExportToExcel()
+        public bool OpenInExcel()
         {
             bool ReturnValue;
             TReportExcel myExcel;
@@ -553,9 +596,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 bool ExportOnlyLowestLevel = false;
 
-                // Add the parameter eport_only_lowest_level to the Parameters if you don't want to export the
+                // Add the parameter export_only_lowest_level to the Parameters if you don't want to export the
                 // higher levels. In some reports (Supporting Churches Report or Partner Contact Report) the csv
-                // output looks much nicer if it doesn't contain the unnecessary higer levels.
+                // output looks much nicer if it doesn't contain the unnecessary higher levels.
                 if (Parameters.Exists("csv_export_only_lowest_level"))
                 {
                     ExportOnlyLowestLevel = Parameters.Get("csv_export_only_lowest_level").ToBool();
@@ -569,6 +612,55 @@ namespace Ict.Petra.Client.MReporting.Gui
                         csvProcess.EnableRaisingEvents = false;
                         csvProcess.StartInfo.FileName = dlgSaveCSVFile.FileName;
                         csvProcess.Start();
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// export to an Excel xlsx file
+        /// </summary>
+        public void ExportToExcelFile()
+        {
+            if (dlgSaveXLSXFile.FileName.Length == 0)
+            {
+                dlgSaveXLSXFile.FileName = this.ReportName + '.' + dlgSaveXLSXFile.DefaultExt;
+            }
+
+            if (dlgSaveXLSXFile.ShowDialog() == DialogResult.OK)
+            {
+                bool ExportOnlyLowestLevel = false;
+
+                // Add the parameter export_only_lowest_level to the Parameters if you don't want to export the
+                // higher levels. In some reports (Supporting Churches Report or Partner Contact Report) the csv
+                // output looks much nicer if it doesn't contain the unnecessary higher levels.
+                if (Parameters.Exists("csv_export_only_lowest_level"))
+                {
+                    ExportOnlyLowestLevel = Parameters.Get("csv_export_only_lowest_level").ToBool();
+                }
+
+                XmlDocument doc = Results.WriteXmlDocument(Parameters, ExportOnlyLowestLevel);
+
+                if (doc != null)
+                {
+                    using (FileStream fs = new FileStream(dlgSaveXLSXFile.FileName, FileMode.Create))
+                    {
+                        if (TCsv2Xml.Xml2ExcelStream(doc, fs, false))
+                        {
+                            fs.Close();
+                        }
+                    }
+
+                    try
+                    {
+                        System.Diagnostics.Process excelProcess;
+                        excelProcess = new System.Diagnostics.Process();
+                        excelProcess.EnableRaisingEvents = false;
+                        excelProcess.StartInfo.FileName = dlgSaveXLSXFile.FileName;
+                        excelProcess.Start();
                     }
                     catch (Exception)
                     {
