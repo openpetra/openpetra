@@ -216,11 +216,11 @@ namespace Ict.Common.IO
         /// this makes use of the EPPlus library
         /// http://epplus.codeplex.com/
         /// </summary>
-        public static bool Xml2ExcelStream(XmlDocument ADoc, MemoryStream AStream, bool AWithHashInCaption = true)
+        public static bool Xml2ExcelStream(XmlDocument ADoc, Stream AStream, bool AWithHashInCaption = true)
         {
             try
             {
-                ExcelPackage pck = new ExcelPackage();
+                ExcelPackage pck = new ExcelPackage(AStream);
 
                 ExcelWorksheet worksheet = pck.Workbook.Worksheets.Add("Data Export");
 
@@ -469,8 +469,11 @@ namespace Ict.Common.IO
             }
             catch (Exception)
             {
-                sr.Close();
                 throw;
+            }
+            finally
+            {
+                sr.Close();
             }
 
             return myDoc;
