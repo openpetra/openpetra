@@ -5677,9 +5677,33 @@
     <!-- Explicit Indexes on table p_postcode_range  -->
   </table>
   <table name="p_postcode_region"
-         descr="Postcode regions and the ranges they contain."
+         descr="List postcode regions"
          area="Petra Data"
          label="Postcode Region"
+         dumpname="p_postre"
+         group="mailroom">
+    <tablefield name="p_region_c"
+                type="varchar"
+                descr="Name of a postcode region"
+                format="X(32)"
+                label="Region Name"
+                notnull="yes"/>
+    <tablefield name="p_description_c"
+                type="varchar"
+                descr="This describes the region."
+                format="X(50)"
+                label="Description"
+                help="This describes the region."/>
+    <!-- Constraints on table p_postcode_region -->
+    <primarykey name="p_postcode_region_pk"
+                descr=""
+                thisFields="p_region_c"/>
+    <!-- Explicit Indexes on table p_postcode_region  -->
+  </table>
+  <table name="p_postcode_region_range"
+         descr="Links ranges to a region."
+         area="Petra Data"
+         label="Postcode Region Range"
          dumpname="p_postco"
          group="mailroom">
     <tablefield name="p_region_c"
@@ -5694,16 +5718,21 @@
                 format="X(32)"
                 label="Range Name"
                 notnull="yes"/>
-    <!-- Constraints on table p_postcode_region -->
-    <primarykey name="p_postcode_region_pk"
+    <!-- Constraints on table p_postcode_region_range -->
+    <primarykey name="p_postcode_region_range_pk"
                 descr=""
                 thisFields="p_region_c, p_range_c"/>
     <foreignkey name="p_postcode_region_fk1"
                 descr=""
+                thisFields="p_region_c"
+                otherTable="p_postcode_region"
+                otherFields="p_region_c"/>
+    <foreignkey name="p_postcode_region_fk2"
+                descr=""
                 thisFields="p_range_c"
                 otherTable="p_postcode_range"
                 otherFields="p_range_c"/>
-    <!-- Explicit Indexes on table p_postcode_region  -->
+    <!-- Explicit Indexes on table p_postcode_region_range  -->
   </table>
   <table name="p_publication"
          descr="Details of a publication"

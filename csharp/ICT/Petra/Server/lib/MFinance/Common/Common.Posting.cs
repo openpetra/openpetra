@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, morayh, christophert
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -868,6 +868,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                         GlmPeriodRow = APostingDS.AGeneralLedgerMasterPeriod.NewRowTyped();
                                         GlmPeriodRow.GlmSequence = GlmRow.GlmSequence;
                                         GlmPeriodRow.PeriodNumber = PeriodCount;
+                                        APostingDS.AGeneralLedgerMasterPeriod.Rows.Add(GlmPeriodRow);
                                     }
                                     else
                                     {

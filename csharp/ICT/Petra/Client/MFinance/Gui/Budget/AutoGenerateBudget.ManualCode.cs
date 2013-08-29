@@ -55,6 +55,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
     public partial class TFrmAutoGenerateBudget
     {
         private Int32 FLedgerNumber;
+        private bool FBudgetsExist = false;
 
         private Ict.Petra.Shared.MFinance.GL.Data.BudgetTDS FMainDS;
 
@@ -90,10 +91,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             string CheckedMember = "CHECKED";
             string AccountDBN = ABudgetTable.GetAccountCodeDBName();
             string CostCentreDBN = ABudgetTable.GetCostCentreCodeDBName();
-            //string BudgetSeqDBN = ABudgetTable.GetBudgetSequenceDBName();
-            //string CCAccKey = "CostCentreAccountKey";
+            string BudgetSeqDBN = ABudgetTable.GetBudgetSequenceDBName();
             string CCAccDesc = "CostCentreAccountDescription";
-            //string BudgetSeqKey = "BudgetSequenceKey";
+            string BudgetSeqKey = "BudgetSequenceKey";
 
             //Calculate the longest Cost Centre to calculate padding amount
             ABudgetRow BudgetRow;
@@ -101,43 +101,50 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             if (ABdgTable != null)
             {
-                for (int i = 0; i < ABdgTable.Count; i++)
+                if (ABdgTable.Count > 0)
                 {
-                    BudgetRow = (ABudgetRow)ABdgTable.Rows[i];
-                    CostCentreCodeLength = BudgetRow.CostCentreCode.Length;
+                    FBudgetsExist = true;
 
-                    if (CostCentreCodeLength > CostCentrePadding)
+                    for (int i = 0; i < ABdgTable.Count; i++)
                     {
-                        CostCentrePadding = CostCentreCodeLength;
+                        BudgetRow = (ABudgetRow)ABdgTable.Rows[i];
+                        CostCentreCodeLength = BudgetRow.CostCentreCode.Length;
+
+                        if (CostCentreCodeLength > CostCentrePadding)
+                        {
+                            CostCentrePadding = CostCentreCodeLength;
+                        }
                     }
+
+                    BudgetRow = null;
+
+                    // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first cost centre etc)
+                    //ABudgetRow emptyRow = (ABudgetRow)ABdgTable.NewRow();
+
+                    DataView view = new DataView(ABdgTable);
+                    view.RowFilter = String.Format("{0}={1}",
+                        ABudgetTable.GetLedgerNumberDBName(),
+                        FLedgerNumber);
+                    DataTable ABdgTable2 = view.ToTable(true, new string[] { BudgetSeqDBN, AccountDBN, CostCentreDBN });
+
+                    ABdgTable2.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+                    ABdgTable2.Columns.Add(new DataColumn(BudgetSeqKey, typeof(string), BudgetSeqDBN));
+                    ABdgTable2.Columns.Add(new DataColumn(CCAccDesc, typeof(string),
+                            CostCentreDBN.PadRight(CostCentrePadding + 2, ' ') + " + '-' + " + AccountDBN));
+
+                    clbCostCentreAccountCodes.Columns.Clear();
+                    clbCostCentreAccountCodes.AddCheckBoxColumn("", ABdgTable2.Columns[CheckedMember], 17, false);
+                    clbCostCentreAccountCodes.AddTextColumn("Key", ABdgTable2.Columns[BudgetSeqKey], 0);
+                    clbCostCentreAccountCodes.AddTextColumn("Cost Centre-Account", ABdgTable2.Columns[CCAccDesc], 200);
+                    clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, BudgetSeqKey, CheckedMember, BudgetSeqKey, CCAccDesc, false, true, false);
+
+                    clbCostCentreAccountCodes.SetCheckedStringList("");
                 }
-
-                BudgetRow = null;
-
-                // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first cost centre etc)
-                //ABudgetRow emptyRow = (ABudgetRow)ABdgTable.NewRow();
-
-                DataView view = new DataView(ABdgTable);
-                view.RowFilter = String.Format("{0}={1}",
-                    ABudgetTable.GetLedgerNumberDBName(),
-                    FLedgerNumber);
-                //DataTable ABdgTable2 = view.ToTable(true, new string[] { BudgetSeqDBN, AccountDBN, CostCentreDBN });
-                DataTable ABdgTable2 = view.ToTable(true, new string[] { AccountDBN, CostCentreDBN });
-                ABdgTable2.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
-
-                //ABdgTable2.Columns.Add(new DataColumn(BudgetSeqKey, typeof(string), BudgetSeqDBN));
-                ABdgTable2.Columns.Add(new DataColumn(CCAccDesc, typeof(string),
-                        CostCentreDBN.PadRight(CostCentrePadding + 2, ' ') + " + '-' + " + AccountDBN));
-
-                clbCostCentreAccountCodes.Columns.Clear();
-                clbCostCentreAccountCodes.AddCheckBoxColumn("", ABdgTable2.Columns[CheckedMember], 17, false);
-                //clbCostCentreAccountCodes.AddTextColumn("Key", ABdgTable2.Columns[BudgetSeqKey], 0);
-                clbCostCentreAccountCodes.AddTextColumn("Cost Centre-Account", ABdgTable2.Columns[CCAccDesc], 200);
-                //clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, BudgetSeqKey, CheckedMember, BudgetSeqKey, CCAccDesc, false, true, false);
-                clbCostCentreAccountCodes.DataBindGrid(ABdgTable2, CCAccDesc, CheckedMember, CCAccDesc, CCAccDesc, false, true, false);
-
-                clbCostCentreAccountCodes.SetCheckedStringList("");
             }
+
+            btnGenerate.Enabled = FBudgetsExist;
+            btnSelectAllBudgets.Enabled = FBudgetsExist;
+            btnUnselectAllBudgets.Enabled = FBudgetsExist;
         }
 
         private void GenerateBudget(Object sender, EventArgs e)
@@ -148,7 +155,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             msg += " or just those that have changed since the last consolidation." + "\n\r\n\r";
             msg += "Do you want to consolidate all of your budgets?";
 
-            bool ConsolidateAll =
+            bool consolidateAll =
                 (MessageBox.Show(msg, "Consolidate Budgets", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2,
                      MessageBoxOptions.DefaultDesktopOnly, false) == DialogResult.Yes);
 
@@ -161,22 +168,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 TRemote.MFinance.Budget.WebConnectors.LoadBudgetForConsolidate(FLedgerNumber);
 
-                TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, ConsolidateAll, out VerificationResult);
+                TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, consolidateAll, out VerificationResult);
 
                 string CheckItemsList = clbCostCentreAccountCodes.GetCheckedStringList();
 
                 string[] CheckedItems = CheckItemsList.Split(',');
 
-                string ForecastType;
-
-                if (rbtThisYearsBudgets.Checked)
-                {
-                    ForecastType = MFinanceConstants.FORECAST_TYPE_BUDGET;
-                }
-                else
-                {
-                    ForecastType = MFinanceConstants.FORECAST_TYPE_ACTUALS;
-                }
+                string ForecastType = rbtThisYearsBudgets.Checked ? MFinanceConstants.FORECAST_TYPE_BUDGET : MFinanceConstants.FORECAST_TYPE_ACTUALS;
 
                 if (rbtSelectedBudgets.Checked && (CheckItemsList.Length > 0)
                     || (rbtAllBudgets.Checked == true))
@@ -213,12 +211,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         //This flag is needed to stop the event occuring twice for each
         //change of the option
-        private bool AllBudgetsWasLastSelected = false;
+        private bool FAllBudgetsWasLastSelected = false;
         private void NewBudgetScope(Object sender, EventArgs e)
         {
-            if (rbtAllBudgets.Checked && !AllBudgetsWasLastSelected)
+            if (!FBudgetsExist)
             {
-                AllBudgetsWasLastSelected = true;
+                return;
+            }
+
+            if (rbtAllBudgets.Checked && !FAllBudgetsWasLastSelected)
+            {
+                FAllBudgetsWasLastSelected = true;
                 CurrentCheckedList = clbCostCentreAccountCodes.GetCheckedStringList();
 
                 SelectAll();
@@ -227,9 +230,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 btnUnselectAllBudgets.Enabled = false;
                 clbCostCentreAccountCodes.Enabled = false;
             }
-            else if (!rbtAllBudgets.Checked && AllBudgetsWasLastSelected)
+            else if (!rbtAllBudgets.Checked && FAllBudgetsWasLastSelected)
             {
-                AllBudgetsWasLastSelected = false;
+                FAllBudgetsWasLastSelected = false;
                 btnSelectAllBudgets.Enabled = true;
                 btnUnselectAllBudgets.Enabled = true;
                 clbCostCentreAccountCodes.Enabled = true;
@@ -266,13 +269,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             for (int i = 0; i < BudgetTable.Count; i++)
             {
                 BudgetRow = (ABudgetRow)BudgetTable.Rows[i];
-                CheckedList += BudgetRow.CostCentreCode + '-' + BudgetRow.AccountCode + ",";
-                //CheckedList += BudgetRow.BudgetSequence.ToString() + ",";
+                CheckedList += BudgetRow.BudgetSequence.ToString() + ",";
             }
 
             if (CheckedList.Length > 0)
             {
-                //MessageBox.Show(CheckedList);
                 CheckedList = CheckedList.Substring(0, CheckedList.Length - 1);
                 clbCostCentreAccountCodes.SetCheckedStringList(CheckedList);
                 clbCostCentreAccountCodes.SelectRowInGrid(1);

@@ -1236,6 +1236,11 @@ namespace Ict.Common.DB
         {
             TDBTransaction ReturnValue;
 
+            if (this.Transaction != null)
+            {
+                throw new Exception("BeginTransaction would overwrite existing transaction, better use GetNewOrExistingTransaction");
+            }
+
             try
             {
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)

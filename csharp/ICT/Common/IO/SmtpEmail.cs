@@ -24,6 +24,7 @@
 using System;
 using System.Net;
 using System.Net.Mail;
+using System.Collections.Generic;
 using Ict.Common;
 
 namespace Ict.Common.IO
@@ -88,7 +89,8 @@ namespace Ict.Common.IO
         /// create a mail message and send it
         /// </summary>
         /// <returns></returns>
-        public bool SendEmail(string fromemail, string fromDisplayName, string receipients, string subject, string body, string attachfile)
+        public bool SendEmail(string fromemail, string fromDisplayName, string receipients, string subject, string body,
+            string[] attachfiles = null)
         {
             try
             {
@@ -104,27 +106,31 @@ namespace Ict.Common.IO
                     email.Body = body;
                     email.IsBodyHtml = false;
 
-                    Attachment data = null;
+                    List <Attachment>attachments = new List <Attachment>();
 
-                    //Attachement if any:
-                    if ((attachfile != null) && (attachfile.Length > 0))
+                    //Attachment if any:
+                    if (attachfiles != null)
                     {
-                        if (System.IO.File.Exists(attachfile) == true)
+                        foreach (string attachfile in attachfiles)
                         {
-                            data = new Attachment(attachfile, System.Net.Mime.MediaTypeNames.Application.Octet);
-                            email.Attachments.Add(data);
-                        }
-                        else
-                        {
-                            TLogging.Log("Could not send email");
-                            TLogging.Log("File to attach '" + attachfile + "' does not exist!");
-                            return false;
+                            if (System.IO.File.Exists(attachfile) == true)
+                            {
+                                Attachment data = new Attachment(attachfile, System.Net.Mime.MediaTypeNames.Application.Octet);
+                                email.Attachments.Add(data);
+                                attachments.Add(data);
+                            }
+                            else
+                            {
+                                TLogging.Log("Could not send email");
+                                TLogging.Log("File to attach '" + attachfile + "' does not exist!");
+                                return false;
+                            }
                         }
                     }
 
                     bool Result = SendMessage(email);
 
-                    if (data != null)
+                    foreach (Attachment data in attachments)
                     {
                         // make sure that the file is not locked any longer
                         data.Dispose();

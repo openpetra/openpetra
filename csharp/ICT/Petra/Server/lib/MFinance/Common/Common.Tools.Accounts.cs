@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -308,10 +308,17 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             try
             {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                bool NewTransaction;
+                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
                 propertyCodeTable = AAccountPropertyAccess.LoadViaALedger(
                     ledgerInfo.LedgerNumber, transaction);
-                DBAccess.GDBAccessObj.CommitTransaction();
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
             }
             catch (Exception)
             {
@@ -347,6 +354,66 @@ namespace Ict.Petra.Server.MFinance.Common
             catch (Exception)
             {
             }
+
+            // if special account flag is not set in the property table, then use config parameters and hardcoded defaults
+            switch (AEnum)
+            {
+                case TAccountPropertyEnum.GIFT_HEADING:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "GIFT");
+
+                case TAccountPropertyEnum.INTER_LEDGER_HEADING:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "ILT");
+
+                case TAccountPropertyEnum.BANK_HEADING:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "CASH");
+
+                case TAccountPropertyEnum.BALANCE_SHEET_HEADING:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "BAL");
+
+                case TAccountPropertyEnum.DEBTOR_HEADING:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "DRS");
+
+                case TAccountPropertyEnum.CREDITOR_HEADING:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "CRS");
+
+                case TAccountPropertyEnum.TOTAL_ASSET_HEADING:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "ASSETS");
+
+                case TAccountPropertyEnum.TOTAL_LIABILITY_HEADING:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "LIABS");
+
+                case TAccountPropertyEnum.EQUITY_HEADING:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "RET EARN");
+
+                case TAccountPropertyEnum.EARNINGS_BF_ACCT:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "9700");
+
+                case TAccountPropertyEnum.DIRECT_XFER_ACCT:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "5501");
+
+                case TAccountPropertyEnum.ICH_SETTLEMENT_ACCT:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "5601");
+
+                case TAccountPropertyEnum.ICH_ACCT:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "8500");
+
+                case TAccountPropertyEnum.INTERNAL_XFER_ACCT:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "9800");
+
+                case TAccountPropertyEnum.ADMIN_FEE_INCOME_ACCT:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "3400");
+
+                case TAccountPropertyEnum.ADMIN_FEE_EXPENSE_ACCT:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "4900");
+
+                case TAccountPropertyEnum.FUND_TRANSFER_INCOME_ACCT:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "3300");
+
+                case TAccountPropertyEnum.FUND_TRANSFER_EXPENSE_ACCT:
+                    return TAppSettingsManager.GetValue(AEnum.ToString(), "4800");
+            }
+
+            TLogging.Log("THandleAccountPropertyInfo: cannot find Account code for " + AEnum.ToString());
             return String.Empty;
         }
 
@@ -421,10 +488,17 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             try
             {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                bool NewTransaction;
+                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
                 accountTable = AAccountAccess.LoadViaALedger(
                     ledgerInfo.LedgerNumber, transaction);
-                DBAccess.GDBAccessObj.CommitTransaction();
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
             }
             catch (Exception)
             {
@@ -666,12 +740,19 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private void LoadData()
         {
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            bool NewTransaction;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
 
             try
             {
                 periodTable = AAccountingPeriodAccess.LoadViaALedger(intLedgerNumber, transaction);
-                DBAccess.GDBAccessObj.CommitTransaction();
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
             }
             catch (Exception)
             {

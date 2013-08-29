@@ -1920,7 +1920,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainInterests(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpInterests);
         }
 
         private void MaintainReminders(System.Object sender, System.EventArgs e)
@@ -2508,6 +2508,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 case TPartnerEditTabPageEnum.petpPartnerRelationships:
                 case TPartnerEditTabPageEnum.petpNotes:
                 case TPartnerEditTabPageEnum.petpFinanceDetails:
+                case TPartnerEditTabPageEnum.petpInterests:
                     FInitiallySelectedTabPage = FShowTabPage;
 
                     break;
@@ -2515,7 +2516,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 #if  SHOWUNFINISHEDTABS
                 case TPartnerEditTabPageEnum.petpContacts:
                 case TPartnerEditTabPageEnum.petpReminders:
-                case TPartnerEditTabPageEnum.petpInterests:
                     FInitiallySelectedTabPage = FShowTabPage;
 
                     break;
@@ -2523,7 +2523,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 #else
                 case TPartnerEditTabPageEnum.petpContacts:
                 case TPartnerEditTabPageEnum.petpReminders:
-                case TPartnerEditTabPageEnum.petpInterests:
                     FShowTabPage = TPartnerEditTabPageEnum.petpAddresses;
                     FInitiallySelectedTabPage = FShowTabPage;
 
@@ -3004,6 +3003,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TPartnerEditTabPageEnum.petpInterests:
                     FMainDS.PPartnerInterest.ColumnChanging += new DataColumnChangeEventHandler(FPetraUtilsObject.OnAnyDataColumnChanging);
+                    FMainDS.PPartnerInterest.RowDeleting += new DataRowChangeEventHandler(FPetraUtilsObject.OnAnyDataRowChanging);
                     break;
 
                 case TPartnerEditTabPageEnum.petpOfficeSpecific:

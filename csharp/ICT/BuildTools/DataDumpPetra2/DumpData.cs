@@ -152,7 +152,7 @@ namespace Ict.Tools.DataDumpPetra2
             TTable oldTable = storeOld.GetTable(oldTableName);
 
             // if this is a new table in OpenPetra, do not dump anything. the table will be empty in OpenPetra
-            if (oldTable == null)
+            if ((oldTable == null) && (newTable.strName != "p_postcode_region_range"))
             {
                 return;
             }
@@ -334,6 +334,8 @@ namespace Ict.Tools.DataDumpPetra2
 
             TSequenceWriter.InitSequences(GetStoreNew().GetSequences());
 
+            CreatePostcodeRegionRangeTable();
+
             if (ATableName.Length == 0)
             {
                 List <TTable>newTables = storeNew.GetTables();
@@ -356,6 +358,64 @@ namespace Ict.Tools.DataDumpPetra2
 
             TLogging.Log("Success: finished exporting the data");
             TTable.GEnabledLoggingMissingFields = true;
+        }
+
+        // creates p_postcode_region_range.d.gz and populates with data from p_postcode_region.d.gz
+        private void CreatePostcodeRegionRangeTable()
+        {
+            string dumpFile = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "p_postcode_region";
+            FileInfo FileName = new FileInfo(dumpFile + ".d.gz");
+
+            // new file is not needed if p_postcode_region.d.gz does not exist or is empty
+            if (!File.Exists(dumpFile + ".d.gz") || (FileName.Length == 0))
+            {
+                return;
+            }
+
+            Encoding ProgressFileEncoding;
+            string ProgressCodepage = TAppSettingsManager.GetValue("CodePage", Environment.GetEnvironmentVariable("PROGRESS_CP"));
+
+            try
+            {
+                ProgressFileEncoding = Encoding.GetEncoding(Convert.ToInt32(ProgressCodepage));
+            }
+            catch
+            {
+                ProgressFileEncoding = Encoding.GetEncoding(ProgressCodepage);
+            }
+
+            try
+            {
+                string FilePath = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
+                                  "p_postcode_region" + ".d.gz";
+                Stream fs = new FileStream(FilePath, FileMode.Open, FileAccess.Read);
+                GZipInputStream gzipStream = new GZipInputStream(fs);
+                StreamReader MyReader = new StreamReader(gzipStream, ProgressFileEncoding);
+
+                FileStream outStream = File.Create(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar +
+                    "p_postcode_region_range" + ".d.gz");
+                Stream gzoStream = new GZipOutputStream(outStream);
+                StreamWriter MyWriter = new StreamWriter(gzoStream, Encoding.UTF8);
+
+                char[] block = new char[10000];
+                int count = 0;
+
+                // copy entire contents of p_postcode_region.d.gz to p_postcode_region_range.d.gz
+                while ((count = MyReader.ReadBlock(block, 0, block.Length)) != 0)
+                {
+                    MyWriter.Write(block, 0, count);
+                }
+
+                MyWriter.Close();
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("Memory usage: " + (GC.GetTotalMemory(false) / 1024 / 1024).ToString() + " MB");
+                TLogging.Log("WARNING Problems processing file " + "p_postcode_region_range" + ": " + e.ToString());
+            }
+
+            storeOld.AddTable(storeNew.GetTable("p_postcode_region_range"));
         }
 
         /// <summary>

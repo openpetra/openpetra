@@ -25,7 +25,7 @@ RootNode:
             Dock: Right
             Margin: 0
             Controls:
-                Row0: [dtpShowStatementsFrom]
+                Row0: [dtpShowStatementsFrom, btnRefresh]
         pnlGridWithButtons:
             Dock: Fill
             Controls: [grdSelectStatement, pnlButtons]
@@ -42,5 +42,7 @@ RootNode:
             ActionClick: ImportNewStatement
         dtpShowStatementsFrom:
             OnChange: PopulateStatementGrid
+        btnRefresh:
+            OnClick: PopulateStatementGrid
     Menu:
     Toolbar:

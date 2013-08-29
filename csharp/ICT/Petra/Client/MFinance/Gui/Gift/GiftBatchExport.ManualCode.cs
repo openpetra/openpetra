@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash,timop,dougm
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -226,11 +226,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void ExportBatches(object sender, EventArgs e)
         {
-            String fileName = txtFilename.Text;
+            String fileName = Path.GetFullPath(txtFilename.Text);
 
             if (!Directory.Exists(Path.GetDirectoryName(fileName)))
             {
-                MessageBox.Show(Catalog.GetString("Please select an existing directory for this file!"),
+                MessageBox.Show(Catalog.GetString("Please select an existing directory for this file!") + Environment.NewLine +
+                    String.Format(Catalog.GetString("Directory '{0}' does not exist"),
+                        Path.GetDirectoryName(fileName)),
                     Catalog.GetString("Error"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
