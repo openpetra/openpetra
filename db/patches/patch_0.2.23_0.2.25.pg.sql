@@ -19,6 +19,8 @@ UPDATE a_ap_payment SET a_currency_code_c = 'EUR';
 DROP TABLE pt_leaving_code;
 
 ALTER TABLE p_postcode_region RENAME TO p_postcode_region_range;
+ALTER TABLE p_postcode_region_range DROP CONSTRAINT p_postcode_region_pk;
+ALTER TABLE p_postcode_region_range ADD CONSTRAINT p_postcode_region_range_pk PRIMARY KEY (p_region_c,p_range_c);
 
 CREATE TABLE p_postcode_region (
 
