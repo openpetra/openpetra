@@ -21,6 +21,7 @@ RootNode:
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             FilterControls: [txtDetailCurrencyCode, txtDetailCurrencyName, txtDetailCurrencySymbol, cmbDetailCountryCode, Column:ACurrency.DisplayFormat]
+            FindControls: [txtDetailCurrencyCode, txtDetailCurrencyName, txtDetailCurrencySymbol, cmbDetailCountryCode]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]

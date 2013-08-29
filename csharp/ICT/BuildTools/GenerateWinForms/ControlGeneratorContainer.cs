@@ -30,6 +30,7 @@ using System.Xml;
 using Ict.Tools.CodeGeneration;
 using Ict.Common.IO;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Tools.DBXML;
 using Owf.Controls;
 
@@ -654,6 +655,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>Name of the Filter and Find Panel</summary>
         public const string PNL_FILTER_AND_FIND = "pnlFilterAndFind";
 
+        /// <summary>A list of columns that are numeric - so we don't get duplicates on filter and find</summary>
+        private List<string> listNumericColumns = new List<string>();
+
+        /// <summary>A list of dummy controls that we generate so they can be cloned - so we don't get duplicates on filter and find</summary>
+        private List<string> listCloneableControlNames = new List<string>();
+
         /// <summary>constructor</summary>
         public PanelGenerator()
             : base("pnl", typeof(Panel))
@@ -743,6 +750,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (ctrl.controlName == PNL_FILTER_AND_FIND)
             {
+                listNumericColumns.Clear();
+
                 writer.Template.SetCodelet("FILTERANDFIND", "true");
 
                 writer.SetControlProperty(ctrl, "Dock", "Left");
@@ -804,16 +813,617 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     "    FucoFilterAndFind.Dispose();" + Environment.NewLine +
                     "}");
 
+                XmlNodeList controlAttributesList = null;
+                XmlNode ctrlNode = ctrl.xmlNode;
+                foreach (XmlNode child in ctrlNode.ChildNodes)
+                {
+                    if (child.Name == "ControlAttributes")
+                    {
+                        controlAttributesList = child.ChildNodes;
+                    }
+                }
+
                 ProcessTemplate snippetFilterAndFindDeclarations = writer.Template.GetSnippet("FILTERANDFINDDECLARATIONS");
                 writer.Template.InsertSnippet("FILTERANDFINDDECLARATIONS", snippetFilterAndFindDeclarations);
 
                 ProcessTemplate snippetFilterAndFindMethods = writer.Template.GetSnippet("FILTERANDFINDMETHODS");
+
+                writer.Template.SetCodelet("INDIVIDUALFILTERPANELS", "");
+                writer.Template.SetCodelet("INDIVIDUALEXTRAFILTERPANELS", "");
+                writer.Template.SetCodelet("INDIVIDUALFINDPANELS", "");
+                writer.Template.SetCodelet("INDIVIDUALFILTERFINDPANELEVENTS", "");
+                writer.Template.SetCodelet("INDIVIDUALFILTERFINDPANELPROPERTIES", "");
+                writer.Template.SetCodelet("NUMERICFILTERFINDCOLUMNS", "");
+
+                // Process each of the three Filter/Find definitions
+                int TotalPanels = ProcessIndividualFilterFindPanel(writer, "FilterControls", "Filter", "StandardFilter", controlAttributesList, "INDIVIDUALFILTERPANELS");
+                TotalPanels += ProcessIndividualFilterFindPanel(writer, "ExtraFilterControls", "Filter", "ExtraFilter", controlAttributesList, "INDIVIDUALEXTRAFILTERPANELS");
+                TotalPanels += ProcessIndividualFilterFindPanel(writer, "FindControls", "Find", "Find", controlAttributesList, "INDIVIDUALFINDPANELS");
+                if (TotalPanels == 0)
+                {
+                    throw new Exception("Found no controls for the Filter/Find panel");
+                }
+
+                // Manual code methods
+                if (FCodeStorage.ManualFileExistsAndContains("void CreateFilterFindPanelsManual()"))
+                {
+                    writer.Template.SetCodelet("CREATEFILTERFINDPANELSMANUAL", "CreateFilterFindPanelsManual();" + Environment.NewLine);
+                }
+                else
+                {
+                    writer.Template.SetCodelet("CREATEFILTERFINDPANELSMANUAL", "");
+                }
+
+                if (FCodeStorage.ManualFileExistsAndContains("void FilterToggledManual(bool"))
+                {
+                    writer.Template.SetCodelet("FILTERTOGGLEDMANUAL", "FilterToggledManual(pnlFilterAndFind.Width == 0);" + Environment.NewLine);
+                }
+                else
+                {
+                    writer.Template.SetCodelet("FILTERTOGGLEDMANUAL", "");
+                }
+
+                if (FCodeStorage.ManualFileExistsAndContains("void ApplyFilterManual(ref"))
+                {
+                    writer.Template.SetCodelet("APPLYFILTERMANUAL", "ApplyFilterManual(ref filter);" + Environment.NewLine);
+                }
+                else
+                {
+                    writer.Template.SetCodelet("APPLYFILTERMANUAL", "");
+                }
+
+                if (FCodeStorage.ManualFileExistsAndContains("bool IsMatchingRowManual("))
+                {
+                    writer.Template.SetCodelet("ISMATCHINGROW", "IsMatchingRowManual");
+                }
+                else
+                {
+                    writer.Template.SetCodelet("ISMATCHINGROW", "FFindPanelControls.IsMatchingRow");
+                }
+
+                // Write the whole thing out
                 writer.Template.InsertSnippet("FILTERANDFINDMETHODS", snippetFilterAndFindMethods);
             }
             else
             {
                 base.ProcessChildren(writer, ctrl);
             }
+        }
+
+        /// <summary>
+        /// Process all the definitions for a specified panel set.  Return the number of items on the panel
+        /// </summary>
+        private int ProcessIndividualFilterFindPanel(TFormWriter writer, string AXmlNodeName, string APanelType, string APanelSubType, XmlNodeList AControlAttributesList, string ATargetCodelet)
+        {
+            int NumItemsOnThisPanel = 0;
+            List <XmlNode>children = TYml2Xml.GetChildren((XmlNode)FCodeStorage.FXmlNodes[AXmlNodeName], false);
+
+            foreach (XmlNode child in children)
+            {
+                string controlName = child.Attributes["name"].Value;           // eg txtDetailSomeColumn, or Column:table.column
+
+                if (controlName.StartsWith("Column:"))
+                {
+                    // The column is specified directly
+                    // We create a prototype label and control to clone from with names based on the column name
+                    // Decide on control name, label name, column name
+                    controlName = controlName.Substring(7);
+                    string tableName, columnName, lblName;
+
+                    if (controlName.Contains("."))
+                    {
+                        int p = controlName.IndexOf('.');
+                        tableName = controlName.Substring(0, p);
+                        columnName = controlName.Substring(p + 1);
+                    }
+                    else
+                    {
+                        tableName = FCodeStorage.GetAttribute("DetailTable");
+                        columnName = controlName;
+                    }
+
+                    lblName = "lbl" + columnName;
+                    string lblText = StringHelper.ReverseUpperCamelCase(columnName);
+
+                    bool bHasALabel = true;
+                    string columnDataType = GetColumnDataType(writer, tableName, columnName);
+                    string controlType = (columnDataType == "bit") ? "CheckBox" : "TextBox";
+                    
+                    // Controls based on a column name are either checkbox or textbox
+                    if (columnDataType == "bit")
+                    {
+                        controlName = "chk" + columnName;
+                        bHasALabel = false;
+                    }
+                    else
+                    {
+                        controlName = "txt" + columnName;
+                    }
+
+                    // Get additional attributes for these dummy controls
+                    XmlAttributeCollection controlAttributes = GetAdditionalAttributes(controlName, AControlAttributesList);
+
+                    if (controlAttributes != null && controlAttributes["NoLabel"] != null && controlType != "CheckBox")
+                    {
+                        bHasALabel = (controlAttributes["NoLabel"].Value != "true");
+                    }
+
+                    // Create the throw-away label and control so that we can clone them (unless they have been created for a previous panel)
+                    if (bHasALabel)
+                    {
+                        CreateCloneableControl(writer, lblName, "Label", lblText, ATargetCodelet);
+                    }
+
+                    if (columnDataType == "bit")
+                    {
+                        CreateCloneableControl(writer, controlName, "CheckBox", lblText, ATargetCodelet);
+                    }
+                    else
+                    {
+                        CreateCloneableControl(writer, controlName, "TextBox", null, ATargetCodelet);
+                    }
+
+                    bool bHasClearButton;
+                    AddFilterFindPanel(writer, controlType, APanelType, APanelSubType, controlName, lblName, bHasALabel, columnName, columnDataType, controlAttributes, ATargetCodelet, out bHasClearButton);
+
+                    WriteAdditionalProperties(writer, controlType, APanelType, controlName, bHasClearButton, controlAttributes);
+
+                    NumItemsOnThisPanel++;
+                }
+                else if (controlName.StartsWith("pnl") && !FCodeStorage.FControlList.ContainsKey(controlName))
+                {
+                    // It is a panel that does not exist as a details panel - so it might be (must be) one of ours
+                    // We will need to discover what controls go on this panel
+                    XmlNode panelNode = (XmlNode)FCodeStorage.FXmlNodes[controlName];
+                    if (panelNode == null)
+                    {
+                        throw new Exception("Could not find an definition for " + controlName);
+                    }
+
+                    // Get the list of controls on this dynamic panel
+                    XmlNode dynamicControlsNode = TXMLParser.GetChild(panelNode, "Controls");
+                    if (dynamicControlsNode == null || dynamicControlsNode.ChildNodes.Count == 0)
+                    {
+                        throw new Exception("No controls specified for " + controlName);
+                    }
+
+                    // take each dynamic control in turn
+                    foreach (XmlNode dynamicControl in dynamicControlsNode)
+                    {
+                        string dynamicControlName = dynamicControl.Attributes["name"].Value;
+                        // find the node for this name
+                        XmlNode dynamicControlNode = TXMLParser.GetChild(panelNode, dynamicControlName);
+                        if (dynamicControlNode == null)
+                        {
+                            throw new Exception("Could not find an definition for " + dynamicControlName);
+                        }
+
+                        if (dynamicControlName.StartsWith("rgr"))
+                        {
+                            // Create a radio button group
+                            CreateDynamicFilterFindRadioButtonGroup(writer, dynamicControlNode, APanelType, APanelSubType, ATargetCodelet);
+                        }
+                        else if (dynamicControlName.StartsWith("cmb"))
+                        {
+                            // Create a dynamic ComboBox
+                            CreateDynamicFilterFindComboBox(writer, dynamicControlNode, APanelType, APanelSubType, ATargetCodelet);
+                        }
+                        else if (dynamicControlName.StartsWith("txt"))
+                        {
+                            // Create a dynamic TextBox
+                            throw new NotImplementedException("No code written yet to create a dynamic text box");
+                        }
+                        else if (dynamicControlName.StartsWith("chk"))
+                        {
+                            // Create a dynamic CheckBox
+                            throw new NotImplementedException("No code written yet to create a dynamic check box");
+                        }
+                        else
+                        {
+                            throw new NotImplementedException("No code written yet to create a dynamic instance of this control: " + dynamicControlName);
+                        }
+                    }
+
+                    NumItemsOnThisPanel++;
+                }
+                else
+                {
+                    // The column is specified by its control name
+                    string columnName = controlName.Substring(3);
+                    string lblName = "lbl" + columnName;
+
+                    if (columnName.StartsWith("Detail"))
+                    {
+                        columnName = columnName.Substring(6);
+                    }
+
+                    string columnDataType = GetColumnDataType(writer, FCodeStorage.GetAttribute("DetailTable"), columnName);
+
+                    string ctrlNamePrefix = controlName.Substring(0, 3);
+                    string controlType = null;
+
+                    switch (ctrlNamePrefix)
+                    {
+                        case "cmb":
+                            // we have to work out the type of combo we are cloning FROM
+                            TControlDef comboCtrl = FCodeStorage.FControlList[controlName];
+
+                            if (comboCtrl.HasAttribute("List"))
+                            {
+                                controlType = "TCmbAutoPopulated";
+                            }
+                            else if (comboCtrl.HasAttribute("MultiColumn"))
+                            {
+                                controlType = "TCmbVersatile";
+                            }
+                            else
+                            {
+                                controlType = "TCmbAutoComplete";
+                            }
+                            break;
+
+                        case "chk":
+                            controlType = "CheckBox";
+                            break;
+
+                        case "txt":
+                            controlType = "TextBox";
+                            break;
+
+                        case "rbt":
+                            controlType = "RadioButton";
+                            break;
+
+                        case "pnl":
+                            controlType = "Panel";
+                            break;
+
+                        case "rgr":
+                            controlType = "GroupBox";
+                            break;
+
+                        case "lbl":
+                            controlType = "Label";
+                            break;
+
+                        default:
+                            throw new Exception("Unsupported control type to clone from: " + controlName);
+                    }
+
+                    XmlAttributeCollection controlAttributes = GetAdditionalAttributes(controlName, AControlAttributesList);
+
+                    bool bHasALabel = true;
+                    if (controlAttributes != null && controlAttributes["NoLabel"] != null && controlType != "CheckBox")
+                    {
+                        bHasALabel = (controlAttributes["NoLabel"].Value != "true");
+                    }
+
+                    bool bHasClearButton;
+                    AddFilterFindPanel(writer, controlType, APanelType, APanelSubType, controlName, lblName, bHasALabel, columnName, columnDataType, controlAttributes, ATargetCodelet, out bHasClearButton);
+
+                    WriteAdditionalProperties(writer, controlType, APanelType, controlName, bHasClearButton, controlAttributes);
+
+                    NumItemsOnThisPanel++;
+                }
+            }
+
+            return NumItemsOnThisPanel;
+        }
+
+        /// <summary>
+        /// Gets the attribute collection for a specific control in the list of all nodes at this level
+        /// </summary>
+        private XmlAttributeCollection GetAdditionalAttributes(string AControlName, XmlNodeList AAdditionalPropertyNodeList)
+        {
+            XmlAttributeCollection additionalAttributes = null;
+            if (AAdditionalPropertyNodeList != null)
+            {
+                foreach (XmlNode controlNode in AAdditionalPropertyNodeList)
+                {
+                    if (controlNode.Name == AControlName)
+                    {
+                        additionalAttributes = controlNode.Attributes;
+                    }
+                }
+            }
+
+            return additionalAttributes;
+        }
+
+        /// <summary>
+        /// Write the additional properties specified in the attribute list
+        /// </summary>
+        private void WriteAdditionalProperties(TFormWriter writer, string AControlType, string APanelType, string AControlName, bool AHasClearButton, XmlAttributeCollection AControlAttributesList)
+        {
+            if (AControlAttributesList == null)
+            {
+                return;
+            }
+
+            foreach (XmlAttribute att in AControlAttributesList)
+            {
+                if (att.Name == "depth" || att.Name == "ClearButton" || att.Name == "ClearValue" || att.Name == "NoLabel")
+                {
+                    // we have dealt with these already
+                    continue;
+                }
+                else if (att.Name == "Width")
+                {
+                    string width = String.Format("Math.Min({0}, FFilterAndFindParameters.FindAndFilterInitialWidth)", att.Value);
+                    AddFilterFindProperty(writer, AControlType, APanelType, AControlName, att.Name, width);
+                }
+                else if (att.Name == "Label" && !listCloneableControlNames.Contains(AControlName))
+                {
+                    string lblName = "lbl" + AControlName.Substring(3);
+                    AddFilterFindProperty(writer, "Label", APanelType, lblName, "Text", "\"" + att.Value + "\"");
+                }
+                else if (att.Name == "Text")
+                {
+                    AddFilterFindProperty(writer, AControlType, APanelType, AControlName, "Text", "\"" + att.Value + "\"");
+                }
+                else if (att.Name == "List")
+                {
+                    AddFilterFindProperty(writer, AControlType, APanelType, AControlName, "ListTable", "TCmbAutoPopulated.TListTableEnum." + att.Value);
+                }
+                else if (att.Name == "OnChange")
+                {
+                    string eventName = "TextChanged";
+                    if (!AHasClearButton)
+                    {
+                        if (AControlName.StartsWith("cmb"))
+                        {
+                            eventName = "SelectedValueChanged";
+                        }
+                        else if (AControlName.StartsWith("rbt"))
+                        {
+                            eventName = "CheckedChanged";
+                        }
+                    }
+                    AddFilterFindEvent(writer, AControlType, APanelType, AControlName, eventName, att.Value);
+                }
+                else
+                {
+                    AddFilterFindProperty(writer, AControlType, APanelType, AControlName, att.Name, att.Value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get the tag value for the control using its attributes - includes whether the control has a clear button and the clear value
+        /// </summary>
+        private string GetFilterFindTagValue(XmlAttributeCollection AControlAttributesList, out bool AHasClearButton)
+        {
+            AHasClearButton = true;
+            if (AControlAttributesList != null && AControlAttributesList["ClearButton"] != null)
+            {
+                AHasClearButton = (AControlAttributesList["ClearButton"].Value != "false");
+            }
+
+            string clearValue = String.Empty;
+            if (AControlAttributesList != null && AControlAttributesList["ClearValue"] != null)
+            {
+                clearValue = AControlAttributesList["ClearValue"].Value;
+            }
+
+            string strTag = String.Empty;
+            if (!AHasClearButton)
+            {
+                strTag += TUcoFilterAndFind.ArgumentPanelHelper.ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON;
+            }
+            if (clearValue != String.Empty)
+            {
+                strTag += String.Format("{0}={1};", TUcoFilterAndFind.ArgumentPanelHelper.ARGUMENTCONTROLTAG_CLEARVALUE, clearValue);
+            }
+
+            return strTag == String.Empty ? "String.Empty" : String.Format("\"{0}\"", strTag);
+        }
+
+        /// <summary>
+        /// Create a cloneable control that forms the basis of the cloned control on the filter/find panel
+        /// </summary>
+        private void CreateCloneableControl(TFormWriter writer, string AControlName, string AControlType, string AControlText, string ATargetCodelet)
+        {
+            if (listCloneableControlNames.Contains(AControlName))
+            {
+                return;
+            }
+
+            ProcessTemplate snippetControl;
+            if (AControlText == null)
+            {
+                snippetControl = writer.Template.GetSnippet("SNIPDYNAMICCREATECONTROL");
+            }
+            else
+            {
+                snippetControl = writer.Template.GetSnippet("SNIPDYNAMICCREATECONTROLWITHTEXT");
+                snippetControl.SetCodelet("CONTROLTEXT", AControlText);
+            }
+            snippetControl.SetCodelet("CONTROLNAME", AControlName);
+            snippetControl.SetCodelet("CONTROLTYPE", AControlType);
+            writer.Template.InsertSnippet(ATargetCodelet, snippetControl);
+            writer.Template.AddToCodelet(ATargetCodelet, Environment.NewLine);
+
+            listCloneableControlNames.Add(AControlName);
+        }
+
+        /// <summary>
+        /// Add a new panel set (label and Control) based on a pair of cloneable controls.
+        /// Column name and data type can be null
+        /// </summary>
+        private void AddFilterFindPanel(TFormWriter writer, string AControlType, string APanelType, string APanelSubType,
+            string AControlName, string ALabelName, bool AHasALabel,
+            string AColumnName, string AColumnDataType, XmlAttributeCollection AControlAttributesList, string ATargetCodelet, out bool AHasClearButton)
+        {
+            ProcessTemplate snippetFilterFind;
+            if (AColumnName == null)
+            {
+                snippetFilterFind = writer.Template.GetSnippet("SNIPINDIVIDUALFILTERFINDPANELNOCOLUMN");
+            }
+            else
+            {
+                snippetFilterFind = writer.Template.GetSnippet("SNIPINDIVIDUALFILTERFINDPANEL");
+                snippetFilterFind.SetCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
+                snippetFilterFind.SetCodelet("COLUMNNAME", AColumnName);
+                snippetFilterFind.SetCodelet("COLUMNDATATYPE", AColumnDataType);
+            }
+
+            ProcessTemplate snippetLabel = writer.Template.GetSnippet("SNIPCLONELABEL");
+
+            if (AHasALabel)
+            {
+                snippetLabel.SetCodelet("CLONEDFROMLABEL", ALabelName);
+                snippetLabel.SetCodelet("PANELTYPE", ATargetCodelet.Contains("FILTER") ? "Filter" : "Find");
+                snippetLabel.SetCodelet("PANELTYPEUC", ATargetCodelet.Contains("FILTER") ? "FILTER" : "FIND");
+                snippetFilterFind.InsertSnippet("CLONELABEL", snippetLabel);
+            }
+            else
+            {
+                snippetFilterFind.SetCodelet("CLONELABEL", "null," + Environment.NewLine);
+            }
+
+            snippetFilterFind.SetCodelet("CONTROLCLONE", AControlName.StartsWith("cmb") ? "ShallowCloneToComboBox" : "ShallowClone");
+            snippetFilterFind.SetCodelet("CONTROLTYPE", AControlType);
+            snippetFilterFind.SetCodelet("CLONEDFROMCONTROL", AControlName);
+            snippetFilterFind.SetCodelet("PANELTYPE", APanelType);
+            snippetFilterFind.SetCodelet("PANELTYPEUC", APanelType.ToUpper());
+            snippetFilterFind.SetCodelet("PANELSUBTYPE", APanelSubType);
+            snippetFilterFind.SetCodelet("TAG", GetFilterFindTagValue(AControlAttributesList, out AHasClearButton));
+
+            writer.Template.InsertSnippet(ATargetCodelet, snippetFilterFind);
+            writer.Template.AddToCodelet(ATargetCodelet, Environment.NewLine);
+        }
+
+        /// <summary>
+        /// Create a completely dynamic comboBox control that has no direct relationship to the database
+        /// </summary>
+        private void CreateDynamicFilterFindComboBox(TFormWriter writer, XmlNode ADynamicControlNode, string APanelType, string APanelSubType, string ATargetCodelet)
+        {
+            string ctrlName = ADynamicControlNode.Name;
+            string lblName = "lbl" + ctrlName.Substring(3);
+            XmlNode comboCtrlNode = (XmlNode)FCodeStorage.FXmlNodes[ctrlName];
+            XmlAttributeCollection controlAttributes = comboCtrlNode.Attributes;
+
+            CreateCloneableControl(writer, lblName, "Label", StringHelper.ReverseUpperCamelCase(ctrlName.Substring(3)), ATargetCodelet);
+            CreateCloneableControl(writer, ctrlName, "TCmbAutoComplete", null, ATargetCodelet);
+
+            bool bHasClearButton;
+            AddFilterFindPanel(writer, "TCmbAutoComplete", APanelType, APanelSubType, ctrlName, lblName, true, null, null, controlAttributes, ATargetCodelet, out bHasClearButton);
+
+            WriteAdditionalProperties(writer, "TCmbAutoComplete", APanelType, ctrlName, bHasClearButton, controlAttributes);
+        }
+
+        /// <summary>
+        /// Create a completely dynamic radio button group that has no direct relationship to the database
+        /// </summary>
+        private void CreateDynamicFilterFindRadioButtonGroup(TFormWriter writer, XmlNode ADynamicControlNode, string APanelType, string APanelSubType, string ATargetCodelet)
+        {
+            string ctrlName = ADynamicControlNode.Name;
+            XmlNode rgrCtrlNode = (XmlNode)FCodeStorage.FXmlNodes[ctrlName];
+            XmlAttributeCollection controlAttributes = rgrCtrlNode.Attributes;
+
+            string labelText = StringHelper.ReverseUpperCamelCase(ctrlName.Substring(3));
+            if (controlAttributes["Label"] != null)
+            {
+                labelText = controlAttributes["Label"].Value;
+            }
+
+            CreateCloneableControl(writer, ctrlName, "GroupBox", labelText, ATargetCodelet);
+
+            XmlNode optionalValuesNode = TXMLParser.GetChild(ADynamicControlNode, "OptionalValues");
+            foreach (XmlNode optionalValueNode in optionalValuesNode)
+            {
+                bool bIsDefault = false;
+                string optionalValueName = optionalValueNode.Attributes["name"].Value;
+                if (optionalValueName.StartsWith("="))
+                {
+                    bIsDefault = true;
+                    optionalValueName = optionalValueName.Substring(1);
+                }
+                string rbtName = "rbt" + optionalValueName;
+
+                CreateCloneableControl(writer, rbtName, "RadioButton", StringHelper.ReverseUpperCamelCase(optionalValueName), ATargetCodelet);
+                writer.Template.AddToCodelet(ATargetCodelet, String.Format("{0}.Controls.Add({1});{2}{2}", ctrlName, rbtName, Environment.NewLine));
+
+                if (bIsDefault)
+                {
+                    AddFilterFindProperty(writer, "RadioButton", APanelType, rbtName, "Checked", "true");
+                }
+
+                if (FCodeStorage.FXmlNodes[rbtName] != null)
+                {
+                    XmlAttributeCollection rbtAttributes = ((XmlNode)FCodeStorage.FXmlNodes[rbtName]).Attributes;
+                    WriteAdditionalProperties(writer, "RadioButton", APanelType, rbtName, false, rbtAttributes);
+                }
+
+            }
+
+            bool bHasClearButton;
+            AddFilterFindPanel(writer, "GroupBox", APanelType, APanelSubType, ctrlName, "null," + Environment.NewLine, false, null, null, controlAttributes, ATargetCodelet, out bHasClearButton);
+        }
+
+        /// <summary>
+        /// Add an event for a control (typically based on OnChange)
+        /// </summary>
+        private void AddFilterFindEvent(TFormWriter writer, string AControlType, string APanelType, string AControlName, string AEventName, string AHandler)
+        {
+            ProcessTemplate snippetHandler = writer.Template.GetSnippet("SNIPDYNAMICEVENTHANDLER");
+            snippetHandler.SetCodelet("CONTROLTYPE", AControlType);
+            snippetHandler.SetCodelet("PANELTYPE", APanelType);
+            snippetHandler.SetCodelet("CONTROLNAME", AControlName);
+            snippetHandler.SetCodelet("EVENTNAME", AEventName);
+            snippetHandler.SetCodelet("EVENTHANDLER", AHandler);
+
+            writer.Template.InsertSnippet("INDIVIDUALFILTERFINDPANELEVENTS", snippetHandler);
+        }
+
+        /// <summary>
+        /// Add an property for a control
+        /// </summary>
+        private void AddFilterFindProperty(TFormWriter writer, string AControlType, string APanelType, string AControlName, string APropertyName, string APropertyValue)
+        {
+            ProcessTemplate snippetProperty = writer.Template.GetSnippet("SNIPDYNAMICSETPROPERTY");
+            snippetProperty.SetCodelet("CONTROLTYPE", AControlType);
+            snippetProperty.SetCodelet("PANELTYPE", APanelType);
+            snippetProperty.SetCodelet("CONTROLNAME", AControlName);
+            snippetProperty.SetCodelet("PROPERTYNAME", APropertyName);
+            snippetProperty.SetCodelet("PROPERTYVALUE", APropertyValue);
+
+            writer.Template.InsertSnippet("INDIVIDUALFILTERFINDPANELPROPERTIES", snippetProperty);
+        }
+
+        /// <summary>
+        /// Gets the data type for the specified column.  If the data type is a number the method also creates a shadow column in the data table
+        /// so that numeric filtering is done on the basis of LIKE rather than equals.
+        /// </summary>
+        private string GetColumnDataType(TFormWriter writer, string ATableName, string AColumnName)
+        {
+            string columnDataType = null;
+
+            TTable table = TDataBinding.FPetraXMLStore.GetTable(ATableName);
+            if (table != null)
+            {
+                TTableField column = table.GetField(AColumnName);
+                if (column != null)
+                {
+                    // We will have raised a warning if we failed to find the column
+                    columnDataType = column.strType;
+                    if (columnDataType == "integer" || columnDataType == "number")
+                    {
+                        string dbColumnName = column.strName;
+                        if (!listNumericColumns.Contains(dbColumnName))
+                        {
+                            ProcessTemplate snippetNumericColumn = writer.Template.GetSnippet("SNIPNUMERICFILTERFINDCOLUMN");
+                            snippetNumericColumn.SetCodelet("DETAILTABLE", ATableName);
+                            snippetNumericColumn.SetCodelet("COLUMNNAME", dbColumnName);
+                            writer.Template.InsertSnippet("NUMERICFILTERFINDCOLUMNS", snippetNumericColumn);
+
+                            listNumericColumns.Add(dbColumnName);
+                        }
+                    }
+                }
+            }
+
+            return columnDataType;
         }
     }
 

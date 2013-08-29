@@ -27,6 +27,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
+using System.Data;
 using Ict.Common.Controls.Formatting;
 
 namespace Ict.Common.Controls
@@ -446,7 +447,7 @@ namespace Ict.Common.Controls
         /// </summary>
         public TUcoFilterAndFind(List <Panel>AFilterControls, List <Panel>AExtraFilterControls, List <Panel>AFindControls,
             FilterAndFindParameters AParameters) : this(AFilterControls, AExtraFilterControls, AFindControls,
-                                                        AParameters.ApplyFilterButtonContext, AParameters.ShowFilterIsAlwaysOnLabelContext,
+                                                        AParameters.ApplyFilterButtonContext, AParameters.ShowKeepFilterTurnedOnButtonContext,
                                                         AParameters.ShowFilterIsAlwaysOnLabelContext, AParameters.FindAndFilterInitialWidth)
         {
         }
@@ -1408,6 +1409,7 @@ namespace Ict.Common.Controls
             rbtFindDirUp.AutoSize = true;
             rbtFindDirUp.Name = "rbtFindDirUp";
             rbtFindDirUp.Text = Catalog.GetString("&Up");
+            rbtFindDirUp.Tag = "SuppressChangeDetection";
 
             rbtFindDirDown.Top = 14;
             rbtFindDirDown.Left = 60;
@@ -1415,6 +1417,7 @@ namespace Ict.Common.Controls
             rbtFindDirDown.Checked = true;
             rbtFindDirDown.Name = "rbtFindDirDown";
             rbtFindDirDown.Text = Catalog.GetString("D&own");
+            rbtFindDirDown.Tag = "SuppressChangeDetection";
 
             grpFindDirection.Top = 30;
             grpFindDirection.Left = 3;
@@ -1586,7 +1589,11 @@ namespace Ict.Common.Controls
 
                 if (ControlAsComboBox != null)
                 {
-                    ControlAsComboBox.SelectedIndexChanged += delegate(object sender, EventArgs e) {
+                    ControlAsComboBox.TextChanged += delegate(object sender, EventArgs e)
+                    {
+                        OnArgumentCtrlValueChanged(sender, e);
+                    };
+                    ControlAsComboBox.SelectedValueChanged += delegate(object sender, EventArgs e) {
                         OnArgumentCtrlValueChanged(sender, e);
                     };
                 }
@@ -1595,7 +1602,7 @@ namespace Ict.Common.Controls
 
                 if (ControlAsCheckBox != null)
                 {
-                    ControlAsCheckBox.CheckedChanged += delegate(object sender, EventArgs e) {
+                    ControlAsCheckBox.CheckStateChanged += delegate(object sender, EventArgs e) {
                         OnArgumentCtrlValueChanged(sender, e);
                     };
                 }
@@ -1665,13 +1672,32 @@ namespace Ict.Common.Controls
                         };  // Turn the button back to 'normal' appearance
                         ClearArgumentCtrlButton.Tag = "SuppressChangeDetection" + ";" + ArgumentPanelCtrl.Name;
 
-                        ClearArgumentCtrlButton.Click += delegate(object sender, EventArgs e) {
+                        ClearArgumentCtrlButton.Click += delegate(object sender, EventArgs e)
+                        {
                             ClearArgumentCtrlButtonClick(sender, e);
                         };
 
                         tipGeneral.SetToolTip(ClearArgumentCtrlButton, "Clear value");
 
                         AArgumentPanel.Controls.Add(ClearArgumentCtrlButton);
+                    }
+                }
+                else
+                {
+                    // we still need to restrict the width, even when there is no clear button
+                    ProbeControl = ArgumentPanelCtrl as Label;
+                    ProbeControl2 = ArgumentPanelCtrl as Button;
+
+                    // Check if we found a Control that isn't a Label and also not a Button
+                    if ((ProbeControl == null)
+                        && (ProbeControl2 == null))
+                    {
+                        int maxWidth = AContainerPanelWidth - ArgumentPanelCtrl.Left - 18;
+
+                        if (ArgumentPanelCtrl.Width > maxWidth)
+                        {
+                            ArgumentPanelCtrl.Width = maxWidth;
+                        }
                     }
                 }
             }
@@ -1743,6 +1769,7 @@ namespace Ict.Common.Controls
             TextBox ControlToClearAsTextBox;
             CheckBox ControlToClearAsCheckBox;
             ComboBox ControlToClearAsCombo;
+            TCmbAutoComplete ControlToClearAsAutoComplete;
 
             // Determine the Argument Control whose value should be cleared.
             // This information is held in the Tag of the Button that sends this Event;
@@ -1786,19 +1813,18 @@ namespace Ict.Common.Controls
 
                     if (!String.IsNullOrEmpty(TagAsString))
                     {
-                        if ((!TagAsString.Contains(ArgumentPanelHelper.ARGUMENTCONTROLTAG_CLEARVALUE))
-                            || (TagAsString.Contains(ArgumentPanelHelper.ARGUMENTCONTROLTAG_CLEARVALUE + "=false")))
+                        if (TagAsString.Contains(ArgumentPanelHelper.ARGUMENTCONTROLTAG_CLEARVALUE))
                         {
-                            ControlToClearAsCheckBox.Checked = false;
+                            ControlToClearAsCheckBox.Checked = (TagAsString.Contains(ArgumentPanelHelper.ARGUMENTCONTROLTAG_CLEARVALUE + "=true"));
                         }
                         else
                         {
-                            ControlToClearAsCheckBox.Checked = true;
+                            ControlToClearAsCheckBox.CheckState = CheckState.Indeterminate;
                         }
                     }
                     else
                     {
-                        ControlToClearAsCheckBox.Checked = false;
+                        ControlToClearAsCheckBox.CheckState = CheckState.Indeterminate;
                     }
 
                     OnClearArgumentCtrlButtonClicked(sender, null, ControlToClearAsCheckBox);
@@ -1807,7 +1833,21 @@ namespace Ict.Common.Controls
                 }
 
                 //
-                // Clearing of a ComboBox
+                // Clearing a TCmbAutoComplete (with IgnoreNewValues set)
+                //
+                ControlToClearAsAutoComplete = ControlToClearInstance as TCmbAutoComplete;
+
+                if (ControlToClearAsAutoComplete != null && ControlToClearAsAutoComplete.IgnoreNewValues == true)
+                {
+                    ControlToClearAsAutoComplete.Text = String.Empty;
+
+                    OnClearArgumentCtrlButtonClicked(sender, null, ControlToClearAsAutoComplete);
+
+                    return;
+                }
+
+                //
+                // Clearing of a 'standard' ComboBox
                 //
                 ControlToClearAsCombo = ControlToClearInstance as ComboBox;
 
@@ -2047,7 +2087,7 @@ namespace Ict.Common.Controls
                 throw new ArgumentNullException("Argument 'sender' must not be null and must be a Button");
             }
 
-            if (ApplyFilterClicked != null)
+            if (FindNextClicked != null)
             {
                 ContainingPanel = ClickedButton.Parent as Panel;
 
@@ -2078,7 +2118,7 @@ namespace Ict.Common.Controls
                 throw new ArgumentNullException("Argument 'AAssociatedArgumentCtrl' must not be null");
             }
 
-            if (ApplyFilterClicked != null)
+            if (ClearArgumentCtrlButtonClicked != null)
             {
                 ContainingPanel = (ClickedButton.Parent.Parent) as Panel;
 
@@ -2174,8 +2214,8 @@ namespace Ict.Common.Controls
 
                     if (SenderAsCheckBox != null)
                     {
-                        Value = SenderAsCheckBox.Checked;
-                        ValueType = typeof(System.Boolean);
+                        Value = SenderAsCheckBox.CheckState;
+                        ValueType = typeof(CheckState);
                     }
 
                     SenderAsComboBox = sender as ComboBox;

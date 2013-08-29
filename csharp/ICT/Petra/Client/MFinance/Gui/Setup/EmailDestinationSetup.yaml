@@ -21,9 +21,10 @@ RootNode:
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
-#            InitiallyExpanded: true
             FilterControls: [cmbDetailFileCode, txtDetailConditionalValue, txtDetailEmailAddress]
-            
+            FindControls: [cmbDetailFileCode, txtDetailConditionalValue, txtDetailEmailAddress]
+            ControlAttributes:
+                txtDetailEmailAddress: {Label=Email Address}
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]

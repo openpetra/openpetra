@@ -67,12 +67,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void LoadBatches(Int32 ALedgerNumber)
         {
             FLedgerNumber = ALedgerNumber;
+            
+            RadioButton rbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
+            TCmbAutoComplete cmbYearFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearFilter");
 
             rbtEditing.Checked = true;
-
-            FPetraUtilsObject.DisableDataChangedEvent();
             TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbYearFilter, FLedgerNumber); //.InitialiseAvailableGiftYearsList(ref cmbYearFilter, FLedgerNumber);
-            FPetraUtilsObject.EnableDataChangedEvent();
 
             // this will load the batches from the server
             RefreshFilter(null, null);
@@ -312,6 +312,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Int32 yearNumber = 0;
             Int32 periodNumber = 0;
 
+            RadioButton rbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
+            TCmbAutoComplete cmbYearFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearFilter");
+            TCmbAutoComplete cmbPeriodFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriodFilter");
+
             if (!rbtEditing.Checked)
             {
                 rbtEditing.Checked = true;
@@ -488,6 +492,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                             //Update the Transaction effective dates
                             UpdateJournalTransEffectiveDate(false);
+
+                            TCmbAutoComplete cmbYearFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearFilter");
+                            TCmbAutoComplete cmbPeriodFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriodFilter");
 
                             if (cmbYearFilter.SelectedIndex != 0)
                             {
@@ -860,6 +867,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             int newRowToSelectAfterFilter = 1;
             bool senderIsRadioButton = (sender is RadioButton);
 
+            RadioButton rbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
+            RadioButton rbtPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtPosting");
+            RadioButton rbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
+            TCmbAutoComplete cmbYearFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearFilter");
+            TCmbAutoComplete cmbPeriodFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriodFilter");
+
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
             {
                 return;
@@ -985,8 +998,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
 
-            FMainDS.ABatch.DefaultView.RowFilter =
-                String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+            FFilterPanelControls.BaseOffFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+            FFilterPanelControls.BaseOnFilter = FFilterPanelControls.BaseOffFilter;
+            FMainDS.ABatch.DefaultView.RowFilter = FFilterPanelControls.GetCurrentFilter();
+            UpdateRecordNumberDisplay();
+
+            //FMainDS.ABatch.DefaultView.RowFilter =
+            //    String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
 
             if (grdDetails.Rows.Count < 2)
             {
@@ -1316,12 +1334,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RefreshPeriods(Object sender, EventArgs e)
         {
+            TCmbAutoComplete cmbYearFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearFilter");
+            TCmbAutoComplete cmbPeriodFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriodFilter");
             TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref cmbPeriodFilter, FLedgerNumber, cmbYearFilter.GetSelectedInt32());
-            cmbPeriodFilter.SelectedIndex = 0;
         }
 
         private void ToggleOptionButtonCheckedEvent(bool AToggleOn)
         {
+            RadioButton rbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
+            RadioButton rbtPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtPosting");
+            RadioButton rbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
+
             if (AToggleOn)
             {
                 rbtEditing.CheckedChanged += new System.EventHandler(this.RefreshFilter);
@@ -1343,55 +1366,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FucoFilterAndFind.DisplayFindTab();
         }
-
-        #region Filter and Find Event Handling
-
-        private void FindAndFilterHookUpEvents()
-        {
-            // TODO
-            FucoFilterAndFind.ApplyFilterClicked += delegate(object AUcoEventSender, TUcoFilterAndFind.TContextEventExtControlArgs AUcoEventArgs)
-            {
-                FindAndFilter_ApplyFilterClicked(AUcoEventSender, AUcoEventArgs);
-            };
-        }
-
-        private void FindAndFilter_ArgumentCtrlValueChanged(object AUcoEventSender, TUcoFilterAndFind.TContextEventExtControlValueArgs AUcoEventArgs)
-        {
-            // TODO
-        }
-
-        private void FindAndFilter_ApplyFilterClicked(object AUcoEventSender, TUcoFilterAndFind.TContextEventExtControlArgs AUcoEventArgs)
-        {
-            if (AUcoEventArgs.Action != null)
-            {
-                // Start whatever is needed to apply the Filter - asynchronously -
-                // and then immediately execute the AUcoEventArgs.Action command to update the 'Apply Filter' Button
-                // to signalise to the user that the filter is being applied!
-
-                // TODO: asynchronously start method that will apply the Filter
-
-                this.Cursor = Cursors.WaitCursor;
-                Application.DoEvents();
-
-                AUcoEventArgs.Action(((TUcoFilterAndFind.TContextEventExtControlArgs)AUcoEventArgs).AffectedControl);
-            }
-
-            // Simulate applying of filter... (that would happen in a separate Thread!)
-            System.Threading.Thread.Sleep(2000);
-            // Applying of Filter is finished...
-
-            if (AUcoEventArgs.ResetAction != null)
-            {
-                // Once the applying of the Filter is finished, execute the AUcoEventArgs.ResetAction command to update
-                // the 'Apply Filter' Button (so that the Button is brought back to its normal state)!
-                AUcoEventArgs.ResetAction(((TUcoFilterAndFind.TContextEventExtControlArgs)AUcoEventArgs).AffectedControl);
-
-                UpdateRecordNumberDisplay();
-
-                this.Cursor = Cursors.Default;
-            }
-        }
-
-        #endregion
     }
 }
