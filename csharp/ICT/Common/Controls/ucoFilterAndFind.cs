@@ -28,6 +28,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 using System.Data;
+using Ict.Common;
 using Ict.Common.Controls.Formatting;
 
 namespace Ict.Common.Controls
@@ -1564,8 +1565,8 @@ namespace Ict.Common.Controls
                 ArgumentPanelTag = String.Empty;
             }
 
-            KeepPanelBackColour = ArgumentPanelTag.Contains(ArgumentPanelHelper.ARGUMENTPANELTAG_KEEPBACKCOLOUR);
-            NoAutomaticArgumentClearButton = ArgumentPanelTag.Contains(ArgumentPanelHelper.ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON);
+            KeepPanelBackColour = ArgumentPanelTag.Contains(CommonTagString.ARGUMENTPANELTAG_KEEPBACKCOLOUR);
+            NoAutomaticArgumentClearButton = ArgumentPanelTag.Contains(CommonTagString.ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON);
 
             // Remove any BackColour if it wasn't requested to keep it
             if (!KeepPanelBackColour)
@@ -1813,9 +1814,9 @@ namespace Ict.Common.Controls
 
                     if (!String.IsNullOrEmpty(TagAsString))
                     {
-                        if (TagAsString.Contains(ArgumentPanelHelper.ARGUMENTCONTROLTAG_CLEARVALUE))
+                        if (TagAsString.Contains(CommonTagString.ARGUMENTCONTROLTAG_CLEARVALUE))
                         {
-                            ControlToClearAsCheckBox.Checked = (TagAsString.Contains(ArgumentPanelHelper.ARGUMENTCONTROLTAG_CLEARVALUE + "=true"));
+                            ControlToClearAsCheckBox.Checked = (TagAsString.Contains(CommonTagString.ARGUMENTCONTROLTAG_CLEARVALUE + "=true"));
                         }
                         else
                         {
@@ -1857,8 +1858,8 @@ namespace Ict.Common.Controls
 
                     if (!String.IsNullOrEmpty(TagAsString))
                     {
-                        if ((!TagAsString.Contains(ArgumentPanelHelper.ARGUMENTCONTROLTAG_CLEARVALUE))
-                            || (TagAsString.Contains(ArgumentPanelHelper.ARGUMENTCONTROLTAG_CLEARVALUE + "=0")))
+                        if ((!TagAsString.Contains(CommonTagString.ARGUMENTCONTROLTAG_CLEARVALUE))
+                            || (TagAsString.Contains(CommonTagString.ARGUMENTCONTROLTAG_CLEARVALUE + "=0")))
                         {
                             // Index 0 is the 'nothing selected' (=clear) value
                             ControlToClearAsCombo.SelectedIndex = 0;
@@ -2242,22 +2243,6 @@ namespace Ict.Common.Controls
         public static class ArgumentPanelHelper
         {
             /// <summary>
-            /// Tag for an 'Argument Panel': Instructs the TUcoFilterAndFind UserControl to not change the Argument Panels' BackColour to Transparent.
-            /// </summary>
-            public const string ARGUMENTPANELTAG_KEEPBACKCOLOUR = "KeepBackColour";
-
-            /// <summary>
-            /// Tag for an 'Argument Panel': Instructs the TUcoFilterAndFind UserControl to not create 'Argument Clear' Buttons for Argument Controls.
-            /// </summary>
-            public const string ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON = "NoAutomaticArgumentClearButton";
-
-            /// <summary>
-            /// Tag for an Argument Control: Specifies what value is the 'Clear Value' for that Control (depends on the kind of Control!).
-            /// </summary>
-            /// <remarks>The 'Clear Value' is what gets set on the Control when its 'Clear Value' Button gets clicked.</remarks>
-            public const string ARGUMENTCONTROLTAG_CLEARVALUE = "ClearValue";
-
-            /// <summary>
             /// Helper Method to create an Argument Panel out of a Label and a Control. Such an 'Argument Panel'
             /// can be passed to the TUcoFilterAndFind UserControl.
             /// </summary>
@@ -2293,7 +2278,7 @@ namespace Ict.Common.Controls
 
                 if (!AAutomaticClearButton)
                 {
-                    ArgumentPanel.Tag = ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON;
+                    ArgumentPanel.Tag = CommonTagString.ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON;
                 }
 
                 if (!(AControl is CheckBox))

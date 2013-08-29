@@ -246,16 +246,16 @@ namespace Ict.Common.Controls
         private void SetPanelControlTag(string ATag)
         {
             // Clear Button??
-            if (ATag.Contains(TUcoFilterAndFind.ArgumentPanelHelper.ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON))
+            if (ATag.Contains(CommonTagString.ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON))
             {
                 FHasClearButton = false;
-                FPanelControl.Tag += ";" + TUcoFilterAndFind.ArgumentPanelHelper.ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON;
+                FPanelControl.Tag += ";" + CommonTagString.ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON;
             }
 
             if (FHasClearButton)
             {
                 // Clear Value??
-                string strClearValue = TUcoFilterAndFind.ArgumentPanelHelper.ARGUMENTCONTROLTAG_CLEARVALUE;
+                string strClearValue = CommonTagString.ARGUMENTCONTROLTAG_CLEARVALUE;
 
                 if (ATag.Contains(strClearValue))
                 {
@@ -265,14 +265,14 @@ namespace Ict.Common.Controls
                     int p2 = ATag.IndexOf(';', p);
 
                     string value = ATag.Substring(p, p2 - p);
-                    FPanelControl.Tag += String.Format(";{0}{1}", TUcoFilterAndFind.ArgumentPanelHelper.ARGUMENTCONTROLTAG_CLEARVALUE, value);
+                    FPanelControl.Tag += String.Format(";{0}{1}", CommonTagString.ARGUMENTCONTROLTAG_CLEARVALUE, value);
                 }
                 else
                 {
                     if (FPanelControl is TCmbAutoComplete)
                     {
                         // No clear value specified, but if we are using a TCmbAutoComplete with a clear button the value will be -1 by default
-                        FPanelControl.Tag += String.Format(";{0}=-1", TUcoFilterAndFind.ArgumentPanelHelper.ARGUMENTCONTROLTAG_CLEARVALUE);
+                        FPanelControl.Tag += String.Format(";{0}=-1", CommonTagString.ARGUMENTCONTROLTAG_CLEARVALUE);
                     }
                 }
             }

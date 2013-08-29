@@ -2199,4 +2199,31 @@ namespace Ict.Common
             return result;
         }
     }
+
+    /// <summary>
+    /// This small class has several string constants relating to strings that can be part of a control's Tag property
+    /// </summary>
+    public static class CommonTagString
+    {
+        /// <summary>
+        /// When this is included in a control's Tag the automatic detection of changed data is suppressed on this control
+        /// </summary>
+        public const string SUPPRESS_CHANGE_DETECTION = "SuppressChangeDetection";
+
+        /// <summary>
+        /// Tag for a Filter/Find 'Argument Panel': Instructs the TUcoFilterAndFind UserControl to not change the Argument Panels' BackColour to Transparent.
+        /// </summary>
+        public const string ARGUMENTPANELTAG_KEEPBACKCOLOUR = "KeepBackColour";
+
+        /// <summary>
+        /// Tag for a Filter/Find 'Argument Panel': Instructs the TUcoFilterAndFind UserControl to not create 'Argument Clear' Buttons for Argument Controls.
+        /// </summary>
+        public const string ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON = "NoAutomaticArgumentClearButton";
+
+        /// <summary>
+        /// Tag for a Filter/Find Argument Control: Specifies what value is the 'Clear Value' for that Control (depends on the kind of Control!).
+        /// </summary>
+        /// <remarks>The 'Clear Value' is what gets set on the Control when its 'Clear Value' Button gets clicked.</remarks>
+        public const string ARGUMENTCONTROLTAG_CLEARVALUE = "ClearValue";
+    }
 }

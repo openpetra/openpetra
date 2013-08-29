@@ -30,7 +30,6 @@ using System.Xml;
 using Ict.Tools.CodeGeneration;
 using Ict.Common.IO;
 using Ict.Common;
-using Ict.Common.Controls;
 using Ict.Tools.DBXML;
 using Owf.Controls;
 
@@ -1270,12 +1269,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (!AHasClearButton)
             {
-                strTag += TUcoFilterAndFind.ArgumentPanelHelper.ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON;
+                strTag += CommonTagString.ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON;
             }
 
             if (clearValue != String.Empty)
             {
-                strTag += String.Format("{0}={1};", TUcoFilterAndFind.ArgumentPanelHelper.ARGUMENTCONTROLTAG_CLEARVALUE, clearValue);
+                strTag += String.Format("{0}={1};", CommonTagString.ARGUMENTCONTROLTAG_CLEARVALUE, clearValue);
             }
 
             return strTag == String.Empty ? "String.Empty" : String.Format("\"{0}\"", strTag);
