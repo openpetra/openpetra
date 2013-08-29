@@ -204,7 +204,7 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="AfileName"></param>
         /// <returns></returns>
