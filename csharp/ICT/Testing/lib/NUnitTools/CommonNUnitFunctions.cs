@@ -227,7 +227,7 @@ namespace Ict.Testing.NUnitTools
 
             NantProcess.EnableRaisingEvents = false;
 
-            if (Ict.Common.Utilities.DetermineExecutingOS() == TExecutingOSEnum.eosWinNTOrLater)
+            if (Ict.Common.Utilities.DetermineExecutingOS() >= TExecutingOSEnum.eosWinNTOrLater)
             {
                 NantProcess.StartInfo.FileName = "cmd";
                 NantProcess.StartInfo.Arguments = "/c " + pathAndFileNameToNantExe + " " + argument + " -logfile:nant.txt";
