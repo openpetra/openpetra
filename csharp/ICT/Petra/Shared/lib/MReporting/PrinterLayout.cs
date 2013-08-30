@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,18 +22,16 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using Ict.Petra.Shared.MReporting;
 using System.Collections;
 using Ict.Common.Printing;
-using Ict.Petra.Client.MReporting.Logic;
 using Ict.Common;
 using System.Drawing.Printing;
 using System.Drawing;
 using System.Reflection;
 using Ict.Petra.Shared;
-using Ict.Petra.Client.App.Core;
+//using Ict.Petra.Client.App.Core;
 
-namespace Ict.Petra.Client.MReporting.Logic
+namespace Ict.Petra.Shared.MReporting
 {
     /// <summary>
     /// Here the specific layout of the report is defined.
