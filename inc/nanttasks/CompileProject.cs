@@ -314,7 +314,11 @@ namespace Ict.Tools.NAntTasks
 
             if (mainProperties.ContainsKey("ApplicationManifest") && (mainProperties["ApplicationManifest"].Length > 0))
             {
-                parameters.CompilerOptions += " /win32manifest:\"APPMANIFEST\"";
+                if (!this.Project.RuntimeFramework.Name.StartsWith("mono"))
+                {
+                    // we cannot include the manifest when compiling on Mono
+                    parameters.CompilerOptions += " /win32manifest:\"APPMANIFEST\"";
+                }
             }
 
             parameters.CompilerOptions += " /define:DEBUGMODE /doc:\"XMLOUTPUTFILE.xml\"";
