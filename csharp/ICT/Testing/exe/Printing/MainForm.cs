@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -190,6 +190,8 @@ namespace Tests.Common.Printing
         {
             OpenFileDialog DialogOpen = new OpenFileDialog();
 
+            // see file in sub directory test data.
+            // create file with method TResultList.WriteBinaryFile
             DialogOpen.Filter = "Binary Report File (*.bin)|*.bin";
             DialogOpen.RestoreDirectory = true;
             DialogOpen.Title = "Open Binary Report File";
@@ -214,6 +216,42 @@ namespace Tests.Common.Printing
                 printPreviewControl1.Document = doc;
                 doc.EndPrint += new PrintEventHandler(this.PrintDocument_EndPrint);
                 printPreviewControl1.InvalidatePreview();
+            }
+        }
+
+        void BtnPrintReportPDFClick(object sender, EventArgs e)
+        {
+            OpenFileDialog DialogOpen = new OpenFileDialog();
+
+            // see file in sub directory test data.
+            // create file with method TResultList.WriteBinaryFile
+            DialogOpen.Filter = "Binary Report File (*.bin)|*.bin";
+            DialogOpen.RestoreDirectory = true;
+            DialogOpen.Title = "Open Binary Report File";
+
+            if (DialogOpen.ShowDialog() == DialogResult.OK)
+            {
+                TResultList Results = new TResultList();
+                TParameterList Parameters;
+                Results.ReadBinaryFile(DialogOpen.FileName, out Parameters);
+
+                TPetraIdentity PetraIdentity = new TPetraIdentity(
+                    "TESTUSER", "", "", "", "", DateTime.MinValue,
+                    DateTime.MinValue, DateTime.MinValue, 0, -1, -1, false,
+                    false);
+
+                UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
+
+                PrintDocument doc = new PrintDocument();
+
+                TPdfPrinter pdfPrinter = new TPdfPrinter(doc, TGfxPrinter.ePrinterBehaviour.eReport);
+                TReportPrinterLayout layout = new TReportPrinterLayout(Results, Parameters, pdfPrinter, true);
+
+                pdfPrinter.Init(eOrientation.ePortrait, layout, eMarginType.ePrintableArea);
+
+                pdfPrinter.SavePDF("test.pdf");
+
+                System.Diagnostics.Process.Start(Path.GetFullPath("test.pdf"));
             }
         }
     }
