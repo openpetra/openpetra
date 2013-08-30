@@ -443,7 +443,7 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
-        void WriteStringQuoted(String theString, bool bLineEnd=false)
+        void WriteStringQuoted(String theString, bool bLineEnd = false)
         {
             if (theString != null)
             {
@@ -456,7 +456,7 @@ namespace Ict.Petra.Server.MFinance.GL
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteCurrency(decimal currencyField, bool bLineEnd=false)
+        void WriteCurrency(decimal currencyField, bool bLineEnd = false)
         {
             Int64 integerNumber = Convert.ToInt64(currencyField);
 
@@ -472,18 +472,17 @@ namespace Ict.Petra.Server.MFinance.GL
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteGeneralNumber(decimal generalNumberField, bool bLineEnd=false)
+        void WriteGeneralNumber(decimal generalNumberField, bool bLineEnd = false)
         {
             FStringWriter.Write(String.Format(FCultureInfo, "{0:g}", generalNumberField));
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteDate(DateTime dateField, bool bLineEnd=false)
+        void WriteDate(DateTime dateField, bool bLineEnd = false)
         {
             FStringWriter.Write(dateField.ToString(FDateFormatString));
             WriteDelimiter(bLineEnd);
         }
-
     }
     /// <summary>
     /// provides the outer structure for summarizing journals

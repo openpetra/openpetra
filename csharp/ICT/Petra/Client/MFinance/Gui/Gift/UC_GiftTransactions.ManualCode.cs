@@ -164,6 +164,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             SetGiftDetailDefaultView();
+
             // only load from server if there are no transactions loaded yet for this batch
             // otherwise we would overwrite transactions that have already been modified
             if (FMainDS.AGiftDetail.DefaultView.Count == 0)
