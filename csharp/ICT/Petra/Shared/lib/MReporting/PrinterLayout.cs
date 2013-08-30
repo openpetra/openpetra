@@ -94,8 +94,8 @@ namespace Ict.Petra.Shared.MReporting
         {
             APaperKind = PaperKind.A4;
             AMargins = new Margins(20, 20, 20, 39);
-            AWidthInPoint = -1;
-            AHeightInPoint = -1;
+            AWidthInPoint = 827;
+            AHeightInPoint = 1169;
 
             return true;
         }
