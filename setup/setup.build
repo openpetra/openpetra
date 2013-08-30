@@ -454,6 +454,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
       <fileset basedir="${dir.root}/setup/petra${PetraRelease}/linuxserver/">
           <include name="*.config" />
       </fileset>
+      <filterchain>
+          <expandproperties />
+      </filterchain>
     </copy>
     <copy todir="${setupDir}/demo30">
       <fileset basedir="${dir.bin}/demodata/">
