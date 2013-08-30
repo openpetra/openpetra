@@ -124,9 +124,18 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             TVerificationResult verification = TStringChecks.ValidateEmail(txtEmail.Text, true);
 
-            if (verification.ResultSeverity == TResultSeverity.Resv_Critical)
+            if ((verification != null) && (verification.ResultSeverity == TResultSeverity.Resv_Critical))
             {
-                MessageBox.Show(Catalog.GetString("The Email addresses are in invalid format. Use the semicolon to between multiple addresses"),
+                MessageBox.Show(Catalog.GetString("The Email addresses are in invalid format. Use comma or semicolon to separate multiple addresses."),
+                    Catalog.GetString("Invalid Data entered"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return;
+            }
+
+            if (!AttachExcelFile && !AttachCSVFile && !AttachPDF)
+            {
+                MessageBox.Show(Catalog.GetString("You need to select at least one file to be attached to the Email."),
                     Catalog.GetString("Invalid Data entered"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);

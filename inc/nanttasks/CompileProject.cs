@@ -327,7 +327,12 @@ namespace Ict.Tools.NAntTasks
 
             // insert the path to the xml output file after the command line options thing has been done
             parameters.CompilerOptions = parameters.CompilerOptions.Replace("XMLOUTPUTFILE", OutputFile.Replace("\\", "/"));
-            parameters.CompilerOptions = parameters.CompilerOptions.Replace("APPMANIFEST", mainProperties["ApplicationManifest"].Replace("\\", "/"));
+
+            if (mainProperties.ContainsKey("ApplicationManifest") && (mainProperties["ApplicationManifest"].Length > 0))
+            {
+                parameters.CompilerOptions =
+                    parameters.CompilerOptions.Replace("APPMANIFEST", mainProperties["ApplicationManifest"].Replace("\\", "/"));
+            }
 
             String FrameworkDLLPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(typeof(System.Type)).Location);
 
