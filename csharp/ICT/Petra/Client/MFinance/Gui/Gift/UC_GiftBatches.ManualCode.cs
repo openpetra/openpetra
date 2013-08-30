@@ -1152,8 +1152,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string hashTotal = txtDetailHashTotal.Text.Trim();
             string hashNumericPart = string.Empty;
             decimal hashDecimalVal;
-            Int32 hashTotalIndexOfLastNumeric = -1;
-            bool isNumericVal;
 
             if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
             {
@@ -1174,12 +1172,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                hashTotalIndexOfLastNumeric = hashTotal.LastIndexOfAny(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
+                Int32 hashTotalIndexOfLastNumeric = hashTotal.LastIndexOfAny(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
 
                 if (hashTotalIndexOfLastNumeric > -1)
                 {
                     hashNumericPart = hashTotal.Substring(0, hashTotalIndexOfLastNumeric + 1);
-                    isNumericVal = Decimal.TryParse(hashNumericPart, out hashDecimalVal);
+                    bool isNumericVal = Decimal.TryParse(hashNumericPart, out hashDecimalVal);
 
                     if (!isNumericVal)
                     {

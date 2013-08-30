@@ -163,6 +163,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //TODO            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
             }
 
+            SetGiftDetailDefaultView();
             // only load from server if there are no transactions loaded yet for this batch
             // otherwise we would overwrite transactions that have already been modified
             if (FMainDS.AGiftDetail.DefaultView.Count == 0)
@@ -173,7 +174,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ShowData();
             ShowDetails();
 
-            SetGiftDetailDefaultView();
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
 
             if (AFromTabClick)

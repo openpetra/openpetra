@@ -375,11 +375,12 @@ namespace Ict.Common
 
             while (counter < s.Length)
             {
+/*
                 if ((s[counter] == '\\') && (s[counter + 1] == '"'))  // escaped quote
                 {
                     counter += 2;
                 }
-
+*/
                 if (s[counter] == '"')
                 {
                     if ((counter + 1 == s.Length) || (s[counter + 1] != '"'))
@@ -392,7 +393,6 @@ namespace Ict.Common
                         counter++;
                     }
                 }
-
                 counter++;
             }
 
@@ -562,7 +562,6 @@ namespace Ict.Common
             }
 
             value = value.Replace("\"\"", "\"");
-            value = value.Replace("\\\"", "\"");
 
             if (position == list.Length)
             {

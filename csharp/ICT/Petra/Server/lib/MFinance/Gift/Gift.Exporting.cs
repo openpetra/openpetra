@@ -513,7 +513,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         {
             if (theString != null)
             {
-                theString = theString.Replace(quote, "\\" + quote);
+                theString = theString.Replace(quote, quote + quote);
             }
 
             FStringWriter.Write(quote);
@@ -532,7 +532,9 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
             else
             {
+                FStringWriter.Write(quote);
                 FStringWriter.Write(StringHelper.FormatUsingCurrencyCode(currencyField, FCurrencyCode));
+                FStringWriter.Write(quote);
             }
 
             WriteDelimiter(bLineEnd);
