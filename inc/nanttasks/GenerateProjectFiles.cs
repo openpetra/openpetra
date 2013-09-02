@@ -710,6 +710,20 @@ namespace Ict.Tools.NAntTasks
 
             template.Replace("${ApplicationIcon}", replaceWith);
 
+            // set the application manifest if a file app.manifest exists (needed for patch tool)
+            replaceWith = String.Empty;
+
+            if (File.Exists(ASrcPath + Path.DirectorySeparatorChar + "app.manifest"))
+            {
+                temp = GetTemplateFile(ATemplateDir + "template.csproj.appmanifest");
+                string manifestPath = GetRelativePath(ASrcPath + Path.DirectorySeparatorChar + "app.manifest", FDirProjectFiles + "/dummy/");
+                temp.Replace("${application-Manifest}", manifestPath.Replace('/', Path.DirectorySeparatorChar));
+                temp.Replace("${application-Manifest-backslash}", manifestPath.Replace('/', '\\'));
+                replaceWith = temp.ToString();
+            }
+
+            template.Replace("${ApplicationManifest}", replaceWith);
+
             // Set the Pre-build event if required by the environment and if the project is Ict.Common
             replaceWith = String.Empty;
 

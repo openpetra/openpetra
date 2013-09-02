@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -190,6 +190,26 @@ namespace Ict.Common.IO
                 }
 
                 reader.Close();
+                RbtCheckedChanged(null, null);
+            }
+        }
+
+        /// <summary>
+        /// set CSV data directly, not reading from file.
+        /// used when pasting from clipboard
+        /// </summary>
+        public string CSVData
+        {
+            set
+            {
+                FCSVRows = new List <string>();
+                string[] lines = value.Split(new char[] { '\n' });
+
+                while (FCSVRows.Count < 6 && FCSVRows.Count < lines.Length)
+                {
+                    FCSVRows.Add(lines[FCSVRows.Count].Trim());
+                }
+
                 RbtCheckedChanged(null, null);
             }
         }

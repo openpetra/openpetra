@@ -345,7 +345,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     return;
                 }
 
-                if (FCalculator.SendEmail(options.EmailAddresses, options.AttachExcelFile, options.AttachCSVFile, options.AttachPDF))
+                if (FCalculator.SendEmail(options.EmailAddresses, options.AttachExcelFile, options.AttachCSVFile, options.AttachPDF, FWrapColumn))
                 {
                     MessageBox.Show(Catalog.GetString("Email has been sent successfully"),
                         Catalog.GetString("Success"));

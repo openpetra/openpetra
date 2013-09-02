@@ -358,114 +358,22 @@ namespace Ict.Common.IO
 
         /// <summary>
         /// convert a CSV file to an XmlDocument.
-        /// the first line is expected to contain the column names/captions
-        /// the separator is read from the header line, and the captions require # at the start of each caption
-        /// </summary>
-        public static XmlDocument ParseCSV2Xml(string ACSVFilename)
-        {
-            return ParseCSV2Xml(ACSVFilename, String.Empty);
-        }
-
-        /// <summary>
-        /// convert a CSV file to an XmlDocument.
         /// the first line is expected to contain the column names/captions, in quotes.
         /// from the header line, the separator can be determined, if the parameter ASeparator is empty
         /// </summary>
-        public static XmlDocument ParseCSV2Xml(string ACSVFilename, string ASeparator, Encoding AEncoding = null)
+        public static XmlDocument ParseCSV2Xml(string ACSVFilename, string ASeparator = null, Encoding AEncoding = null)
         {
-            XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
-
             StreamReader sr = new StreamReader(ACSVFilename, TTextFile.GetFileEncoding(ACSVFilename, AEncoding), false);
 
+            List <string>Lines = new List <string>();
             try
             {
-                string headerLine = sr.ReadLine();
-                string separator = ASeparator;
-
-                if (ASeparator == string.Empty)
-                {
-                    if (!headerLine.StartsWith("\""))
-                    {
-                        throw new Exception(Catalog.GetString("Cannot open CSV file, because it is missing the header line.") +
-                            Environment.NewLine +
-                            Catalog.GetString("There must be a row with the column captions, at least the first caption must be in quotes."));
-                    }
-                    else
-                    {
-                        // read separator from header line. at least the first column needs to be quoted
-                        separator = headerLine[StringHelper.FindMatchingQuote(headerLine, 0) + 2].ToString();
-                    }
-                }
-
-                List <string>AllAttributes = new List <string>();
-
-                while (headerLine.Length > 0)
-                {
-                    string attrName = StringHelper.GetNextCSV(ref headerLine, separator);
-
-                    if (attrName.Length == 0)
-                    {
-                        TLogging.Log("Csv2Xml: found empty column header, will not consider any following columns");
-                        break;
-                    }
-
-                    if (attrName.Length > 1)
-                    {
-                        attrName = attrName[0] + StringHelper.UpperCamelCase(attrName, ' ', false, false).Substring(1);
-                    }
-
-                    AllAttributes.Add(attrName);
-                }
-
                 while (!sr.EndOfStream)
                 {
-                    string line = sr.ReadLine();
-
-                    if (line.Trim().Length > 0)
-                    {
-                        SortedList <string, string>AttributePairs = new SortedList <string, string>();
-
-                        foreach (string attrName in AllAttributes)
-                        {
-                            AttributePairs.Add(attrName, StringHelper.GetNextCSV(ref line, separator));
-                        }
-
-                        string rowName = "Element";
-
-                        if (AttributePairs.ContainsKey("name"))
-                        {
-                            rowName = AttributePairs["name"];
-                        }
-
-                        XmlNode newNode = myDoc.CreateElement("", rowName, "");
-
-                        if (AttributePairs.ContainsKey("childOf"))
-                        {
-                            XmlNode parentNode = TXMLParser.FindNodeRecursive(myDoc.DocumentElement, AttributePairs["childOf"]);
-
-                            if (parentNode == null)
-                            {
-                                parentNode = myDoc.DocumentElement;
-                            }
-
-                            parentNode.AppendChild(newNode);
-                        }
-                        else
-                        {
-                            myDoc.DocumentElement.AppendChild(newNode);
-                        }
-
-                        foreach (string attrName in AllAttributes)
-                        {
-                            if ((attrName != "name") && (attrName != "childOf"))
-                            {
-                                XmlAttribute attr = myDoc.CreateAttribute(attrName);
-                                attr.Value = AttributePairs[attrName];
-                                newNode.Attributes.Append(attr);
-                            }
-                        }
-                    }
+                    Lines.Add(sr.ReadLine());
                 }
+
+                return ParseCSV2Xml(Lines, ASeparator);
             }
             catch (Exception)
             {
@@ -474,6 +382,105 @@ namespace Ict.Common.IO
             finally
             {
                 sr.Close();
+            }
+        }
+
+        /// <summary>
+        /// convert a CSV file to an XmlDocument.
+        /// the first line is expected to contain the column names/captions, in quotes.
+        /// from the header line, the separator can be determined, if the parameter ASeparator is empty
+        /// </summary>
+        public static XmlDocument ParseCSV2Xml(List <string>ALines, string ASeparator = null)
+        {
+            XmlDocument myDoc = TYml2Xml.CreateXmlDocument();
+
+            int LineCounter = 1;
+            string headerLine = ALines[0];
+            string separator = ASeparator;
+
+            if ((ASeparator == null) || (ASeparator == string.Empty))
+            {
+                if (!headerLine.StartsWith("\""))
+                {
+                    throw new Exception(Catalog.GetString("Cannot open CSV file, because it is missing the header line.") +
+                        Environment.NewLine +
+                        Catalog.GetString("There must be a row with the column captions, at least the first caption must be in quotes."));
+                }
+                else
+                {
+                    // read separator from header line. at least the first column needs to be quoted
+                    separator = headerLine[StringHelper.FindMatchingQuote(headerLine, 0) + 2].ToString();
+                }
+            }
+
+            List <string>AllAttributes = new List <string>();
+
+            while (headerLine.Length > 0)
+            {
+                string attrName = StringHelper.GetNextCSV(ref headerLine, separator);
+
+                if (attrName.Length == 0)
+                {
+                    TLogging.Log("Csv2Xml: found empty column header, will not consider any following columns");
+                    break;
+                }
+
+                if (attrName.Length > 1)
+                {
+                    attrName = attrName[0] + StringHelper.UpperCamelCase(attrName, ' ', false, false).Substring(1);
+                }
+
+                AllAttributes.Add(attrName);
+            }
+
+            while (LineCounter < ALines.Count)
+            {
+                string line = ALines[LineCounter++];
+
+                if (line.Trim().Length > 0)
+                {
+                    SortedList <string, string>AttributePairs = new SortedList <string, string>();
+
+                    foreach (string attrName in AllAttributes)
+                    {
+                        AttributePairs.Add(attrName, StringHelper.GetNextCSV(ref line, separator));
+                    }
+
+                    string rowName = "Element";
+
+                    if (AttributePairs.ContainsKey("name"))
+                    {
+                        rowName = AttributePairs["name"];
+                    }
+
+                    XmlNode newNode = myDoc.CreateElement("", rowName, "");
+
+                    if (AttributePairs.ContainsKey("childOf"))
+                    {
+                        XmlNode parentNode = TXMLParser.FindNodeRecursive(myDoc.DocumentElement, AttributePairs["childOf"]);
+
+                        if (parentNode == null)
+                        {
+                            parentNode = myDoc.DocumentElement;
+                        }
+
+                        parentNode.AppendChild(newNode);
+                    }
+                    else
+                    {
+                        myDoc.DocumentElement.AppendChild(newNode);
+                    }
+
+                    foreach (string attrName in AllAttributes)
+                    {
+                        if ((attrName != "name") && (attrName != "childOf"))
+                        {
+                            XmlAttribute attr = myDoc.CreateAttribute(attrName);
+                            attr.Value = AttributePairs[attrName];
+                            newNode.Attributes.Append(attr);
+                        }
+                    }
+                }
             }
 
             return myDoc;
