@@ -14,6 +14,7 @@ RootNode:
         actTestPostBatch: {Label=&Test Batch, ActionClick=TestPostBatch}
         actImportFromSpreadSheet: {ActionClick=ImportFromSpreadSheet}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
+        actImportFromClipboard: {Label=&Import from Clipboard, ActionClick=ImportFromClipboard}
         actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
     Controls:
         pnlContent:
@@ -77,12 +78,12 @@ RootNode:
             Label: &Batch
             mniPostBatch:
             mniTestPostBatch:
-            #mniImportFromSpreadSheet:
             mniImportBatches:
+            mniImportFromClipboard:
             mniExportBatches:
     Toolbar:
         tbbTestPostBatch:
         tbbPostBatch:
-        #tbbImportFromSpreadSheet:
         tbbImportBatches:
+        tbbImportFromClipboard:
         tbbExportBatches:

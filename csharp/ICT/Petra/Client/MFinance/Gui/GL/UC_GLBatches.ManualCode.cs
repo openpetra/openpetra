@@ -1296,6 +1296,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ImportBatches();
         }
 
+        private void ImportFromClipboard(object sender, EventArgs e)
+        {
+            ImportFromClipboard();
+        }
+
         private void ExportBatches(object sender, EventArgs e)
         {
             if (FPetraUtilsObject.HasChanges)
