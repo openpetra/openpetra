@@ -97,7 +97,7 @@ namespace Ict.Petra.Shared.MReporting
             AWidthInPoint = 827;
             AHeightInPoint = 1169;
 
-            return true;
+            return false;
         }
 
         /// <summary>
