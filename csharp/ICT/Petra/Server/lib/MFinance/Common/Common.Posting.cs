@@ -1153,7 +1153,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 NewBatchRow.LastJournal = OriginalBatch.LastJournal;
                 MainDS.ABatch.Rows.Add(NewBatchRow);
 
-                MainDS.AJournal.DefaultView.RowFilter = AJournalTable.GetLedgerNumberDBName() + "," + AJournalTable.GetBatchNumberDBName();
+                MainDS.AJournal.DefaultView.Sort = AJournalTable.GetLedgerNumberDBName() + "," + AJournalTable.GetBatchNumberDBName();
                 DataRowView[] JournalsRowView = MainDS.AJournal.DefaultView.FindRows(new object[] { ALedgerNumber, ABatchNumberToReverse });
 
                 foreach (DataRowView rv in JournalsRowView)
@@ -1170,9 +1170,9 @@ namespace Ict.Petra.Server.MFinance.Common
                     OriginalJournal.Reversed = true;
                     MainDS.AJournal.Rows.Add(NewJournalRow);
 
-                    MainDS.ATransaction.DefaultView.RowFilter = ATransactionTable.GetLedgerNumberDBName() + "," +
-                                                                ATransactionTable.GetBatchNumberDBName() + "," +
-                                                                ATransactionTable.GetJournalNumberDBName();
+                    MainDS.ATransaction.DefaultView.Sort = ATransactionTable.GetLedgerNumberDBName() + "," +
+                                                           ATransactionTable.GetBatchNumberDBName() + "," +
+                                                           ATransactionTable.GetJournalNumberDBName();
                     DataRowView[] TransactionsRowView = MainDS.ATransaction.DefaultView.FindRows(new object[] { ALedgerNumber, ABatchNumberToReverse,
                                                                                                                 OriginalJournal.JournalNumber });
 
@@ -1190,10 +1190,10 @@ namespace Ict.Petra.Server.MFinance.Common
 
                         MainDS.ATransaction.Rows.Add(NewTransactionRow);
 
-                        MainDS.ATransAnalAttrib.DefaultView.RowFilter = ATransAnalAttribTable.GetLedgerNumberDBName() + "," +
-                                                                        ATransAnalAttribTable.GetBatchNumberDBName() + "," +
-                                                                        ATransAnalAttribTable.GetJournalNumberDBName() + "," +
-                                                                        ATransAnalAttribTable.GetTransactionNumberDBName();
+                        MainDS.ATransAnalAttrib.DefaultView.Sort = ATransAnalAttribTable.GetLedgerNumberDBName() + "," +
+                                                                   ATransAnalAttribTable.GetBatchNumberDBName() + "," +
+                                                                   ATransAnalAttribTable.GetJournalNumberDBName() + "," +
+                                                                   ATransAnalAttribTable.GetTransactionNumberDBName();
                         DataRowView[] TransAnalAttribRowView =
                             MainDS.ATransAnalAttrib.DefaultView.FindRows(new object[] { ALedgerNumber, ABatchNumberToReverse,
                                                                                         OriginalJournal.JournalNumber,

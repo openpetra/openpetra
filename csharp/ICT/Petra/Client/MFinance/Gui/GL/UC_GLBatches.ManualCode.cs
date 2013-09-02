@@ -701,58 +701,64 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 DateForReverseBatch = StartDateCurrentPeriod;
             }
 
-            int ReversalGLBatch;
-
-            if (!TRemote.MFinance.GL.WebConnectors.ReverseBatch(FLedgerNumber, FSelectedBatchNumber,
-                    DateForReverseBatch,
-                    out ReversalGLBatch,
-                    out Verifications))
+            if (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to reverse batch {0}?"),
+                        FSelectedBatchNumber),
+                    Catalog.GetString("Question"),
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
             {
-                string ErrorMessages = String.Empty;
+                int ReversalGLBatch;
 
-                foreach (TVerificationResult verif in Verifications)
+                if (!TRemote.MFinance.GL.WebConnectors.ReverseBatch(FLedgerNumber, FSelectedBatchNumber,
+                        DateForReverseBatch,
+                        out ReversalGLBatch,
+                        out Verifications))
                 {
-                    ErrorMessages += "[" + verif.ResultContext + "] " +
-                                     verif.ResultTextCaption + ": " +
-                                     verif.ResultText + Environment.NewLine;
-                }
+                    string ErrorMessages = String.Empty;
 
-                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Reversal failed"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-            else
-            {
-                MessageBox.Show(
-                    String.Format(Catalog.GetString("A reversal batch has been created, with batch number {0}!"), ReversalGLBatch),
-                    Catalog.GetString("Success"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                    foreach (TVerificationResult verif in Verifications)
+                    {
+                        ErrorMessages += "[" + verif.ResultContext + "] " +
+                                         verif.ResultTextCaption + ": " +
+                                         verif.ResultText + Environment.NewLine;
+                    }
 
-                // refresh the grid, to reflect that the batch has been posted
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(FLedgerNumber, ReversalGLBatch));
-
-                this.FPreviouslySelectedDetailRow = null;
-                ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
-                ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
-
-                LoadBatches(FLedgerNumber);
-
-                //Select unposted batch row in same index position as batch just posted
-                grdDetails.DataSource = null;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
-
-                if (grdDetails.Rows.Count > 1)
-                {
-                    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
-                    // such that a removal of a row is not detected
-                    SelectRowInGrid(newCurrentRowPos);
+                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Reversal failed"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
                 }
                 else
                 {
-                    EnableButtonControl(false);
-                    ClearDetailControls();
-                    pnlDetails.Enabled = false;
+                    MessageBox.Show(
+                        String.Format(Catalog.GetString("A reversal batch has been created, with batch number {0}!"), ReversalGLBatch),
+                        Catalog.GetString("Success"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    // refresh the grid, to reflect that the batch has been posted
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(FLedgerNumber, ReversalGLBatch));
+
+                    this.FPreviouslySelectedDetailRow = null;
+                    ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
+                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+
+                    LoadBatches(FLedgerNumber);
+
+                    //Select unposted batch row in same index position as batch just posted
+                    grdDetails.DataSource = null;
+                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+
+                    if (grdDetails.Rows.Count > 1)
+                    {
+                        //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+                        // such that a removal of a row is not detected
+                        SelectRowInGrid(newCurrentRowPos);
+                    }
+                    else
+                    {
+                        EnableButtonControl(false);
+                        ClearDetailControls();
+                        pnlDetails.Enabled = false;
+                    }
                 }
             }
         }
