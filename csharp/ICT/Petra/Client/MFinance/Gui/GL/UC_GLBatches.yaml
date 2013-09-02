@@ -16,6 +16,7 @@ RootNode:
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
         actImportFromClipboard: {Label=&Import from Clipboard, ActionClick=ImportFromClipboard}
         actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
+        actReverseBatch: {Label=&Reverse Batch, ActionClick=ReverseBatch}
     Controls:
         pnlContent:
             Dock: Fill
@@ -78,12 +79,14 @@ RootNode:
             Label: &Batch
             mniPostBatch:
             mniTestPostBatch:
+            mniReverseBatch:
             mniImportBatches:
             mniImportFromClipboard:
             mniExportBatches:
     Toolbar:
         tbbTestPostBatch:
         tbbPostBatch:
+        tbbReverseBatch:
         tbbImportBatches:
         tbbImportFromClipboard:
         tbbExportBatches:
