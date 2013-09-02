@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -657,7 +657,14 @@ namespace Ict.Common.IO
                                     string mapping = StringHelper.GetNextCSV(ref list, ",");
                                     string mappingName = StringHelper.GetNextCSV(ref mapping, new string[] { "=", ":" }).Trim();
                                     string mappingValue = StripQuotes(mapping.Trim()).Replace("\\n", Environment.NewLine);
-                                    TYml2Xml.SetAttribute(newElement, mappingName, mappingValue);
+                                    try
+                                    {
+                                        TYml2Xml.SetAttribute(newElement, mappingName, mappingValue);
+                                    }
+                                    catch (XmlException e)
+                                    {
+                                        ThrowException(e.Message, currentLine);
+                                    }
                                 }
                             }
                             else if (nodeContent.StartsWith("["))
