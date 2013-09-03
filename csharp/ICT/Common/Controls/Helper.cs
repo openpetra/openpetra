@@ -82,6 +82,8 @@ namespace Ict.Common.Controls
 
     #region Helper classes used by Filter/Find panels on individual screens (see ucoFilterAndFind.cs)
 
+    #region TIndividualFilterFindPanel
+
     /// <summary>
     /// A simple class that maintains the information about the controls on a panel and the database column/name to which it refers
     /// </summary>
@@ -279,6 +281,10 @@ namespace Ict.Common.Controls
         }
     }
 
+    #endregion
+
+    #region TFilterPanelControls
+
     /// <summary>
     /// A class that contains information about all the controls on the filter panel
     /// </summary>
@@ -446,11 +452,23 @@ namespace Ict.Common.Controls
         /// Gets the current filter from all the inputs on the filter panel
         /// </summary>
         /// <returns>The current filter from all the inputs on the filter panel</returns>
-        public string GetCurrentFilter()
+        public string GetCurrentFilter(bool AIsCollapsed, TUcoFilterAndFind.FilterContext AKeepFilterOnButtonDepressedContext, TUcoFilterAndFind.FilterContext AFilterAlwaysOnLabelContext)
         {
-            string filter = FBaseOnFilter;
-            string stdFilter = GetCurrentFilter(FStandardFilterPanels);
-            string extFilter = GetCurrentFilter(FExtraFilterPanels);
+            string filter = AIsCollapsed ? FBaseOffFilter : FBaseOnFilter;
+
+            bool bIgnoreStandardFilter = (AIsCollapsed &&
+                (AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.None
+                || AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly
+                || AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.None
+                || AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly));
+            string stdFilter = (bIgnoreStandardFilter) ? String.Empty : GetCurrentFilter(FStandardFilterPanels);
+
+            bool bIgnoreExtraFilter = (AIsCollapsed &&
+                (AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.None
+                || AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.StandardFilterOnly
+                || AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.None
+                || AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.StandardFilterOnly));
+            string extFilter = (bIgnoreExtraFilter) ? String.Empty : GetCurrentFilter(FExtraFilterPanels);
 
             if ((filter.Length > 0) && (stdFilter.Length > 0))
             {
@@ -465,58 +483,6 @@ namespace Ict.Common.Controls
             }
 
             filter += extFilter;
-            return filter;
-        }
-
-        /// <summary>
-        /// Gets the filter to apply when the Filter panel is hidden
-        /// </summary>
-        /// <param name="AFilterParameters">The filter parameters for the Filter panel</param>
-        /// <param name="AIsExtraFilterShown">Set to true if the extra filter panel is visible</param>
-        /// <param name="AIsKeepFilterTurnedOnButtonDepressed">Set the context for which Filters are on when the panel is hidden</param>
-        /// <returns></returns>
-        public string GetCurrentOffFilter(TUcoFilterAndFind.FilterAndFindParameters AFilterParameters,
-            bool AIsExtraFilterShown,
-            TUcoFilterAndFind.FilterContext AIsKeepFilterTurnedOnButtonDepressed)
-        {
-            string filter = FBaseOffFilter;
-
-            // Start with the standard filter
-            bool bApplyFilter = AFilterParameters.ShowFilterIsAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.StandardFilterOnly
-                                || AFilterParameters.ShowFilterIsAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.StandardAndExtraFilter
-                                || AIsKeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.StandardFilterOnly
-                                || AIsKeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.StandardAndExtraFilter;
-
-            if (bApplyFilter)
-            {
-                string stdFilter = GetCurrentFilter(FStandardFilterPanels);
-
-                if ((filter.Length > 0) && (stdFilter.Length > 0))
-                {
-                    filter += " AND ";
-                }
-
-                filter += stdFilter;
-            }
-
-            // Now the extra filter
-            bApplyFilter = AFilterParameters.ShowFilterIsAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly
-                           || AFilterParameters.ShowFilterIsAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.StandardAndExtraFilter
-                           || AIsKeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.ExtraFilterOnly
-                           || AIsKeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.StandardAndExtraFilter;
-
-            if (bApplyFilter && AIsExtraFilterShown)
-            {
-                string extraFilter = GetCurrentFilter(FExtraFilterPanels);
-
-                if ((filter.Length > 0) && (extraFilter.Length > 0))
-                {
-                    filter += " AND ";
-                }
-
-                filter += extraFilter;
-            }
-
             return filter;
         }
 
@@ -646,7 +612,10 @@ namespace Ict.Common.Controls
             return null;
         }
 
-        public void InitialiseSelectedIndexes()
+        /// <summary>
+        /// Initialises all ComboBoxes to empty text.  Call this after the filter/find controls have been populated with data
+        /// </summary>
+        public void InitialiseComboBoxes()
         {
             foreach (TIndividualFilterFindPanel iffp in FStandardFilterPanels)
             {
@@ -655,6 +624,8 @@ namespace Ict.Common.Controls
                     if (iffp.HasClearButton)
                     {
                         ((TCmbAutoComplete)iffp.PanelControl).SelectedIndex = -1;
+                        ((TCmbAutoComplete)iffp.PanelControl).SelectedIndex = -1;
+                        ((TCmbAutoComplete)iffp.PanelControl).Text = String.Empty;
                     }
                 }
             }
@@ -666,11 +637,17 @@ namespace Ict.Common.Controls
                     if (iffp.HasClearButton)
                     {
                         ((TCmbAutoComplete)iffp.PanelControl).SelectedIndex = -1;
+                        ((TCmbAutoComplete)iffp.PanelControl).SelectedIndex = -1;
+                        ((TCmbAutoComplete)iffp.PanelControl).Text = String.Empty;
                     }
                 }
             }
         }
     }
+
+    #endregion
+
+    #region TFindPanelControls
 
     /// <summary>
     /// A class that contains information about all the controls on the find panel
@@ -853,7 +830,28 @@ namespace Ict.Common.Controls
 
             return true;
         }
+
+        /// <summary>
+        /// Initialises all ComboBoxes to empty text.  Call this after the filter/find controls have been populated with data
+        /// </summary>
+        public void InitialiseComboBoxes()
+        {
+            foreach (TIndividualFilterFindPanel iffp in FFindPanels)
+            {
+                if (iffp.PanelControl is TCmbAutoComplete)
+                {
+                    if (iffp.HasClearButton)
+                    {
+                        ((TCmbAutoComplete)iffp.PanelControl).SelectedIndex = -1;
+                        ((TCmbAutoComplete)iffp.PanelControl).SelectedIndex = -1;
+                        ((TCmbAutoComplete)iffp.PanelControl).Text = String.Empty;
+                    }
+                }
+            }
+        }
     }
+
+    #endregion
 
     #endregion
 }
