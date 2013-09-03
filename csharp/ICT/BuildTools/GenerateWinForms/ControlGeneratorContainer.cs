@@ -924,19 +924,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     // The column is specified directly
                     // We create a prototype label and control to clone from with names based on the column name
                     // Decide on control name, label name, column name
-                    controlName = controlName.Substring(7);
+                    controlName = controlName.Substring(7).TrimStart();
                     string tableName, columnName, lblName;
 
                     if (controlName.Contains("."))
                     {
                         int p = controlName.IndexOf('.');
                         tableName = controlName.Substring(0, p);
-                        columnName = controlName.Substring(p + 1);
+                        columnName = controlName.Substring(p + 1).TrimEnd();
                     }
                     else
                     {
                         tableName = FCodeStorage.GetAttribute("DetailTable");
-                        columnName = controlName;
+                        columnName = controlName.TrimEnd();
                     }
 
                     lblName = "lbl" + columnName;
@@ -962,7 +962,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     if ((controlAttributes != null) && (controlAttributes["NoLabel"] != null) && (controlType != "CheckBox"))
                     {
-                        bHasALabel = (controlAttributes["NoLabel"].Value != "true");
+                        bHasALabel = (controlAttributes["NoLabel"].Value.ToLower() != "true");
                     }
 
                     // Create the throw-away label and control so that we can clone them (unless they have been created for a previous panel)
@@ -1060,6 +1060,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
                 else
                 {
+                    // Does it exist in the main list??
+                    if (!FCodeStorage.FControlList.ContainsKey(controlName))
+                    {
+                        throw new Exception("Could not find a reference to the control: " + controlName);
+                    }
+
                     // The column is specified by its control name
                     string columnName = controlName.Substring(3);
                     string lblName = "lbl" + columnName;
@@ -1124,12 +1130,33 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
 
                     XmlAttributeCollection controlAttributes = GetAdditionalAttributes(controlName, AControlAttributesList);
-
                     bool bHasALabel = true;
 
-                    if ((controlAttributes != null) && (controlAttributes["NoLabel"] != null) && (controlType != "CheckBox"))
+                    if ((controlAttributes != null) && (controlType != "CheckBox"))
                     {
-                        bHasALabel = (controlAttributes["NoLabel"].Value != "true");
+                        if (controlAttributes["NoLabel"] != null)
+                        {
+                            bHasALabel = (controlAttributes["NoLabel"].Value.ToLower() != "true");
+                        }
+                    }
+
+                    if (bHasALabel)
+                    {
+                        // Our new control is to have a label
+                        if (FCodeStorage.FControlList[controlName].GetAttribute("NoLabel", "false").ToLower() == "true")
+                        {
+                            // The cloned-from control has no label so we can only do domething if the YAML specifies a label text
+                            if (controlAttributes != null && controlAttributes["Label"] != null)
+                            {
+                                // the cloned-from control has no label so we will need to create one to clone from
+                                CreateCloneableControl(writer, lblName, "Label", controlAttributes["Label"].Value, ATargetCodelet);
+                            }
+                            else
+                            {
+                                // We cannot have a label after all
+                                bHasALabel = false;
+                            }
+                        }
                     }
 
                     bool bHasClearButton;
