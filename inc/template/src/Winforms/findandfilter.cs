@@ -12,6 +12,7 @@ ImageList FFilterImages;
 
 private TFilterPanelControls FFilterPanelControls = new TFilterPanelControls();
 private TFindPanelControls FFindPanelControls = new TFindPanelControls();
+private bool FIsFilterFindInitialised = false;
 
 ///<summary>
 /// Sets up the Filter Button and the Filter and Find UserControl.
@@ -158,14 +159,14 @@ private void ToggleFilter()
         // Collapse the filter panel and uncheck the button if there is no active filter
         pnlFilterAndFind.Width = 0;
         {#FILTERTOGGLEDMANUAL}
-        string filterWhileOff = FFilterPanelControls.GetCurrentOffFilter(
-            FFilterAndFindParameters,
-            FucoFilterAndFind.IsExtraFilterShown,
-            FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed);
+        string filterWhileOff = FFilterPanelControls.GetCurrentFilter(
+            true,
+            FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed,
+            FucoFilterAndFind.ShowFilterIsAlwaysOnLabel);
 
         ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView.RowFilter = filterWhileOff; 
 
-        if (filterWhileOff == String.Empty)
+        if (filterWhileOff == FFilterPanelControls.BaseOffFilter)
         {
             chkToggleFilter.Checked = false;
 
@@ -214,8 +215,19 @@ void FucoFilterAndFind_FindNextClicked(object sender, TUcoFilterAndFind.TContext
 
 void FucoFilterAndFind_ArgumentCtrlValueChanged(object sender, TUcoFilterAndFind.TContextEventExtControlValueArgs e)
 {
-    // Something has changed - do we need to update the filter?
-    // Yes if 
+    // Something has changed on the filter/find panel
+    // If this is the first activation we need to initialise combo boxes because they will now have been populated for the first time
+    if ((sender is TUcoFilterAndFind) && !FIsFilterFindInitialised)
+    {
+        // First time of diaplaying the panel(s)
+        // we need to initialise all the combo boxes to their clear value
+        FFilterPanelControls.InitialiseComboBoxes();
+        FFindPanelControls.InitialiseComboBoxes();
+        FIsFilterFindInitialised = true;
+    }
+
+    // Do we need to update the filter?
+    // Yes if
     //  1. the panel is being shown and one or other has no ApplyNow button
     //  2. a control has been changed on a panel with no ApplyNow button
     bool DynamicStandardFilterPanel = (((FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.None) ||
@@ -251,6 +263,11 @@ void FucoFilterAndFind_ArgumentCtrlValueChanged(object sender, TUcoFilterAndFind
         ApplyFilter();
         Console.WriteLine("Applying the filter dynamically, due to a control value change");
     }
+
+    if (!FucoFilterAndFind.IgnoreValueChangedEvent)
+    {
+        SelectRowInGrid(FPrevRowChangedRow);
+    }
 }
 
 void FucoFilterAndFind_ApplyFilterClicked(object sender, TUcoFilterAndFind.TContextEventExtControlArgs e)
@@ -261,7 +278,10 @@ void FucoFilterAndFind_ApplyFilterClicked(object sender, TUcoFilterAndFind.TCont
 void ApplyFilter()
 {
     // Get the current filter and optionally call manual code so user can modify it, if necessary
-    string filter = FFilterPanelControls.GetCurrentFilter();
+    string filter = FFilterPanelControls.GetCurrentFilter(
+        FucoFilterAndFind == null || FucoFilterAndFind.IsCollapsed,
+        (FucoFilterAndFind == null) ? TUcoFilterAndFind.FilterContext.None : FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed,
+        FFilterAndFindParameters.ShowFilterIsAlwaysOnLabelContext);
     {#APPLYFILTERMANUAL}
 
     ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView.RowFilter = filter;
