@@ -429,10 +429,11 @@ namespace Ict.Common.Controls
             get
             {
                 string labelText = this.lblDescription.Text;
+                string inactiveIdentifier = "<" + Catalog.GetString("INACTIVE") + "> ";
 
-                if (labelText.StartsWith("<INACTIVE> "))
+                if (labelText.StartsWith(inactiveIdentifier))
                 {
-                    labelText = labelText.Substring(11);
+                    labelText = labelText.Substring(inactiveIdentifier.Length);
                 }
 
                 return labelText;
@@ -704,7 +705,8 @@ namespace Ict.Common.Controls
 
         private void HighlightLabelForInactiveItems(string AItemDescription)
         {
-            bool itemIsActive = !(AItemDescription.StartsWith("<INACTIVE> "));
+            string inactiveIdentifier = "<" + Catalog.GetString("INACTIVE") + "> ";
+        	bool itemIsActive = !(AItemDescription.StartsWith(inactiveIdentifier));
 
             if (itemIsActive && (this.lblDescription.BackColor != System.Drawing.SystemColors.Control))
             {

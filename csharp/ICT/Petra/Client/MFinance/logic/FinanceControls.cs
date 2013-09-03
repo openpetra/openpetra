@@ -355,7 +355,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                     if ((rw[ACostCentreTable.ColumnCostCentreActiveFlagId] != null)
                         && (rw[ACostCentreTable.ColumnCostCentreActiveFlagId].ToString() == "False"))
                     {
-                        rw[ACostCentreTable.ColumnCostCentreNameId] = "<INACTIVE> " + rw[ACostCentreTable.ColumnCostCentreNameId];
+                		rw[ACostCentreTable.ColumnCostCentreNameId] = "<" + Catalog.GetString("INACTIVE") + "> " + rw[ACostCentreTable.ColumnCostCentreNameId];
                     }
                 }
             }
@@ -421,7 +421,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     if ((rw[AAccountTable.ColumnAccountActiveFlagId] != null) && (rw[AAccountTable.ColumnAccountActiveFlagId].ToString() == "False"))
                     {
-                        rw[AAccountTable.ColumnAccountCodeShortDescId] = "<INACTIVE> " + rw[AAccountTable.ColumnAccountCodeShortDescId];
+                        rw[AAccountTable.ColumnAccountCodeShortDescId] = "<" + Catalog.GetString("INACTIVE") + "> " + rw[AAccountTable.ColumnAccountCodeShortDescId];
                     }
                 }
             }
