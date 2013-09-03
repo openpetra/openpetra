@@ -135,7 +135,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             //TDBTransaction FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             FTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
-            //Set this to true to committ or rollback the calling transaction at this point
+            //Set this to true to commit or rollback the calling transaction at this point
             NewTransaction = true;
 
             AGiftBatchRow giftBatch = null;
@@ -149,6 +149,14 @@ namespace Ict.Petra.Server.MFinance.Gift
             try
             {
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, FTransaction);
+                if (LedgerTable.Rows.Count == 0)
+                {
+                    AMessages.Add(new TVerificationResult(Catalog.GetString("Gift Batch Import"),
+                            String.Format(Catalog.GetString("Ledger {0} doesn't exist."),
+                                FLedgerNumber),
+                            TResultSeverity.Resv_Critical));
+                    return false;
+                }
                 AGiftRow previousGift = null;
 
                 while ((FImportLine = sr.ReadLine()) != null)
@@ -193,6 +201,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             string BankAccountCode = ImportString(Catalog.GetString("bank account code"));
                             decimal HashTotal = ImportDecimal(Catalog.GetString("hash total"));
                             DateTime GlEffectiveDate = ImportDate(Catalog.GetString("effective Date"));
+                            FImportMessage = "Creating new batch";
 
                             giftBatch = TGiftBatchFunctions.CreateANewGiftBatchRow(ref FMainDS,
                                 ref FTransaction,
@@ -209,7 +218,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             if (giftBatch.ExchangeRateToBase > 10000000)  // Huge numbers here indicate that the decimal comma/point is incorrect.
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Gift Batch Import"),
-                                        String.Format(Catalog.GetString("Error: huge exchange rate of {0} suggest decimal point format problem."),
+                                        String.Format(Catalog.GetString("huge exchange rate of {0} suggest decimal point format problem."),
                                             giftBatch.ExchangeRateToBase),
                                         TResultSeverity.Resv_Critical));
                                 return false;

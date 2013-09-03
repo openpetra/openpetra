@@ -1509,7 +1509,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 out NewTransaction);
 
             GiftBatchTDS MainDS = LoadGiftBatchData(ALedgerNumber, ABatchNumber);
+            AVerifications = new TVerificationResultCollection();
 
+            if (MainDS.AGiftBatch.Rows.Count < 1)
+            {
+                AVerifications.Add(
+                    new TVerificationResult(
+                        "Posting Gift Batch",
+                        String.Format("Unable to Load GiftBatchData ({0}, {1})",
+                            ALedgerNumber,
+                            ABatchNumber),
+                        TResultSeverity.Resv_Critical));
+                return null;
+            }
+
+            AGiftBatchRow GiftBatchRow = MainDS.AGiftBatch[0];
             // for calculation of admin fees
             AMotivationDetailFeeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
             AFeesPayableAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
@@ -1521,35 +1535,34 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            AVerifications = new TVerificationResultCollection();
 
             // check that the Gift Batch BatchPeriod matches the date effective
             int DateEffectivePeriod, DateEffectiveYear;
-            TFinancialYear.IsValidPostingPeriod(MainDS.AGiftBatch[0].LedgerNumber,
-                MainDS.AGiftBatch[0].GlEffectiveDate,
+            TFinancialYear.IsValidPostingPeriod(GiftBatchRow.LedgerNumber,
+                GiftBatchRow.GlEffectiveDate,
                 out DateEffectivePeriod,
                 out DateEffectiveYear,
                 null);
 
-            if (MainDS.AGiftBatch[0].BatchPeriod != DateEffectivePeriod)
+            if (GiftBatchRow.BatchPeriod != DateEffectivePeriod)
             {
                 AVerifications.Add(
                     new TVerificationResult(
                         "Posting Gift Batch",
                         String.Format("Invalid gift batch period {0} for date {1:dd-MMM-yyyy}",
-                            MainDS.AGiftBatch[0].BatchPeriod,
-                            MainDS.AGiftBatch[0].GlEffectiveDate),
+                            GiftBatchRow.BatchPeriod,
+                            GiftBatchRow.GlEffectiveDate),
                         TResultSeverity.Resv_Critical));
                 return null;
             }
-            else if ((MainDS.AGiftBatch[0].HashTotal != 0) && (MainDS.AGiftBatch[0].BatchTotal != MainDS.AGiftBatch[0].HashTotal))
+            else if ((GiftBatchRow.HashTotal != 0) && (GiftBatchRow.BatchTotal != GiftBatchRow.HashTotal))
             {
                 AVerifications.Add(
                     new TVerificationResult(
                         "Posting Gift Batch",
                         String.Format("The gift batch total ({0}) does not equal the hash total ({1}).",
-                            StringHelper.FormatUsingCurrencyCode(MainDS.AGiftBatch[0].BatchTotal, MainDS.AGiftBatch[0].CurrencyCode),
-                            StringHelper.FormatUsingCurrencyCode(MainDS.AGiftBatch[0].HashTotal, MainDS.AGiftBatch[0].CurrencyCode)),
+                            StringHelper.FormatUsingCurrencyCode(GiftBatchRow.BatchTotal, GiftBatchRow.CurrencyCode),
+                            StringHelper.FormatUsingCurrencyCode(GiftBatchRow.HashTotal, GiftBatchRow.CurrencyCode)),
                         TResultSeverity.Resv_Critical));
                 return null;
             }
@@ -1605,7 +1618,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 // TODO deal with different currencies; at the moment assuming base currency
                 //giftDetail.GiftAmount = giftDetail.GiftTransactionAmount;
-                giftDetail.GiftAmount = giftDetail.GiftTransactionAmount * MainDS.AGiftBatch[0].ExchangeRateToBase;
+                giftDetail.GiftAmount = giftDetail.GiftTransactionAmount * GiftBatchRow.ExchangeRateToBase;
 
                 // get all motivation detail fees for this gift
                 foreach (AMotivationDetailFeeRow motivationFeeRow in MainDS.AMotivationDetailFee.Rows)
@@ -1618,7 +1631,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             motivationFeeRow.FeeCode,
                             giftDetail.GiftAmount,
                             out AVerifications);
-                        AddToFeeTotals(MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, MainDS.AGiftBatch[0].BatchPeriod);
+                        AddToFeeTotals(MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, GiftBatchRow.BatchPeriod);
                     }
                 }
             }

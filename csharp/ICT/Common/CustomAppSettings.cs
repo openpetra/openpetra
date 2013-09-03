@@ -263,6 +263,7 @@ namespace Ict.Common
                 if (appsetting != null)
                 {
                     ReturnValue = appsetting.GetAttribute("value");
+                    TLogging.Log("AppSettings: " + AKey + " = " + ReturnValue);
                 }
                 else
                 {
