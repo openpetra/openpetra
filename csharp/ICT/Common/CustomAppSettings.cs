@@ -263,7 +263,7 @@ namespace Ict.Common
                 if (appsetting != null)
                 {
                     ReturnValue = appsetting.GetAttribute("value");
-                    TLogging.Log("CustomAppSettings: " + AKey + " = " + ReturnValue);
+//                  TLogging.Log("CustomAppSettings: " + AKey + " = " + ReturnValue);
                 }
                 else
                 {
@@ -386,7 +386,7 @@ namespace Ict.Common
                 }
                 else
                 {
-                    TLogging.Log("CustomAppSettings: Int32(" + AKey + ") not found - default: " + ReturnValue, TLoggingType.ToLogfile);
+//                  TLogging.Log("CustomAppSettings: Int32(" + AKey + ") not found - default: " + ReturnValue, TLoggingType.ToLogfile);
                 }
             }
 
