@@ -22,7 +22,7 @@ RootNode:
         pnlFilterAndFind:
             ExpandedWidth: 175
             FilterControls: [txtDetailBusinessCode, txtDetailBusinessDescription, chkDetailDeletable]
-            FindControls: [txtDetailBusinessCode, txtDetailBusinessDescription, chkDetailDeletable]
+            FindControls: [txtDetailBusinessCode, txtDetailBusinessDescription]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
