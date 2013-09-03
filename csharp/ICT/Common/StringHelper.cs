@@ -1742,6 +1742,10 @@ namespace Ict.Common
             {
                 ReturnValue = "#,##0.00;(#,##0.00);0.00;0";
             }
+            else if (IsSame(format, "CurrencyCSV"))
+            {
+                ReturnValue = "#,##0.00;-#,##0.00;0.00;0";
+            }
             else if (IsSame(format, "CurrencyWithoutDecimals"))
             {
                 ReturnValue = "#,##0;(#,##0);0;";
