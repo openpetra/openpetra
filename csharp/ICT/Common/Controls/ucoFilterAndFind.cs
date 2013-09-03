@@ -421,6 +421,8 @@ namespace Ict.Common.Controls
         Control FFindPanelFirstArgumentControl;
         FilterContext FKeepFilterTurnedOnButtonDepressed = FilterContext.None;
 
+        private bool FIgnoreValueChangedEvent = false;
+
         #region Constructors
 
         /// <summary>
@@ -582,6 +584,19 @@ namespace Ict.Common.Controls
             get
             {
                 return FShowFindPanel;
+            }
+        }
+
+        /// <summary>
+        /// Kludge required for TCmbAutoComplete: This control requires 2 calls to set the selectedIndex to -1.
+        /// This property is set to true before the first call and false afterwards.
+        /// </summary>
+        /// <returns></returns>
+        public bool IgnoreValueChangedEvent
+        {
+            get
+            {
+                return FIgnoreValueChangedEvent;
             }
         }
 
@@ -1376,7 +1391,7 @@ namespace Ict.Common.Controls
             FPnlFindControls.Name = "FPnlFindControls";
             FPnlFindControls.Left = 7;
             FPnlFindControls.Top = 8;
-            FPnlFindControls.Width = 154;
+            FPnlFindControls.Width = FInitialWidth - 5;
             FPnlFindControls.Height = 174;
             FPnlFindControls.BorderColor = System.Drawing.Color.CadetBlue;
             FPnlFindControls.ShadowOffSet = 4;
@@ -1594,7 +1609,8 @@ namespace Ict.Common.Controls
                     {
                         OnArgumentCtrlValueChanged(sender, e);
                     };
-                    ControlAsComboBox.SelectedValueChanged += delegate(object sender, EventArgs e) {
+                    ControlAsComboBox.SelectedValueChanged += delegate(object sender, EventArgs e)
+                    {
                         OnArgumentCtrlValueChanged(sender, e);
                     };
                 }
@@ -1637,7 +1653,7 @@ namespace Ict.Common.Controls
 
                         if (AContainerPanelIsFindPanel)
                         {
-                            ControlLeftOfButtonMaxWidth -= 15;
+                            //ControlLeftOfButtonMaxWidth -= 15;
                         }
 
                         // Check if the 'argument clear Button' will fit to the right of the Control
@@ -1840,6 +1856,17 @@ namespace Ict.Common.Controls
 
                 if ((ControlToClearAsAutoComplete != null) && (ControlToClearAsAutoComplete.IgnoreNewValues == true))
                 {
+                    // Here is a quirk of the ComboBox.SelectedIndex method
+                    // If you want to set it to -1 you have to make the call twice - first it goes to 0 and second call goes to -1
+                    // See the comment in TCmbAutoComplete SetSelectedString() method
+                    // In our case here we do not want the Filter panel to get two events - one when the selected index is 0 - because this can upset
+                    // the selected row if the first index has, say no matching rows, then the highlight will move to the top - and then
+                    // an index of -1 will match all rows, but by then the highlight will have changed.
+                    // DO NOT REMOVE ONE OF THE SELECTEDINDEX = -1 ROWS FOR THIS REASON
+                    FIgnoreValueChangedEvent = true;
+                    ControlToClearAsAutoComplete.SelectedIndex = -1;
+                    FIgnoreValueChangedEvent = false;
+                    ControlToClearAsAutoComplete.SelectedIndex = -1;
                     ControlToClearAsAutoComplete.Text = String.Empty;
 
                     OnClearArgumentCtrlButtonClicked(sender, null, ControlToClearAsAutoComplete);
@@ -2223,8 +2250,16 @@ namespace Ict.Common.Controls
 
                     if (SenderAsComboBox != null)
                     {
-                        Value = SenderAsComboBox.SelectedIndex;
-                        ValueType = typeof(System.Int32);
+                        if (SenderAsComboBox is TCmbAutoComplete)
+                        {
+                            Value = SenderAsComboBox.Text;
+                            ValueType = typeof(System.String);
+                        }
+                        else
+                        {
+                            Value = SenderAsComboBox.SelectedIndex;
+                            ValueType = typeof(System.Int32);
+                        }
                     }
 
                     ArgumentCtrlValueChanged(sender, new TContextEventExtControlValueArgs(Context,
