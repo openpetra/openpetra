@@ -457,17 +457,17 @@ namespace Ict.Common.Controls
             string filter = AIsCollapsed ? FBaseOffFilter : FBaseOnFilter;
 
             bool bIgnoreStandardFilter = (AIsCollapsed &&
-                (AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.None
-                || AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly
-                || AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.None
-                || AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly));
+                (AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.None ||
+                AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly) &&
+                (AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.None ||
+                AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly));
             string stdFilter = (bIgnoreStandardFilter) ? String.Empty : GetCurrentFilter(FStandardFilterPanels);
 
             bool bIgnoreExtraFilter = (AIsCollapsed &&
-                (AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.None
-                || AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.StandardFilterOnly
-                || AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.None
-                || AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.StandardFilterOnly));
+                (AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.None ||
+                AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.StandardFilterOnly) &&
+                (AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.None ||
+                AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.StandardFilterOnly));
             string extFilter = (bIgnoreExtraFilter) ? String.Empty : GetCurrentFilter(FExtraFilterPanels);
 
             if ((filter.Length > 0) && (stdFilter.Length > 0))
