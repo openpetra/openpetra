@@ -706,7 +706,7 @@ namespace Ict.Common.Controls
         private void HighlightLabelForInactiveItems(string AItemDescription)
         {
             string inactiveIdentifier = "<" + Catalog.GetString("INACTIVE") + "> ";
-        	bool itemIsActive = !(AItemDescription.StartsWith(inactiveIdentifier));
+            bool itemIsActive = !(AItemDescription.StartsWith(inactiveIdentifier));
 
             if (itemIsActive && (this.lblDescription.BackColor != System.Drawing.SystemColors.Control))
             {
