@@ -443,9 +443,9 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <summary>
         /// send report as email
         /// </summary>
-        public Boolean SendEmail(string AEmailAddresses, bool AAttachExcelFile, bool AAttachCSVFile, bool AAttachPDF)
+        public Boolean SendEmail(string AEmailAddresses, bool AAttachExcelFile, bool AAttachCSVFile, bool AAttachPDF, bool AWrapColumn)
         {
-            return FReportingGenerator.SendEmail(AEmailAddresses, AAttachExcelFile, AAttachCSVFile, AAttachPDF);
+            return FReportingGenerator.SendEmail(AEmailAddresses, AAttachExcelFile, AAttachCSVFile, AAttachPDF, AWrapColumn);
         }
 
         /// <summary>

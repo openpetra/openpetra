@@ -14,7 +14,9 @@ RootNode:
         actTestPostBatch: {Label=&Test Batch, ActionClick=TestPostBatch}
         actImportFromSpreadSheet: {ActionClick=ImportFromSpreadSheet}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
+        actImportFromClipboard: {Label=&Import from Clipboard, ActionClick=ImportFromClipboard}
         actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
+        actReverseBatch: {Label=&Reverse Batch, ActionClick=ReverseBatch}
     Controls:
         pnlContent:
             Dock: Fill
@@ -77,12 +79,14 @@ RootNode:
             Label: &Batch
             mniPostBatch:
             mniTestPostBatch:
-            #mniImportFromSpreadSheet:
+            mniReverseBatch:
             mniImportBatches:
+            mniImportFromClipboard:
             mniExportBatches:
     Toolbar:
         tbbTestPostBatch:
         tbbPostBatch:
-        #tbbImportFromSpreadSheet:
+        tbbReverseBatch:
         tbbImportBatches:
+        tbbImportFromClipboard:
         tbbExportBatches:
