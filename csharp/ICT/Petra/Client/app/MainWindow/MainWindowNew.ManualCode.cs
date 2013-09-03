@@ -281,7 +281,25 @@ namespace Ict.Petra.Client.App.PetraClient
 
                     if (ConferenceName != String.Empty)
                     {
-                        SpecificConferenceNode.Attributes["Label"].Value = ConferenceName;
+                        if (ConferenceName.Length <= 28)
+                        {
+                            SpecificConferenceNode.Attributes["Label"].Value = ConferenceName + "\n";
+                        }
+                        // split up the name if it is too long to fit in the navigation panel
+                        else
+                        {
+                            int IndexOfSpace = ConferenceName.IndexOf(" ", 0);
+                            int LastIndexOfSpace = 0;
+                            
+                            while (IndexOfSpace <= 28 && IndexOfSpace != -1)
+                            {
+                                LastIndexOfSpace = IndexOfSpace;
+                                IndexOfSpace = ConferenceName.IndexOf(" ", LastIndexOfSpace + 1);
+                            }
+                        
+                            SpecificConferenceNode.Attributes["Label"].Value = ConferenceName.Substring(0, LastIndexOfSpace) 
+                                + "\n" + ConferenceName.Substring(LastIndexOfSpace + 1) + "\n";
+                        }
                     }
                     else
                     {

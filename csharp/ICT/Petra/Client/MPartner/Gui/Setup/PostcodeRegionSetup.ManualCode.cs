@@ -87,6 +87,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             MyDataView.AllowNew = false;
             MyDataView.Sort = "p_range_c ASC";
             grdRanges.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
+
+            MyDataView = FMainDS.PPostcodeRegion.DefaultView;
+            MyDataView.AllowNew = false;
+            MyDataView.Sort = "p_region_c ASC";
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
         }
 
         private void NewRecord(Object sender, EventArgs e)
@@ -166,32 +171,43 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                         out RangeFrom,
                         out RangeTo,
                         MainWindow);
+                    
+                    InitializeManualCode();
+                    ShowDetailsManual(FPreviouslySelectedDetailRow);
+                    
+                    if (RangeName == null)
+                    {
+                        return;
+                    }
 
                     for (int i = 0; i < RangeName.Length; i++)
                     {
-                        // check if this range already exists for region
-                        Boolean RangeExists = false;
+                        if (RangeName[i] != null)
+                        {
+                            // check if this range already exists for region
+                            Boolean RangeExists = false;
 
-                        if (FMainDS.PPostcodeRegionRange.Rows.Find(new object[] { RegionName, RangeName[i] }) != null)
-                        {
-                            RangeExists = true;
-                        }
+                            if (FMainDS.PPostcodeRegionRange.Rows.Find(new object[] { RegionName, RangeName[i] }) != null)
+                            {
+                                RangeExists = true;
+                            }
 
-                        if (!RangeExists && (RangeName[i].Length > 0))
-                        {
-                            PostcodeRegionsTDSPPostcodeRegionRangeRow NewRow = FMainDS.PPostcodeRegionRange.NewRowTyped(true);
-                            NewRow.Region = RegionName;
-                            NewRow.Range = RangeName[i];
-                            NewRow.From = RangeFrom[i];
-                            NewRow.To = RangeTo[i];
-                            FMainDS.PPostcodeRegionRange.Rows.Add(NewRow);
-                            FPetraUtilsObject.SetChangedFlag();
-                        }
-                        else if (RangeName[i].Length > 0)
-                        {
-                            string Message = string.Format(Catalog.GetString("The {0} range already exists for this region"), RangeName[i]);
-                            MessageBox.Show(Message, Catalog.GetString(
+                            if (!RangeExists && (RangeName[i].Length > 0))
+                            {
+                                PostcodeRegionsTDSPPostcodeRegionRangeRow NewRow = FMainDS.PPostcodeRegionRange.NewRowTyped(true);
+                                NewRow.Region = RegionName;
+                                NewRow.Range = RangeName[i];
+                                NewRow.From = RangeFrom[i];
+                                NewRow.To = RangeTo[i];
+                                FMainDS.PPostcodeRegionRange.Rows.Add(NewRow);
+                                FPetraUtilsObject.SetChangedFlag();
+                            }
+                            else if (RangeName[i].Length > 0)
+                            {
+                                string Message = string.Format(Catalog.GetString("The {0} range already exists for this region"), RangeName[i]);
+                                MessageBox.Show(Message, Catalog.GetString(
                                     "Add Range"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
                         }
                     }
                 }

@@ -180,7 +180,7 @@ namespace Ict.Petra.Shared.MConference.Validation
                 // displays a warning message (non-critical error)
                 VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
                             PetraErrorCodes.ERR_EARLY_APPLICABLE_DATE_LATER_THAN_LATE_APPLICABLE_DATE)),
-                    ValidationColumn, ValidationControlsData.ValidationControl);
+                            ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);

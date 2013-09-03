@@ -85,6 +85,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             this.Close();
         }
 
+        private void BtnCancel_Click(System.Object sender, System.EventArgs e)
+        {
+            this.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.Close();
+        }
+
         /// <summary>
         /// Used for passing parameters to the screen before it is actually shown.
         ///
@@ -137,6 +143,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 DataRowView[] HighlightedRows = SelectRange.GetSelectedRows();
                 int NumberOfRows = HighlightedRows.Length;
+                PPostcodeRangeTable CachedRangeTable = (PPostcodeRangeTable) TDataCache.GetCacheableDataTableFromCache("PostcodeRangeList");
+                bool NoRangesSelected = true;
 
                 ARangeName = new string[NumberOfRows];
                 AFrom = new string[NumberOfRows];
@@ -144,9 +152,26 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
                 for (int i = 0; i < NumberOfRows; i++)
                 {
-                    ARangeName[i] = ((PPostcodeRangeRow)HighlightedRows[i].Row).Range;
-                    AFrom[i] = ((PPostcodeRangeRow)HighlightedRows[i].Row).From;
-                    ATo[i] = ((PPostcodeRangeRow)HighlightedRows[i].Row).To;
+                    if (CachedRangeTable.Rows.Find(new object[] { ((PPostcodeRangeRow)HighlightedRows[i].Row).Range }) != null)
+                    {     
+                        ARangeName[i] = ((PPostcodeRangeRow)HighlightedRows[i].Row).Range;
+                        AFrom[i] = ((PPostcodeRangeRow)HighlightedRows[i].Row).From;
+                        ATo[i] = ((PPostcodeRangeRow)HighlightedRows[i].Row).To;
+                        
+                        NoRangesSelected = false;
+                    }
+                    else
+                    {
+                        ARangeName[i] = null;
+                        AFrom[i] = null;
+                        ATo[i] = null;
+                    }
+                }
+                
+                if (NoRangesSelected)
+                {
+                    MessageBox.Show(String.Format("No valid ranges have been selected."), String.Format("Add Range"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
                 return true;

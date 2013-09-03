@@ -25,14 +25,15 @@ RootNode:
             Dock: Fill
             Controls: [grdDetails, pnlButtons]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
-            Stretch: horizontally
+            Width: 80
         btnDelete:
             Action: actDelete
-            Stretch: horizontally
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailType, DetailApplicable, DetailAmountPercent, DetailAmount, DetailPercent]

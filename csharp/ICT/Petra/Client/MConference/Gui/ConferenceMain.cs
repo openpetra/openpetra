@@ -80,6 +80,20 @@ namespace Ict.Petra.Client.MConference.Gui
         }
 
         /// <summary>
+        /// opens Outreach Supplement screen for pre selected conference
+        /// </summary>
+        public static void OutreachSupplementsForSelectedConference(Form AParentForm)
+        {
+            long ConferenceKey = Convert.ToInt64(AParentForm.GetType().GetMethod("GetSelectedConferenceKey").Invoke(AParentForm, null));
+
+            TSearchCriteria[] Search = new TSearchCriteria[1];
+            Search[0] = new TSearchCriteria(PcSupplementTable.GetConferenceKeyDBName(), ConferenceKey);
+            TFrmOutreachSupplementSetup frm = new TFrmOutreachSupplementSetup(AParentForm, Search, ConferenceKey);
+
+            frm.Show();
+        }
+
+        /// <summary>
         /// opens Event Find Screen screen and uses Conference Find Form (not displayed) to create a new conference
         /// </summary>
         public static void NewConference(Form AParentForm)
