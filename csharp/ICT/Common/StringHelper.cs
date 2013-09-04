@@ -833,24 +833,13 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// adds a new value to a comma separated list, adding a comma if necessary
-        /// </summary>
-        /// <param name="line">the existing line, could be empty or hold already values</param>
-        /// <param name="value">the new value</param>
-        /// <returns>the new list, consisting of the old list plus the new value</returns>
-        public static string AddCSV(string line, string value)
-        {
-            return AddCSV(line, value, ",");
-        }
-
-        /// <summary>
         /// adds a new value to a comma separated list, adding a delimiter if necessary
         /// </summary>
-        /// <param name="line">existing list</param>
+        /// <param name="line">the existing line, could be empty or hold already values</param>
         /// <param name="value">value to be added</param>
         /// <param name="separator">delimiter to use</param>
         /// <returns>the new list containing the old list and the new value</returns>
-        public static string AddCSV(string line, string value, string separator)
+        public static string AddCSV(string line, string value, string separator = ",")
         {
             string ReturnValue = "";
             Boolean containsSeparator;
@@ -870,6 +859,8 @@ namespace Ict.Common
                 value = " ";
             }
 
+            // escape the backslash. this is just the reversal of the behaviour in GetNextCSV
+            value = value.Replace("\\", "\\\\");
             value = value.Replace("\"", "\"\"");
             containsSeparator = (value.IndexOf(separator) != -1);
 

@@ -462,6 +462,12 @@ namespace Ict.Common.Testing
             Assert.AreEqual("0", StringHelper.GetNextCSV(ref testListSeparator2Spaces, "  "));
             Assert.AreEqual("", StringHelper.GetNextCSV(ref testListSeparator2Spaces, "  "));
             Assert.AreEqual("0", StringHelper.GetNextCSV(ref testListSeparator2Spaces, "  "));
+
+            string testBackSlash = string.Empty;
+            string testBackSlashElement = "test with \\\\ double backslash";
+            testBackSlash = StringHelper.AddCSV(testBackSlash, testBackSlashElement, ";");
+            Assert.AreEqual(testBackSlashElement, StringHelper.GetNextCSV(ref testBackSlash,
+                    ";"), "double backslash should be the same after AddCSV and GetNextCSV");
         }
 
         /// test TVariant and dates
