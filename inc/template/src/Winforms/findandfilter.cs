@@ -235,7 +235,7 @@ void FucoFilterAndFind_ArgumentCtrlValueChanged(object sender, TUcoFilterAndFind
         ((FucoFilterAndFind.ShowFilterIsAlwaysOnLabel == TUcoFilterAndFind.FilterContext.None) ||
         (FucoFilterAndFind.ShowFilterIsAlwaysOnLabel == TUcoFilterAndFind.FilterContext.ExtraFilterOnly)));
 
-    bool DynamicExtraFilterPanel = (((FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.None) ||
+    bool DynamicExtraFilterPanel = FucoFilterAndFind.IsExtraFilterShown && (((FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.None) ||
         (FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.StandardFilterOnly)) &&
         ((FucoFilterAndFind.ShowFilterIsAlwaysOnLabel == TUcoFilterAndFind.FilterContext.None) ||
         (FucoFilterAndFind.ShowFilterIsAlwaysOnLabel == TUcoFilterAndFind.FilterContext.StandardFilterOnly)));
