@@ -114,9 +114,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AJournal.DefaultView);
 
-            FMainDS.AJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
+            string rowFilter = string.Format("{0} = {1}",
                 AJournalTable.GetBatchNumberDBName(),
                 FBatchNumber);
+            FMainDS.AJournal.DefaultView.RowFilter = rowFilter;
+            FFilterPanelControls.BaseOffFilter = rowFilter;
+            FFilterPanelControls.BaseOnFilter = rowFilter;
+
+            UpdateRecordNumberDisplay();
 
             FMainDS.AJournal.DefaultView.Sort = String.Format("{0} DESC",
                 AJournalTable.GetJournalNumberDBName()

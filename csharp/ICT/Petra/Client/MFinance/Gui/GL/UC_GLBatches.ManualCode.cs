@@ -1000,8 +1000,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FFilterPanelControls.BaseOffFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
             FFilterPanelControls.BaseOnFilter = FFilterPanelControls.BaseOffFilter;
-            FMainDS.ABatch.DefaultView.RowFilter = FFilterPanelControls.GetCurrentFilter();
-            UpdateRecordNumberDisplay();
+            ApplyFilter();
+            //FMainDS.ABatch.DefaultView.RowFilter = FFilterPanelControls.GetCurrentFilter();
+            //UpdateRecordNumberDisplay();
 
             //FMainDS.ABatch.DefaultView.RowFilter =
             //    String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);

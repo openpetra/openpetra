@@ -118,8 +118,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.DataSource = null;
             grdAnalAttributes.DataSource = null;
 
-            SetTransactionDefaultView();
-
             //Load from server if necessary
             if (FMainDS.ATransaction.DefaultView.Count == 0)
             {
@@ -127,6 +125,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransaction.DefaultView);
+
+            SetTransactionDefaultView();
 
             FJournalRow = GetJournalRow();
 
@@ -196,7 +196,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ClearTransactionDefaultView()
         {
-            FMainDS.ATransaction.DefaultView.RowFilter = String.Empty;
+            //FMainDS.ATransaction.DefaultView.RowFilter = String.Empty;
+            FFilterPanelControls.BaseOffFilter = String.Empty;
+            FFilterPanelControls.BaseOnFilter = String.Empty;
+            ApplyFilter();
         }
 
         private void SetTransactionDefaultView(bool AAscendingOrder = true)
@@ -205,13 +208,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FBatchNumber != -1)
             {
-                ClearTransactionDefaultView();
+                // Note from Alan: Do we need this?
+                //ClearTransactionDefaultView();
 
-                FMainDS.ATransaction.DefaultView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                string rowFilter = String.Format("{0}={1} And {2}={3}",
                     ATransactionTable.GetBatchNumberDBName(),
                     FBatchNumber,
                     ATransactionTable.GetJournalNumberDBName(),
                     FJournalNumber);
+                FFilterPanelControls.BaseOffFilter = rowFilter;
+                FFilterPanelControls.BaseOnFilter = rowFilter;
+                FMainDS.ATransaction.DefaultView.RowFilter = rowFilter;
+
+                UpdateRecordNumberDisplay();
 
                 FMainDS.ATransaction.DefaultView.Sort = String.Format("{0} " + sort,
                     ATransactionTable.GetTransactionNumberDBName()

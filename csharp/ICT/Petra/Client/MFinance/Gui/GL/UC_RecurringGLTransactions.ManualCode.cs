@@ -195,6 +195,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void ClearTransactionDefaultView()
         {
             FMainDS.ARecurringTransaction.DefaultView.RowFilter = String.Empty;
+            FFilterPanelControls.BaseOffFilter = String.Empty;
+            FFilterPanelControls.BaseOnFilter = String.Empty;
         }
 
         private void SetTransactionDefaultView(bool AAscendingOrder = true)
@@ -203,13 +205,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FBatchNumber != -1)
             {
-                ClearTransactionDefaultView();
+                // AlanP asks: Do we need this call??
+                //ClearTransactionDefaultView();
 
-                FMainDS.ARecurringTransaction.DefaultView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                string rowFilter = String.Format("{0}={1} And {2}={3}",
                     ARecurringTransactionTable.GetBatchNumberDBName(),
                     FBatchNumber,
                     ARecurringTransactionTable.GetJournalNumberDBName(),
                     FJournalNumber);
+                FMainDS.ARecurringTransaction.DefaultView.RowFilter = rowFilter;
+                FFilterPanelControls.BaseOffFilter = rowFilter;
+                FFilterPanelControls.BaseOnFilter = rowFilter;
+
+                UpdateRecordNumberDisplay();
 
                 FMainDS.ARecurringTransaction.DefaultView.Sort = String.Format("{0} " + sort,
                     ARecurringTransactionTable.GetTransactionNumberDBName()

@@ -21,13 +21,19 @@ RootNode:
             Dock: Top
         pnlDetailGrid:
             Dock: Fill
-            Controls: [pnlDetailButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
             Height: 200
             Width: 600
         pnlDetailsSection:
             Dock: Bottom
             Controls: [pnlDetails, pnlTransAnalysisAttributes]
             Height: 320
+        pnlFilterAndFind:
+            ExpandedWidth: 170
+            ShowApplyFilterButton: FilterContext.StandardFilterOnly
+            ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
+            FilterControls: [cmbDetailCostCentreCode, cmbDetailAccountCode]
+            FindControls: [txtDetailNarrative, txtDetailReference]
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete, btnDeleteAll]

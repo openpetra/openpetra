@@ -123,9 +123,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void SetJournalDefaultView()
         {
-            FMainDS.ARecurringJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
+            string rowFilter = string.Format("{0} = {1}",
                 ARecurringJournalTable.GetBatchNumberDBName(),
                 FBatchNumber);
+            FMainDS.ARecurringJournal.DefaultView.RowFilter = rowFilter;
+            FFilterPanelControls.BaseOffFilter = rowFilter;
+            FFilterPanelControls.BaseOnFilter = rowFilter;
+
+            UpdateRecordNumberDisplay();
 
             FMainDS.ARecurringJournal.DefaultView.Sort = String.Format("{0} DESC",
                 ARecurringJournalTable.GetJournalNumberDBName()
