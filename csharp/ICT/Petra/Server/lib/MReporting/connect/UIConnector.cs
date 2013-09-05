@@ -77,6 +77,19 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             }
         }
 
+        /// <summary>
+        /// to show the progress of the report calculation;
+        /// prints the current id of the row that is being calculated;
+        /// this is not remoting the progress. useful for unit tests
+        /// </summary>
+        public IAsynchronousExecutionProgress AsyncExecProgressServerSide
+        {
+            get
+            {
+                return FAsyncExecProgress;
+            }
+        }
+
 
         /// <summary>
         /// Calculates the report, which is specified in the parameters table
