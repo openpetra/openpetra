@@ -596,7 +596,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // set exchange rate to base to 1 as default if no journals with other currencies exist
                     foreach (ARecurringJournalRow JournalRow in FMainDS.ARecurringJournal.Rows)
                     {
-                        requestParams.Add("AExchangeRateToBaseForJournal" + JournalRow.JournalNumber.ToString(), 1);
+                        requestParams.Add("AExchangeRateToBaseForJournal" + JournalRow.JournalNumber.ToString(), 1.0);
                     }
                 }
                 else
@@ -648,14 +648,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ParentForm.ShowInTaskbar = true;
             }
 
-            if (SubmitCancelled)
-            {
-                MessageBox.Show(Catalog.GetString("Submission of recurring batch was cancelled"),
-                    Catalog.GetString("Cancelled"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-            }
-            else
+            if (!SubmitCancelled)
             {
                 TVerificationResultCollection AMessages;
 
