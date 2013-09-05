@@ -571,7 +571,7 @@ namespace Ict.Common.Controls
         {
             get
             {
-                return FShowFindPanel;
+                return FShowExtraFilter;
             }
         }
 
