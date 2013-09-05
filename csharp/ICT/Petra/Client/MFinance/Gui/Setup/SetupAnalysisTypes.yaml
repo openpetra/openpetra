@@ -16,6 +16,7 @@ RootNode:
         pnlContent:
             Controls: [sptValues]
             Dock: Fill
+        #This screen now features a splitter bar
         sptValues:
             SplitterOrientation: Horizontal
             SplitterDistance: 240
