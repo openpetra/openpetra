@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,12 +22,11 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using Ict.Petra.Shared.MReporting;
 using Ict.Common;
 using Ict.Common.Printing;
 using System.Collections;
 
-namespace Ict.Petra.Client.MReporting.Logic
+namespace Ict.Petra.Shared.MReporting
 {
     /// <summary>
     /// Functions that deal with getting the right rows from the result;

@@ -173,6 +173,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void UpdateChangeableStatus()
         {
+            FPetraUtilsObject.EnableAction("actReverseBatch", (FPreviouslySelectedDetailRow != null)
+                && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_POSTED);
+
             Boolean postable = (FPreviouslySelectedDetailRow != null)
                                && FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED;
 
@@ -668,6 +671,105 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             return true;
+        }
+
+        private void ReverseBatch(System.Object sender, EventArgs e)
+        {
+            TVerificationResultCollection Verifications;
+
+            if (FPetraUtilsObject.HasChanges)
+            {
+                // save first, then post
+                if (!((TFrmGLBatch)ParentForm).SaveChanges())
+                {
+                    // saving failed, therefore do not try to reverse
+                    MessageBox.Show(Catalog.GetString("The batch was not reversed due to problems during saving; ") + Environment.NewLine +
+                        Catalog.GetString("Please first save the batch, and then you can reverse it!"),
+                        Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
+            //get index position of row to post
+            int newCurrentRowPos = GetSelectedRowIndex();
+
+            //TODO: Allow the user in a dialog to specify the reverse date
+            DateTime StartDateCurrentPeriod;
+            DateTime EndDateLastForwardingPeriod;
+            DateTime DateForReverseBatch = dtpDetailDateEffective.Date.Value;
+
+            TRemote.MFinance.GL.WebConnectors.GetCurrentPostingRangeDates(FMainDS.ALedger[0].LedgerNumber,
+                out StartDateCurrentPeriod,
+                out EndDateLastForwardingPeriod);
+
+            if ((DateForReverseBatch.Date < StartDateCurrentPeriod) || (DateForReverseBatch.Date > EndDateLastForwardingPeriod))
+            {
+                MessageBox.Show(String.Format(Catalog.GetString(
+                            "The Reverse Date is outside the periods available for reversing. We will set the posting date to the first possible date, {0}."),
+                        StartDateCurrentPeriod));
+                DateForReverseBatch = StartDateCurrentPeriod;
+            }
+
+            if (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to reverse batch {0}?"),
+                        FSelectedBatchNumber),
+                    Catalog.GetString("Question"),
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+            {
+                int ReversalGLBatch;
+
+                if (!TRemote.MFinance.GL.WebConnectors.ReverseBatch(FLedgerNumber, FSelectedBatchNumber,
+                        DateForReverseBatch,
+                        out ReversalGLBatch,
+                        out Verifications))
+                {
+                    string ErrorMessages = String.Empty;
+
+                    foreach (TVerificationResult verif in Verifications)
+                    {
+                        ErrorMessages += "[" + verif.ResultContext + "] " +
+                                         verif.ResultTextCaption + ": " +
+                                         verif.ResultText + Environment.NewLine;
+                    }
+
+                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Reversal failed"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
+                else
+                {
+                    MessageBox.Show(
+                        String.Format(Catalog.GetString("A reversal batch has been created, with batch number {0}!"), ReversalGLBatch),
+                        Catalog.GetString("Success"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    // refresh the grid, to reflect that the batch has been posted
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(FLedgerNumber, ReversalGLBatch));
+
+                    this.FPreviouslySelectedDetailRow = null;
+                    ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
+                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+
+                    LoadBatches(FLedgerNumber);
+
+                    //Select unposted batch row in same index position as batch just posted
+                    grdDetails.DataSource = null;
+                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+
+                    if (grdDetails.Rows.Count > 1)
+                    {
+                        //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+                        // such that a removal of a row is not detected
+                        SelectRowInGrid(newCurrentRowPos);
+                    }
+                    else
+                    {
+                        EnableButtonControl(false);
+                        ClearDetailControls();
+                        pnlDetails.Enabled = false;
+                    }
+                }
+            }
         }
 
         private void PostBatch(System.Object sender, EventArgs e)
@@ -1315,6 +1417,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void ImportBatches(object sender, EventArgs e)
         {
             ImportBatches();
+        }
+
+        private void ImportFromClipboard(object sender, EventArgs e)
+        {
+            ImportFromClipboard();
         }
 
         private void ExportBatches(object sender, EventArgs e)

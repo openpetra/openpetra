@@ -268,6 +268,11 @@ namespace Ict.Common.Printing
                 counter++;
             }
 
+            if (ADocumentNr > 1)
+            {
+                return null;
+            }
+
             throw new Exception("cannot find the body tag");
         }
 
@@ -425,7 +430,11 @@ namespace Ict.Common.Printing
                 }
             }
 
-            if (FPrinter is TGfxPrinter)
+            if (CurrentNode == null)
+            {
+                FHasMorePages = false;
+            }
+            else if (FPrinter is TGfxPrinter)
             {
                 TGfxPrinter printer = (TGfxPrinter)FPrinter;
                 RenderContent(printer.FPageXPos, printer.FPageWidthAvailable, ref CurrentNode);

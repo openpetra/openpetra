@@ -70,6 +70,27 @@ namespace Ict.Petra.Server.MFinance.Gift
         private String FImportLine;
         private String FNewLine;
 
+        private String InferCostCentre(AGiftDetailRow AgiftDetails)
+        {
+            String costCentre = "";
+
+            if (!Common.Common.HasPartnerCostCentreLink(AgiftDetails.RecipientKey, out costCentre))
+            {
+                // There's no helpful entry in a_valid_ledger_number - I'll see about using the MotivationDetail.
+                AMotivationDetailRow mdRow = FMainDS.AMotivationDetail.NewRowTyped(false);
+                mdRow.LedgerNumber = AgiftDetails.LedgerNumber;
+                mdRow.MotivationGroupCode = AgiftDetails.MotivationGroupCode;
+                mdRow.MotivationDetailCode = AgiftDetails.MotivationDetailCode;
+                AMotivationDetailTable tempTbl = AMotivationDetailAccess.LoadUsingTemplate(mdRow, null);
+
+                if (tempTbl.Rows.Count > 0)
+                {
+                    costCentre = tempTbl[0].CostCentreCode;
+                }
+            }
+
+            return costCentre;
+        }
 
         /// <summary>
         /// Import Gift batch data
@@ -114,7 +135,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             //TDBTransaction FTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             FTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
-            //Set this to true to committ or rollback the calling transaction at this point
+            //Set this to true to commit or rollback the calling transaction at this point
             NewTransaction = true;
 
             AGiftBatchRow giftBatch = null;
@@ -128,6 +149,14 @@ namespace Ict.Petra.Server.MFinance.Gift
             try
             {
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, FTransaction);
+                if (LedgerTable.Rows.Count == 0)
+                {
+                    AMessages.Add(new TVerificationResult(Catalog.GetString("Gift Batch Import"),
+                            String.Format(Catalog.GetString("Ledger {0} doesn't exist."),
+                                FLedgerNumber),
+                            TResultSeverity.Resv_Critical));
+                    return false;
+                }
                 AGiftRow previousGift = null;
 
                 while ((FImportLine = sr.ReadLine()) != null)
@@ -157,23 +186,22 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                         Catalog.GetString("Database I/O Failure"),
                                         0);
-
-                                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-
-                                    sr.Close();
                                     return false;
                                 }
 
-                                FMainDS.AGiftBatch.AcceptChanges();
+//                              FMainDS.AGiftBatch.AcceptChanges();  // changed to use a new TDS for each batch.
+                                FMainDS = new GiftBatchTDS();
+
                                 previousGift = null;
                             }
 
                             totalBatchAmount = 0;
 
                             string BatchDescription = ImportString(Catalog.GetString("batch description"));
-                            string BankAccountCode = ImportString(Catalog.GetString("bank account  code"));
+                            string BankAccountCode = ImportString(Catalog.GetString("bank account code"));
                             decimal HashTotal = ImportDecimal(Catalog.GetString("hash total"));
                             DateTime GlEffectiveDate = ImportDate(Catalog.GetString("effective Date"));
+                            FImportMessage = "Creating new batch";
 
                             giftBatch = TGiftBatchFunctions.CreateANewGiftBatchRow(ref FMainDS,
                                 ref FTransaction,
@@ -186,6 +214,16 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftBatch.HashTotal = HashTotal;
                             giftBatch.CurrencyCode = ImportString(Catalog.GetString("currency code"));
                             giftBatch.ExchangeRateToBase = ImportDecimal(Catalog.GetString("exchange rate to base"));
+
+                            if (giftBatch.ExchangeRateToBase > 10000000)  // Huge numbers here indicate that the decimal comma/point is incorrect.
+                            {
+                                AMessages.Add(new TVerificationResult(Catalog.GetString("Gift Batch Import"),
+                                        String.Format(Catalog.GetString("huge exchange rate of {0} suggest decimal point format problem."),
+                                            giftBatch.ExchangeRateToBase),
+                                        TResultSeverity.Resv_Critical));
+                                return false;
+                            }
+
                             giftBatch.BankCostCentre = ImportString(Catalog.GetString("bank cost centre"));
                             giftBatch.GiftType = ImportString(Catalog.GetString("gift type"));
                             FImportMessage = Catalog.GetString("Saving gift batch");
@@ -201,9 +239,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     Catalog.GetString("Database I/O Failure"),
                                     0);
 
-                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-
-                                sr.Close();
                                 return false;
                             }
 
@@ -217,6 +252,14 @@ namespace Ict.Petra.Server.MFinance.Gift
                         else if (RowType == "T")
                         {
                             int numberOfElements = StringHelper.GetCSVList(FImportLine, FDelimiter).Count;
+
+                            if (numberOfElements < 12) // Perhaps this CSV file is a summary, and can't be imported?
+                            {
+                                AMessages.Add(new TVerificationResult(Catalog.GetString("Gift Batch Import"),
+                                        Catalog.GetString("CSV Format problem: Not enough fields in gift row\n(This may be a summary?)"),
+                                        TResultSeverity.Resv_Critical));
+                                return false;
+                            }
 
                             //this is the format with extra columns
                             FExtraColumns = numberOfElements > 22;
@@ -299,7 +342,26 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftDetails.ConfidentialGiftFlag = ImportBoolean(Catalog.GetString("confidential gift"));
                             giftDetails.MotivationGroupCode = ImportString(Catalog.GetString("motivation group code"));
                             giftDetails.MotivationDetailCode = ImportString(Catalog.GetString("motivation detail"));
-                            giftDetails.CostCentreCode = ImportString(Catalog.GetString("cost centre code"));
+
+                            if (giftDetails.MotivationGroupCode == "") // Perhaps this CSV file is a summary, and can't be imported?
+                            {
+                                AMessages.Add(new TVerificationResult(Catalog.GetString("Gift Batch Import"),
+                                        Catalog.GetString("CSV Format problem: No Motivation Group code."),
+                                        TResultSeverity.Resv_Critical));
+                                return false;
+                            }
+
+                            if (FExtraColumns)
+                            {
+                                giftDetails.CostCentreCode = ImportString(Catalog.GetString("cost centre code"));
+                            }
+                            else
+                            {
+                                //
+                                // "In Petra Cost Centre is always inferred from recipient field and motivation detail so is not needed in the import."
+                                giftDetails.CostCentreCode = InferCostCentre(giftDetails);
+                            }
+
                             giftDetails.GiftCommentOne = ImportString(Catalog.GetString("comment one"));
                             giftDetails.CommentOneType = ImportString(Catalog.GetString("comment one type"));
 
@@ -312,14 +374,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftDetails.CommentThreeType = ImportString(Catalog.GetString("comment three type"));
                             giftDetails.TaxDeductable = ImportBoolean(Catalog.GetString("tax deductable"));
 
-                            if (FImportLine.Length > 0)
-                            {
-                                gift.DateEntered = ImportDate(Catalog.GetString("date entered"));
-                            }
-                            else
-                            {
-                                gift.DateEntered = giftBatch.GlEffectiveDate;
-                            }
+                            gift.DateEntered = giftBatch.GlEffectiveDate;
 
                             FImportMessage = Catalog.GetString("Saving gift");
 
@@ -334,9 +389,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     Catalog.GetString("Database I/O Failure"),
                                     0);
 
-                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-
-                                sr.Close();
                                 return false;
                             }
 
@@ -354,9 +406,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     Catalog.GetString("Database I/O Failure"),
                                     0);
 
-                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-
-                                sr.Close();
                                 return false;
                             }
 
@@ -369,13 +418,14 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     string.Format(Catalog.GetString("Batch {0} - Importing gift detail"), giftBatch.BatchNumber),
                                     (BatchDetailCounter / 50 + 2) * 10 > 90 ? 90 : (BatchDetailCounter / 50 + 2) * 10);
                             }
-                        }
+                        } // If known row type
                         else
                         {
                             throw new Exception(Catalog.GetString("Invalid Row Type. Perhaps using wrong CSV separator?"));
                         }
-                    }
-                }
+                    }  // if the CSV line qualifies
+
+                }  // while CSV lines
 
                 //Update batch total for the last batch entered.
                 if (giftBatch != null)
@@ -422,43 +472,40 @@ namespace Ict.Petra.Server.MFinance.Gift
                     Catalog.GetString("Exception Occurred"),
                     0);
 
-                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-
-                sr.Close();
                 return false;
             }
-//            finally  //Can't use return with Finally
-//            {
-//                try
-//                {
-//                    sr.Close();
-//                }
-//                catch
-//                {
-//                };
-//            }
-
-            if (ok && NewTransaction)
+            finally  //Can't use return with Finally
             {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            else
-            {
-                if (NewTransaction)
+                try
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    sr.Close();
+                }
+                catch
+                {
+                };
+
+                if (ok && NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+
+                    AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
+                            Catalog.GetString("Data could not be saved."),
+                            TResultSeverity.Resv_Critical));
+
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Data could not be saved."),
+                        0);
                 }
 
-                AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
-                        Catalog.GetString("Data could not be saved."),
-                        TResultSeverity.Resv_Critical));
-
-                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                    Catalog.GetString("Data could not be saved."),
-                    0);
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
             }
-
-            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             return true;
         }

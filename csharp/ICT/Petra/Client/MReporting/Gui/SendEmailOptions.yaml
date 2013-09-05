@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MReporting.Gui
     FormType: dialog
     Template: window
-    WindowWidth: 400
+    WindowWidth: 600
     WindowHeight: 300
     
     Events:
@@ -19,7 +19,8 @@ RootNode:
                 Row3: [chkPDF]
                 
         txtEmail:
-            Label: Send to these Emails
+            Label: Send to these Emails Addresses
+            Width: 300
 
         chkExcelFile:
             Label: Attach Excel file (.xlsx)

@@ -300,7 +300,7 @@ namespace Ict.Petra.Server.MFinance.GL
             WriteStringQuoted("B");
             WriteStringQuoted(summarizedData);
             WriteCurrency(0);
-            WriteLineDate(FDateForSummary);
+            WriteDate(FDateForSummary, true);
         }
 
         void WriteBatchLine(ABatchRow batch)
@@ -308,7 +308,7 @@ namespace Ict.Petra.Server.MFinance.GL
             WriteStringQuoted("B");
             WriteStringQuoted(batch.BatchDescription);
             WriteCurrency(batch.BatchControlTotal);
-            WriteLineDate(batch.DateEffective);
+            WriteDate(batch.DateEffective, true);
         }
 
         void WriteJournalSummaryLine(AJournalSummaryRow journalSummary)
@@ -319,7 +319,7 @@ namespace Ict.Petra.Server.MFinance.GL
             WriteStringQuoted("STD");
             WriteStringQuoted(journalSummary.TransactionCurrency);
             WriteGeneralNumber(journalSummary.ExchangeRateToBase);             // format ok ???
-            WriteLineDate(FDateForSummary);
+            WriteDate(FDateForSummary, true);
         }
 
         void WriteJournalLine(AJournalRow journal)
@@ -340,7 +340,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 WriteGeneralNumber(journal.ExchangeRateToBase);
             }
 
-            WriteLineDate(journal.DateEffective);
+            WriteDate(journal.DateEffective, true);
         }
 
         void WriteTransactionLine(ATransactionRow transaction)
@@ -422,12 +422,12 @@ namespace Ict.Petra.Server.MFinance.GL
             if (amount > 0)
             {
                 WriteCurrency(amount);
-                WriteLineCurrency(0);
+                WriteCurrency(0, true);
             }
             else
             {
                 WriteCurrency(0);
-                WriteLineCurrency(-amount);
+                WriteCurrency(-amount, true);
             }
         }
 
@@ -443,15 +443,20 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
-        void WriteStringQuoted(String theString, bool bLineEnd)
+        void WriteStringQuoted(String theString, bool bLineEnd = false)
         {
+            if (theString != null)
+            {
+                theString = theString.Replace(quote, quote + quote);
+            }
+
             FStringWriter.Write(quote);
             FStringWriter.Write(theString);
             FStringWriter.Write(quote);
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteCurrency(decimal currencyField, bool bLineEnd)
+        void WriteCurrency(decimal currencyField, bool bLineEnd = false)
         {
             Int64 integerNumber = Convert.ToInt64(currencyField);
 
@@ -467,56 +472,16 @@ namespace Ict.Petra.Server.MFinance.GL
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteGeneralNumber(decimal generalNumberField, bool bLineEnd)
+        void WriteGeneralNumber(decimal generalNumberField, bool bLineEnd = false)
         {
             FStringWriter.Write(String.Format(FCultureInfo, "{0:g}", generalNumberField));
             WriteDelimiter(bLineEnd);
         }
 
-        void WriteDate(DateTime dateField, bool bLineEnd)
+        void WriteDate(DateTime dateField, bool bLineEnd = false)
         {
             FStringWriter.Write(dateField.ToString(FDateFormatString));
             WriteDelimiter(bLineEnd);
-        }
-
-        void WriteStringQuoted(String theString)
-        {
-            WriteStringQuoted(theString, false);
-        }
-
-        void WriteCurrency(decimal currencyField)
-        {
-            WriteCurrency(currencyField, false);
-        }
-
-        void WriteGeneralNumber(decimal generalNumberField)
-        {
-            WriteGeneralNumber(generalNumberField, false);
-        }
-
-        void WriteDate(DateTime dateField)
-        {
-            WriteDate(dateField, false);
-        }
-
-        void WriteLineStringQuoted(String theString)
-        {
-            WriteStringQuoted(theString, true);
-        }
-
-        void WriteLineCurrency(decimal currencyField)
-        {
-            WriteCurrency(currencyField, true);
-        }
-
-        void WriteLineGeneralNumber(decimal generalNumberField)
-        {
-            WriteGeneralNumber(generalNumberField, true);
-        }
-
-        void WriteLineDate(DateTime dateField)
-        {
-            WriteDate(dateField, true);
         }
     }
     /// <summary>

@@ -180,110 +180,122 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void ExportBatches(object sender, EventArgs e)
         {
-            StreamWriter sw1 = null;
+            if (rbtBatchNumberSelection.Checked)
+            {
+                if (!txtBatchNumberStart.NumberValueInt.HasValue)
+                {
+                    txtBatchNumberStart.NumberValueInt = 0;
+                }
 
+                if (!txtBatchNumberEnd.NumberValueInt.HasValue)
+                {
+                    txtBatchNumberEnd.NumberValueInt = 999999;
+                }
+            }
+            else
+            {
+                if ((!dtpDateFrom.ValidDate()) || (!dtpDateTo.ValidDate()))
+                {
+                    MessageBox.Show(Catalog.GetString("Date Format invalid"),
+                        Catalog.GetString("Error"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
+            StreamWriter sw1 = null;
             try
             {
-                String fileName = Path.GetFullPath(txtFilename.Text);
-
-                if (!Directory.Exists(Path.GetDirectoryName(fileName)))
-                {
-                    MessageBox.Show(Catalog.GetString("Please select an existing directory for this file!") + Environment.NewLine +
-                        String.Format(Catalog.GetString("Directory '{0}' does not exist"),
-                            Path.GetDirectoryName(fileName)),
-                        Catalog.GetString("Error"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                    return;
-                }
-
-                String dateFormatString = cmbDateFormat.GetSelectedString();
-
-                // might be called from the main navigation window (FMainDS is null), or from the GL Batch screen (reusing MainDS)
-                if (FMainDS == null)
-                {
-                    FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS();
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, -1, -1));
-                }
-
-                Hashtable requestParams = new Hashtable();
-
-                Int32 ALedgerNumber = 0;
-
-                ArrayList batches = new ArrayList();
-
-                foreach (ABatchRow batch  in FMainDS.ABatch.Rows)
-                {
-                    // check conditions for exporting this batch
-                    // Batch Status
-                    bool exportThisBatch = batch.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED)
-                                           || (chkIncludeUnposted.Checked && batch.BatchStatus.Equals(MFinanceConstants.BATCH_UNPOSTED));
-
-                    if (rbtBatchNumberSelection.Checked)
-                    {
-                        exportThisBatch &= (batch.BatchNumber >= txtBatchNumberStart.NumberValueInt);
-                        exportThisBatch &= (batch.BatchNumber <= txtBatchNumberEnd.NumberValueInt);
-                    }
-                    else
-                    {
-                        exportThisBatch &= (batch.DateEffective >= dtpDateFrom.Date);
-                        exportThisBatch &= (batch.DateEffective <= dtpDateTo.Date);
-                    }
-
-                    if (exportThisBatch)
-                    {
-                        batches.Add(batch.BatchNumber);
-                    }
-
-                    ALedgerNumber = batch.LedgerNumber;
-                }
-
-                if (batches.Count == 0)
-                {
-                    MessageBox.Show(Catalog.GetString("There are no batches matching your criteria"),
-                        Catalog.GetString("Error"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                    return;
-                }
-
-                requestParams.Add("ALedgerNumber", ALedgerNumber);
-                requestParams.Add("Delimiter", ConvertDelimiter(cmbDelimiter.GetSelectedString(), false));
-                requestParams.Add("DateFormatString", dateFormatString);
-                requestParams.Add("Summary", rbtSummary.Checked);
-                requestParams.Add("bUseBaseCurrency", rbtBaseCurrency.Checked);
-                requestParams.Add("BaseCurrency", FMainDS.ALedger[0].BaseCurrency);
-                requestParams.Add("TransactionsOnly", chkTransactionsOnly.Checked);
-                requestParams.Add("bDontSummarize", chkDontSummarize.Checked);
-                requestParams.Add("DontSummarizeAccount", cmbDontSummarizeAccount.GetSelectedString());
-                requestParams.Add("DateForSummary", dtpDateSummary.Date);
-                requestParams.Add("NumberFormat", ConvertNumberFormat(cmbNumberFormat));
-
-                String exportString = null;
-                sw1 = new StreamWriter(fileName);
-
-                Thread ExportThread = new Thread(() => ExportAllGLBatchData(ref batches, requestParams, out exportString));
-                using (TProgressDialog ExportDialog = new TProgressDialog(ExportThread))
-                {
-                    ExportDialog.ShowDialog();
-                }
-
-                sw1.Write(exportString);
-
-                MessageBox.Show(Catalog.GetString("Your data was exported successfully!"),
-                    Catalog.GetString("Success"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-
-                SaveUserDefaults();
+                sw1 = new StreamWriter(txtFilename.Text);
             }
-            finally
+            catch (Exception ex)
             {
-                if (sw1 != null)
-                {
-                    sw1.Close();
-                }
+                MessageBox.Show(ex.Message,
+                    Catalog.GetString("Failed to open file"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return;
             }
+
+            String dateFormatString = cmbDateFormat.GetSelectedString();
+
+            // might be called from the main navigation window (FMainDS is null), or from the GL Batch screen (reusing MainDS)
+            if (FMainDS == null)
+            {
+                FMainDS = new Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS();
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll, -1, -1));
+            }
+
+            Int32 ALedgerNumber = 0;
+
+            ArrayList batches = new ArrayList();
+
+            foreach (ABatchRow batch in FMainDS.ABatch.Rows)
+            {
+                // check conditions for exporting this batch
+                // Batch Status
+                bool exportThisBatch = batch.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED)
+                                       || (chkIncludeUnposted.Checked && batch.BatchStatus.Equals(MFinanceConstants.BATCH_UNPOSTED));
+
+                if (rbtBatchNumberSelection.Checked)
+                {
+                    exportThisBatch &= (batch.BatchNumber >= txtBatchNumberStart.NumberValueInt);
+                    exportThisBatch &= (batch.BatchNumber <= txtBatchNumberEnd.NumberValueInt);
+                }
+                else
+                {
+                    exportThisBatch &= (batch.DateEffective >= dtpDateFrom.Date);
+                    exportThisBatch &= (batch.DateEffective <= dtpDateTo.Date);
+                }
+
+                if (exportThisBatch)
+                {
+                    batches.Add(batch.BatchNumber);
+                }
+
+                ALedgerNumber = batch.LedgerNumber;
+            }
+
+            if (batches.Count == 0)
+            {
+                MessageBox.Show(Catalog.GetString("There are no batches matching your criteria"),
+                    Catalog.GetString("Error"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return;
+            }
+
+            Hashtable requestParams = new Hashtable();
+            requestParams.Add("ALedgerNumber", ALedgerNumber);
+            requestParams.Add("Delimiter", ConvertDelimiter(cmbDelimiter.GetSelectedString(), false));
+            requestParams.Add("DateFormatString", dateFormatString);
+            requestParams.Add("Summary", rbtSummary.Checked);
+            requestParams.Add("bUseBaseCurrency", rbtBaseCurrency.Checked);
+            requestParams.Add("BaseCurrency", FMainDS.ALedger[0].BaseCurrency);
+            requestParams.Add("TransactionsOnly", chkTransactionsOnly.Checked);
+            requestParams.Add("bDontSummarize", chkDontSummarize.Checked);
+            requestParams.Add("DontSummarizeAccount", cmbDontSummarizeAccount.GetSelectedString());
+            requestParams.Add("DateForSummary", dtpDateSummary.Date);
+            requestParams.Add("NumberFormat", ConvertNumberFormat(cmbNumberFormat));
+
+            String exportString = null;
+
+            Thread ExportThread = new Thread(() => ExportAllGLBatchData(ref batches, requestParams, out exportString));
+            using (TProgressDialog ExportDialog = new TProgressDialog(ExportThread))
+            {
+                ExportDialog.ShowDialog();
+            }
+
+            sw1.Write(exportString);
+            sw1.Close();
+
+            MessageBox.Show(Catalog.GetString("Your data was exported successfully!"),
+                Catalog.GetString("Success"),
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+
+            SaveUserDefaults();
         }
 
         /// <summary>

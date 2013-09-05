@@ -150,6 +150,7 @@ OpenPetra:
                         #EditExistingGifts:
                         #EditLastUnpostedGiftBatch:
                         #PostGiftBatch:
+                        ExportGiftBatches: {Description:Export to CSV file for use with Excel,ActionOpenScreen= TFrmGiftBatchExport}
                     GiftReceipting:
                         PrintAnnualReceipts: {Description:Print the annual gift receipts, ActionOpenScreen=TFrmGiftReceiptPrinting}
                         DonorOrRecipientHistory: {ActionOpenScreen=TFrmDonorRecipientHistory}
@@ -194,6 +195,7 @@ OpenPetra:
                         GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=TFrmGLBatch}
                         RecurringGLBatches: {Label=Recurring GL Batches, Description:Enter and submit recurring General Ledger batches, ActionOpenScreen=TFrmRecurringGLBatch}
                         GLRevaluation: {Description:Runs a Revaluation, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TGLRevaluation}
+                        ExportBatches: {Description:Export to CSV file for use with Excel,ActionOpenScreen= TFrmGLBatchExport}
                         #EnterTransactions:
                         #ImportTransactions:
                         #EditExistingTransactions:
@@ -379,6 +381,7 @@ OpenPetra:
                         NationalitySummaryReport: {ActionOpenScreen=TFrmNationalitySummaryReport}
                         PresentAttendeeReport: {ActionOpenScreen=TFrmPresentAttendeeReport}
                         TransportReport: {ActionOpenScreen=TFrmTransportReport}
+                        Payment:  {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance, ActionOpenScreen=TFrmARConferencePayments}
                     FieldReports:
                         ChargedFieldReport: {ActionOpenScreen=TFrmChargedFieldReport}
                         SendingFieldReport: {ActionOpenScreen=TFrmSendingFieldReport}
