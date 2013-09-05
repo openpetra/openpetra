@@ -364,10 +364,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             ADeletionQuestion = String.Format(Catalog.GetString(
                     "You have chosen to delete this budget (Cost Centre: {0}, Account: {1}, Type: {2}, Revision: {3}).{4}{4}Do you really want to delete it?"),
-                FPreviouslySelectedDetailRow.CostCentreCode,
-                FPreviouslySelectedDetailRow.AccountCode,
-                FPreviouslySelectedDetailRow.BudgetTypeCode,
-                FPreviouslySelectedDetailRow.Revision,
+                ARowToDelete.CostCentreCode,
+                ARowToDelete.AccountCode,
+                ARowToDelete.BudgetTypeCode,
+                ARowToDelete.Revision,
                 Environment.NewLine);
             return true;
         }
@@ -382,7 +382,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             ACompletionMessage = String.Empty;
 
-            int budgetSequence = FPreviouslySelectedDetailRow.BudgetSequence;
+            int budgetSequence = ARowToDelete.BudgetSequence;
             DeleteBudgetPeriodData(budgetSequence);
             ARowToDelete.Delete();
 
@@ -429,7 +429,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 try
                 {
-                    FdlgSeparator.CSVFileName = dialog.FileName;
+                    Boolean fileCanOpen = FdlgSeparator.OpenCsvFile(dialog.FileName);
+
+                    if (!fileCanOpen)
+                    {
+                        throw new Exception(String.Format(Catalog.GetString("File {0} Cannot be opened."), dialog.FileName));
+                    }
 
                     FdlgSeparator.DateFormat = dateFormatString;
 
