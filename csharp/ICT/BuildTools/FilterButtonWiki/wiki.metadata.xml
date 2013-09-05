@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rootnode>
+  <comments>
+    <comment key="SetupCorporateExchangeRate.yaml" value="style='background:Orange' |Have not completed integration with manual row filter" />
+    <comment key="SetupDailyExchangeRate.yaml" value="style='background:Orange' |Have not completed integration with manual row filter" />
+    <comment key="SetupAnalysisTypes.yaml" value="Multiple changes to the YAML to incorporate a splitter panel containing two grids" />
+    <comment key="PersonnelStaffData.yaml" value="This screen is inaccessible to the Open Petra Menu" />
+    <comment key="ApplicationTypeSetup.yaml" value="style='background:Orange' |Still needs filtering by radio button cloning" />
+    <comment key="EarlyLateRegistrationSetup.yaml" value="style='background:Orange' |Still needs filtering by radio button cloning" />
+    <comment key="ConferenceStandardCostSetup.yaml" value="style='background:Orange' |Has a currency text box that is not implemented (but not required?)" />
+    <comment key="SetupSuspenseAccount.yaml" value="style='background:Orange' |Requires manual code to get description column from another location" />
+    <comment key="ContactAttributeSetup.yaml" value="Multiple changes to the YAML to incorporate a splitter panel containing two grids" />
+    
+    
+    <!-- Partner Edit screens are not going to have Filter/Find -->
+    <comment key="UC_Applications.yaml" value="style='background:LightSkyBlue' |No Filter/Find planned for this screen" />
+    <comment key="UC_FinanceDetails.yaml" value="style='background:LightSkyBlue' |No Filter/Find planned for this screen" />
+    <comment key="UC_IndividualData_Abilities.yaml" value="style='background:LightSkyBlue' |No Filter/Find planned for this screen" />
+    <comment key="UC_IndividualData_CommitmentPeriods.yaml" value="style='background:LightSkyBlue' |No Filter/Find planned for this screen" />
+    <comment key="UC_IndividualData_JobAssignments.yaml" value="style='background:LightSkyBlue' |No Filter/Find planned for this screen" />
+    <comment key="UC_IndividualData_Passport.yaml" value="style='background:LightSkyBlue' |No Filter/Find planned for this screen" />
+    <comment key="UC_IndividualData_PersonalDocuments.yaml" value="style='background:LightSkyBlue' |No Filter/Find planned for this screen" />
+    <comment key="UC_IndividualData_PersonalLanguages.yaml" value="style='background:LightSkyBlue' |No Filter/Find planned for this screen" />
+    <comment key="UC_IndividualData_PersonSkills.yaml" value="style='background:LightSkyBlue' |No Filter/Find planned for this screen" />
+    <comment key="UC_IndividualData_PreviousExperience.yaml" value="style='background:LightSkyBlue' |No Filter/Find planned for this screen" />
+    <comment key="UC_IndividualData_ProgressReports.yaml" value="style='background:LightSkyBlue' |No Filter/Find planned for this screen" />
+    <comment key="UC_PartnerInterests.yaml" value="style='background:LightSkyBlue' |No Filter/Find planned for this screen" />
+    <comment key="UC_PartnerRelationships.yaml" value="style='background:LightSkyBlue' |No Filter/Find planned for this screen" />
+    <comment key="UC_Subscriptions.yaml" value="style='background:LightSkyBlue' |No Filter/Find planned for this screen" />
+  </comments>
+</rootnode>

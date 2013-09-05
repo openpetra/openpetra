@@ -26,6 +26,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Xml;
 
 namespace Ict.Tools.FilterButtonWiki
 {
@@ -50,8 +51,12 @@ namespace Ict.Tools.FilterButtonWiki
         private static int FGridCount;
         private static int FPnlDetailsCount;
         private static int FPnlButtonsCount;
+        private static int FPnlFilterFindCount;
         private static int FCountWithAll;
         private static StreamWriter FLogFile;
+
+        // our metadata Xml
+        private static XmlNode FMetaDataComments;
 
         private static void CheckForIssues(List <string>AListToCheck, string ATitle)
         {
@@ -64,7 +69,7 @@ namespace Ict.Tools.FilterButtonWiki
                 "The table listings consist of only those files that have a grid, a details panel and a buttons panel.");
             FLogFile.WriteLine("{| border=\"1\" cellpadding=\"5\" cellspacing=\"0\"");
 
-            FLogFile.WriteLine("!Filename !! Has Grid !! Has Details !! Has Buttons !! Has All !! Comments");
+            FLogFile.WriteLine("!Filename !! Has Grid !! Has Details !! Has Buttons !! Has All !! Has Filter/Find !! Has Manual RowFilter !! Comments");
 
             foreach (string tryPath in AListToCheck)
             {
@@ -76,15 +81,26 @@ namespace Ict.Tools.FilterButtonWiki
 
         private static void CheckForIssues(string AYAMLPath)
         {
+            string manualPath = AYAMLPath.Replace(".yaml", ".ManualCode.cs");
+
+            if (!File.Exists(manualPath))
+            {
+                return;
+            }
+
+            using (StreamReader srManual = new StreamReader(manualPath))
             using (StreamReader srYAML = new StreamReader(AYAMLPath))
             {
                 string yml = srYAML.ReadToEnd();
+                string manual = srManual.ReadToEnd();
 
                 string shortYAMLPath = AYAMLPath.Substring(FBaseClientPath.Length + 1);
 
                 bool bHasGrid = yml.Contains("grdDetails:");
                 bool bHasDetails = yml.Contains("pnlDetails:");
                 bool bHasButtons = yml.Contains("pnlButtons:") || yml.Contains("pnlDetailButtons");
+                bool bHasFilterFind = yml.Contains("[pnlFilterAndFind,");
+                bool bHasManualRowFilter = manual.Contains(".RowFilter = ");
 
                 if (!bHasGrid && !bHasDetails && !bHasButtons)
                 {
@@ -106,6 +122,11 @@ namespace Ict.Tools.FilterButtonWiki
                     FPnlButtonsCount++;
                 }
 
+                if (bHasFilterFind)
+                {
+                    FPnlFilterFindCount++;
+                }
+
                 if (bHasButtons && bHasDetails && bHasGrid)
                 {
                     FCountWithAll++;
@@ -115,12 +136,19 @@ namespace Ict.Tools.FilterButtonWiki
                 FLogFile.WriteLine("|-");
                 FLogFile.WriteLine("|{0}", shortYAMLPath);
 
-                // Col2: HasGrid, Col3: Haspnldetails, Col4: Has pnlButtons, Col5: HasAll
+                // Col2: HasGrid, Col3: Haspnldetails, Col4: Has pnlButtons, Col5: HasAll, Col6: Has pnlFilterFind, Col7: Manual RowFilter, Col8: Comment
                 FLogFile.WriteLine(bHasGrid ? "|Yes" : "|No");
                 FLogFile.WriteLine(bHasDetails ? "|Yes" : "|No");
                 FLogFile.WriteLine(bHasButtons ? "|Yes" : "|No");
-                FLogFile.WriteLine(bHasGrid && bHasButtons && bHasDetails ? "|Yes" : "|No");
-                FLogFile.WriteLine("|");
+                FLogFile.WriteLine(bHasGrid && bHasButtons && bHasDetails ? "|Yes" : "|style=\"background:LightSkyBlue\" |No");
+                FLogFile.WriteLine(bHasFilterFind ? "|style=\"background:LightSkyBlue\" |Yes" : "|No");
+                FLogFile.WriteLine(bHasManualRowFilter ? "|style=\"background:Yellow\" |Yes" : "|No");
+
+                // is there a comment for this file?
+                FLogFile.Write("|");
+                string fileName = Path.GetFileName(AYAMLPath);
+                XmlNode commentNode = FMetaDataComments.SelectSingleNode(String.Format("comment[@key='{0}']", fileName));
+                FLogFile.WriteLine(commentNode == null ? String.Empty : commentNode.Attributes["value"].Value);
             }
         }
 
@@ -134,10 +162,22 @@ namespace Ict.Tools.FilterButtonWiki
             int pos = PathToMe.IndexOf(@"\delivery");
             string rootPath = PathToMe.Substring(0, pos);
 
+            XmlDocument xmlDoc = new XmlDocument();
+            string metaDataPath = Path.Combine(rootPath, @"csharp\ICT\BuildTools\FilterButtonWiki\wiki.metadata.xml");
+            if (File.Exists(metaDataPath))
+            {
+                xmlDoc.Load(metaDataPath);
+            }
+            else
+            {
+                xmlDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><rootnode/>");
+            }
+            FMetaDataComments = xmlDoc.SelectSingleNode("//comments");
+
             // The output file is in the OpenPetra log folder
             using (FLogFile = new StreamWriter(Path.Combine(rootPath, @"log\FilterButtonWiki.txt")))
             {
-                FLogFile.WriteLine("== Filter Button Implementation ==");
+                FLogFile.WriteLine("== Most Recent Filter Button Implementation Information ==");
                 FLogFile.WriteLine(
                     "Analysis run at {0} on {1}.<br/>All the files listed below have at least one of: a Details Grid, a Details Panel or a Buttons Panel",
                     DateTime.Now.ToShortTimeString(),
@@ -210,6 +250,7 @@ namespace Ict.Tools.FilterButtonWiki
                 FGridCount = 0;
                 FPnlDetailsCount = 0;
                 FPnlButtonsCount = 0;
+                FPnlFilterFindCount = 0;
 
                 CheckForIssues(FListWindowEdit, "WindowEdit");
                 CheckForIssues(FListWindowTDS, "WindowTDS");
@@ -229,6 +270,8 @@ namespace Ict.Tools.FilterButtonWiki
                 FLogFile.WriteLine("  {0} screens with pnlDetails", FPnlDetailsCount);
                 FLogFile.WriteLine("  {0} screens with pnlButtons", FPnlButtonsCount);
                 FLogFile.WriteLine("  {0} screens have all the above", FCountWithAll);
+                FLogFile.WriteLine("  {0} screens have Filter/Find", FPnlFilterFindCount);
+                FLogFile.WriteLine("  There are {0} screens that are still potential candidates for Filter/Find", FCountWithAll - FPnlFilterFindCount);
 
                 FLogFile.Close();
             }
