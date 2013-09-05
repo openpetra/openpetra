@@ -68,6 +68,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbDateFormat.Items.Insert(0, regionalDateString);
             }
 
+            txtDetailFieldKey.PartnerClass = "UNIT";
             LoadUserDefaults();
         }
 
@@ -226,111 +227,146 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void ExportBatches(object sender, EventArgs e)
         {
-            String fileName = Path.GetFullPath(txtFilename.Text);
-
-            if (!Directory.Exists(Path.GetDirectoryName(fileName)))
-            {
-                MessageBox.Show(Catalog.GetString("Please select an existing directory for this file!") + Environment.NewLine +
-                    String.Format(Catalog.GetString("Directory '{0}' does not exist"),
-                        Path.GetDirectoryName(fileName)),
-                    Catalog.GetString("Error"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-                return;
-            }
-
-            Hashtable requestParams = new Hashtable();
-
-            requestParams.Add("ALedgerNumber", FLedgerNumber);
-            requestParams.Add("Delimiter", ConvertDelimiter(cmbDelimiter.GetSelectedString(), false));
-            requestParams.Add("DateFormatString", cmbDateFormat.GetSelectedString());
-            requestParams.Add("Summary", rbtSummary.Checked);
-            requestParams.Add("IncludeUnposted", chkIncludeUnposted.Checked);
-            requestParams.Add("bUseBaseCurrency", rbtBaseCurrency.Checked);
-            requestParams.Add("TransactionsOnly", chkTransactionsOnly.Checked);
-            requestParams.Add("RecipientNumber", Convert.ToInt64(txtDetailRecipientKey.Text));
-            requestParams.Add("FieldNumber", Convert.ToInt64(txtDetailFieldKey.Text));
-            requestParams.Add("DateForSummary", dtpDateSummary.Date);
-            requestParams.Add("NumberFormat", ConvertNumberFormat(cmbNumberFormat));
-            requestParams.Add("ExtraColumns", chkExtraColumns.Checked);
-
-            if (rbtBatchNumberSelection.Checked)
-            {
-                requestParams.Add("BatchNumberStart", txtBatchNumberStart.NumberValueInt);
-                requestParams.Add("BatchNumberEnd", txtBatchNumberEnd.NumberValueInt);
-            }
-            else
-            {
-                requestParams.Add("BatchDateFrom", dtpDateFrom.Date);
-                requestParams.Add("BatchDateTo", dtpDateTo.Date);
-            }
-
-            TVerificationResultCollection AMessages = new TVerificationResultCollection();
-            String exportString = null;
-            Int32 BatchCount = 0;
-
-            Thread ExportThread = new Thread(() => ExportAllGiftBatchData(
-                    requestParams,
-                    out exportString,
-                    out AMessages,
-                    out BatchCount));
-
-            using (TProgressDialog ExportDialog = new TProgressDialog(ExportThread))
-            {
-                ExportDialog.ShowDialog();
-            }
-
-            if (AMessages.Count > 0)
-            {
-                if (AMessages.HasCriticalErrors)
-                {
-                    MessageBox.Show(AMessages.BuildVerificationResultString(), Catalog.GetString("Error"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-
-                    return;
-                }
-                else
-                {
-                    MessageBox.Show(AMessages.BuildVerificationResultString(), Catalog.GetString("Warnings"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-            }
-
-            if (BatchCount == 0)
-            {
-                MessageBox.Show(Catalog.GetString("There are no batches matching your criteria"),
-                    Catalog.GetString("Error"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-                return;
-            }
-
             StreamWriter sw1 = null;
 
             try
             {
-                sw1 = new StreamWriter(fileName,
+                sw1 = new StreamWriter(txtFilename.Text,
                     false,
                     Encoding.GetEncoding(TAppSettingsManager.GetInt32("ExportGiftBatchEncoding", 1252)));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message,
+                    Catalog.GetString("Failed to open file"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                if (rbtBatchNumberSelection.Checked)
+                {
+                    if (!txtBatchNumberStart.NumberValueInt.HasValue)
+                    {
+                        txtBatchNumberStart.NumberValueInt = 0;
+                    }
+
+                    if (!txtBatchNumberEnd.NumberValueInt.HasValue)
+                    {
+                        txtBatchNumberEnd.NumberValueInt = 999999;
+                    }
+                }
+                else
+                {
+                    if ((!dtpDateFrom.ValidDate()) || (!dtpDateTo.ValidDate()))
+                    {
+                        MessageBox.Show(Catalog.GetString("Date Format invalid"),
+                            Catalog.GetString("Error"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+
+                String numberFormat = ConvertNumberFormat(cmbNumberFormat);
+                String delimiter = ConvertDelimiter(cmbDelimiter.GetSelectedString(), false);
+
+                if (((numberFormat == "European") && (delimiter == ",")) || ((numberFormat == "American") && (delimiter == ".")))
+                {
+                    MessageBox.Show(Catalog.GetString("Numeric Decimal cannot be the same as the delimiter."),
+                        Catalog.GetString("Error"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
+
+                Hashtable requestParams = new Hashtable();
+                requestParams.Add("ALedgerNumber", FLedgerNumber);
+                requestParams.Add("Delimiter", ConvertDelimiter(cmbDelimiter.GetSelectedString(), false));
+                requestParams.Add("DateFormatString", cmbDateFormat.GetSelectedString());
+                requestParams.Add("Summary", rbtSummary.Checked);
+                requestParams.Add("IncludeUnposted", chkIncludeUnposted.Checked);
+                requestParams.Add("bUseBaseCurrency", rbtBaseCurrency.Checked);
+                requestParams.Add("TransactionsOnly", chkTransactionsOnly.Checked);
+                requestParams.Add("RecipientNumber", Convert.ToInt64(txtDetailRecipientKey.Text));
+                requestParams.Add("FieldNumber", Convert.ToInt64(txtDetailFieldKey.Text));
+                requestParams.Add("DateForSummary", dtpDateSummary.Date);
+                requestParams.Add("NumberFormat", ConvertNumberFormat(cmbNumberFormat));
+                requestParams.Add("ExtraColumns", chkExtraColumns.Checked);
+
+                if (rbtBatchNumberSelection.Checked)
+                {
+                    requestParams.Add("BatchNumberStart", txtBatchNumberStart.NumberValueInt);
+                    requestParams.Add("BatchNumberEnd", txtBatchNumberEnd.NumberValueInt);
+                }
+                else
+                {
+                    requestParams.Add("BatchDateFrom", dtpDateFrom.Date);
+                    requestParams.Add("BatchDateTo", dtpDateTo.Date);
+                }
+
+                TVerificationResultCollection AMessages = new TVerificationResultCollection();
+                String exportString = null;
+                Int32 BatchCount = 0;
+
+                Thread ExportThread = new Thread(() => ExportAllGiftBatchData(
+                        requestParams,
+                        out exportString,
+                        out AMessages,
+                        out BatchCount));
+
+                using (TProgressDialog ExportDialog = new TProgressDialog(ExportThread))
+                {
+                    ExportDialog.ShowDialog();
+                }
+
+                if (AMessages.Count > 0)
+                {
+                    if (AMessages.HasCriticalErrors)
+                    {
+                        MessageBox.Show(AMessages.BuildVerificationResultString(), Catalog.GetString("Error"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                        return;
+                    }
+                    else
+                    {
+                        MessageBox.Show(AMessages.BuildVerificationResultString(), Catalog.GetString("Warnings"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                }
+
+                if (BatchCount == 0)
+                {
+                    MessageBox.Show(Catalog.GetString("There are no batches matching your criteria"),
+                        Catalog.GetString("Error"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
+                }
+
                 sw1.Write(exportString);
+
+                SaveUserDefaults();
+                MessageBox.Show(Catalog.GetString("Gift Batches Exported successfully."),
+                    Catalog.GetString("Gift Batch Export"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message,
+                    Catalog.GetString("Error"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
             finally
             {
-                if (sw1 != null)
-                {
-                    sw1.Close();
-                }
+                sw1.Close();
             }
-
-            MessageBox.Show(Catalog.GetString("Your data was exported successfully!") + Environment.NewLine +
-                fileName,
-                Catalog.GetString("Success"),
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
-
-            SaveUserDefaults();
         }
 
         /// <summary>
@@ -380,16 +416,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         void BtnHelpClick(object sender, EventArgs e)
-        {
-            // TODO
-        }
-
-        void BtnRecipientClick(object sender, EventArgs e)
-        {
-            // TODO
-        }
-
-        void BtnFieldClick(object sender, EventArgs e)
         {
             // TODO
         }

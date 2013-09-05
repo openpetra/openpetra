@@ -63,6 +63,7 @@ namespace Tests.MFinance.Server.Gift
             //new TLogging("TestServer.log");
             TPetraServerConnector.Connect("../../etc/TestServer.config");
             FLedgerNumber = TAppSettingsManager.GetInt32("LedgerNumber", 43);
+            TLogging.Log("Ledger Number = " + FLedgerNumber);
         }
 
         /// <summary>
@@ -99,7 +100,10 @@ namespace Tests.MFinance.Server.Gift
 
             TVerificationResultCollection VerificationResult;
 
-            importer.ImportGiftBatches(parameters, FileContent, out VerificationResult);
+            if (!importer.ImportGiftBatches(parameters, FileContent, out VerificationResult))
+            {
+                Assert.Fail("Gift Batch was not imported: " + VerificationResult.BuildVerificationResultString());
+            }
 
             int BatchNumber = importer.GetLastGiftBatchNumber();
 
@@ -107,7 +111,7 @@ namespace Tests.MFinance.Server.Gift
 
             if (!TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out VerificationResult))
             {
-                Assert.Fail("Gift Batch was not posted");
+                Assert.Fail("Gift Batch was not posted: " + VerificationResult.BuildVerificationResultString());
             }
         }
 

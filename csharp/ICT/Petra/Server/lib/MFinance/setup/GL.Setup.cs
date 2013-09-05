@@ -1889,6 +1889,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
         private static void ImportDefaultCostCentreHierarchy(ref GLSetupTDS AMainDS, Int32 ALedgerNumber, string ALedgerName)
         {
+            if (ALedgerName.Length == 0)
+            {
+                throw new Exception("We need a name for the ledger, otherwise the yml will be invalid");
+            }
+
             // load XmlCostCentreHierarchy from a default file
 
             string Filename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
@@ -1901,11 +1906,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             XmlCostCentreHierarchy = XmlCostCentreHierarchy.Replace("{#LEDGERNUMBER}", ALedgerNumber.ToString());
             XmlCostCentreHierarchy = XmlCostCentreHierarchy.Replace("{#LEDGERNUMBERWITHLEADINGZEROS}", ALedgerNumber.ToString("00"));
-
-            if (ALedgerName.Length == 0)
-            {
-                throw new Exception("We need a name for the ledger, otherwise the yml will be invalid");
-            }
 
             XmlCostCentreHierarchy = XmlCostCentreHierarchy.Replace("{#LEDGERNAME}", ALedgerName);
 

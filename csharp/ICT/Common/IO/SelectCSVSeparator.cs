@@ -174,13 +174,22 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// set the filename for CSV
+        /// Don't call this, since you can't find out if it worked. Use OpenCsvFile instead.
         /// </summary>
         public string CSVFileName
         {
             set
             {
-                StreamReader reader = new StreamReader(value, TTextFile.GetFileEncoding(value), false);
+                System.Text.Encoding FileEncoding = TTextFile.GetFileEncoding(value);
+
+                //
+                // If it failed to open the file, GetFileEncoding returned null.
+                if (FileEncoding == null)
+                {
+                    return;     // This prevents an exception at this point.
+                }               // If any client code expected an exception, you should call OpenCsvFile instead.
+
+                StreamReader reader = new StreamReader(value, FileEncoding, false);
 
                 FCSVRows = new List <string>();
 
@@ -214,6 +223,36 @@ namespace Ict.Common.IO
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="AfileName"></param>
+        /// <returns></returns>
+        public Boolean OpenCsvFile(String AfileName)
+        {
+            System.Text.Encoding FileEncoding = TTextFile.GetFileEncoding(AfileName);
+
+            //
+            // If it failed to open the file, GetFileEncoding returned null.
+            if (FileEncoding == null)
+            {
+                return false;
+            }
+
+            StreamReader reader = new StreamReader(AfileName, FileEncoding, false);
+
+            FCSVRows = new List <string>();
+
+            while (!reader.EndOfStream && FCSVRows.Count < 6)
+            {
+                FCSVRows.Add(reader.ReadLine());
+            }
+
+            reader.Close();
+            RbtCheckedChanged(null, null);
+            return true;
+        }
+
         void RbtCheckedChanged(object sender, EventArgs e)
         {
             txtOtherSeparator.Enabled = rbtOther.Checked;
@@ -235,7 +274,7 @@ namespace Ict.Common.IO
                 FSeparator = txtOtherSeparator.Text;
             }
 
-            if ((FSeparator.Length > 0) && (FCSVRows != null))
+            if ((FSeparator.Length > 0) && (FCSVRows != null) && (FCSVRows.Count > 0))
             {
                 DataTable table = new DataTable();
                 string line = FCSVRows[0];

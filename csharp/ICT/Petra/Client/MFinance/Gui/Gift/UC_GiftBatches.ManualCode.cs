@@ -554,6 +554,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateChangeableStatus();
 
             RefreshCurrencyAndExchangeRate();
+            Boolean ComboSetsOk = cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1);
+            ComboSetsOk &= cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
+
+            if (!ComboSetsOk)
+            {
+                MessageBox.Show("Can't set combo box with row details.");
+            }
         }
 
         private Boolean ViewMode
@@ -940,15 +947,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 PrintGiftBatchReceipts(PostedGiftTDS);
 
                 RefreshAll();
+                RefreshGridData(currentBatchNo, true);
 
                 if (FPetraUtilsObject.HasChanges)
                 {
                     ((TFrmGiftBatch)ParentForm).SaveChanges();
-                }
-
-                if (currentBatchNo > 0)
-                {
-                    RefreshGridData(currentBatchNo, true);
                 }
             }
         }
@@ -1149,8 +1152,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string hashTotal = txtDetailHashTotal.Text.Trim();
             string hashNumericPart = string.Empty;
             decimal hashDecimalVal;
-            Int32 hashTotalIndexOfLastNumeric = -1;
-            bool isNumericVal;
 
             if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
             {
@@ -1171,12 +1172,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                hashTotalIndexOfLastNumeric = hashTotal.LastIndexOfAny(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
+                Int32 hashTotalIndexOfLastNumeric = hashTotal.LastIndexOfAny(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
 
                 if (hashTotalIndexOfLastNumeric > -1)
                 {
                     hashNumericPart = hashTotal.Substring(0, hashTotalIndexOfLastNumeric + 1);
-                    isNumericVal = Decimal.TryParse(hashNumericPart, out hashDecimalVal);
+                    bool isNumericVal = Decimal.TryParse(hashNumericPart, out hashDecimalVal);
 
                     if (!isNumericVal)
                     {
