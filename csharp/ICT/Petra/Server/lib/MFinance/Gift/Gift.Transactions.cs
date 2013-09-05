@@ -682,8 +682,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             AVerificationResult = new TVerificationResultCollection();
 
-            // make sure that empty tables are removed
+            // make sure that empty tables are removed !! This can return NULL!
             AInspectDS = AInspectDS.GetChangesTyped(true);
+            if (AInspectDS == null)
+            {
+                AVerificationResult.Add(new TVerificationResult(
+                    Catalog.GetString("Save Gift Batch"),
+                    Catalog.GetString("No changes - nothing to do"), 
+                    TResultSeverity.Resv_Info));
+                return TSubmitChangesResult.scrNothingToBeSaved;
+            }
 
             bool AllValidationsOK = true;
 
