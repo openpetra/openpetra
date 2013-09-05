@@ -20,7 +20,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [cmbDetailSuspenseAccountCode]
+            FindControls: [cmbDetailSuspenseAccountCode]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]

@@ -59,14 +59,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FTypeCode = value;
-                //save the position of the actual row
-                int rowIndex = GetSelectedRowIndex();
-                FMainDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                
+                string rowFilter = String.Format("{0} = '{1}'",
                     AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
                     FTypeCode);
-                SelectRowInGrid(rowIndex);
+                FFilterPanelControls.BaseOffFilter = rowFilter;
+                FFilterPanelControls.BaseOnFilter = rowFilter;
+                ApplyFilter();
 
-                UpdateRecordNumberDisplay();
+                SelectRowInGrid(FPrevRowChangedRow);
             }
         }
         private void NewRow(System.Object sender, EventArgs e)
