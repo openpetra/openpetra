@@ -384,8 +384,6 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
 
             ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            List <string>OutreachTypes = new List <string>();
-
             DataTable Table = new PUnitTable();
 
             try
