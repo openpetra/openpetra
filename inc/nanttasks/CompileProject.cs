@@ -312,6 +312,15 @@ namespace Ict.Tools.NAntTasks
             parameters.OutputAssembly = OutputFile;
             parameters.WarningLevel = 4;
 
+            if (mainProperties.ContainsKey("ApplicationManifest") && (mainProperties["ApplicationManifest"].Length > 0))
+            {
+                if (!this.Project.RuntimeFramework.Name.StartsWith("mono"))
+                {
+                    // we cannot include the manifest when compiling on Mono
+                    parameters.CompilerOptions += " /win32manifest:\"APPMANIFEST\"";
+                }
+            }
+
             parameters.CompilerOptions += " /define:DEBUGMODE /doc:\"XMLOUTPUTFILE.xml\"";
 
             if (this.Project.PlatformName == "unix")
@@ -322,6 +331,12 @@ namespace Ict.Tools.NAntTasks
 
             // insert the path to the xml output file after the command line options thing has been done
             parameters.CompilerOptions = parameters.CompilerOptions.Replace("XMLOUTPUTFILE", OutputFile.Replace("\\", "/"));
+
+            if (mainProperties.ContainsKey("ApplicationManifest") && (mainProperties["ApplicationManifest"].Length > 0))
+            {
+                parameters.CompilerOptions =
+                    parameters.CompilerOptions.Replace("APPMANIFEST", mainProperties["ApplicationManifest"].Replace("\\", "/"));
+            }
 
             String FrameworkDLLPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(typeof(System.Type)).Location);
 

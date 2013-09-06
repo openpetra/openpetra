@@ -1723,6 +1723,24 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// reverse a GL Batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumberToReverse"></param>
+        /// <param name="ADateForReversal"></param>
+        /// <param name="AReversalBatchNumber"></param>
+        /// <param name="AVerifications"></param>
+        [RequireModulePermission("FINANCE-3")]
+        public static bool ReverseBatch(Int32 ALedgerNumber, Int32 ABatchNumberToReverse,
+            DateTime ADateForReversal,
+            out Int32 AReversalBatchNumber,
+            out TVerificationResultCollection AVerifications)
+        {
+            return TGLPosting.ReverseBatch(ALedgerNumber, ABatchNumberToReverse,
+                ADateForReversal, out AReversalBatchNumber, out AVerifications);
+        }
+
+        /// <summary>
         /// post a GL Batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -1892,7 +1910,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                 JournalRow.JournalCreditTotal = recJournal.JournalCreditTotal;
                                 JournalRow.JournalDebitTotal = recJournal.JournalDebitTotal;
 
-                                AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBaseForJournal" + recJournal.JournalNumber.ToString()];
+                                Decimal.TryParse(
+                                    requestParams["AExchangeRateToBaseForJournal" + recJournal.JournalNumber.ToString()].ToString(),
+                                    out AExchangeRateToBase);
+                                //AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBaseForJournal" + recJournal.JournalNumber.ToString()];
                                 JournalRow.ExchangeRateToBase = AExchangeRateToBase;
 
                                 JournalRow.DateEffective = AEffectiveDate;
@@ -1937,6 +1958,29 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                         TransactionRow.Reference = recTransaction.Reference;
 
                                         GLMainDS.ATransaction.Rows.Add(TransactionRow);
+
+                                        foreach (ARecurringTransAnalAttribRow recAnalAttrib in RGLMainDS.ARecurringTransAnalAttrib.Rows)
+                                        {
+                                            if ((recAnalAttrib.TransactionNumber == recTransaction.TransactionNumber)
+                                                && (recTransaction.JournalNumber == recJournal.JournalNumber)
+                                                && (recTransaction.BatchNumber == ABatchNumber)
+                                                && (recTransaction.LedgerNumber == ALedgerNumber))
+                                            {
+                                                ATransAnalAttribRow TransAnalAttribRow = GLMainDS.ATransAnalAttrib.NewRowTyped();
+
+                                                TransAnalAttribRow.LedgerNumber = JournalRow.LedgerNumber;
+                                                TransAnalAttribRow.BatchNumber = JournalRow.BatchNumber;
+                                                TransAnalAttribRow.JournalNumber = JournalRow.JournalNumber;
+                                                TransAnalAttribRow.TransactionNumber = recTransaction.TransactionNumber;
+                                                TransAnalAttribRow.AnalysisTypeCode = recAnalAttrib.AnalysisTypeCode;
+
+                                                TransAnalAttribRow.AccountCode = recAnalAttrib.AccountCode;
+                                                TransAnalAttribRow.CostCentreCode = recAnalAttrib.CostCentreCode;
+                                                TransAnalAttribRow.AnalysisAttributeValue = recAnalAttrib.AnalysisAttributeValue;
+
+                                                GLMainDS.ATransAnalAttrib.Rows.Add(TransAnalAttribRow);
+                                            }
+                                        }
                                     }
                                 }
                             }

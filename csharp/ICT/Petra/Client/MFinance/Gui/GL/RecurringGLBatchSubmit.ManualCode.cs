@@ -190,7 +190,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             decimal exchRateToBase = 0;
 
-            if (!(Decimal.TryParse(txtExchangeRateToBase.Text, out exchRateToBase) && (exchRateToBase > 0)))
+            if (txtExchangeRateToBase.Visible && !(Decimal.TryParse(txtExchangeRateToBase.Text, out exchRateToBase) && (exchRateToBase > 0)))
             {
                 MessageBox.Show(Catalog.GetString("The exchange rate must be a number greater than 0."));
                 txtExchangeRateToBase.Focus();

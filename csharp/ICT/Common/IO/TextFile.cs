@@ -273,7 +273,16 @@ namespace Ict.Common.IO
         {
             FileInfo fileinfo = new FileInfo(AFilename);
 
-            FileStream fs = fileinfo.OpenRead();
+            FileStream fs;
+
+            try
+            {
+                fs = fileinfo.OpenRead();
+            }
+            catch (Exception)
+            {
+                return ADefaultEncoding;  // This prevents an exception at this point.
+            }                             // If your client code expected an exception, you should examine the return value instead.
 
             Encoding[] UnicodeEncodings =
             {
