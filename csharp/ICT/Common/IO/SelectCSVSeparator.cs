@@ -173,7 +173,6 @@ namespace Ict.Common.IO
             }
         }
 
-
         /// <summary>
         /// Don't call this, since you can't find out if it worked. Use OpenCsvFile instead.
         /// </summary>

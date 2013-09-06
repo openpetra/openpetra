@@ -684,12 +684,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             // make sure that empty tables are removed !! This can return NULL!
             AInspectDS = AInspectDS.GetChangesTyped(true);
+
             if (AInspectDS == null)
             {
                 AVerificationResult.Add(new TVerificationResult(
-                    Catalog.GetString("Save Gift Batch"),
-                    Catalog.GetString("No changes - nothing to do"), 
-                    TResultSeverity.Resv_Info));
+                        Catalog.GetString("Save Gift Batch"),
+                        Catalog.GetString("No changes - nothing to do"),
+                        TResultSeverity.Resv_Info));
                 return TSubmitChangesResult.scrNothingToBeSaved;
             }
 
@@ -1517,6 +1518,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 out NewTransaction);
 
             GiftBatchTDS MainDS = LoadGiftBatchData(ALedgerNumber, ABatchNumber);
+
             AVerifications = new TVerificationResultCollection();
 
             if (MainDS.AGiftBatch.Rows.Count < 1)
@@ -1542,7 +1544,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
-
 
             // check that the Gift Batch BatchPeriod matches the date effective
             int DateEffectivePeriod, DateEffectiveYear;

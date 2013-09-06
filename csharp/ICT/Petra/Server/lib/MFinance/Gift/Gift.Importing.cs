@@ -149,6 +149,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             try
             {
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, FTransaction);
+
                 if (LedgerTable.Rows.Count == 0)
                 {
                     AMessages.Add(new TVerificationResult(Catalog.GetString("Gift Batch Import"),
@@ -157,6 +158,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             TResultSeverity.Resv_Critical));
                     return false;
                 }
+
                 AGiftRow previousGift = null;
 
                 while ((FImportLine = sr.ReadLine()) != null)

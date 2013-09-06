@@ -522,9 +522,9 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             if (AMainDS.AEpTransaction.DefaultView.Count == 0)
             {
                 AVerificationResult.Add(new TVerificationResult(
-                    Catalog.GetString("Creating Gift Batch"),
-                    String.Format(Catalog.GetString("There are no transactions for statement #{0}."), AStatementKey),
-                    TResultSeverity.Resv_Info));
+                        Catalog.GetString("Creating Gift Batch"),
+                        String.Format(Catalog.GetString("There are no transactions for statement #{0}."), AStatementKey),
+                        TResultSeverity.Resv_Info));
                 return -1;
             }
 

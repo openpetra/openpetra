@@ -271,7 +271,8 @@ namespace Ict.Common
                     {
                         try
                         {
-                            TLogging.Log("CustomAppSettings: Cannot find " + AKey + " in command line options or in the config file " + FConfigFileName,
+                            TLogging.Log(
+                                "CustomAppSettings: Cannot find " + AKey + " in command line options or in the config file " + FConfigFileName,
                                 TLoggingType.ToConsole | TLoggingType.ToLogfile);
                         }
                         catch (TNoLoggingToFile_WrongConstructorUsedException)
@@ -379,6 +380,7 @@ namespace Ict.Common
             if (!Int32.TryParse(GetValue(AKey, (ADefaultValue == -1)), out ReturnValue))
             {
                 ReturnValue = ADefaultValue;
+
                 if (ADefaultValue == -1)
                 {
                     // Caller wanted the Value and didn't specify a Default: log that
@@ -399,13 +401,14 @@ namespace Ict.Common
         /// <param name="AKey">the name of the parameter</param>
         /// <param name="ADefaultValue">the default value in case the parameter cannot be found</param>
         /// <returns>the value of the parameter, or the default value</returns>
-        public static System.Int64 GetInt64(String AKey, System.Int64 ADefaultValue=-1)
+        public static System.Int64 GetInt64(String AKey, System.Int64 ADefaultValue = -1)
         {
             Int64 ReturnValue;
 
             if (!Int64.TryParse(GetValue(AKey, (ADefaultValue == -1)), out ReturnValue))
             {
                 ReturnValue = ADefaultValue;
+
                 if (ADefaultValue == -1)
                 {
                     // Caller wanted the Value and didn't specify a Default: log that
