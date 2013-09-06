@@ -160,6 +160,10 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                 {
                     tempTable = PcEarlyLateAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
                 }
+                else if (ATablename == PcSupplementTable.GetTableDBName())
+                {
+                    tempTable = PcSupplementAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
+                }
                 else if (ATablename == PcDiscountTable.GetTableDBName())
                 {
                     tempTable = PcDiscountAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
@@ -429,6 +433,18 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                     else if (ATablename == PcEarlyLateTable.GetTableDBName())
                     {
                         if (PcEarlyLateAccess.SubmitChanges((PcEarlyLateTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == PcSupplementTable.GetTableDBName())
+                    {
+                        if (PcSupplementAccess.SubmitChanges((PcSupplementTable)ASubmitTable, SubmitChangesTransaction,
                                 out SingleVerificationResultCollection))
                         {
                             SubmissionResult = TSubmitChangesResult.scrOK;

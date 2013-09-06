@@ -373,6 +373,55 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         }
 
         /// <summary>
+        /// Get the outreach types for the selected conference
+        /// </summary>
+        /// <param name="APartnerKey">match long for conference key</param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static DataTable GetOutreachTypes(long APartnerKey)
+        {
+            TDBTransaction ReadTransaction;
+
+            ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            List <string>OutreachTypes = new List <string>();
+
+            DataTable Table = new PUnitTable();
+
+            try
+            {
+                string OutreachPrefixCode =
+                    ((PcConferenceRow)PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction).Rows[0]).OutreachPrefix;
+
+                PUnitTable UnitTable = PUnitAccess.LoadAll(ReadTransaction);
+
+                // add PUnit rows with matching OutreachPrefixCode to the new DataTable
+                foreach (PUnitRow Row in UnitTable.Rows)
+                {
+                    if ((Row.OutreachCode.Length == 13) && (Row.OutreachCode.Substring(0, 5) == OutreachPrefixCode))
+                    {
+                        DataRow CopyRow = Table.NewRow();
+                        ((PUnitRow)CopyRow).PartnerKey = Row.PartnerKey;
+                        ((PUnitRow)CopyRow).OutreachCode = Row.OutreachCode.Substring(5, 6);
+                        ((PUnitRow)CopyRow).UnitName = Row.UnitName;
+                        Table.Rows.Add(CopyRow);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.GetOutreachTypes: commit own transaction.");
+            }
+
+            return Table;
+        }
+
+        /// <summary>
         /// Create a new Conference
         /// </summary>
         /// <param name="APartnerKey">match long for conference key</param>

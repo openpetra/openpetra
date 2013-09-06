@@ -10,8 +10,8 @@ RootNode:
     UsingNamespaces: [Ict.Common.Data,Ict.Petra.Shared.MConference.Data,Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MConference.Validation,Ict.Petra.Shared.MPartner.Partner.Validation]
     TemplateParameters:
         INITMANUALCODE: InitGridManually();
-    WindowWidth: 522
-    WindowHeight: 404
+    WindowWidth: 800
+    WindowHeight: 500
     Actions:
         actSearch: {ActionClick=Search}
         actNew: {ActionClick=NewConference}
@@ -27,28 +27,32 @@ RootNode:
             Controls:[pnlFilter, grdConferences]
         pnlFilter:
             Dock: Top
-            Controls: [txtConference, txtPrefix, btnSearch]
-        txtConference:
-            Label: Conference
-        txtPrefix:
-            Label: Prefix
-        btnSearch:
-            Label: Search
-            Action: actSearch
+            Controls:
+                Row0: [txtConference, txtPrefix]
+                Row1: [btnSearch]
+        pnlButtons:
+            Dock: Bottom
+            ControlsOrientation: horizontal
+            Controls: [pnlLeftButtons, pnlRightButtons]
+        pnlLeftButtons:
+            Align: left
+            ControlsOrientation: horizontal
+            Controls: [btnNew, btnRemove]
+        pnlRightButtons:
+            Align: right
+            ControlsOrientation: horizontal
+            Controls: [btnAccept, btnCancel]
         grdConferences:
             Dock: Fill
             Columns: [PPartner.PartnerShortName, PcConference.ConferenceKey, PcConference.OutreachPrefix, PcConference.Start, PcConference.End]
             EnableMultiSelection: false
             CustomColumns:
                 PPartner.PartnerShortName: {Label=Conference Name}
-                PcConference.ConferenceKey: {Label=Conference Key}
+                PcConference.ConferenceKey: {Label=Conference Key, Type=PartnerKey}
                 PcConference.OutreachPrefix: {Label=Outreach Code Prefix}
-            Width: 500
-            Height: 200
-        pnlButtons:
-            Dock: Bottom
-            Controls:
-                Row1: [btnNew, btnRemove, btnAccept, btnCancel]
+        btnSearch:
+            Label: Search
+            Action: actSearch
         btnNew:
             Label: &New
             Action: actNew
@@ -61,3 +65,8 @@ RootNode:
         btnCancel:
             Label: &Cancel
             Action: actCancel
+            
+        txtConference:
+            Label: Conference Name
+        txtPrefix:
+            Label: Campaign Prefix Code

@@ -1,12 +1,12 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Conference Standard Costs
+    FormTitle: Maintain Outreach Supplements
     Namespace: Ict.Petra.Client.MConference.Gui.Setup
-    DetailTable: PcConferenceCost
+    DetailTable: PcSupplement
     UsingNamespaces: [Ict.Petra.Shared.MConference.Data, Ict.Petra.Shared.MConference.Validation, Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.Interfaces.MConference]
     FormType: edit
     Template: windowMaintainTable
-    WindowWidth: 500
+    WindowWidth: 650
     WindowHeight: 500
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
@@ -36,15 +36,21 @@ RootNode:
             Width: 80
         grdDetails:
             Dock: Fill
-            Columns: [DetailOptionDays, DetailCharge]
+            Columns: [DetailOutreachType, DetailSupplement]
             ActionFocusRow: FocusedRowChanged
-            SortOrder: DetailOptionDays ASC
+            SortOrder: DetailOutreachType ASC
+            CustomColumns:
+                DetailOutreachType: {Label=Outreach Type}
+                DetailSupplement: {Label=Supplement, Type=Currency(2)}
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [txtDetailOptionDays, txtDetailCharge]
-        txtDetailOptionDays: {Label=Option Days, Width=40, Format=Integer}
-        txtDetailCharge: {Label=Charge, Width=100, Format=Currency}
+                Row0: [cmbDetailOutreachType]
+                Row1: [txtDetailSupplement]
+                
+        txtDetailSupplement: {Label=Charge, Width=100, Format=Currency}
+        cmbDetailOutreachType: {Width=500, List=UserDefinedList, ClearIfSettingEmpty=true}
+        
     Toolbar:
         tbbNew:
             Label: New Conference Standard Cost

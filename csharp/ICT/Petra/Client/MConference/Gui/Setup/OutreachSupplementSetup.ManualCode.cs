@@ -29,17 +29,20 @@ using System.Xml;
 using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MConference;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MConference.Validation;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MConference.Gui.Setup
 {
-    public partial class TFrmConferenceStandardCostSetup
+    public partial class TFrmOutreachSupplementSetup
     {
         /// PartnerKey for selected conference to be set from outside
         public static Int64 FPartnerKey {
@@ -61,45 +64,36 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             // display the conference currency in a text box at the top of the screen and in pnlDetails
             TRemote.MConference.Conference.WebConnectors.GetCurrency(FPartnerKey, out CurrencyCode, out CurrencyName);
             txtConferenceCurrency.Text = CurrencyCode + ": " + CurrencyName;
-            txtDetailCharge.CurrencyCode = CurrencyCode;
+            txtDetailSupplement.CurrencyCode = CurrencyCode;
+
+            DataTable Table = TRemote.MConference.Conference.WebConnectors.GetOutreachTypes(FPartnerKey);
+
+            // add empty row
+            DataRow emptyRow = Table.NewRow();
+
+            emptyRow[PUnitTable.ColumnPartnerKeyId] = -1;
+            emptyRow[PUnitTable.ColumnOutreachCodeId] = string.Empty;
+            emptyRow[PUnitTable.ColumnUnitNameId] = Catalog.GetString("Select an outreach");
+            Table.Rows.Add(emptyRow);
+
+            // populate the combo box
+            cmbDetailOutreachType.InitialiseUserControl(Table,
+                PUnitTable.GetOutreachCodeDBName(),
+                PUnitTable.GetUnitNameDBName(),
+                null);
+            cmbDetailOutreachType.AppearanceSetup(new int[] { -1, 500 }, -1);
         }
 
-        private void NewRowManual(ref PcConferenceCostRow ARow)
+        private void NewRowManual(ref PcSupplementRow ARow)
         {
-            int NewOptionDays = 1;  // starts at 1 day
-            int i = 1;
-
-            // if a row already exists for 1 day find the next available integer
-            if (FMainDS.PcConferenceCost.Rows.Find(new object[] { FPartnerKey, NewOptionDays }) != null)
-            {
-                while (FMainDS.PcConferenceCost.Rows.Find(new object[] { FPartnerKey, NewOptionDays + i }) != null)
-                {
-                    i++;
-                }
-
-                NewOptionDays += i;
-            }
-
-            ARow.OptionDays = NewOptionDays;
-
-            // set the conference key
             ARow.ConferenceKey = FPartnerKey;
+            ARow.OutreachType = "";
+            ARow.Supplement = 0;
         }
 
         private void NewRecord(Object sender, EventArgs e)
         {
-            CreateNewPcConferenceCost();
-        }
-
-        private void ValidateDataDetailsManual(PcConferenceCostRow ARow)
-        {
-            // this is used to compare with the row that is being validated
-            DataRowCollection GridData = FMainDS.PcConferenceCost.Rows;
-
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-
-            TSharedConferenceValidation_Conference.ValidateConferenceStandardCost(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict, GridData);
+            CreateNewPcSupplement();
         }
     }
 }

@@ -358,10 +358,11 @@ OpenPetra:
                         
         ConferenceManagement: {Icon=conference.ico, PermissionsRequired=CONFERENCE, DependsOnConference=true}
             Main: {SkipThisLevel=true}
-                Find: {Namespace=Ict.Petra.Client.MConference.Gui, DontShowNestedTasksAsLinks=true}
-                    Find:    
+                Conference: {Namespace=Ict.Petra.Client.MConference.Gui, DontShowNestedTasksAsLinks=true}
+                    Conference:    
                         SelectConference: {Description=Select a Conference to work on, ActionOpenScreen=TFrmConferenceFindForm}
                         NewConference: {Namespace=Ict.Petra.Client.MConference.Gui, Description=Create a new Conference, ActionClick=TConferenceMain.NewConference}
+                        DeleteConference: {Label=Delete This Conference, Description="Careful: Delete the conference with all conference data", ActionClick=TDeleteConference.DeleteThisConference}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MConference, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
                     Reports:
                         AbsenteeReport: {ActionOpenScreen=TFrmAbsenteeReport}
@@ -390,10 +391,11 @@ OpenPetra:
                         OutreachReport: {ActionOpenScreen=TFrmOutreachReport}
                 Setup: {Namespace=Ict.Petra.Client.MConference.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     CurrentConference:
+                        MasterSettings: {Label=Conference Master Settings, Description=Maintain Conference Master Settings, ActionOpenScreen=TFrmConferenceMasterSettings}
+                        ChildDiscount: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Child Discounts, Description=Maintain Child Discounts, ActionClick=TConferenceMain.ChildDiscountsForSelectedConference}
                         ConferenceStandardCost: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Conference Standard Costs, Description=Maintain Conference Standard Costs, ActionClick=TConferenceMain.StandardCostsForSelectedConference}
                         EarlyLateRegistration: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Early and Late Registrations, Description=Maintain Early and Late Registrations, ActionClick=TConferenceMain.EarlyLateRegistrationsForSelectedConference}
-                        ChildDiscount: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Child Discounts, Description=Maintain Child Discounts, ActionClick=TConferenceMain.ChildDiscountsForSelectedConference}
-                        MasterSettings: {Label=Conference Master Settings, Description=Maintain Conference Master Settings, ActionOpenScreen=TFrmConferenceMasterSettings}
+                        OutreachSupplement: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Outreach Supplements, Description=Maintain Outreach Supplements, ActionClick=TConferenceMain.OutreachSupplementsForSelectedConference}
                     General:
                         ConferenceCostType: {Label=Conference Cost Types, Description=Maintain Conference Cost Types, ActionOpenScreen=TFrmConferenceCostTypeSetup}
         FinancialDevelopment: {Icon=develope.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=Financial Development, DependsOnLedger=true, PermissionsRequired=DEVUSER}

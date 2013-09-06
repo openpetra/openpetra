@@ -36,16 +36,19 @@ namespace Ict.Petra.Client.MConference.Gui
     /// </summary>
     public class TConferenceMain
     {
+        /// PartnerKey for selected conference to be set from outside
+        public static Int64 FPartnerKey;
+
         /// <summary>
         /// opens Early Late Registration screen for pre selected conference
         /// </summary>
         public static void EarlyLateRegistrationsForSelectedConference(Form AParentForm)
         {
-            long ConferenceKey = Convert.ToInt64(AParentForm.GetType().GetMethod("GetSelectedConferenceKey").Invoke(AParentForm, null));
-
             TSearchCriteria[] Search = new TSearchCriteria[1];
-            Search[0] = new TSearchCriteria(PcEarlyLateTable.GetConferenceKeyDBName(), ConferenceKey);
-            TFrmEarlyLateRegistrationSetup frm = new TFrmEarlyLateRegistrationSetup(AParentForm, Search, ConferenceKey);
+            Search[0] = new TSearchCriteria(PcEarlyLateTable.GetConferenceKeyDBName(), FPartnerKey);
+
+            TFrmEarlyLateRegistrationSetup.FPartnerKey = FPartnerKey;
+            TFrmEarlyLateRegistrationSetup frm = new TFrmEarlyLateRegistrationSetup(AParentForm, Search);
 
             frm.Show();
         }
@@ -55,11 +58,11 @@ namespace Ict.Petra.Client.MConference.Gui
         /// </summary>
         public static void StandardCostsForSelectedConference(Form AParentForm)
         {
-            long ConferenceKey = Convert.ToInt64(AParentForm.GetType().GetMethod("GetSelectedConferenceKey").Invoke(AParentForm, null));
-
             TSearchCriteria[] Search = new TSearchCriteria[1];
-            Search[0] = new TSearchCriteria(PcConferenceCostTable.GetConferenceKeyDBName(), ConferenceKey);
-            TFrmConferenceStandardCostSetup frm = new TFrmConferenceStandardCostSetup(AParentForm, Search, ConferenceKey);
+            Search[0] = new TSearchCriteria(PcConferenceCostTable.GetConferenceKeyDBName(), FPartnerKey);
+
+            TFrmConferenceStandardCostSetup.FPartnerKey = FPartnerKey;
+            TFrmConferenceStandardCostSetup frm = new TFrmConferenceStandardCostSetup(AParentForm, Search);
 
             frm.Show();
         }
@@ -69,12 +72,26 @@ namespace Ict.Petra.Client.MConference.Gui
         /// </summary>
         public static void ChildDiscountsForSelectedConference(Form AParentForm)
         {
-            long ConferenceKey = Convert.ToInt64(AParentForm.GetType().GetMethod("GetSelectedConferenceKey").Invoke(AParentForm, null));
-
             TSearchCriteria[] Search = new TSearchCriteria[2];
-            Search[0] = new TSearchCriteria(PcDiscountTable.GetConferenceKeyDBName(), ConferenceKey);
+            Search[0] = new TSearchCriteria(PcDiscountTable.GetConferenceKeyDBName(), FPartnerKey);
             Search[1] = new TSearchCriteria(PcDiscountTable.GetDiscountCriteriaCodeDBName(), "CHILD");
-            TFrmChildDiscountSetup frm = new TFrmChildDiscountSetup(AParentForm, Search, ConferenceKey);
+
+            TFrmChildDiscountSetup.FPartnerKey = FPartnerKey;
+            TFrmChildDiscountSetup frm = new TFrmChildDiscountSetup(AParentForm, Search);
+
+            frm.Show();
+        }
+
+        /// <summary>
+        /// opens Outreach Supplement screen for pre selected conference
+        /// </summary>
+        public static void OutreachSupplementsForSelectedConference(Form AParentForm)
+        {
+            TSearchCriteria[] Search = new TSearchCriteria[1];
+            Search[0] = new TSearchCriteria(PcSupplementTable.GetConferenceKeyDBName(), FPartnerKey);
+
+            TFrmOutreachSupplementSetup.FPartnerKey = FPartnerKey;
+            TFrmOutreachSupplementSetup frm = new TFrmOutreachSupplementSetup(AParentForm, Search);
 
             frm.Show();
         }
