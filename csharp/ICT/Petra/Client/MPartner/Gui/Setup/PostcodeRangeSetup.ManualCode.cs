@@ -61,6 +61,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewPPostcodeRange();
+
+            btnAccept.Enabled = true;
         }
 
         /// <summary>
@@ -69,14 +71,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         public DataRowView[] GetSelectedRows()
         {
             return grdDetails.SelectedDataRowsAsDataRowView;
-        }
-
-        private void ValidateDataDetailsManual(PPostcodeRangeRow ARow)
-        {
-            /*TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-             *
-             * TSharedPartnerValidation_Partner.ValidatePostcodeRangesSetup(this, ARow, ref VerificationResultCollection,
-             *  FPetraUtilsObject.ValidationControlsDict);*/
         }
 
         private void BtnAccept_Click(System.Object sender, System.EventArgs e)
@@ -104,6 +98,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             pnlRegionName.Visible = true;
             pnlAcceptCancelButtons.Visible = true;
+
+            if (grdDetails.Rows.Count < 2)
+            {
+                btnAccept.Enabled = false;
+            }
         }
     }
 
@@ -143,7 +142,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 DataRowView[] HighlightedRows = SelectRange.GetSelectedRows();
                 int NumberOfRows = HighlightedRows.Length;
-                PPostcodeRangeTable CachedRangeTable = (PPostcodeRangeTable) TDataCache.GetCacheableDataTableFromCache("PostcodeRangeList");
+                PPostcodeRangeTable CachedRangeTable = (PPostcodeRangeTable)TDataCache.GetCacheableDataTableFromCache("PostcodeRangeList");
                 bool NoRangesSelected = true;
 
                 ARangeName = new string[NumberOfRows];
@@ -153,11 +152,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 for (int i = 0; i < NumberOfRows; i++)
                 {
                     if (CachedRangeTable.Rows.Find(new object[] { ((PPostcodeRangeRow)HighlightedRows[i].Row).Range }) != null)
-                    {     
+                    {
                         ARangeName[i] = ((PPostcodeRangeRow)HighlightedRows[i].Row).Range;
                         AFrom[i] = ((PPostcodeRangeRow)HighlightedRows[i].Row).From;
                         ATo[i] = ((PPostcodeRangeRow)HighlightedRows[i].Row).To;
-                        
+
                         NoRangesSelected = false;
                     }
                     else
@@ -167,11 +166,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                         ATo[i] = null;
                     }
                 }
-                
+
                 if (NoRangesSelected)
                 {
                     MessageBox.Show(String.Format("No valid ranges have been selected."), String.Format("Add Range"),
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
                 return true;

@@ -41,16 +41,13 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 {
     public partial class TFrmEarlyLateRegistrationSetup
     {
-        private Int64 FPartnerKey;
+        /// PartnerKey for selected conference to be set from outside
+        public static Int64 FPartnerKey {
+            private get; set;
+        }
+
         private DateTime StartDate;
         private DateTime EndDate;
-
-        /// constructor
-        public TFrmEarlyLateRegistrationSetup(Form AParentForm, TSearchCriteria[] ASearchCriteria, long ASelectedConferenceKey) : base()
-        {
-            FPartnerKey = ASelectedConferenceKey;
-            Initialize(AParentForm, ASearchCriteria);
-        }
 
         private void InitializeManualCode()
         {

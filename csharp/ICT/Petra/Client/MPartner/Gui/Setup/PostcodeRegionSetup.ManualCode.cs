@@ -92,6 +92,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             MyDataView.AllowNew = false;
             MyDataView.Sort = "p_region_c ASC";
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
+
+            btnRemove.Enabled = false;
         }
 
         private void NewRecord(Object sender, EventArgs e)
@@ -130,6 +132,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             }
 
             FPrevRangeRowChangedRow = e.Row;
+
+            btnRemove.Enabled = true;
         }
 
         private bool DeleteRowManual(PPostcodeRegionRow ARowToDelete, ref String ACompletionMessage)
@@ -171,14 +175,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                         out RangeFrom,
                         out RangeTo,
                         MainWindow);
-                    
-                    InitializeManualCode();
-                    ShowDetailsManual(FPreviouslySelectedDetailRow);
-                    
+
                     if (RangeName == null)
                     {
                         return;
                     }
+
+                    ShowDetailsManual(FPreviouslySelectedDetailRow);
 
                     for (int i = 0; i < RangeName.Length; i++)
                     {
@@ -206,7 +209,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                             {
                                 string Message = string.Format(Catalog.GetString("The {0} range already exists for this region"), RangeName[i]);
                                 MessageBox.Show(Message, Catalog.GetString(
-                                    "Add Range"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                        "Add Range"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             }
                         }
                     }
@@ -239,6 +242,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private void DeleteRangeRecord(Object sender, EventArgs e)
         {
             DeletePPostcodeRegionRange();
+
+            if (grdRanges.Rows.Count == 0)
+            {
+                btnRemove.Enabled = false;
+            }
         }
 
         /// <summary>
