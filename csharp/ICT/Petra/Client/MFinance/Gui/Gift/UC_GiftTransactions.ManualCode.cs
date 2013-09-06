@@ -1740,13 +1740,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (AUpdateCurrentRowOnly)
             {
-                //This happens when the gift amount is updated
+                //This code runs when the gift amount is updated
                 if (FExchangeRateToBase != GetBatchRow().ExchangeRateToBase)
                 {
                     FExchangeRateToBase = GetBatchRow().ExchangeRateToBase;
                 }
 
-                FPreviouslySelectedDetailRow.GiftAmount = FPreviouslySelectedDetailRow.GiftTransactionAmount * FExchangeRateToBase;
+                FPreviouslySelectedDetailRow.GiftAmount = (decimal)txtDetailGiftTransactionAmount.NumberValueDecimal * FExchangeRateToBase;
+
                 return;
             }
 
