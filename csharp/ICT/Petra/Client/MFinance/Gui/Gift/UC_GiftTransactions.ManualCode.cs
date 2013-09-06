@@ -1747,7 +1747,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 FPreviouslySelectedDetailRow.GiftAmount = (decimal)txtDetailGiftTransactionAmount.NumberValueDecimal * FExchangeRateToBase;
-                
+
                 return;
             }
 
