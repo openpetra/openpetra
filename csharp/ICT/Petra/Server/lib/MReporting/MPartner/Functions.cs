@@ -47,6 +47,7 @@ using System.Collections.Specialized;
 using System.Data.Odbc;
 using System.Data;
 using System.Diagnostics;
+using Ict.Petra.Server.MPartner.Partner.UIConnectors;
 
 namespace Ict.Petra.Server.MReporting.MPartner
 {
@@ -712,6 +713,21 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 }
             }
 
+            //
+            // If there was no result and the partner given is a family, I can see about the field for the family member with id=0.
+            if (FieldName == "")
+            {
+                PPartnerTable tbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, null);
+                if ((tbl.Rows.Count > 0) && (tbl[0].PartnerClass == TPartnerClass.FAMILY.ToString()))
+                {
+                    PPersonTable familyMembers = PPersonAccess.LoadViaPFamily(APartnerKey, null);
+                    familyMembers.DefaultView.RowFilter = "p_family_id_i = 0";
+                    if (familyMembers.DefaultView.Count > 0)
+                    {
+                        FieldName = GetFieldOfPartner(((PPersonRow)familyMembers.DefaultView[0].Row).PartnerKey);
+                    }
+                }
+            }
             return FieldName;
         }
 

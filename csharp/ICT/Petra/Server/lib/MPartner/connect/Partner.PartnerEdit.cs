@@ -1636,7 +1636,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         PPartnerTable.GetPartnerKeyDBName() + ' ' +
                         "WHERE " + PPersonTable.GetFamilyKeyDBName() + " = ? " +
                         "AND " + PPartnerTable.GetStatusCodeDBName() + " <> " + '"' +
-                        SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED) + '"',                                         // Make sure we don't load MERGED Partners (shouldn't have a p_family_key_n, but just in case.)
+                        SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED) + '"',    // Make sure we don't load MERGED Partners (shouldn't have a p_family_key_n, but just in case.)
                         PPersonTable.GetTableName(), ReadTransaction, ParametersArray, 0, 0);
 
                     ACount = FamilyPersonsDT.Rows.Count;
@@ -1724,11 +1724,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
             }
             return PartnerTypeFamilyMembersDT;
-        }
-
-        private PartnerEditTDSFamilyMembersTable GetFamilyMembersInternal(Int64 AFamilyPartnerKey, String AWorkWithSpecialType, out Int32 ACount)
-        {
-            return GetFamilyMembersInternal(AFamilyPartnerKey, AWorkWithSpecialType, out ACount, false);
         }
 
         private PartnerEditTDSPPartnerInterestTable GetPartnerInterestsInternal(out Int32 ACount, Boolean ACountOnly)
