@@ -460,16 +460,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)
         {
-        	TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
-        	
-        	if (txn.NumberValueDecimal == null)
-        	{
-        		return;
-        	}
-        	else
-        	{
-        		UpdateTotals();
-        	}
+            TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
+
+            if (txn.NumberValueDecimal == null)
+            {
+                return;
+            }
+            else
+            {
+                UpdateTotals();
+            }
         }
 
         private void UpdateTotals()
@@ -1400,12 +1400,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            if (txtDetailGiftAmount.NumberValueDecimal == null || !txtDetailGiftAmount.NumberValueDecimal.HasValue)
+            if ((txtDetailGiftAmount.NumberValueDecimal == null) || !txtDetailGiftAmount.NumberValueDecimal.HasValue)
             {
-            	txtDetailGiftAmount.NumberValueDecimal = 0;
-            	ARow.GiftAmount = 0;
+                txtDetailGiftAmount.NumberValueDecimal = 0;
+                ARow.GiftAmount = 0;
             }
-            
+
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_Gift.ValidateRecurringGiftDetailManual(this, ARow, ref VerificationResultCollection,

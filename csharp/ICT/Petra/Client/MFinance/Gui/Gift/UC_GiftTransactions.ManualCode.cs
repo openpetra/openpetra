@@ -501,14 +501,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)
         {
-        	TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
-        	
-        	if (txn.NumberValueDecimal == null)
-        	{
-        		return;
-        	}
-        	
-        	if ((FPreviouslySelectedDetailRow != null) && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
+            TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
+
+            if (txn.NumberValueDecimal == null)
+            {
+                return;
+            }
+
+            if ((FPreviouslySelectedDetailRow != null) && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
                 UpdateBaseAmount(true);
             }

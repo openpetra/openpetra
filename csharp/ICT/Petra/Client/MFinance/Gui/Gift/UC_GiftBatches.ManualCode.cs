@@ -1103,14 +1103,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void HashTotalChanged(object sender, EventArgs e)
         {
-        	TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
-        	
-        	if (txn.NumberValueDecimal == null)
-        	{
-        		return;
-        	}
-        	
-        	Decimal HashTotal = Convert.ToDecimal(txtDetailHashTotal.NumberValueDecimal);
+            TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
+
+            if (txn.NumberValueDecimal == null)
+            {
+                return;
+            }
+
+            Decimal HashTotal = Convert.ToDecimal(txtDetailHashTotal.NumberValueDecimal);
             Form p = ParentForm;
 
             if (p != null)
@@ -1160,7 +1160,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string hashNumericPart = string.Empty;
             decimal hashDecimalVal;
 
-            if (txtDetailHashTotal.NumberValueDecimal == null || !txtDetailHashTotal.NumberValueDecimal.HasValue)
+            if ((txtDetailHashTotal.NumberValueDecimal == null) || !txtDetailHashTotal.NumberValueDecimal.HasValue)
             {
                 correctHashValue = 0m;
             }
