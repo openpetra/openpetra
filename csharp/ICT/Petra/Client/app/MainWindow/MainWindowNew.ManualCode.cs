@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.App.PetraClient
         TBreadcrumbTrail FBreadcrumbTrail;
 
         private static bool FConferenceSelected = false;
-        private static Int64 FConferenceKey = 0;
+        private static Int64 FConferenceKey = -1;
 
         /// <summary>
         /// The currently selected Ledger
@@ -247,12 +247,15 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             FConferenceKey = TUserDefaults.GetInt64Default("LastConferenceWorkedWith");
 
+            // Set PartnerKey in conference setup screens for selected conference
+            Ict.Petra.Client.MConference.Gui.TConferenceMain.FPartnerKey = FConferenceKey;
+
             XmlNode childNode = AMenuNode.FirstChild;
             XmlAttribute enabledAttribute;
 
             while (childNode != null)
             {
-                if ((TXMLParser.GetAttribute(childNode, "DependsOnConference").ToLower() == "true") && (FConferenceKey != 0))
+                if ((TXMLParser.GetAttribute(childNode, "DependsOnConference").ToLower() == "true") && (FConferenceKey != -1))
                 {
                     FConferenceSelected = true; // node only displayed if this is true
 
@@ -281,7 +284,27 @@ namespace Ict.Petra.Client.App.PetraClient
 
                     if (ConferenceName != String.Empty)
                     {
-                        SpecificConferenceNode.Attributes["Label"].Value = ConferenceName;
+                        const int BreakPoint = 28;
+
+                        // split up the name if it is too long to fit in the navigation panel
+                        if (ConferenceName.Length <= BreakPoint)
+                        {
+                            SpecificConferenceNode.Attributes["Label"].Value = ConferenceName + "\n";
+                        }
+                        else
+                        {
+                            int IndexOfSpace = ConferenceName.IndexOf(" ", 0);
+                            int LastIndexOfSpace = 0;
+
+                            while (IndexOfSpace <= BreakPoint && IndexOfSpace != -1)
+                            {
+                                LastIndexOfSpace = IndexOfSpace;
+                                IndexOfSpace = ConferenceName.IndexOf(" ", LastIndexOfSpace + 1);
+                            }
+
+                            SpecificConferenceNode.Attributes["Label"].Value = ConferenceName.Substring(0, LastIndexOfSpace) +
+                                                                               "\n" + ConferenceName.Substring(LastIndexOfSpace + 1) + "\n";
+                        }
                     }
                     else
                     {

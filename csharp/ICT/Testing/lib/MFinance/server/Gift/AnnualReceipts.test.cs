@@ -110,6 +110,7 @@ namespace Tests.MFinance.Server.Gift
 
             // import a test gift batch
             TVerificationResultCollection VerificationResult;
+
             if (!ImportAndPostGiftBatch(out VerificationResult))
             {
                 Assert.Fail("ImportAndPostGiftBatch failed: " + VerificationResult.BuildVerificationResultString());
