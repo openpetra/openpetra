@@ -26,6 +26,7 @@ using System.Data;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
@@ -389,6 +390,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void HashTotalChanged(object sender, EventArgs e)
         {
+        	TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
+        	
+        	if (txn.NumberValueDecimal == null)
+        	{
+        		return;
+        	}
+        	
             Decimal HashTotal = Convert.ToDecimal(txtDetailHashTotal.NumberValueDecimal);
             Form p = ParentForm;
 
@@ -428,7 +436,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Int32 hashTotalIndexOfLastNumeric = -1;
             bool isNumericVal;
 
-            if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
+            if (txtDetailHashTotal.NumberValueDecimal == null || !txtDetailHashTotal.NumberValueDecimal.HasValue)
             {
                 correctHashValue = 0m;
             }
@@ -470,15 +478,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            if (txtDetailHashTotal.NumberValueDecimal != correctHashValue)
-            {
-                txtDetailHashTotal.NumberValueDecimal = correctHashValue;
-            }
-
-            if (ARow.HashTotal != correctHashValue)
-            {
-                ARow.HashTotal = correctHashValue;
-            }
+            txtDetailHashTotal.NumberValueDecimal = correctHashValue;
+            ARow.HashTotal = correctHashValue;
         }
 
         /// <summary>
