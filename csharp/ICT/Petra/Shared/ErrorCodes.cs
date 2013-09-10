@@ -280,6 +280,11 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Level must be between {0} and {1}.")]
         public const String ERR_INTEREST_LEVEL_NOT_WITHIN_RANGE = "PARTN.00015V";
 
+        /// <summary>Partner of Partner Class Church: Denomination must be assigned, but no Denominations are set up to choose from.</summary>
+        [ErrCodeAttribute("Denominations must be set up.",
+             ErrorMessageText = "A Denomination must be assigned, but there are no Denominations set up to choose from. Please set up Denominations and then repeat the process!")]
+        public const String ERR_NO_DENOMINATIONS_SET_UP = "PARTN.00018V";
+
         #endregion
 
         #region Personnel Module-specific error codes

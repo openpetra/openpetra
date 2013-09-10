@@ -23,6 +23,11 @@
 //
 using System;
 
+using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPartner.Validation;
+
 namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_PartnerDetails_Church
@@ -75,6 +80,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             pnlAccomodationDetails.Visible = chkAccomodation.Checked;
         }
 
+        private void ValidateDataManual(PChurchRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedPartnerValidation_Partner.ValidatePartnerChurchManual(this, ARow, 
+                TDataCache.GetCacheableDataTableFromCache("DenominationList"),
+                ref VerificationResultCollection, FValidationControlsDict);
+        }        
+        
         #endregion
     }
 }
