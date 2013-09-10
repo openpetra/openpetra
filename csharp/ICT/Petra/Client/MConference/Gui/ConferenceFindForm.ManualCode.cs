@@ -294,7 +294,7 @@ namespace Ict.Petra.Client.MConference.Gui
         {
             DialogResult dlgResult;
 
-            AConferenceKey = -1;
+            AConferenceKey = 0;
             AConferenceName = String.Empty;
 
             TFrmConferenceFindForm FindConference = new TFrmConferenceFindForm(AParentForm);

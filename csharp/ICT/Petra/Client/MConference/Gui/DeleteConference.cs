@@ -83,7 +83,7 @@ namespace Ict.Petra.Client.MConference.Gui
             // Get conference key
             long ConferenceKey = TUserDefaults.GetInt64Default("LastConferenceWorkedWith");
 
-            if (ConferenceKey == -1)
+            if (ConferenceKey == 0)
             {
                 MessageBox.Show(Catalog.GetString("There is no conference selected."),
                     Catalog.GetString("Delete Conference"),
@@ -120,11 +120,11 @@ namespace Ict.Petra.Client.MConference.Gui
                 if (AConferenceKey == TUserDefaults.GetInt64Default("LastConferenceWorkedWith"))
                 {
                     // update user defaults table
-                    TUserDefaults.SetDefault(TUserDefaults.CONFERENCE_LASTCONFERENCEWORKEDWITH, -1);
+                    TUserDefaults.SetDefault(TUserDefaults.CONFERENCE_LASTCONFERENCEWORKEDWITH, 0);
 
                     // reload navigation
                     PropertyInfo CurrentConferenceProperty = AMainWindow.GetType().GetProperty("SelectedConferenceKey");
-                    CurrentConferenceProperty.SetValue(AMainWindow, -1, null);
+                    CurrentConferenceProperty.SetValue(AMainWindow, 0, null);
 
                     MethodInfo method = AMainWindow.GetType().GetMethod("LoadNavigationUI");
 

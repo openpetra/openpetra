@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.App.PetraClient
         TBreadcrumbTrail FBreadcrumbTrail;
 
         private static bool FConferenceSelected = false;
-        private static Int64 FConferenceKey = -1;
+        private static Int64 FConferenceKey = 0;
 
         /// <summary>
         /// The currently selected Ledger
@@ -255,7 +255,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             while (childNode != null)
             {
-                if ((TXMLParser.GetAttribute(childNode, "DependsOnConference").ToLower() == "true") && (FConferenceKey != -1))
+                if ((TXMLParser.GetAttribute(childNode, "DependsOnConference").ToLower() == "true") && (FConferenceKey != 0))
                 {
                     FConferenceSelected = true; // node only displayed if this is true
 
@@ -515,7 +515,10 @@ namespace Ict.Petra.Client.App.PetraClient
 
             AddNavigationForEachLedger(MainMenuNode, AvailableLedgers, ADontUseDefaultLedger);
 
-            AddConferenceInformation(MainMenuNode);
+            if (UserInfo.GUserInfo.IsInModule("PTNRUSER") && UserInfo.GUserInfo.IsInModule("CONFERENCE"))
+            {
+                AddConferenceInformation(MainMenuNode);
+            }
 
             return MainMenuNode;
         }
