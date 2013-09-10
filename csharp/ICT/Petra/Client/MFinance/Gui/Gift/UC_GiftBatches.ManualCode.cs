@@ -1168,7 +1168,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-            	correctHashValue = txtDetailHashTotal.NumberValueDecimal.Value;
+                correctHashValue = txtDetailHashTotal.NumberValueDecimal.Value;
             }
 
             txtDetailHashTotal.NumberValueDecimal = correctHashValue;

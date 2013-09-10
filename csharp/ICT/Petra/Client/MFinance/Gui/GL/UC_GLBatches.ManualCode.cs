@@ -222,7 +222,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-            	correctHashValue = txtDetailBatchControlTotal.NumberValueDecimal.Value;
+                correctHashValue = txtDetailBatchControlTotal.NumberValueDecimal.Value;
             }
 
             txtDetailBatchControlTotal.NumberValueDecimal = correctHashValue;
