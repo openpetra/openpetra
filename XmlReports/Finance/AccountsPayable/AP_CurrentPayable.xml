@@ -2,32 +2,32 @@
 <!DOCTYPE reports SYSTEM "../../reports.dtd">
 <reports>
 
-	<report id="APCurrentPayable">
-		<description>
-			Show all the documents that are outstanding, or were outstanding on a particular date.
-		</description>
-		<reportparameters>
-			<reportparameter name="param_ledger_number_i"/>
-			<reportparameter name="param_payment_date"/>
-		</reportparameters>
-		
-		<reportheader/>
-		
-		<pageheader>
-			<field whichfield="title1">
-					<value text ="Current Accounts Payable" />
-			</field>
-			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
-			<field whichfield="descr1"><value text="Ledger: "/><value variable="param_ledger_number_i"/>
-				<value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/>
-			</field>
+  <report id="APCurrentPayable">
+    <description>
+      Show all the documents that are outstanding, or were outstanding on a particular date.
+    </description>
+    <reportparameters>
+      <reportparameter name="param_ledger_number_i"/>
+      <reportparameter name="param_payment_date"/>
+    </reportparameters>
+
+    <reportheader/>
+
+    <pageheader>
+      <field whichfield="title1">
+          <value text ="Current Accounts Payable" />
+      </field>
+      <field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+      <field whichfield="descr1"><value text="Ledger: "/><value variable="param_ledger_number_i"/>
+        <value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/>
+      </field>
       <field whichfield ="descr3">
         <value text="Report Date: "/>
         <value variable="param_payment_date"/>
       </field>
     </pageheader>
-		
-		<calculations>
+
+    <calculations>
 
       <calculation id="SelectDocuments" returns="Automatic" returnsFormat="row">
         <query>
@@ -50,7 +50,8 @@
               LEFT JOIN PUB_a_ap_payment USING (a_payment_number_i)
               JOIN PUB_a_ap_supplier USING (p_partner_key_n)
               JOIN PUB_p_partner USING (p_partner_key_n)
-              WHERE ((PUB_a_ap_payment.a_payment_date_d IS NULL) OR (PUB_a_ap_payment.a_payment_date_d > {#param_payment_date#}))
+              WHERE ((PUB_a_ap_payment.a_payment_date_d IS NULL AND PUB_a_ap_document.a_document_status_c != 'CANCELLED') 
+                OR (PUB_a_ap_payment.a_payment_date_d > {#param_payment_date#}))
               AND (PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}})
               ORDER BY SupplierName, ApNumber;
             </value>
@@ -146,26 +147,26 @@
     </calculations>
 
     <levels>
-		  <level name="main">
-			  <detail>
-  				  <lowerLevelReport level="ReportLevel"/>
-			  </detail>
-		  </level>
+      <level name="main">
+        <detail>
+            <lowerLevelReport level="ReportLevel"/>
+        </detail>
+      </level>
 
       <level name="ReportLevel">
-			  <detail>
-  				  <lowerLevelReport level="DocumentLevel" calculation="SelectDocuments"/>
-			  </detail>
+        <detail>
+            <lowerLevelReport level="DocumentLevel" calculation="SelectDocuments"/>
+        </detail>
         <footer space="above">
           <field whichfield="column 6">
             <value text="Total:"/>
           </field>
-          <field whichfield="column 7" format="#,##0.00;#,##0.00;0.00;0.00">
+          <field whichfield="column 7" format="currency">
             <value function="getSumLowerReport({{lineId}}, {{column}})"/>
-          </field>          
+          </field>
         </footer>
       </level>
-      
+
       <level name="DocumentLevel">
         <header>
         </header>
@@ -196,6 +197,6 @@
           </field>
         </detail>
       </level>
-		</levels>
-	</report>
+    </levels>
+  </report>
 </reports>
