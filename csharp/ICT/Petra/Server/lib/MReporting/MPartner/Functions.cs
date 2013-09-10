@@ -718,16 +718,19 @@ namespace Ict.Petra.Server.MReporting.MPartner
             if (FieldName == "")
             {
                 PPartnerTable tbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, null);
+
                 if ((tbl.Rows.Count > 0) && (tbl[0].PartnerClass == TPartnerClass.FAMILY.ToString()))
                 {
                     PPersonTable familyMembers = PPersonAccess.LoadViaPFamily(APartnerKey, null);
                     familyMembers.DefaultView.RowFilter = "p_family_id_i = 0";
+
                     if (familyMembers.DefaultView.Count > 0)
                     {
                         FieldName = GetFieldOfPartner(((PPersonRow)familyMembers.DefaultView[0].Row).PartnerKey);
                     }
                 }
             }
+
             return FieldName;
         }
 
