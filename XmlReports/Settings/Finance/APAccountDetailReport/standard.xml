@@ -12,10 +12,10 @@
   <Parameter id="param_calculation" column="1" value="eString:Reference Number" />
   <Parameter id="ColumnWidth" column="1" value="eInteger:3" />
   <Parameter id="param_ytd" column="1" value="eString:false" />
-  <Parameter id="param_calculation" column="2" value="eString:Credits" />
+  <Parameter id="param_calculation" column="2" value="eString:Debits" />
   <Parameter id="ColumnWidth" column="2" value="eInteger:2" />
   <Parameter id="param_ytd" column="2" value="eString:false" />
-  <Parameter id="param_calculation" column="3" value="eString:Debits" />
+  <Parameter id="param_calculation" column="3" value="eString:Credits" />
   <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
   <Parameter id="param_ytd" column="3" value="eString:false" />
   <Parameter id="param_calculation" column="4" value="eString:Detail" />
@@ -32,7 +32,7 @@
   <Parameter id="TotalDebit" value="eInteger:0" />
   <Parameter id="param_column_Date" value="eInteger:0" />
   <Parameter id="param_column_Reference Number" value="eInteger:1" />
-  <Parameter id="param_column_Credits" value="eInteger:2" />
-  <Parameter id="param_column_Debits" value="eInteger:3" />
+  <Parameter id="param_column_Debits" value="eInteger:2" />
+  <Parameter id="param_column_Credits" value="eInteger:3" />
   <Parameter id="param_column_Detail" value="eInteger:4" />
 </Parameters>
