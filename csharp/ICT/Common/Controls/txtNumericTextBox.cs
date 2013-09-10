@@ -200,7 +200,7 @@ namespace Ict.Common.Controls
 
             set
             {
-                if (FControlMode == TNumericTextBoxMode.Decimal)
+                if ((FControlMode == TNumericTextBoxMode.Decimal) || (FControlMode == TNumericTextBoxMode.Currency))
                 {
                     FDecimalPlaces = value;
                 }
@@ -1103,6 +1103,7 @@ namespace Ict.Common.Controls
                     switch (FControlMode)
                     {
                         case TNumericTextBoxMode.Decimal:
+                        case TNumericTextBoxMode.Currency:
 
                             if (FNumberPrecision == TNumberPrecision.Double)
                             {

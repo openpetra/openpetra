@@ -460,7 +460,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)
         {
-            UpdateTotals();
+            TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
+
+            if (txn.NumberValueDecimal == null)
+            {
+                return;
+            }
+            else
+            {
+                UpdateTotals();
+            }
         }
 
         private void UpdateTotals()
@@ -1389,6 +1398,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if ((ARow == null) || (GetBatchRow() == null))
             {
                 return;
+            }
+
+            if ((txtDetailGiftAmount.NumberValueDecimal == null) || !txtDetailGiftAmount.NumberValueDecimal.HasValue)
+            {
+                txtDetailGiftAmount.NumberValueDecimal = 0;
+                ARow.GiftAmount = 0;
             }
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
