@@ -431,11 +431,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             decimal correctHashValue;
 
-            if (ARow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
-            {
-                return;
-            }
-
             if ((txtDetailHashTotal.NumberValueDecimal == null) || !txtDetailHashTotal.NumberValueDecimal.HasValue)
             {
                 correctHashValue = 0m;
