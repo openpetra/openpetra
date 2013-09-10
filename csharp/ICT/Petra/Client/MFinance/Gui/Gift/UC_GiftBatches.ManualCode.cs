@@ -1103,6 +1103,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void HashTotalChanged(object sender, EventArgs e)
         {
+            TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
+
+            if (txn.NumberValueDecimal == null)
+            {
+                return;
+            }
+
             Decimal HashTotal = Convert.ToDecimal(txtDetailHashTotal.NumberValueDecimal);
             Form p = ParentForm;
 
@@ -1149,60 +1156,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void ParseHashTotal(AGiftBatchRow ARow)
         {
             decimal correctHashValue;
-            string hashTotal = txtDetailHashTotal.Text.Trim();
-            string hashNumericPart = string.Empty;
-            decimal hashDecimalVal;
 
-            if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
+            if (ARow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            {
+                return;
+            }
+
+            if ((txtDetailHashTotal.NumberValueDecimal == null) || !txtDetailHashTotal.NumberValueDecimal.HasValue)
             {
                 correctHashValue = 0m;
             }
-            else if (hashTotal.Contains(" "))
-            {
-                hashNumericPart = hashTotal.Substring(0, hashTotal.IndexOf(' '));
-
-                if (!Decimal.TryParse(hashNumericPart, out hashDecimalVal))
-                {
-                    correctHashValue = 0m;
-                }
-                else
-                {
-                    correctHashValue = hashDecimalVal;
-                }
-            }
             else
             {
-                Int32 hashTotalIndexOfLastNumeric = hashTotal.LastIndexOfAny(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
-
-                if (hashTotalIndexOfLastNumeric > -1)
-                {
-                    hashNumericPart = hashTotal.Substring(0, hashTotalIndexOfLastNumeric + 1);
-                    bool isNumericVal = Decimal.TryParse(hashNumericPart, out hashDecimalVal);
-
-                    if (!isNumericVal)
-                    {
-                        correctHashValue = 0m;
-                    }
-                    else
-                    {
-                        correctHashValue = hashDecimalVal;
-                    }
-                }
-                else
-                {
-                    correctHashValue = 0m;
-                }
+                correctHashValue = txtDetailHashTotal.NumberValueDecimal.Value;
             }
 
-            if (txtDetailHashTotal.NumberValueDecimal != correctHashValue)
-            {
-                txtDetailHashTotal.NumberValueDecimal = correctHashValue;
-            }
-
-            if (ARow.HashTotal != correctHashValue)
-            {
-                ARow.HashTotal = correctHashValue;
-            }
+            txtDetailHashTotal.NumberValueDecimal = correctHashValue;
+            ARow.HashTotal = correctHashValue;
         }
 
         /// <summary>
