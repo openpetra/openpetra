@@ -95,6 +95,12 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
         {
             // this is used to compare with the row that is being validated
             DataRowCollection GridData = FMainDS.PcConferenceCost.Rows;
+            
+            if (txtDetailCharge.Text == "")
+            {
+                txtDetailCharge.Text = "0.00";
+                ARow.Charge = 0;
+            }
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 

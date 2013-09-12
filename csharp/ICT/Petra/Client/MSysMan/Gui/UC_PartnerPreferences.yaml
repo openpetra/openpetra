@@ -1,0 +1,16 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraUtils
+    Namespace: Ict.Petra.Client.MSysMan.Gui
+    UsingNamespaces: [Ict.Petra.Shared.MSysMan,Ict.Petra.Shared.MSysMan.Data,Ict.Petra.Shared.MSysMan.Validation]
+    FormType: dialog
+    Template: usercontrolUnbound
+
+    Controls:
+        pnlContent:
+            Controls: [grpTasks]
+        grpTasks:
+            Controls: [txtTest]
+            Width: 430
+            Height: 150
+        txtTest:

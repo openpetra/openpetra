@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.App.PetraClient
         TBreadcrumbTrail FBreadcrumbTrail;
 
         private static bool FConferenceSelected = false;
-        private static Int64 FConferenceKey = -1;
+        private static Int64 FConferenceKey = 0;
 
         /// <summary>
         /// The currently selected Ledger
@@ -244,7 +244,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
         // displays information about the currently selected conference in the navigation panel
         private static void AddConferenceInformation(XmlNode AMenuNode)
-        {
+        {    
             FConferenceKey = TUserDefaults.GetInt64Default("LastConferenceWorkedWith");
 
             // Set PartnerKey in conference setup screens for selected conference
@@ -255,7 +255,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             while (childNode != null)
             {
-                if ((TXMLParser.GetAttribute(childNode, "DependsOnConference").ToLower() == "true") && (FConferenceKey != -1))
+                if ((TXMLParser.GetAttribute(childNode, "DependsOnConference").ToLower() == "true") && (FConferenceKey != 0))
                 {
                     FConferenceSelected = true; // node only displayed if this is true
 
@@ -515,7 +515,11 @@ namespace Ict.Petra.Client.App.PetraClient
 
             AddNavigationForEachLedger(MainMenuNode, AvailableLedgers, ADontUseDefaultLedger);
 
-            AddConferenceInformation(MainMenuNode);
+            
+            if (UserInfo.GUserInfo.IsInModule("PTNRUSER") && UserInfo.GUserInfo.IsInModule("CONFERENCE"))
+            {
+                AddConferenceInformation(MainMenuNode);
+            }
 
             return MainMenuNode;
         }
@@ -584,11 +588,20 @@ namespace Ict.Petra.Client.App.PetraClient
         }
 
         /// <summary>
-        /// Keep Conference module in view after a new conference has been selected.
+        /// This was added for use after a new conference has been selected.
+        /// IT ONLY WORKS IF THE USER HAS CONFERENCE ACCESS!
         /// </summary>
         public void SelectConferenceFolder()
         {
             lstFolders.SelectFolder(4);
+        }
+
+        /// <summary>
+        /// This was added for use after user preferences have been set.
+        /// </summary>
+        public void SelectSettingsFolder()
+        {
+            lstFolders.SelectFolder(6);
         }
 
         /// <summary>

@@ -1,0 +1,36 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraUtils
+    Namespace: Ict.Petra.Client.MSysMan.Gui
+    UsingNamespaces: [Ict.Petra.Shared.MSysMan,Ict.Petra.Shared.MSysMan.Data,Ict.Petra.Shared.MSysMan.Validation]
+    FormType: dialog
+    Template: usercontrolUnbound
+
+    Controls:
+        pnlContent:
+            Controls: [grpTasks]
+        grpTasks:
+            Controls: [rgrViewTasks, rgrTaskSize, chkSingleClickExecution]
+            ControlsOrientation: vertical
+            Stretch: horizontally
+            Width: 430
+            Height: 150
+        rgrViewTasks:
+            ControlsOrientation: horizontal
+            Controls: [rbtTiles, rbtList]
+            Label: View Tasks as
+            Stretch: horizontally
+            BorderVisible: false
+        rbtTiles:
+        rbtList:
+        rgrTaskSize:
+            ControlsOrientation: horizontal
+            Controls: [rbtLarge, rbtMedium, rbtSmall]
+            Stretch: horizontally
+            BorderVisible: false
+        rbtLarge:
+        rbtMedium:
+        rbtSmall:
+        chkSingleClickExecution:
+            CheckBoxAttachedLabel: true
+            Label: Single-click to open an item

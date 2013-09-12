@@ -391,7 +391,7 @@ OpenPetra:
                         OutreachReport: {ActionOpenScreen=TFrmOutreachReport}
                 Setup: {Namespace=Ict.Petra.Client.MConference.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     CurrentConference:
-                        MasterSettings: {Label=Conference Master Settings, Description=Maintain Conference Master Settings, ActionOpenScreen=TFrmConferenceMasterSettings}
+                        MasterSettings: {Label=Conference Master Settings, Description=Maintain Conference Master Settings, ActionOpenScreen=TConferenceMain.MasterSettingsForSelectedConference}
                         ChildDiscount: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Child Discounts, Description=Maintain Child Discounts, ActionClick=TConferenceMain.ChildDiscountsForSelectedConference}
                         ConferenceStandardCost: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Conference Standard Costs, Description=Maintain Conference Standard Costs, ActionClick=TConferenceMain.StandardCostsForSelectedConference}
                         EarlyLateRegistration: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Early and Late Registrations, Description=Maintain Early and Late Registrations, ActionClick=TConferenceMain.EarlyLateRegistrationsForSelectedConference}
@@ -418,8 +418,10 @@ OpenPetra:
             Main: {SkipThisLevel=true}
                 Safety: {DontShowNestedTasksAsLinks=true}
                     SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
-                Language: {DontShowNestedTasksAsLinks=true}
-                    SetLanguageSettings: {Description="Switch to another language or culture settings", ActionOpenScreen=TFrmMaintainLanguageCulture}
+                Preferences: {DontShowNestedTasksAsLinks=true}
+                    UserPreferences:
+                        SetLanguageSettings: {Description="Switch to another language or culture settings", ActionOpenScreen=TFrmMaintainLanguageCulture}
+                        SetUserPreferences: {Description="Maintain User Preferences", ActionOpenScreen=TFrmUserPreferences}
                 Export: {DontShowNestedTasksAsLinks=true, PermissionsRequired=FINANCE-1,PERSONNEL}
                     ExportDataToIntranet: {Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExport}
 
