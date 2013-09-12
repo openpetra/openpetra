@@ -3,24 +3,31 @@ RootNode:
     FormTitle: Maintain Security Groups
     Namespace: Ict.Petra.Client.MSysMan.Gui.Setup
     DetailTable: SGroup
-    UsingNamespaces: [Ict.Petra.Shared.MSysMan, Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MSysMan.Validation, Ict.Petra.Shared.Interfaces.MCommon, Ict.Common.Remoting.Client]
+    UsingNamespaces: [Ict.Petra.Shared.MSysMan, Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MSysMan.Validation, Ict.Petra.Shared.Interfaces.MCommon]
     FormType: edit
     Template: windowMaintainTable
     WindowWidth: 650
     WindowHeight: 450
     Actions:
-        actNew: {Label=New, ActionClick=NewRecord}
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
-            Controls: [btnNew]
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailGroupId, DetailGroupName]
@@ -33,7 +40,4 @@ RootNode:
             Controls:
                 Row0: [txtDetailGroupId, txtDetailGroupName]
         txtDetailGroupId: {Label=Group Code, Width=110, CharacterCasing=Upper}
-        txtDetailGroupName: {Label=Description, Width=280}
-    Toolbar:
-        tbbNew:
-            Label: New Group
+        txtDetailGroupName: {Label=Description, Width=330}

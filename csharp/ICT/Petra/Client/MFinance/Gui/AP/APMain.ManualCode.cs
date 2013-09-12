@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -228,16 +228,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 grdSupplierResult.Columns.Clear();
                 grdSupplierResult.AddTextColumn("Supplier Key", FSupplierTable.Columns[0], 90);
-                grdSupplierResult.AddTextColumn("Supplier Name", FSupplierTable.Columns[1], 250);
+                grdSupplierResult.AddTextColumn("Supplier Name", FSupplierTable.Columns[1], 150);
                 grdSupplierResult.AddTextColumn("Currency", FSupplierTable.Columns[2], 85);
             }
             else
             {
                 grdInvoiceResult.Columns.Clear();
-                grdInvoiceResult.AddCheckBoxColumn("", FInvoiceTable.Columns["Selected"], 25, false);
+                grdInvoiceResult.AddCheckBoxColumn("", FInvoiceTable.Columns["Selected"], 20, false);
                 grdInvoiceResult.AddTextColumn("AP#", FInvoiceTable.Columns["ApNumber"], 55);
-//              grdInvoiceResult.AddTextColumn("Inv#", FInvoiceTable.Columns["DocumentCode"], 90);
-                grdInvoiceResult.AddTextColumn("Supplier", FInvoiceTable.Columns["PartnerShortName"], 240);
+                grdInvoiceResult.AddTextColumn("Inv#", FInvoiceTable.Columns["DocumentCode"], 90);
+                grdInvoiceResult.AddTextColumn("Supplier", FInvoiceTable.Columns["PartnerShortName"], 150);
                 grdInvoiceResult.AddCurrencyColumn("Amount", FInvoiceTable.Columns["TotalAmount"], 2);
                 grdInvoiceResult.AddCurrencyColumn("Outstanding", FInvoiceTable.Columns["OutstandingAmount"], 2);
                 grdInvoiceResult.AddTextColumn("Currency", FInvoiceTable.Columns["CurrencyCode"], 70);
@@ -246,10 +246,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdInvoiceResult.AddDateColumn("Issued", FInvoiceTable.Columns["DateIssued"]);
 //              grdInvoiceResult.AddTextColumn("Discount", FInvoiceTable.Columns["DiscountMsg"], 150);
 
-                grdInvoiceResult.Columns[3].Width = 90;  // Only the text columns can have their widths set while
-                grdInvoiceResult.Columns[4].Width = 90;  // they're being added.
-                grdInvoiceResult.Columns[6].Width = 110; // For these currency and date columns,
-                grdInvoiceResult.Columns[8].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
+                grdInvoiceResult.Columns[4].Width = 90;  // Only the text columns can have their widths set while
+                grdInvoiceResult.Columns[5].Width = 90;  // they're being added.
+                grdInvoiceResult.Columns[7].Width = 110; // For these currency and date columns,
+                grdInvoiceResult.Columns[9].Width = 110; // I need to set the width afterwards. (THIS WILL GO WONKY IF EXTRA FIELDS ARE ADDED ABOVE.)
 
                 grdInvoiceResult.MouseClick += new MouseEventHandler(grdInvoiceResult_Click);
             }
@@ -276,7 +276,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             Decimal TotalSelected = 0;
             bool ListHasItems = false;
 
-            //grdInvoiceResult.PagedDataTable
             if (grdInvoiceResult.IsInitialised) // I may be called before the first search.
             {
                 if (grdInvoiceResult.PagedDataTable.Rows.Count > 0)
@@ -300,7 +299,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                             }
                         }
 
-                        String BarStatus = "|" + Row["DocumentStatus"].ToString();
+                        String BarStatus = "|" + Row["DocumentStatus"].ToString() + "|";
 
                         //
                         // While I'm in this loop, I'll also check whether to enable the "Pay", "Post", "Reverse" and "Delete" buttons.
@@ -319,7 +318,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                             TaggedInvoicesDeletable = true;
                         }
 
-                        if ("|POSTED" == BarStatus)
+                        if ("|POSTED|" == BarStatus)
                         {
                             TaggedInvoicesReversable = true;
                         }
@@ -448,12 +447,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         FSupplierTable = NewPage;
                     }
 
-/*
- *                  else
- *                  {
- *                      FSupplierTable.Merge(NewPage);
- *                  }
- */
                     return NewPage;
                 }
             }
@@ -468,12 +461,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         FInvoiceTable = NewPage;
                     }
 
-/*
- *                  else
- *                  {
- *                      FInvoiceTable.Merge(NewPage);
- *                  }
- */
                     return NewPage;
                 }
             }
@@ -526,19 +513,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private Int32 GetCurrentlySelectedDocumentId()
         {
             DataRowView[] SelectedGridRow = grdInvoiceResult.SelectedDataRowsAsDataRowView;
-            Int32 InvoiceNum = -1;
+            Int32 ApDocumentId = -1;
 
             if (SelectedGridRow.Length >= 1)
             {
-                Object Cell = SelectedGridRow[0]["DocumentId"];
+                Object Cell = SelectedGridRow[0]["ApDocumentId"];
 
                 if (Cell.GetType() == typeof(Int32))
                 {
-                    InvoiceNum = Convert.ToInt32(Cell);
+                    ApDocumentId = Convert.ToInt32(Cell);
                 }
             }
 
-            return InvoiceNum;
+            return ApDocumentId;
         }
 
         /// <summary>
@@ -567,8 +554,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (SelectedInvoice > 0)
             {
                 TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
-                frm.LoadAApDocument(FLedgerNumber, SelectedInvoice);
-                frm.Show();
+
+                if (frm.LoadAApDocument(FLedgerNumber, SelectedInvoice))
+                {
+                    frm.Show();
+                }
             }
         }
 
@@ -727,7 +717,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 if (Row["Selected"].Equals(true))
                 {
-                    LoadDs.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, (int)Row["ApNumber"]));
+                    LoadDs.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, (int)Row["ApDocumentId"]));
                 }
             }
 
@@ -745,7 +735,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     if ("POSTED" == Row["DocumentStatus"].ToString())
                     {
-                        ReverseTheseDocs.Add((int)Row["DocumentId"]);
+                        ReverseTheseDocs.Add((int)Row["ApDocumentId"]);
                     }
                     else
                     {
@@ -780,20 +770,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         out Verifications))
                 {
                     System.Windows.Forms.MessageBox.Show("Invoice reversed to Approved status.", Catalog.GetString("Reversal"));
+                    DoSearch(null, null);
                     return;
                 }
                 else
                 {
-                    string ErrorMessages = String.Empty;
-
-                    foreach (TVerificationResult verif in Verifications)
-                    {
-                        ErrorMessages += "[" + verif.ResultContext + "] " +
-                                         verif.ResultTextCaption + ": " +
-                                         verif.ResultText + Environment.NewLine;
-                    }
-
-                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Reversal"));
+                    string ErrorMessages = Verifications.BuildVerificationResultString();
+                    MessageBox.Show(ErrorMessages, Catalog.GetString("Reverse Invoice"));
                 }
             }
         }
@@ -809,7 +792,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + Row["DocumentStatus"].ToString()) < 0)
                     {
-                        DeleteTheseDocs.Add((int)Row["DocumentId"]);
+                        DeleteTheseDocs.Add((int)Row["ApDocumentId"]);
                     }
                     else
                     {
@@ -831,24 +814,29 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (TRemote.MFinance.AP.WebConnectors.DeleteAPDocuments(FLedgerNumber, DeleteTheseDocs, out Verifications))
             {
                 MessageBox.Show(Catalog.GetString("Document(s) deleted successfully!"));
+                DoSearch(null, null);
             }
             else
             {
-                string ErrorMessages = String.Empty;
-
-                foreach (TVerificationResult verif in Verifications)
-                {
-                    ErrorMessages += "[" + verif.ResultContext + "] " +
-                                     verif.ResultTextCaption + ": " +
-                                     verif.ResultText + Environment.NewLine;
-                }
-
-                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Document Deletion failed"));
+                string ErrorMessages = Verifications.BuildVerificationResultString();
+                MessageBox.Show(ErrorMessages, Catalog.GetString("Document Deletion"));
             }
         }
 
         private void OpenAllTagged(object sender, EventArgs e)
         {
+            foreach (DataRow Row in grdInvoiceResult.PagedDataTable.Rows)
+            {
+                if (Row["Selected"].Equals(true))
+                {
+                    TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
+
+                    if (frm.LoadAApDocument(FLedgerNumber, (int)Row["ApDocumentId"]))
+                    {
+                        frm.Show();
+                    }
+                }
+            }
         }
 
         private void PayAllTagged(object sender, EventArgs e)
@@ -861,16 +849,18 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             foreach (DataRow Row in grdInvoiceResult.PagedDataTable.Rows)
             {
                 if ((Row["Selected"].Equals(true)
-                     && ("|POSTED|PARTPAID".IndexOf("|" + Row["DocumentStatus"].ToString()) >= 0)))
+                     && ("|POSTED|PARTPAID|".IndexOf("|" + Row["DocumentStatus"].ToString() + "|") >= 0)))
                 {
-                    PayTheseDocs.Add((int)Row["DocumentId"]);
+                    PayTheseDocs.Add((int)Row["ApDocumentId"]);
                 }
             }
 
             if (PayTheseDocs.Count > 0)
             {
-                PaymentScreen.AddDocumentsToPayment(TempDS, FLedgerNumber, PayTheseDocs);
-                PaymentScreen.Show();
+                if (PaymentScreen.AddDocumentsToPayment(TempDS, FLedgerNumber, PayTheseDocs))
+                {
+                    PaymentScreen.Show();
+                }
             }
         }
 
@@ -885,7 +875,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 if ((Row["Selected"].Equals(true) && ("|POSTED|PARTPAID|PAID|".IndexOf(Row["DocumentStatus"].ToString()) < 0)))
                 {
-                    int DocId = (int)Row["DocumentId"];
+                    int DocId = (int)Row["ApDocumentId"];
 
                     int RowIdx = TempDS.AApDocument.DefaultView.Find(DocId);
 
@@ -907,6 +897,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     // TODO: print reports on successfully posted batch
                     MessageBox.Show(Catalog.GetString("The tagged documents have been posted successfully!"));
+                    DoSearch(null, null);
 
                     // TODO: show posting register of GL Batch?
                 }

@@ -10,18 +10,25 @@ RootNode:
     WindowWidth: 750
     WindowHeight: 467
     Actions:
-        actNew: {Label=New, ActionClick=NewRecord}
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
-            Controls: [btnNew]
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailLanguageLevel, DetailLanguageLevelDescr, DetailLanguageComment, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
@@ -43,7 +50,3 @@ RootNode:
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
-        
-    Toolbar:
-        tbbNew:
-            Label: New Language Level

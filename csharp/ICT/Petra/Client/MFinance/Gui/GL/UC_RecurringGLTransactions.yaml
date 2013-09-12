@@ -9,10 +9,11 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add, ActionClick=NewRow}
-        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}
+        actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllTrans}        
     Controls:
         pnlContent:
-            Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
+            Controls: [pnlInfo, pnlDetailGrid, pnlDetailsSection]
             Dock: Fill
         pnlInfo:
             Controls:
@@ -23,12 +24,39 @@ RootNode:
         txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlDetailButtons, grdDetails]
+            Height: 200
+            Width: 600
+        pnlDetailsSection:
+            Dock: Bottom
+            Controls: [pnlDetails, pnlTransAnalysisAttributes]
+            Height: 320
         pnlDetailButtons:
+            Dock: Bottom
+            Controls: [btnNew, btnDelete, btnDeleteAll]
+            ControlsOrientation: horizontal
+        btnNew: {Action=actNew, Width=120}
+        btnDelete: {Action=actDelete, Width=120}
+        btnDeleteAll: {Action=actDeleteAll, Width=120, StartNewButtonGroup=true}
+
+        pnlTransAnalysisAttributes:
             Dock: Right
-            Controls: [btnNew, btnDelete]
-        btnNew: {Action=actNew, Stretch=horizontally}
-        btnDelete: {Action=actDelete, Stretch=horizontally}
+            Controls: [lblAnalAttributes, grdAnalAttributes]
+            Width: 300
+
+        grdAnalAttributes:
+            TableName: ATransAnalAttrib
+            Width: 220
+            Height: 100
+            Columns: [AnalysisTypeCode]
+            CustomColumns:
+                AnalysisTypeCode: {Label=Type, Type=String}
+            ActionFocusRow: AnalysisAttributesGridFocusRow
+            ActionClick: AnalysisAttributesGridClick
+
+        lblAnalAttributes:
+            Label: Analysis Attributes
+
         grdDetails:
             Dock: Fill
             TableName: ARecurringTransaction
@@ -42,16 +70,21 @@ RootNode:
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
             ActionFocusRow: FocusedRowChanged
-            ActionDoubleClick: ShowAttributesTab
-            ActionEnterKeyPressed: ShowAttributesTab
             SortOrder: ARecurringTransaction.TransactionNumber ASC
             RowFilter: ARecurringTransaction.BatchNumber, ARecurringTransaction.JournalNumber
+            EnableMultiSelection: false
         pnlDetails:
-            Dock: Bottom
-            Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, pnlDetailAmounts]
-        cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList}
+            Dock: Left
+            Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, cmbDetailKeyMinistryKey, pnlDetailAmounts]
+        cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList, OnChange=CostCentreCodeDetailChanged}
         cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList, OnChange=AccountCodeDetailChanged}
-        txtDetailNarrative: {Label=Narrative, Width=537}
+        cmbDetailKeyMinistryKey: {Label=Key Ministry, Width=330, List=UserDefinedList}
+        txtDetailNarrative:
+            Label: Narrative
+            Width: 300
+            Height: 50
+            Multiline: true
+            ScrollBars: Vertical
         txtDetailReference: {Label=Reference}
         pnlDetailAmounts:
             Controls:

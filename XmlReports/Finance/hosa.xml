@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE reports SYSTEM "../reports.dtd">
+<reports>
+
+    <report id="HOSA">
+        <description>
+            HOSA = "Home Office Statement of Accounts".
+            HOSA is an account detail report, that has a special section for accounts of type INCOME:
+            it lists all donations from a_gift_detail towards this costcentre, grouped by recipient partner key.
+            It can be used for other cost centres than fields too, eg. department costcentres, or even personal cost centres.
+        </description>
+        <reportparameters>
+            <reportparameter name="param_account_hierarchy_c"/>
+            <reportparameter name="param_ledger_number_i"/>
+            <reportparameter name="param_ich_number"/> <!-- 0 means that all ich runs will be considered -->
+            <reportparameter name="param_start_period_i"/>
+            <reportparameter name="param_end_period_i"/>
+            <reportparameter name="param_start_date"/>
+            <reportparameter name="param_end_date"/>
+            <reportparameter name="param_year_i">
+                <option name="Date Range"/>
+                <option name="Available Years" calculation="Select Available Years"/>
+            </reportparameter>
+            <reportparameter name="param_currency"> 
+                <option name="Base"/>
+                <option name="International"/>
+                <option name="Transaction"/>
+            </reportparameter>
+            <reportparameter name="param_cost_centre_codes"/><!-- for HOSAs, this should be only one costcentre -->
+        </reportparameters>
+        
+        <reportheader/>
+        
+        <pageheader>
+            <field whichfield="title1">
+                <fielddetail>
+                    <value text ="HOSA" />
+                </fielddetail>
+            </field>
+            <field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+            <field whichfield="descr1"><value text="Ledger "/><value variable="param_ledger_number_i"/>
+                <value text="   "/><value function="getLedgerName({{param_ledger_number_i}})"/>
+            </field>
+            <field whichfield="period2" align="right">
+                <fielddetail condition="eq({param_rgrCostCentres},CostCentreList)">
+                    <value text="    Cost Centres: "/>
+                    <value function="replace({param_cost_centre_codes},&quot;,)"/>
+                </fielddetail>
+            </field>
+            <field whichfield="period3" align="right">
+                <fielddetail>
+                    <value function="getAccountingHierarchy({param_account_hierarchy_c})"/>
+                </fielddetail>
+            </field>
+
+            <field whichfield="descr2" width="7 cm"><value text="Currency: "/>
+                <value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
+            </field>
+            <field whichfield="descr3"><value text="Current Period is "/>
+                <value variable="param_current_period_i"/>
+            </field>            
+            <field whichfield="period1">
+                <fielddetail condition="eq({param_daterange},true)">
+                    <value text="Period:  "/>
+                    <value variable="param_start_date" format="formatteddate"/>
+                    <value text=" To "/>
+                    <value variable="param_end_date" format="formatteddate"/>
+                </fielddetail>
+                <fielddetail condition="eq({param_period},true)">
+                    <value text="Period:  "/>
+                    <value function="getPeriodStartDate({{param_ledger_number_i}}, {{param_start_period_i}})"/>
+                    <value text=" To "/>
+                    <value function="getPeriodEndDate({{param_ledger_number_i}}, {{param_end_period_i}})"/>
+                    <value text = "   (" />
+                    <value variable="param_start_period_i"/>
+                    <value text=" To "/>
+                    <value variable="param_end_period_i"/>
+                    <value text = ")    (" />
+                    <value function="getStatePeriod({{param_ledger_number_i}}, {{param_year_i}}, {{param_end_period_i}})"/>
+                    <value text = ")" />
+                </fielddetail>
+                <fielddetail condition="eq({param_quarter},true)">
+                    <value text="Period:  "/>
+                    <value variable="param_start_date" format="formatteddate"/>
+                    <value text=" To "/>
+                    <value variable="param_end_date" format="formatteddate"/>
+                    <value text="   (Quarter:  "/>
+                    <value function="div({param_end_period_i}, 3)"/>
+                    <value text=")"/>
+                </fielddetail>
+            </field>
+            <field whichfield="left1" pos="0 cm" width="7 cm"><value text = "CostCentre/Account"/></field>
+        </pageheader>
+        
+        <calculations>
+                
+            <calculation id="Select Summary of incoming gifts"
+                    returns="automatic"
+                    returnsFormat="row">
+                <query>
+                    <queryDetail><value>Ict.Petra.Server.MFinance.queries.QueryFinanceReport.HosaCalculateGifts</value></queryDetail>
+                </query>
+            </calculation> <!-- Select Transactions -->
+
+            <calculation id="Select Transactions of AccountCostCentre excluding system generated Gift Batches"
+              returns="a_transaction_date_d, a_amount_in_base_currency_n, a_amount_in_intl_currency_n, a_transaction_amount_n, a_debit_credit_indicator_l, a_transaction_currency_c, a_narrative_c, a_reference_c, batchNumber, journalNumber, transactionNumber"
+              returnsFormat="row">
+                <query>
+                  <queryDetail>
+                    <value>
+                  SELECT 
+                    a_transaction_date_d,
+                    trans.a_batch_number_i as batchNumber, 
+                    trans.a_journal_number_i as journalNumber, 
+                    trans.a_transaction_number_i as transactionNumber,
+                    a_amount_in_base_currency_n,
+                    a_amount_in_intl_currency_n,
+                    a_debit_credit_indicator_l,
+                    j.a_transaction_currency_c,
+                    a_transaction_amount_n,
+                    a_narrative_c,
+                    a_reference_c
+                  FROM PUB_a_transaction AS trans, PUB_a_journal AS j 
+                  WHERE trans.a_ledger_number_i = j.a_ledger_number_i 
+                    AND trans.a_journal_number_i = j.a_journal_number_i
+                    AND trans.a_batch_number_i = j.a_batch_number_i
+                    AND trans.a_ledger_number_i = {{param_ledger_number_i}}
+                    AND trans.a_account_code_c = {line_a_account_code_c} 
+                    AND trans.a_cost_centre_code_c = {line_a_cost_centre_code_c}
+                    AND trans.a_transaction_date_d BETWEEN {#param_start_date#} AND {#param_end_date#}
+                    AND trans.a_transaction_status_l = 1
+                    AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE "Year end re-allocation%")
+                    AND NOT (trans.a_system_generated_l = 1 AND 
+                            (trans.a_narrative_c LIKE "Gifts received - Gift Batch%" OR trans.a_narrative_c LIKE "GB - Gift Batch%"))
+                    ORDER BY 1, 2, 3, 4
+                    </value>
+                  </queryDetail>
+                </query>
+            </calculation>
+
+            <!-- for HOSA, we need to get all Income accounts, even if there is nothing posted -->
+            <calculation id="Select All Accounts"
+              returns="line_a_account_alias_c, line_a_account_code_c, account_name, account_type, a_debit_credit_indicator_l"
+              returnsFormat="row">
+                <query>
+                  <queryDetail>
+                    <value>
+                  SELECT DISTINCT acc.a_account_code_c AS line_a_account_alias_c,
+                    acc.a_account_code_c AS line_a_account_code_c,
+                    acc.a_account_type_c AS account_type,
+                    acc.a_account_code_short_desc_c AS account_name, a_debit_credit_indicator_l 
+                  FROM PUB_a_account AS acc 
+                  WHERE acc.a_ledger_number_i = {{param_ledger_number_i}}
+                    AND acc.a_posting_status_l = 1
+                    AND NOT EXISTS(
+                        SELECT prop.a_property_value_c FROM PUB_a_account_property AS prop 
+                        WHERE prop.a_ledger_number_i = acc.a_ledger_number_i
+                        AND prop.a_property_code_c = {param_account_hierarchy_c}
+                        AND prop.a_account_code_c = acc.a_account_code_c)
+                  UNION
+                  SELECT DISTINCT prop.a_property_value_c AS line_a_account_alias_c,
+                    acc.a_account_code_c AS line_a_account_code_c,
+                    acc.a_account_code_short_desc_c AS account_name, 
+                    acc.a_account_type_c AS account_type,
+                    acc.a_debit_credit_indicator_l AS a_debit_credit_indicator_l
+                  FROM PUB_a_account AS acc 
+                    INNER JOIN PUB_a_account_property AS prop 
+                    ON prop.a_ledger_number_i = acc.a_ledger_number_i
+                    AND prop.a_account_code_c = acc.a_account_code_c
+                  WHERE acc.a_ledger_number_i = {{param_ledger_number_i}}
+                    AND prop.a_property_code_c = {param_account_hierarchy_c}
+                    AND acc.a_posting_status_l = 1
+                  ORDER BY 1
+                  </value>
+                  </queryDetail>
+                </query>
+            </calculation>
+
+            <calculation id="Debit" 
+                    returnsFormat="#,##0.00; ; ; ;" returns="amount">
+                <caption><value text="Debits"/></caption>
+                <query>
+                    <queryDetail>
+                        <value function="getAccountDetailAmount(getTransactionAmount({param_currency}),{ALLLEVELS:a_debit_credit_indicator_l})"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+
+            <calculation id="Credit" 
+                    returnsFormat=" ; #,##0.00; ; ;" returns="amount">
+                <caption><value text="Credits"/></caption>
+                <query>
+                    <queryDetail>
+                        <value function="getAccountDetailAmount(getTransactionAmount({param_currency}),{ALLLEVELS:a_debit_credit_indicator_l})"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+
+            <calculation id="Transaction Currency" 
+                    returnsFormat="text" returns="text" align="left">
+                <caption><value text=" "/></caption>
+                <query>
+                    <queryDetail><value variable="a_transaction_currency_c"/></queryDetail>
+                </query>
+            </calculation>
+            <calculation id="Transaction Narrative" 
+                    returnsFormat="text" returns="text" align="left">
+                <caption><value text="Description/Gift Totals/Recipient Key and Name"/></caption>
+                <query>
+                    <queryDetail><value variable="a_narrative_c"/></queryDetail>
+                </query>
+            </calculation>
+            <calculation id="Start Balance" 
+                    returnsFormat="nothing" returns="amount">
+                <caption><value text="Start Balance"/></caption>
+                <query><queryDetail></queryDetail>
+                </query>
+            </calculation>
+            <calculation id="End Balance" 
+                    returnsFormat="nothing" returns="amount">
+                <caption><value text="End Balance"/></caption>
+                <query><queryDetail></queryDetail>
+                </query>
+            </calculation>
+            <calculation id="Start Balance CostCentre" 
+                    returnsFormat="internal" returns="internal">
+                <caption><value text="Start Balance"/></caption>
+                <query>
+                    <queryDetail><value function="getAccountDetailAmount(
+                                    getActual(
+                                              sub({{param_start_period_i}},1),
+                                              {{param_year_i}},
+                                              true,
+                                              {param_currency}),
+                                    not({ALLLEVELS:a_debit_credit_indicator_l}))"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+            <calculation id="End Balance CostCentre" 
+                    returnsFormat="internal" returns="internal">
+                <caption><value text="End Balance"/></caption>
+                <query>
+                    <queryDetail><value function="getAccountDetailAmount(
+                                    getActual(
+                                              {{param_end_period_i}},
+                                              {{param_year_i}},
+                                              true,
+                                              {param_currency}),
+                                    not({ALLLEVELS:a_debit_credit_indicator_l}))"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+
+        </calculations>
+        <levels>
+        <level name="main">
+            <detail>
+                <lowerLevelReport level="GrandTotalNetBalance"/>
+            </detail>
+        </level> <!-- main -->
+
+        <level name="GrandTotalNetBalance" identification="">
+            <header>
+            </header>
+            <detail>
+                <lowerLevelReport level="GrandTotal">
+                </lowerLevelReport>            
+            </detail>
+            <footer>
+                <field whichfield="left 0" pos = "0cm" width="2cm" align="left"><value text="Net Balance:"/></field>
+                <field whichfield="column 0" format="#,##0.00; ; ; "><value function="getNetBalance({{lineId}})"/></field>
+                <field whichfield="column 1" format=" ;#,##0.00;0.00; "><value function="getNetBalance({{lineId}})"/></field>
+            </footer>
+        </level><!-- GrandTotalNetBalance -->
+
+        <level name="GrandTotal" identification="">
+            <header>
+            </header>
+            <detail>
+                <lowerLevelReport level="CostCentreDetailNetBalance" calculation ="Select Account Detail SortBy CostCentre"/>
+            </detail>
+            <footer line="above">
+                <field whichfield="left 0" pos = "0cm" width="2cm" align="left"><value text="Grand Total:"/></field>
+                <field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
+                <field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
+                <if condition="not(isNull(param_start_period_i))" >
+                    <field whichfield="column 4" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
+                        <value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
+                    <field whichfield="column 5" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
+                        <value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
+                </if>
+            </footer>
+        </level><!-- GrandTotal -->
+
+        <level name="CostCentreDetailNetBalance" identification="line_a_cost_centre_code_c"
+                condition="HasChildColumns">
+            <header>
+            </header>
+            <detail>
+                <lowerLevelReport level="CostCentreDetail"/>
+            </detail>
+            <footer line="below">
+                <field whichfield="left 0" pos = "2cm" width="3cm" align="right"><value text="Net Balance:"/></field>
+                <field whichfield="column 0" format="#,##0.00; ; ; "><value function="getNetBalance({{lineId}})"/></field>
+                <field whichfield="column 1" format=" ;#,##0.00;0.00; "><value function="getNetBalance({{lineId}})"/></field>
+            </footer>
+        </level><!-- CostCentreDetailNetBalance -->
+
+
+        <level name="CostCentreDetail" identification="line_a_cost_centre_code_c"
+                condition="HasChildRows">
+            <header>
+            </header>
+            <detail>
+                <lowerLevelReport level="DetailNetBalance" calculation ="Select All Accounts"/>
+            </detail>
+            <footer>
+                <field whichfield="left 0" pos = "2cm" width="3cm" align="right"><value text="Cost Centre Total:"/></field>
+                <field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
+                <field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
+                <if condition="not(isNull(param_start_period_i))" >
+                    <field whichfield="column 4" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
+                        <value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
+                    <field whichfield="column 5" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
+                        <value function="getSumLower2Report({{lineId}}, {{column}})"/></field>
+                </if>
+            </footer>
+        </level><!-- CostCentreDetail -->
+
+        <level name="DetailNetBalance" identification="line_a_account_code_c, line_a_cost_centre_code_c"
+                condition = "HasChildColumns">
+            <header>
+            </header>
+            <detail>
+                <lowerLevelReport level="AccountCostCentreDetail"/>
+            </detail>
+            <footer space="below">
+                <field whichfield="left 0" pos = "2cm" width="2cm" align="right"><value text="Net Balance:"/></field>
+                <field whichfield="column 0" format="#,##0.00; ; ; "><value function="getNetBalance({{lineId}})"/></field>
+                <field whichfield="column 1" format=" ;#,##0.00;0.00; "><value function="getNetBalance({{lineId}})"/></field>
+            </footer>
+        </level><!-- DetailNetBalance -->
+
+        <level name="AccountCostCentreDetail" identification="line_a_account_code_c, line_a_cost_centre_code_c"
+            condition="HasColumns">
+            <header>
+                <field whichfield="header 0" pos="0 cm" width="3cm" align="left"><value variable="line_a_cost_centre_code_c"/>
+                    <value text="-"/><value variable="line_a_account_alias_c"/></field>
+                <field whichfield="header 1" pos="4cm" width="12cm" align="left"><value variable="account_name"/>
+                    <value text=", "/><value variable="cost_centre_name"/></field>
+            </header>
+            <detail>
+                <switch>
+                    <case condition="eq({account_type},Income)">
+                        <lowerLevelReport level="TransactionDetail" calculation ="Select Summary of incoming gifts"/>
+                        <lowerLevelReport level="TransactionDetail" calculation ="Select Transactions of AccountCostCentre excluding system generated Gift Batches"/>
+                    </case>
+                    <case condition="ne({account_type},Income)">
+                        <lowerLevelReport level="TransactionDetail" calculation ="Select Transactions of AccountCostCentre"/>
+                    </case>
+                </switch>                
+            </detail>
+            <footer>
+                <field whichfield="left 0" pos = "2cm" width="2cm" align="right"><value text="Sub Total:"/></field>
+                <field whichfield="column 0" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
+                <field whichfield="column 1" format="#,##0.00;#,##0.00;0.00;0.00"><value function="getSumLowerReport({{lineId}}, {{column}})"/></field>
+                <if condition="not(isNull(param_start_period_i))" >
+                    <field calculation="GetGLMSequences" whichfield="column 4" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
+                        <value calculation="Start Balance CostCentre"/></field>
+                    <field calculation="GetGLMSequences" whichfield="column 5" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
+                        <value calculation="End Balance CostCentre"/></field>
+                </if>
+            </footer>
+        </level> <!-- AccountCostCentreDetail -->
+
+        <level name="TransactionDetail" identification="line_a_account_code_c, line_a_cost_centre_code_c, a_reference_c">
+            <header>
+            </header>
+            <detail>
+                <field whichfield="left 0" pos="1 cm" width="2cm" align="left"><value variable="a_transaction_date_d"/></field>
+                <field whichfield="left 1" pos="3.5 cm" width="3cm" align="left"><value variable="a_reference_c"/></field>
+                <field whichfield="columns" />
+            </detail>
+            <footer>
+            </footer>
+        </level><!-- TransactionDetail -->
+
+        </levels>
+    </report><!-- HOSA -->
+</reports>

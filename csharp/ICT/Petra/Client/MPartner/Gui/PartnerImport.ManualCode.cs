@@ -36,6 +36,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -163,7 +164,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // select separator, make sure there is a header line with the column captions/names
                     TDlgSelectCSVSeparator dlgSeparator = new TDlgSelectCSVSeparator(true);
-                    dlgSeparator.CSVFileName = DialogOpen.FileName;
+                    Boolean fileCanOpen = dlgSeparator.OpenCsvFile(DialogOpen.FileName);
+
+                    if (!fileCanOpen)
+                    {
+                        MessageBox.Show(Catalog.GetString("Unable to open file."),
+                            Catalog.GetString("Import Partners"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
+                        return;
+                    }
 
                     if (dlgSeparator.ShowDialog() == DialogResult.OK)
                     {
@@ -771,6 +781,34 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PmStaffDataTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
+        private void AddJobAssignment(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
+        {
+            PmJobAssignmentRow JobAssignmentRow;
+
+            // add all jobs that exist for any job assignments for this partner
+            FMainDS.PmJobAssignment.DefaultView.RowFilter = String.Format("{0}={1}", PmJobAssignmentTable.GetPartnerKeyDBName(), AOrigPartnerKey);
+
+            foreach (DataRowView rv in FMainDS.PmJobAssignment.DefaultView)
+            {
+                JobAssignmentRow = (PmJobAssignmentRow)rv.Row;
+
+                // find the job that exists for the current job assignment for this partner
+                FMainDS.UmJob.DefaultView.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}={7}",
+                    UmJobTable.GetUnitKeyDBName(), JobAssignmentRow.UnitKey,
+                    UmJobTable.GetPositionNameDBName(), JobAssignmentRow.PositionName,
+                    UmJobTable.GetPositionScopeDBName(), JobAssignmentRow.PositionScope,
+                    UmJobTable.GetJobKeyDBName(), JobAssignmentRow.JobKey);
+
+                foreach (DataRowView rv2 in FMainDS.UmJob.DefaultView)
+                {
+                    ANewPartnerDS.UmJob.ImportRow(rv2.Row);
+                }
+            }
+
+            ImportRecordsByPartnerKey(ANewPartnerDS.PmJobAssignment, FMainDS.PmJobAssignment,
+                PmJobAssignmentTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
+        }
+
         private void AddPmPersonLanguage(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS)
         {
             ImportRecordsByPartnerKey(ANewPartnerDS.PmPersonLanguage, FMainDS.PmPersonLanguage,
@@ -1118,6 +1156,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             AddAddresses(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
             AddCommentSeq(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
             AddStaffData(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
+            AddJobAssignment(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
             AddPmPersonLanguage(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
             AddPreviousExperience(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);
             AddPassport(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS);

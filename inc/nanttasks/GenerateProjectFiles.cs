@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -344,10 +344,69 @@ namespace Ict.Tools.NAntTasks
 
                 if (next == null)
                 {
+                    List <string>ProjectsNotPartOfCyclicDep = new List <string>();
+
+                    int CountProjectsChanged = 0;
+
+                    do
+                    {
+                        CountProjectsChanged = ProjectsNotPartOfCyclicDep.Count;
+
+                        foreach (string file in ProjectNames)
+                        {
+                            if (ProjectsNotPartOfCyclicDep.Contains(file))
+                            {
+                                continue;
+                            }
+
+                            // if this file is not in the list of another file, ignore it
+                            bool isReferenced = false;
+
+                            foreach (string file2 in ProjectNames)
+                            {
+                                if (ProjectsNotPartOfCyclicDep.Contains(file2))
+                                {
+                                    continue;
+                                }
+
+                                TDetailsOfDll details2 = AProjects[file2];
+
+                                foreach (string dependency in details2.ReferencedDlls)
+                                {
+                                    if (dependency == file)
+                                    {
+                                        isReferenced = true;
+                                    }
+                                }
+                            }
+
+                            if (!isReferenced)
+                            {
+                                ProjectsNotPartOfCyclicDep.Add(file);
+                            }
+                        }
+                    } while (ProjectsNotPartOfCyclicDep.Count != CountProjectsChanged);
+
                     string problemFiles = string.Empty;
 
                     foreach (string file in ProjectNames)
                     {
+                        if (ProjectsNotPartOfCyclicDep.Contains(file))
+                        {
+                            continue;
+                        }
+
+                        Console.WriteLine(file);
+                        TDetailsOfDll details = AProjects[file];
+
+                        foreach (string dependency in details.ReferencedDlls)
+                        {
+                            if (ProjectNames.Contains(dependency))
+                            {
+                                Console.WriteLine("    => " + dependency);
+                            }
+                        }
+
                         if (problemFiles.Length > 0)
                         {
                             problemFiles += " and ";
@@ -408,8 +467,7 @@ namespace Ict.Tools.NAntTasks
                     }
 
                     temp.Replace("${ProjectName}", OutputName);
-                    temp.Replace("${ProjectFile}",
-                        FDirProjectFiles + Path.DirectorySeparatorChar + ADevName + Path.DirectorySeparatorChar + OutputName + ".csproj");
+                    temp.Replace("${ProjectFile}", OutputName + ".csproj");
                     temp.Replace("${ProjectGuid}", GetProjectGUID(projectName));
                     Projects += temp.ToString();
 
@@ -564,7 +622,7 @@ namespace Ict.Tools.NAntTasks
                 }
             }
 
-            return Result;
+            return Result.Replace('/', Path.DirectorySeparatorChar);
         }
 
         /// add AssemblyInfo file
@@ -589,7 +647,7 @@ namespace Ict.Tools.NAntTasks
             swAssemblyInfo.Close();
 
             string relativeFilename = GetRelativePath(AssemblyInfoPath, FDirProjectFiles + "/dummy/").Replace('\\', Path.DirectorySeparatorChar);
-            string relativeFilenameBackslash = relativeFilename.Replace('/', Path.DirectorySeparatorChar);
+            string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
 
             temp = GetTemplateFile(ATemplateDir + "template.csproj.compile");
             temp.Replace("${filename}", AssemblyInfoPath);
@@ -617,8 +675,10 @@ namespace Ict.Tools.NAntTasks
             template.Replace("${OutputType}", AProjectType);
             template.Replace("${Namespace}", AProjectName);
             template.Replace("${NETframework-version}", FNetFrameworkVersion);
-            template.Replace("${dir.bin}", FDirBin);
-            template.Replace("${dir.obj}", this.Properties["dir.obj"]);
+            template.Replace("${dir.bin}", "../../bin");
+            template.Replace("${dir.bin.backslash}", "..\\..\\bin");
+            template.Replace("${dir.obj}", "../../obj");
+            template.Replace("${dir.obj.backslash}", "..\\..\\obj");
 
             if (FDebugParameters.ContainsKey(AProjectName))
             {
@@ -641,12 +701,28 @@ namespace Ict.Tools.NAntTasks
                 if (iconFiles.Length > 0)
                 {
                     temp = GetTemplateFile(ATemplateDir + "template.csproj.appicon");
-                    temp.Replace("${application-Icon}", iconFiles[0]);
+                    string iconPath = GetRelativePath(iconFiles[0], FDirProjectFiles + "/dummy/");
+                    temp.Replace("${application-Icon}", iconPath.Replace('/', Path.DirectorySeparatorChar));
+                    temp.Replace("${application-Icon-backslash}", iconPath.Replace('/', '\\'));
                     replaceWith = temp.ToString();
                 }
             }
 
             template.Replace("${ApplicationIcon}", replaceWith);
+
+            // set the application manifest if a file app.manifest exists (needed for patch tool)
+            replaceWith = String.Empty;
+
+            if (File.Exists(ASrcPath + Path.DirectorySeparatorChar + "app.manifest"))
+            {
+                temp = GetTemplateFile(ATemplateDir + "template.csproj.appmanifest");
+                string manifestPath = GetRelativePath(ASrcPath + Path.DirectorySeparatorChar + "app.manifest", FDirProjectFiles + "/dummy/");
+                temp.Replace("${application-Manifest}", manifestPath.Replace('/', Path.DirectorySeparatorChar));
+                temp.Replace("${application-Manifest-backslash}", manifestPath.Replace('/', '\\'));
+                replaceWith = temp.ToString();
+            }
+
+            template.Replace("${ApplicationManifest}", replaceWith);
 
             // Set the Pre-build event if required by the environment and if the project is Ict.Common
             replaceWith = String.Empty;
@@ -739,7 +815,7 @@ namespace Ict.Tools.NAntTasks
             foreach (string ContainedFile in ContainsFiles)
             {
                 string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + "/dummy/").Replace('\\', Path.DirectorySeparatorChar);
-                string relativeFilenameBackslash = relativeFilename.Replace('/', Path.DirectorySeparatorChar);
+                string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
 
                 if ((ContainedFile.EndsWith(".ManualCode.cs") && File.Exists(ContainedFile.Replace(".ManualCode.cs", "-generated.cs")))
                     || (ContainedFile.EndsWith(".Designer.cs") && File.Exists(ContainedFile.Replace(".Designer.cs", ".cs"))))
@@ -782,11 +858,14 @@ namespace Ict.Tools.NAntTasks
 
                         // Add the YAML file as a dependent non-compile file
                         OtherFile = ContainedFile.Replace("-generated.cs", ".yaml");
+                        string OtherFileRelativeFilename = GetRelativePath(OtherFile, FDirProjectFiles + "/dummy/");
 
                         if (File.Exists(OtherFile) && File.Exists(ATemplateDir + "template.csproj.none.DependentUpon"))
                         {
                             temp = GetTemplateFile(ATemplateDir + "template.csproj.none.DependentUpon");
                             temp.Replace("${filename}", OtherFile);
+                            temp.Replace("${relative-filename}", OtherFileRelativeFilename);
+                            temp.Replace("${relative-filename-backslash}", OtherFileRelativeFilename.Replace('/', '\\'));
                             temp.Replace("${relative-DependentUpon}", Path.GetFileName(relativeFilename));
                             CompileFile.Append(temp.ToString());
                         }
@@ -808,7 +887,7 @@ namespace Ict.Tools.NAntTasks
             {
                 string relativeFilename = GetRelativePath(ContainedFile, FDirProjectFiles + "/dummy/");
 
-                string relativeFilenameBackslash = relativeFilename.Replace('/', Path.DirectorySeparatorChar);
+                string relativeFilenameBackslash = relativeFilename.Replace('/', '\\');
 
                 if (ContainsFiles.Contains(ContainedFile.Replace(".resx", ".cs")))
                 {
@@ -849,6 +928,9 @@ namespace Ict.Tools.NAntTasks
                     {
                         replaceWith += temp;
                         replaceWith = replaceWith.Replace("${filename}", dataXmlFiles[i]);
+                        string OtherFileRelativeFilename = GetRelativePath(dataXmlFiles[i], FDirProjectFiles + "/dummy/");
+                        replaceWith = replaceWith.Replace("${relative-filename}", OtherFileRelativeFilename);
+                        replaceWith = replaceWith.Replace("${relative-filename-backslash}", OtherFileRelativeFilename.Replace('/', '\\'));
                     }
 
                     replaceWith += ("  </ItemGroup>" + Environment.NewLine);
@@ -861,7 +943,8 @@ namespace Ict.Tools.NAntTasks
                 template.Replace("${MiscellaneousFiles}", String.Empty);
             }
 
-            template.Replace("${dir.3rdParty}", FCodeRootDir + Path.DirectorySeparatorChar + "ThirdParty");
+            template.Replace("${dir.3rdParty}",
+                GetRelativePath(FCodeRootDir + Path.DirectorySeparatorChar + "ThirdParty", FDirProjectFiles + "\\devenv\\").Replace("/", "\\"));
             template.Replace("${csharpStdLibs}", "");
 
             string completedFile = template.ToString();

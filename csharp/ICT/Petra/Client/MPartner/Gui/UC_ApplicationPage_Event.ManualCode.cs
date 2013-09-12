@@ -58,6 +58,35 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public event THookupPartnerEditDataChangeEventHandler HookupDataChange;
 
+        #region Properties
+        /// return label text for "Event" field
+        public String EventLabelText
+        {
+            get
+            {
+                return lblEvent.Text;
+            }
+        }
+
+        /// return code value for "Event"
+        public String EventValueCode
+        {
+            get
+            {
+                return txtEvent.Text;
+            }
+        }
+
+        /// return label value for "Event"
+        public String EventValueLabel
+        {
+            get
+            {
+                return txtEvent.LabelText;
+            }
+        }
+        #endregion
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -129,6 +158,20 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void GetDataFromControlsManual(PmGeneralApplicationRow ARow)
         {
+            // need to make sure that partner key fields that are not referring to p_partner table
+            // but to other tables like p_unit or p_person are set to NULL when they are empty (and
+            // not to 0 as then foreign key constraints will fail)
+            if ((txtFieldCharged.Text.Length != 0)
+                && (Convert.ToInt64(txtFieldCharged.Text) == 0))
+            {
+                FMainDS.PmShortTermApplication[0].SetStFieldChargedNull();
+            }
+
+            if ((txtPlacementPerson.Text.Length != 0)
+                && (Convert.ToInt64(txtPlacementPerson.Text) == 0))
+            {
+                ARow.SetPlacementPartnerKeyNull();
+            }
         }
 
         private void ValidateDataManual(PmGeneralApplicationRow ARow)

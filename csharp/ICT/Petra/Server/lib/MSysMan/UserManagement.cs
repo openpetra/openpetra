@@ -173,7 +173,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             SUserTable userTable = new SUserTable();
             SUserRow newUser = userTable.NewRowTyped();
 
-            newUser.UserId = AUsername.ToUpper();
+            newUser.UserId = AUsername;
             newUser.FirstName = AFirstName;
             newUser.LastName = AFamilyName;
 
@@ -420,12 +420,15 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             // TODO: if user module access permissions have changed, automatically update the table access permissions?
 
             // for new users: create users on the alternative authentication method
-            foreach (SUserRow user in ASubmitDS.SUser.Rows)
+            if (ASubmitDS.SUser != null)
             {
-                if (user.RowState == DataRowState.Added)
+                foreach (SUserRow user in ASubmitDS.SUser.Rows)
                 {
-                    CreateUser(user.UserId, string.Empty, user.FirstName, user.LastName, string.Empty);
-                    user.AcceptChanges();
+                    if (user.RowState == DataRowState.Added)
+                    {
+                        CreateUser(user.UserId, string.Empty, user.FirstName, user.LastName, string.Empty);
+                        user.AcceptChanges();
+                    }
                 }
             }
 

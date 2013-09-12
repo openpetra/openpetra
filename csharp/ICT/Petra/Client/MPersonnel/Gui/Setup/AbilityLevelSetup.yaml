@@ -10,18 +10,25 @@ RootNode:
     WindowWidth: 750
     WindowHeight: 400
     Actions:
-        actNew: {Label=New, ActionClick=NewRecord}
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
-            Controls: [btnNew]
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailAbilityLevel, DetailAbilityLevelDescr, DetailUnassignableFlag, DetailUnassignableDate, DetailDeletableFlag]
@@ -36,10 +43,7 @@ RootNode:
                 Row1: [chkDetailUnassignableFlag, dtpDetailUnassignableDate]
                 Row2: [chkDetailDeletableFlag]
         txtDetailAbilityLevel: {Format=Integer, Width=30}
-        txtDetailAbilityLevelDescr: {Label=Description, Width=410}
+        txtDetailAbilityLevelDescr: {Label=Description, Width=460}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
         chkDetailDeletableFlag: {Label=Deletable}
-    Toolbar:
-        tbbNew:
-            Label: New Ability Level

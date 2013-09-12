@@ -11,18 +11,24 @@ RootNode:
     WindowHeight: 500
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
-            Controls: [btnNew]
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailMethodOfPaymentCode, DetailMethodOfPaymentDesc, DetailSpecialMethodOfPmt, DetailActive]
@@ -40,9 +46,6 @@ RootNode:
                 Row1: [chkDetailSpecialMethodOfPmt]
                 Row2: [chkDetailActive]
         txtDetailMethodOfPaymentCode: {Label=Method of Payment, CharacterCasing=Upper}
-        txtDetailMethodOfPaymentDesc: {Label=Description, Width=265}
+        txtDetailMethodOfPaymentDesc: {Label=Description, Width=310}
         chkDetailSpecialMethodOfPmt:  {Label=Special Method of Payment}
         chkDetailActive:
-    Toolbar:
-        tbbNew:
-            Label: New Method of Payment

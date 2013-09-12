@@ -12,7 +12,7 @@
   <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
   <Parameter id="param_calculation" column="1" value="eString:Donor Name" />
   <Parameter id="param_ytd" column="1" value="eString:false" />
-  <Parameter id="ColumnWidth" column="1" value="eDecimal:4615063718147915776" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:4" />
   <Parameter id="param_calculation" column="2" value="eString:Street" />
   <Parameter id="ColumnWidth" column="2" value="eInteger:3" />
   <Parameter id="param_ytd" column="2" value="eString:false" />
@@ -23,7 +23,7 @@
   <Parameter id="ColumnWidth" column="4" value="eInteger:3" />
   <Parameter id="param_ytd" column="4" value="eString:false" />
   <Parameter id="param_calculation" column="5" value="eString:Country" />
-  <Parameter id="ColumnWidth" column="5" value="eDecimal:4609434218613702656" />
+  <Parameter id="ColumnWidth" column="5" value="eDecimal:4612811918334230528" />
   <Parameter id="param_ytd" column="5" value="eString:false" />
   <Parameter id="param_calculation" column="6" value="eString:Donor Class" />
   <Parameter id="param_ytd" column="6" value="eString:false" />
@@ -43,7 +43,7 @@
   <Parameter id="FirstColumn" column="10" value="eInteger:0" />
   <Parameter id="SecondColumn" column="10" value="eInteger:1" />
   <Parameter id="param_ytd" column="10" value="eString:false" />
-  <Parameter id="ColumnWidth" column="10" value="eInteger:2" />
+  <Parameter id="ColumnWidth" column="10" value="eInteger:3" />
   <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
   <Parameter id="param_recipientkey" value="eInteger:0" />
   <Parameter id="param_extract_name" value="eString:" />

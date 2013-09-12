@@ -82,15 +82,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS = AMainDS;
 
             LoadDataOnDemand();
-
-            // enable grid to react to insert and delete keyboard keys
-            grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
-
-            if (grdDetails.Rows.Count <= 1)
-            {
-                pnlDetails.Visible = false;
-                btnDelete.Enabled = false;
-            }
         }
 
         /// <summary>
@@ -117,11 +108,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.StartOfCommitment = DateTime.Now.Date;
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
-        {
-            this.DeletePmStaffData();
-        }
-
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable
@@ -131,55 +117,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>true if user is permitted and able to delete the current row</returns>
         private bool PreDeleteManual(PmStaffDataRow ARowToDelete, ref string ADeletionQuestion)
         {
-// TODO: perform a check if the value is already referenced somewhere (similar to what the commented-out code does)
-// Table referenced from: pm_partner_field_of_service
-//            int num = TRemote.MFinance.Setup.WebConnectors.CheckDeleteAFreeformAnalysis(FLedgerNumber,
-//                FPreviouslySelectedDetailRow.AnalysisTypeCode,
-//                FPreviouslySelectedDetailRow.AnalysisValue);
-//
-//            if (num > 0)
-//            {
-//                MessageBox.Show(Catalog.GetString(
-//                        "This value is already referenced and cannot be deleted."));
-//                return false;
-//            }
-
             /*Code to execute before the delete can take place*/
-            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Commitment record:\r\n{0} at {1} started {2}?"),
-                ARowToDelete.StatusCode,
-                ARowToDelete.ReceivingField.ToString(),
-                DataBinding.DateTimeToLongDateString2(ARowToDelete.StartOfCommitment));
+            ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            ADeletionQuestion += String.Format("{0}{0}({1} {2} {3},{0} {4} {5})",
+                Environment.NewLine,
+                lblReceivingField.Text,
+                txtReceivingField.Text,
+                txtReceivingField.LabelText,
+                lblStartDate.Text,
+                dtpStartDate.Date.Value.ToString("dd-MMM-yyyy").ToUpper());
             return true;
-        }
-
-        /// <summary>
-        /// Deletes the current row and optionally populates a completion message
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to delete</param>
-        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(PmStaffDataRow ARowToDelete, out string ACompletionMessage)
-        {
-            bool deletionSuccessful = false;
-
-            // no message to be shown after deletion
-            ACompletionMessage = "";
-
-            try
-            {
-                ARowToDelete.Delete();
-                deletionSuccessful = true;
-            }
-            catch (Exception ex)
-            {
-                ACompletionMessage = ex.Message;
-                MessageBox.Show(ex.Message,
-                    "Deletion Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-
-            return deletionSuccessful;
         }
 
         /// <summary>
@@ -194,13 +141,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool ADeletionPerformed,
             string ACompletionMessage)
         {
-            DoRecalculateScreenParts();
-
-            if (grdDetails.Rows.Count <= 1)
+            if (ADeletionPerformed)
             {
-                // hide details part and disable buttons if no record in grid (first row for headings)
-                btnDelete.Enabled = false;
-                pnlDetails.Visible = false;
+                DoRecalculateScreenParts();
             }
         }
 
@@ -213,12 +156,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ShowDetailsManual(PmStaffDataRow ARow)
         {
-            if (ARow != null)
-            {
-                btnDelete.Enabled = true;
-                pnlDetails.Visible = true;
-            }
-
             // In theory, the next Method call could be done in Methods NewRowManual; however, NewRowManual runs before
             // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
             // of a non-existing 'AfterNewRowManual' Method....
@@ -307,15 +244,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 RecalculateScreenParts(this, e);
             }
-        }
-
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        /// <returns>void</returns>
-        private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
-        {
-            NewRecord(this, null);
         }
 
         private void GetDetailDataFromControlsManual(PmStaffDataRow ARow)

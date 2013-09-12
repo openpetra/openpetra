@@ -168,9 +168,6 @@ namespace Ict.Petra.Client.CommonControls
             LanguageLevelList,
 
             /// <summary>todoComment</summary>
-            LeavingCodeList,
-
-            /// <summary>todoComment</summary>
             LedgerNameList,
 
             /// <summary>todoComment</summary>
@@ -323,6 +320,22 @@ namespace Ict.Petra.Client.CommonControls
                 // MessageBox.Show('FListTable: ' + FListTable.ToString("G"));
                 FListTable = value;
                 AppearanceSetup(FListTable);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the object that contains data about the control's underlying cmbCombobox.
+        /// </summary>
+        public new object Tag
+        {
+            get
+            {
+                return cmbCombobox.Tag;
+            }
+
+            set
+            {
+                cmbCombobox.Tag = value;
             }
         }
 
@@ -681,15 +694,6 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
-                case TListTableEnum.LeavingCodeList:
-
-                    InitialiseUserControl(
-                    TDataCache.TMPersonnel.GetCacheableUnitsTable(TCacheableUnitTablesEnum.LeavingCodeList),
-                    "pt_leaving_code_ind_c",
-                    "pt_leaving_code_descr_c",
-                    null);
-                    break;
-
                 case TListTableEnum.LedgerNameList:
 
                     InitialiseUserControl(
@@ -793,32 +797,8 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.PostCodeRegionList:
 
-                    /* Region table contains several records per actual region, depending on how many
-                    * postcode ranges there are in a region. Therefore it is important to remove "duplicate"
-                    * rows and just have one row per actual region code in the combobox. It is important
-                    *                     that region rows arrive in "order by Region" from server */
-                    PPostcodeRegionTable RegionTable = (PPostcodeRegionTable)TDataCache.TMPartner.GetCacheableMailingTable(
-                    TCacheableMailingTablesEnum.PostCodeRegionList);
-                    PPostcodeRegionRow RegionRow;
-                    int CountRegionRows = RegionTable.Rows.Count;
-                    string CurrentRegion = "";
-
-                    // go through table in reverse order so rows can be deleted and only one row per region code remains
-                    for (int Index = CountRegionRows - 1; Index >= 0; Index--)
-                    {
-                        RegionRow = (PPostcodeRegionRow)RegionTable.Rows[Index];
-
-                        if (RegionRow.Region != CurrentRegion)
-                        {
-                            CurrentRegion = RegionRow.Region;
-                        }
-                        else
-                        {
-                            RegionRow.Delete();
-                        }
-                    }
-
-                    InitialiseUserControl(RegionTable,
+                    InitialiseUserControl(
+                    TDataCache.TMPartner.GetCacheableMailingTable(TCacheableMailingTablesEnum.PostcodeRegionList),
                     PPostcodeRegionTable.GetRegionDBName(),
                     null,
                     null);
@@ -1282,11 +1262,6 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.LanguageLevelList:
                     this.ColumnWidthCol1 = 57;
                     this.ColumnWidthCol2 = 130;
-                    break;
-
-                case TListTableEnum.LeavingCodeList:
-                    this.ColumnWidthCol1 = 40;
-                    this.ColumnWidthCol2 = 200;
                     break;
 
                 case TListTableEnum.LedgerNameList:

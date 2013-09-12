@@ -138,6 +138,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Merge DataTables which are held only in PartnerEditTDS into IndividualDataTDS so that we can access that data in here!
             FMainDS.Merge(FPartnerEditTDS);
 
+            // In regards to local personnel data items: this will automatically be loaded in
+            // TUC_IndividualData_LocalPersonnelData.LoadDataOnDemand so we can empty the table here
+            // to make sure we have no data items in there that are not personnel related
+            if (FMainDS.PDataLabelValuePartner != null)
+            {
+                FMainDS.PDataLabelValuePartner.Rows.Clear();
+            }
+
             ucoSummaryData.PetraUtilsObject = FPetraUtilsObject;
             ucoSummaryData.MainDS = FMainDS;
             ucoSummaryData.PartnerEditUIConnector = FPartnerEditUIConnector;
@@ -389,10 +397,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     // remove columns before merging (and re-add them afterwards) as otherwise merging raises exception
-                    UCPersonalLanguage.RemoveSpecialColumns();
                     FPartnerEditTDS.Tables[PmPersonLanguageTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PmPersonLanguageTable.GetTableName()].Merge(FMainDS.PmPersonLanguage);
-                    UCPersonalLanguage.AddSpecialColumns();
                 }
 
                 // Abilities
@@ -424,10 +430,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     // remove columns before merging (and re-add them afterwards) as otherwise merging raises exception
-                    UCPassport.RemoveSpecialColumns();
                     FPartnerEditTDS.Tables[PmPassportDetailsTable.GetTableName()].Rows.Clear();
                     FPartnerEditTDS.Tables[PmPassportDetailsTable.GetTableName()].Merge(FMainDS.PmPassportDetails);
-                    UCPassport.AddSpecialColumns();
                 }
 
                 //Personal Data
@@ -586,7 +590,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FPartnerEditTDS.Tables.Add(new PDataLabelValuePartnerTable());
                     }
 
-                    FPartnerEditTDS.Tables[PDataLabelValuePartnerTable.GetTableName()].Rows.Clear();
+                    // don't clear rows as there might be valid rows from local partner data in there
                     FPartnerEditTDS.Tables[PDataLabelValuePartnerTable.GetTableName()].Merge(FMainDS.PDataLabelValuePartner);
                 }
             }

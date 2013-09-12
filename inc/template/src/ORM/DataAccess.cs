@@ -15,6 +15,7 @@ using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Data;
 using Ict.Petra.Shared;
+using Ict.Petra.Server.MCommon.Data.Cascading;
 {#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
@@ -237,7 +238,7 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// this method is called by all overloads
     public static int CountAll(TDBTransaction ATransaction)
     {
-        return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}", ATransaction, false));
+        return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}", ATransaction));
     }
 {#IFDEF FORMALPARAMETERSPRIMARYKEY}
 
@@ -259,14 +260,14 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// this method is called by all overloads
     public static int CountUsingTemplate({#TABLENAME}Row ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
     {
-        return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}" + GenerateWhereClause(TTypedDataTable.GetColumnStringList({#TABLENAME}Table.TableId), ATemplateRow, ATemplateOperators)), ATransaction, false, 
+        return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}" + GenerateWhereClause(TTypedDataTable.GetColumnStringList({#TABLENAME}Table.TableId), ATemplateRow, ATemplateOperators)), ATransaction, 
                GetParametersForWhereClause({#TABLENAME}Table.TableId, ATemplateRow)));
     }
 
     /// this method is called by all overloads
     public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
     {
-        return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}" + GenerateWhereClause(TTypedDataTable.GetColumnStringList({#TABLENAME}Table.TableId), ASearchCriteria)), ATransaction, false, 
+        return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}" + GenerateWhereClause(TTypedDataTable.GetColumnStringList({#TABLENAME}Table.TableId), ASearchCriteria)), ATransaction, 
         GetParametersForWhereClause({#TABLENAME}Table.TableId, ASearchCriteria)));
     }
     {#VIAOTHERTABLE}
@@ -302,7 +303,33 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// <returns>True = Data are written to the data base successfully.</returns>
     public static bool SubmitChanges({#TABLENAME}Table ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
     {
-        return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});
+        TVerificationResultCollection SingleVerificationResultCollection;
+        DataView DeletedRows = new DataView(ATable, string.Empty, String.Empty, DataViewRowState.Deleted);
+
+        AVerificationResult = null;
+
+        for (int Counter = 0; Counter < DeletedRows.Count; Counter++) 
+        {
+            if({#TABLENAME}Cascading.CountByPrimaryKey(DataUtilities.GetPKValuesFromDataRow(DeletedRows[Counter].Row), ATransaction, true, 
+                out SingleVerificationResultCollection) > 0)
+            {
+                if (AVerificationResult == null) 
+                {
+                    AVerificationResult = new TVerificationResultCollection();
+                }
+                
+                AVerificationResult.AddCollection(SingleVerificationResultCollection);
+            }
+        }
+
+        if (AVerificationResult != null) 
+        {
+            return false;
+        }
+        else
+        {
+            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});
+        }
     }
 
 {#IFDEF FORMALPARAMETERSPRIMARYKEY}
@@ -356,7 +383,7 @@ public class {#TABLENAME}Access : TTypedDataAccess
 public static void Load{#VIAPROCEDURENAME}(DataSet ADataSet, {#FORMALPARAMETERSOTHERPRIMARYKEY}, StringCollection AFieldList, TDBTransaction ATransaction, StringCollection AOrderBy, int AStartRecord, int AMaxRecords)
 {
     LoadViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, ADataSet, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}},
-        new System.Object[{#NUMBERFIELDS}]{{#ACTUALPARAMETERSOTHERPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        new System.Object[{#NUMBERFIELDSOTHER}]{{#ACTUALPARAMETERSOTHERPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
 }
 
 /// auto generated
@@ -376,7 +403,7 @@ public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}({#FORMALPARAMETERSOTHERP
 {
     {#TABLENAME}Table Data = new {#TABLENAME}Table();
     LoadViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, Data, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}},
-        new System.Object[{#NUMBERFIELDS}]{{#ACTUALPARAMETERSOTHERPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
+        new System.Object[{#NUMBERFIELDSOTHER}]{{#ACTUALPARAMETERSOTHERPRIMARYKEY}}, AFieldList, ATransaction, AOrderBy, AStartRecord, AMaxRecords);
     return Data;
 }
 
@@ -482,7 +509,7 @@ public static {#TABLENAME}Table Load{#VIAPROCEDURENAME}Template(TSearchCriteria[
 public static int Count{#VIAPROCEDURENAME}({#FORMALPARAMETERSOTHERPRIMARYKEY}, TDBTransaction ATransaction)
 {
     return CountViaForeignKey({#TABLENAME}Table.TableId, {#OTHERTABLENAME}Table.TableId, new string[{#NUMBERFIELDS}]{{#THISTABLEFIELDS}}, 
-        new System.Object[{#NUMBERFIELDS}]{{#ACTUALPARAMETERSOTHERPRIMARYKEY}}, ATransaction);
+        new System.Object[{#NUMBERFIELDSOTHER}]{{#ACTUALPARAMETERSOTHERPRIMARYKEY}}, ATransaction);
 }
 
 /// auto generated
@@ -650,7 +677,7 @@ public static int Count{#VIAPROCEDURENAME}({#FORMALPARAMETERSOTHERPRIMARYKEY}, T
     {#ODBCPARAMETERSFOREIGNKEY}
     return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}, PUB_{#SQLLINKTABLENAME} WHERE " +
                 "{#WHERECLAUSEVIALINKTABLE}",
-                ATransaction, false, ParametersArray));
+                ATransaction, ParametersArray));
 }
 
 /// auto generated
@@ -658,7 +685,7 @@ public static int Count{#VIAPROCEDURENAME}Template({#OTHERTABLENAME}Row ATemplat
 {
     return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}, PUB_{#SQLLINKTABLENAME}, PUB_{#SQLOTHERTABLENAME} WHERE " +
                 "{#WHERECLAUSEALLVIATABLES}" +
-                GenerateWhereClauseLong("PUB_{#SQLLINKTABLENAME}", {#TABLENAME}Table.TableId, ATemplateRow, ATemplateOperators)), ATransaction, false, 
+                GenerateWhereClauseLong("PUB_{#SQLLINKTABLENAME}", {#TABLENAME}Table.TableId, ATemplateRow, ATemplateOperators)), ATransaction, 
                 GetParametersForWhereClauseWithPrimaryKey({#OTHERTABLENAME}Table.TableId, ATemplateRow)));
 }
 
@@ -667,6 +694,6 @@ public static int Count{#VIAPROCEDURENAME}Template(TSearchCriteria[] ASearchCrit
 {
     return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}, PUB_{#SQLLINKTABLENAME}, PUB_{#SQLOTHERTABLENAME} WHERE " +
                 "{#WHERECLAUSEALLVIATABLES}" +
-                GenerateWhereClauseLong("PUB_{#SQLLINKTABLENAME}", ASearchCriteria)), ATransaction, false, 
+                GenerateWhereClauseLong("PUB_{#SQLLINKTABLENAME}", ASearchCriteria)), ATransaction, 
                 GetParametersForWhereClause({#TABLENAME}Table.TableId, ASearchCriteria)));
 }

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -62,17 +62,18 @@ namespace Ict.Petra.Shared.MFinance
             ACurrentJournal.JournalCreditTotal = 0.0M;
             ACurrentJournal.JournalCreditTotalBase = 0.0M;
 
+            DataView trnsDataView = new DataView(AMainDS.ATransaction);
+
+            trnsDataView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                ATransactionTable.GetBatchNumberDBName(),
+                ACurrentJournal.BatchNumber,
+                ATransactionTable.GetJournalNumberDBName(),
+                ACurrentJournal.JournalNumber);
+
             // transactions are filtered for this journal; add up the total amounts
-            foreach (DataRowView v in AMainDS.ATransaction.DefaultView)
+            foreach (DataRowView v in trnsDataView)
             {
                 ATransactionRow r = (ATransactionRow)v.Row;
-
-                // recalculate the amount in base currency
-
-                if (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
-                {
-                    r.AmountInBaseCurrency = r.TransactionAmount / ACurrentJournal.ExchangeRateToBase;
-                }
 
                 if (r.DebitCreditIndicator)
                 {
@@ -104,7 +105,7 @@ namespace Ict.Petra.Shared.MFinance
             if ((ACurrentJournal.ExchangeRateToBase == 0.0m)
                 && (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString()))
             {
-                throw new Exception(String.Format("Batch {0} Journal {1} has invalid exchange rate to base",
+                throw new Exception(String.Format("Recurring Batch {0} Journal {1} has invalid exchange rate to base",
                         ACurrentJournal.BatchNumber,
                         ACurrentJournal.JournalNumber));
             }
@@ -114,17 +115,18 @@ namespace Ict.Petra.Shared.MFinance
             ACurrentJournal.JournalCreditTotal = 0.0M;
             ACurrentJournal.JournalCreditTotalBase = 0.0M;
 
+            DataView trnsDataView = new DataView(AMainDS.ARecurringTransaction);
+
+            trnsDataView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                ARecurringTransactionTable.GetBatchNumberDBName(),
+                ACurrentJournal.BatchNumber,
+                ARecurringTransactionTable.GetJournalNumberDBName(),
+                ACurrentJournal.JournalNumber);
+
             // transactions are filtered for this journal; add up the total amounts
-            foreach (DataRowView v in AMainDS.ARecurringTransaction.DefaultView)
+            foreach (DataRowView v in trnsDataView)
             {
                 ARecurringTransactionRow r = (ARecurringTransactionRow)v.Row;
-
-                // recalculate the amount in base currency
-
-                if (ACurrentJournal.TransactionTypeCode != CommonAccountingTransactionTypesEnum.REVAL.ToString())
-                {
-                    r.AmountInBaseCurrency = r.TransactionAmount / ACurrentJournal.ExchangeRateToBase;
-                }
 
                 if (r.DebitCreditIndicator)
                 {
@@ -147,31 +149,100 @@ namespace Ict.Petra.Shared.MFinance
         public static void UpdateTotalsOfBatch(ref GLBatchTDS AMainDS,
             ABatchRow ACurrentBatch)
         {
-            string origTransactionFilter = AMainDS.ATransaction.DefaultView.RowFilter;
-            string origJournalFilter = AMainDS.AJournal.DefaultView.RowFilter;
-
             ACurrentBatch.BatchDebitTotal = 0.0m;
             ACurrentBatch.BatchCreditTotal = 0.0m;
 
-            AMainDS.AJournal.DefaultView.RowFilter =
-                AJournalTable.GetBatchNumberDBName() + " = " + ACurrentBatch.BatchNumber.ToString();
+            DataView jnlDataView = new DataView(AMainDS.AJournal);
+            jnlDataView.RowFilter = String.Format("{0}={1}",
+                AJournalTable.GetBatchNumberDBName(),
+                ACurrentBatch.BatchNumber);
 
-            foreach (DataRowView journalview in AMainDS.AJournal.DefaultView)
+            foreach (DataRowView journalview in jnlDataView)
             {
                 GLBatchTDSAJournalRow journalrow = (GLBatchTDSAJournalRow)journalview.Row;
-
-                AMainDS.ATransaction.DefaultView.RowFilter =
-                    ATransactionTable.GetBatchNumberDBName() + " = " + journalrow.BatchNumber.ToString() + " and " +
-                    ATransactionTable.GetJournalNumberDBName() + " = " + journalrow.JournalNumber.ToString();
 
                 UpdateTotalsOfJournal(ref AMainDS, journalrow);
 
                 ACurrentBatch.BatchDebitTotal += journalrow.JournalDebitTotal;
                 ACurrentBatch.BatchCreditTotal += journalrow.JournalCreditTotal;
             }
+        }
 
-            AMainDS.ATransaction.DefaultView.RowFilter = origTransactionFilter;
-            AMainDS.AJournal.DefaultView.RowFilter = origJournalFilter;
+        /// <summary>
+        /// Calculate the base amount for the transactions, and update the totals for the journals and the current batch
+        ///   Assumes that all transactions for the journal are already loaded.
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="ACurrentBatch"></param>
+        /// <param name="ACurrentJournal"></param>
+        public static void UpdateTotalsOfBatchForJournal(ref GLBatchTDS AMainDS,
+            ABatchRow ACurrentBatch, GLBatchTDSAJournalRow ACurrentJournal)
+        {
+            //Subtract existing journal totals amounts
+            ACurrentBatch.BatchDebitTotal -= ACurrentJournal.JournalDebitTotal;
+            ACurrentBatch.BatchCreditTotal -= ACurrentJournal.JournalCreditTotal;
+
+            UpdateTotalsOfJournal(ref AMainDS, ACurrentJournal);
+
+            //Add updated Journals amounts
+            ACurrentBatch.BatchDebitTotal += ACurrentJournal.JournalDebitTotal;
+            ACurrentBatch.BatchCreditTotal += ACurrentJournal.JournalCreditTotal;
+        }
+
+        /// <summary>
+        /// Calculate the base amount for the transactions, and update the totals for the journals and the current batch
+        /// </summary>
+        /// <param name="AMainDS"></param>
+        /// <param name="ACurrentBatch"></param>
+        public static void UpdateTotalsOfRecurringBatch(ref GLBatchTDS AMainDS,
+            ARecurringBatchRow ACurrentBatch)
+        {
+            ACurrentBatch.BatchDebitTotal = 0.0m;
+            ACurrentBatch.BatchCreditTotal = 0.0m;
+
+            DataView jnlDataView = new DataView(AMainDS.ARecurringJournal);
+            jnlDataView.RowFilter = String.Format("{0}={1}",
+                ARecurringJournalTable.GetBatchNumberDBName(),
+                ACurrentBatch.BatchNumber);
+
+            foreach (DataRowView journalview in jnlDataView)
+            {
+                GLBatchTDSARecurringJournalRow journalrow = (GLBatchTDSARecurringJournalRow)journalview.Row;
+
+                UpdateTotalsOfRecurringJournal(ref AMainDS, journalrow);
+
+                ACurrentBatch.BatchDebitTotal += journalrow.JournalDebitTotal;
+                ACurrentBatch.BatchCreditTotal += journalrow.JournalCreditTotal;
+            }
+        }
+
+        private const int DECIMALS = 10;
+
+        /// <summary>
+        /// use this method to calculate the new amount, using an exchange rate.
+        /// This will round the result to the defined limit of decimal places
+        /// </summary>
+        public static decimal Multiply(decimal AAmount, decimal AExchangeRate, int ADecimals = DECIMALS)
+        {
+            decimal Result = AAmount * AExchangeRate;
+
+            return Math.Round(Result, ADecimals);
+        }
+
+        /// <summary>
+        /// use this method to calculate the new amount, using an exchange rate.
+        /// This will round the result to the defined limit of decimal places
+        /// </summary>
+        public static decimal Divide(decimal AAmount, decimal AExchangeRate, int ADecimals = DECIMALS)
+        {
+            if (AExchangeRate == 0.0m)
+            {
+                return 0.0m;
+            }
+
+            decimal Result = AAmount / AExchangeRate;
+
+            return Math.Round(Result, ADecimals);
         }
     }
 }

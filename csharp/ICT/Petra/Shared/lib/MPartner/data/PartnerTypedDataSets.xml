@@ -37,7 +37,9 @@
     <Table sqltable="p_foundation_deadline"/>
     <Table sqltable="p_foundation_proposal"/>
     <Table sqltable="p_foundation_proposal_detail"/>
-    <Table sqltable="p_partner_interest"/>
+    <Table sqltable="p_partner_interest">
+      <Field name="InterestCategory" sqltable="p_interest" sqlfield="p_category_c"/>
+    </Table>
     <Table sqltable="p_interest"/>
     <!-- will not be filled on the server, but using the cached table. needed for the relation PartnerInterestCategory, which is needed for the grid for partner interests -->
     <Table sqltable="p_partner_reminder"/>
@@ -45,8 +47,11 @@
     <Table sqltable="p_partner_relationship">
       <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
       <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>
+      <Field sqltable="p_relation" sqlfield="p_relation_description_c" name="RelationDescription"/>
+      <Field sqltable="p_relation" sqlfield="p_reciprocal_description_c" name="ReciprocalRelationDescription"/>
+      <CustomField name="DisplayRelationDescription" type="String"/>
     </Table>
-    <Table sqltable="p_relation"/>
+    <!-- <Table sqltable="p_relation"/> -->
     <Table sqltable="p_partner_contact"/>
     <!-- not in use yet! -->
     <Table sqltable="p_data_label_value_application"/>
@@ -106,10 +111,6 @@
     <CustomRelation name="PartnerInterestCategory"
             childTable="PPartnerInterest" childFields="Interest"
             parentTable="PInterest" parentFields="Interest"
-            createConstraints="false"/>
-    <CustomRelation name="PartnerRelation"
-            parentTable="PRelation" parentFields="RelationName"
-            childTable="PPartnerRelationship" childFields="RelationName"
             createConstraints="false"/>
   </DataSet>
 
@@ -425,6 +426,8 @@
       <CustomField name="Category" type="string"/>
     </Table>
 
+    <Table sqltable="um_job"/>
+      
     <Table sqltable="pm_personal_data"/>
     <Table sqltable="pt_passport_type"/>
     <Table sqltable="pm_passport_details"/>
@@ -443,6 +446,7 @@
     <Table sqltable="pm_person_ability"/>
     <Table sqltable="pm_commitment_status"/>
     <Table sqltable="pm_staff_data"/>
+    <Table sqltable="pm_job_assignment"/>
     <Table sqltable="pm_person_evaluation"/>
     <Table sqltable="pt_arrival_point"/>
     <Table sqltable="pt_travel_type"/>
@@ -461,7 +465,6 @@
     <Table sqltable="um_unit_ability"/>
     <Table sqltable="um_unit_language"/>
     <Table sqltable="um_unit_cost"/>
-    <Table sqltable="um_job"/>
     <Table sqltable="um_job_requirement"/>
     <Table sqltable="um_job_language"/>
     <Table sqltable="um_job_qualification"/>
@@ -486,5 +489,13 @@
     <Table sqltable="p_contact_attribute"/>
     <Table sqltable="p_contact_attribute_detail"/>
   </DataSet>   
+
+  <DataSet name="PostcodeRegionsTDS">
+    <Table sqltable="p_postcode_region"/>
+    <Table sqltable="p_postcode_region_range">
+      <Field name="From" sqltable="p_postcode_range" sqlfield="p_from_c"/>
+      <Field name="To" sqltable="p_postcode_range" sqlfield="p_to_c"/>
+    </Table>
+  </DataSet>
   
 </PetraDataSets>

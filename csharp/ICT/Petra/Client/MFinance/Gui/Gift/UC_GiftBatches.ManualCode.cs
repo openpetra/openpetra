@@ -199,8 +199,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             lblValidDateRange.Text = String.Format(Catalog.GetString("Valid between {0} and {1}"),
                 FStartDateCurrentPeriod.ToShortDateString(), FEndDateLastForwardingPeriod.ToShortDateString());
 
-            //dtpDetailGlEffectiveDate.Date = FDefaultDate;
-
             if (grdDetails.Rows.Count > 1)
             {
                 ((TFrmGiftBatch) this.ParentForm).EnableTransactions();
@@ -211,8 +209,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             ShowData();
-            ShowDetails(GetCurrentBatchRow());
-
             FBatchLoaded = true;
         }
 
@@ -374,7 +370,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (grdDetails.Rows.Count < 2)
             {
-                ClearControls();
+                ShowDetails(null);
                 ((TFrmGiftBatch) this.ParentForm).DisableTransactions();
             }
             else if (FBatchLoaded == true)
@@ -530,7 +526,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (ARow == null)
             {
+                ((TFrmGiftBatch)ParentForm).DisableTransactions();
+                dtpDetailGlEffectiveDate.Date = FDefaultDate;
                 return;
+            }
+
+            if (ARow.BatchStatus == MFinanceConstants.BATCH_CANCELLED)
+            {
+                ((TFrmGiftBatch)ParentForm).DisableTransactions();
+            }
+            else
+            {
+                ((TFrmGiftBatch)ParentForm).EnableTransactions();
             }
 
             FLedgerNumber = ARow.LedgerNumber;
@@ -539,9 +546,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FPetraUtilsObject.DetailProtectedMode =
                 (ARow.BatchStatus.Equals(MFinanceConstants.BATCH_POSTED) || ARow.BatchStatus.Equals(MFinanceConstants.BATCH_CANCELLED)) || ViewMode;
 
-            ((TFrmGiftBatch)ParentForm).EnableTransactions();
-
-            dtpDetailGlEffectiveDate.Date = ARow.GlEffectiveDate;
+            //dtpDetailGlEffectiveDate.Date = ARow.GlEffectiveDate;
 
             //Update the batch period if necessary
             UpdateBatchPeriod(null, null);
@@ -549,6 +554,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateChangeableStatus();
 
             RefreshCurrencyAndExchangeRate();
+            Boolean ComboSetsOk = cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1);
+            ComboSetsOk &= cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
+
+            if (!ComboSetsOk)
+            {
+                MessageBox.Show("Can't set combo box with row details.");
+            }
         }
 
         private Boolean ViewMode
@@ -625,111 +637,93 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ((TFrmGiftBatch)ParentForm).SaveChanges();
         }
 
-        /// <summary>
-        /// cancel a batch (there is no deletion of batches)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void CancelRow(System.Object sender, EventArgs e)
+        private void CancelRecord(System.Object sender, EventArgs e)
         {
-            this.DeleteAGiftBatch();
-        }
+            string completionMessage = string.Empty;
+            int currentlySelectedRow = 0;
+            string existingBatchStatus = string.Empty;
+            decimal existingBatchTotal = 0;
 
-        /// <summary>
-        /// Performs checks to determine whether a deletion of the current
-        ///  row is permissable
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
-        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
-        /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(AGiftBatchRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
+            if ((FPreviouslySelectedDetailRow == null) || (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
-                MessageBox.Show(Catalog.GetString("No Gift Batch is selected to delete."),
-                    Catalog.GetString("Cancelling of Gift Batch"));
-                return false;
+                return;
             }
-            else
-            {
-                // ask if the user really wants to cancel the batch
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to cancel Gift Batch no: {0} ?"),
-                    ARowToDelete.BatchNumber);
-                return true;
-            }
-        }
 
-        /// <summary>
-        /// Deletes the current row and optionally populates a completion message
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to delete</param>
-        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(AGiftBatchRow ARowToDelete, out string ACompletionMessage)
-        {
-            bool deletionSuccessful = false;
+            currentlySelectedRow = grdDetails.GetFirstHighlightedRowIndex();
 
             try
             {
                 //Normally need to set the message parameters before the delete is performed if requiring any of the row values
-                ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
-                    ARowToDelete.BatchNumber);
+                completionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
+                    FPreviouslySelectedDetailRow.BatchNumber);
+
+                existingBatchTotal = FPreviouslySelectedDetailRow.BatchTotal;
+                existingBatchStatus = FPreviouslySelectedDetailRow.BatchStatus;
+
+                //Load all journals for current Batch
+                //clear any transactions currently being editied in the Transaction Tab
+                ((TFrmGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+
+                //Clear gifts and details etc for current Batch
+                FMainDS.AGiftDetail.Clear();
+                FMainDS.AGift.Clear();
+
+                //Load tables afresh
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber));
+
+                //Delete gift details
+                for (int i = FMainDS.AGiftDetail.Count - 1; i >= 0; i--)
+                {
+                    FMainDS.AGiftDetail[i].Delete();
+                }
+
+                //Delete gifts
+                for (int i = FMainDS.AGift.Count - 1; i >= 0; i--)
+                {
+                    FMainDS.AGift[i].Delete();
+                }
 
                 //Batch is only cancelled and never deleted
-                ARowToDelete.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+                FPreviouslySelectedDetailRow.BeginEdit();
+                FPreviouslySelectedDetailRow.BatchTotal = 0;
+                FPreviouslySelectedDetailRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+                FPreviouslySelectedDetailRow.EndEdit();
+
+                FPetraUtilsObject.HasChanges = true;
 
                 // save first, then post
                 if (!((TFrmGiftBatch)ParentForm).SaveChanges())
                 {
-                    // saving failed, therefore do not try to post
-                    MessageBox.Show(Catalog.GetString("The cancelled batch cannot be saved!") + Environment.NewLine +
-                        Catalog.GetString("Please click Save to confirm the deletion."));
+                    FPreviouslySelectedDetailRow.BeginEdit();
+                    //Should normally be Unposted, but allow for other status values in future
+                    FPreviouslySelectedDetailRow.BatchTotal = existingBatchTotal;
+                    FPreviouslySelectedDetailRow.BatchStatus = existingBatchStatus;
+                    FPreviouslySelectedDetailRow.EndEdit();
 
-                    deletionSuccessful = false;
+                    SelectRowInGrid(currentlySelectedRow);
+
+                    // saving failed, therefore do not try to cancel
+                    MessageBox.Show(Catalog.GetString("The cancelled batch failed to save!"));
                 }
                 else
                 {
-                    deletionSuccessful = true;
+                    SelectRowInGrid(currentlySelectedRow);
+
+                    MessageBox.Show(completionMessage,
+                        "Batch Cancelled",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    UpdateChangeableStatus();
                 }
             }
             catch (Exception ex)
             {
-                ACompletionMessage = ex.Message;
+                completionMessage = ex.Message;
                 MessageBox.Show(ex.Message,
-                    "Deletion Error",
+                    "Cancellation Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
-            }
-
-            return deletionSuccessful;
-        }
-
-        /// <summary>
-        /// Code to be run after the deletion process
-        /// </summary>
-        /// <param name="ARowToDelete">the row that was/was to be deleted</param>
-        /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
-        /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
-        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        private void PostDeleteManual(AGiftBatchRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
-        {
-            /*Code to execute after the delete has occurred*/
-            if (ADeletionPerformed && (ACompletionMessage.Length > 0))
-            {
-                MessageBox.Show(ACompletionMessage,
-                    "Deletion Completed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-
-                UpdateChangeableStatus();
-            }
-            else if (!AAllowDeletion)
-            {
-                //message to user
-            }
-            else if (!ADeletionPerformed)
-            {
-                //message to user
             }
 
             if (grdDetails.Rows.Count > 1)
@@ -739,25 +733,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 ((TFrmGiftBatch)ParentForm).DisableTransactions();
-                ClearControls();
-            }
-        }
-
-        private void ClearControls()
-        {
-            try
-            {
-                FPetraUtilsObject.DisableDataChangedEvent();
-                txtDetailBatchDescription.Clear();
-                txtDetailHashTotal.NumberValueDecimal = 0;
-                dtpDetailGlEffectiveDate.Date = FDefaultDate;
-                cmbDetailBankCostCentre.SelectedIndex = -1;
-                cmbDetailBankAccountCode.SelectedIndex = -1;
-                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
-            }
-            finally
-            {
-                FPetraUtilsObject.EnableDataChangedEvent();
+                ShowDetails(null);
             }
         }
 
@@ -884,6 +860,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 currentBatchNo = FPreviouslySelectedDetailRow.BatchNumber;
             }
 
+            Boolean batchIsEmpty = true;
+            ((TFrmGiftBatch)ParentForm).LoadTransactions(FPreviouslySelectedDetailRow.LedgerNumber,
+                FPreviouslySelectedDetailRow.BatchNumber,
+                FPreviouslySelectedDetailRow.BatchStatus, false);
+
+            if (FMainDS.AGift != null)
+            {
+                FMainDS.AGift.DefaultView.RowFilter = "a_batch_number_i = " + FPreviouslySelectedDetailRow.BatchNumber;
+                batchIsEmpty = (FMainDS.AGift.DefaultView.Count == 0);
+            }
+
+            if (batchIsEmpty)  // there are no gifts in this batch!
+            {
+                MessageBox.Show(Catalog.GetString("Batch is empty!"), Catalog.GetString("Posting failed"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+
             TVerificationResultCollection Verifications;
 
             if (FPetraUtilsObject.HasChanges)
@@ -899,7 +893,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //Read current rows position ready to reposition after removal of posted row from grid
-            int newCurrentRowPos = grdDetails.SelectedRowIndex();
+            int newCurrentRowPos = GetSelectedRowIndex();
 
             if (newCurrentRowPos < 0)
             {
@@ -953,15 +947,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 PrintGiftBatchReceipts(PostedGiftTDS);
 
                 RefreshAll();
+                RefreshGridData(currentBatchNo, true);
 
                 if (FPetraUtilsObject.HasChanges)
                 {
                     ((TFrmGiftBatch)ParentForm).SaveChanges();
-                }
-
-                if (currentBatchNo > 0)
-                {
-                    RefreshGridData(currentBatchNo, true);
                 }
             }
         }
@@ -1012,7 +1002,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Boolean changeable = (FPreviouslySelectedDetailRow != null) && (!ViewMode)
                                  && (FPreviouslySelectedDetailRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
-            this.btnDelete.Enabled = changeable;
+            this.btnCancel.Enabled = changeable;
             this.btnPostBatch.Enabled = changeable;
             pnlDetails.Enabled = changeable;
             mniBatch.Enabled = !ViewMode;
@@ -1047,7 +1037,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             String ACurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
 
-            txtDetailHashTotal.CurrencySymbol = ACurrencyCode;
+            txtDetailHashTotal.CurrencyCode = ACurrencyCode;
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false);
 
@@ -1113,6 +1103,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void HashTotalChanged(object sender, EventArgs e)
         {
+            TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
+
+            if (txn.NumberValueDecimal == null)
+            {
+                return;
+            }
+
             Decimal HashTotal = Convert.ToDecimal(txtDetailHashTotal.NumberValueDecimal);
             Form p = ParentForm;
 
@@ -1159,62 +1156,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void ParseHashTotal(AGiftBatchRow ARow)
         {
             decimal correctHashValue;
-            string hashTotal = txtDetailHashTotal.Text.Trim();
-            string hashNumericPart = string.Empty;
-            decimal hashDecimalVal;
-            Int32 hashTotalIndexOfLastNumeric = -1;
-            bool isNumericVal;
 
-            if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
+            if (ARow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            {
+                return;
+            }
+
+            if ((txtDetailHashTotal.NumberValueDecimal == null) || !txtDetailHashTotal.NumberValueDecimal.HasValue)
             {
                 correctHashValue = 0m;
             }
-            else if (hashTotal.Contains(" "))
-            {
-                hashNumericPart = hashTotal.Substring(0, hashTotal.IndexOf(' '));
-
-                if (!Decimal.TryParse(hashNumericPart, out hashDecimalVal))
-                {
-                    correctHashValue = 0m;
-                }
-                else
-                {
-                    correctHashValue = hashDecimalVal;
-                }
-            }
             else
             {
-                hashTotalIndexOfLastNumeric = hashTotal.LastIndexOfAny(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
-
-                if (hashTotalIndexOfLastNumeric > -1)
-                {
-                    hashNumericPart = hashTotal.Substring(0, hashTotalIndexOfLastNumeric + 1);
-                    isNumericVal = Decimal.TryParse(hashNumericPart, out hashDecimalVal);
-
-                    if (!isNumericVal)
-                    {
-                        correctHashValue = 0m;
-                    }
-                    else
-                    {
-                        correctHashValue = hashDecimalVal;
-                    }
-                }
-                else
-                {
-                    correctHashValue = 0m;
-                }
+                correctHashValue = txtDetailHashTotal.NumberValueDecimal.Value;
             }
 
-            if (txtDetailHashTotal.NumberValueDecimal != correctHashValue)
-            {
-                txtDetailHashTotal.NumberValueDecimal = correctHashValue;
-            }
-
-            if (ARow.HashTotal != correctHashValue)
-            {
-                ARow.HashTotal = correctHashValue;
-            }
+            txtDetailHashTotal.NumberValueDecimal = correctHashValue;
+            ARow.HashTotal = correctHashValue;
         }
 
         /// <summary>

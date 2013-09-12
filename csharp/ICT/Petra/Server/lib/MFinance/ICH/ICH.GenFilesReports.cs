@@ -254,7 +254,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                     msg.Attachments.Add(new Attachment(AFileName));
                     //msg.Bcc.Add(BCCAddress);
 
-                    SendMail.SendMessage(ref msg);
+                    SendMail.SendMessage(msg);
                 }
 
                 DBAccess.GDBAccessObj.RollbackTransaction();

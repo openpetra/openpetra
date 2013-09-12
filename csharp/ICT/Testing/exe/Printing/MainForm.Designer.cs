@@ -60,6 +60,7 @@ namespace Tests.Common.Printing
             this.tbbSaveTestText = new System.Windows.Forms.ToolStripButton();
             this.tbbSavePDF = new System.Windows.Forms.ToolStripButton();
             this.tbbPrintPDFToScreen = new System.Windows.Forms.ToolStripButton();
+            this.tbbImportReportBinaryFile = new System.Windows.Forms.ToolStripButton();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.txtHTMLText = new System.Windows.Forms.TextBox();
             this.tabPreview = new System.Windows.Forms.TabControl();
@@ -69,8 +70,9 @@ namespace Tests.Common.Printing
             this.tbbPreviousPage = new System.Windows.Forms.ToolStripButton();
             this.tbbNextPage = new System.Windows.Forms.ToolStripButton();
             this.cmbZoom = new System.Windows.Forms.ToolStripComboBox();
-            this.tbbImportReportBinaryFile = new System.Windows.Forms.ToolStripButton();
+            this.btnPrintReportPDF = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
@@ -86,7 +88,8 @@ namespace Tests.Common.Printing
                     this.tbbSaveTestText,
                     this.tbbSavePDF,
                     this.tbbPrintPDFToScreen,
-                    this.tbbImportReportBinaryFile
+                    this.tbbImportReportBinaryFile,
+                    this.btnPrintReportPDF
                 });
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -133,6 +136,16 @@ namespace Tests.Common.Printing
             this.tbbPrintPDFToScreen.Size = new System.Drawing.Size(104, 22);
             this.tbbPrintPDFToScreen.Text = "Print PDF to Screen";
             this.tbbPrintPDFToScreen.Click += new System.EventHandler(this.TbbPrintPDFToScreenClick);
+            //
+            // tbbImportReportBinaryFile
+            //
+            this.tbbImportReportBinaryFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.tbbImportReportBinaryFile.Image = ((System.Drawing.Image)(resources.GetObject("tbbImportReportBinaryFile.Image")));
+            this.tbbImportReportBinaryFile.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbImportReportBinaryFile.Name = "tbbImportReportBinaryFile";
+            this.tbbImportReportBinaryFile.Size = new System.Drawing.Size(122, 22);
+            this.tbbImportReportBinaryFile.Text = "Load Report Binary File";
+            this.tbbImportReportBinaryFile.Click += new System.EventHandler(this.TbbImportReportBinaryFileClick);
             //
             // splitContainer1
             //
@@ -237,15 +250,15 @@ namespace Tests.Common.Printing
             this.cmbZoom.Size = new System.Drawing.Size(121, 25);
             this.cmbZoom.SelectedIndexChanged += new System.EventHandler(this.CmbZoomSelectedIndexChanged);
             //
-            // tbbImportReportBinaryFile
+            // btnPrintReportPDF
             //
-            this.tbbImportReportBinaryFile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.tbbImportReportBinaryFile.Image = ((System.Drawing.Image)(resources.GetObject("tbbImportReportBinaryFile.Image")));
-            this.tbbImportReportBinaryFile.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbbImportReportBinaryFile.Name = "tbbImportReportBinaryFile";
-            this.tbbImportReportBinaryFile.Size = new System.Drawing.Size(122, 22);
-            this.tbbImportReportBinaryFile.Text = "Load Report Binary File";
-            this.tbbImportReportBinaryFile.Click += new System.EventHandler(this.TbbImportReportBinaryFileClick);
+            this.btnPrintReportPDF.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.btnPrintReportPDF.Image = ((System.Drawing.Image)(resources.GetObject("btnPrintReportPDF.Image")));
+            this.btnPrintReportPDF.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnPrintReportPDF.Name = "btnPrintReportPDF";
+            this.btnPrintReportPDF.Size = new System.Drawing.Size(104, 22);
+            this.btnPrintReportPDF.Text = "Print Report to PDF";
+            this.btnPrintReportPDF.Click += new System.EventHandler(this.BtnPrintReportPDFClick);
             //
             // MainForm
             //
@@ -261,6 +274,7 @@ namespace Tests.Common.Printing
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.tabPreview.ResumeLayout(false);
             this.tbpPrintPreview.ResumeLayout(false);
@@ -270,6 +284,8 @@ namespace Tests.Common.Printing
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.ToolStripButton btnPrintReportPDF;
 
         private System.Windows.Forms.ToolStripButton tbbImportReportBinaryFile;
 

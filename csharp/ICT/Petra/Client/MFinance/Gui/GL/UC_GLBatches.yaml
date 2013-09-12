@@ -8,13 +8,15 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actNew: {Label=&Add, ActionClick=NewRow}
-        actCancel: {Label=&Cancel, ActionClick=CancelRow}
+        actNew: {Label=&Add Batch, ActionClick=NewRow}
+        actCancel: {Label=&Cancel Batch, ActionClick=CancelRow, Image=Delete_Record.ico}
         actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
         actTestPostBatch: {Label=&Test Batch, ActionClick=TestPostBatch}
         actImportFromSpreadSheet: {ActionClick=ImportFromSpreadSheet}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
+        actImportFromClipboard: {Label=&Import from Clipboard, ActionClick=ImportFromClipboard}
         actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
+        actReverseBatch: {Label=&Reverse Batch, ActionClick=ReverseBatch}
     Controls:
         pnlContent:
             Dock: Fill
@@ -35,21 +37,22 @@ RootNode:
             Controls: [cmbYearFilter, cmbPeriodFilter]
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnCancel, btnTestPostBatch, btnPostBatch]
-        btnNew: {Action=actNew, Stretch=horizontally}
-        btnCancel: {Action=actCancel, Stretch=horizontally}
-        btnPostBatch: {Action=actPostBatch, Stretch=horizontally}
-        btnTestPostBatch: {Stretch=horizontally}
+            ControlsOrientation: horizontal
+        btnNew: {Action=actNew, Width=120}
+        btnCancel: {Action=actCancel, Width=120}
+        btnTestPostBatch: {Width=120, StartNewButtonGroup=true}
+        btnPostBatch: {Action=actPostBatch, Width=120}
         grdDetails:
             Dock: Fill
             Columns: [BatchNumber, BatchStatus, DateEffective, BatchDebitTotal, BatchCreditTotal, BatchControlTotal, BatchDescription]
             CustomColumns:
                 BatchNumber: {Label=Batch, Type=Integer}
                 BatchStatus: {Label=Status}
-                DateEffective: {Label=Status, Type=DateTime}
+                DateEffective: {Label=Effective Date, Type=DateTime}
                 BatchDebitTotal: {Label=Debit Total, Type=Currency}
                 BatchCreditTotal: {Label=Credit Total, Type=Currency}
                 BatchControlTotal: {Label=Hash Total, Type=Currency}
@@ -58,6 +61,7 @@ RootNode:
             ActionDoubleClick: ShowJournalTab
             ActionEnterKeyPressed: ShowJournalTab
             SortOrder: ABatch.BatchNumber DESC
+            EnableMultiSelection: false
         pnlDetails:
             Dock: Bottom
             Controls:
@@ -75,12 +79,14 @@ RootNode:
             Label: &Batch
             mniPostBatch:
             mniTestPostBatch:
-            #mniImportFromSpreadSheet:
+            mniReverseBatch:
             mniImportBatches:
+            mniImportFromClipboard:
             mniExportBatches:
     Toolbar:
         tbbTestPostBatch:
         tbbPostBatch:
-        #tbbImportFromSpreadSheet:
+        tbbReverseBatch:
         tbbImportBatches:
+        tbbImportFromClipboard:
         tbbExportBatches:

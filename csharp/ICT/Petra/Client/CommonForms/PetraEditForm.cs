@@ -398,6 +398,78 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
+        /// <summary>
+        /// Recursively clears the content of all the controls in the specified container without
+        /// </summary>
+        /// <param name="AParentControl">The container control whose controls are to be cleared (often this will be pnlDetails)</param>
+        public void ClearControls(Control AParentControl)
+        {
+            DisableDataChangedEvent();
+
+            foreach (Control ctrl in AParentControl.Controls)
+            {
+                try
+                {
+                    if (ctrl.GetType() == typeof(TextBox))
+                    {
+                        ((TextBox)ctrl).Clear();
+                    }
+                    else if (ctrl.GetType() == typeof(TTxtMaskedTextBox))
+                    {
+                        ((TTxtMaskedTextBox)ctrl).Clear();
+                    }
+                    else if (ctrl.GetType() == typeof(ComboBox))
+                    {
+                        ((ComboBox)ctrl).SelectedIndex = -1;
+                    }
+                    else if (ctrl.GetType() == typeof(CheckBox))
+                    {
+                        ((CheckBox)ctrl).Checked = false;
+                    }
+                    else if (ctrl is NumericUpDown)
+                    {
+                        ((NumericUpDown)ctrl).Value = ((NumericUpDown)ctrl).Minimum;
+                    }
+                    else if (ctrl.GetType() == typeof(TCmbAutoComplete))
+                    {
+                        ((TCmbAutoComplete)ctrl).SetSelectedString(String.Empty);
+                    }
+                    else if (ctrl.GetType() == typeof(TCmbVersatile))
+                    {
+                        ((TCmbVersatile)ctrl).SetSelectedString(String.Empty);
+                    }
+                    else if (ctrl.GetType() == typeof(TClbVersatile))
+                    {
+                        ((TClbVersatile)ctrl).ClearSelected();
+                    }
+                    else if (ctrl.GetType() == typeof(TtxtPetraDate))
+                    {
+                        ((TtxtPetraDate)ctrl).Clear();
+                    }
+                    else if (ctrl.GetType() == typeof(Ict.Common.Controls.TTxtNumericTextBox))
+                    {
+                        ((Ict.Common.Controls.TTxtNumericTextBox)ctrl).ClearBox();
+                    }
+                    else if (ctrl.GetType() == typeof(Ict.Common.Controls.TTxtCurrencyTextBox))
+                    {
+                        ((Ict.Common.Controls.TTxtCurrencyTextBox)ctrl).NumberValueDecimal = 0;
+                    }
+                    else if (ctrl.Controls.Count > 0)
+                    {
+                        // Clear these controls as well
+                        ClearControls(ctrl);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TLogging.LogAtLevel(7,
+                        "Exception caught in TFrmPetraEditUtils.ClearControls(): " + ctrl.Name + "(" + ctrl.ToString() + "): " + ex.Message);
+                }
+            }
+
+            EnableDataChangedEvent();
+        }
+
         /** This is available for the child form to respond to by overriding
          */
         protected void ControlValueChanged()

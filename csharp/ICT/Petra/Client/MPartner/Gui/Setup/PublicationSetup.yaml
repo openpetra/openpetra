@@ -10,18 +10,25 @@ RootNode:
     WindowWidth: 713
     WindowHeight: 700
     Actions:
-        actNew: {Label=New, ActionClick=NewRecord}
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
-            Controls: [btnNew]
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailPublicationCode, DetailPublicationDescription, DetailFrequencyCode, DetailValidPublication, DetailPublicationLabelCode]
@@ -34,13 +41,9 @@ RootNode:
                 Row2: [cmbDetailFrequencyCode]
                 Row3: [chkDetailValidPublication]
         txtDetailPublicationCode: {Label=Publication Code, Width=100, CharacterCasing=Upper, OnLeave=UpdatePublicationLabelCode}
-        txtDetailPublicationDescription: {Width=228, ColSpan=2}
+        txtDetailPublicationDescription: {Width=278, ColSpan=2}
         txtDetailPublicationLabelCode: {Width=30}
         txtDetailNumberOfIssues: {Width=30}
         cmbDetailFrequencyCode: {List=FrequencyList, ColSpan=3}
         txtDetailNumberOfReminders: {Width=30}
         chkDetailValidPublication: 
-
-    Toolbar:
-        tbbNew: 
-            Label: New Publication Code

@@ -99,6 +99,28 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        public String PublicationCodeLabel
+        {
+            get
+            {
+                return lblPSubscriptionPublicationCode.Text;
+            }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public String PublicationCodeValue
+        {
+            get
+            {
+                return cmbPSubscriptionPublicationCode.GetSelectedString();
+            }
+        }
+
         /// <summary>todoComment</summary>
         public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
 
@@ -337,10 +359,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Sets the Publication cost
         /// </summary>
         /// <returns>void</returns>
-        private void SetupPublicationCost(double APublicationCost, String ACurrencyCode)
+        private void SetupPublicationCost(decimal APublicationCost, String ACurrencyCode)
         {
-            this.txtPublicationCost.NumberValueDouble = APublicationCost;
-            this.txtPublicationCost.CurrencySymbol = ACurrencyCode;
+            this.txtPublicationCost.NumberValueDecimal = APublicationCost;
+            this.txtPublicationCost.CurrencyCode = ACurrencyCode;
         }
 
         private void UpdatePublicationCost()
@@ -363,7 +385,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     /* if the Subscription has a cost, set it, else set the cost to 0. */
                     if (PublicationCostRows.Length > 0)
                     {
-                        SetupPublicationCost((double)((PPublicationCostRow)PublicationCostRows[0]).PublicationCost,
+                        SetupPublicationCost((decimal)((PPublicationCostRow)PublicationCostRows[0]).PublicationCost,
                             ((PPublicationCostRow)PublicationCostRows[0]).CurrencyCode);
                     }
                     else

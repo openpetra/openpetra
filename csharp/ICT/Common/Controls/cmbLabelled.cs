@@ -414,6 +414,32 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// the text displayed in the combobox label including an inactive prefix
+        public string LabelTextFull
+        {
+            get
+            {
+                return this.lblDescription.Text;
+            }
+        }
+
+        /// the text displayed in the combobox label with an inactive prefix removed
+        public string LabelTextOriginal
+        {
+            get
+            {
+                string labelText = this.lblDescription.Text;
+                string inactiveIdentifier = "<" + Catalog.GetString("INACTIVE") + "> ";
+
+                if (labelText.StartsWith(inactiveIdentifier))
+                {
+                    labelText = labelText.Substring(inactiveIdentifier.Length);
+                }
+
+                return labelText;
+            }
+        }
+
         /// <summary>
         /// set the string that should be selected;
         /// uses TCmbVersatile.SetSelectedString
@@ -667,7 +693,29 @@ namespace Ict.Common.Controls
 
         private void RefreshLabel(object sender, EventArgs e)
         {
-            this.lblDescription.Text = cmbCombobox.GetSelectedDescription();
+            string descr = cmbCombobox.GetSelectedDescription();
+
+            this.lblDescription.Text = descr;
+
+            if (this.lblDescription.Visible)
+            {
+                HighlightLabelForInactiveItems(descr);
+            }
+        }
+
+        private void HighlightLabelForInactiveItems(string AItemDescription)
+        {
+            string inactiveIdentifier = "<" + Catalog.GetString("INACTIVE") + "> ";
+            bool itemIsActive = !(AItemDescription.StartsWith(inactiveIdentifier));
+
+            if (itemIsActive && (this.lblDescription.BackColor != System.Drawing.SystemColors.Control))
+            {
+                this.lblDescription.BackColor = System.Drawing.SystemColors.Control;
+            }
+            else if (!itemIsActive && (this.lblDescription.BackColor != System.Drawing.Color.PaleVioletRed))
+            {
+                this.lblDescription.BackColor = System.Drawing.Color.PaleVioletRed;
+            }
         }
 
         /// <summary>

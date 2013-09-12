@@ -68,13 +68,16 @@ namespace Tests.MFinance.Server.Gift
             TPetraServerConnector.Disconnect();
         }
 
-        private bool ImportAndPostGiftBatch()
+        private bool ImportAndPostGiftBatch(out TVerificationResultCollection VerificationResult)
         {
             TGiftImporting importer = new TGiftImporting();
 
             string testFile = TAppSettingsManager.GetValue("GiftBatch.file", "../../csharp/ICT/Testing/lib/MFinance/SampleData/sampleGiftBatch.csv");
+
             StreamReader sr = new StreamReader(testFile);
             string FileContent = sr.ReadToEnd();
+
+            FileContent = FileContent.Replace("{ledgernumber}", FLedgerNumber.ToString());
 
             sr.Close();
 
@@ -84,8 +87,6 @@ namespace Tests.MFinance.Server.Gift
             parameters.Add("DateFormatString", "yyyy-MM-dd");
             parameters.Add("NumberFormat", "American");
             parameters.Add("NewLine", Environment.NewLine);
-
-            TVerificationResultCollection VerificationResult;
 
             importer.ImportGiftBatches(parameters, FileContent, out VerificationResult);
 
@@ -108,7 +109,12 @@ namespace Tests.MFinance.Server.Gift
             CommonNUnitFunctions.ResetDatabase();
 
             // import a test gift batch
-            ImportAndPostGiftBatch();
+            TVerificationResultCollection VerificationResult;
+
+            if (!ImportAndPostGiftBatch(out VerificationResult))
+            {
+                Assert.Fail("ImportAndPostGiftBatch failed: " + VerificationResult.BuildVerificationResultString());
+            }
 
             // TODO test reversed gifts
 

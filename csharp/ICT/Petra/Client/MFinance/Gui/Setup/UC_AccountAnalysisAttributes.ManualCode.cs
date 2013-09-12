@@ -67,6 +67,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     }
                 }
             }
+
+            btnDelete.Enabled = (grdDetails.Rows.Count > 1);
         }
 
         /// <summary>
@@ -100,6 +102,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 //          GetDataFromControls();
             this.CreateNewAAnalysisAttribute();
             pnlDetails.Enabled = true;
+
+            SelectRowInGrid(grdDetails.Rows.Count);
         }
 
         private string NewUniqueAnalTypeCode()
@@ -133,8 +137,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (ARow != null)  // How can ARow ever be null!!
             {
                 LoadCmbAnalType();
+                cmbDetailAnalTypeCode.SelectedValueChanged -= OnDetailAnalysisTypeCodeChange;
                 cmbDetailAnalTypeCode.Text = ARow.AnalysisTypeCode;
-                pnlDetails.Enabled = false;
+                cmbDetailAnalTypeCode.SelectedValueChanged += new System.EventHandler(OnDetailAnalysisTypeCodeChange);
             }
         }
 
@@ -144,49 +149,54 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ARow.Active = true;
             ARow.AccountCode = FAccountCode;
 
-            //            cmbDetailAnalTypeCode.SelectedIndex = 0; // I'm not convinced about this...
+            //cmbDetailAnalTypeCode.SelectedIndex = 0; // I'm not convinced about this...
 
             ARow.AnalysisTypeCode = NewUniqueAnalTypeCode();
         }
 
-        private void DeleteRow(System.Object sender, EventArgs e)
+        private bool PreDeleteManual(AAnalysisAttributeRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if (FPreviouslySelectedDetailRow == null)
+            if ((ARowToDelete != null) && (ARowToDelete.RowState != DataRowState.Deleted))
             {
-                return;
+                ADeletionQuestion = String.Format(
+                    Catalog.GetString("Confirm you want to Remove {0} from this account."),
+                    ARowToDelete.AnalysisTypeCode);
             }
 
-            // TODO: Do I need to check whether I can detatch this AnalTypeCode from this account?
+            return true;
+        }
 
-            /*
-             * int num = TRemote.MFinance.Setup.WebConnectors.CheckDeleteAFreeformAnalysis(FLedgerNumber,
-             *  FPreviouslySelectedDetailRow.AnalysisTypeCode,
-             *  "*All*");
-             *
-             * if (num > 0)
-             * {
-             *  MessageBox.Show(Catalog.GetString(
-             *          "{0} is already referenced and cannot be deleted."), FPreviouslySelectedDetailRow.AnalysisTypeCode);
-             *  return;
-             * }
-             */
+        private bool DeleteRowManual(AAnalysisAttributeRow ARowToDelete, ref string ACompletionMessage)
+        {
+            bool success = false;
 
-            if ((FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
-                || (MessageBox.Show(String.Format(Catalog.GetString(
-                                "Confirm you want to Remove {0} from this account."),
-                            FPreviouslySelectedDetailRow.AnalysisTypeCode), Catalog.GetString("Confirm Delete"),
-                        MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
+            try
             {
-                int rowIndex = CurrentRowIndex();
-                FPreviouslySelectedDetailRow.Delete();
-                FPetraUtilsObject.SetChangedFlag();
-                SelectByIndex(rowIndex);
+                ARowToDelete.Delete();
+                success = true;
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error trying to delete current row:" + Environment.NewLine + Environment.NewLine + ex.Message);
+            }
+
+            return success;
+        }
+
+        private void PostDeleteManual(AAnalysisAttributeRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
+        {
+            btnDelete.Enabled = (grdDetails.Rows.Count > 1);
         }
 
         private void OnDetailAnalysisTypeCodeChange(System.Object sender, EventArgs e)
         {
-            GetDataFromControls();
+            if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted))
+            {
+                FPreviouslySelectedDetailRow.AnalysisTypeCode = cmbDetailAnalTypeCode.GetSelectedString();         //GetDataFromControls();
+            }
         }
 
         private void GetDetailDataFromControlsManual(AAnalysisAttributeRow ARow)

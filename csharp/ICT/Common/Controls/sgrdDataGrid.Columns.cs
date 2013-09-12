@@ -138,6 +138,8 @@ namespace Ict.Common.Controls
             SourceGrid.Cells.ICellVirtual ReturnValue;
             SourceGrid.Cells.ICellVirtual BaseDataCell = base.GetDataCell(AGridRow);
             SourceGrid.Cells.ICellVirtual AlternatingDataCellSelected;
+            TSgrdDataGrid GridWrapper = (TSgrdDataGrid)FGrid;
+
             int Reminder;
 
             HeaderCell.View = ((TSgrdDataGrid)FGrid).ColumnHeaderView;
@@ -152,6 +154,8 @@ namespace Ict.Common.Controls
 
             if (Reminder == 0)
             {
+                FDataCellSelected.View.BackColor = ((TSgrdDataGrid)FGrid).CellBackgroundColour;
+                FDataCellSelected.View.Border = new DevAge.Drawing.RectangleBorder(new BorderLine(GridWrapper.GridLinesColour, 0.5f));
                 ReturnValue = FDataCellSelected;
             }
             else
@@ -161,6 +165,7 @@ namespace Ict.Common.Controls
                     AlternatingDataCellSelected = FDataCellSelected.Copy();
                     AlternatingDataCellSelected.View = (SourceGrid.Cells.Views.IView)FDataCellSelected.View.Clone();
                     AlternatingDataCellSelected.View.BackColor = ((TSgrdDataGrid)FGrid).AlternatingBackgroundColour;
+                    AlternatingDataCellSelected.View.Border = new DevAge.Drawing.RectangleBorder(new BorderLine(GridWrapper.GridLinesColour, 0.5f));
                     ReturnValue = AlternatingDataCellSelected;
                 }
                 else

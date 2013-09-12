@@ -643,13 +643,6 @@ namespace Ict.Common.Verification
     [Serializable]
     public class TVerificationResultCollection : CollectionBase
     {
-        #region Resourcestrings
-
-        private static readonly string StrErrorFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    (Severity: {1}, Code={3})");
-        private static readonly string StrStatusFooter = Catalog.GetString("{0}\r\n    Status: {2}\r\n");
-
-        #endregion
-
         /// <summary>
         /// Control for which the first data validation error is recorded.
         /// </summary>
@@ -674,6 +667,14 @@ namespace Ict.Common.Verification
         /// </summary>
         public TVerificationResultCollection()
         {
+        }
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public TVerificationResultCollection(System.Guid ACurrentDataValidationRunID)
+        {
+            FCurrentDataValidationRunID = ACurrentDataValidationRunID;
         }
 
         /// <summary>
@@ -947,6 +948,10 @@ namespace Ict.Common.Verification
             }
         }
 
+        private static readonly string StrErrorFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    (Severity: {1}, Code={3})");
+        private static readonly string StrErrorNoCodeFooter = Catalog.GetString("{0}\r\n    Problem: {2}\r\n    (Severity: {1})");
+        private static readonly string StrStatusFooter = Catalog.GetString("{0}\r\n    Status: {2}\r\n");
+
         /// <summary>
         /// Returns a formatted String that contains information about all
         /// <see cref="TVerificationResult" />s in the <see cref="TVerificationResultCollection" />.
@@ -975,6 +980,11 @@ namespace Ict.Common.Verification
                         Status = "Non-critical";
                         Formatter = StrErrorFooter;
                         break;
+                }
+
+                if ((Formatter == StrErrorFooter) && (si.ResultCode == "")) // If no code was given, don't show the empty placeholder.
+                {
+                    Formatter = StrErrorNoCodeFooter;
                 }
 
                 ReturnValue = ReturnValue +
@@ -1565,13 +1575,18 @@ namespace Ict.Common.Verification
         public static void DowngradeScreenVerificationResults(TVerificationResultCollection AScreenVerificationResults)
         {
             int NumberOfVerificationResults = AScreenVerificationResults.Count;
+            int NumberOfDowngradedVerificationResults = 0;
 
             for (int Counter1 = 0; Counter1 < NumberOfVerificationResults; Counter1++)
             {
-                AScreenVerificationResults.Add(new TVerificationResult((TScreenVerificationResult)AScreenVerificationResults[Counter1]));
+                if (AScreenVerificationResults[Counter1] is TScreenVerificationResult)
+                {
+                    AScreenVerificationResults.Add(new TVerificationResult((TScreenVerificationResult)AScreenVerificationResults[Counter1]));
+                    NumberOfDowngradedVerificationResults++;
+                }
             }
 
-            for (int Counter2 = 0; Counter2 < NumberOfVerificationResults; Counter2++)
+            for (int Counter2 = 0; Counter2 < NumberOfDowngradedVerificationResults; Counter2++)
             {
                 AScreenVerificationResults.RemoveAt(0);
             }

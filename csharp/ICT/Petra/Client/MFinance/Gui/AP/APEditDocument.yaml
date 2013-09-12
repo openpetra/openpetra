@@ -12,8 +12,8 @@ RootNode:
     WindowHeight: 600
     Actions:
         cndDiscountEnabled: {InitialValue=false}
-        actNewDetail: {Label=Add De&tail, ActionClick=NewDetail}
-        actRemoveDetail:  {Label=&Remove Detail, ActionClick=RemoveDetail}
+        actNewDetail: {Label=Add De&tail, ActionClick=NewDetail, Image=New_Record.ico}
+        actDelete:  {Label=&Remove Detail, ActionClick=DeleteRecord}
         actAnalyse: {ActionClick=Analyse}
         actPostDocument: {Label=Post, ActionClick=PostDocument}
         actPayDocument: {Label=Pay, ActionClick=PayDocument}
@@ -38,7 +38,7 @@ RootNode:
                 Row3: [nudDiscountDays, txtDiscountPercentage]
                 Row4: [txtTotalAmount, txtExchangeRateToBase, btnLookupExchangeRate]
             Dock: Top
-        txtDocumentCode: {Label=Invoice &Number, Validation=true}
+        txtDocumentCode: {Label=Invoice &Number}
         cmbDocumentType:
             OptionalValues: [=Invoice, Credit Note]
             Label: T&ype
@@ -70,10 +70,11 @@ RootNode:
             Controls: [pnlDetailGrid, pnlDetails]
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
-            Dock: Right
-            Controls: [btnAddDetail, btnRemoveDetail]
+            Dock: Bottom
+            Controls: [btnAddDetail, btnDelete]
+            ControlsOrientation: horizontal
         grdDetails:
             Dock: Fill
             TableName:AApDocumentDetail
@@ -88,10 +89,10 @@ RootNode:
                 Row3: [txtDetailBaseAmount, cmbDetailAccountCode]
                 Row4: [Empty1, pnlItemButtons]
         txtDetailNarrative: {ColSpan=2}
-            Width: 350
+            Width: 365
             Label: Narrati&ve
         txtDetailItemRef: {ColSpan=2}
-            Width: 350
+            Width: 365
             Label: Detail &Ref
         txtDetailAmount:
             Format: Currency(2)
@@ -119,13 +120,13 @@ RootNode:
             Label: Anal Attri&b
             Action: actAnalyse
         btnAddDetail:
-            Width: 100
+            Width: 120
             Action: actNewDetail
-        btnRemoveDetail:
+        btnDelete:
             Enabled: false
             Label: &Remove Detail
-            Width: 100
-            Action: actRemoveDetail
+            Width: 120
+            Action: actDelete
 # TODO: Approval completely disabled for the moment
 #        btnApproveDetail:
 #            Label: A&pprove Detail

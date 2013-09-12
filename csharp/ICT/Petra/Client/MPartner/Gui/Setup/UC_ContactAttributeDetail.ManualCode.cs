@@ -153,47 +153,21 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             }
         }
 
-        private void DeleteRow(Object sender, EventArgs e)
+        /// <summary>
+        /// Code to be run after the deletion process
+        /// </summary>
+        /// <param name="ARowToDelete">the row that was/was to be deleted</param>
+        /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
+        /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
+        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
+        private void PostDeleteManual(PContactAttributeDetailRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
         {
-            if (FPreviouslySelectedDetailRow == null)
+            if (ADeletionPerformed)
             {
-                return;
-            }
-
-            if (MessageBox.Show(Catalog.GetString("Are you sure that you want to delete the current Contact Detail Attribute?"),
-                    Catalog.GetString("Delete Row"),
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question) == DialogResult.No)
-            {
-                return;
-            }
-
-            // Get the selected grid row
-            int nSelectedRow = grdDetails.SelectedRowIndex();
-            // Delete the current row
-            FPreviouslySelectedDetailRow.Delete();
-            FPetraUtilsObject.SetChangedFlag();
-
-            // Select the next row to show
-            SelectRowInGrid(nSelectedRow);
-
-            OnCountChanged(new CountEventArgs(grdDetails.Rows.Count - 1));
-        }
-
-        private void ShowDetailsManual(PContactAttributeDetailRow ARow)
-        {
-            if (ARow == null)
-            {
-                pnlDetails.Enabled = false;
-                btnDelete.Enabled = false;
-                txtDetailContactAttrDetailCode.Text = String.Empty;
-                txtDetailContactAttrDetailDescr.Text = String.Empty;
-            }
-            else
-            {
-                pnlDetails.Enabled = true;
-                // We must not delete the only row in the grid, nor if the row is read-only
-                btnDelete.Enabled = grdDetails.Rows.Count > 2 && !txtDetailContactAttrDetailCode.ReadOnly;
+                OnCountChanged(new CountEventArgs(grdDetails.Rows.Count - 1));
             }
         }
 
@@ -286,7 +260,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
 
             // we go round a loop where, as we change the column value, the number of rows in the dataview becomes zero
-            int curRow = grdDetails.SelectedRowIndex();
+            int curRow = GetSelectedRowIndex();
 
             while (dv.Count > 0)
             {

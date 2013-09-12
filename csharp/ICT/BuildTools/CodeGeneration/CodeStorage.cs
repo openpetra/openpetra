@@ -103,6 +103,9 @@ namespace Ict.Tools.CodeGeneration
 
         private string FManualCodeFileContent = "";
 
+        private const string STOCK_NEW_RECORD_IMAGE = "New_Record.ico";
+        private const string STOCK_DELETE_RECORD_IMAGE = "Delete_Record.ico";
+
         /// <summary>constructor</summary>
         public TCodeStorage(XmlDocument AXmlDocument, SortedList AXmlNodes)
         {
@@ -565,6 +568,29 @@ namespace Ict.Tools.CodeGeneration
             string ActionImage = TYml2Xml.GetAttribute(AParsedNode, "Image");
             string ActionId = TYml2Xml.GetAttribute(AParsedNode, "ActionId");
 
+            if (AParsedNode.Name == "actNew")
+            {
+                if (ActionImage.ToLower() == "none")
+                {
+                    ActionImage = String.Empty;
+                }
+                else if (ActionImage == String.Empty)
+                {
+                    ActionImage = STOCK_NEW_RECORD_IMAGE;
+                }
+            }
+            else if (AParsedNode.Name == "actDelete")
+            {
+                if (ActionImage.ToLower() == "none")
+                {
+                    ActionImage = String.Empty;
+                }
+                else if (ActionImage == String.Empty)
+                {
+                    ActionImage = STOCK_DELETE_RECORD_IMAGE;
+                }
+            }
+
             TActionHandler result = new TActionHandler(AParsedNode, AParsedNode.Name, ActionClick, ActionId, ActionLabel, ActionTooltip, ActionImage);
 
             if (FActionList.ContainsKey(AParsedNode.Name))
@@ -680,6 +706,16 @@ namespace Ict.Tools.CodeGeneration
     /// </summary>
     public class TControlDef
     {
+        /// <summary>
+        /// Name of Panel that contains Buttons that are related to a Grid (such as 'Add' and 'Delete')
+        /// </summary>
+        public const string STR_BUTTON_PANEL_NAME = "pnlButtons";
+
+        /// <summary>
+        /// Name of Panel that contains Buttons that are related to a Grid (such as 'Add' and 'Delete')
+        /// </summary>
+        public const string STR_DETAIL_BUTTON_PANEL_NAME = "pnlDetailButtons";
+
         /// <summary>
         /// construtor
         /// </summary>
@@ -933,6 +969,59 @@ namespace Ict.Tools.CodeGeneration
             get
             {
                 return FCodeStorage.GetChildren(this).Count;
+            }
+        }
+
+        /// <summary>
+        /// True if the Control is a Grid Button Panel.
+        /// </summary>
+        public bool IsGridButtonPanel
+        {
+            get
+            {
+                return this.controlName == STR_BUTTON_PANEL_NAME
+                       || this.controlName == STR_DETAIL_BUTTON_PANEL_NAME;
+            }
+        }
+
+        /// <summary>
+        /// True if the Control is a horizontal Grid Button Panel.
+        /// </summary>
+        public bool IsHorizontalGridButtonPanel
+        {
+            get
+            {
+                return IsGridButtonPanel
+                       && (HasAttribute("ControlsOrientation"))
+                       && (GetAttribute("ControlsOrientation").ToLower() == "horizontal");
+            }
+        }
+
+        /// <summary>
+        /// True if the Control is placed on a Grid Button Panel.
+        /// </summary>
+        public bool IsOnGridButtonPanel
+        {
+            get
+            {
+                return this.parentName == STR_BUTTON_PANEL_NAME
+                       || this.parentName == STR_DETAIL_BUTTON_PANEL_NAME;
+            }
+        }
+
+        /// <summary>
+        /// True if the Control is placed on a horizontal Grid Button Panel.
+        /// </summary>
+        public bool IsOnHorizontalGridButtonPanel
+        {
+            get
+            {
+                TControlDef ParentControl = FCodeStorage.GetControl(this.parentName);
+
+                return IsOnGridButtonPanel
+                       && (
+                           ParentControl.HasAttribute("ControlsOrientation"))
+                       && (ParentControl.GetAttribute("ControlsOrientation").ToLower() == "horizontal");
             }
         }
     }

@@ -125,10 +125,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Loads Partner Types Data from Petra Server into FMainDS.
+        /// Loads Partner Subscription Data from Petra Server into FMainDS.
         /// </summary>
         /// <returns>true if successful, otherwise false.</returns>
-        public Boolean LoadDataOnDemand()
+        private Boolean LoadDataOnDemand()
         {
             Boolean ReturnValue;
 
@@ -201,18 +201,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
 
-            // enable grid to react to insert and delete keyboard keys
-            grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
-
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
+                ShowDetails(1); // do this as for some reason details are not automatically show here at the moment
             }
             else
             {
-                pnlDetails.Visible = false;
-                //ucoDetails.MakeScreenInvisible(true);
-                btnDelete.Enabled = false;
                 btnCancelAllSubscriptions.Enabled = false;
             }
 
@@ -265,15 +260,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (ARow != null)
             {
                 ucoDetails.AllowEditIssues = true;
-                pnlDetails.Visible = true;
                 ucoDetails.ShowDetails(ARow);
             }
 
-            btnDelete.Enabled = false;
-
             if (ARow != null)
             {
-                btnDelete.Enabled = true;
                 btnCancelAllSubscriptions.Enabled = true;
             }
         }
@@ -285,15 +276,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void GetDetailDataFromControlsManual(PSubscriptionRow ARow)
         {
             ucoDetails.GetDetails(ARow);
-        }
-
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        /// <returns>void</returns>
-        private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
-        {
-            NewRecord(this, null);
         }
 
         /// <summary>
@@ -326,11 +308,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.PublicationCode = "";
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
-        {
-            this.DeletePSubscription();
-        }
-
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable
@@ -341,39 +318,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         private bool PreDeleteManual(PSubscriptionRow ARowToDelete, ref string ADeletionQuestion)
         {
             /*Code to execute before the delete can take place*/
-            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Subscription {0}?"),
-                ARowToDelete.PublicationCode);
+            ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            ADeletionQuestion += String.Format("{0}{0}({1} {2})",
+                Environment.NewLine,
+                ucoDetails.PublicationCodeLabel,
+                ucoDetails.PublicationCodeValue);
             return true;
-        }
-
-        /// <summary>
-        /// Deletes the current row and optionally populates a completion message
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to delete</param>
-        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(PSubscriptionRow ARowToDelete, out string ACompletionMessage)
-        {
-            bool deletionSuccessful = false;
-
-            // no message to be shown after deletion
-            ACompletionMessage = "";
-
-            try
-            {
-                ARowToDelete.Delete();
-                deletionSuccessful = true;
-            }
-            catch (Exception ex)
-            {
-                ACompletionMessage = ex.Message;
-                MessageBox.Show(ex.Message,
-                    "Deletion Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-
-            return deletionSuccessful;
         }
 
         /// <summary>
@@ -388,13 +338,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool ADeletionPerformed,
             string ACompletionMessage)
         {
-            DoRecalculateScreenParts();
-
-            if (grdDetails.Rows.Count <= 1)
+            if (ADeletionPerformed)
             {
-                // hide details part and disable buttons if no record in grid (first row for headings)
-                btnDelete.Enabled = false;
-                pnlDetails.Visible = false;
+                DoRecalculateScreenParts();
             }
         }
 

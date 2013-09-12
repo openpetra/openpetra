@@ -109,7 +109,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FLogic.LoadDataOnDemand();
 
             grdDetails.Columns.Clear();
-            grdDetails.AddTextColumn("Description", FMainDS.PPartnerRelationship.Columns["RelationDescription"]);
+            grdDetails.AddTextColumn("Description", FMainDS.PPartnerRelationship.ColumnDisplayRelationDescription);
             grdDetails.AddPartnerKeyColumn("Partner Key", FMainDS.PPartnerRelationship.Columns["OtherPartnerKey"]);
             grdDetails.AddTextColumn("Partner Name",
                 FMainDS.PPartnerRelationship.Columns[PartnerEditTDSPPartnerRelationshipTable.GetPartnerShortNameDBName()]);
@@ -126,17 +126,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             txtPPartnerRelationshipPartnerKey.ValueChanged += new TDelegatePartnerChanged(txtPPartnerRelationshipPartnerKey_ValueChanged);
             txtPPartnerRelationshipRelationKey.ValueChanged += new TDelegatePartnerChanged(txtPPartnerRelationshipRelationKey_ValueChanged);
 
-            // enable grid to react to insert and delete keyboard keys
-            grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
-
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
+                ShowDetails(1); // do this as for some reason details are not automatically show here at the moment
             }
             else
             {
-                MakeDetailsInvisible(true);
-                btnDelete.Enabled = false;
                 btnEditOtherPartner.Enabled = false;
             }
         }
@@ -174,10 +170,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             long RelationPartnerKey;
 
-            // show controls if not visible yet
-            MakeDetailsInvisible(false);
-
-            btnDelete.Enabled = false;
             btnEditOtherPartner.Enabled = false;
 
             if (ARow != null)
@@ -268,24 +260,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        /// <returns>void</returns>
-        private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
+        private void RelationNameChanged(object sender, EventArgs e)
         {
-            NewRecord(this, null);
-        }
-
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        /// <returns>void</returns>
-        private void grdDetails_DeleteKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
-        {
-            if (e.Row != -1)
+            // update grid column for relation description
+            if (FLogic != null)
             {
-                this.DeleteRecord(this, null);
+                FLogic.UpdateRelationDescription(GetSelectedDetailRow(),
+                    cmbPPartnerRelationshipRelationName.GetSelectedString());
             }
         }
 
@@ -321,11 +302,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.RelationKey = ARow.PartnerKey;
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
-        {
-            this.DeletePPartnerRelationship();
-        }
-
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable
@@ -336,39 +312,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         private bool PreDeleteManual(PartnerEditTDSPPartnerRelationshipRow ARowToDelete, ref string ADeletionQuestion)
         {
             /*Code to execute before the delete can take place*/
-            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Relationship record: '{0}'?"),
-                ARowToDelete.RelationName);
+            ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            ADeletionQuestion += String.Format("{0}{0}({1} {2})",
+                Environment.NewLine,
+                lblPPartnerRelationshipRelationName.Text,
+                cmbPPartnerRelationshipRelationName.GetSelectedString());
             return true;
-        }
-
-        /// <summary>
-        /// Deletes the current row and optionally populates a completion message
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to delete</param>
-        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(PartnerEditTDSPPartnerRelationshipRow ARowToDelete, out string ACompletionMessage)
-        {
-            bool deletionSuccessful = false;
-
-            // no message to be shown after deletion
-            ACompletionMessage = "";
-
-            try
-            {
-                ARowToDelete.Delete();
-                deletionSuccessful = true;
-            }
-            catch (Exception ex)
-            {
-                ACompletionMessage = ex.Message;
-                MessageBox.Show(ex.Message,
-                    "Deletion Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-
-            return deletionSuccessful;
         }
 
         /// <summary>
@@ -383,13 +332,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool ADeletionPerformed,
             string ACompletionMessage)
         {
-            DoRecalculateScreenParts();
-
-            if (grdDetails.Rows.Count <= 1)
+            if (ADeletionPerformed)
             {
-                // hide details part and disable buttons if no record in grid (first row for headings)
-                btnDelete.Enabled = false;
-                pnlDetails.Visible = false;
+                DoRecalculateScreenParts();
             }
         }
 
@@ -442,16 +387,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 this.Cursor = Cursors.Default;
             }
-        }
-
-        /// <summary>
-        /// Sets this Usercontrol visible or unvisile true = visible, false = invisible.
-        /// </summary>
-        /// <returns>void</returns>
-        private void MakeDetailsInvisible(Boolean value)
-        {
-            /* make the details part of this screen visible or invisible. */
-            this.pnlDetails.Visible = !value;
         }
 
         private void ValidateDataDetailsManual(PPartnerRelationshipRow ARow)

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,6 +28,8 @@ using System.Collections.Specialized;
 using Ict.Common;
 using System.Globalization;
 using System.Security.Cryptography;
+using System.Data;
+using System.Threading;
 
 namespace Ict.Common
 {
@@ -373,6 +375,12 @@ namespace Ict.Common
 
             while (counter < s.Length)
             {
+/*
+ *              if ((s[counter] == '\\') && (s[counter + 1] == '"'))  // escaped quote
+ *              {
+ *                  counter += 2;
+ *              }
+ */
                 if (s[counter] == '"')
                 {
                     if ((counter + 1 == s.Length) || (s[counter + 1] != '"'))
@@ -778,16 +786,34 @@ namespace Ict.Common
         /// <summary>
         /// parse a line of CSV values, and return a StringCollection with the values
         /// </summary>
-        public static StringCollection GetCSVList(string list, string delimiter)
+        public static StringCollection GetCSVList(string list, string delimiter, bool trimmedValues = false)
         {
             string listcsv = list;
             StringCollection Result = new StringCollection();
 
-            Result.Add(GetNextCSV(ref listcsv, delimiter));
+            string value = GetNextCSV(ref listcsv, delimiter);
+
+            if (trimmedValues)
+            {
+                Result.Add(value.Trim());
+            }
+            else
+            {
+                Result.Add(value);
+            }
 
             while ((listcsv.Length != 0))
             {
-                Result.Add(GetNextCSV(ref listcsv, delimiter));
+                value = GetNextCSV(ref listcsv, delimiter);
+
+                if (trimmedValues)
+                {
+                    Result.Add(value.Trim());
+                }
+                else
+                {
+                    Result.Add(value);
+                }
             }
 
             return Result;
@@ -1420,17 +1446,14 @@ namespace Ict.Common
         /// <returns>true if greater or equals 0</returns>
         public static bool IsStringPositiveInteger(String APositiveInteger)
         {
-            bool ReturnValue;
+            Int64 Res64;
+            bool ReturnValue = Int64.TryParse(APositiveInteger, out Res64);
 
-            ReturnValue = true;
-            try
+            if (ReturnValue)
             {
-                System.Int64.Parse(APositiveInteger, System.Globalization.NumberStyles.None);
+                ReturnValue = (Res64 >= 0);
             }
-            catch (Exception)
-            {
-                ReturnValue = false;
-            }
+
             return ReturnValue;
         }
 
@@ -1802,10 +1825,6 @@ namespace Ict.Common
             String ReturnValue;
             decimal d;
             DateTime ThisYearDate;
-            String formatNegative;
-            String formatPositive;
-            String formatZero;
-            String formatNil;
 
             // for partnerkey
             String OrigFormat;
@@ -1850,10 +1869,10 @@ namespace Ict.Common
                     return value.ToString();
                 }
 
-                formatPositive = GetNextCSV(ref format, ";");
-                formatNegative = GetNextCSV(ref format, ";");
-                formatZero = GetNextCSV(ref format, ";");
-                formatNil = GetNextCSV(ref format, ";");
+                String formatPositive = GetNextCSV(ref format, ";");
+                String formatNegative = GetNextCSV(ref format, ";");
+                String formatZero = GetNextCSV(ref format, ";");
+                String formatNil = GetNextCSV(ref format, ";");
 
                 if ((OrigFormat.ToLower() == "partnerkey") || (value.FormatString == "partnerkey"))
                 {
@@ -1910,6 +1929,72 @@ namespace Ict.Common
             return FormatCurrency(new TVariant(value), format);
         }
 
+        private static DataTable CurrencyFormats = null;
+
+        /// <summary>
+        /// Use this for displaying currency-sensitive amounts.
+        /// </summary>
+        /// <param name="AValue"></param>
+        /// <param name="ACurrencyCode"></param>
+        /// <returns></returns>
+        public static String FormatUsingCurrencyCode(decimal AValue, String ACurrencyCode)
+        {
+            String format = "->>>,>>>,>>>,>>9.99";
+
+            if (CurrencyFormats != null)
+            {
+                CurrencyFormats.DefaultView.RowFilter = String.Format("a_currency_code_c='{0}'", ACurrencyCode);
+
+                if (CurrencyFormats.DefaultView.Count > 0)
+                {
+                    format = CurrencyFormats.DefaultView[0].Row["a_display_format_c"].ToString();
+                }
+            }
+
+            return StringHelper.FormatCurrency(new TVariant(AValue), format);
+        }
+
+        /// <summary></summary>
+        /// <param name="ACurrencyCode"></param>
+        /// <returns></returns>
+        public static int DecimalPlacesForCurrency(String ACurrencyCode)
+        {
+            int Ret = 2;
+
+            if (CurrencyFormats != null)
+            {
+                CurrencyFormats.DefaultView.RowFilter = String.Format("a_currency_code_c='{0}'", ACurrencyCode);
+
+                if (CurrencyFormats.DefaultView.Count > 0)
+                {
+                    String format = CurrencyFormats.DefaultView[0].Row["a_display_format_c"].ToString();
+                    int dotPos = format.LastIndexOf('.');
+
+                    if (dotPos > 0)
+                    {
+                        Ret = format.Length - 1 - dotPos;
+                    }
+                    else
+                    {
+                        Ret = 0;
+                    }
+                }
+            }
+
+            return Ret;
+        }
+
+        /// <summary>
+        /// If this is not given (during initialisation), a default format will be used.
+        /// </summary>
+        public static DataTable CurrencyFormatTable
+        {
+            set
+            {
+                CurrencyFormats = value;
+            }
+        }
+
         /// <summary>
         /// returns the full name of the month, using .net localised information
         /// </summary>
@@ -1957,7 +2042,7 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// print a date to string, optionally with time and even seconds
+        /// Print a date to string, optionally with time and even seconds
         /// </summary>
         /// <param name="ADateTime">the date to print</param>
         /// <param name="AIncludeTime">want to print time</param>
@@ -1969,22 +2054,16 @@ namespace Ict.Common
 
             ReturnValue = ADateTime.ToString("dd-MMM-yyyy").ToUpper();
 
-            // need to do something about german, Month March, should be rather M&Auml;R than MRZ?
-            // see also http:www.codeproject.com/csharp/csdatetimelibrary.asp?df=100&forumid=157955&exp=0&select=1387944
-            // and http:www.nntp.perl.org/group/perl.datetime/2003/05/msg2250.html
-            // better solution has been implemented: for export to CSV/Excel, the date should not be formatted as text, but formatted by the export/print program...
+            // For export to CSV/Excel, the date should not be formatted as text, but formatted by the export/print program...
 
-            // Mono and .Net return different strings for month of March in german culture
-            if (CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "de")
+            // Mono and .Net return different strings for month of March in German culture
+            if ((CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "de") && (ADateTime.Month == 3))
             {
-                if (ADateTime.Month == 3)
-                {
-                    ReturnValue = ReturnValue.Replace("MRZ", "MÄR");
-                }
+                ReturnValue = ReturnValue.Replace("MRZ", "MÄR");
             }
 
             // todo use short month names from local array, similar to GetLongMonthName
-            if (ATimeWithSeconds)
+            if (AIncludeTime)
             {
                 if (ATimeWithSeconds)
                 {
@@ -1999,23 +2078,23 @@ namespace Ict.Common
             return ReturnValue;
         }
 
-        private static ArrayList months = new ArrayList();
-
-        /// <summary>
-        /// initialize the localized month names
-        /// not used at the moment; using .net localisation instead
-        /// </summary>
-        /// <param name="monthNames">an array of the month names</param>
-        public static void SetLocalizedMonthNames(ArrayList monthNames)
-        {
-            months = new ArrayList();
-
-            foreach (string s in monthNames)
-            {
-                months.Add(s);
-            }
-        }
-
+/*
+ *      private static ArrayList months = new ArrayList();
+ *      /// <summary>
+ *      /// initialize the localized month names
+ *      /// not used at the moment; using .net localisation instead
+ *      /// </summary>
+ *      /// <param name="monthNames">an array of the month names</param>
+ *      public static void SetLocalizedMonthNames(ArrayList monthNames)
+ *      {
+ *          months = new ArrayList();
+ *
+ *          foreach (string s in monthNames)
+ *          {
+ *              months.Add(s);
+ *          }
+ *      }
+ */
         /// <summary>
         /// Finds a matching closing bracket in a String.
         /// </summary>

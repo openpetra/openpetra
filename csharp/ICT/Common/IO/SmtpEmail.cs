@@ -24,6 +24,7 @@
 using System;
 using System.Net;
 using System.Net.Mail;
+using System.Collections.Generic;
 using Ict.Common;
 
 namespace Ict.Common.IO
@@ -88,39 +89,55 @@ namespace Ict.Common.IO
         /// create a mail message and send it
         /// </summary>
         /// <returns></returns>
-        public bool SendEmail(string fromemail, string fromDisplayName, string receipients, string subject, string body, string attachfile)
+        public bool SendEmail(string fromemail, string fromDisplayName, string receipients, string subject, string body,
+            string[] attachfiles = null)
         {
             try
             {
-                MailMessage email = new MailMessage();
-                //From and To
-                email.Sender = new MailAddress(fromemail, fromDisplayName);
-                email.From = new MailAddress(fromemail, fromDisplayName);
-                email.To.Add(receipients);
-
-                //Subject and Body
-                email.Subject = subject;
-                email.Body = body;
-                email.IsBodyHtml = false;
-
-                //Attachement if any:
-                if ((attachfile != null) && (attachfile.Length > 0))
+                using (MailMessage email = new MailMessage())
                 {
-                    if (System.IO.File.Exists(attachfile) == true)
-                    {
-                        Attachment data = new Attachment(attachfile, System.Net.Mime.MediaTypeNames.Application.Octet);
+                    //From and To
+                    email.Sender = new MailAddress(fromemail, fromDisplayName);
+                    email.From = new MailAddress(fromemail, fromDisplayName);
+                    email.To.Add(receipients);
 
-                        email.Attachments.Add(data);
-                    }
-                    else
+                    //Subject and Body
+                    email.Subject = subject;
+                    email.Body = body;
+                    email.IsBodyHtml = false;
+
+                    List <Attachment>attachments = new List <Attachment>();
+
+                    //Attachment if any:
+                    if (attachfiles != null)
                     {
-                        TLogging.Log("Could not send email");
-                        TLogging.Log("File to attach '" + attachfile + "' does not exist!");
-                        return false;
+                        foreach (string attachfile in attachfiles)
+                        {
+                            if (System.IO.File.Exists(attachfile) == true)
+                            {
+                                Attachment data = new Attachment(attachfile, System.Net.Mime.MediaTypeNames.Application.Octet);
+                                email.Attachments.Add(data);
+                                attachments.Add(data);
+                            }
+                            else
+                            {
+                                TLogging.Log("Could not send email");
+                                TLogging.Log("File to attach '" + attachfile + "' does not exist!");
+                                return false;
+                            }
+                        }
                     }
+
+                    bool Result = SendMessage(email);
+
+                    foreach (Attachment data in attachments)
+                    {
+                        // make sure that the file is not locked any longer
+                        data.Dispose();
+                    }
+
+                    return Result;
                 }
-
-                return SendMessage(ref email);
             }
             catch (Exception ex)
             {
@@ -135,7 +152,7 @@ namespace Ict.Common.IO
         /// </summary>
         /// <param name="AEmail">on successful sending, the header is modified with the sent date</param>
         /// <returns>true if email was sent successfully</returns>
-        public bool SendMessage(ref MailMessage AEmail)
+        public bool SendMessage(MailMessage AEmail)
         {
             if (AEmail.Headers.Get("Date-Sent") != null)
             {

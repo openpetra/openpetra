@@ -102,8 +102,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
 
             // enable grid to react to insert and delete keyboard keys
-            grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
-            grdDetails.DeleteKeyPressed += new TKeyPressedEventHandler(grdDetails_DeleteKeyPressed);
+            //WB grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
 
             // enable grid to react to modified event or field key in details part
             ucoApplicationEvent.ApplicationEventChanged += new TUC_Application_Event.TDelegateApplicationEventChanged(
@@ -114,7 +113,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (grdDetails.Rows.Count <= 1)
             {
                 pnlDetails.Visible = false;
-                btnDelete.Enabled = false;
             }
         }
 
@@ -240,54 +238,57 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
         }
 
-        private void DeleteRow(System.Object sender, EventArgs e)
+        private bool PreDeleteManual(IndividualDataTDSPmGeneralApplicationRow ARowToDelete, ref String ADeletionQuestion)
         {
-            if (FPreviouslySelectedDetailRow == null)
+            if (IsEventApplication(ARowToDelete))
             {
-                return;
+                ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+                ADeletionQuestion += String.Format("{0}{0}({1} {2} {3})",
+                    Environment.NewLine,
+                    ucoApplicationEvent.EventLabelText,
+                    ucoApplicationEvent.EventValueCode,
+                    ucoApplicationEvent.EventValueLabel);
+            }
+            else
+            {
+                ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+                ADeletionQuestion += String.Format("{0}{0}({1} {2})",
+                    Environment.NewLine,
+                    ucoApplicationField.FieldLabelText,
+                    ucoApplicationField.FieldValueCode,
+                    ucoApplicationField.FieldValueLabel);
             }
 
-            if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have choosen to delete the record for {0} {1}.\n\nDo you really want to delete it?"),
-                        FPreviouslySelectedDetailRow.ApplicationForEventOrField,
-                        FPreviouslySelectedDetailRow.EventOrFieldName),
-                    Catalog.GetString("Confirm Delete"),
-                    MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+            return true;
+        }
+
+        private bool DeleteRowManual(IndividualDataTDSPmGeneralApplicationRow ARowToDelete, ref String ACompletionMessage)
+        {
+            ACompletionMessage = String.Empty;
+
+            // along with the general application record the specific record needs to be deleted
+            if (IsEventApplication(ARowToDelete))
             {
-                int rowIndex = grdDetails.SelectedRowIndex();
+                GetEventApplicationRow(ARowToDelete).Delete();
+            }
+            else
+            {
+                GetFieldApplicationRow(ARowToDelete).Delete();
+            }
 
-                // along with the general application record the specific record needs to be deleted
-                if (IsEventApplication(FPreviouslySelectedDetailRow))
-                {
-                    GetEventApplicationRow(FPreviouslySelectedDetailRow).Delete();
-                }
-                else
-                {
-                    GetFieldApplicationRow(FPreviouslySelectedDetailRow).Delete();
-                }
+            ARowToDelete.Delete();
 
-                FPreviouslySelectedDetailRow.Delete();
-                FPetraUtilsObject.SetChangedFlag();
+            return true;
+        }
 
-                // temporarily reset selected row to avoid interference with validation
-                //FPreviouslySelectedDetailRow = null;
-                //grdDetails.Selection.FocusRowLeaving -= new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                //grdDetails.SelectRowInGrid(rowIndex, true);
-                //grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-                //FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                //ShowDetails(FPreviouslySelectedDetailRow);
-
-                // AlanP Upgrade note... I think the previous, commented lines can be replaced with this...
-                SelectRowInGrid(rowIndex);
-
+        private void PostDeleteManual(IndividualDataTDSPmGeneralApplicationRow ARowToDelete,
+            Boolean AAllowDeletion,
+            Boolean ADeletionPerformed,
+            String ACompletionMessage)
+        {
+            if (ADeletionPerformed)
+            {
                 DoRecalculateScreenParts();
-
-                if (grdDetails.Rows.Count <= 1)
-                {
-                    // hide details part and disable buttons if no record in grid (first row for headings)
-                    btnDelete.Enabled = false;
-                    pnlDetails.Visible = false;
-                }
             }
         }
 
@@ -334,7 +335,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (ARow != null)
             {
-                btnDelete.Enabled = true;
                 pnlDetails.Visible = true;
 
                 if (IsEventApplication(ARow))
@@ -495,18 +495,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
         {
             NewRowShortTermApp(this, null);
-        }
-
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        /// <returns>void</returns>
-        private void grdDetails_DeleteKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
-        {
-            if (e.Row != -1)
-            {
-                this.DeleteRow(this, null);
-            }
         }
 
         /// <summary>

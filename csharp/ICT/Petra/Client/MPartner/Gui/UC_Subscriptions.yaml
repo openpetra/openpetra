@@ -17,15 +17,16 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails,pnlButtons]
+            Controls: [pnlButtons,grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete, btnCancelAllSubscriptions]
-        btnNew: {Stretch=horizontally}
+            ControlsOrientation: horizontal
+        btnNew: {Width=80}
             Action: actNew
-        btnDelete: {Stretch=horizontally}
+        btnDelete: {Width=80}
             Action: actDelete
-        btnCancelAllSubscriptions: {Stretch=horizontally}
+        btnCancelAllSubscriptions: {Width=150}
             Action: actCancelAllSubscriptions
         grdDetails:
             Dock: Fill

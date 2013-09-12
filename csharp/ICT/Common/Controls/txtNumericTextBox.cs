@@ -66,7 +66,11 @@ namespace Ict.Common.Controls
         private TNumericTextBoxMode FControlMode = TNumericTextBoxMode.Decimal;
         private TNumberPrecision FNumberPrecision = TNumberPrecision.Decimal;
         private int FDecimalPlaces = 2;
-        private bool FNullValueAllowed = false;
+
+        /// <summary>
+        /// Is it OK to show {null} in this control?
+        /// </summary>
+        public bool FNullValueAllowed = false;
 
         private string FNumberDecimalSeparator = ".";
         private string FCurrencyDecimalSeparator = ".";
@@ -96,6 +100,10 @@ namespace Ict.Common.Controls
             /// todoComment
             /// </summary>
             Decimal,
+            /// <summary>
+            /// todoComment
+            /// </summary>
+            Currency
         }
 
         #region Properties
@@ -115,10 +123,22 @@ namespace Ict.Common.Controls
 
             set
             {
-                if (FControlMode == TNumericTextBoxMode.NormalTextBox)
+                if ((FControlMode == TNumericTextBoxMode.NormalTextBox)
+                    || (FControlMode == TNumericTextBoxMode.Currency))
                 {
                     base.Text = value;
                 }
+            }
+        }
+
+        /// <summary>
+        /// This Culture came originally from the thread (ie from the user's locale setup)
+        /// </summary>
+        public CultureInfo Culture
+        {
+            get
+            {
+                return FCurrentCulture;
             }
         }
 
@@ -180,7 +200,7 @@ namespace Ict.Common.Controls
 
             set
             {
-                if (FControlMode == TNumericTextBoxMode.Decimal)
+                if ((FControlMode == TNumericTextBoxMode.Decimal) || (FControlMode == TNumericTextBoxMode.Currency))
                 {
                     FDecimalPlaces = value;
                 }
@@ -253,7 +273,15 @@ namespace Ict.Common.Controls
                             && (CleanedfromNonNumeralChars != ".")
                             && (CleanedfromNonNumeralChars != String.Empty))
                         {
-                            return Convert.ToDecimal(CleanedfromNonNumeralChars, FCurrentCulture);
+                            decimal? Ret = null;
+                            try
+                            {
+                                Ret = Convert.ToDecimal(CleanedfromNonNumeralChars, FCurrentCulture);
+                            }
+                            catch (Exception)
+                            {
+                            }
+                            return Ret;
                         }
                         else
                         {
@@ -624,7 +652,8 @@ namespace Ict.Common.Controls
             }
 
             // handle PASTE
-            if ((e.KeyCode == Keys.V) && (e.Modifiers == Keys.Control))
+            if (((e.KeyCode == Keys.V) && (e.Modifiers == Keys.Control))
+                || ((e.KeyCode == Keys.Insert) && (e.Shift)))
             {
                 HandlePaste();
                 e.Handled = true;
@@ -704,12 +733,18 @@ namespace Ict.Common.Controls
                     case TNumericTextBoxMode.Integer :
                     case TNumericTextBoxMode.LongInteger :
                     case TNumericTextBoxMode.Decimal :
+                    case TNumericTextBoxMode.Currency :
                         {
                             #region Numeric Validation Rule
 
                             if (FControlMode == TNumericTextBoxMode.Decimal)
                             {
                                 intActDecPlace = this.Text.IndexOf(FNumberDecimalSeparator);
+                            }
+
+                            if (FControlMode == TNumericTextBoxMode.Currency)
+                            {
+                                intActDecPlace = this.Text.IndexOf(FCurrencyDecimalSeparator);
                             }
 
                             // Check & Reset boolean if the decimal place does not exist
@@ -884,11 +919,11 @@ namespace Ict.Common.Controls
                             break;
                         }
 
-                    case TNumericTextBoxMode.NormalTextBox :
-                        {
-                            //Nothing here..
-                            break;
-                        }
+                    case TNumericTextBoxMode.NormalTextBox:
+                    {
+                        //Nothing here..
+                        break;
+                    }
                 }
 
                 if (bolDelete == true)
@@ -960,7 +995,6 @@ namespace Ict.Common.Controls
 
         private void HandlePaste()
         {
-            String str;
             IDataObject clip;
 
             if (!this.ReadOnly)
@@ -974,20 +1008,30 @@ namespace Ict.Common.Controls
                     // try and paste the contents
                     try
                     {
-                        str = (String)(clip.GetData(DataFormats.Text));
+                        String str = (String)(clip.GetData(DataFormats.Text));
+                        String NumberPattern = "0123456789-+%" + FNumberDecimalSeparator + FCurrencyDecimalSeparator;
+                        String OkStr = "";
+
+                        for (int i = 0; i < str.Length; i++)
+                        {
+                            if (NumberPattern.IndexOf(str[i]) >= 0)
+                            {
+                                OkStr += str[i];
+                            }
+                        }
 
                         if (this.SelectionLength > 0)
                         {
-                            this.SelectedText = str;
+                            this.SelectedText = OkStr;
 //                              ProcessChangedText(this.Text);
                         }
                         else if (this.SelectionStart > 0)
                         {
-                            base.Text = this.Text.Substring(0, this.SelectionStart) + str + this.Text.Substring(this.SelectionStart);
+                            base.Text = this.Text.Substring(0, this.SelectionStart) + OkStr + this.Text.Substring(this.SelectionStart);
                         }
                         else
                         {
-                            base.Text = str;
+                            base.Text = OkStr;
                         }
                     }
                     catch (Exception Exp)
@@ -1030,6 +1074,22 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="m"></param>
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_PASTE)
+            {
+                HandlePaste();
+            }
+            else
+            {
+                base.WndProc(ref m);
+            }
+        }
+
         private void FormatValue(string AValue)
         {
             double NumberValueDouble;
@@ -1043,6 +1103,7 @@ namespace Ict.Common.Controls
                     switch (FControlMode)
                     {
                         case TNumericTextBoxMode.Decimal:
+                        case TNumericTextBoxMode.Currency:
 
                             if (FNumberPrecision == TNumberPrecision.Double)
                             {

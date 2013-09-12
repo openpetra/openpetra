@@ -57,7 +57,110 @@ namespace Ict.Common.Controls
     /// </summary>
     public class TSgrdDataGrid : SourceGrid.DataGrid
     {
+        /// <summary>
+        /// Used to specify colours for several aspects of a TSgrdDataGrid.
+        /// </summary>
+        public struct ColourInformation
+        {
+            private Color FBackColour;
+            private Color FCellBackgroundColour;
+            private Color FAlternatingBackgroundColour;
+            private Color FSelectionColour;
+            private Color FGridLinesColour;
+
+            /// <summary>
+            /// Colour of the background of the Grid.
+            /// </summary>
+            public Color BackColour
+            {
+                get
+                {
+                    return FBackColour;
+                }
+
+                set
+                {
+                    FBackColour = value;
+                }
+            }
+
+            /// <summary>
+            /// Colour of the background of every cell and row.
+            /// </summary>
+            public Color CellBackgroundColour
+            {
+                get
+                {
+                    return FCellBackgroundColour;
+                }
+
+                set
+                {
+                    FCellBackgroundColour = value;
+                }
+            }
+
+            /// <summary>
+            /// Used to colour the background of every odd numbered row differently to
+            /// generate a 'banding' effect (works only with columns defined in
+            /// sgrdDataGrid.Columns!).
+            /// </summary>
+            public Color AlternatingBackgroundColour
+            {
+                get
+                {
+                    return FAlternatingBackgroundColour;
+                }
+
+                set
+                {
+                    FAlternatingBackgroundColour = value;
+                }
+            }
+
+            /// <summary>
+            /// Colour of the Selection.
+            /// </summary>
+            public Color SelectionColour
+            {
+                get
+                {
+                    return FSelectionColour;
+                }
+
+                set
+                {
+                    FSelectionColour = value;
+                }
+            }
+
+            /// <summary>
+            /// Colour of the Grid Lines (works only with columns defined in
+            /// sgrdDataGrid.Columns!).
+            /// </summary>
+            public Color GridLinesColour
+            {
+                get
+                {
+                    return FGridLinesColour;
+                }
+
+                set
+                {
+                    FGridLinesColour = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Used for passing Colour information to the Grid. Re-used by all instances of the Grid!
+        /// </summary>
+        public static Func <ColourInformation>SetColourInformation;
+
         private const Int32 WM_KEYDOWN = 0x100;
+
+        private static ColourInformation FColourInfo;
+        private static bool FColourInfoSetup = false;
 
         /// <summary> Required designer variable. </summary>
         private System.ComponentModel.IContainer components = null;
@@ -76,12 +179,32 @@ namespace Ict.Common.Controls
         private Boolean FShowColumnHeadersDisabled;
 
         /// <summary>
-        /// Used by to colour the background of every odd numbered row differently to
+        /// Colour of the background of the Grid. This is only seen in a space inside the Grid that is not covered by Rows!
+        /// </summary>
+        private Color FBackColour;
+
+        /// <summary>
+        /// Colour of the background of every cell and row.
+        /// </summary>
+        private Color FCellBackgroundColour;
+
+        /// <summary>
+        /// Used to colour the background of every odd numbered row differently to
         /// generate a 'banding' effect (works only with columns defined in
         /// sgrdDataGrid.Columns!).
-        ///
         /// </summary>
-        private Color FAlternateBackColor;
+        private Color FAlternateBackColour;
+
+        /// <summary>
+        /// Colour of the Selection.
+        /// </summary>
+        private Color FSelectionColour;
+
+        /// <summary>
+        /// Colour of the Grid Lines (works only with columns defined in
+        /// sgrdDataGrid.Columns!).
+        /// </summary>
+        private Color FGridLinesColour;
 
         /// <summary>
         /// If set to an appropriate delegate function, this provides ToolTips on each
@@ -305,25 +428,113 @@ namespace Ict.Common.Controls
             }
         }
 
-        /** / Custom properties follow
-         * This property determines which AlternatingBackgroundColour should be used.
-         *
+        /*
+         * Custom properties follow
          */
+
+        /// <summary>
+        /// Colour of the background of the Grid. This is only seen in a space inside the Grid that is not covered by Rows!
+        /// </summary>
         [Category("Appearance"),
          RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
          Browsable(true),
-         Description("The colour that is used to set the backgroud colour of every second line.")]
-        public Color AlternatingBackgroundColour
+         Description("The colour of the of background of the Grid. This is only seen in a space inside the Grid that is not covered by Rows!")]
+        public Color BackColour
         {
             get
             {
-                return FAlternateBackColor;
+                return FBackColour;
             }
 
             set
             {
-                FAlternateBackColor = value;
-                this.Invalidate();
+                FBackColour = value;
+                this.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Colour of the background of every cell and row.
+        /// </summary>
+        [Category("Appearance"),
+         RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
+         Browsable(true),
+         Description("The colour of the background of every cell and row.")]
+        public Color CellBackgroundColour
+        {
+            get
+            {
+                return FCellBackgroundColour;
+            }
+
+            set
+            {
+                FCellBackgroundColour = value;
+                this.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Alternating background colour of the Grid. This is the colour that is used to set
+        /// the background colour of every second line.
+        /// </summary>
+        [Category("Appearance"),
+         RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
+         Browsable(true),
+         Description("The colour that is used to set the background colour of every second line.")]
+        public Color AlternatingBackgroundColour
+        {
+            get
+            {
+                return FAlternateBackColour;
+            }
+
+            set
+            {
+                FAlternateBackColour = value;
+                this.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Colour of the Selection.
+        /// </summary>
+        [Category("Appearance"),
+         RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
+         Browsable(true),
+         Description("The colour of the Selection.")]
+        public Color SelectionColour
+        {
+            get
+            {
+                return FSelectionColour;
+            }
+
+            set
+            {
+                FSelectionColour = value;
+                this.Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Colour of the Grid Lines.
+        /// </summary>
+        [Category("Appearance"),
+         RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
+         Browsable(true),
+         Description("The colour of the Grid Lines.")]
+        public Color GridLinesColour
+        {
+            get
+            {
+                return FGridLinesColour;
+            }
+
+            set
+            {
+                FGridLinesColour = value;
+                this.Refresh();
             }
         }
 
@@ -567,14 +778,33 @@ namespace Ict.Common.Controls
             this.Height = 100;
             this.Width = 400;
 
+            if (SetColourInformation != null)
+            {
+                if (!FColourInfoSetup)
+                {
+                    FColourInfo = SetColourInformation();
+                    FColourInfoSetup = true;
+                }
+            }
+            else
+            {
+                FColourInfo.BackColour = System.Drawing.Color.White;
+                FColourInfo.CellBackgroundColour = System.Drawing.Color.White;
+                FColourInfo.AlternatingBackgroundColour = System.Drawing.Color.FromArgb(230, 230, 230);
+                FColourInfo.SelectionColour = Color.FromArgb(150, Color.FromKnownColor(KnownColor.Highlight));
+                FColourInfo.GridLinesColour = System.Drawing.SystemColors.ControlDark;
+            }
+
             // Default look
-            this.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.BackColor = FColourInfo.BackColour;
+            this.CellBackgroundColour = FColourInfo.CellBackgroundColour;
+            this.AlternatingBackgroundColour = FColourInfo.AlternatingBackgroundColour;
+            this.GridLinesColour = FColourInfo.GridLinesColour;
             this.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.AlternatingBackgroundColour = System.Drawing.Color.FromArgb(230, 230, 230);
             this.AutoStretchColumnsToFitWidth = true;
             this.MinimumHeight = 19;
             ((SelectionBase) this.Selection).Border = new DevAge.Drawing.RectangleBorder();
-            ((SelectionBase) this.Selection).BackColor = Color.FromArgb(150, Color.FromKnownColor(KnownColor.Highlight));
+            ((SelectionBase) this.Selection).BackColor = FColourInfo.SelectionColour;
             ((SelectionBase) this.Selection).FocusBackColor = ((SelectionBase) this.Selection).BackColor;
 
             // Default behaviour
@@ -787,22 +1017,19 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth, EditorBase AEditor, bool AReadOnly)
         {
-            SourceGrid.Cells.ICellVirtual ADataCell;
-            SourceGrid.DataGridColumn AGridColumn;
-
             if (ADataColumn == null)
             {
                 throw new ArgumentNullException("ADataColumn", "ADataColumn must not be nil!");
             }
 
-            ADataCell = new SourceGrid.Cells.DataGrid.CheckBox();
+            SourceGrid.Cells.ICellVirtual ADataCell = new SourceGrid.Cells.DataGrid.CheckBox();
 
             if (AEditor != null)
             {
                 ADataCell.Editor = AEditor;
             }
 
-            AGridColumn = new TSgrdTextColumn(this, ADataColumn, AColumnTitle, ADataCell, AColumnWidth, FSortableHeaders);
+            SourceGrid.DataGridColumn AGridColumn = new TSgrdTextColumn(this, ADataColumn, AColumnTitle, ADataCell, AColumnWidth, FSortableHeaders);
 
             if (AReadOnly)
             {
@@ -1023,7 +1250,14 @@ namespace Ict.Common.Controls
                 object value,
                 Type destinationType)
             {
-                return String.Format("{0:0000000000}", (Int64)value);
+                if (value != null)
+                {
+                    return String.Format("{0:0000000000}", (Int64)value);
+                }
+                else
+                {
+                    return String.Format("{0:0000000000}", 0);
+                }
             }
         }
 
@@ -1371,10 +1605,10 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// Returns the index of the currently selected row or -1 if no row is selected
+        /// Returns the index of the first (topmost) highlighted row or -1 if no row is highlighted
         /// </summary>
         /// <returns>int</returns>
-        public int SelectedRowIndex()
+        public int GetFirstHighlightedRowIndex()
         {
             int rowIndex = -1;
 
@@ -1469,13 +1703,6 @@ namespace Ict.Common.Controls
             //  the call to list all rows in the viewport and INCLUDE partial!!  Having got this list, the decision is made whether to scroll.
             //  So we pass false so as not to include partial rows in this decision.
             return this.ShowCell(new SourceGrid.Position(rowToShow, 0), false);
-        }
-
-        /// make sure the grid scrolls to the selected row to have it in the visible area
-        public void ViewSelectedRow()
-        {
-            // scroll to the row
-            ShowCell(this.SelectedRowIndex());
         }
 
         /// <summary>
@@ -1686,12 +1913,12 @@ namespace Ict.Common.Controls
 
                 this.OnInsertKeyPressed(new RowEventArgs(SelectedDataRow));
 
-                //TODO: check if this will work for tabbed forms that contain subforms
                 //If a New button exists call its code.
-                if (this.FindForm().Controls.Find("btnNew", true).Length > 0)
+                Control insertButton = this.FindNearestControl("btnNew");
+
+                if (insertButton != null)
                 {
-                    System.Windows.Forms.Button insertButton = (System.Windows.Forms.Button) this.FindForm().Controls.Find("btnNew", true)[0];
-                    insertButton.PerformClick();
+                    ((System.Windows.Forms.Button)insertButton).PerformClick();
                 }
             }
             // Key for firing OnDeleteKeyPressed event
@@ -1710,12 +1937,12 @@ namespace Ict.Common.Controls
 
                 this.OnDeleteKeyPressed(new RowEventArgs(SelectedDataRow));
 
-                //TODO: check if this will work for tabbed forms that contain subforms
                 //If a Delete button exists call its code.
-                if (this.FindForm().Controls.Find("btnDelete", true).Length > 0)
+                Control deleteButton = this.FindNearestControl("btnDelete");
+
+                if (deleteButton != null)
                 {
-                    System.Windows.Forms.Button deleteButton = (System.Windows.Forms.Button) this.FindForm().Controls.Find("btnDelete", true)[0];
-                    deleteButton.PerformClick();
+                    ((System.Windows.Forms.Button)deleteButton).PerformClick();
                 }
             }
             // Keys that can trigger AutoFind
@@ -1733,6 +1960,25 @@ namespace Ict.Common.Controls
             }
 
             FLastKeyCode = AKeyEventArgs.KeyCode;
+        }
+
+        private Control FindNearestControl(String AControlName)
+        {
+            Control TryParent = this.Parent;
+
+            while (TryParent != null)
+            {
+                Control[] TryButtons = TryParent.Controls.Find(AControlName, true);
+
+                if (TryButtons.Length > 0)
+                {
+                    return TryButtons[0];
+                }
+
+                TryParent = TryParent.Parent;
+            }
+
+            return null;
         }
 
         #endregion

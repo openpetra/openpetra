@@ -1,0 +1,71 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Early and Late Registrations
+    Namespace: Ict.Petra.Client.MConference.Gui.Setup
+    DetailTable: PcEarlyLate
+    UsingNamespaces: [Ict.Petra.Shared.MConference.Data, Ict.Petra.Shared.MConference.Validation, Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.Interfaces.MConference]
+    FormType: edit
+    Template: windowMaintainTable
+    WindowWidth: 800
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlConferenceDetails, pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlConferenceDetails:
+            Dock: Top
+            Controls: [txtConferenceName, txtConferenceDates]
+            ControlsOrientation: vertical
+        txtConferenceName: {ReadOnly=true, BorderStyle=None, Stretch=horizontally}
+        txtConferenceDates: {ReadOnly=true, BorderStyle=None, Stretch=horizontally}
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
+        btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailType, DetailApplicable, DetailAmountPercent, DetailAmount, DetailPercent]
+            CustomColumns:
+                DetailType: {Label=Registration Type, Type="Boolean(Early,Late)"}
+                DetailAmountPercent: {Label=Value Type, Type="Boolean(Amount,Percentage)"}
+            ActionFocusRow: FocusedRowChanged
+            SortOrder: DetailApplicable ASC
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [rgrType, dtpDetailApplicable]
+                Row1: [rgrAmountPercent, txtDetailAmount, txtDetailPercent]
+        rgrType:
+            ControlsOrientation: horizontal
+            Controls: [rbtEarly, rbtLate]
+        rbtEarly:
+            ParameterValue: true
+            OnChange: UpdateRegistrationType
+        rbtLate:
+            ParameterValue: false
+        rgrAmountPercent:
+            ControlsOrientation: horizontal
+            Controls: [rbtAmount, rbtPercent]
+        rbtAmount:
+            ParameterValue: true
+            OnChange: UpdateAmountPercent
+        rbtPercent:
+            ParameterValue: false
+        dtpDetailApplicable: {Label=Applicable, Width=100}
+        txtDetailAmount: {Label=Amount, Width=90, Format=Currency}
+        txtDetailPercent: {Label=Percentage, Width=60, Format=PercentInteger}
+    Toolbar:
+        tbbNew:
+            Label: New Early or Late Registration

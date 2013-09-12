@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, alanP
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -309,14 +309,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
+        private string FUsage;
+
         /// <summary>
         /// Gets the current text from the rate usage tooltip (used by the test software)
         /// </summary>
         public string Usage
         {
+            set
+            {
+                FUsage = value;
+
+                if (value == String.Empty)
+                {
+                    tooltipDeleteInfo.Hide(btnInvertExchangeRate);
+                }
+                else
+                {
+                    tooltipDeleteInfo.Show(value, btnInvertExchangeRate);
+                }
+            }
             get
             {
-                return tooltipDeleteInfo.GetToolTip(btnInvertExchangeRate);
+                return FUsage;
             }
         }
 
@@ -331,9 +346,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             // Now we set some default settings that apply when the screen is MODELESS
             //  (If the screen will be MODAL one of the ShowDialog methods will be called below)
-            btnClose.Visible = false;           // Do not show the modal buttons
-            btnCancel.Visible = false;
-            btnDelete.Top = btnClose.Top + btnClose.Height / 2;
+            pnlModalButtons.Visible = false;
             mniImport.Enabled = true;           // Allow imports
             tbbImport.Enabled = true;
             blnIsInModalMode = false;
@@ -355,7 +368,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FCorporateDS.ACorporateExchangeRate.Merge(TypedTable);
         }
 
-        private void RunOnceOnActivationManual()
+        /// <summary>
+        /// not anymore RunOnceOnActivationManual, because that might not be run before the formhandler in a NUnitforms test
+        /// </summary>
+        private void RunBeforeActivation()
         {
             // Set the Tag for the checkbox since we don't want changes to the checkbox to look like we have to save the data
             this.chkHideOthers.Tag = MCommon.MCommonResourcestrings.StrCtrlSuppressChangeDetection;
@@ -416,6 +432,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             else
             {
                 ShowDetails(null);
+            }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            if (!this.blnIsInModalMode)
+            {
+                RunBeforeActivation();
             }
         }
 
@@ -526,6 +550,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             DefineModalSettings();
 
+            RunBeforeActivation();
+
             DialogResult dlgResult = base.ShowDialog();
 
             SelectedExchangeRate = modalRateOfExchange;
@@ -578,16 +604,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void DefineModalSettings()
         {
-            // We need the accept/cancel buttons when MODAL.  It looks better if they are at the top and New is beneath
-            btnClose.Visible = true;
-            btnCancel.Visible = true;
-            int pos1 = btnNew.Top;
-            int pos2 = btnClose.Top;
-            int spacing = pos2 - pos1;
-            btnClose.Top = pos1;
-            btnCancel.Top = pos2;
-            btnNew.Top = btnCancel.Top + spacing + (btnNew.Height / 2);
-            btnDelete.Top = btnNew.Top + spacing;
+            pnlModalButtons.Visible = true;
 
             // Import not allowed when MODAL
             mniImport.Enabled = false;
@@ -1012,72 +1029,88 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            // We need not only the current row info from the exchange rate table, but also the next row later in time, if it exists
-            // Create a special view because we don't know how the grid is sorted
-            string filter =
-                ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + ARow.FromCurrencyCode + "' and " +
-                ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + ARow.Table + "'";
-            DataView dvDailyRate = new DataView(FMainDS.ADailyExchangeRate, filter, SortByDateDescending, DataViewRowState.CurrentRows);
-
-            // Find our current row and hence the previous one
-            DateTime ToDate = DateTime.MaxValue;
-            int nThis = FindRowInDataView(dvDailyRate, ARow.FromCurrencyCode, ARow.ToCurrencyCode, ARow.DateEffectiveFrom, ARow.TimeEffectiveFrom);
-
-            while (nThis > 0)
+            // This is a bit of a fudge --
+            // If we are in modal mode we don't make any changes to the journal/gift data sets because we can't save any changes
+            // because it is up to the modal caller to take our result and save the change.
+            // If we are in modeless mode we will save the changes to the other data sets.
+            // This makes things inconsistent - but is a consequence of trying to make the daily exchange rate table look like it is linked to the other two
+            // when, in fact, it isn't.  Sometimes we update the other tables via this screen and sometimes we don't.
+            // It would be sligtly better if we knew in modal mode which journal row we were providing a rate for - but we don't know that either.
+            if (!blnIsInModalMode)
             {
-                DateTime tryDate = ((ADailyExchangeRateRow)dvDailyRate[nThis - 1].Row).DateEffectiveFrom;
+                // We need not only the current row info from the exchange rate table, but also the next row later in time, if it exists
+                // Create a special view because we don't know how the grid is sorted
+                string filter =
+                    ADailyExchangeRateTable.GetFromCurrencyCodeDBName() + " = '" + ARow.FromCurrencyCode + "' and " +
+                    ADailyExchangeRateTable.GetToCurrencyCodeDBName() + " = '" + ARow.Table + "'";
+                DataView dvDailyRate = new DataView(FMainDS.ADailyExchangeRate, filter, SortByDateDescending, DataViewRowState.CurrentRows);
 
-                if (tryDate == ARow.DateEffectiveFrom)
-                {
-                    // keep going till we find a different date because different times on the same date don't count
-                    nThis--;
-                }
-                else
-                {
-                    ToDate = tryDate;
-                    break;
-                }
-            }
+                // Find our current row and hence the previous one
+                DateTime ToDate = DateTime.MaxValue;
+                int nThis = FindRowInDataView(dvDailyRate, ARow.FromCurrencyCode, ARow.ToCurrencyCode, ARow.DateEffectiveFrom, ARow.TimeEffectiveFrom);
 
-            // OK, so we might have changed the rate
-            if (FJournalDS.HasMatchingUnpostedRate && (FJournalDS.MatchingRate != ARow.RateOfExchange))
-            {
-                // change all the relevant entries
-                DataView dvJournal = FJournalDS.JournalTable.DefaultView;
-                dvJournal.RowFilter = String.Format(CultureInfo.InvariantCulture, JournalRowFilterRange, ARow.FromCurrencyCode, ARow.ToCurrencyCode,
-                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d",
-                        CultureInfo.InvariantCulture), FJournalDS.MatchingRate, "Unposted");
-
-                for (int i = dvJournal.Count - 1; i >= 0; i--)
+                while (nThis > 0)
                 {
-                    AJournalRow row = ((AJournalRow)dvJournal[i].Row);
-                    row.BeginEdit();
-                    row.ExchangeRateToBase = ARow.RateOfExchange;
-                    row.EndEdit();
+                    DateTime tryDate = ((ADailyExchangeRateRow)dvDailyRate[nThis - 1].Row).DateEffectiveFrom;
+
+                    if (tryDate == ARow.DateEffectiveFrom)
+                    {
+                        // keep going till we find a different date because different times on the same date don't count
+                        nThis--;
+                    }
+                    else
+                    {
+                        ToDate = tryDate;
+                        break;
+                    }
                 }
 
-                FJournalDS.MatchingRate = ARow.RateOfExchange;
-                FJournalDS.NeedsSave = true;
-            }
-
-            if (FGiftBatchDS.HasMatchingUnpostedRate && (FGiftBatchDS.MatchingRate != ARow.RateOfExchange))
-            {
-                // change all the relevant entries
-                DataView dvGift = FGiftBatchDS.GiftBatchTable.DefaultView;
-                dvGift.RowFilter = String.Format(CultureInfo.InvariantCulture, GiftBatchRowFilter, ARow.FromCurrencyCode, ARow.ToCurrencyCode,
-                    ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d",
-                        CultureInfo.InvariantCulture), FGiftBatchDS.MatchingRate);
-
-                for (int i = dvGift.Count - 1; i >= 0; i--)
+                // OK, so we might have changed the rate
+                if (FJournalDS.HasMatchingUnpostedRate && (FJournalDS.MatchingRate != ARow.RateOfExchange))
                 {
-                    AGiftBatchRow row = ((AGiftBatchRow)dvGift[i].Row);
-                    row.BeginEdit();
-                    row.ExchangeRateToBase = ARow.RateOfExchange;
-                    row.EndEdit();
+                    // change all the relevant entries
+                    DataView dvJournal = FJournalDS.JournalTable.DefaultView;
+                    dvJournal.RowFilter = String.Format(CultureInfo.InvariantCulture,
+                        JournalRowFilterRange,
+                        ARow.FromCurrencyCode,
+                        ARow.ToCurrencyCode,
+                        ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture),
+                        ToDate.ToString("d",
+                            CultureInfo.InvariantCulture),
+                        FJournalDS.MatchingRate,
+                        "Unposted");
+
+                    for (int i = dvJournal.Count - 1; i >= 0; i--)
+                    {
+                        AJournalRow row = ((AJournalRow)dvJournal[i].Row);
+                        row.BeginEdit();
+                        row.ExchangeRateToBase = ARow.RateOfExchange;
+                        row.EndEdit();
+                    }
+
+                    FJournalDS.MatchingRate = ARow.RateOfExchange;
+                    FJournalDS.NeedsSave = true;
                 }
 
-                FGiftBatchDS.MatchingRate = ARow.RateOfExchange;
-                FGiftBatchDS.NeedsSave = true;
+                if (FGiftBatchDS.HasMatchingUnpostedRate && (FGiftBatchDS.MatchingRate != ARow.RateOfExchange))
+                {
+                    // change all the relevant entries
+                    DataView dvGift = FGiftBatchDS.GiftBatchTable.DefaultView;
+                    dvGift.RowFilter = String.Format(CultureInfo.InvariantCulture, GiftBatchRowFilter, ARow.FromCurrencyCode, ARow.ToCurrencyCode,
+                        ARow.DateEffectiveFrom.ToString("d", CultureInfo.InvariantCulture), ToDate.ToString("d",
+                            CultureInfo.InvariantCulture), FGiftBatchDS.MatchingRate);
+
+                    for (int i = dvGift.Count - 1; i >= 0; i--)
+                    {
+                        AGiftBatchRow row = ((AGiftBatchRow)dvGift[i].Row);
+                        row.BeginEdit();
+                        row.ExchangeRateToBase = ARow.RateOfExchange;
+                        row.EndEdit();
+                    }
+
+                    FGiftBatchDS.MatchingRate = ARow.RateOfExchange;
+                    FGiftBatchDS.NeedsSave = true;
+                }
             }
 
             // Finally check if we have an inverse rate for this date/time and currency pair
@@ -1389,14 +1422,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
             }
 
-            if (tipText == String.Empty)
-            {
-                tooltipDeleteInfo.Hide(btnInvertExchangeRate);
-            }
-            else
-            {
-                tooltipDeleteInfo.Show(tipText, btnInvertExchangeRate);
-            }
+            Usage = tipText;
 
             // return true if the rate has been used
             CanEdit = !bHasPostedJournalEntries;

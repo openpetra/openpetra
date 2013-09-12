@@ -9,21 +9,24 @@ RootNode:
     Template: controlMaintainCachableTable
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
-        actDelete: {Label=&Delete, ActionClick=DeleteRow}      
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
+            Width: 80
         btnDelete:
             Action: actDelete
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailContactAttrDetailCode, DetailContactAttrDetailDescr, DetailActive]
@@ -44,6 +47,3 @@ RootNode:
         chkDetailActive: {Label=Active}
     Menu:
         mniAnalysisValues:
-    Toolbar:
-        tbbNew:
-            Label: New Contact Attribute Detail

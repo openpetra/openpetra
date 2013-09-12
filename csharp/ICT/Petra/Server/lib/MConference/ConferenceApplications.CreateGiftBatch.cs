@@ -228,6 +228,11 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                         RegistrationKey = AUnknownPartner;
                     }
 
+                    if (RegistrationKey == 0)
+                    {
+                        RegistrationKey = AUnknownPartner;
+                    }
+
                     decimal ConferenceFee = Convert.ToDecimal(StringHelper.GetNextCSV(ref line, InputSeparator, PreviousConferenceFee.ToString()));
                     PreviousConferenceFee = ConferenceFee;
 

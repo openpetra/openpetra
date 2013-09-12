@@ -1,0 +1,56 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Outreach Supplements
+    Namespace: Ict.Petra.Client.MConference.Gui.Setup
+    DetailTable: PcSupplement
+    UsingNamespaces: [Ict.Petra.Shared.MConference.Data, Ict.Petra.Shared.MConference.Validation, Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.Interfaces.MConference]
+    FormType: edit
+    Template: windowMaintainTable
+    WindowWidth: 650
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlConferenceDetails, pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlConferenceDetails:
+            Dock: Top
+            Controls: [txtConferenceName, txtConferenceCurrency]
+            ControlsOrientation: vertical
+        txtConferenceName: {ReadOnly=true, BorderStyle=None, Stretch=horizontally}
+        txtConferenceCurrency: {ReadOnly=true, BorderStyle=None, Stretch=horizontally}
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
+        btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailOutreachType, DetailSupplement]
+            ActionFocusRow: FocusedRowChanged
+            SortOrder: DetailOutreachType ASC
+            CustomColumns:
+                DetailOutreachType: {Label=Outreach Type}
+                DetailSupplement: {Label=Supplement, Type=Currency(2)}
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [cmbDetailOutreachType]
+                Row1: [txtDetailSupplement]
+                
+        txtDetailSupplement: {Label=Charge, Width=100, Format=Currency}
+        cmbDetailOutreachType: {Width=500, List=UserDefinedList, ClearIfSettingEmpty=true}
+        
+    Toolbar:
+        tbbNew:
+            Label: New Conference Standard Cost

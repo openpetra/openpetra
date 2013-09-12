@@ -648,6 +648,38 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
         }
 
+        /// <summary>write the code for the designer file where the properties of the control are written</summary>
+        public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
+        {
+            string Width;
+
+            base.SetControlProperties(writer, ctrl);
+
+            if (ctrl.GetAttribute("Height").ToString() == "31")  // 31 is the Height of pnlButtons/pnlDetailButtons Panels that have ControlsOrientation=horizontal and whose Buttons have been shrinked in size to 23 Pixels by the ButtonGenerator - and
+            {                                                    // whose 'Height' Element hasn't been set in the YAML file...
+                if (ctrl.IsGridButtonPanel)
+                {
+                    Width = ctrl.GetAttribute("Width").ToString();
+
+                    // Somehow we can run into a situation where Width isn't specified. This would lead to writing out an
+                    // invalid Size Property. To prevent that we set it to some value which we can find easily in files and
+                    // which will be ignored anyway at runtime as the Panel will be Docked with 'DockStyle.Bottom'!
+                    if (Width.Length == 0)
+                    {
+                        Width = "1111";
+                    }
+
+                    FDefaultHeight = 28;
+
+//Console.WriteLine("Adjusted Height of Panel '" + ctrl.controlName + "' as it is a horizontal Grid Button Panel");
+                    writer.SetControlProperty(ctrl, "Size", "new System.Drawing.Size(" +
+                        Width + ", " + FDefaultHeight.ToString() + ")");
+                }
+            }
+
+            return writer.FTemplate;
+        }
+
         /// <summary>get the label text for this control</summary>
         public override bool GenerateLabel(TControlDef ctrl)
         {

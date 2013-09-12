@@ -54,12 +54,14 @@ using Ict.Petra.Client.MCommon.Gui;
 using Ict.Petra.Client.MConference.Gui;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Client.MPartner.Gui.Extracts;
+using Ict.Petra.Client.MPartner.Gui.Setup;
 using Ict.Petra.Client.MPersonnel.Gui;
 using Ict.Petra.Client.MFinance.Gui;
 using Ict.Petra.Client.MSysMan.Gui;
 using SplashScreen;
 using PetraClientShutdown;
 using Ict.Common.Remoting.Shared;
+using System.Data;
 
 namespace Ict.Petra.Client.App.PetraClient
 {
@@ -343,7 +345,13 @@ namespace Ict.Petra.Client.App.PetraClient
 
                 ExceptionHandling.GApplicationShutdownCallback = Shutdown.SaveUserDefaultsAndDisconnectAndStop;
 
-                new TLogging(TClientSettings.GetPathLog() + Path.DirectorySeparatorChar + "PetraClient.log");
+                TLogging Logger = new TLogging(TClientSettings.GetPathLog() + Path.DirectorySeparatorChar + "PetraClient.log");
+                String LogFileMsg;
+
+                if (!Logger.CanWriteLogFile(out LogFileMsg))
+                {
+                    MessageBox.Show(LogFileMsg, Catalog.GetString("Failed to open logfile"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
 
                 Catalog.Init();
 
@@ -512,6 +520,10 @@ namespace Ict.Petra.Client.App.PetraClient
                         ProcessReminders.StartStandaloneRemindersProcessing();
                     }
 
+                    DataTable CurrencyFormatTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CurrencyCodeList);
+
+                    StringHelper.CurrencyFormatTable = CurrencyFormatTable;
+
                     // This loads the Main Window of Petra
                     Form MainWindow;
 
@@ -651,12 +663,16 @@ namespace Ict.Petra.Client.App.PetraClient
             TCommonScreensForwarding.OpenConferenceFindScreen = @TConferenceFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenEventFindScreen = @TEventFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenExtractFindScreen = @TExtractFindScreenManager.OpenModalForm;
+            TCommonScreensForwarding.OpenRangeFindScreen = @TPostcodeRangeSetupManager.OpenModalForm;
 
             // Set up Delegate for the opening of Forms from the Main Menu
             Ict.Common.Controls.TLstTasks.OpenNewOrExistingForm = @Ict.Petra.Client.CommonForms.TFormsList.OpenNewOrExistingForm;
 
-            // Set up Delegate for the retrieval of the list of Currencies from the Cache.
+            // Set up Delegate for the retrieval of the list of Currencies from the Cache
             Ict.Common.Controls.TTxtCurrencyTextBox.RetrieveCurrencyList = @Ict.Petra.Client.CommonControls.TControlExtensions.RetrieveCurrencyList;
+
+            // Set up Delegate for the set-up of various Colours of all SourceGrid DataGrid instances from UserDefaults
+            Ict.Common.Controls.TSgrdDataGrid.SetColourInformation = @SetDataGridColoursFromUserDefaults;
 
             // Set up Data Validation Delegates
             TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;
@@ -684,6 +700,52 @@ namespace Ict.Petra.Client.App.PetraClient
             // I18N: assign proper font which helps to read asian characters
             // this is the first place where it is called, and we need to initialize the TAppSettingsManager
             TAppSettingsManager.InitFontI18N();
+        }
+
+        /// <summary>
+        /// Sets up various Colours of all SourceGrid DataGrid instances from UserDefaults.
+        /// </summary>
+        /// <returns>void</returns>
+        private static TSgrdDataGrid.ColourInformation SetDataGridColoursFromUserDefaults()
+        {
+            string SelectionColourUserDefault;
+
+            TSgrdDataGrid.ColourInformation ReturnValue = new TSgrdDataGrid.ColourInformation();
+
+            // Note: The UserDefaults store the colours as HTML representations of colours. Example: "#FFFFFF" = System.Drawing.Color.White
+            ReturnValue.BackColour = System.Drawing.ColorTranslator.FromHtml(
+                TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_GRID_BACKGROUND,
+                    System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.White)));
+            ReturnValue.CellBackgroundColour = System.Drawing.ColorTranslator.FromHtml(
+                TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_GRID_CELLBACKGROUND,
+                    System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.White)));
+
+            ReturnValue.AlternatingBackgroundColour = System.Drawing.ColorTranslator.FromHtml(
+                TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_GRID_ALTERNATE,
+                    System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(230, 230, 230))));
+            ReturnValue.GridLinesColour = System.Drawing.ColorTranslator.FromHtml(
+                TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_GRID_GRIDLINES,
+                    System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(211, 211, 211))));
+
+            // The UserDefault for the Selection colour stores a decimal Alpha value appended to the HTML representation of the colour
+            // because the Selection needs to be transparent to a certain degree in order to let the data of a selected Grid Row shine through!
+            // Example: "#00FFAA;50": A=140 (decimal 140), R=15 (hex 0F), G=255 (hex FF), B=170 (hex AA)
+            SelectionColourUserDefault = TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_GRID_SELECTION, String.Empty);
+
+            if (SelectionColourUserDefault.Length > 0)
+            {
+                ReturnValue.SelectionColour = System.Drawing.ColorTranslator.FromHtml(SelectionColourUserDefault.Split(';')[0]);
+                ReturnValue.SelectionColour = System.Drawing.Color.FromArgb(Convert.ToInt32(SelectionColourUserDefault.Split(
+                            ';')[1]), ReturnValue.SelectionColour);
+            }
+            else
+            {
+                // No UserDefault for the Selection in the DB; use a hard-coded default
+                ReturnValue.SelectionColour =
+                    System.Drawing.Color.FromArgb(120, System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Highlight));
+            }
+
+            return ReturnValue;
         }
 
         /// <summary>

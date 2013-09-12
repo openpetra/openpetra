@@ -51,8 +51,8 @@ namespace Tests.MFinance.Server.Gift
     {
         Int32 FLedgerNumber = -1;
 
-        const string MainFeesPayableCode = "ICT";
-        const string MainFeesReceivableCode = "HO_ADMIN";
+        const string MainFeesPayableCode = "GIF2";
+        const string MainFeesReceivableCode = "HO_ADMIN2";
 
         /// <summary>
         /// open database connection or prepare other things for this test
@@ -63,6 +63,7 @@ namespace Tests.MFinance.Server.Gift
             //new TLogging("TestServer.log");
             TPetraServerConnector.Connect("../../etc/TestServer.config");
             FLedgerNumber = TAppSettingsManager.GetInt32("LedgerNumber", 43);
+            TLogging.Log("Ledger Number = " + FLedgerNumber);
         }
 
         /// <summary>
@@ -86,6 +87,8 @@ namespace Tests.MFinance.Server.Gift
             StreamReader sr = new StreamReader(testFile);
             string FileContent = sr.ReadToEnd();
 
+            FileContent = FileContent.Replace("{ledgernumber}", FLedgerNumber.ToString());
+
             sr.Close();
 
             Hashtable parameters = new Hashtable();
@@ -97,7 +100,10 @@ namespace Tests.MFinance.Server.Gift
 
             TVerificationResultCollection VerificationResult;
 
-            importer.ImportGiftBatches(parameters, FileContent, out VerificationResult);
+            if (!importer.ImportGiftBatches(parameters, FileContent, out VerificationResult))
+            {
+                Assert.Fail("Gift Batch was not imported: " + VerificationResult.BuildVerificationResultString());
+            }
 
             int BatchNumber = importer.GetLastGiftBatchNumber();
 
@@ -105,7 +111,7 @@ namespace Tests.MFinance.Server.Gift
 
             if (!TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out VerificationResult))
             {
-                Assert.Fail("Gift Batch was not posted");
+                Assert.Fail("Gift Batch was not posted: " + VerificationResult.BuildVerificationResultString());
             }
         }
 
@@ -126,28 +132,26 @@ namespace Tests.MFinance.Server.Gift
 
             AFeesPayableTable FeesPayableTable = AFeesPayableAccess.LoadUsingTemplate(template, Transaction);
 
-            TLogging.Log("Fees payable" + FeesPayableTable.Count.ToString());
+            AFeesReceivableRow template1 = new AFeesReceivableTable().NewRowTyped(false);
+
+            template1.LedgerNumber = FLedgerNumber;
+            template1.FeeCode = MainFeesReceivableCode;
+
+            AFeesReceivableTable FeesReceivableTable = AFeesReceivableAccess.LoadUsingTemplate(template1, Transaction);
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
 
             if (FeesPayableTable.Count == 0)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-feespayable-data.sql");
+                    "test-sql\\gl-test-feespayable-data.sql", FLedgerNumber);
             }
-
-            AFeesReceivableRow template1 = new AFeesReceivableTable().NewRowTyped(false);
-
-            template.LedgerNumber = FLedgerNumber;
-            template.FeeCode = MainFeesReceivableCode;
-
-            AFeesReceivableTable FeesReceivableTable = AFeesReceivableAccess.LoadUsingTemplate(template1, Transaction);
 
             if (FeesReceivableTable.Count == 0)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-feesreceivable-data.sql");
+                    "test-sql\\gl-test-feesreceivable-data.sql", FLedgerNumber);
             }
-
-            DBAccess.GDBAccessObj.CommitTransaction();
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
@@ -162,7 +166,7 @@ namespace Tests.MFinance.Server.Gift
             // Test also for exception handling
             Assert.AreEqual(12m, TGiftTransactionWebConnector.CalculateAdminFee(MainDS,
                     FLedgerNumber,
-                    "GIF2",
+                    MainFeesPayableCode,
                     100m,
                     out VerficationResults), "admin fee fixed 12% of 100 expect 12");
         }

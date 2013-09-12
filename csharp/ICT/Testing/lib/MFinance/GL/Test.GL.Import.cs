@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -56,8 +56,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     [TestFixture]
     public class TestGLImport
     {
-        private const int intLedgerNumber = 43;
-
+        private int intLedgerNumber = 43;
 
         /// <summary>
         /// Test_01_GL_Import
@@ -78,8 +77,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             strContent = strContent.Replace("31/07/2010", "31/07/" + DateTime.Now.Year.ToString());
             strContent = strContent.Replace("02/07/2010", "02/07/" + DateTime.Now.Year.ToString());
+            strContent = strContent.Replace("{ledgernumber}", intLedgerNumber.ToString());
 
-            // Console.WriteLine(strContent);
             TVerificationResultCollection verificationResult;
 
             bool importSuccess = TGLTransactionWebConnector.ImportGLBatches(requestParams, strContent, out verificationResult);
@@ -104,6 +103,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
         private void PrepareTestCaseData()
         {
+            // new database because period July has to be open
+            intLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
             // Check if some special test data are available - otherwise load ...
@@ -114,7 +116,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             if (!CostCentreTestCasesAvailable)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-costcentre-data.sql");
+                    "test-sql\\gl-test-costcentre-data.sql", intLedgerNumber);
             }
         }
 

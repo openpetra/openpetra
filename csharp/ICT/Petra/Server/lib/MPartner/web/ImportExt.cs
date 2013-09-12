@@ -31,6 +31,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -224,6 +225,26 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         }
                     }
 
+                    foreach (UmJobRow Row in FMainDS.UmJob.Rows)
+                    {
+                        if (!Row.IsUnitKeyNull() && (Row.UnitKey == OfficeCode))
+                        {
+                            AddVerificationResult("Unknown UnitKey in JobRow: " + OfficeCode);
+                            // TODO: I really want to put NULL in here.
+                            Row.UnitKey = DomainManager.GSiteKey;
+                        }
+                    }
+
+                    foreach (PmJobAssignmentRow Row in FMainDS.PmJobAssignment.Rows)
+                    {
+                        if (!Row.IsUnitKeyNull() && (Row.UnitKey == OfficeCode))
+                        {
+                            AddVerificationResult("Unknown UnitKey in JobAssignmentRow: " + OfficeCode);
+                            // TODO: I really want to put NULL in here.
+                            Row.UnitKey = DomainManager.GSiteKey;
+                        }
+                    }
+
                     foreach (PPartnerInterestRow Row in FMainDS.PPartnerInterest.Rows)
                     {
                         if (!Row.IsFieldKeyNull() && (Row.FieldKey == OfficeCode))
@@ -309,6 +330,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             else
             {
                 AddVerificationResult("Unknown Currency code: " + ACurrencyCode);
+                return "";
+            }
+        }
+
+        private String CheckJobAssignmentTypeCode(String AAssignmentTypeCode, TDBTransaction ATransaction)
+        {
+            if ((AAssignmentTypeCode == "") || (PtAssignmentTypeAccess.Exists(AAssignmentTypeCode, ATransaction)))
+            {
+                return AAssignmentTypeCode;
+            }
+            else
+            {
+                AddVerificationResult("Unknown Job Assignment Type Code: " + AAssignmentTypeCode);
                 return "";
             }
         }
@@ -1084,7 +1118,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             StaffDataRow.Key = ReadInt64();
             StaffDataRow.StartOfCommitment = ReadDate();
             StaffDataRow.StartDateApprox = ReadBoolean();
-            StaffDataRow.EndOfCommitment = ReadDate();
+            StaffDataRow.EndOfCommitment = ReadNullableDate();
             StaffDataRow.StatusCode = ReadString();
             StaffDataRow.ReceivingField = ReadInt64();
             StaffDataRow.HomeOffice = ReadInt64();
@@ -1466,21 +1500,103 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             /* Child3CostsPeriodIntl */ ReadDecimal();
         }
 
-        private void ImportJob()
+        private void ImportJob(TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
         {
-            // Job Assignments are not being imported into the database anymore from 2.1.0 onwards.
+            PmJobAssignmentRow JobAssignmentRow = FMainDS.PmJobAssignment.NewRowTyped();
 
-            ReadNullableDate();
-            ReadNullableDate();
-            ReadString();
-            ReadString();
-            ReadBoolean();
-            ReadInt64();
-            ReadInt64();
-            ReadInt64();
-            ReadString();
-            ReadString();
-            ReadNullableDate();
+            JobAssignmentRow.PartnerKey = FPartnerKey;
+            JobAssignmentRow.FromDate = ReadDate();
+            JobAssignmentRow.ToDate = ReadNullableDate();
+            JobAssignmentRow.PositionName = ReadString();
+            JobAssignmentRow.PositionScope = ReadString();
+            JobAssignmentRow.AssistantTo = ReadBoolean();
+
+            ReadInt64(); // JobAssignmentRow.JobKey: not to be imported
+            ReadInt64(); // JobAssignmentRow.JobAssignmentKey: not to be imported
+
+            JobAssignmentRow.UnitKey = ReadInt64();
+            JobAssignmentRow.AssignmentTypeCode = CheckJobAssignmentTypeCode(ReadString(), ATransaction);
+
+            if (APetraVersion.Compare(new TFileVersionInfo("3.0.0")) < 0)
+            {
+                ReadString();       // used to be JobAssignmentRow.LeavingCode
+                ReadNullableDate(); // used to be JobAssignmentRow.LeavingCodeUpdatedDate
+            }
+
+            if (!FIgnorePartner)
+            {
+                // find job assignment (ignoring job key and job assignment key)
+                PmJobAssignmentRow TmpJobAssignmentRow = FMainDS.PmJobAssignment.NewRowTyped(false);
+                TmpJobAssignmentRow.PartnerKey = FPartnerKey;
+                TmpJobAssignmentRow.UnitKey = JobAssignmentRow.UnitKey;
+                TmpJobAssignmentRow.PositionName = JobAssignmentRow.PositionName;
+                TmpJobAssignmentRow.PositionScope = JobAssignmentRow.PositionScope;
+
+                PmJobAssignmentTable ExistingJobAssignmentTable = PmJobAssignmentAccess.LoadUsingTemplate(TmpJobAssignmentRow, null, ATransaction);
+
+                if (ExistingJobAssignmentTable.Count == 0)
+                {
+                    // if job assignment does not exist: find job
+                    UmJobRow TmpJobRow = FMainDS.UmJob.NewRowTyped(false);
+                    TmpJobRow.UnitKey = JobAssignmentRow.UnitKey;
+                    TmpJobRow.PositionName = JobAssignmentRow.PositionName;
+                    TmpJobRow.PositionScope = JobAssignmentRow.PositionScope;
+
+                    UmJobTable ExistingJobTable = UmJobAccess.LoadUsingTemplate(TmpJobRow, null, ATransaction);
+
+                    if (ExistingJobTable.Count == 0)
+                    {
+                        // if job does not exist: create job with default values
+                        UmJobRow JobRow = FMainDS.UmJob.NewRowTyped(true);
+                        JobRow.UnitKey = TmpJobRow.UnitKey;
+                        JobRow.PositionName = TmpJobRow.PositionName;
+                        JobRow.PositionScope = TmpJobRow.PositionScope;
+                        JobRow.JobKey = (Int32)MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_job);
+                        JobRow.JobType = "Long Term";
+                        JobRow.FromDate = JobAssignmentRow.FromDate;
+                        JobRow.ToDate = JobAssignmentRow.ToDate;
+                        JobRow.CommitmentPeriod = "None";
+                        JobRow.TrainingPeriod = "None";
+                        JobRow.Present = 1;
+
+                        UmJobAccess.AddOrModifyRecord(JobRow.UnitKey,
+                            JobRow.PositionName,
+                            JobRow.PositionScope,
+                            JobRow.JobKey,
+                            FMainDS.UmJob,
+                            JobRow,
+                            FDoNotOverwrite,
+                            ATransaction);
+
+                        JobAssignmentRow.JobKey = JobRow.JobKey;
+                    }
+                    else
+                    {
+                        JobAssignmentRow.JobKey = ((UmJobRow)ExistingJobTable.Rows[0]).JobKey;
+                    }
+
+                    JobAssignmentRow.JobAssignmentKey = (Int32)MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence(
+                        TSequenceNames.seq_job_assignment);
+                }
+                else
+                {
+                    // job assignment already exists: update record in database
+                    JobAssignmentRow.JobKey = ((PmJobAssignmentRow)ExistingJobAssignmentTable.Rows[0]).JobKey;
+                    JobAssignmentRow.JobAssignmentKey = ((PmJobAssignmentRow)ExistingJobAssignmentTable.Rows[0]).JobAssignmentKey;
+                }
+
+                // now add or modify job assignment record
+                PmJobAssignmentAccess.AddOrModifyRecord(JobAssignmentRow.PartnerKey,
+                    JobAssignmentRow.UnitKey,
+                    JobAssignmentRow.PositionName,
+                    JobAssignmentRow.PositionScope,
+                    JobAssignmentRow.JobKey,
+                    JobAssignmentRow.JobAssignmentKey,
+                    FMainDS.PmJobAssignment,
+                    JobAssignmentRow,
+                    FDoNotOverwrite,
+                    ATransaction);
+            }
         }
 
         private void ImportUnitJob()
@@ -1659,7 +1775,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
                 else if (KeyWord == "JOB")
                 {
-                    ImportJob();
+                    ImportJob(APetraVersion, ATransaction);
                 }
                 else if (KeyWord == "LANGUAGE")
                 {
@@ -1780,6 +1896,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             FDoNotOverwrite = ADoNotOverwrite;
             FMainDS = new PartnerImportExportTDS();
             TDBTransaction Transaction;
+            Boolean NewTransaction;
 
             InitReading(ALinesToImport);
 
@@ -1796,7 +1913,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 try
                 {
-                    Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                    Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
                     while (CheckForKeyword("PARTNER"))
                     {

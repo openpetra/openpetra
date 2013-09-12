@@ -6,7 +6,7 @@
 //       sethb
 //       Andrew Dillon
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -508,6 +508,9 @@ namespace Ict.Common.Controls
             #endregion
 
             FInitializeComponentRan = true;
+
+            // problem with NULL value on Linux, see https://tracker.openpetra.org/view.php?id=1443
+            this.Text = String.Empty;
         }
 
         /// <summary>

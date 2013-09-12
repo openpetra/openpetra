@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -66,15 +66,27 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private void LoadAll()
         {
+            bool NewTransaction = false;
+
             try
             {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
                 aGLMp = AGeneralLedgerMasterPeriodAccess.LoadAll(transaction);
-                DBAccess.GDBAccessObj.CommitTransaction();
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
             }
             catch (Exception)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
                 throw;
             }
         }
@@ -146,14 +158,21 @@ namespace Ict.Petra.Server.MFinance.Common
             ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[2].Value = ACurrentFinancialYear;
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            bool NewTransaction;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
             string strSQL = "SELECT * FROM PUB_" + AGeneralLedgerMasterTable.GetTableDBName() + " ";
             strSQL += "WHERE " + AGeneralLedgerMasterTable.GetLedgerNumberDBName() + " = ? ";
             strSQL += "AND " + AGeneralLedgerMasterTable.GetAccountCodeDBName() + " = ? ";
             strSQL += "AND " + AGeneralLedgerMasterTable.GetYearDBName() + " = ? ";
             aGLM = DBAccess.GDBAccessObj.SelectDT(
                 strSQL, AGeneralLedgerMasterTable.GetTableDBName(), transaction, ParametersArray);
-            DBAccess.GDBAccessObj.CommitTransaction();
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
         }
 
         /// <summary>
@@ -173,14 +192,21 @@ namespace Ict.Petra.Server.MFinance.Common
             ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar);
             ParametersArray[2].Value = ACostCentreCode;
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            bool NewTransaction;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
             string strSQL = "SELECT * FROM PUB_" + AGeneralLedgerMasterTable.GetTableDBName() + " ";
             strSQL += "WHERE " + AGeneralLedgerMasterTable.GetLedgerNumberDBName() + " = ? ";
             strSQL += "AND " + AGeneralLedgerMasterTable.GetAccountCodeDBName() + " = ? ";
             strSQL += "AND " + AGeneralLedgerMasterTable.GetCostCentreCodeDBName() + " = ? ";
             aGLM = DBAccess.GDBAccessObj.SelectDT(
                 strSQL, AGeneralLedgerMasterTable.GetTableDBName(), transaction, ParametersArray);
-            DBAccess.GDBAccessObj.CommitTransaction();
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
         }
 
         /// <summary>
@@ -192,7 +218,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 try
                 {
-                    return (decimal)aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetYtdActualBaseDBName()];
+                    return Convert.ToDecimal(aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetYtdActualBaseDBName()]);
                 }
                 catch (IndexOutOfRangeException)
                 {
@@ -210,7 +236,7 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 try
                 {
-                    return (decimal)aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetYtdActualForeignDBName()];
+                    return Convert.ToDecimal(aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetYtdActualForeignDBName()]);
                 }
                 catch (IndexOutOfRangeException)
                 {
@@ -230,7 +256,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return (int)aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetGlmSequenceDBName()];
+                return Convert.ToInt32(aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetGlmSequenceDBName()]);
             }
         }
 
@@ -241,7 +267,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return (string)aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetCostCentreCodeDBName()];
+                return aGLM.Rows[iPtr][AGeneralLedgerMasterTable.GetCostCentreCodeDBName()].ToString();
             }
         }
     }
@@ -272,20 +298,32 @@ namespace Ict.Petra.Server.MFinance.Common
             ParametersArray[2] = new OdbcParameter("", OdbcType.VarChar);
             ParametersArray[2].Value = AAccountCode;
 
+            bool NewTransaction = false;
+
             try
             {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
                 string strSQL = "SELECT * FROM PUB_" + AGeneralLedgerMasterTable.GetTableDBName() + " ";
                 strSQL += "WHERE " + AGeneralLedgerMasterTable.GetLedgerNumberDBName() + " = ? ";
                 strSQL += "AND " + AGeneralLedgerMasterTable.GetYearDBName() + " = ? ";
                 strSQL += "AND " + AGeneralLedgerMasterTable.GetAccountCodeDBName() + " = ? ";
                 glmTable = DBAccess.GDBAccessObj.SelectDT(
                     strSQL, AGeneralLedgerMasterTable.GetTableDBName(), transaction, ParametersArray);
-                DBAccess.GDBAccessObj.CommitTransaction();
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
             }
             catch (Exception)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+
                 throw;
             }
         }
@@ -323,7 +361,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return (string)glmRow[AGeneralLedgerMasterTable.GetAccountCodeDBName()];
+                return glmRow[AGeneralLedgerMasterTable.GetAccountCodeDBName()].ToString();
             }
         }
 
@@ -334,7 +372,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return (string)glmRow[AGeneralLedgerMasterTable.GetCostCentreCodeDBName()];
+                return glmRow[AGeneralLedgerMasterTable.GetCostCentreCodeDBName()].ToString();
             }
         }
 
@@ -345,7 +383,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return (int)glmRow[AGeneralLedgerMasterTable.GetGlmSequenceDBName()];
+                return Convert.ToInt32(glmRow[AGeneralLedgerMasterTable.GetGlmSequenceDBName()]);
             }
         }
 
@@ -356,7 +394,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return (decimal)glmRow[AGeneralLedgerMasterTable.GetYtdActualBaseDBName()];
+                return Convert.ToDecimal(glmRow[AGeneralLedgerMasterTable.GetYtdActualBaseDBName()]);
             }
         }
 
@@ -367,7 +405,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return (decimal)glmRow[AGeneralLedgerMasterTable.GetClosingPeriodActualBaseDBName()];
+                return Convert.ToDecimal(glmRow[AGeneralLedgerMasterTable.GetClosingPeriodActualBaseDBName()]);
             }
         }
     }

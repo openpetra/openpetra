@@ -10,18 +10,25 @@ RootNode:
     WindowWidth: 786
     WindowHeight: 650
     Actions:
-        actNew: {Label=New, ActionClick=NewRecord}
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
-            Controls: [btnNew]
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailAcquisitionCode, DetailAcquisitionDescription, DetailValidAcquisition, DetailDeletable, DetailRecruitingEffort]
@@ -35,10 +42,7 @@ RootNode:
                 Row1: [chkDetailValidAcquisition, chkDetailRecruitingEffort]
                 Row2: [chkDetailDeletable]
         txtDetailAcquisitionCode: {Label=Acquisition Code, CharacterCasing=Upper}
-        txtDetailAcquisitionDescription: {Width=275, Validation=true}
+        txtDetailAcquisitionDescription: {Width=325, Validation=true}
         chkDetailValidAcquisition: {Label=Assignable}
         chkDetailDeletable:
         chkDetailRecruitingEffort: {Label=Recruiting Mission}
-    Toolbar:
-        tbbNew:
-            Label: New Acquisition Code

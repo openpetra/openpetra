@@ -9,8 +9,9 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNewGift: {Label=&Add Gift, ActionClick=NewGift}
-        actNewDetail: {Label=Add Detai&l, ActionClick=NewGiftDetail}
-        actDeleteDetail: {Label=&Delete Detail, ActionClick=DeleteDetail}
+        actNewDetail: {Label=Add Detai&l, ActionClick=NewGiftDetail, Image=New_Record.ico}
+        actDelete: {Label=&Delete Detail, ActionClick=DeleteRecord}
+        actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllGifts}
         actAdjustGift: {Label=&Adjust Gift, ActionClick=AdjustGift}
         actReverseGift: {Label=Reverse &Gift, ActionClick=ReverseGift}
         actReverseGiftDetail: {Label=&Reverse Gift Detail, ActionClick=ReverseGiftDetail}
@@ -43,17 +44,18 @@ RootNode:
         txtHashTotal: {Format=Currency, ReadOnly=true,  Unbound=true}
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
-            Dock: Right
-            Controls: [btnNewGift, btnNewDetail, btnDeleteDetail]
-        btnNewGift: {Action=actNewGift}
-        btnNewDetail: {Action=actNewDetail}
-        btnDeleteDetail:
+            Dock: Bottom
+            Controls: [btnNewGift, btnNewDetail, btnDelete, btnDeleteAll]
+            ControlsOrientation: horizontal
+        btnNewGift: {Action=actNewGift, Width=120}
+        btnNewDetail: {Action=actNewDetail, Width=120, StartNewButtonGroup=true}
+        btnDelete: {Action=actDelete, Width=120}
+        btnDeleteAll: {Action=actDeleteAll, Width=120, StartNewButtonGroup=true}
         grdDetails:
             TableName: AGiftDetail
             Dock: Fill
-            #TODO: support split gifts, and deal with gift details properly
             Columns: [GiftTransactionNumber, DetailNumber, DonorName, DonorClass, ConfidentialGiftFlag, GiftTransactionAmount, RecipientDescription, RecipientField, MotivationGroupCode, MotivationDetailCode, ReceiptNumber, ReceiptPrinted, MethodOfGivingCode, MethodOfPaymentCode, MailingCode, GiftAmount]
             CustomColumns:
                 GiftTransactionNumber: {Label=Gift No., Type=Int32}
@@ -73,13 +75,13 @@ RootNode:
                 ReceiptNumber: {Label=Receipt, Type=Int32}
                 ReceiptPrinted: {Label=Receipt Printed,Type=Boolean} 
             ActionFocusRow: FocusedRowChanged
+            EnableMultiSelection: false
             SortOrder: GiftTransactionNumber ASC
             RowFilter: AGiftDetail.BatchNumber
             SortableHeaders: false
         pnlDetails:
             Dock: Fill
             Scrollbars: true
-            # TODO: split gifts
             Controls:
                 Row0: [txtDetailDonorKey]
                 Row1: [cmbDetailMethodOfGivingCode, cmbDetailMethodOfPaymentCode]
@@ -96,7 +98,7 @@ RootNode:
                 Row12: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
         #txtDonorName: {ReadOnly=true, PartnerShortNameLookup=AGiftDetail.DonorKey}
         dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Help: This date is used for receipt printing, Unbound=true, Validation=true}
-        txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=yes, Unbound=true}
+        txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=true, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, ColSpan=2, Unbound=true, OnChange=DonorKeyChanged}
         txtDetailReference: {Label=Reference, Width=170}
         cmbDetailReceiptLetterCode:

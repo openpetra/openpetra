@@ -42,14 +42,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     {
         private void InitializeManualCode()
         {
-            // The controls have some characters that ar enot valid as Xml element names
+            // The controls have some characters that are not valid as Xml element names
             // So we have to do additional initialization here.
             rbtWords.Text = "In Words";
             rbtNumeric.Text = "As a Number";
             rbtPerHundred.Text = "As a Number/100";
             rbtNone.Text = "Don't Show/None";
 
-            lblPrintSample.Margin = new Padding(3, 0, 3, 7);
+            // And because the text has changed we need to reposition each control
+            rbtNumeric.Left += 20;
+            rbtPerHundred.Left += 40;
+            rbtNone.Left += 65;
+
+            rbtWords.Width += 20;
+            rbtNumeric.Width += 20;
+            rbtPerHundred.Width += 35;
+            rbtNone.Width += 60;
+
+            rgrDetailDecimalOptions.Width += 150;
+
+            // Finally we line up our labels precisely
+            lblUnit.Left = txtDetailUnitLabelPlural.Left;
+            lblDecimal.Left = txtDetailDecimalLabelPlural.Left;
 
             // Add event handlers for our radio buttons so we can display our print sample text
             rbtNone.CheckedChanged += new EventHandler(rbtNone_CheckedChanged);

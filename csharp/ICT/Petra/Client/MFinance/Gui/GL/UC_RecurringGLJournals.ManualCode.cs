@@ -47,7 +47,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     {
         private Int32 FLedgerNumber = -1;
         private Int32 FBatchNumber = -1;
+        private Int32 FJournalNumberToDelete = -1;
         private string FBatchStatus = string.Empty;
+
+        /// <summary>
+        /// Returns FMainDS
+        /// </summary>
+        /// <returns></returns>
+        public GLBatchTDS RecurringJournalFMainDS()
+        {
+            return FMainDS;
+        }
 
         /// <summary>
         /// load the journals into the grid
@@ -57,13 +67,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ABatchStatus"></param>
         public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber, string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
+            bool batchChanged = (FBatchNumber != ABatchNumber);
+
             //Check if same Journals as previously selected
-            if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus)
+            if ((FLedgerNumber == ALedgerNumber) && !batchChanged && (FBatchStatus == ABatchStatus)
                 && (FMainDS.ARecurringJournal.DefaultView.Count > 0))
             {
                 if (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
                 {
-                    if ((grdDetails.SelectedRowIndex() > 0)
+                    if ((GetSelectedRowIndex() > 0)
                         && (GetSelectedDetailRow().RowState != DataRowState.Deleted))
                     {
                         GetDetailsFromControls(GetSelectedDetailRow());
@@ -79,51 +91,45 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FPreviouslySelectedDetailRow = null;
 
+            if (batchChanged)
+            {
+                //Clear all previous data.
+                FMainDS.ARecurringTransAnalAttrib.Clear();
+                FMainDS.ARecurringTransaction.Clear();
+                FMainDS.ARecurringJournal.Clear();
+            }
+
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringJournal.DefaultView);
 
-            FMainDS.ARecurringJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
-                ARecurringJournalTable.GetBatchNumberDBName(),
-                FBatchNumber);
-
-            FMainDS.ARecurringJournal.DefaultView.Sort = String.Format("{0} ASC",
-                ARecurringJournalTable.GetJournalNumberDBName()
-                );
+            SetJournalDefaultView();
 
             // only load from server if there are no journals loaded yet for this batch
             // otherwise we would overwrite journals that have already been modified
             if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournal(ALedgerNumber, ABatchNumber));
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndContent(ALedgerNumber, ABatchNumber));
             }
 
             ShowData();
-            ShowDetails();
 
             if (grdDetails.Rows.Count < 2)
             {
-                ClearControls();
+                ShowDetails(null);
             }
 
             txtBatchNumber.Text = FBatchNumber.ToString();
-
-            //This will update Batch totals
-            UpdateTotals(GetBatchRow());
-
-            grdDetails.Focus();
         }
 
-        /// <summary>
-        /// Load the journals for the current batch in the background
-        /// </summary>
-        public void UnloadJournals()
+        private void SetJournalDefaultView()
         {
-            if (FMainDS.ARecurringJournal.DefaultView.Count > 0)
-            {
-                FPreviouslySelectedDetailRow = null;
-                FMainDS.ARecurringJournal.Clear();
-                //ClearControls();
-            }
+            FMainDS.ARecurringJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
+                ARecurringJournalTable.GetBatchNumberDBName(),
+                FBatchNumber);
+
+            FMainDS.ARecurringJournal.DefaultView.Sort = String.Format("{0} DESC",
+                ARecurringJournalTable.GetJournalNumberDBName()
+                );
         }
 
         /// <summary>
@@ -135,6 +141,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((GetSelectedDetailRow() != null) && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
                 GetSelectedDetailRow().DateEffective = AEffectiveDate;
+                GetDetailsFromControls(GetSelectedDetailRow());
             }
         }
 
@@ -192,7 +199,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// update the journal header fields from a batch
         /// </summary>
         /// <param name="ABatch"></param>
-        public void UpdateTotals(ARecurringBatchRow ABatch)
+        public void UpdateHeaderTotals(ARecurringBatchRow ABatch)
         {
             decimal sumDebits = 0.0M;
             decimal sumCredits = 0.0M;
@@ -205,28 +212,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 sumDebits += r.JournalDebitTotal;
             }
 
-            if (ABatch.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
-            {
-                if (ABatch.BatchCreditTotal != sumCredits)
-                {
-                    ABatch.BatchCreditTotal = sumCredits;
-                }
-
-                if (ABatch.BatchDebitTotal != sumDebits)
-                {
-                    ABatch.BatchDebitTotal = sumDebits;
-                }
-
-                if (ABatch.BatchRunningTotal != Math.Round(sumDebits - sumCredits, 2))
-                {
-                    ABatch.BatchRunningTotal = Math.Round(sumDebits - sumCredits, 2);
-                }
-            }
-
             FPetraUtilsObject.DisableDataChangedEvent();
             txtCurrentPeriod.Text = ABatch.BatchPeriod.ToString();
             txtDebit.NumberValueDecimal = sumDebits;
+            ABatch.BatchDebitTotal = sumDebits;
             txtCredit.NumberValueDecimal = sumCredits;
+            ABatch.BatchCreditTotal = sumCredits;
             txtControl.NumberValueDecimal = ABatch.BatchControlTotal;
             FPetraUtilsObject.EnableDataChangedEvent();
         }
@@ -243,7 +234,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 //Can't cancel an already cancelled row
                 btnDelete.Enabled = (ARow.JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
-                ((TFrmRecurringGLBatch)ParentForm).EnableTransactions();
 
                 if (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
                 {
@@ -266,10 +256,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         public void NewRow(System.Object sender, EventArgs e)
         {
-            //TODO if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
-            //TODO {
-            //TODO     return;
-            //TODO }
+            if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
+            {
+                return;
+            }
 
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
@@ -279,7 +269,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ((TFrmRecurringGLBatch) this.ParentForm).EnableTransactions();
 
-                txtDetailJournalDescription.Text = "Please enter a journal description";
+                txtDetailJournalDescription.Text = Catalog.GetString("Please enter a journal description");
                 txtDetailJournalDescription.SelectAll();
             }
         }
@@ -346,33 +336,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             pnlDetailsProtected = !changeable;
         }
 
-        /// <summary>
-        /// Performs checks to determine whether a deletion of the current
-        ///  row is permissable
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
-        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
-        /// <returns>true if user is permitted and able to delete the current row</returns>
         private bool PreDeleteManual(ARecurringJournalRow ARowToDelete, ref string ADeletionQuestion)
         {
-            if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
-            {
-                MessageBox.Show(Catalog.GetString("No Recurring GL Journal is selected to delete."),
-                    Catalog.GetString("Deleting Recurring GL Journal"));
-                return false;
-            }
-            else
-            {
-                // ask if the user really wants to cancel the journal
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Recurring GL Journal no: {0} ?"),
-                    ARowToDelete.JournalNumber);
-                return true;
-            }
-        }
+            bool allowDeletion = true;
 
-        private void DeleteRecord(System.Object sender, EventArgs e)
-        {
-            this.DeleteARecurringJournal();
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete journal no. {0} from recurring Batch {1}?"),
+                    ARowToDelete.JournalNumber,
+                    ARowToDelete.BatchNumber);
+            }
+
+            return allowDeletion;
         }
 
         /// <summary>
@@ -381,31 +356,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ARowToDelete">the currently selected row to delete</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(ARecurringJournalRow ARowToDelete, out string ACompletionMessage)
+        private bool DeleteRowManual(ARecurringJournalRow ARowToDelete, ref string ACompletionMessage)
         {
+            int batchNumber = ARowToDelete.BatchNumber;
+
+            FJournalNumberToDelete = ARowToDelete.JournalNumber;
             bool deletionSuccessful = false;
 
-            int batchNumber = ARowToDelete.BatchNumber;
-            int journalNumber = ARowToDelete.JournalNumber;
+            // Delete on client side data through views that is already loaded. Data that is not
+            // loaded yet will be deleted with cascading delete on server side so we don't have
+            // to worry about this here.
+
+            ACompletionMessage = String.Format(Catalog.GetString("Journal no.: {0} deleted successfully."),
+                FJournalNumberToDelete);
 
             try
             {
-                // Delete on client side data through views that is already loaded. Data that is not
-                // loaded yet will be deleted with cascading delete on server side so we don't have
-                // to worry about this here.
-
-                ACompletionMessage = String.Format(Catalog.GetString("Journal no.: {0} deleted successfully."),
-                    journalNumber);
+                //clear any transactions currently being editied in the Transaction Tab
+                ((TFrmRecurringGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
                 // Delete the associated recurring transaction analysis attributes
                 DataView viewRecurringTransAnalAttrib = new DataView(FMainDS.ARecurringTransAnalAttrib);
-                viewRecurringTransAnalAttrib.RowFilter = String.Format("{0} = {1} AND {2} = {3} AND {4} = {5}",
-                    ARecurringTransAnalAttribTable.GetLedgerNumberDBName(),
-                    FLedgerNumber,
+                viewRecurringTransAnalAttrib.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
                     ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
                     batchNumber,
                     ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
-                    journalNumber);
+                    FJournalNumberToDelete
+                    );
 
                 foreach (DataRowView row in viewRecurringTransAnalAttrib)
                 {
@@ -414,20 +391,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 // Delete the associated recurring transactions
                 DataView viewRecurringTransaction = new DataView(FMainDS.ARecurringTransaction);
-                viewRecurringTransaction.RowFilter = String.Format("{0} = {1} AND {2} = {3} AND {4} = {5}",
-                    ARecurringTransactionTable.GetLedgerNumberDBName(),
-                    FLedgerNumber,
+                viewRecurringTransaction.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
                     ARecurringTransactionTable.GetBatchNumberDBName(),
                     batchNumber,
                     ARecurringTransactionTable.GetJournalNumberDBName(),
-                    journalNumber);
+                    FJournalNumberToDelete
+                    );
 
                 foreach (DataRowView row in viewRecurringTransaction)
                 {
                     row.Delete();
                 }
 
-                // Delete the recurring journal row.
+                // Delete the recurring batch row.
                 ARowToDelete.Delete();
 
                 FPreviouslySelectedDetailRow = null;
@@ -461,41 +437,192 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             /*Code to execute after the delete has occurred*/
             if (ADeletionPerformed && (ACompletionMessage.Length > 0))
             {
-                //MessageBox.Show(ACompletionMessage,
-                //    "Deletion completed",
-                //    MessageBoxButtons.OK,
-                //    MessageBoxIcon.Information);
+                RenumberJournals();
+                SetBatchLastJournalNumber();
+                UpdateHeaderTotals(GetBatchRow());
 
-                if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
+                if (((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
                 {
-                    ClearControls();
+                    MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
+                }
+                else
+                {
+                    MessageBox.Show(
+                        "Unable to save after deletion and renumbering remaining recurring journals! Try saving manually and closing and reopening the form.");
                 }
             }
-            else if (!AAllowDeletion)
+
+            if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
             {
-                //message to user
-                MessageBox.Show(ACompletionMessage,
-                    "Deletion not allowed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-            else if (!ADeletionPerformed)
-            {
-                //message to user
-                MessageBox.Show(ACompletionMessage,
-                    "Deletion failed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                ClearControls();
             }
 
-            if (grdDetails.Rows.Count > 1)
+            ((TFrmRecurringGLBatch)ParentForm).EnableTransactions((grdDetails.Rows.Count > 1));
+        }
+
+        private void DeleteNewRecords(int ABatchNumber, int AJournalNumber)
+        {
+            // Delete the associated recurring transaction analysis attributes
+            DataView viewRecurringTransAnalAttrib = new DataView(FMainDS.ARecurringTransAnalAttrib);
+
+            viewRecurringTransAnalAttrib.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+                ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                ABatchNumber,
+                ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                AJournalNumber
+                );
+
+            foreach (DataRowView row in viewRecurringTransAnalAttrib)
             {
-                ((TFrmRecurringGLBatch)ParentForm).EnableTransactions();
+                row.Delete();
+            }
+
+            // Delete the associated recurring transactions
+            DataView viewRecurringTransaction = new DataView(FMainDS.ARecurringTransaction);
+            viewRecurringTransaction.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+                ARecurringTransactionTable.GetBatchNumberDBName(),
+                ABatchNumber,
+                ARecurringTransactionTable.GetJournalNumberDBName(),
+                AJournalNumber
+                );
+
+            foreach (DataRowView row in viewRecurringTransaction)
+            {
+                row.Delete();
+            }
+        }
+
+        private void RenumberJournals()
+        {
+            bool jrnlsRenumbered = false;
+
+            DataView jrnlView = new DataView(FMainDS.ARecurringJournal);
+            DataView transView = new DataView(FMainDS.ARecurringTransaction);
+            DataView attrView = new DataView(FMainDS.ARecurringTransAnalAttrib);
+
+            //Reduce all trans and journal data by 1 in JournalNumber field
+            //Reduce those with higher transaction number by one
+            jrnlView.RowFilter = String.Format("{0} = {1} AND {2} > {3}",
+                ARecurringJournalTable.GetBatchNumberDBName(),
+                FBatchNumber,
+                ARecurringJournalTable.GetJournalNumberDBName(),
+                FJournalNumberToDelete);
+
+            jrnlView.Sort = String.Format("{0} ASC",
+                ARecurringJournalTable.GetJournalNumberDBName());
+
+            jrnlsRenumbered = (jrnlView.Count > 0);
+
+            // Delete the associated transaction analysis attributes
+            //  if attributes do exist, and renumber those above
+            foreach (DataRowView jV in jrnlView)
+            {
+                GLBatchTDSARecurringJournalRow jrnlRowCurrent = (GLBatchTDSARecurringJournalRow)jV.Row;
+
+                int currentJnrlNumber = jrnlRowCurrent.JournalNumber;
+
+                //Copy current row down to fill gap and then delete it
+                GLBatchTDSARecurringJournalRow newJrnlRow = FMainDS.ARecurringJournal.NewRowTyped(true);
+
+                newJrnlRow.ItemArray = jrnlRowCurrent.ItemArray;
+
+                //reduce journal number by 1 in the new row
+                newJrnlRow.JournalNumber--;
+
+                FMainDS.ARecurringJournal.Rows.Add(newJrnlRow);
+
+                //Process Transactions
+                transView.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
+                    ARecurringTransactionTable.GetBatchNumberDBName(),
+                    FBatchNumber,
+                    ARecurringTransactionTable.GetJournalNumberDBName(),
+                    currentJnrlNumber);
+
+                transView.Sort = String.Format("{0} ASC, {1} ASC",
+                    ARecurringTransactionTable.GetJournalNumberDBName(),
+                    ARecurringTransactionTable.GetTransactionNumberDBName());
+
+                //Iterate through higher number attributes and transaction numbers and reduce by one
+                ARecurringTransactionRow transRowCurrent = null;
+
+                foreach (DataRowView gv in transView)
+                {
+                    transRowCurrent = (ARecurringTransactionRow)gv.Row;
+
+                    GLBatchTDSARecurringTransactionRow newTransRow = FMainDS.ARecurringTransaction.NewRowTyped(true);
+
+                    newTransRow.ItemArray = transRowCurrent.ItemArray;
+
+                    //reduce journal number by 1 in the new row
+                    newTransRow.JournalNumber--;
+
+                    FMainDS.ARecurringTransaction.Rows.Add(newTransRow);
+
+                    //Repeat process for attributes that belong to current transaction
+                    attrView.RowFilter = String.Format("{0} = {1} And {2} = {3} And {4} = {5}",
+                        ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                        FBatchNumber,
+                        ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                        currentJnrlNumber,
+                        ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                        transRowCurrent.TransactionNumber);
+
+                    attrView.Sort = String.Format("{0} ASC, {1} ASC, {2} ASC",
+                        ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                        ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                        ARecurringTransAnalAttribTable.GetAnalysisTypeCodeDBName());
+
+                    // Delete the associated transaction analysis attributes
+                    //  if attributes do exist, and renumber those above
+                    if (attrView.Count > 0)
+                    {
+                        //Iterate through higher number attributes and transaction numbers and reduce by one
+                        ARecurringTransAnalAttribRow attrRowCurrent = null;
+
+                        foreach (DataRowView rV in attrView)
+                        {
+                            attrRowCurrent = (ARecurringTransAnalAttribRow)rV.Row;
+
+                            ARecurringTransAnalAttribRow newAttrRow = FMainDS.ARecurringTransAnalAttrib.NewRowTyped(true);
+
+                            newAttrRow.ItemArray = attrRowCurrent.ItemArray;
+
+                            //reduce journal number by 1
+                            newAttrRow.JournalNumber--;
+
+                            FMainDS.ARecurringTransAnalAttrib.Rows.Add(newAttrRow);
+
+                            attrRowCurrent.Delete();
+                        }
+                    }
+
+                    transRowCurrent.Delete();
+                }
+
+                jrnlRowCurrent.Delete();
+            }
+
+            if (jrnlsRenumbered)
+            {
+                FPetraUtilsObject.SetChangedFlag();
+            }
+
+            //Need to refresh FPreviouslySelectedDetailRow else it points to a deleted row
+            SelectRowInGrid(grdDetails.GetFirstHighlightedRowIndex());
+        }
+
+        private void SetBatchLastJournalNumber()
+        {
+            SetJournalDefaultView();
+
+            if (FMainDS.ARecurringJournal.DefaultView.Count > 0)
+            {
+                ARecurringJournalRow jrnlRow = (ARecurringJournalRow)FMainDS.ARecurringJournal.DefaultView[0].Row;
+                GetBatchRow().LastJournal = jrnlRow.JournalNumber;
             }
             else
             {
-                ((TFrmRecurringGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
-                ((TFrmRecurringGLBatch)ParentForm).DisableTransactions();
+                GetBatchRow().LastJournal = 0;
             }
         }
 

@@ -106,11 +106,11 @@ namespace Tests.MFinance.Server.BankImport
 
             int BatchNumber = importer.GetLastGiftBatchNumber();
 
-            Assert.AreNotEqual(-1, BatchNumber, "Should have imported the gift batch and return a valid batch number");
+            Assert.AreNotEqual(-1, BatchNumber, "Failed to import gift batch: " + VerificationResult.BuildVerificationResultString());
 
             if (!TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out VerificationResult))
             {
-                Assert.Fail("Gift Batch was not posted");
+                Assert.Fail("Gift Batch was not posted: " + VerificationResult.BuildVerificationResultString());
             }
 
             // import the test csv file, will already do the training

@@ -41,9 +41,10 @@ CachedTables:
                 PMethodOfContact:
                 PMergeForm:
                 PMergeField:
-                PMailing:                
-            CalculatedLists:
-                PostCodeRegionList:
+                PMailing:
+                PPostcodeRange:
+                PPostcodeRegion:
+                PPostcodeRegionRange:
         Subscriptions:
             DatabaseTables:
                 PPublication:
@@ -63,7 +64,6 @@ CachedTables:
             DatabaseTables:
                 PtPosition: {Comment="Contains the different position which exist within our organisation, e.g. Field Leader, Book Keeper, Computer support"}
                 PtAssignmentType: {Enum=JobAssignmentTypeList, Comment="Describes whether a person is full-time, part-time, etc"}
-                PtLeavingCode: {Comment=Describes the reason a person left a particular position}                
             CalculatedLists:
                 OutreachList: {Comment=List of all outreaches}
                 ConferenceList: {Comment=List of all conferences}
@@ -117,6 +117,7 @@ CachedTables:
                 LedgerNameList: {Comment=names of available ledgers, DependsOnLedger=false}
                 LedgerDetails: {Comment="ledger details (number of accounting periods, current period, etc)"}
                 CostCentreList:
+                CostCentresLinkedToPartnerList:
                 AccountList:
                 AccountHierarchyList:
                 ICHStewardshipList:

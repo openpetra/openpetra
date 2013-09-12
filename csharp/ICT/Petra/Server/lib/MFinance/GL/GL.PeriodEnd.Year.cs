@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -68,15 +68,41 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool AIsInInfoMode,
             out TVerificationResultCollection AVerificationResult)
         {
-            bool res = new TYearEnd().RunYearEnd(ALedgerNum, AIsInInfoMode,
-                out AVerificationResult);
+            bool NewTransaction;
 
-            if (!res)
+            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+
+            try
             {
-                AVerificationResult.Add(new TVerificationResult("Year End", "Success", "Success", TResultSeverity.Resv_Status));
-            }
+                bool res = new TYearEnd().RunYearEnd(ALedgerNum, AIsInInfoMode,
+                    out AVerificationResult);
 
-            return res;
+                if (!res)
+                {
+                    AVerificationResult.Add(new TVerificationResult("Year End", "Success", "Success", TResultSeverity.Resv_Status));
+                }
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+
+                return res;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("TPeriodIntervallConnector.TPeriodYearEnd() throws " + e.ToString());
+                AVerificationResult = new TVerificationResultCollection();
+                AVerificationResult.Add(
+                    new TVerificationResult(
+                        Catalog.GetString("Year End"),
+                        Catalog.GetString("Uncaught Exception: ") + e.Message,
+                        TResultSeverity.Resv_Critical));
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                return false;
+            }
         }
     }
 }
@@ -105,30 +131,25 @@ namespace Ict.Petra.Server.MFinance.GL
             verificationResults = new TVerificationResultCollection();
 
             TCarryForward carryForward = new TCarryForward(ledgerInfo);
-            int intYear = 0;
 
             if (carryForward.GetPeriodType != TCarryForwardENum.Year)
             {
                 TVerificationResult tvt =
-                    new TVerificationResult(Catalog.GetString("Year End is expected ..."),
-                        Catalog.GetString("In this situation you cannot run a month end routine"), "",
+                    new TVerificationResult(Catalog.GetString("Month End is required!"),
+                        Catalog.GetString("In this situation you cannot run Year End."), "",
                         TPeriodEndErrorAndStatusCodes.PEEC_04.ToString(),
                         TResultSeverity.Resv_Critical);
                 verificationResults.Add(tvt);
                 FHasCriticalErrors = true;
             }
-            else
-            {
-                intYear = carryForward.Year;
-            }
 
             RunPeriodEndSequence(new TReallocation(ledgerInfo),
                 Catalog.GetString("Reallocation of all income and expense accounts"));
 
-            RunPeriodEndSequence(new TGlmNewYearInit(ledgerInfo.LedgerNumber, intYear),
+            RunPeriodEndSequence(new TGlmNewYearInit(ledgerInfo.LedgerNumber, ledgerInfo.CurrentFinancialYear),
                 Catalog.GetString("Initialize the glm-entries of the next year"));
 
-            RunPeriodEndSequence(new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber, intYear),
+            RunPeriodEndSequence(new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber),
                 Catalog.GetString("Set the account period values to the New Year"));
 
             if (!FInfoMode)

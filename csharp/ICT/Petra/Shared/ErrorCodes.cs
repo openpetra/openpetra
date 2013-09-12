@@ -106,6 +106,43 @@ namespace Ict.Petra.Shared
              ErrorMessageTitle = "Invalid Data Entered")]
         public const String ERR_VALUESIDENTICAL_ERROR = "GEN.00008V";
 
+        /// <summary>Values must not be the same.</summary>
+        [ErrCodeAttribute("Value outside of range.",
+             ErrorMessageText = "Value for '{0}' must be between {1} and {2}",
+             ErrorMessageTitle = "Invalid Data Entered")]
+        public const String ERR_VALUE_OUTSIDE_OF_RANGE = "GEN.00009V";
+
+        #endregion
+
+        #region Conference Module-specific error codes
+
+
+        /// <summary>Standard cost inconsistency</summary>
+        [ErrCodeAttribute("Standard cost inconsistency.",
+             ErrorMessageText = "{0} day/s at the conference costs more than {1} days!\r\n" + "Are you sure this is correct?",
+             ErrorMessageTitle = "Standard cost inconsistency")]
+        public const String ERR_STANDARD_COST_INCONSISTENCY = "CON.00001N";
+
+        /// <summary>Applicable date after conference end date</summary>
+        [ErrCodeAttribute("Applicable date after conference end date.",
+             ErrorMessageText = "Applicable date cannot be after the end of the conference.")]
+        public const String ERR_APPLICABLE_DATE_AFTER_CONFERENCE_END_DATE = "CON.00002V";
+
+        /// <summary>Early applicable date later than a late applicable date</summary>
+        [ErrCodeAttribute("Early applicable date later than a late applicable date.",
+             ErrorMessageText = "There is an early registration discount which has a date later than this late registration surcharge.")]
+        public const String ERR_EARLY_APPLICABLE_DATE_LATER_THAN_LATE_APPLICABLE_DATE = "CON.00003V";
+
+        /// <summary>Late applicable date earlier than an early applicable date</summary>
+        [ErrCodeAttribute("Late applicable date earlier than an early applicable date.",
+             ErrorMessageText = "There is a late registration surcharge which has a date earlier than this early registration discount.")]
+        public const String ERR_LATE_APPLICABLE_DATE_EARLIER_THAN_EARLY_APPLICABLE_DATE = "CON.00004V";
+
+        /// <summary>PcDiscount discount percentage greater than 100</summary>
+        [ErrCodeAttribute("Invalid discount percentage.",
+             ErrorMessageText = "Discount percentages cannot be greater than 100%")]
+        public const String ERR_DISCOUNT_PERCENTAGE_GREATER_THAN_100 = "CON.00005V";
+
         #endregion
 
         #region Finance Module-specific error codes
@@ -179,6 +216,18 @@ namespace Ict.Petra.Shared
              FullDescription = "The International Postal Code entered is not a valid International Postal Type.")]
         public const String ERR_INVALIDINTERNATIONALPOSTALCODE = "PARTN.00008V";
 
+        /// <summary>Interest must not be empty if category is set.</summary>
+        [ErrCodeAttribute("Interest not set.",
+             ErrorMessageText = "Interest must be selected since category '{0}' is set.",
+             ErrorMessageTitle = "Interest not set")]
+        public const String ERR_INTEREST_NOT_SET = "PARTN.00016V";
+
+        /// <summary>One of Interest, Country or Field must be set for Partner Interest record.</summary>
+        [ErrCodeAttribute("Insufficient Data.",
+             ErrorMessageText = "At least one of Interest, Country or Field must be set.",
+             ErrorMessageTitle = "Insufficient Data")]
+        public const String ERR_INTEREST_NO_DATA_SET_AT_ALL = "PARTN.00017V";
+
         #region Subscriptions
 
         /// <summary>Subscription Status Mandatory.</summary>
@@ -225,6 +274,16 @@ namespace Ict.Petra.Shared
         public const String ERR_BANKINGDETAILS_ATLEASTONEMAINACCOUNT = "PARTN.00014V";
 
         #endregion
+
+        /// <summary>Partner Interest: Level needs to be within valid range.</summary>
+        [ErrCodeAttribute("Level must be within valid range.",
+             ErrorMessageText = "Level must be between {0} and {1}.")]
+        public const String ERR_INTEREST_LEVEL_NOT_WITHIN_RANGE = "PARTN.00015V";
+
+        /// <summary>Partner of Partner Class Church: Denomination must be assigned, but no Denominations are set up to choose from.</summary>
+        [ErrCodeAttribute("Denominations must be set up.",
+             ErrorMessageText = "A Denomination must be assigned, but there are no Denominations set up to choose from. Please set up Denominations and then repeat the process!")]
+        public const String ERR_NO_DENOMINATIONS_SET_UP = "PARTN.00018V";
 
         #endregion
 

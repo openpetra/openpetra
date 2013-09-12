@@ -40,6 +40,11 @@
 
 <target name="initConfigFiles" description="write and overwrite the config files for client, server and testing, and the version.txt">
   <property name="templateFile" value="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"/>
+  
+  <if test="${DBMS.Type == 'sqlite'}">
+    <property name="DBMS.DBHostOrFile" value="${SQLitedbWork.file}"/>
+  </if>
+  
   <property name="configFile" value="${ServerConfigFile}"/>
   <call target="initConfigFiles-internal"/>
 
@@ -69,6 +74,13 @@
 
 <target name="startPetraServer" depends="initConfigFiles" description="Starts a local Petra Server">
   <if test="${platform::is-windows()}">
+    <!-- make sure that the Mono files for sqlite are in the bin directory; needed for devzip -->
+    <if test="${(DBMS.Type=='sqlite') and (not file::exists(dir.bin + '/Mono.Data.Sqlite.dll'))}">
+        <copy file="${dir.3rdParty}/SQLite/Mono.Data.Sqlite.dll" todir="${dir.bin}"/>
+    </if>
+    <if test="${(DBMS.Type=='sqlite') and (not file::exists(dir.bin + '/sqlite3.dll'))}">
+        <copy file="${dir.3rdParty}/SQLite/sqlite3.dll" todir="${dir.bin}"/>
+    </if>
     <exec program="cmd.exe" 
           workingdir="${dir.bin}"
           commandline="-RunWithoutMenu:false -C:${ServerConfigFile}"

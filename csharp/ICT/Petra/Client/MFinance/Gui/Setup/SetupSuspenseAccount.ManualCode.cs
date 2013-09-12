@@ -130,11 +130,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ARow.SuspenseAccountCode = "";
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
-        {
-            DeleteASuspenseAccount();
-        }
-
         private void DataSavingStarted(System.Object sender, System.EventArgs e)
         {
             // saving fails if extra columns exist

@@ -9,7 +9,7 @@ RootNode:
     MasterTable: PSubscription
     MultipleMasterRows: true   # generates a call to the Method 'GetSelectedMasterRow' as there can be more than one master row so need to determine the current one in manual code file
     Actions:
-        actEditIssues: {Label=Edit I&ssues, ActionClick=EditIssues}
+        actEditIssues: {Label=Edit Issues, ActionClick=EditIssues}
     Controls:
         pnlDetails:
             Controls: 
@@ -33,22 +33,22 @@ RootNode:
             Controls: [txtPSubscriptionNumberIssuesReceived, dtpPSubscriptionFirstIssue, dtpPSubscriptionLastIssue, btnEditIssues]
 
         cmbPSubscriptionPublicationCode: {List=PublicationInfoList, OnChange=PublicationCodeChanged}
-            Label: Pub&lication Code
+            Label: Publication Code
         cmbPSubscriptionSubscriptionStatus: {OnChange=PublicationStatusChanged}
-            Label: S&ubscription Status
+            Label: Subscription Status
             OptionalValues: [=PERMANENT, PROVISIONAL, GIFT, CANCELLED, EXPIRED]
             Validation: true
         chkPSubscriptionGratisSubscription: {OnChange=GratisSubscriptionChanged}
-            Label: Free Subscri&ption
+            Label: Free Subscription
 
         txtPublicationCost: {Format=Currency}
             Label: Publication Cost
         txtPSubscriptionNumberComplimentary: {Format=Integer}
-            Label: Complimentar&y
+            Label: Complimentary
         txtPSubscriptionPublicationCopies: {Format=Integer}
-            Label: &Copies
+            Label: Copies
         cmbPSubscriptionReasonSubsGivenCode: {List=ReasonSubscriptionGivenList}
-            Label: Reason &Given
+            Label: Reason Given
         cmbPSubscriptionReasonSubsCancelledCode: {List=ReasonSubscriptionCancelledList}
             Label: Reason Ended
         txtPSubscriptionGiftFromKey:
@@ -56,22 +56,29 @@ RootNode:
             Type: PartnerKey
 
         dtpPSubscriptionStartDate:
-            Label: S&tart Date
+            Label: Start Date
+            Validation: true
         dtpPSubscriptionExpiryDate:
-            Label: E&xpiry Date
+            Label: Expiry Date
+            Validation: true
         dtpPSubscriptionSubscriptionRenewalDate:
-            Label: Date Rene&wed
+            Label: Date Renewed
+            Validation: true
         dtpPSubscriptionDateNoticeSent:
-            Label: Not&ice Sent
+            Label: Notice Sent
+            Validation: true
         dtpPSubscriptionDateCancelled:
-            Label: Date E&nded
+            Label: Date Ended
+            Validation: true
 
         txtPSubscriptionNumberIssuesReceived: {Format=Integer, Width=60}
             Label: Issues Received
         dtpPSubscriptionFirstIssue:
-            Label: Fi&rst Issue Sent
+            Label: First Issue Sent
+            Validation: true
         dtpPSubscriptionLastIssue:
-            Label: L&ast Issue Sent
+            Label: Last Issue Sent
+            Validation: true
         btnEditIssues: {Stretch=horizontally}
             Label: Edit Issues
             Action: actEditIssues

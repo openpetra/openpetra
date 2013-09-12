@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -86,6 +86,7 @@ namespace Ict.Common.Data.Testing
             batch.BatchDescription = "test";
             batch.BankCostCentre = (MainDS.ALedger[0].LedgerNumber * 100).ToString("0000");
             batch.LastGiftNumber = 0;
+            batch.HashTotal = 83;
             MainDS.AGiftBatch.Rows.Add(batch);
 
             TVerificationResultCollection VerificationResult;
@@ -98,6 +99,14 @@ namespace Ict.Common.Data.Testing
             result = GiftBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "SubmitChanges of update should be ok");
             Assert.AreEqual(false, VerificationResult.HasCriticalErrors, "there are critical errors in UPDATE");
+
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            AGiftBatchTable batches = AGiftBatchAccess.LoadByPrimaryKey(batch.LedgerNumber, batch.BatchNumber, transaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            // some problems with sqlite and datagrid
+            Assert.AreEqual(typeof(decimal), batches[0][AGiftBatchTable.ColumnHashTotalId].GetType(), "type decimal");
+            Assert.AreEqual(83.0m, batches[0].HashTotal, "gift batch hashtotal does not equal");
         }
 
         /// <summary>

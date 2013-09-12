@@ -5677,9 +5677,33 @@
     <!-- Explicit Indexes on table p_postcode_range  -->
   </table>
   <table name="p_postcode_region"
-         descr="Postcode regions and the ranges they contain."
+         descr="List postcode regions"
          area="Petra Data"
          label="Postcode Region"
+         dumpname="p_postre"
+         group="mailroom">
+    <tablefield name="p_region_c"
+                type="varchar"
+                descr="Name of a postcode region"
+                format="X(32)"
+                label="Region Name"
+                notnull="yes"/>
+    <tablefield name="p_description_c"
+                type="varchar"
+                descr="This describes the region."
+                format="X(50)"
+                label="Description"
+                help="This describes the region."/>
+    <!-- Constraints on table p_postcode_region -->
+    <primarykey name="p_postcode_region_pk"
+                descr=""
+                thisFields="p_region_c"/>
+    <!-- Explicit Indexes on table p_postcode_region  -->
+  </table>
+  <table name="p_postcode_region_range"
+         descr="Links ranges to a region."
+         area="Petra Data"
+         label="Postcode Region Range"
          dumpname="p_postco"
          group="mailroom">
     <tablefield name="p_region_c"
@@ -5694,16 +5718,21 @@
                 format="X(32)"
                 label="Range Name"
                 notnull="yes"/>
-    <!-- Constraints on table p_postcode_region -->
-    <primarykey name="p_postcode_region_pk"
+    <!-- Constraints on table p_postcode_region_range -->
+    <primarykey name="p_postcode_region_range_pk"
                 descr=""
                 thisFields="p_region_c, p_range_c"/>
     <foreignkey name="p_postcode_region_fk1"
                 descr=""
+                thisFields="p_region_c"
+                otherTable="p_postcode_region"
+                otherFields="p_region_c"/>
+    <foreignkey name="p_postcode_region_fk2"
+                descr=""
                 thisFields="p_range_c"
                 otherTable="p_postcode_range"
                 otherFields="p_range_c"/>
-    <!-- Explicit Indexes on table p_postcode_region  -->
+    <!-- Explicit Indexes on table p_postcode_region_range  -->
   </table>
   <table name="p_publication"
          descr="Details of a publication"
@@ -9548,6 +9577,13 @@
                 label="Export to Intranet?"
                 help="Should gifts with this motivation be exported to worldwide Intranet?"
                 initial="yes"/>                
+    <tablefield name="a_report_column_c"
+                type="varchar"
+                descr="Which column should these gifts be reported in?"
+                format="X(20)"
+                label="Reporting Column (Worker or Field)"
+                columnlabel="Reporting Column"
+                help="Any gifts for personnel should be assigned to Worker, otherwise Field."/>
     <!-- Constraints on table a_motivation_detail -->
     <primarykey name="a_motivation_detail_pk"
                 descr=""
@@ -11921,7 +11957,7 @@
     <tablefield name="a_narrative_c"
                 type="varchar"
                 descr=""
-                format="X(100)"
+                format="X(250)"
                 label="Narrative"
                 columnlabel="Narrative"
                 help="Enter a description of the transaction."/>
@@ -18310,60 +18346,6 @@
                 thisFields="pt_assignment_type_code_c"/>
     <!-- Explicit Indexes on table pt_assignment_type  -->
   </table>
-  <table name="pt_leaving_code"
-         descr="This describes the reason a person left a particular position."
-         area="Petra Data"
-         label="Leaving Code"
-         dumpname="pt_le_cd"
-         group="units">
-    <tablefield name="pt_leaving_code_ind_c"
-                type="varchar"
-                descr="This is the one letter code that indicates why a person left
-&lt;br/&gt;a particular position."
-                format="X(2)"
-                label="Leaving Code"
-                columnlabel="Leaving Code"
-                help="Enter the appropriate one letter code."
-                notnull="yes">
-    </tablefield>
-    <tablefield name="pt_leaving_code_descr_c"
-                type="varchar"
-                descr="This describes the one letter leaving code."
-                format="X(35)"
-                label="Leaving Code Description"
-                columnlabel="Leaving Code Description"
-                help="Enter the appropriate description of the leaving code."
-                notnull="yes"/>
-    <tablefield name="pt_unassignable_flag_l"
-                type="bit"
-                descr="Can this qualification level be assigned?"
-                format="Yes/No"
-                label="Unassignable?"
-                columnlabel="Unassignable?"
-                help="Check box if qualification level is no longer assignable."
-                notnull="yes"
-                initial="no"/>
-    <tablefield name="pt_unassignable_date_d"
-                type="date"
-                descr="This is the date the record was last updated."
-                format="99/99/9999"
-                label="Date"
-                columnlabel="Date"
-                help="Date from which the qualification level is unassignable."/>
-    <tablefield name="pt_deletable_flag_l"
-                type="bit"
-                descr="Indicates if a record can be deleted."
-                format="Yes/No"
-                label="Deletable"
-                columnlabel="Deletable"
-                help="Indicates if a record can be deleted."
-                initial="yes"/>
-    <!-- Constraints on table pt_leaving_code -->
-    <primarykey name="pt_leaving_code_pk"
-                descr=""
-                thisFields="pt_leaving_code_ind_c"/>
-    <!-- Explicit Indexes on table pt_leaving_code  -->
-  </table>
   <table name="pm_job_assignment"
          descr="This defines the position one fills."
          area="Petra Data"
@@ -18451,20 +18433,6 @@
                 label="To Date"
                 columnlabel="To Date"
                 help="Expected end date for this job (blank if indefinite)"/>
-    <tablefield name="pm_leaving_code_c"
-                type="varchar"
-                descr="This is a one character field indicating the leaving code."
-                format="XX"
-                label="Leaving Code"
-                columnlabel="Leaving Code"
-                help="Select the correct leaving code.."/>
-    <tablefield name="pm_leaving_code_updated_date_d"
-                type="date"
-                descr="This date field indicating the date the leaving code was updated. "
-                format="99/99/9999"
-                label="Updated Date"
-                columnlabel="Updated Date"
-                help="Enter the current date upon changing the leaving code.status."/>
     <tablefield name="pm_hrd_cpy_detail_change_flag_l"
                 type="bit"
                 descr="This field indicates if the hard copy details have been changed."
@@ -18505,11 +18473,6 @@
                 thisFields="pt_assignment_type_code_c"
                 otherTable="pt_assignment_type"
                 otherFields="pt_assignment_type_code_c"/>
-    <foreignkey name="pm_job_assignment_fk4"
-                descr=""
-                thisFields="pm_leaving_code_c"
-                otherTable="pt_leaving_code"
-                otherFields="pt_leaving_code_ind_c"/>
     <!-- Explicit Indexes on table pm_job_assignment  -->
   </table>
   <table name="um_unit_ability"
@@ -19853,8 +19816,7 @@
                 initial="0"/>
     <tablefield name="ph_gender_c"
                 type="varchar"
-                descr="possible values: couple, family, male, female"
-                notnull="yes"                
+                descr="possible values: couple, family, male, female"             
                 format="X(20)"/>
     <tablefield name="pc_in_d"
                 type="date"

@@ -334,10 +334,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             // save ledger settings now
             // (a_ledger_init_flag records are automatically added/removed on server side)
-            return TRemote.MFinance.Setup.WebConnectors.SaveLedgerSettings(FLedgerNumber,
+            TSubmitChangesResult res = TRemote.MFinance.Setup.WebConnectors.SaveLedgerSettings(FLedgerNumber,
                 FCalendarStartDate,
                 ref ASubmitChanges,
                 out AVerificationResult);
+            TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber);
+            return res;
         }
 
         private void CalendarModeChanged(System.Object sender, EventArgs e)

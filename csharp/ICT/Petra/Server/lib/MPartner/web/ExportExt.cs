@@ -561,28 +561,25 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 WriteLine();
             }
 
-/*
- * We don't do Job Assignments anymore.
- *
- *          foreach (PmJobAssignmentRow JobAssignmentRow in AMainDS.PmJobAssignment.Rows)
- *          {
- *              Write("JOB");
- *              WriteLine();
- *              Write(JobAssignmentRow.IsFromDateNull()? "?" : JobAssignmentRow.FromDate.ToString(DATEFORMAT));
- *              Write(JobAssignmentRow.IsToDateNull()? "?" : JobAssignmentRow.ToDate.Value.ToString(DATEFORMAT));
- *              Write(JobAssignmentRow.IsPositionNameNull()? "": JobAssignmentRow.PositionName);
- *              Write(JobAssignmentRow.IsPositionScopeNull()? "" : JobAssignmentRow.PositionScope);
- *              Write(JobAssignmentRow.IsAssistantToNull()? false : JobAssignmentRow.AssistantTo);
- *              Write(JobAssignmentRow.IsJobKeyNull()? 0 : JobAssignmentRow.JobKey);
- *              Write(JobAssignmentRow.IsJobAssignmentKeyNull()? 0 : JobAssignmentRow.JobAssignmentKey);
- *              WriteLine();
- *              Write(JobAssignmentRow.IsUnitKeyNull()? 0 : JobAssignmentRow.UnitKey);
- *              Write(JobAssignmentRow.IsAssignmentTypeCodeNull()? "" : JobAssignmentRow.AssignmentTypeCode);
- *              Write(JobAssignmentRow.IsLeavingCodeNull()? "" : JobAssignmentRow.LeavingCode);
- *              Write(JobAssignmentRow.IsLeavingCodeUpdatedDateNull()? "?" : JobAssignmentRow.LeavingCodeUpdatedDate.Value.ToString(DATEFORMAT));
- *              WriteLine();
- *          }
- */
+            foreach (PmJobAssignmentRow JobAssignmentRow in AMainDS.PmJobAssignment.Rows)
+            {
+                Write("JOB");
+                WriteLine();
+                Write(JobAssignmentRow.IsFromDateNull() ? "?" : JobAssignmentRow.FromDate.ToString(DATEFORMAT));
+                Write(JobAssignmentRow.IsToDateNull() ? "?" : JobAssignmentRow.ToDate.Value.ToString(DATEFORMAT));
+                Write(JobAssignmentRow.IsPositionNameNull() ? "" : JobAssignmentRow.PositionName);
+                Write(JobAssignmentRow.IsPositionScopeNull() ? "" : JobAssignmentRow.PositionScope);
+                Write(JobAssignmentRow.IsAssistantToNull() ? false : JobAssignmentRow.AssistantTo);
+                Write(JobAssignmentRow.IsJobKeyNull() ? 0 : JobAssignmentRow.JobKey);
+                Write(JobAssignmentRow.IsJobAssignmentKeyNull() ? 0 : JobAssignmentRow.JobAssignmentKey);
+                WriteLine();
+                Write(JobAssignmentRow.IsUnitKeyNull() ? 0 : JobAssignmentRow.UnitKey);
+                Write(JobAssignmentRow.IsAssignmentTypeCodeNull() ? "" : JobAssignmentRow.AssignmentTypeCode);
+                // Write(JobAssignmentRow.IsLeavingCodeNull()? "" : JobAssignmentRow.LeavingCode);
+                // Write(JobAssignmentRow.IsLeavingCodeUpdatedDateNull()? "?" : JobAssignmentRow.LeavingCodeUpdatedDate.Value.ToString(DATEFORMAT));
+                WriteLine();
+            }
+
             foreach (PmPersonEvaluationRow Row in AMainDS.PmPersonEvaluation.Rows)
             {
                 Write("PROGREP");

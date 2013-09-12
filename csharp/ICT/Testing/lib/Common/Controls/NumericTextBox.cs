@@ -38,58 +38,63 @@ namespace Tests.Common.Controls
     public class TTestNumericTextBox
     {
         /// <summary>
-        /// testing decimal currency values in numeric text box
+        /// Testing decimal currency values in numeric text box
+        /// Modified July 13 Tim Ingham to use CurrencyCode,
+        /// but the "CurrentThread.CurrentCulture" things still left here,
+        /// even though we should not be relying on that to achieve the right results.
         /// </summary>
         [Test]
         public void TestCurrencyValues()
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
             TTxtCurrencyTextBox txtBox = new TTxtCurrencyTextBox();
-            txtBox.DecimalPlaces = 2;
+            txtBox.CurrencyCode = "GBP";
 
             txtBox.NumberValueDecimal = 1410.95M;
-            Assert.AreEqual(1410.95M, txtBox.NumberValueDecimal, "decimal value stored in british culture");
+            Assert.AreEqual(1410.95M, txtBox.NumberValueDecimal, "decimal value stored in British culture");
 
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE"); // Changing the Culture like this is really not a good idea,
+                                                                            // but there's a tweak in the CurrencyTextBox that attempts to compensate!
             txtBox.NumberValueDecimal = 0.0M;
             txtBox.NumberValueDecimal = 1410.95M;
-            Assert.AreEqual(1410.95M, txtBox.NumberValueDecimal, "decimal value stored in german culture, switching culture, same txt object");
-            Assert.AreEqual("1,410.95",
-                txtBox.Text,
-                "text value stored in german culture, switching culture, same txt object, therefore still british format");
 
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
+            Assert.AreEqual("1.410,95",
+                txtBox.Text,
+                "After changing Culture, so text text should be formatted according to new culture.");
+            Assert.AreEqual(1410.95M, txtBox.NumberValueDecimal, "Text box was created with British culture, switch culture, value can be read back.");
+
             TTxtCurrencyTextBox txtDEBox = new TTxtCurrencyTextBox();
-            txtDEBox.DecimalPlaces = 2;
+            txtBox.CurrencyCode = "EUR";
             txtDEBox.NumberValueDecimal = 0.0M;
             txtDEBox.NumberValueDecimal = 1410.95M;
-            Assert.AreEqual("1.410,95", txtDEBox.Text, "text value stored in german culture");
-            Assert.AreEqual(1410.95M, txtDEBox.NumberValueDecimal, "decimal value stored in german culture");
+            Assert.AreEqual("1.410,95", txtDEBox.Text, "text value stored as Euros");
+            Assert.AreEqual(1410.95M, txtDEBox.NumberValueDecimal, "decimal value stored as Euros");
             txtDEBox.NumberValueDecimal = 1234410.95M;
-            Assert.AreEqual("1.234.410,95", txtDEBox.Text, "huge number text value stored in german culture");
+            Assert.AreEqual("1.234.410,95", txtDEBox.Text, "huge number text value stored as Euros");
 
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
-            txtBox.NumberValueDecimal = 0.0M;
-            txtBox.NumberValueDecimal = 30.00M;
-            Assert.AreEqual(30.00M, txtBox.NumberValueDecimal, "decimal value stored in english culture, with english UI");
-
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
-            txtBox.NumberValueDecimal = 0.0M;
-            txtBox.NumberValueDecimal = 770.00M;
-            Assert.AreEqual(770.00M,
-                txtBox.NumberValueDecimal,
-                "decimal value stored in english culture, with english UI, thousand separator problem");
-            Assert.AreEqual("770.00", txtBox.Text, "testing problem with thousand separator");
-            txtBox.NumberValueDecimal = 1234410.95M;
-            Assert.AreEqual("1,234,410.95", txtBox.Text, "huge number text value stored in british culture");
-
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
-            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
-            txtBox.NumberValueDecimal = 0.0M;
-            txtBox.NumberValueDecimal = 1410.95M;
-            Assert.AreEqual(1410.95M, txtBox.NumberValueDecimal, "decimal value stored in german culture, but english UI");
+/*
+ *          Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
+ *          Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
+ *          txtBox.NumberValueDecimal = 0.0M;
+ *          txtBox.NumberValueDecimal = 30.00M;
+ *          Assert.AreEqual(30.00M, txtBox.NumberValueDecimal, "decimal value stored in English culture, with English UI");
+ *          Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
+ *          Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
+ *          txtBox.NumberValueDecimal = 0.0M;
+ *          txtBox.NumberValueDecimal = 770.00M;
+ *          Assert.AreEqual(770.00M,
+ *              txtBox.NumberValueDecimal,
+ *              "decimal value stored in English culture, with english UI, thousand separator problem");
+ *          Assert.AreEqual("770.00", txtBox.Text, "testing problem with thousand separator");
+ *          txtBox.NumberValueDecimal = 1234410.95M;
+ *          Assert.AreEqual("1,234,410.95", txtBox.Text, "huge number text value stored in British culture");
+ *
+ *          Thread.CurrentThread.CurrentCulture = new CultureInfo("de-DE");
+ *          Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
+ *          txtBox.NumberValueDecimal = 0.0M;
+ *          txtBox.NumberValueDecimal = 1410.95M;
+ *          Assert.AreEqual(1410.95M, txtBox.NumberValueDecimal, "decimal value stored in German culture, but English UI");
+ */
         }
 
         /// <summary>

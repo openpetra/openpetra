@@ -48,7 +48,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
         private PLanguageTable FLanguageCodeDT;
         private PtLanguageLevelTable FLanguageLevelDT;
-        private DataColumn FLanguageNameColumn;
 
         #region Properties
 
@@ -85,22 +84,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             LoadDataOnDemand();
 
             grdDetails.Columns.Clear();
-            grdDetails.AddTextColumn("Language",
-                FMainDS.PmPersonLanguage.Columns["Parent_" + PLanguageTable.GetLanguageDescriptionDBName()]);
+            grdDetails.AddTextColumn("Language", FMainDS.PmPersonLanguage.ColumnLanguageDescription);
             grdDetails.AddTextColumn("Language Level", FMainDS.PmPersonLanguage.ColumnLanguageLevel);
             grdDetails.AddTextColumn("Years Of Experience", FMainDS.PmPersonLanguage.ColumnYearsOfExperience);
             grdDetails.AddDateColumn("as of", FMainDS.PmPersonLanguage.ColumnYearsOfExperienceAsOf);
 
             FLanguageCodeDT = (PLanguageTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
-
-            // enable grid to react to insert and delete keyboard keys
-            grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
-
-            if (grdDetails.Rows.Count <= 1)
-            {
-                pnlDetails.Visible = false;
-                btnDelete.Enabled = false;
-            }
         }
 
         /// <summary>
@@ -127,39 +116,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Add columns that were created and are not part of the normal PmPersonalLanguageTable
-        /// </summary>
-        public void AddSpecialColumns()
-        {
-            if (FLanguageNameColumn == null)
-            {
-                FLanguageNameColumn = new DataColumn();
-                FLanguageNameColumn.DataType = System.Type.GetType("System.String");
-                FLanguageNameColumn.ColumnName = "Parent_" + PLanguageTable.GetLanguageDescriptionDBName();
-                FLanguageNameColumn.Expression = "Parent." + PLanguageTable.GetLanguageDescriptionDBName();
-            }
-
-            if (!FMainDS.PmPersonLanguage.Columns.Contains(FLanguageNameColumn.ColumnName))
-            {
-                FMainDS.PmPersonLanguage.Columns.Add(FLanguageNameColumn);
-            }
-        }
-
-        /// <summary>
-        /// Remove columns that were created and are not part of the normal PmPersonalLanguageTable.
-        /// This is needed e.g. when table contents are to be merged with main PartnerEditTDS language
-        /// table that does not contain extra columns
-        /// </summary>
-        public void RemoveSpecialColumns()
-        {
-            if ((FLanguageNameColumn != null)
-                && FMainDS.PmPersonLanguage.Columns.Contains(FLanguageNameColumn.ColumnName))
-            {
-                FMainDS.PmPersonLanguage.Columns.Remove(FLanguageNameColumn);
-            }
-        }
-
-        /// <summary>
         /// add a new batch
         /// </summary>
         /// <param name="sender"></param>
@@ -172,7 +128,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private void NewRowManual(ref PmPersonLanguageRow ARow)
+        private void NewRowManual(ref IndividualDataTDSPmPersonLanguageRow ARow)
         {
             string newName;
             Int32 countNewDetail = 0;
@@ -192,54 +148,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.LanguageCode = newName;
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
+        private void GetDetailDataFromControlsManual(IndividualDataTDSPmPersonLanguageRow ARow)
         {
-            this.DeletePmPersonLanguage();
-        }
-
-        /// <summary>
-        /// Performs checks to determine whether a deletion of the current
-        ///  row is permissable
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
-        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
-        /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(PmPersonLanguageRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            /*Code to execute before the delete can take place*/
-            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Language record: '{0}'?"),
-                ARowToDelete.LanguageCode);
-            return true;
-        }
-
-        /// <summary>
-        /// Deletes the current row and optionally populates a completion message
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to delete</param>
-        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(PmPersonLanguageRow ARowToDelete, out string ACompletionMessage)
-        {
-            bool deletionSuccessful = false;
-
-            // no message to be shown after deletion
-            ACompletionMessage = "";
-
-            try
-            {
-                ARowToDelete.Delete();
-                deletionSuccessful = true;
-            }
-            catch (Exception ex)
-            {
-                ACompletionMessage = ex.Message;
-                MessageBox.Show(ex.Message,
-                    "Deletion Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-
-            return deletionSuccessful;
+            // update language description in grid from language code used in details part
+            ARow.LanguageDescription = cmbLanguageCode.GetSelectedDescription();
         }
 
         /// <summary>
@@ -254,13 +166,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool ADeletionPerformed,
             string ACompletionMessage)
         {
-            DoRecalculateScreenParts();
-
-            if (grdDetails.Rows.Count <= 1)
+            if (ADeletionPerformed)
             {
-                // hide details part and disable buttons if no record in grid (first row for headings)
-                btnDelete.Enabled = false;
-                pnlDetails.Visible = false;
+                DoRecalculateScreenParts();
             }
         }
 
@@ -273,12 +181,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ShowDetailsManual(PmPersonLanguageRow ARow)
         {
-            if (ARow != null)
-            {
-                btnDelete.Enabled = true;
-                pnlDetails.Visible = true;
-            }
-
             // In theory, the next Method call could be done in Methods NewRowManual; however, NewRowManual runs before
             // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
             // of a non-existing 'AfterNewRowManual' Method....
@@ -315,7 +217,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean LoadDataOnDemand()
         {
             Boolean ReturnValue;
-            PLanguageTable LanguageTable;
 
             try
             {
@@ -340,23 +241,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                     }
                 }
-
-                // Add relation table to data set
-                if (FMainDS.PLanguage == null)
-                {
-                    FMainDS.Tables.Add(new PLanguageTable());
-                }
-
-                LanguageTable = (PLanguageTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
-                // rename data table as otherwise the merge with the data set won't work; tables need to have same name
-                LanguageTable.TableName = PLanguageTable.GetTableName();
-                FMainDS.Merge(LanguageTable);
-
-                // Relations are not automatically enabled. Need to enable them here in order to use for columns.
-                FMainDS.EnableRelations();
-
-                // add column for language name
-                AddSpecialColumns();
 
                 if (FMainDS.PmPersonLanguage.Rows.Count != 0)
                 {
@@ -385,15 +269,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 RecalculateScreenParts(this, e);
             }
-        }
-
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        /// <returns>void</returns>
-        private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
-        {
-            NewRecord(this, null);
         }
 
         private void ValidateDataDetailsManual(PmPersonLanguageRow ARow)

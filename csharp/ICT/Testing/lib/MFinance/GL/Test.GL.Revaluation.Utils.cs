@@ -46,7 +46,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             TPetraServerConnector.Connect();
             System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
-            //ResetDatabase();
+
             LoadTestTata();
         }
 

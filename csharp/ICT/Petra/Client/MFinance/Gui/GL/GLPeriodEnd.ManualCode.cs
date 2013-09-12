@@ -57,7 +57,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                           "\r\n\r\n" + msg + "\r\n";
                 }
 
-                msg += Catalog.GetString("Press the button below to close the current period.");
+                if (!FverificationResult.HasCriticalErrors)
+                {
+                    msg += Catalog.GetString("Press the button below to close the current period.");
+                }
+
                 tbxMessage.Text = msg;
                 btnPeriodEnd.Enabled = (!FverificationResult.HasCriticalErrors);
                 this.OnResizeEnd(new EventArgs());

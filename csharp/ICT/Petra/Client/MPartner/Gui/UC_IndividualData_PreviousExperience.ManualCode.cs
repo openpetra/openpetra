@@ -82,15 +82,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS = AMainDS;
 
             LoadDataOnDemand();
-
-            // enable grid to react to insert and delete keyboard keys
-            grdDetails.InsertKeyPressed += new TKeyPressedEventHandler(grdDetails_InsertKeyPressed);
-
-            if (grdDetails.Rows.Count <= 1)
-            {
-                pnlDetails.Visible = false;
-                btnDelete.Enabled = false;
-            }
         }
 
         /// <summary>
@@ -110,11 +101,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.Key = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_past_experience));
         }
 
-        private void DeleteRecord(Object sender, EventArgs e)
-        {
-            this.DeletePmPastExperience();
-        }
-
         /// <summary>
         /// Performs checks to determine whether a deletion of the current
         ///  row is permissable
@@ -125,40 +111,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         private bool PreDeleteManual(PmPastExperienceRow ARowToDelete, ref string ADeletionQuestion)
         {
             /*Code to execute before the delete can take place*/
-            ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Previous Experience record: {0} {1}?"),
-                ARowToDelete.PrevLocation,
-                ARowToDelete.PrevRole);
+            ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            ADeletionQuestion += String.Format("{0}{0}({1} {2}, {3} {4})",
+                Environment.NewLine,
+                lblLocation.Text,
+                txtLocation.Text,
+                lblRole.Text,
+                txtRole.Text);
             return true;
-        }
-
-        /// <summary>
-        /// Deletes the current row and optionally populates a completion message
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to delete</param>
-        /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(PmPastExperienceRow ARowToDelete, out string ACompletionMessage)
-        {
-            bool deletionSuccessful = false;
-
-            // no message to be shown after deletion
-            ACompletionMessage = "";
-
-            try
-            {
-                ARowToDelete.Delete();
-                deletionSuccessful = true;
-            }
-            catch (Exception ex)
-            {
-                ACompletionMessage = ex.Message;
-                MessageBox.Show(ex.Message,
-                    "Deletion Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-
-            return deletionSuccessful;
         }
 
         /// <summary>
@@ -173,13 +133,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool ADeletionPerformed,
             string ACompletionMessage)
         {
-            DoRecalculateScreenParts();
-
-            if (grdDetails.Rows.Count <= 1)
+            if (ADeletionPerformed)
             {
-                // hide details part and disable buttons if no record in grid (first row for headings)
-                btnDelete.Enabled = false;
-                pnlDetails.Visible = false;
+                DoRecalculateScreenParts();
             }
         }
 
@@ -192,12 +148,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ShowDetailsManual(PmPastExperienceRow ARow)
         {
-            if (ARow != null)
-            {
-                btnDelete.Enabled = true;
-                pnlDetails.Visible = true;
-            }
-
             // In theory, the next Method call could be done in Methods NewRowManual; however, NewRowManual runs before
             // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
             // of a non-existing 'AfterNewRowManual' Method....
@@ -305,15 +255,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 RecalculateScreenParts(this, e);
             }
-        }
-
-        /// <summary>
-        /// Event Handler for Grid Event
-        /// </summary>
-        /// <returns>void</returns>
-        private void grdDetails_InsertKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)
-        {
-            NewRecord(this, null);
         }
 
         private void ValidateDataDetailsManual(PmPastExperienceRow ARow)

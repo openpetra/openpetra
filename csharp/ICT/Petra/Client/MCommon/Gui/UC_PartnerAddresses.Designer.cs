@@ -114,7 +114,6 @@ namespace Ict.Petra.Client.MCommon.Gui
             //
             // grdRecordList
             //
-            this.grdRecordList.AlternatingBackgroundColour = System.Drawing.Color.White;
             this.grdRecordList.Anchor =
                 ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top |
                                                         System.Windows.Forms.AnchorStyles.Bottom) |

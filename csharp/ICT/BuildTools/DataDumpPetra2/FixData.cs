@@ -28,6 +28,7 @@ using System.Collections.Specialized;
 using System.Collections.Generic;
 using Ict.Common;
 using Ict.Tools.DBXML;
+using ICSharpCode.SharpZipLib.GZip;
 
 namespace Ict.Tools.DataDumpPetra2
 {
@@ -37,6 +38,9 @@ namespace Ict.Tools.DataDumpPetra2
     /// </summary>
     public class TFixData
     {
+        private static int FormSequence = 1;
+        private static List <string>PostcodeRegionsList = new List <string>();
+
         /// <summary>
         /// set a value of a row, position given by AColumnNames
         /// </summary>
@@ -195,7 +199,7 @@ namespace Ict.Tools.DataDumpPetra2
         /// <summary>
         /// fix data that would cause problems for PostgreSQL constraints
         /// </summary>
-        public static int MigrateData(TParseProgressCSV AParser, StreamWriter AWriter, TTable AOldTable, TTable ANewTable)
+        public static int MigrateData(TParseProgressCSV AParser, StreamWriter AWriter, StreamWriter AWriterTest, TTable AOldTable, TTable ANewTable)
         {
             StringCollection OldColumnNames = GetColumnNames(AOldTable);
             StringCollection NewColumnNames = GetColumnNames(ANewTable);
@@ -287,10 +291,14 @@ namespace Ict.Tools.DataDumpPetra2
                 {
                     RowCounter++;
                     AWriter.WriteLine(CSVFile.StrMergeSpecial(NewRow));
+                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ANewTable.strName + " FROM stdin;");
+                    AWriterTest.WriteLine(CSVFile.StrMergeSpecial(NewRow));
+                    AWriterTest.WriteLine("\\.");
+                    AWriterTest.WriteLine("ROLLBACK;");
                 }
             }
 
-            RowCounter += FixData(ANewTable.strName, NewColumnNames, ref NewRow, AWriter);
+            RowCounter += FixData(ANewTable.strName, NewColumnNames, ref NewRow, AWriter, AWriterTest);
 
             return RowCounter;
         }
@@ -446,6 +454,16 @@ namespace Ict.Tools.DataDumpPetra2
                 return TFinanceGeneralLedgerUpgrader.FixABatch(AColumnNames, ref ANewRow);
             }
 
+            if (ATableName == "a_budget_type")
+            {
+                return TFinanceGeneralLedgerUpgrader.FixABudgetType(AColumnNames, ref ANewRow);
+            }
+
+            if (ATableName == "a_motivation_detail")
+            {
+                return TFinanceGeneralLedgerUpgrader.FixAMotivationDetail(AColumnNames, ref ANewRow);
+            }
+
             // wrong gift batch status, need to have case sensitive status
             if (ATableName == "a_gift_batch")
             {
@@ -569,10 +587,44 @@ namespace Ict.Tools.DataDumpPetra2
                 SetValue(AColumnNames, ref ANewRow, "p_believer_since_year_i", believerInfo[1]);
             }
 
+            // new sequence for pc_room_alloc
+            if (ATableName == "pc_room_alloc")
+            {
+                SetValue(AColumnNames, ref ANewRow, "pc_key_i", TSequenceWriter.GetNextSequenceValue("seq_room_alloc").ToString());
+            }
+
+            if (ATableName == "a_form_element")
+            {
+                if (GetValue(AColumnNames, ANewRow, "a_form_sequence_i") == "0")
+                {
+                    SetValue(AColumnNames, ref ANewRow, "a_form_sequence_i", FormSequence.ToString());
+                    FormSequence++;
+                }
+            }
+
+            if (ATableName == "p_postcode_region")
+            {
+                string CurrentRegion = ANewRow[0];
+
+                foreach (string OldRegion in PostcodeRegionsList)
+                {
+                    if (CurrentRegion == OldRegion)
+                    {
+                        return false;
+                    }
+                }
+
+                PostcodeRegionsList.Add(CurrentRegion);
+            }
+
             return true;
         }
 
-        private static int FixData(string ATableName, StringCollection AColumnNames, ref string[] ANewRow, StreamWriter AWriter)
+        private static int FixData(string ATableName,
+            StringCollection AColumnNames,
+            ref string[] ANewRow,
+            StreamWriter AWriter,
+            StreamWriter AWriterTest)
         {
             int RowCounter = 0;
 
@@ -620,6 +672,10 @@ namespace Ict.Tools.DataDumpPetra2
                         SetValue(AColumnNames, ref ANewRow, "a_year_i", YearNumber);
 
                         AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
                         RowCounter++;
 
                         Revisions.Add(LedgerNumber + "_" + YearNumber);
@@ -655,6 +711,10 @@ namespace Ict.Tools.DataDumpPetra2
                     SetValue(AColumnNames, ref ANewRow, "s_default_value_c", SiteKey);
 
                     AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("\\.");
+                    AWriterTest.WriteLine("ROLLBACK;");
                     RowCounter++;
                 }
             }

@@ -150,6 +150,12 @@ namespace Ict.Common.Remoting.Shared
         bool RestoreDatabaseFromYmlGZ(string AYmlGzData);
 
         /// <summary>
+        /// Marks all DataTables in the Cache to be no longer up-to-date (=out of sync
+        /// with the data that was originally placed in the DataTable).
+        /// </summary>
+        void RefreshAllCachedTables();
+
+        /// <summary>
         /// add a new user
         /// </summary>
         /// <returns></returns>

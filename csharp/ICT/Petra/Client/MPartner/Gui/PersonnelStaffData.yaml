@@ -11,22 +11,25 @@ RootNode:
     WindowHeight: 700
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
-        actDelete: {Label=&Delete, ActionClick=DeleteRow}      
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
     Controls:
         pnlContent:
-            Controls: [pnlInfo,pnlGrid, pnlDetails]
+            Controls: [pnlInfo, pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Height: 200
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
+            Width: 80
         btnDelete:
             Action: actDelete
+            Width: 80
         pnlInfo:
             Dock: Top
             Controls:
@@ -60,7 +63,4 @@ RootNode:
         txtDetailReceivingField: {Label=Receiving Field, Type=PartnerKey, PartnerClass=UNIT, Validation=true}
         txtDetailStaffDataComments: {Label=Comments, Multiline=true, ScrollBars=Vertical, Height=100, Width=500}
         txtDetailJobTitle: {Label=Job Title, Width=500}
-    Toolbar:
-        tbbNew:
-            Label: New Commitment
 

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, alanp
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using Ict.Tools.CodeGeneration;
 using Ict.Tools.DBXML;
 using Ict.Common;
 using Ict.Tools.CodeGeneration.DataStore;
+using Ict.Tools.CodeGeneration.ReferenceCountConnectors;
 
 namespace Ict.Tools.GenerateORM
 {
@@ -53,18 +54,19 @@ namespace Ict.Tools.GenerateORM
             cmdLine = new TCmdOpts();
 
             if (!cmdLine.IsFlagSet("do")
-                || (cmdLine.GetOptValue("do") == "dataset")
-                && (!cmdLine.IsFlagSet("input") || !cmdLine.IsFlagSet("outputNamespace")))
+                || ((cmdLine.GetOptValue("do") == "dataset") && (!cmdLine.IsFlagSet("input") || !cmdLine.IsFlagSet("outputNamespace")))
+                || ((cmdLine.GetOptValue("do") == "referencecount")
+                    && (!cmdLine.IsFlagSet("inputclient") || !cmdLine.IsFlagSet("outputserver") || !cmdLine.IsFlagSet("templatedir"))))
             {
                 System.Console.WriteLine("GenerateORM: generate Typed Tables and Datasets");
                 System.Console.WriteLine("usage: GenerateORM -do:<operation> -petraxml:<xyz/petra.xml>");
                 System.Console.WriteLine("operations available:");
                 System.Console.WriteLine("  defaulttables ");
                 System.Console.WriteLine("           with parameters: ");
-                System.Console.WriteLine("                 -outputshared:<path to ICT\\Petra\\Shared>");
+                System.Console.WriteLine("                 -outputshared:<path to ICT/Petra/Shared>");
                 System.Console.WriteLine("  dataaccess ");
                 System.Console.WriteLine("           with parameters: ");
-                System.Console.WriteLine("                 -outputshared:<path to ICT\\Petra\\Shared>");
+                System.Console.WriteLine("                 -outputshared:<path to ICT/Petra/Shared>");
                 System.Console.WriteLine("  dataset ");
                 System.Console.WriteLine("           with parameters: ");
                 System.Console.WriteLine("                 -input:<dataset XML file>");
@@ -72,7 +74,12 @@ namespace Ict.Tools.GenerateORM
                 System.Console.WriteLine("  cachedtables ");
                 System.Console.WriteLine("           with parameters: ");
                 System.Console.WriteLine("                 -cachedef:<dataset XML file>");
-                System.Console.WriteLine("                 -outputshared:<path to ICT\\Petra\\Shared>");
+                System.Console.WriteLine("                 -outputshared:<path to ICT/Petra/Shared>");
+                System.Console.WriteLine("  referencecount ");
+                System.Console.WriteLine("           with parameters: ");
+                System.Console.WriteLine("                 -inputclient:<path to ICT/Petra/Client>");
+                System.Console.WriteLine("                 -outputserver:<path to ICT/Petra/Server>");
+                System.Console.WriteLine("                 -templatedir:<path to inc/template/src>");
                 System.Console.WriteLine(
                     "       e.g. GenerateORM -do:dataset -petraxml:U:/sql/datadefinition/petra.xml -input:U:/sql/datadefinition/dataset.xml -outputNamespace:Ict.Petra.Shared.MCommon.Data.Dataset");
                 return 100;
@@ -80,6 +87,21 @@ namespace Ict.Tools.GenerateORM
 
             try
             {
+                if (cmdLine.GetOptValue("do") == "referencecount")
+                {
+                    // No need to parse the petra.xml document for this task - so we just run and exit
+                    new TLogging();
+                    TCreateReferenceCountConnectors createConnectors = new TCreateReferenceCountConnectors();
+
+                    if (!createConnectors.CreateFiles(cmdLine.GetOptValue("outputserver"), cmdLine.GetOptValue("inputclient"),
+                            cmdLine.GetOptValue("templatedir")))
+                    {
+                        return -1;
+                    }
+
+                    return 0;
+                }
+
                 parser = new TDataDefinitionParser(cmdLine.GetOptValue("petraxml"));
                 store = new TDataDefinitionStore();
 
@@ -88,100 +110,100 @@ namespace Ict.Tools.GenerateORM
                     if ((cmdLine.GetOptValue("do") == "defaulttables") || (cmdLine.GetOptValue("do") == "datatables"))
                     {
                         CodeGenerationTable.WriteTypedTable(store, "partner", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Shared.MPartner.Partner.Data",
                             "Partner.Tables");
                         CodeGenerationTable.WriteTypedTable(store, "mailroom", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Shared.MPartner.Mailroom.Data",
                             "Mailroom.Tables");
                         CodeGenerationTable.WriteTypedTable(store, "personnel", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Shared.MPersonnel.Personnel.Data",
                             "Personnel.Tables");
                         CodeGenerationTable.WriteTypedTable(store, "units", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Shared.MPersonnel.Units.Data",
                             "Units.Tables");
                         CodeGenerationTable.WriteTypedTable(store, "conference", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Shared.MConference.Data",
                             "Conference.Tables");
                         CodeGenerationTable.WriteTypedTable(store, "hospitality", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Shared.MHospitality.Data",
                             "Hospitality.Tables");
                         CodeGenerationTable.WriteTypedTable(store, "account", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Shared.MFinance.Account.Data",
                             "Account.Tables");
                         CodeGenerationTable.WriteTypedTable(store, "ap", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Shared.MFinance.AP.Data",
                             "AP.Tables");
                         CodeGenerationTable.WriteTypedTable(store, "ar", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Shared.MFinance.AR.Data",
                             "AR.Tables");
                         CodeGenerationTable.WriteTypedTable(store, "gift", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Shared.MFinance.Gift.Data",
                             "Gift.Tables");
                         CodeGenerationTable.WriteTypedTable(store, "sysman", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Shared.MSysMan.Data",
                             "SysMan.Tables");
                         CodeGenerationTable.WriteTypedTable(store, "common", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Shared.MCommon.Data",
                             "Common.Tables");
 
                         CodeGenerationTableValidation.WriteValidation(store, "partner", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\MPartner\\validation\\",
+                                "outputshared") + "/lib/MPartner/validation/",
                             "Ict.Petra.Shared.MPartner.Partner.Validation",
                             "Partner.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "mailroom", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\MPartner\\validation\\",
+                                "outputshared") + "/lib/MPartner/validation/",
                             "Ict.Petra.Shared.MPartner.Mailroom.Validation",
                             "Mailroom.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "personnel", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\MPersonnel\\validation\\",
+                                "outputshared") + "/lib/MPersonnel/validation/",
                             "Ict.Petra.Shared.MPersonnel.Personnel.Validation",
                             "Personnel.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "units", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\MPersonnel\\validation\\",
+                                "outputshared") + "/lib/MPersonnel/validation/",
                             "Ict.Petra.Shared.MPersonnel.Units.Validation",
                             "Units.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "conference", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\MConference\\validation\\",
+                                "outputshared") + "/lib/MConference/validation/",
                             "Ict.Petra.Shared.MConference.Validation",
                             "Conference.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "hospitality", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\MHospitality\\validation\\",
+                                "outputshared") + "/lib/MHospitality/validation/",
                             "Ict.Petra.Shared.MHospitality.Validation",
                             "Hospitality.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "account", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\MFinance\\validation\\",
+                                "outputshared") + "/lib/MFinance/validation/",
                             "Ict.Petra.Shared.MFinance.Account.Validation",
                             "Account.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "ap", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\MFinance\\validation\\",
+                                "outputshared") + "/lib/MFinance/validation/",
                             "Ict.Petra.Shared.MFinance.AP.Validation",
                             "AP.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "ar", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\MFinance\\validation\\",
+                                "outputshared") + "/lib/MFinance/validation/",
                             "Ict.Petra.Shared.MFinance.AR.Validation",
                             "AR.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "gift", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\MFinance\\validation\\",
+                                "outputshared") + "/lib/MFinance/validation/",
                             "Ict.Petra.Shared.MFinance.Gift.Validation",
                             "Gift.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "sysman", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\MSysMan\\validation\\",
+                                "outputshared") + "/lib/MSysMan/validation/",
                             "Ict.Petra.Shared.MSysMan.Validation",
                             "SysMan.Validation");
                         CodeGenerationTableValidation.WriteValidation(store, "common", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\MCommon\\validation\\",
+                                "outputshared") + "/lib/MCommon/validation/",
                             "Ict.Petra.Shared.MCommon.Validation",
                             "Common.Validation");
 
@@ -192,55 +214,55 @@ namespace Ict.Tools.GenerateORM
                     else if (cmdLine.GetOptValue("do") == "dataaccess")
                     {
                         CodeGenerationAccess.WriteTypedDataAccess(store, "partner", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Server.MPartner.Partner.Data.Access",
                             "Partner.Access");
                         CodeGenerationAccess.WriteTypedDataAccess(store, "mailroom", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Server.MPartner.Mailroom.Data.Access",
                             "Mailroom.Access");
                         CodeGenerationAccess.WriteTypedDataAccess(store, "personnel", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Server.MPersonnel.Personnel.Data.Access",
                             "Personnel.Access");
                         CodeGenerationAccess.WriteTypedDataAccess(store, "units", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Server.MPersonnel.Units.Data.Access",
                             "Units.Access");
                         CodeGenerationAccess.WriteTypedDataAccess(store, "conference", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Server.MConference.Data.Access",
                             "Conference.Access");
                         CodeGenerationAccess.WriteTypedDataAccess(store, "hospitality", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Server.MHospitality.Data.Access",
                             "Hospitality.Access");
                         CodeGenerationAccess.WriteTypedDataAccess(store, "account", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Server.MFinance.Account.Data.Access",
                             "Account.Access");
                         CodeGenerationAccess.WriteTypedDataAccess(store, "ap", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Server.MFinance.AP.Data.Access",
                             "AP.Access");
                         CodeGenerationAccess.WriteTypedDataAccess(store, "ar", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Server.MFinance.AR.Data.Access",
                             "AR.Access");
                         CodeGenerationAccess.WriteTypedDataAccess(store, "gift", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Server.MFinance.Gift.Data.Access",
                             "Gift.Access");
                         CodeGenerationAccess.WriteTypedDataAccess(store, "sysman", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Server.MSysMan.Data.Access",
                             "SysMan.Access");
                         CodeGenerationAccess.WriteTypedDataAccess(store, "common", cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Server.MCommon.Data.Access",
                             "Common.Access");
                         CodeGenerationCascading.WriteTypedDataCascading(store, cmdLine.GetOptValue(
-                                "outputshared") + "\\lib\\data\\",
+                                "outputshared") + "/lib/data/",
                             "Ict.Petra.Server.MCommon.Data.Cascading",
                             "Cascading");
                     }

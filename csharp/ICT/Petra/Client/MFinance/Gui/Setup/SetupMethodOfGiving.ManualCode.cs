@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Common;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -48,39 +49,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ARow.MethodOfGivingCode = newName;
-        }
-
-        private void DeleteRow(System.Object sender, EventArgs e)
-        {
-            Ict.Petra.Shared.MFinance.Account.Data.AMethodOfGivingRow actualRow = GetSelectedDetailRow();
-
-            SelectByIndex(-1);
-            FMainDS.AMethodOfGiving.Rows.Remove(actualRow);
-            FPreviouslySelectedDetailRow = null;
-        }
-
-        private void SelectByIndex(int rowIndex)
-        {
-            if (rowIndex >= grdDetails.Rows.Count)
-            {
-                rowIndex = grdDetails.Rows.Count - 1;
-            }
-
-            if ((rowIndex < 1) && (grdDetails.Rows.Count > 1))
-            {
-                rowIndex = 1;
-            }
-
-            if ((rowIndex >= 1) && (grdDetails.Rows.Count > 1))
-            {
-                grdDetails.Selection.SelectRow(rowIndex, true);
-                FPreviouslySelectedDetailRow = GetSelectedDetailRow();
-                ShowDetails(FPreviouslySelectedDetailRow);
-            }
-            else
-            {
-                FPreviouslySelectedDetailRow = null;
-            }
+            ARow.MethodOfGivingDesc = Catalog.GetString("PLEASE ENTER DESCRIPTION");
         }
     }
 }

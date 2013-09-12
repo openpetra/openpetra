@@ -418,7 +418,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// todoComment
         /// </summary>
         /// <returns></returns>
-        public PPartnerInterestTable GetDataPartnerInterests()
+        public PartnerEditTDSPPartnerInterestTable GetDataPartnerInterests()
         {
             Int32 PartnerInterestsCount;
 
@@ -602,12 +602,25 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         LocationPK = new TLocationPK(0, 0);
                     }
 
-                    // ParatnerInterests
+                    // PartnerInterests
                     if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpInterests))
                     {
+                        DataRow InterestRow;
+
                         // Load data for Interests
                         FPartnerEditScreenDS.Merge(GetPartnerInterestsInternal(out ItemsCountPartnerInterests, false));
                         FPartnerEditScreenDS.Merge(GetInterestsInternal(out ItemsCountInterests, false));
+
+                        // fill field for interest category in PartnerInterest table in dataset
+                        foreach (PartnerEditTDSPPartnerInterestRow row in FPartnerEditScreenDS.PPartnerInterest.Rows)
+                        {
+                            InterestRow = FPartnerEditScreenDS.PInterest.Rows.Find(new object[] { row.Interest });
+
+                            if (InterestRow != null)
+                            {
+                                row.InterestCategory = ((PInterestRow)InterestRow).Category;
+                            }
+                        }
                     }
                     else
                     {
@@ -1592,7 +1605,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             PPartnerTable.GetPartnerKeyDBName() + ' ' +
                             "WHERE " + PPersonTable.GetFamilyKeyDBName() + " = ? " +
                             "AND " + PPartnerTable.GetStatusCodeDBName() + " <> " + '"' +
-                            SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED) + '"', ReadTransaction, false,
+                            SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED) + '"', ReadTransaction,
                             ParametersArray));
 
                     // Make sure we don't count MERGED Partners (shouldn't have a p_family_key_n, but just in case.)
@@ -1623,7 +1636,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         PPartnerTable.GetPartnerKeyDBName() + ' ' +
                         "WHERE " + PPersonTable.GetFamilyKeyDBName() + " = ? " +
                         "AND " + PPartnerTable.GetStatusCodeDBName() + " <> " + '"' +
-                        SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED) + '"',                                         // Make sure we don't load MERGED Partners (shouldn't have a p_family_key_n, but just in case.)
+                        SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED) + '"',    // Make sure we don't load MERGED Partners (shouldn't have a p_family_key_n, but just in case.)
                         PPersonTable.GetTableName(), ReadTransaction, ParametersArray, 0, 0);
 
                     ACount = FamilyPersonsDT.Rows.Count;
@@ -1713,18 +1726,16 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return PartnerTypeFamilyMembersDT;
         }
 
-        private PartnerEditTDSFamilyMembersTable GetFamilyMembersInternal(Int64 AFamilyPartnerKey, String AWorkWithSpecialType, out Int32 ACount)
-        {
-            return GetFamilyMembersInternal(AFamilyPartnerKey, AWorkWithSpecialType, out ACount, false);
-        }
-
-        private PPartnerInterestTable GetPartnerInterestsInternal(out Int32 ACount, Boolean ACountOnly)
+        private PartnerEditTDSPPartnerInterestTable GetPartnerInterestsInternal(out Int32 ACount, Boolean ACountOnly)
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
-            PPartnerInterestTable InterestDT;
+            PartnerEditTDSPPartnerInterestTable PartnerInterestDT;
+            PInterestTable InterestDT;
+            DataRow InterestRow;
+            int ItemsCountInterests;
 
-            InterestDT = new PPartnerInterestTable();
+            PartnerInterestDT = new PartnerEditTDSPPartnerInterestTable();
             try
             {
                 ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
@@ -1740,13 +1751,25 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 //                  TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetPartnerInterestsInternal: loading Interests for Partner " + FPartnerKey.ToString() + "...");
                     try
                     {
-                        InterestDT = PPartnerInterestAccess.LoadViaPPartner(FPartnerKey, ReadTransaction);
+                        PartnerInterestDT.Merge(PPartnerInterestAccess.LoadViaPPartner(FPartnerKey, ReadTransaction));
+                        InterestDT = GetInterestsInternal(out ItemsCountInterests, false);
+
+                        // fill field for interest category in PartnerInterest table in dataset
+                        foreach (PartnerEditTDSPPartnerInterestRow row in PartnerInterestDT.Rows)
+                        {
+                            InterestRow = InterestDT.Rows.Find(new object[] { row.Interest });
+
+                            if (InterestRow != null)
+                            {
+                                row.InterestCategory = ((PInterestRow)InterestRow).Category;
+                            }
+                        }
                     }
                     catch (Exception)
                     {
                         throw;
                     }
-                    ACount = InterestDT.Rows.Count;
+                    ACount = PartnerInterestDT.Rows.Count;
                 }
             }
             finally
@@ -1757,10 +1780,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetPartnerInterestsInternal: committed own transaction.");
                 }
             }
-            return InterestDT;
+            return PartnerInterestDT;
         }
 
-        private PPartnerInterestTable GetPartnerInterestsInternal(out Int32 ACount)
+        private PartnerEditTDSPPartnerInterestTable GetPartnerInterestsInternal(out Int32 ACount)
         {
             return GetPartnerInterestsInternal(out ACount, false);
         }
@@ -2441,9 +2464,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 TempDS.Merge(AInspectDS);
                 TSubmitChangesResult IndividualDataResult;
 
-                // can remove table PPerson here as this is part of both PartnerEditTDS and IndividualDataTDS and
+                // can remove tables PPerson, PDataLabelValuePartner and PDataLabelValueApplication here
+                // as this is part of both PartnerEditTDS and IndividualDataTDS and
                 // so the relevant data was already saved when PartnerEditTDS was saved
-                TempDS.RemoveTable("PPerson");
+                TempDS.RemoveTable(PPersonTable.GetTableName());
+                TempDS.RemoveTable(PDataLabelValuePartnerTable.GetTableName());
+                TempDS.RemoveTable(PDataLabelValueApplicationTable.GetTableName());
+                TempDS.InitVars();
 
                 IndividualDataResult = TIndividualDataWebConnector.SubmitChangesServerSide(ref TempDS, ref AInspectDS, ASubmitChangesTransaction,
                     out SingleVerificationResultCollection);

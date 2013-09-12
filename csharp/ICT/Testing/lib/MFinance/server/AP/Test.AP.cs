@@ -265,11 +265,8 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                 MainDS.AApSupplier[0].DefaultExpAccount,
                 MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
 
-            // need rounding to avoid this error:
-            //  Expected: 83.33333333333333333333333333m
-            //  But was:  83.3333333333m
-            Assert.AreEqual(Math.Round(Amount / ExchangeRatePosting, 5), Math.Round(ExpAccountAfter - ExpAccountBefore,
-                    5), "after posting the invoice, the expense account should be debited the amount in base currency");
+            Assert.AreEqual(Math.Round(Amount / ExchangeRatePosting, 2), Math.Round(ExpAccountAfter - ExpAccountBefore,
+                    2), "after posting the invoice, the expense account should be debited the amount in base currency");
 
             // Pay the AP document
             int ApDocumentId = MainDS.AApDocument[0].ApDocumentId;
@@ -310,8 +307,8 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             decimal RevalAccountAfter = new TGet_GLM_Info(intLedgerNumber,
                 LedgerTable[0].ForexGainsLossesAccount, CostCentreCode).YtdActual;
             Assert.AreEqual(
-                Math.Round((Amount / ExchangeRatePayment) - (Amount / ExchangeRatePosting), 5),
-                Math.Round((RevalAccountAfter - RevalAccountBefore), 5),
+                Math.Round((Amount / ExchangeRatePayment) - (Amount / ExchangeRatePosting), 2),
+                Math.Round((RevalAccountAfter - RevalAccountBefore), 2),
                 "after paying the invoice, the revaluation account should be credited with the forex gain");
         }
 
@@ -398,11 +395,8 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
              *  MainDS.AApSupplier[0].DefaultExpAccount,
              *  MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
              *
-             * //  I need rounding to avoid this error:
-             * //  Expected: 83.33333333333333333333333333m
-             * //  But was:  83.3333333333m
-             * Assert.AreEqual(Math.Round(Amount / ExchangeRatePosting, 5), Math.Round(ExpAccountAfter - ExpAccountBefore,
-             *      5), "after posting the invoice, the expense account should be debited the amount in base currency");
+             * Assert.AreEqual(Math.Round(Amount / ExchangeRatePosting, 2), Math.Round(ExpAccountAfter - ExpAccountBefore,
+             *      2), "after posting the invoice, the expense account should be debited the amount in base currency");
              */
 
             // Pay the AP document
@@ -452,8 +446,8 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
              *  LedgerTable[0].ForexGainsLossesAccount,
              *  MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
              * Assert.AreEqual(
-             *  Math.Round((Amount / ExchangeRatePayment) - (Amount / ExchangeRatePosting), 5),
-             *  Math.Round((RevalAccountAfter - RevalAccountBefore), 5),
+             *  Math.Round((Amount / ExchangeRatePayment) - (Amount / ExchangeRatePosting), 2),
+             *  Math.Round((RevalAccountAfter - RevalAccountBefore), 2),
              *  "after paying the invoice, the revaluation account should be credited with the forex gain");
              */
 
@@ -497,11 +491,11 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                 LedgerTable[0].ForexGainsLossesAccount, CostCentreCode).YtdActual;
 
             // check the amount on the AP account
-            Assert.AreEqual(APAccountBalanceAfter, APAccountBalanceBefore, "After paying then reversing, the AP account should be as before.");
-            Assert.AreEqual(BankAccountAfter, BankAccountBefore, "After paying then reversing, the Bank account should be as before.");
+            Assert.AreEqual(APAccountBalanceBefore, APAccountBalanceAfter, "After paying then reversing, the AP account should be as before.");
+            Assert.AreEqual(BankAccountBefore, BankAccountAfter, "After paying then reversing, the Bank account should be as before.");
             Assert.AreEqual(
-                Math.Round(RevalAccountAfter, 5),
-                Math.Round(RevalAccountBefore, 5),
+                Math.Round(RevalAccountAfter, 2),
+                Math.Round(RevalAccountBefore, 2),
                 "After paying then reversing, the Forex Gains/Losses Account account should be as before.");
         }
     }

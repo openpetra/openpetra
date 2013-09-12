@@ -151,7 +151,7 @@ namespace Ict.Tools.NAntTasks
                 mainProperties.Add(propNode.Name, propNode.InnerText);
             }
 
-            string OutputFile = mainProperties["OutputPath"];
+            string OutputFile = Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" + mainProperties["OutputPath"].Replace("\\", "/"));
 
             OutputFile += "/" + mainProperties["AssemblyName"];
 
@@ -167,6 +167,12 @@ namespace Ict.Tools.NAntTasks
             csc.OutputFile = new FileInfo(OutputFile);
             csc.DocFile = new FileInfo(mainProperties["DocumentationFile"]);
             csc.OutputTarget = mainProperties["OutputType"];
+
+            // needed because of sqlite3.dll, when compiling on Linux for Windows
+            if (this.Project.PlatformName == "unix")
+            {
+                csc.Platform = "x86";
+            }
 
             csc.Define = "DEBUGMODE";
 
@@ -274,8 +280,9 @@ namespace Ict.Tools.NAntTasks
             CompilerParameters parameters = new CompilerParameters();
 
             parameters.GenerateInMemory = false;
+            parameters.CompilerOptions = string.Empty;
 
-            string OutputFile = mainProperties["OutputPath"];
+            string OutputFile = Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" + mainProperties["OutputPath"].Replace("\\", "/"));
 
             OutputFile += "/" + mainProperties["AssemblyName"];
 
@@ -284,20 +291,51 @@ namespace Ict.Tools.NAntTasks
                 parameters.GenerateExecutable = false;
                 OutputFile += ".dll";
             }
+            else if (mainProperties["OutputType"].ToLower() == "winexe")
+            {
+                parameters.GenerateExecutable = true;
+                parameters.CompilerOptions += " /target:winexe";
+                OutputFile += ".exe";
+            }
             else
             {
                 parameters.GenerateExecutable = true;
                 OutputFile += ".exe";
             }
 
+            // needed because of sqlite3.dll, when compiling on Linux for Windows
+            if (this.Project.PlatformName == "unix")
+            {
+                parameters.CompilerOptions += " /platform:x86";
+            }
+
             parameters.OutputAssembly = OutputFile;
             parameters.WarningLevel = 4;
 
-            parameters.CompilerOptions = "/define:DEBUGMODE /doc:\"" + OutputFile + ".xml\"";
+            if (mainProperties.ContainsKey("ApplicationManifest") && (mainProperties["ApplicationManifest"].Length > 0))
+            {
+                if (!this.Project.RuntimeFramework.Name.StartsWith("mono"))
+                {
+                    // we cannot include the manifest when compiling on Mono
+                    parameters.CompilerOptions += " /win32manifest:\"APPMANIFEST\"";
+                }
+            }
+
+            parameters.CompilerOptions += " /define:DEBUGMODE /doc:\"XMLOUTPUTFILE.xml\"";
 
             if (this.Project.PlatformName == "unix")
             {
+                // command line options use - instead of /, eg. /define or -define
                 parameters.CompilerOptions = parameters.CompilerOptions.Replace("/", "-");
+            }
+
+            // insert the path to the xml output file after the command line options thing has been done
+            parameters.CompilerOptions = parameters.CompilerOptions.Replace("XMLOUTPUTFILE", OutputFile.Replace("\\", "/"));
+
+            if (mainProperties.ContainsKey("ApplicationManifest") && (mainProperties["ApplicationManifest"].Length > 0))
+            {
+                parameters.CompilerOptions =
+                    parameters.CompilerOptions.Replace("APPMANIFEST", mainProperties["ApplicationManifest"].Replace("\\", "/"));
             }
 
             String FrameworkDLLPath = Path.GetDirectoryName(System.Reflection.Assembly.GetAssembly(typeof(System.Type)).Location);
@@ -312,7 +350,15 @@ namespace Ict.Tools.NAntTasks
                         {
                             if (ItemNode.HasChildNodes && (ItemNode.ChildNodes[0].Name == "HintPath"))
                             {
-                                parameters.ReferencedAssemblies.Add(ItemNode.ChildNodes[0].InnerText);
+                                if (ItemNode.ChildNodes[0].InnerText.Contains(".."))
+                                {
+                                    parameters.ReferencedAssemblies.Add(Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" +
+                                            ItemNode.ChildNodes[0].InnerText.Replace("\\", "/")));
+                                }
+                                else
+                                {
+                                    parameters.ReferencedAssemblies.Add(ItemNode.ChildNodes[0].InnerText);
+                                }
                             }
                             else
                             {
@@ -326,16 +372,30 @@ namespace Ict.Tools.NAntTasks
                         {
                             string ReferencedProjectName = ItemNode.ChildNodes[1].InnerText;
                             parameters.ReferencedAssemblies.Add(
-                                Path.GetDirectoryName(OutputFile) + Path.DirectorySeparatorChar +
-                                ReferencedProjectName + ".dll");
+                                Path.GetFullPath(Path.GetDirectoryName(OutputFile) + "/" +
+                                    ReferencedProjectName.Replace("\\", "/") + ".dll"));
                         }
                         else if (ItemNode.Name == "Compile")
                         {
-                            src.Add(ItemNode.Attributes["Include"].Value);
+                            if (ItemNode.Attributes["Include"].Value.Contains(".."))
+                            {
+                                src.Add(Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" +
+                                        ItemNode.Attributes["Include"].Value.Replace("\\", "/")));
+                            }
+                            else
+                            {
+                                src.Add(ItemNode.Attributes["Include"].Value);
+                            }
                         }
                         else if (ItemNode.Name == "EmbeddedResource")
                         {
                             string ResourceXFile = ItemNode.Attributes["Include"].Value;
+
+                            if (ResourceXFile.StartsWith(".."))
+                            {
+                                ResourceXFile = Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" +
+                                    ResourceXFile.Replace("\\", "/"));
+                            }
 
                             if (ResourceXFile.EndsWith(".resx"))
                             {
@@ -343,7 +403,20 @@ namespace Ict.Tools.NAntTasks
 
                                 if (ItemNode.HasChildNodes && (ItemNode.FirstChild.Name == "DependentUpon"))
                                 {
-                                    NamespaceAndClass = GetNamespaceAndClass(ItemNode.FirstChild.InnerText);
+                                    string CSFile = ItemNode.FirstChild.InnerText;
+
+                                    if (CSFile.StartsWith(".."))
+                                    {
+                                        CSFile = Path.GetFullPath(Path.GetDirectoryName(FCSProjFile) + "/" +
+                                            CSFile.Replace("\\", "/"));
+                                    }
+                                    else if (!Path.IsPathRooted(CSFile))
+                                    {
+                                        CSFile = Path.GetFullPath(Path.GetDirectoryName(ResourceXFile) + "/" +
+                                            CSFile);
+                                    }
+
+                                    NamespaceAndClass = GetNamespaceAndClass(CSFile);
                                 }
 
                                 //"../../../../tmp/" +
@@ -365,6 +438,10 @@ namespace Ict.Tools.NAntTasks
                                     writer.Close();
 
                                     parameters.EmbeddedResources.Add(ResourcesFile);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Warning: cannot find resource file " + ResourceXFile);
                                 }
                             }
                             else

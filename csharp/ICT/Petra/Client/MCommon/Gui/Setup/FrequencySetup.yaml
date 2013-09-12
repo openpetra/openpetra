@@ -10,18 +10,25 @@ RootNode:
     WindowWidth: 660
     WindowHeight: 700
     Actions:
-        actNew: {Label=New, ActionClick=NewRecord}
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
-            Controls: [btnNew]
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailFrequencyCode, DetailFrequencyDescription, DetailNumberOfYears, DetailNumberOfMonths, DetailNumberOfDays, DetailNumberOfHours, DetailNumberOfMinutes]
@@ -43,12 +50,9 @@ RootNode:
                 Row1: [txtDetailNumberOfDays, txtDetailNumberOfHours, txtDetailNumberOfMinutes] 
             ColSpan: 2
         txtDetailFrequencyCode: {Width=100}
-        txtDetailFrequencyDescription: {Width=160}
+        txtDetailFrequencyDescription: {Width=260}
         txtDetailNumberOfYears: {Format=Integer, Width=30, Validation=true}
         txtDetailNumberOfMonths: {Format=Integer, Width=30, Validation=true}
         txtDetailNumberOfDays: {Format=Integer, Width=30, Validation=true}
         txtDetailNumberOfHours: {Format=Integer, Width=30, Validation=true}
         txtDetailNumberOfMinutes: {Format=Integer, Width=30, Validation=true}
-    Toolbar:
-        tbbNew:
-            Label: New Frequency

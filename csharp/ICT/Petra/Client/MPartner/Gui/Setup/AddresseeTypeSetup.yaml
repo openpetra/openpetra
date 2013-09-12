@@ -10,18 +10,25 @@ RootNode:
     WindowWidth: 660
     WindowHeight: 430
     Actions:
-        actNew: {Label=New, ActionClick=NewRecord}
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
-            Controls: [btnNew]
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailAddresseeTypeCode, DetailDescription, DetailDeletable]
@@ -31,9 +38,6 @@ RootNode:
             Controls:
                 Row0: [txtDetailAddresseeTypeCode, txtDetailDescription]
                 Row1: [chkDetailDeletable]
-        txtDetailAddresseeTypeCode: {Label=Addressee Type Code, Width=150, CharacterCasing=Upper}
+        txtDetailAddresseeTypeCode: {Label=Addressee Type Code, Width=200, CharacterCasing=Upper}
         txtDetailDescription: {Width=194}
         chkDetailDeletable:
-    Toolbar:
-        tbbNew:
-            Label: New Addressee Type

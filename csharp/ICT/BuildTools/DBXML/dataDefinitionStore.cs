@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -314,23 +314,13 @@ namespace Ict.Tools.DBXML
         }
 
         /// <summary>
-        /// overload, do warn about missing fields (if GEnabledLoggingMissingFields is set)
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        public TTableField GetField(string s)
-        {
-            return GetField(s, true);
-        }
-
-        /// <summary>
         /// return the reference to a column, given by name
         /// </summary>
         /// <param name="s">name of the column</param>
         /// <param name="AShowWarningNonExistingField">show warning if there is no field with that name;
         /// only takes effect if GEnabledLoggingMissingFields is true</param>
         /// <returns>reference to the column</returns>
-        public TTableField GetField(string s, bool AShowWarningNonExistingField)
+        public TTableField GetField(string s, bool AShowWarningNonExistingField = true)
         {
             TTableField ReturnValue;
 
@@ -528,6 +518,7 @@ namespace Ict.Tools.DBXML
         {
             TIndex index;
             TIndexField indexfield;
+            TTable OtherTable;
 
             grpConstraint.Sort(new ConstraintComparer());
 
@@ -536,7 +527,20 @@ namespace Ict.Tools.DBXML
                 if (constr.strType == "foreignkey")
                 {
                     constr.strThisTable = strName;
-                    db.GetTable(constr.strOtherTable).AddReference(constr);
+                    OtherTable = db.GetTable(constr.strOtherTable);
+
+                    if (OtherTable == null)
+                    {
+                        Console.WriteLine(
+                            "*** Foreign Key relationship: otherTable '" + constr.strOtherTable +
+                            "' is not a valid table name (Foreing Key of table '" +
+                            strName + "')");
+                        Environment.Exit(1);
+                    }
+                    else
+                    {
+                        db.GetTable(constr.strOtherTable).AddReference(constr);
+                    }
                 }
 
                 // indexes

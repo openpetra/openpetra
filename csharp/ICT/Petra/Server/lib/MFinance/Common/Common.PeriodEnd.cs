@@ -21,6 +21,7 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Data;
 using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.Verification;
@@ -100,8 +101,9 @@ namespace Ict.Petra.Server.MFinance.Common
                         TResultSeverity.Resv_Noncritical);
                 verificationResults.Add(tvt);
             }
-            else
+            else if (FInfoMode == false)
             {
+                // now we actually run the operation
                 Apeo.RunEndOfPeriodOperation();
                 AbstractPeriodEndOperation newApeo = Apeo.GetActualizedClone();
                 newApeo.IsInInfoMode = true;
@@ -109,7 +111,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 if (newApeo.JobSize != 0)
                 {
-                    // Critical Problem beause now there shall nothing to do anymore ...
+                    // Critical Problem because there should be nothing left to do.
                     String strTitle = Catalog.GetString("Problem occurs in module [{0}]");
                     strTitle = String.Format(strTitle, AOperationName);
                     String strMessage = Catalog.GetString(
@@ -272,35 +274,24 @@ namespace Ict.Petra.Server.MFinance.Common
                 // Set to the first month of the "next year".
                 SetProvisionalYearEndFlag(false);
                 SetNewFwdPeriodValue(1);
+                ledgerInfo.CurrentFinancialYear = ledgerInfo.CurrentFinancialYear + 1;
+                TAccountPeriodToNewYear accountPeriod = new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber);
+                accountPeriod.IsInInfoMode = false;
+                accountPeriod.RunEndOfPeriodOperation();
             }
             else if (ledgerInfo.CurrentPeriod == ledgerInfo.NumberOfAccountingPeriods)
             {
                 // Set the YearEndFlag to "Switch between the months ...
                 SetProvisionalYearEndFlag(true);
-                SetYearMark(0, true);
             }
             else
             {
                 // Conventional Month->Month Switch ...
                 SetNewFwdPeriodValue(ledgerInfo.CurrentPeriod + 1);
-                SetYearMark(-1, false);
             }
 
             new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
                 TLedgerInitFlagEnum.Revaluation).Flag = false;
-        }
-
-        private void SetYearMark(int AYearOffset, bool AValue)
-        {
-            TAccountPeriodToNewYear accountPeriod = new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber);
-
-            int intYear = accountPeriod.ActualYear;
-            TLedgerInitFlagHandler ledgerInitFlagHandler =
-                new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
-                    TLedgerInitFlagEnum.ActualYear);
-
-            ledgerInitFlagHandler.AddMarker((intYear + AYearOffset).ToString());
-            ledgerInitFlagHandler.Flag = AValue;
         }
 
         /// <summary>
@@ -321,40 +312,6 @@ namespace Ict.Petra.Server.MFinance.Common
             }
         }
 
-        /// <summary>
-        /// This value is only defined if the TCarryForwardENum holds the value "year". In normal cases you can
-        /// get the value of the actual accounting year from the table a_accounting_period,
-        /// but this value is changed in the year end routine and in order
-        /// to make sure I get always the same value, the year is stored in a_ledger_init_flag from the
-        /// entrance to the TCarryForwardENum.Year-Period to the next TCarryForwardENum.Month-Period.
-        /// </summary>
-        public int Year
-        {
-            get
-            {
-                TAccountPeriodToNewYear accountPeriod = new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber);
-                int intYear = accountPeriod.ActualYear;
-                TLedgerInitFlagHandler ledgerInitFlagHandler =
-                    new TLedgerInitFlagHandler(ledgerInfo.LedgerNumber,
-                        TLedgerInitFlagEnum.ActualYear);
-                ledgerInitFlagHandler.AddMarker((intYear).ToString());
-
-                if (ledgerInitFlagHandler.Flag)
-                {
-                    return intYear;
-                }
-
-                ledgerInitFlagHandler.AddMarker((intYear - 1).ToString());
-
-                if (ledgerInitFlagHandler.Flag)
-                {
-                    return intYear - 1;
-                }
-
-                throw new ApplicationException("Undefined TCarryForwardENum.Year Request");
-            }
-        }
-
         void SetProvisionalYearEndFlag(bool AFlagValue)
         {
             OdbcParameter[] ParametersArray;
@@ -366,14 +323,20 @@ namespace Ict.Petra.Server.MFinance.Common
             ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[2].Value = ledgerInfo.LedgerNumber;
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            bool NewTransaction;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+
             string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName() + " ";
             strSQL += "SET " + ALedgerTable.GetYearEndFlagDBName() + " = ? ";
             strSQL += ", " + ALedgerTable.GetProvisionalYearEndFlagDBName() + " = ? ";
             strSQL += "WHERE " + ALedgerTable.GetLedgerNumberDBName() + " = ? ";
             DBAccess.GDBAccessObj.ExecuteNonQuery(
                 strSQL, transaction, ParametersArray);
-            DBAccess.GDBAccessObj.CommitTransaction();
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
         }
 
         void SetNewFwdPeriodValue(int ANewPeriodNum)
@@ -385,49 +348,55 @@ namespace Ict.Petra.Server.MFinance.Common
             ParametersArray[1] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[1].Value = ledgerInfo.LedgerNumber;
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            bool NewTransaction;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
             string strSQL = "UPDATE PUB_" + ALedgerTable.GetTableDBName() + " ";
             strSQL += "SET " + ALedgerTable.GetCurrentPeriodDBName() + " = ? ";
             strSQL += "WHERE " + ALedgerTable.GetLedgerNumberDBName() + " = ? ";
             DBAccess.GDBAccessObj.ExecuteNonQuery(
                 strSQL, transaction, ParametersArray);
-            DBAccess.GDBAccessObj.CommitTransaction();
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
         }
     }
     /// <summary>
-    /// This object handles the transformation of the accouting interval parameters into the
+    /// This object handles the transformation of the accounting interval parameters into the
     /// next year
     /// </summary>
     public class TAccountPeriodToNewYear : AbstractPeriodEndOperation
     {
-        const int NOT_INITIALIZED = -1;
-        int intLedgerNumber;
-        int intActualYear = NOT_INITIALIZED;
-        AAccountingPeriodTable accountingPeriodTable = null;
-        AAccountingPeriodRow accountingPeriodRow = null;
+        int FLedgerNumber;
+        AAccountingPeriodTable FaccountingPeriodTable = null;
 
         /// <summary>
-        /// Constructor to define and load the complete table defined by the same ledger number
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AActualYear">This parameter is important for the
-        /// JobSize-Routine to decide if the RunEndOfPeriodOperation has
-        /// been done or not.</param>
-        public TAccountPeriodToNewYear(int ALedgerNumber, int AActualYear)
-        {
-            intActualYear = AActualYear;
-            intLedgerNumber = ALedgerNumber;
-            LoadData();
-        }
-
-        /// <summary>
-        /// Constructor to define and load the complete table defined by the same ledger number
+        /// Constructor to define and load the complete table defined by ledger number
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         public TAccountPeriodToNewYear(int ALedgerNumber)
         {
-            intLedgerNumber = ALedgerNumber;
+            FLedgerNumber = ALedgerNumber;
             LoadData();
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public override AbstractPeriodEndOperation GetActualizedClone()
+        {
+            return new TAccountPeriodToNewYear(FLedgerNumber);
+        }
+
+        /// <summary>
+        /// not implemented
+        /// </summary>
+        public override int JobSize {
+            get
+            {
+                return -1;
+            }
         }
 
         /// <summary>
@@ -437,74 +406,31 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                accountingPeriodRow = accountingPeriodTable[0];
+                AAccountingPeriodRow accountingPeriodRow = FaccountingPeriodTable[0];
                 return accountingPeriodRow.PeriodStartDate.Year;
             }
         }
 
         private void LoadData()
         {
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            bool NewTransaction;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
 
             try
             {
-                accountingPeriodTable = AAccountingPeriodAccess.LoadViaALedger(intLedgerNumber, transaction);
-                DBAccess.GDBAccessObj.CommitTransaction();
+                FaccountingPeriodTable = AAccountingPeriodAccess.LoadViaALedger(FLedgerNumber, transaction);
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
             }
             catch (Exception)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
                 throw;
-            }
-        }
-
-        /// <summary>
-        /// Gets the control instance and throws an error if the
-        /// Actual year is not set (other Constructor is used).
-        /// </summary>
-        /// <returns></returns>
-        public override AbstractPeriodEndOperation GetActualizedClone()
-        {
-            if (intActualYear == NOT_INITIALIZED)
-            {
-                throw new ApplicationException(
-                    "Actual Year is not initialized - you cannot test for the succes of RunEndOfPeriodOperation()");
-            }
-
-            return new TAccountPeriodToNewYear(intLedgerNumber, intActualYear);
-        }
-
-        /// <summary>
-        /// This is the number of data base record holding the date values of the
-        /// just ending year.
-        /// </summary>
-        public override int JobSize {
-            get
-            {
-                int cnt = 0;
-
-                for (int i = 0; i < accountingPeriodTable.Rows.Count; ++i)
-                {
-                    bool blnFound = false;
-                    accountingPeriodRow = accountingPeriodTable[i];
-
-                    if (accountingPeriodRow.PeriodStartDate.Year == intActualYear)
-                    {
-                        blnFound = true;
-                    }
-
-                    if (accountingPeriodRow.PeriodEndDate.Year == intActualYear)
-                    {
-                        blnFound = true;
-                    }
-
-                    if (blnFound)
-                    {
-                        ++cnt;
-                    }
-                }
-
-                return cnt;
             }
         }
 
@@ -515,9 +441,9 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             if (DoExecuteableCode)
             {
-                for (int i = 0; i < accountingPeriodTable.Rows.Count; ++i)
+                for (int i = 0; i < FaccountingPeriodTable.Rows.Count; ++i)
                 {
-                    accountingPeriodRow = accountingPeriodTable[i];
+                    AAccountingPeriodRow accountingPeriodRow = FaccountingPeriodTable[i];
 
                     accountingPeriodRow.PeriodStartDate =
                         accountingPeriodRow.PeriodStartDate.AddDays(1).AddYears(1).AddDays(-1);
@@ -525,13 +451,18 @@ namespace Ict.Petra.Server.MFinance.Common
                         accountingPeriodRow.PeriodEndDate.AddDays(1).AddYears(1).AddDays(-1);
                 }
 
-                TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+                bool NewTransaction;
+                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
                 try
                 {
                     AAccountingPeriodAccess.SubmitChanges(
-                        accountingPeriodTable, transaction,
+                        FaccountingPeriodTable, transaction,
                         out verificationResults);
-                    DBAccess.GDBAccessObj.CommitTransaction();
+
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                    }
                 }
                 catch (Exception)
                 {
@@ -567,7 +498,7 @@ namespace Ict.Petra.Server.MFinance.Common
         public TGlmNewYearInit(int ALedgerNumber, int AYear)
         {
             intThisYear = AYear;
-            intNextYear = intNextYear + 1;
+            intNextYear = intThisYear + 1;
             intLedgerNumber = ALedgerNumber;
             PostingFromDS = LoadTable(ALedgerNumber, AYear);
             PostingToDS = LoadTable(ALedgerNumber, ++AYear);
@@ -610,12 +541,21 @@ namespace Ict.Petra.Server.MFinance.Common
 
             GLPostingTDS PostingDS = new GLPostingTDS();
 
-            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            bool NewTransaction;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
             try
             {
                 DBAccess.GDBAccessObj.Select(PostingDS,
                     strSQL, AGeneralLedgerMasterTable.GetTableName(), transaction, ParametersArray);
-                DBAccess.GDBAccessObj.CommitTransaction();
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+
                 return PostingDS;
             }
             catch (Exception)
@@ -633,6 +573,12 @@ namespace Ict.Petra.Server.MFinance.Common
             Int32 TempGLMSequence = -1;
 
             intEntryCount = 0;
+
+            if (!FInfoMode)
+            {
+                TCarryForward carryForward = new TCarryForward(new TLedgerInfo(intLedgerNumber));
+                carryForward.SetNextPeriod();
+            }
 
             if (PostingFromDS.AGeneralLedgerMaster.Rows.Count > 0)
             {
@@ -760,7 +706,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>Unposted batches prevent period close.</summary>
             PEEC_06,
 
-        /// <summary>Suspensed accountes prevent period close.</summary>
+        /// <summary>Suspense accounts prevent period close.</summary>
             PEEC_07,
 
         /// <summary>Unposted gift batches are found prevent period close.</summary>

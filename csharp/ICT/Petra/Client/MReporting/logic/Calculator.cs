@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -441,6 +441,14 @@ namespace Ict.Petra.Client.MReporting.Logic
         }
 
         /// <summary>
+        /// send report as email
+        /// </summary>
+        public Boolean SendEmail(string AEmailAddresses, bool AAttachExcelFile, bool AAttachCSVFile, bool AAttachPDF, bool AWrapColumn)
+        {
+            return FReportingGenerator.SendEmail(AEmailAddresses, AAttachExcelFile, AAttachCSVFile, AAttachPDF, AWrapColumn);
+        }
+
+        /// <summary>
         /// cancel the calculation of the report
         /// </summary>
         public void CancelReportCalculation()
@@ -451,7 +459,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <summary>
         /// this is where all the calculations take place
         /// </summary>
-        /// <returns>s true if the report was successfully generated
+        /// <returns>true if the report was successfully generated
         /// </returns>
         public Boolean GenerateResultRemoteClient()
         {
@@ -497,7 +505,7 @@ namespace Ict.Petra.Client.MReporting.Logic
                 }
                 else
                 {
-                    TLogging.Log("Report calculation finished", TLoggingType.ToStatusBar);
+                    TLogging.Log("Report calculation finished.", TLoggingType.ToStatusBar);
                 }
             }
 

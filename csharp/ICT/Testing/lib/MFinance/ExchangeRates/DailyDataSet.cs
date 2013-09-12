@@ -4,7 +4,7 @@
 // @Authors:
 //       AlanP
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -471,7 +471,7 @@ namespace Tests.MFinance.Client.ExchangeRates
                     Boolean IsNewTransaction;
                     TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                         out IsNewTransaction);
-                    nRowsAffected = DBAccess.GDBAccessObj.ExecuteNonQuery(sql, WriteTransaction, true);
+                    nRowsAffected = DBAccess.GDBAccessObj.ExecuteNonQuery(sql, WriteTransaction, null, IsNewTransaction);
                 }
 
                 // Did we do anything?

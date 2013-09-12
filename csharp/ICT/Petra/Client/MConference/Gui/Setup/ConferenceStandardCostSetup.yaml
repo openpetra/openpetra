@@ -1,0 +1,50 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Conference Standard Costs
+    Namespace: Ict.Petra.Client.MConference.Gui.Setup
+    DetailTable: PcConferenceCost
+    UsingNamespaces: [Ict.Petra.Shared.MConference.Data, Ict.Petra.Shared.MConference.Validation, Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.Interfaces.MConference]
+    FormType: edit
+    Template: windowMaintainTable
+    WindowWidth: 500
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlConferenceDetails, pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlConferenceDetails:
+            Dock: Top
+            Controls: [txtConferenceName, txtConferenceCurrency]
+            ControlsOrientation: vertical
+        txtConferenceName: {ReadOnly=true, BorderStyle=None, Stretch=horizontally}
+        txtConferenceCurrency: {ReadOnly=true, BorderStyle=None, Stretch=horizontally}
+        pnlGrid:
+            Dock: Fill
+            Controls: [grdDetails, pnlButtons]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
+        btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailOptionDays, DetailCharge]
+            ActionFocusRow: FocusedRowChanged
+            SortOrder: DetailOptionDays ASC
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailOptionDays, txtDetailCharge]
+        txtDetailOptionDays: {Label=Option Days, Width=40, Format=Integer}
+        txtDetailCharge: {Label=Charge, Width=100, Format=Currency}
+    Toolbar:
+        tbbNew:
+            Label: New Conference Standard Cost

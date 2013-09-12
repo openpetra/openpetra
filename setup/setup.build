@@ -146,7 +146,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         <copy file="${Config.file}" tofile="${tempdir}/PetraClientRemote_temp.config" overwrite="true"/>
     </if>
     <copy file="${tempdir}/PetraClientRemote_temp.config"
-              tofile="${tempdir}/PetraClientRemote.config">
+              tofile="${tempdir}/PetraClientRemote.config" overwrite="true">
         <filterchain>
             <expandproperties />
         </filterchain>
@@ -232,10 +232,12 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <call target="generateSolution"/>
 
   <if test="${string::contains(LinuxTargetDistribution-list, 'postgresql')}">
-    <call target="createPostgreSQLDB" unless="${target::has-executed('createPostgreSQLDB')}"/>
+    <property name="DBMS.Type" value="postgresql"/>
+    <call target="createSQLStatements" unless="${target::has-executed('createSQLStatements')}"/>
   </if>
   <if test="${string::contains(LinuxTargetDistribution-list, 'mysql')}">
-    <call target="createMySQLDB" unless="${target::has-executed('createMySQLDB')}"/>
+    <property name="DBMS.Type" value="mysql"/>
+    <call target="createSQLStatements" unless="${target::has-executed('createSQLStatements')}"/>
   </if>
 
   <call target="translation" unless="${target::has-executed('translation')}"/>
@@ -282,6 +284,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 
 <target name="createRemoteClientPatch" depends="init">
     <property name="OutputZipFilename" value="Patch-win_${OldVersion}_${NewVersion}.zip" overwrite="false"/>
+    <if test="${platform::is-unix()}">
+        <exec program="sh" commandline="-c &quot;chmod a+x ${dir.root}/csharp/ThirdParty/bsdiff/bsdiff&quot;"/>
+    </if>
     <ExecDotNet program="${dir.bin}/Ict.Tools.PatchTool.Console.exe" commandline="-action:create -OpenPetra.PathTemp:${tempdir} -deliverypath:${dir.delivery} -appname:openpetranow-${GUILocalisation} -zipname:openpetraorg-client-backup-${OrgNameWithoutSpace} -oldversion:${OldVersion} -newversion:${NewVersion} -OutputZipFilename:${OutputZipFilename}"/>
 </target>
 
@@ -449,6 +454,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
       <fileset basedir="${dir.root}/setup/petra${PetraRelease}/linuxserver/">
           <include name="*.config" />
       </fileset>
+      <filterchain>
+          <expandproperties />
+      </filterchain>
     </copy>
     <copy todir="${setupDir}/demo30">
       <fileset basedir="${dir.bin}/demodata/">
@@ -475,16 +483,12 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
                 tofile="${setupDir}/db30/createtables-PostgreSQL.sql"/>
       <copy file="${dir.root}/setup/petra${PetraRelease}/createconstraints-PostgreSQL.sql"
                 tofile="${setupDir}/db30/createconstraints-PostgreSQL.sql"/>
-      <copy file="${dir.root}/setup/petra${PetraRelease}/demodata-PostgreSQL.sql"
-                tofile="${setupDir}/db30/demodata-PostgreSQL.sql"/>
     </if>
     <if test="${string::contains(LinuxTargetDistribution, 'mysql')}">
       <copy file="${dir.root}/setup/petra${PetraRelease}/createtables-MySQL.sql"
                 tofile="${setupDir}/db30/createtables-MySQL.sql"/>
       <copy file="${dir.root}/setup/petra${PetraRelease}/createconstraints-MySQL.sql"
                 tofile="${setupDir}/db30/createconstraints-MySQL.sql"/>
-      <copy file="${dir.root}/setup/petra${PetraRelease}/demodata-MySQL.sql"
-                tofile="${setupDir}/db30/demodata-MySQL.sql"/>
     </if>
     <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/INSTALL"
                 tofile="${setupDir}/INSTALL"/>

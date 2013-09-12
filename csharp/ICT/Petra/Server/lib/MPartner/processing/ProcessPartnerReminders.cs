@@ -476,7 +476,7 @@ namespace Ict.Petra.Server.MPartner.Processing
             }
 
             // Send Email (this picks up the SMTPServer AppSetting from the Server Config File)
-            return new TSmtpSender().SendEmail(Destination, "OpenPetra Server", Destination, Subject, Body, null);
+            return new TSmtpSender().SendEmail(Destination, "OpenPetra Server", Destination, Subject, Body);
         }
 
         /// <summary>

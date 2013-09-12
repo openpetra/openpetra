@@ -1,4 +1,4 @@
-// auto generated with nant generateORM
+// auto generated with nant generateORM using DataSets.cs
 // Do not modify this file manually!
 //
 {#GPLFILEHEADER}
@@ -46,7 +46,15 @@ public class {#DATASETNAME} : TTypedDataSet
     /// auto generated
     public new virtual {#DATASETNAME} GetChangesTyped(bool removeEmptyTables)
     {
-        return (({#DATASETNAME})(base.GetChangesTyped(removeEmptyTables)));
+        {#DATASETNAME} result = ({#DATASETNAME})(base.GetChangesTyped(removeEmptyTables));
+
+        if (removeEmptyTables 
+            && (result != null))
+        {
+            result.InitVars();
+        }
+
+        return result;
     }
     
     /// auto generated

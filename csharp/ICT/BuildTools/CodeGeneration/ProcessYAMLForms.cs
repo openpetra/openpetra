@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -165,6 +165,21 @@ namespace Ict.Tools.CodeGeneration
                 writer.CreateDesignerFile(FYamlFilename, rootNode, templateDir);
 
                 return writer.WriteFile(destinationFile);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// for some operations, we want to ignore the language specific yaml files
+        /// </summary>
+        /// <returns>true if the file is language specific</returns>
+        public static bool IgnoreLanguageSpecificYamlFile(string yamlfile)
+        {
+            // only look for main files, not language specific files (*.xy-XY.yaml or *.xy.yaml)
+            if (((yamlfile[yamlfile.Length - 11] == '.') && (yamlfile[yamlfile.Length - 8] == '-')) || (yamlfile[yamlfile.Length - 8] == '.'))
+            {
+                return true;
             }
 
             return false;

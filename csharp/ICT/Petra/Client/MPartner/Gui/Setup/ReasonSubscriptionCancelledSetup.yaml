@@ -10,18 +10,25 @@ RootNode:
     WindowWidth: 660
     WindowHeight: 410
     Actions:
-        actNew: {Label=New, ActionClick=NewRecord}
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
-            Controls: [btnNew]
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailCode, DetailDescription]
@@ -31,9 +38,4 @@ RootNode:
             Controls:
                 Row0: [txtDetailCode, txtDetailDescription]
         txtDetailCode: {Label= Reason Cancelled Code, Width=125, CharacterCasing=Upper}
-        txtDetailDescription: {Width=208}
-    Toolbar:
-        tbbNew: 
-            Label: New Reason Subscription Cancelled Code
-            Label: New Reason Subscriptionn Given Code
-            Label: New Reason Cancelled Code
+        txtDetailDescription: {Width=258}

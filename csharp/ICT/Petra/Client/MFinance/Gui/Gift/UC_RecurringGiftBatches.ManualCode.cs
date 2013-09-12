@@ -26,6 +26,7 @@ using System.Data;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
@@ -94,15 +95,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                ClearControls();
-                ((TFrmRecurringGiftBatch) this.ParentForm).DisableTransactionsTab();
+                ShowDetails(null);
+                ((TFrmRecurringGiftBatch) this.ParentForm).EnableTransactionsTab(false);
             }
 
             ShowData();
-
             FBatchLoaded = true;
 
-            ShowDetails(GetCurrentRecurringBatchRow());
+            UpdateChangeableStatus();
         }
 
         /// <summary>
@@ -168,23 +168,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FLedgerNumber = ARow.LedgerNumber;
-//            FSelectedBatchNumber = ARow.BatchNumber;
 
             FPetraUtilsObject.DetailProtectedMode = false;
 
             ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab();
 
             UpdateChangeableStatus();
-
-//            FPetraUtilsObject.DetailProtectedMode = false;
-//            ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab();
-//            UpdateChangeableStatus();
-//            FPetraUtilsObject.DetailProtectedMode = false;
-//            ((TFrmRecurringGiftBatch)ParentForm).LoadTransactions(
-//                ARow.LedgerNumber,
-//                ARow.BatchNumber);
-
-            // FSelectedBatchNumber = ARow.BatchNumber;
         }
 
         private void ShowTransactionTab(Object sender, EventArgs e)
@@ -199,43 +188,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
+            if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
             {
-                this.CreateNewARecurringGiftBatch();
-                txtDetailBatchDescription.Focus();
-
-                //Save the new record
-                ((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges();
+                return;
             }
-        }
 
-        /// <summary>
-        /// Performs checks to determine whether a deletion of the current
-        ///  row is permissable
-        /// </summary>
-        /// <param name="ARowToDelete">the currently selected row to be deleted</param>
-        /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
-        /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(ARecurringGiftBatchRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            if ((grdDetails.SelectedRowIndex() == -1) || (FPreviouslySelectedDetailRow == null))
-            {
-                MessageBox.Show(Catalog.GetString("No recurring gift batch is selected to delete."),
-                    Catalog.GetString("Deleting Recurring Gift Batch"));
-                return false;
-            }
-            else
-            {
-                // ask if the user really wants to cancel the batch
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete Recurring Gift Batch no: {0} ?"),
-                    ARowToDelete.BatchNumber);
-                return true;
-            }
-        }
-
-        private void DeleteRow(System.Object sender, EventArgs e)
-        {
-            this.DeleteARecurringGiftBatch();
+            this.CreateNewARecurringGiftBatch();
+            txtDetailBatchDescription.Focus();
         }
 
         /// <summary>
@@ -244,61 +203,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ARowToDelete">the currently selected row to delete</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
         /// <returns>true if row deletion is successful</returns>
-        private bool DeleteRowManual(ARecurringGiftBatchRow ARowToDelete, out string ACompletionMessage)
+        private bool DeleteRowManual(ARecurringGiftBatchRow ARowToDelete, ref string ACompletionMessage)
         {
             bool deletionSuccessful = false;
 
             int batchNumber = ARowToDelete.BatchNumber;
+
+            bool newBatch = (ARowToDelete.RowState == DataRowState.Added);
 
             try
             {
                 ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} deleted successfully."),
                     batchNumber);
 
+                //clear any transactions currently being editied in the Transaction Tab
+                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
-                //Load the gift details first before deleting them
-                FMainDS.ARecurringGiftDetail.DefaultView.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
-                    ARecurringGiftDetailTable.GetLedgerNumberDBName(),
-                    FLedgerNumber,
-                    ARecurringGiftDetailTable.GetBatchNumberDBName(),
-                    batchNumber);
-
-                // only load from server if there are no transactions loaded yet for this batch
-                // otherwise we would overwrite transactions that have already been modified
-                if (FMainDS.ARecurringGiftDetail.DefaultView.Count == 0)
+                if (!newBatch)
                 {
+                    //Load tables afresh
+                    FMainDS.ARecurringGiftDetail.Clear();
+                    FMainDS.ARecurringGift.Clear();
                     FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringTransactions(FLedgerNumber, batchNumber));
                 }
 
-                // Delete the associated recurring gift detail rows.
-                DataView viewGiftDetail = new DataView(FMainDS.ARecurringGiftDetail);
-                viewGiftDetail.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
-                    ARecurringGiftTable.GetLedgerNumberDBName(),
-                    FLedgerNumber,
-                    ARecurringGiftTable.GetBatchNumberDBName(),
-                    batchNumber);
-
-                foreach (DataRowView row in viewGiftDetail)
+                //Delete transactions
+                for (int i = FMainDS.ARecurringGiftDetail.Count - 1; i >= 0; i--)
                 {
-                    row.Delete();
+                    FMainDS.ARecurringGiftDetail[i].Delete();
                 }
 
-                // Delete the associated recurring gift rows.
-                DataView viewGift = new DataView(FMainDS.ARecurringGift);
-                viewGift.RowFilter = String.Format("{0} = {1} AND {2} = {3}",
-                    ARecurringGiftTable.GetLedgerNumberDBName(),
-                    FLedgerNumber,
-                    ARecurringGiftTable.GetBatchNumberDBName(),
-                    batchNumber);
-
-                foreach (DataRowView row in viewGift)
+                for (int i = FMainDS.ARecurringGift.Count - 1; i >= 0; i--)
                 {
-                    row.Delete();
+                    FMainDS.ARecurringGift[i].Delete();
                 }
 
                 // Delete the recurring batch row.
                 ARowToDelete.Delete();
 
+                //FMainDS.AcceptChanges();
                 FPreviouslySelectedDetailRow = null;
 
                 deletionSuccessful = true;
@@ -330,14 +273,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             /*Code to execute after the delete has occurred*/
             if (ADeletionPerformed && (ACompletionMessage.Length > 0))
             {
-                MessageBox.Show(ACompletionMessage,
-                    "Deletion Completed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-
-                if (!pnlDetails.Enabled)         //set by FocusedRowChanged if grdDetails.Rows.Count < 2
+                if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
                 {
-                    ClearControls();
+                    MessageBox.Show(ACompletionMessage, Catalog.GetString("Deletion Completed"));
+                }
+                else
+                {
+                    MessageBox.Show("Unable to save after deletion of batch! Try saving manually and closing and reopening the form.");
                 }
             }
             else if (!AAllowDeletion)
@@ -349,32 +291,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //message to user
             }
 
-            if (grdDetails.Rows.Count > 1)
-            {
-                ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab();
-            }
-            else
-            {
-                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
-                ((TFrmRecurringGiftBatch)ParentForm).DisableTransactionsTab();
-            }
-        }
+            UpdateChangeableStatus();
 
-        private void ClearControls()
-        {
-            try
-            {
-                FPetraUtilsObject.DisableDataChangedEvent();
-                txtDetailBatchDescription.Clear();
-                txtDetailHashTotal.NumberValueDecimal = 0;
-                cmbDetailBankCostCentre.SelectedIndex = -1;
-                cmbDetailBankAccountCode.SelectedIndex = -1;
-                cmbDetailMethodOfPaymentCode.SelectedIndex = -1;
-            }
-            finally
-            {
-                FPetraUtilsObject.EnableDataChangedEvent();
-            }
+            ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab((grdDetails.Rows.Count > 1));
+
+            SelectRowInGrid(grdDetails.GetFirstHighlightedRowIndex());
         }
 
         private void Submit(System.Object sender, System.EventArgs e)
@@ -402,9 +323,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 MessageBox.Show(String.Format(Catalog.GetString(
                             "The recurring gift batch total ({0}) for batch {1} does not equal the hash total ({2})."),
-                        FPreviouslySelectedDetailRow.BatchTotal.ToString("C"),
+                        StringHelper.FormatUsingCurrencyCode(FPreviouslySelectedDetailRow.BatchTotal, FPreviouslySelectedDetailRow.CurrencyCode),
                         FPreviouslySelectedDetailRow.BatchNumber,
-                        FPreviouslySelectedDetailRow.HashTotal.ToString("C")), "Submit Recurring Gift Batch");
+                        StringHelper.FormatUsingCurrencyCode(FPreviouslySelectedDetailRow.HashTotal, FPreviouslySelectedDetailRow.CurrencyCode)),
+                    "Submit Recurring Gift Batch");
 
                 txtDetailHashTotal.Focus();
                 txtDetailHashTotal.SelectAll();
@@ -434,6 +356,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Boolean changeable = (FPreviouslySelectedDetailRow != null);
 
             this.btnDelete.Enabled = changeable;
+            this.btnSubmit.Enabled = changeable;
             pnlDetails.Enabled = changeable;
         }
 
@@ -461,12 +384,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             String ACurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
 
-            txtDetailHashTotal.CurrencySymbol = ACurrencyCode;
+            txtDetailHashTotal.CurrencyCode = ACurrencyCode;
             ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
         }
 
         private void HashTotalChanged(object sender, EventArgs e)
         {
+            TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
+
+            if (txn.NumberValueDecimal == null)
+            {
+                return;
+            }
+
             Decimal HashTotal = Convert.ToDecimal(txtDetailHashTotal.NumberValueDecimal);
             Form p = ParentForm;
 
@@ -500,63 +430,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void ParseHashTotal(ARecurringGiftBatchRow ARow)
         {
             decimal correctHashValue;
-            string hashTotal = txtDetailHashTotal.Text.Trim();
-            string hashNumericPart = string.Empty;
-            decimal hashDecimalVal;
-            Int32 hashTotalIndexOfLastNumeric = -1;
-            bool isNumericVal;
 
-            if (!txtDetailHashTotal.NumberValueDecimal.HasValue)
+            if ((txtDetailHashTotal.NumberValueDecimal == null) || !txtDetailHashTotal.NumberValueDecimal.HasValue)
             {
                 correctHashValue = 0m;
             }
-            else if (hashTotal.Contains(" "))
-            {
-                hashNumericPart = hashTotal.Substring(0, hashTotal.IndexOf(' '));
-
-                if (!Decimal.TryParse(hashNumericPart, out hashDecimalVal))
-                {
-                    correctHashValue = 0m;
-                }
-                else
-                {
-                    correctHashValue = hashDecimalVal;
-                }
-            }
             else
             {
-                hashTotalIndexOfLastNumeric = hashTotal.LastIndexOfAny(new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' });
-
-                if (hashTotalIndexOfLastNumeric > -1)
-                {
-                    hashNumericPart = hashTotal.Substring(0, hashTotalIndexOfLastNumeric + 1);
-                    isNumericVal = Decimal.TryParse(hashNumericPart, out hashDecimalVal);
-
-                    if (!isNumericVal)
-                    {
-                        correctHashValue = 0m;
-                    }
-                    else
-                    {
-                        //hashTotal = hashTotal.Insert(hashNumericPart.Length, " ");
-                        correctHashValue = hashDecimalVal;
-                    }
-                }
-                else
-                {
-                    correctHashValue = 0m;
-                }
+                correctHashValue = txtDetailHashTotal.NumberValueDecimal.Value;
             }
 
-            if (txtDetailHashTotal.NumberValueDecimal != correctHashValue)
-            {
-                txtDetailHashTotal.NumberValueDecimal = correctHashValue;
-            }
-
-            if (ARow.HashTotal != correctHashValue)
-            {
-                ARow.HashTotal = correctHashValue;
-            }
+            txtDetailHashTotal.NumberValueDecimal = correctHashValue;
+            ARow.HashTotal = correctHashValue;
         }
 
         /// <summary>

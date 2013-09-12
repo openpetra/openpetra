@@ -4,12 +4,12 @@
     Namespace: Ict.Petra.Client.MSysMan.Gui
     DetailTable: SUser
     DatasetType: Ict.Petra.Shared.MSysMan.Data.MaintainUsersTDS
-    UsingNamespaces: [Ict.Petra.Shared.MSysMan.Data,Ict.Common.Data,Ict.Petra.Shared.MSysMan.Validation]
+    UsingNamespaces: [Ict.Petra.Shared.MSysMan.Data,Ict.Petra.Shared.MSysMan.Validation]
     FormType: edit
     Template: windowEdit
     Actions:
-        actNewUser: {ActionClick=NewUser}
-        actRetire: {ActionClick=RetireUser}
+        actNewUser: {ActionClick=NewUser, Image=New_Record.ico}
+        actRetire: {ActionClick=RetireUser, Image=Delete_Record.ico}
         actSetPassword: {ActionClick=SetPassword}
         cndChangePermissions:
     Controls:
@@ -18,13 +18,14 @@
             Dock: Fill
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNewUser, btnRetire, btnSetPassword]
-        btnNewUser:
-        btnRetire: {Label=Retire/Unretire}
-        btnSetPassword:
+            ControlsOrientation: horizontal
+        btnNewUser: {Width=110}
+        btnRetire: {Label=Retire/Unretire, Width=130}
+        btnSetPassword: {Width=130, StartNewButtonGroup=true}
         grdDetails:
             Dock: Fill
             Columns: [DetailUserId, DetailFirstName, DetailLastName, DetailRetired, DetailLastLoginDate]

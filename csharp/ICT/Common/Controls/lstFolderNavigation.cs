@@ -50,6 +50,7 @@ namespace Ict.Common.Controls
         private bool FMovingSplitter = false;       // avoid recursion of events on Mono
         private bool FMultiLedgerSite = false;
         private int FCurrentLedger = -1;
+        private bool FConferenceSelected = false;
 
         #region Public Static
 
@@ -85,6 +86,10 @@ namespace Ict.Common.Controls
             TVisualStyles VisualStyle = new TVisualStyles(TVisualStylesEnum.vsHorizontalCollapse);
 
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            #endregion
 
             sptNavigation.BackColor = VisualStyle.TitleGradientEnd;
 
@@ -173,6 +178,22 @@ namespace Ict.Common.Controls
             set
             {
                 FCurrentLedger = value;
+            }
+        }
+
+        /// <summary>
+        /// True if the user has previously selected a conference.
+        /// </summary>
+        public bool ConferenceSelected
+        {
+            get
+            {
+                return FConferenceSelected;
+            }
+
+            set
+            {
+                FConferenceSelected = value;
             }
         }
 
@@ -286,7 +307,7 @@ namespace Ict.Common.Controls
             {
                 APanelCreated = true;
 
-                CollPanelHoster = new TPnlModuleNavigation(AFolderNode, FDashboard, this.Width, FMultiLedgerSite);
+                CollPanelHoster = new TPnlModuleNavigation(AFolderNode, FDashboard, this.Width, FMultiLedgerSite, FConferenceSelected);
                 CollPanelHoster.Name = pnlName;
                 CollPanelHoster.Statusbar = FStatusbar;
                 CollPanelHoster.Dock = DockStyle.Left;

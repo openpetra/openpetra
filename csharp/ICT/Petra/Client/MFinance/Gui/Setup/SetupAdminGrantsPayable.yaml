@@ -7,23 +7,29 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
-    WindowWidth: 790
+    WindowWidth: 750
     WindowHeight: 500
     CacheableTableSpecificFilter: Ledger
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
-            Controls: [btnNew]
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [FeeCode, FeeDescription, ChargeOption, ChargePercentage, ChargeAmount, DrAccountCode, CostCentreCode, AccountCode]
@@ -48,7 +54,7 @@ RootNode:
         cmbDetailChargeOption:  {Label=Charge Option, OnChange=ChargeOptionChanged}
             OptionalValues: [Minimum, Maximum, Fixed, Percentage]
         txtDetailChargePercentage:  {Label=Charge Percentage, Format=PercentDecimal}
-        txtDetailChargeAmount:  {Label=Charge Amount, Format=Decimal, Width=111, LabelWidth=130}
+        txtDetailChargeAmount:  {Label=Charge Amount, Format=Decimal, Width=111, LabelWidth=120}
         cmbDetailCostCentreCode:  {NoLabel=True, List=UserDefinedList}
         cmbDetailAccountCode:  {NoLabel=True, List=UserDefinedList, Width=250}
         cmbDetailDrAccountCode:  {Label=Account, List=UserDefinedList}
@@ -61,7 +67,3 @@ RootNode:
                 Row0: [lblToBeDebited, lblToBeCredited]
                 Row1: [txtReceivingFund, cmbDetailCostCentreCode]
                 Row2: [cmbDetailDrAccountCode, cmbDetailAccountCode]
-
-    Toolbar:
-        tbbNew:
-            Label: New Payable Admin. Grant

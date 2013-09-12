@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -183,10 +183,30 @@ public class TSQLiteWriter
         // System.EntryPointNotFoundException: sqlite3_key
         ADBPwd = string.Empty;
 
-        SqliteConnection conn = new SqliteConnection("Data Source=" + ADBFilename +
-            (ADBPwd.Length > 0 ? ";Password=" + ADBPwd : ""));
+        TLogging.Log("Connecting to sqlite database " + ADBFilename);
+        TLogging.Log("Loading file " + ASqlfile);
 
-        conn.Open();
+        if (!File.Exists(ADBFilename))
+        {
+            TLogging.Log("File does not exist: " + ADBFilename);
+            return false;
+        }
+
+        SqliteConnection conn;
+
+        try
+        {
+            conn = new SqliteConnection("Data Source=" + ADBFilename +
+                (ADBPwd.Length > 0 ? ";Password=" + ADBPwd : ""));
+
+            conn.Open();
+        }
+        catch (Exception e)
+        {
+            TLogging.Log("cannot open file " + ADBFilename);
+            TLogging.Log(e.ToString());
+            return false;
+        }
 
         StreamReader reader = new StreamReader(ASqlfile);
         string line = null;
@@ -204,6 +224,15 @@ public class TSQLiteWriter
                 line = line.Replace("true", "1");
                 line = line.Replace("false", "0");
                 RunCommand(conn, line);
+            }
+            else if (line.ToUpper().StartsWith("COPY ") && line.ToUpper().Contains("FROM STDIN"))
+            {
+                string tablename = StringHelper.GetCSVValue(line.Replace(" ", ","), 1);
+
+                string columnnames = line.Substring(line.IndexOf("(") + 1);
+                columnnames = columnnames.Substring(0, columnnames.IndexOf(")"));
+
+                LoadDataFromReader(ADataDefinition, conn, reader, tablename, StringHelper.GetCSVList(columnnames, ",", true));
             }
             else if (line.ToUpper().StartsWith("COPY "))
             {
@@ -241,56 +270,121 @@ public class TSQLiteWriter
         }
     }
 
+    static private void PrepareSqlStatement(SqliteCommand cmd, string ATablename, TTable table, StringCollection AColumnNames)
+    {
+        string stmt = "INSERT INTO " + ATablename + " (";
+        bool first = true;
+
+        foreach (string columnname in AColumnNames)
+        {
+            if (!first)
+            {
+                stmt += ",";
+            }
+
+            first = false;
+
+            stmt += columnname;
+
+            SqliteParameter param = cmd.CreateParameter();
+            cmd.Parameters.Add(param);
+        }
+
+        stmt += ") VALUES (";
+        first = true;
+
+        for (int count = 0; count < AColumnNames.Count; count++)
+        {
+            if (!first)
+            {
+                stmt += ",";
+            }
+
+            first = false;
+            stmt += "?";
+        }
+
+        stmt += ")";
+
+        cmd.CommandText = stmt;
+    }
+
+    static private void ProcessLine(SqliteCommand cmd, string line, TTable table, StringCollection AColumnNames)
+    {
+        int count = 0;
+        string Separator = "\t";
+
+        line = line.Replace("\\N", "?");
+
+        if (!line.Contains(Separator))
+        {
+            Separator = ",";
+        }
+
+        foreach (string columnname in AColumnNames)
+        {
+            TTableField field = table.GetField(columnname);
+
+            Object val = StringHelper.GetNextCSV(ref line, Separator);
+
+            if (val.ToString() == "?")
+            {
+                val = null;
+            }
+            else if ((field.strType == "date") && (val.ToString().Length != 0))
+            {
+                if (val.ToString().Contains("-"))
+                {
+                    StringCollection dateString = StringHelper.StrSplit(val.ToString(), "-");
+                    val = new DateTime(Convert.ToInt16(dateString[0]),
+                        Convert.ToInt16(dateString[1]),
+                        Convert.ToInt16(dateString[2]));
+                }
+                else
+                {
+                    try
+                    {
+                        val = new DateTime(Convert.ToInt16(val.ToString().Substring(0, 3)),
+                            Convert.ToInt16(val.ToString().Substring(4, 2)),
+                            Convert.ToInt16(val.ToString().Substring(6, 2)));
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log(e.ToString());
+                        throw new Exception("error parsing date time " + val);
+                    }
+                }
+            }
+            else if (field.strType == "bit")
+            {
+                val = (val.ToString() == "true") || (val.ToString() == "t");
+            }
+
+            cmd.Parameters[count].Value = val;
+            count++;
+        }
+    }
+
     /// <summary>
     /// load data from a CSV file in Postgresql COPY format
     /// </summary>
-    /// <param name="ADataDefinition"></param>
-    /// <param name="conn"></param>
-    /// <param name="APath"></param>
-    /// <param name="ATablename"></param>
-    /// <returns></returns>
     static private bool LoadData(TDataDefinitionStore ADataDefinition, SqliteConnection conn, string APath, string ATablename)
     {
         using (SqliteTransaction dbTrans = conn.BeginTransaction())
         {
             using (SqliteCommand cmd = conn.CreateCommand())
             {
-                // prepare the statement
-                string stmt = "INSERT INTO " + ATablename + " (";
                 TTable table = ADataDefinition.GetTable(ATablename);
-                bool first = true;
 
-                foreach (TTableField field in table.grpTableField)
+                StringCollection ColumnNames = new StringCollection();
+
+                foreach (TTableField f in table.grpTableField)
                 {
-                    if (!first)
-                    {
-                        stmt += ",";
-                    }
-
-                    first = false;
-
-                    stmt += field.strName;
-
-                    SqliteParameter param = cmd.CreateParameter();
-                    cmd.Parameters.Add(param);
+                    ColumnNames.Add(f.strName);
                 }
 
-                stmt += ") VALUES (";
-                first = true;
-
-                for (int count = 0; count < table.grpTableField.Count; count++)
-                {
-                    if (!first)
-                    {
-                        stmt += ",";
-                    }
-
-                    first = false;
-                    stmt += "?";
-                }
-
-                stmt += ")";
-                cmd.CommandText = stmt;
+                // prepare the statement
+                PrepareSqlStatement(cmd, ATablename, table, ColumnNames);
 
                 // load the data from the text file
                 string filename = APath + Path.DirectorySeparatorChar + ATablename + ".csv";
@@ -305,40 +399,44 @@ public class TSQLiteWriter
 
                 while ((line = reader.ReadLine()) != null)
                 {
-                    int count = 0;
+                    ProcessLine(cmd, line, table, ColumnNames);
 
-                    foreach (TTableField field in table.grpTableField)
+                    if (cmd.ExecuteNonQuery() != 1)
                     {
-                        Object val = StringHelper.GetNextCSV(ref line, ",");
-
-                        if (val.ToString() == "?")
-                        {
-                            val = null;
-                        }
-                        else if ((field.strType == "date") && (val.ToString().Length != 0))
-                        {
-                            if (val.ToString().Contains("-"))
-                            {
-                                StringCollection dateString = StringHelper.StrSplit(val.ToString(), "-");
-                                val = new DateTime(Convert.ToInt16(dateString[0]),
-                                    Convert.ToInt16(dateString[1]),
-                                    Convert.ToInt16(dateString[2]));
-                            }
-                            else
-                            {
-                                val = new DateTime(Convert.ToInt16(val.ToString().Substring(0, 3)),
-                                    Convert.ToInt16(val.ToString().Substring(4, 2)),
-                                    Convert.ToInt16(val.ToString().Substring(6, 2)));
-                            }
-                        }
-                        else if (field.strType == "bit")
-                        {
-                            val = (val.ToString() == "true");
-                        }
-
-                        cmd.Parameters[count].Value = val;
-                        count++;
+                        throw new Exception("failed to import line for table " + ATablename);
                     }
+                }
+            }
+
+            dbTrans.Commit();
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// load data from the sql file in Postgresql COPY format
+    /// </summary>
+    static private bool LoadDataFromReader(TDataDefinitionStore ADataDefinition,
+        SqliteConnection conn,
+        StreamReader sr,
+        string ATablename,
+        StringCollection AColumnNames)
+    {
+        using (SqliteTransaction dbTrans = conn.BeginTransaction())
+        {
+            using (SqliteCommand cmd = conn.CreateCommand())
+            {
+                TTable table = ADataDefinition.GetTable(ATablename);
+
+                // prepare the statement
+                PrepareSqlStatement(cmd, ATablename, table, AColumnNames);
+
+                string line;
+
+                while ((line = sr.ReadLine()) != "\\.")
+                {
+                    ProcessLine(cmd, line, table, AColumnNames);
 
                     cmd.ExecuteNonQuery();
                 }

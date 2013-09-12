@@ -133,11 +133,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grdDetails.AddCheckBoxColumn("C", FMainDS.Tables[TEMP_TABLE_NAME].Columns["ConfidentialGiftFlag"]);
             grdDetails.AddTextColumn("Batch", FMainDS.Tables[TEMP_TABLE_NAME].Columns["BatchNumber"]);
             grdDetails.AddTextColumn("Trans", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftTransactionNumber"]);
+            grdDetails.AddTextColumn("Donor", FMainDS.Tables[TEMP_TABLE_NAME].Columns["DonorDescription"]);
             grdDetails.AddTextColumn("Recipient", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientDescription"]);
             grdDetails.AddTextColumn("Reference", FMainDS.Tables[TEMP_TABLE_NAME].Columns["Reference"]);
             grdDetails.AddTextColumn("Comment One", FMainDS.Tables[TEMP_TABLE_NAME].Columns["GiftCommentOne"]);
             grdDetails.AddTextColumn("Comment Type", FMainDS.Tables[TEMP_TABLE_NAME].Columns["CommentOneType"]);
             grdDetails.AddTextColumn("Recipient Ledger", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientLedgerNumber"]);
+            grdDetails.AddTextColumn("Donor", FMainDS.Tables[TEMP_TABLE_NAME].Columns["DonorKey"]);
             grdDetails.AddTextColumn("Recipient", FMainDS.Tables[TEMP_TABLE_NAME].Columns["RecipientKey"]);
             grdDetails.AddCheckBoxColumn("Charge Fee", FMainDS.Tables[TEMP_TABLE_NAME].Columns["ChargeFlag"]);
             grdDetails.AddTextColumn("Method of Payment", FMainDS.Tables[TEMP_TABLE_NAME].Columns["MethodOfPaymentCode"]);
@@ -173,7 +175,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if ((donor == 0) && (recipient == 0))
             {
-                MessageBox.Show(Catalog.GetString("You have to restrict the search via donor and/or via recipient"),
+                MessageBox.Show(Catalog.GetString("You must restrict the search to a donor and/or a recipient."),
                     Catalog.GetString("Donor/Recipient Error"));
                 txtDonor.Focus();
                 return;
@@ -349,7 +351,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             txtGiftTotal.NumberValueDecimal = sum;
-            txtGiftTotal.CurrencySymbol = FMainDS.ALedger[0].BaseCurrency;
+            txtGiftTotal.CurrencyCode = FMainDS.ALedger[0].BaseCurrency;
             txtGiftTotal.ReadOnly = true;
         }
 

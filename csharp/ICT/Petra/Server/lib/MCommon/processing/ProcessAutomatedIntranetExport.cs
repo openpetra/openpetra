@@ -71,7 +71,7 @@ namespace Ict.Petra.Server.MCommon.Processing
                     "<testdata@intranet.example.org>",
                     "Automatic Intranet Export",
                     "This is an automatic file upload from OpenPetra",
-                    fi.FullName);
+                    new string[] { fi.FullName });
 
                 if (result)
                 {

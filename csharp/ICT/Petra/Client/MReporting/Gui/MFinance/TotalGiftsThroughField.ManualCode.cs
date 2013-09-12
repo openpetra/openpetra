@@ -67,49 +67,40 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
 
-            ACalc.AddParameter("Year0", DateTime.Today.Year);
-            ACalc.AddParameter("param_Year0", DateTime.Today.Year + 1);
-            ACalc.AddParameter("Year3", DateTime.Today.Year - 3);
-
-            ACalc.AddParameter("Month0", 1);
-            ACalc.AddParameter("Month1", 2);
-            ACalc.AddParameter("MonthCombined", 0);
-            ACalc.AddParameter("CountCombined", 0);
-            ACalc.AddParameter("YearWorker", 0);
-            ACalc.AddParameter("YearField", 0);
-            ACalc.AddParameter("MonthWorker", 0);
-            ACalc.AddParameter("MonthField", 0);
+            ACalc.AddParameter("param_YearBlock", DateTime.Today.Year);
 
             int ColumnCounter = 0;
-            ACalc.AddParameter("param_calculation", "Month", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)3, ColumnCounter);
+//            ACalc.AddParameter("param_calculation", "MonthName", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)2, ColumnCounter);
             ++ColumnCounter;
-            ACalc.AddParameter("param_calculation", "AmountWorker", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter);
+//            ACalc.AddParameter("param_calculation", "MonthWorker", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
             ++ColumnCounter;
-            ACalc.AddParameter("param_calculation", "CountWorker", ColumnCounter);
+//            ACalc.AddParameter("param_calculation", "MonthWorkerCount", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)1, ColumnCounter);
             ++ColumnCounter;
-            ACalc.AddParameter("param_calculation", "AmountField", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter);
+//            ACalc.AddParameter("param_calculation", "MonthField", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
             ++ColumnCounter;
-            ACalc.AddParameter("param_calculation", "CountField", ColumnCounter);
+//            ACalc.AddParameter("param_calculation", "MonthFieldCount", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)1, ColumnCounter);
             ++ColumnCounter;
-            ACalc.AddParameter("param_calculation", "AmountCombined", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter);
+//            ACalc.AddParameter("param_calculation", "MonthTotal", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
             ++ColumnCounter;
-            ACalc.AddParameter("param_calculation", "CountCombined", ColumnCounter);
+//            ACalc.AddParameter("param_calculation", "MonthTotalCount", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)1, ColumnCounter);
             ++ColumnCounter;
-            ACalc.AddParameter("param_calculation", "AmountAverage", ColumnCounter);
+//          ACalc.AddParameter("param_calculation", "YearMonthlyAverage", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter);
             ++ColumnCounter;
-            ACalc.AddParameter("param_calculation", "CountAverage", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)1.8, ColumnCounter);
-            ++ColumnCounter;
+//          ACalc.AddParameter("param_calculation", "YearMonthlyAverageCount", ColumnCounter);
+            ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
 
-            ACalc.SetMaxDisplayColumns(ColumnCounter);
+/*
+ * ++ColumnCounter;
+ *          ACalc.SetMaxDisplayColumns(ColumnCounter);
+ */
         }
     }
 }

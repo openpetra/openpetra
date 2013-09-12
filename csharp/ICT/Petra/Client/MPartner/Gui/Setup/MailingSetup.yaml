@@ -3,24 +3,31 @@ RootNode:
     FormTitle: Maintain Mailings
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PMailing
-    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation, Ict.Petra.Shared.Interfaces.MCommon, Ict.Common.Remoting.Client]
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation, Ict.Petra.Shared.Interfaces.MCommon]
     FormType: edit
     Template: windowMaintainTable
     WindowWidth: 800
     WindowHeight: 575
     Actions:
-        actNew: {Label=New, ActionClick=NewRecord}
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
-            Controls: [btnNew]
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailMailingCode, DetailMailingDescription, DetailMailingDate, DetailMailingCost]
@@ -35,10 +42,6 @@ RootNode:
                 Row0: [txtDetailMailingCode, txtDetailMailingDescription]
                 Row1: [dtpDetailMailingDate, txtDetailMailingCost]
         txtDetailMailingCode: {Label=Mailing Code, CharacterCasing=Upper, Width=180}
-        txtDetailMailingDescription: {Label=Description, Width=350}
+        txtDetailMailingDescription: {Label=Description, Width=400}
         dtpDetailMailingDate: {Label=Mailing Date, Validation=True}
         txtDetailMailingCost: {Label=Mailing Cost, Format=Decimal}
-
-    Toolbar:
-        tbbNew: 
-            Label: New Mailing

@@ -84,7 +84,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
             // TODO this does not work yet. see EventRole Maintain screen
-            if (!ctrl.HasAttribute("Align"))
+            if ((!ctrl.HasAttribute("Align"))
+                && (!ctrl.HasAttribute("Width")))
             {
                 ctrl.SetAttribute("Stretch", "horizontally");
             }
@@ -106,11 +107,18 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 labelText = ctrl.Label + ":";
             }
 
-            int width = PanelLayoutGenerator.MeasureTextWidth(labelText) + 5;
-
-            if (Convert.ToInt32(ctrl.GetAttribute("Width", "1")) < width)
+            if (ctrl.HasAttribute("Width"))
             {
-                ctrl.SetAttribute("Width", width.ToString());
+                ctrl.SetAttribute("Width", ctrl.GetAttribute("Width"));
+            }
+            else
+            {
+                ctrl.SetAttribute("Width", (PanelLayoutGenerator.MeasureTextWidth(labelText) + 5).ToString());
+            }
+
+            if (ctrl.HasAttribute("Height"))
+            {
+                ctrl.SetAttribute("Height", ctrl.GetAttribute("Height"));
             }
 
             writer.SetControlProperty(ctrl, "Text", "\"" + labelText + "\"");
@@ -179,14 +187,61 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>write the code for the designer file where the properties of the control are written</summary>
         public override ProcessTemplate SetControlProperties(TFormWriter writer, TControlDef ctrl)
         {
+            bool OverrideImageAlign = false;
+            bool OverrideTextAlign = false;
+            bool NoLabel = false;
+
             if (!ctrl.HasAttribute("Width"))
             {
                 ctrl.SetAttribute("Width", (PanelLayoutGenerator.MeasureTextWidth(ctrl.Label) + 15).ToString());
             }
 
-            if (!ctrl.HasAttribute("Height"))
+            if (ctrl.HasAttribute("NoLabel") && (ctrl.GetAttribute("NoLabel").ToLower() == "true"))
             {
-                ctrl.SetAttribute("Height", FDefaultHeight.ToString());
+                writer.SetControlProperty(ctrl, "Text", "\"\"");
+
+                NoLabel = true;
+            }
+            else
+            {
+                writer.SetControlProperty(ctrl, "Size", "new System.Drawing.Size(" +
+                    ctrl.GetAttribute("Width").ToString() + ", " + ctrl.GetAttribute("Height").ToString() + ")");
+                writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
+            }
+
+            if (ctrl.IsOnHorizontalGridButtonPanel)
+            {
+//Console.WriteLine("Setting Height for Control '" + ctrl.controlName + "' to 23 as it is on a horizontal Grid Button Panel");
+                FDefaultHeight = 23;
+
+                if (!ctrl.HasAttribute("ImageAlign"))
+                {
+                    if (NoLabel)
+                    {
+//Console.WriteLine("Setting ImageAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.BottomCenter as it is on a horizontal Grid Button Panel (no Text)");
+                        writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.BottomCenter");
+                    }
+                    else
+                    {
+//Console.WriteLine("Setting ImageAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.BottomLeft as it is on a horizontal Grid Button Panel");
+                        writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.BottomLeft");
+
+                        // Note: In this case want the text centered on the Button, which the TextAlign Property will achieve.
+                        // However, its default value is System.Drawing.ContentAlignment.MiddleCenter which means we don't need to explicitly write this out into the Designer file...
+//Console.WriteLine("Setting TextAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.MiddleCenter as it is on a horizontal Grid Button Panel");
+//                        writer.SetControlProperty(ctrl, "TextAlign", "System.Drawing.ContentAlignment.MiddleCenter");
+                    }
+
+                    OverrideImageAlign = true;
+                    OverrideTextAlign = true;
+                }
+            }
+            else
+            {
+                if (!ctrl.HasAttribute("Height"))
+                {
+                    ctrl.SetAttribute("Height", FDefaultHeight.ToString());
+                }
             }
 
             base.SetControlProperties(writer, ctrl);
@@ -194,17 +249,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (ctrl.GetAttribute("AcceptButton").ToLower() == "true")
             {
                 writer.Template.AddToCodelet("INITUSERCONTROLS", "this.AcceptButton = " + ctrl.controlName + ";" + Environment.NewLine);
-            }
-
-            if (ctrl.HasAttribute("NoLabel") && (ctrl.GetAttribute("NoLabel").ToLower() == "true"))
-            {
-                writer.SetControlProperty(ctrl, "Text", "\"\"");
-            }
-            else
-            {
-                writer.SetControlProperty(ctrl, "Size", "new System.Drawing.Size(" +
-                    ctrl.GetAttribute("Width").ToString() + ", " + ctrl.GetAttribute("Height").ToString() + ")");
-                writer.SetControlProperty(ctrl, "Text", "\"" + ctrl.Label + "\"");
             }
 
             if (ctrl.GetAction() != null)
@@ -220,14 +264,31 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     if (writer.GetControlProperty(ctrl.controlName, "Text") == "\"\"")
                     {
-                        writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.MiddleCenter");
+                        if ((!ctrl.HasAttribute("ImageAlign"))
+                            && !OverrideImageAlign)
+                        {
+                            // Note: In this case we want the Image centered on the Button, which the ImageAlign Property will achieve.
+                            // However, its default value is System.Drawing.ContentAlignment.MiddleCenter which means we don't need to explicitly write this out into the Designer file...
+
+//Console.WriteLine("Setting ImageAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.MiddleCenter as it is NOT on a horizontal Grid Button Panel (no Text)");
+//                            writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.MiddleCenter");
+                        }
                     }
                     else
                     {
-                        writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.MiddleLeft");
+                        if ((!ctrl.HasAttribute("ImageAlign"))
+                            && !OverrideImageAlign)
+                        {
+//Console.WriteLine("Setting ImageAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.MiddleLeft as it is NOT on a horizontal Grid Button Panel");
+                            writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.MiddleLeft");
+                        }
                     }
 
-                    writer.SetControlProperty(ctrl, "TextAlign", "System.Drawing.ContentAlignment.MiddleRight");
+                    if (!OverrideTextAlign)
+                    {
+//Console.WriteLine("Setting TextAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.MiddleRight as it is NOT on a horizontal Grid Button Panel");
+                        writer.SetControlProperty(ctrl, "TextAlign", "System.Drawing.ContentAlignment.MiddleRight");
+                    }
                 }
             }
 

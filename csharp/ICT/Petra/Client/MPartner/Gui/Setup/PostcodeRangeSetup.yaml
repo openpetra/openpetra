@@ -1,0 +1,62 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain Postcode Ranges
+    Namespace: Ict.Petra.Client.MPartner.Gui.Setup
+    DetailTable: PPostcodeRange
+    CacheableTable: PostcodeRangeList
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    FormType: edit
+    Template: windowMaintainCacheableTable
+    WindowWidth: 660
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+        actAccept: {Label=&Accept, ActionClick=BtnAccept_Click}
+        actCancel: {Label=&Cancel, ActionClick=BtnCancel_Click}
+    Controls:
+        pnlContent:
+            Controls: [pnlRegionName, pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlRegionName:
+            Dock: Top
+            Controls: [txtRegionName]
+            Visible: false
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlButtons, grdDetails, pnlAcceptCancelButtons]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
+        pnlAcceptCancelButtons:
+            Dock: Right
+            Controls: [btnAccept, btnCancel]
+            ControlsOrientation: vertical
+            Visible: false
+        btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
+        btnAccept:
+            Action: actAccept
+            Width: 80
+        btnCancel:
+            Action: actCancel
+            Width: 80
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailRange, DetailFrom, DetailTo]
+            ActionFocusRow: FocusedRowChanged
+            SortOrder: DetailRange ASC
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailRange]
+                Row1: [txtDetailFrom, txtDetailTo]
+        txtRegionName: {ReadOnly=true, Stretch=horizontally}
+        txtDetailRange: {Label=Range Name, Width=200}
+        txtDetailFrom: {Label=From, Width=120}
+        txtDetailTo: {Label=To, Width=120}

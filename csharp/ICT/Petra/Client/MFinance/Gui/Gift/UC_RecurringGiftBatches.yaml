@@ -8,9 +8,9 @@ RootNode:
     FormType: edit
     Template: controlMaintainTable
     Actions:
-        actNew: {Label=&Add, ActionClick=NewRow}
-        actDelete: {Label=&Delete, ActionClick=DeleteRow}
-        actSubmit: {Label=&Submit, ActionClick=Submit}
+        actNew: {Label=&Add Batch, ActionClick=NewRow}
+        actDelete: {Label=&Delete Batch, SkipReferenceCheck=true, ActionClick=DeleteRecord}
+        actSubmit: {Label=&Submit Batch, ActionClick=Submit}
     Controls:
         pnlContent:
             Dock: Fill
@@ -23,13 +23,14 @@ RootNode:
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
         pnlDetailGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlDetailButtons]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
-            Dock: Right
+            Dock: Bottom
             Controls: [btnNew, btnDelete, btnSubmit]
-        btnNew: {Action=actNew}
-        btnDelete: {Action=actDelete}
-        btnSubmit: {Action=actSubmit}
+            ControlsOrientation: horizontal
+        btnNew: {Action=actNew, Width=120}
+        btnDelete: {Action=actDelete, Width=120}
+        btnSubmit: {Action=actSubmit, Width=120, StartNewButtonGroup=true}
         grdDetails:
             Dock: Fill
             TableName: ARecurringGiftBatch
@@ -38,6 +39,7 @@ RootNode:
             ActionDoubleClick: ShowTransactionTab
             ActionEnterKeyPressed: ShowTransactionTab
             SortOrder: BatchNumber DESC
+            EnableMultiSelection: false
         pnlDetails:
             Dock: Bottom
             Controls:

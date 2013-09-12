@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -92,6 +92,7 @@ namespace Tests.MFinance.Server.ICH
 
             sr.Close();
 
+            FileContent = FileContent.Replace("{ledgernumber}", FLedgerNumber.ToString());
             FileContent = FileContent.Replace("2010-09-30", AGiftDateEffective.ToString("yyyy-MM-dd"));
 
             Hashtable parameters = new Hashtable();
@@ -146,9 +147,7 @@ namespace Tests.MFinance.Server.ICH
         /// </summary>
         private void ImportAdminFees()
         {
-            bool NewTransaction = false;
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             AFeesPayableRow template = new AFeesPayableTable().NewRowTyped(false);
 
@@ -157,12 +156,6 @@ namespace Tests.MFinance.Server.ICH
 
             AFeesPayableTable FeesPayableTable = AFeesPayableAccess.LoadUsingTemplate(template, Transaction);
 
-            if (FeesPayableTable.Count == 0)
-            {
-                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-feespayable-data.sql");
-            }
-
             AFeesReceivableRow template1 = new AFeesReceivableTable().NewRowTyped(false);
 
             template.LedgerNumber = FLedgerNumber;
@@ -170,15 +163,18 @@ namespace Tests.MFinance.Server.ICH
 
             AFeesReceivableTable FeesReceivableTable = AFeesReceivableAccess.LoadUsingTemplate(template1, Transaction);
 
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            if (FeesPayableTable.Count == 0)
+            {
+                CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
+                    "test-sql\\gl-test-feespayable-data.sql", FLedgerNumber);
+            }
+
             if (FeesReceivableTable.Count == 0)
             {
                 CommonNUnitFunctions.LoadTestDataBase("csharp\\ICT\\Testing\\lib\\MFinance\\GL\\" +
-                    "test-sql\\gl-test-feesreceivable-data.sql");
-            }
-
-            if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
+                    "test-sql\\gl-test-feesreceivable-data.sql", FLedgerNumber);
             }
         }
 

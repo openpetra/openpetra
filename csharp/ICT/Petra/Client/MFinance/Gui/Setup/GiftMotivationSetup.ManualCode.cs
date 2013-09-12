@@ -84,9 +84,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
         private void NewRowManual(ref AMotivationDetailRow ARow)
         {
-            // TODO support more motivation groups; only supporting one motivation group at the moment
             ARow.LedgerNumber = FLedgerNumber;
-            ARow.MotivationGroupCode = FMainDS.AMotivationDetail[0].MotivationGroupCode;
+
+            if ((FMainDS.AMotivationGroup == null) || (FMainDS.AMotivationGroup.Rows.Count == 0))
+            {
+                MessageBox.Show(Catalog.GetString("You must define at least one Motivation Group."), Catalog.GetString("New Motivation Detail"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            ARow.MotivationGroupCode = FMainDS.AMotivationGroup[0].MotivationGroupCode;
 
             string newName = Catalog.GetString("NEWDETAIL");
             Int32 countNewDetail = 0;
@@ -103,6 +110,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             }
 
             ARow.MotivationDetailCode = newName;
+            ARow.MotivationDetailDesc = Catalog.GetString("PLEASE ENTER DESCRIPTION");
         }
 
         private TSubmitChangesResult StoreManualCode(ref GiftBatchTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
@@ -195,6 +203,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                     FMainDS.AMotivationDetailFee.Rows.Add(NewRow);
                 }
             }
+        }
+
+        private bool PreDeleteManual(AMotivationDetailRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            ADeletionQuestion += String.Format("{0}{0}({1} {2}, {3} {4})",
+                Environment.NewLine,
+                lblDetailMotivationGroupCode.Text,
+                cmbDetailMotivationGroupCode.GetSelectedString(),
+                lblDetailMotivationDetailCode.Text,
+                txtDetailMotivationDetailCode.Text);
+            return true;
         }
     }
 }

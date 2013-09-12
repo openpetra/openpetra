@@ -10,18 +10,25 @@ RootNode:
     WindowWidth: 750
     WindowHeight: 600
     Actions:
-        actNew: {Label=New, ActionClick=NewRecord}
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
-            Controls: [btnNew]
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailLanguageCode, DetailMonthName1, DetailMonthName2, DetailMonthName3, DetailMonthName4, DetailMonthName5, DetailMonthName6, DetailMonthName7, DetailMonthName8, DetailMonthName9, DetailMonthName10, DetailMonthName11, DetailMonthName12]
@@ -88,6 +95,3 @@ RootNode:
             Margin: 0
         cmbDetailLanguageCode: {List=LanguageCodeList}
         Empty:
-    Toolbar:
-        tbbNew:
-            Label: New Month Names for Different Language

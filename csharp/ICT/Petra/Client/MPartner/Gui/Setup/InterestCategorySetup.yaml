@@ -10,18 +10,25 @@ RootNode:
     WindowWidth: 713
     WindowHeight: 700
     Actions:
-        actNew: {Label=New, ActionClick=NewRecord}
+        actNew: {Label=&New, ActionClick=NewRecord}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
-            Controls: [btnNew]
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailCategory, DetailDescription, DetailLevelDescriptions, DetailLevelRangeLow, DetailLevelRangeHigh]
@@ -43,11 +50,7 @@ RootNode:
                 Row0: [txtDetailLevelDescriptions, txtDetailLevelRangeLow, txtDetailLevelRangeHigh]
             ColWidths: [3=Fixed:60]
         txtDetailCategory: {Label=Category, CharacterCasing=Upper}
-        txtDetailDescription: {Label=Description, Width=260}
+        txtDetailDescription: {Label=Description, Width=310}
         txtDetailLevelDescriptions:
         txtDetailLevelRangeLow: {Format=Integer, Label=Level Range Lower, Width=30}
         txtDetailLevelRangeHigh: {Format=Integer, Label=Level Range Upper, Width=30}
-
-    Toolbar:
-        tbbNew: 
-            Label: New Interest Category

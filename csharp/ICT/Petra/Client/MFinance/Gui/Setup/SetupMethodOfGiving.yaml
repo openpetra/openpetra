@@ -11,18 +11,24 @@ RootNode:
     WindowHeight: 500
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlButtons, grdDetails]
         pnlButtons:
-            Dock: Right
-            Controls: [btnNew]
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
         btnNew:
             Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [MethodOfGivingCode, MethodOfGivingDesc, RecurringMethodFlag, TaxRebateFlag, TrustFlag, Active]
@@ -42,11 +48,8 @@ RootNode:
                 Row2: [chkDetailTrustFlag]
                 Row3: [chkDetailActive]
         txtDetailMethodOfGivingCode: {Label=Method of Giving, CharacterCasing=Upper}
-        txtDetailMethodOfGivingDesc: {Label=Description, Width=245}
+        txtDetailMethodOfGivingDesc: {Label=Description, Width=295}
         chkDetailRecurringMethodFlag:  {Label=Used by Recurring Gifts}
         chkDetailTaxRebateFlag:  {Label=Involves a Tax Rebate}
         chkDetailTrustFlag:  {Label=Involves a Trust}
         chkDetailActive:  {Label=Active}
-    Toolbar:
-        tbbNew:
-            Label: New Method of Giving

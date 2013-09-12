@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -93,7 +93,7 @@ namespace Plugin.AuthenticationPetraProgress
 
                 try
                 {
-                    DBAccess.GDBAccessObj.ExecuteNonQuery("UPDATE pub_s_user SET s_password2_c = ?", t, false, parameters.ToArray());
+                    DBAccess.GDBAccessObj.ExecuteNonQuery("UPDATE pub_s_user SET s_password2_c = ?", t, parameters.ToArray());
                 }
                 catch (Exception e)
                 {
@@ -148,7 +148,7 @@ namespace Plugin.AuthenticationPetraProgress
 
                 try
                 {
-                    DBAccess.GDBAccessObj.ExecuteNonQuery("UPDATE pub_s_user SET s_password2_c = ?", t, false, parameters.ToArray());
+                    DBAccess.GDBAccessObj.ExecuteNonQuery("UPDATE pub_s_user SET s_password2_c = ?", t, parameters.ToArray());
                 }
                 catch (Exception e)
                 {

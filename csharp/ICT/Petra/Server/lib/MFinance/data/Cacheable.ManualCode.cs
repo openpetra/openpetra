@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -123,6 +123,19 @@ namespace Ict.Petra.Server.MFinance.Cacheable
             return ACostCentreAccess.LoadViaALedger(ALedgerNumber, FieldList, AReadTransaction);
         }
 
+        private DataTable GetCostCentresLinkedToPartnerListTable(TDBTransaction AReadTransaction, System.Int32 ALedgerNumber, string ATableName)
+        {
+            DataTable CostCentreTable;
+
+            CostCentreTable = TCostCentresLinkedToPartner.GetData(ATableName, ALedgerNumber, AReadTransaction);
+            CostCentreTable.PrimaryKey = new DataColumn[] {
+                CostCentreTable.Columns[AValidLedgerNumberTable.GetLedgerNumberDBName()],
+                CostCentreTable.Columns[AValidLedgerNumberTable.GetCostCentreCodeDBName()],
+                CostCentreTable.Columns[AValidLedgerNumberTable.GetPartnerKeyDBName()]
+            };
+            return CostCentreTable;
+        }
+
         private DataTable GetICHStewardshipListTable(TDBTransaction AReadTransaction, System.Int32 ALedgerNumber, string ATableName)
         {
             StringCollection FieldList = new StringCollection();
@@ -193,6 +206,92 @@ namespace Ict.Petra.Server.MFinance.Cacheable
             FieldList.Add(AAccountHierarchyTable.GetLedgerNumberDBName());
             FieldList.Add(AAccountHierarchyTable.GetAccountHierarchyCodeDBName());
             return AAccountHierarchyAccess.LoadViaALedger(ALedgerNumber, FieldList, AReadTransaction);
+        }
+
+        partial void ValidateFeesPayableListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable)
+        {
+            Type DataTableType;
+            AFeesReceivableTable otherTable = (AFeesReceivableTable)TCacheableTablesManager.GCacheableTablesManager.GetCachedDataTable(
+                "FeesReceivableList",
+                out DataTableType);
+
+            otherTable.DefaultView.Sort = String.Format("{0}, {1} ASC",
+                AFeesReceivableTable.GetLedgerNumberDBName(), AFeesReceivableTable.GetFeeCodeDBName());
+
+            for (int i = 0; i < ASubmitTable.Rows.Count; i++)
+            {
+                DataRow row = ASubmitTable.Rows[i];
+
+                if ((row.RowState == DataRowState.Added) || (row.RowState == DataRowState.Modified))
+                {
+                    string feeCode = row[AFeesPayableTable.ColumnFeeCodeId].ToString();
+                    int ledgerNumber = Convert.ToInt32(row[AFeesPayableTable.ColumnLedgerNumberId]);
+
+                    int otherRowNum = otherTable.DefaultView.Find(new object[] { ledgerNumber, feeCode });
+
+                    if (otherRowNum >= 0)
+                    {
+                        AFeesReceivableRow otherRow = (AFeesReceivableRow)(otherTable.DefaultView[otherRowNum].Row);
+                        string otherUser = otherRow.CreatedBy;
+
+                        if (!String.IsNullOrEmpty(otherRow.ModifiedBy))
+                        {
+                            otherUser = otherRow.ModifiedBy;
+                        }
+
+                        // The message text doesn't get back to the user - but maybe one day it will
+                        throw new EDBConcurrencyException(String.Format(Catalog.GetString(
+                                    "While you were editing this screen another user created a fee code '{0}' for the Grants Receivable screen.  You will have to close and re-open the Grants Payable screen and make your changes again."),
+                                feeCode),
+                            "write",
+                            otherTable.TableName,
+                            otherUser,
+                            otherRow.ModificationId);
+                    }
+                }
+            }
+        }
+
+        partial void ValidateFeesReceivableListManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable)
+        {
+            Type DataTableType;
+            AFeesPayableTable otherTable = (AFeesPayableTable)TCacheableTablesManager.GCacheableTablesManager.GetCachedDataTable("FeesPayableList",
+                out DataTableType);
+
+            otherTable.DefaultView.Sort = String.Format("{0}, {1} ASC", AFeesPayableTable.GetLedgerNumberDBName(), AFeesPayableTable.GetFeeCodeDBName());
+
+            for (int i = 0; i < ASubmitTable.Rows.Count; i++)
+            {
+                DataRow row = ASubmitTable.Rows[i];
+
+                if ((row.RowState == DataRowState.Added) || (row.RowState == DataRowState.Modified))
+                {
+                    string feeCode = row[AFeesReceivableTable.ColumnFeeCodeId].ToString();
+                    int ledgerNumber = Convert.ToInt32(row[AFeesReceivableTable.ColumnLedgerNumberId]);
+
+                    int otherRowNum = otherTable.DefaultView.Find(new object[] { ledgerNumber, feeCode });
+
+                    if (otherRowNum >= 0)
+                    {
+                        AFeesPayableRow otherRow = (AFeesPayableRow)(otherTable.DefaultView[otherRowNum].Row);
+                        string otherUser = otherRow.CreatedBy;
+
+                        if (!String.IsNullOrEmpty(otherRow.ModifiedBy))
+                        {
+                            otherUser = otherRow.ModifiedBy;
+                        }
+
+                        // The message text doesn't get back to the user - but maybe one day it will
+                        throw new EDBConcurrencyException(String.Format(Catalog.GetString(
+                                    "While you were editing this screen another user created a fee code '{0}' for the Grants Payable screen.  You will have to close and re-open the Grants Receivable screen and make your changes again."),
+                                feeCode),
+                            "write",
+                            otherTable.TableName,
+                            otherUser,
+                            otherRow.ModificationId);
+                    }
+                }
+            }
         }
     }
 }

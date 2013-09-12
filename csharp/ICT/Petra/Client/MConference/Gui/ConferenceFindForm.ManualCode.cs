@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       berndr
+//       berndr, peters
 //
 // Copyright 2004-2011 by OM International
 //
@@ -28,17 +28,28 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 using GNU.Gettext;
+using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.Controls;
+using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
+using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MCommon;
+using Ict.Petra.Client.MReporting.Gui.MPersonnel;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MConference;
 using Ict.Petra.Shared.MConference.Data;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Common.Remoting.Client;
-//using Ict.Petra.Shared.MReporting;
 
 namespace Ict.Petra.Client.MConference.Gui
 {
@@ -77,6 +88,43 @@ namespace Ict.Petra.Client.MConference.Gui
             LoadDataGrid(true);
 
             grdConferences.DoubleClickCell += new TDoubleClickCellEventHandler(grdConferences_DoubleClickCell);
+
+            // Attempt to obtain conference key from parent form or parent's parent form and use this to focus the currently selected
+            // conference in the grid. If no conference key is found then the first conference in the grid will be focused.
+            Form MainWindow = FPetraUtilsObject.GetCallerForm();
+            MethodInfo Method = MainWindow.GetType().GetMethod("GetSelectedConferenceKey");
+
+            if (Method == null)
+            {
+                Method = MainWindow.GetType().GetMethod("GetPetraUtilsObject");
+
+                if (Method != null)
+                {
+                    TFrmPetraUtils ParentPetraUtilsObject = (TFrmPetraUtils)Method.Invoke(MainWindow, null);
+                    MainWindow = ParentPetraUtilsObject.GetCallerForm();
+                    Method = MainWindow.GetType().GetMethod("GetSelectedConferenceKey");
+                }
+            }
+
+            if (Method != null)
+            {
+                FSelectedConferenceKey = Convert.ToInt64(Method.Invoke(MainWindow, null));
+                int RowPos = 1;
+
+                foreach (DataRowView rowView in FMainDS.PcConference.DefaultView)
+                {
+                    PcConferenceRow Row = (PcConferenceRow)rowView.Row;
+
+                    if (Row.ConferenceKey == FSelectedConferenceKey)
+                    {
+                        break;
+                    }
+
+                    RowPos++;
+                }
+
+                grdConferences.SelectRowInGrid(RowPos, true);
+            }
         }
 
         void grdConferences_DoubleClickCell(object Sender, SourceGrid.CellContextEventArgs e)
@@ -84,14 +132,86 @@ namespace Ict.Petra.Client.MConference.Gui
             Accept(e, null);
         }
 
+        /// <summary>
+        /// Create a new conference
+        /// </summary>
+        public void NewConference(System.Object sender, EventArgs e)
+        {
+            Form MainWindow = FPetraUtilsObject.GetCallerForm();
+
+            System.Int64 PartnerKey = 0;
+            string PartnerShortName;
+            String OutreachCode;
+
+            // If the delegate is defined, the host form will launch a Modal Partner Find screen for us
+            if (TCommonScreensForwarding.OpenEventFindScreen != null)
+            {
+                // delegate IS defined
+                try
+                {
+                    TCommonScreensForwarding.OpenEventFindScreen.Invoke
+                        ("",
+                        out PartnerKey,
+                        out PartnerShortName,
+                        out OutreachCode,
+                        MainWindow);
+
+                    // check if a conference already exists for chosen event
+                    Boolean ConferenceExists = TRemote.MConference.Conference.WebConnectors.ConferenceExists(PartnerKey);
+
+                    if ((PartnerKey != -1) && !ConferenceExists)
+                    {
+                        TRemote.MConference.Conference.WebConnectors.CreateNewConference(PartnerKey);
+
+                        FSelectedConferenceKey = PartnerKey;
+                        FSelectedConferenceName = PartnerShortName;
+
+                        ReloadNavigation();
+                    }
+                    else if ((PartnerKey != -1) && ConferenceExists)
+                    {
+                        MessageBox.Show(Catalog.GetString("This conference already exists"), Catalog.GetString(
+                                "New Conference"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        NewConference(sender, e);
+                    }
+                }
+                catch (Exception exp)
+                {
+                    throw new ApplicationException("Exception occured while calling OpenEventFindScreen Delegate!", exp);
+                }
+            }
+        }
+
         private void Accept(System.Object sender, EventArgs e)
         {
-            // int[] SelectedRowIndex = grdConferences.Selection.GetSelectionRegion().GetRowsIndex();
-
             if (grdConferences.SelectedDataRows.Length == 1)
             {
                 FSelectedConferenceKey = (Int64)((DataRowView)grdConferences.SelectedDataRows[0]).Row[PcConferenceTable.GetConferenceKeyDBName()];
                 FSelectedConferenceName = (String)((DataRowView)grdConferences.SelectedDataRows[0]).Row[PPartnerTable.GetPartnerShortNameDBName()];
+
+                ReloadNavigation();
+            }
+        }
+
+        // reload navigation
+        private void ReloadNavigation()
+        {
+            // update user defaults table
+            TUserDefaults.SetDefault(TUserDefaults.CONFERENCE_LASTCONFERENCEWORKEDWITH, FSelectedConferenceKey);
+
+            Form MainWindow = FPetraUtilsObject.GetCallerForm();
+            MethodInfo method = MainWindow.GetType().GetMethod("LoadNavigationUI");
+
+            if (method != null)
+            {
+                method.Invoke(MainWindow, new object[] { true });
+            }
+
+            method = MainWindow.GetType().GetMethod("SelectConferenceFolder");
+
+            if (method != null)
+            {
+                method.Invoke(MainWindow, null);
             }
 
             this.DialogResult = DialogResult.OK;
@@ -132,6 +252,22 @@ namespace Ict.Petra.Client.MConference.Gui
             }
 
             grdConferences.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PcConference.DefaultView);
+
+            // sort order for grid
+            DataView MyDataView = FMainDS.PcConference.DefaultView;
+            MyDataView.Sort = "p_partner_short_name_c ASC";
+            grdConferences.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
+        }
+
+        // Deletes the conference
+        private void RemoveRecord(System.Object sender, EventArgs e)
+        {
+            FSelectedConferenceKey = (Int64)((DataRowView)grdConferences.SelectedDataRows[0]).Row[PcConferenceTable.GetConferenceKeyDBName()];
+            FSelectedConferenceName = (String)((DataRowView)grdConferences.SelectedDataRows[0]).Row[PPartnerTable.GetPartnerShortNameDBName()];
+
+            TDeleteConference.DeleteConference(FPetraUtilsObject.GetCallerForm(), FSelectedConferenceKey, FSelectedConferenceName);
+
+            LoadDataGrid(false);
         }
     }
 
@@ -158,7 +294,7 @@ namespace Ict.Petra.Client.MConference.Gui
         {
             DialogResult dlgResult;
 
-            AConferenceKey = -1;
+            AConferenceKey = 0;
             AConferenceName = String.Empty;
 
             TFrmConferenceFindForm FindConference = new TFrmConferenceFindForm(AParentForm);

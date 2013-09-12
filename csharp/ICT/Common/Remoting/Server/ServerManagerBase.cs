@@ -479,6 +479,14 @@ CheckAllClientsDisconnected:
         }
 
         /// <summary>
+        /// RefreshAllCachedTables
+        /// </summary>
+        public virtual void RefreshAllCachedTables()
+        {
+            // implemented in derived class
+        }
+
+        /// <summary>
         /// AddUser
         /// </summary>
         public virtual bool AddUser(string AUserId)

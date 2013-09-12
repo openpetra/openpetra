@@ -42,6 +42,8 @@ using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
 
+using System.Reflection;
+
 namespace PetraServerConsole
 {
 #region TServer
@@ -73,12 +75,13 @@ public class TServer
             // Uncomment the following lines to see which DLL's are loaded into the Default AppDomain at application start.
             // It can help in identifying which DLL's are loaded later in addition to those that were loaded at application start.
 
-            // Console.WriteLine('Loaded Assemblies in AppDomain ' + Thread.GetDomain.FriendlyName + ' (at Server start):');
-            // foreach (Assembly tmpAssembly in Thread.GetDomain.GetAssemblies())
-            // {
-            // Console.WriteLine(tmpAssembly.FullName);
-            // }
-
+/*
+ *          Console.WriteLine("Loaded Assemblies in AppDomain " + Thread.GetDomain().FriendlyName + " (at Server start):");
+ *          foreach (Assembly tmpAssembly in Thread.GetDomain().GetAssemblies())
+ *          {
+ *              Console.WriteLine(tmpAssembly.FullName);
+ *          }
+ */
             new TAppSettingsManager();
 
             TLanguageCulture.Init();
@@ -312,7 +315,9 @@ public class TServer
 
                         Console.WriteLine("     e: export the database to yml.gz");
                         Console.WriteLine("     i: import a yml.gz, which will overwrite the database");
-
+#if DEBUG
+                        Console.WriteLine("     r: Mark all Cached Tables for Refreshing");
+#endif
                         Console.WriteLine("     o: controlled Server shutdown (gets all connected clients to disconnect)");
                         Console.WriteLine("     u: unconditional Server shutdown (forces 'hard' disconnection of all Clients!)");
                         WriteServerPrompt();
@@ -445,6 +450,16 @@ public class TServer
                             Console.WriteLine("     Reset of database cancelled!");
                             WriteServerPrompt();
                         }
+
+                        break;
+
+                    case 'r':
+                    case 'R':
+                        Console.WriteLine(Environment.NewLine + "-> Marking all Cached Tables for Refreshing... <-");
+
+                        TheServerManager.RefreshAllCachedTables();
+
+                        WriteServerPrompt();
 
                         break;
 

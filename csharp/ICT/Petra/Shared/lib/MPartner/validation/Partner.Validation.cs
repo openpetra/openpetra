@@ -213,6 +213,53 @@ namespace Ict.Petra.Shared.MPartner.Validation
             }
         }
 
+        
+        /// <summary>
+        /// Validates the Partner Detail data of a Partner of PartnerClass CHURCH.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="ADenominationCacheableDT">The contents of the Cacheable DataTable 'DenominationList'.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidatePartnerChurchManual(object AContext, PChurchRow ARow, DataTable ADenominationCacheableDT, 
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // Special check: 'Denominations' must exist!
+            ValidationColumn = ARow.Table.Columns[PChurchTable.ColumnDenominationCodeId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ADenominationCacheableDT != null) 
+                {
+                    if (ADenominationCacheableDT.Rows.Count == 0) 
+                    {                        
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_NO_DENOMINATIONS_SET_UP,
+                                String.Empty)),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+                            
+                    }    
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+        
         /// <summary>
         /// Validates the Partner data of a Partner.
         /// </summary>
@@ -273,8 +320,11 @@ namespace Ict.Petra.Shared.MPartner.Validation
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
             DataColumn ValidationColumn;
+            DataColumn ValidationColumn2;
             TValidationControlsData ValidationControlsData;
-            TScreenVerificationResult VerificationResult;
+            TValidationControlsData ValidationControlsData2;
+            TScreenVerificationResult ScreenVerificationResult;
+            TVerificationResult VerificationResult = null;
 
             // Don't validate deleted DataRows
             if (ARow.RowState == DataRowState.Deleted)
@@ -291,17 +341,287 @@ namespace Ict.Petra.Shared.MPartner.Validation
                      && (ARow.SubscriptionStatus == String.Empty))
                     || (ARow.IsSubscriptionStatusNull()))
                 {
-                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                    ScreenVerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                             ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_STATUSMANDATORY)),
                         ValidationColumn, ValidationControlsData.ValidationControl);
                 }
                 else
                 {
-                    VerificationResult = null;
+                    ScreenVerificationResult = null;
                 }
 
                 // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, ScreenVerificationResult, ValidationColumn);
+            }
+
+            // perform checks that include 'Start Date' ----------------------------------------------------------------
+            ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnStartDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                // 'Start Date' must not be later than 'Expiry Date'
+                ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnExpiryDateId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                {
+                    VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                             (ARow.StartDate, ARow.ExpiryDate,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
+
+                // 'Start Date' must not be later than 'Renewal Date'
+                ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnSubscriptionRenewalDateId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                {
+                    VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                             (ARow.StartDate, ARow.SubscriptionRenewalDate,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
+
+                // 'Start Date' must not be later than 'End Date'
+                ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnDateCancelledId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                {
+                    VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                             (ARow.StartDate, ARow.DateCancelled,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
+
+                // 'Start Date' must not be later than 'Notice Sent'
+                ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnDateNoticeSentId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                {
+                    VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                             (ARow.StartDate, ARow.DateNoticeSent,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
+
+                // 'Start Date' must not be later than 'First Sent'
+                ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnFirstIssueId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                {
+                    VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                             (ARow.StartDate, ARow.FirstIssue,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
+
+                // 'Start Date' must not be later than 'Last Date'
+                ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnLastIssueId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                {
+                    VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                             (ARow.StartDate, ARow.LastIssue,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
+            }
+
+            // perform checks that include 'Date Renewed' ----------------------------------------------------------------
+            ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnSubscriptionRenewalDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                // 'Date Renewed' must not be later than today
+                VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                         (ARow.SubscriptionRenewalDate, DateTime.Today,
+                                         ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
+                                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+
+
+                // 'Date Renewed' must not be later than 'Date Expired'
+                ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnExpiryDateId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                {
+                    VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                             (ARow.SubscriptionRenewalDate, ARow.ExpiryDate,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
+
+                // 'Date Renewed' must not be later than 'Date Notice Sent'
+                ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnDateNoticeSentId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                {
+                    VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                             (ARow.SubscriptionRenewalDate, ARow.DateNoticeSent,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
+            }
+
+            // 'Date Cancelled' must not be before today
+            ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnDateCancelledId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                         (ARow.DateCancelled, DateTime.Today,
+                                         ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
+                                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // 'First Sent' must not be later than 'Last Sent'
+            ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnFirstIssueId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnLastIssueId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                {
+                    VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                             (ARow.FirstIssue, ARow.LastIssue,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
+            }
+
+            // 'First Sent' must not be later than today
+            ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnFirstIssueId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                         (ARow.FirstIssue, DateTime.Today,
+                                         ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
+                                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // 'Date Started' must not be later than 'First Sent'
+            ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnStartDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                ValidationColumn2 = ARow.Table.Columns[PSubscriptionTable.ColumnFirstIssueId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                {
+                    VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                             (ARow.StartDate, ARow.FirstIssue,
+                                             ValidationControlsData.ValidationControlLabel, ValidationControlsData2.ValidationControlLabel,
+                                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
+            }
+
+            // 'Last Sent' must not be later than today
+            ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnLastIssueId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = TDateChecks.FirstLesserOrEqualThanSecondDate
+                                         (ARow.LastIssue, DateTime.Today,
+                                         ValidationControlsData.ValidationControlLabel, Catalog.GetString("Today's Date"),
+                                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnSubscriptionStatusId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if ((!ARow.IsSubscriptionStatusNull())
+                    && ((ARow.SubscriptionStatus == "CANCELLED")
+                        || (ARow.SubscriptionStatus == "EXPIRED")))
+                {
+                    // When status is CANCELLED or EXPIRED then make sure that Reason ended and End date are set
+                    if (ARow.IsReasonSubsCancelledCodeNull()
+                        || (ARow.ReasonSubsCancelledCode == String.Empty))
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_REASONENDEDMANDATORY_WHEN_EXPIRED)),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        // Handle addition/removal to/from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    }
+
+                    if (ARow.IsDateCancelledNull())
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_DATEENDEDMANDATORY_WHEN_EXPIRED)),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        // Handle addition/removal to/from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    }
+                }
+                else
+                {
+                    // When Reason ended or End date are set then status must be CANCELLED or EXPIRED
+                    if ((!ARow.IsReasonSubsCancelledCodeNull())
+                        && (ARow.ReasonSubsCancelledCode != String.Empty))
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_REASONENDEDSET_WHEN_ACTIVE)),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        // Handle addition/removal to/from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    }
+
+                    if (!ARow.IsDateCancelledNull())
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_DATEENDEDSET_WHEN_ACTIVE)),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        // Handle addition/removal to/from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    }
+                }
             }
         }
 
@@ -682,6 +1002,136 @@ namespace Ict.Petra.Shared.MPartner.Validation
                         ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnMainAccount,
                         ValidationControlsData.ValidationControl
                         ));
+            }
+        }
+
+        /// <summary>
+        /// Validates the Partner Interest screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <param name="AInterestCategory">The chosen interest category.</param>
+        public static void ValidatePartnerInterestManual(object AContext, PPartnerInterestRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
+            string AInterestCategory)
+        {
+            DataColumn ValidationColumn;
+            DataColumn ValidationColumn2;
+            DataColumn ValidationColumn3;
+            TValidationControlsData ValidationControlsData;
+            TValidationControlsData ValidationControlsData2;
+            TValidationControlsData ValidationControlsData3;
+            TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // remove possible previous columns from result collection
+            ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnLevelId];
+            AVerificationResultCollection.Remove(ValidationColumn);
+            ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnInterestId];
+            AVerificationResultCollection.Remove(ValidationColumn);
+
+            // check that level is entered within valid range (depending on interest category)
+            ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnLevelId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                PInterestCategoryTable CategoryTable;
+                PInterestCategoryRow CategoryRow;
+                int LevelRangeLow;
+                int LevelRangeHigh;
+
+                // check if level is within valid range (retrieve valid range from cached tables)
+                CategoryTable = (PInterestCategoryTable)TSharedDataCache.TMPartner.GetCacheablePartnerTable(
+                    TCacheablePartnerTablesEnum.InterestCategoryList);
+                CategoryRow = (PInterestCategoryRow)CategoryTable.Rows.Find(new object[] { AInterestCategory });
+
+                if ((CategoryRow != null)
+                    && !ARow.IsLevelNull())
+                {
+                    LevelRangeLow = 0;
+                    LevelRangeHigh = 0;
+
+                    if (!CategoryRow.IsLevelRangeLowNull())
+                    {
+                        LevelRangeLow = CategoryRow.LevelRangeLow;
+                    }
+
+                    if (!CategoryRow.IsLevelRangeHighNull())
+                    {
+                        LevelRangeHigh = CategoryRow.LevelRangeHigh;
+                    }
+
+                    if ((!CategoryRow.IsLevelRangeLowNull()
+                         && (ARow.Level < CategoryRow.LevelRangeLow))
+                        || (!CategoryRow.IsLevelRangeHighNull()
+                            && (ARow.Level > CategoryRow.LevelRangeHigh)))
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUE_OUTSIDE_OF_RANGE,
+                                    new string[] { ValidationControlsData.ValidationControlLabel, LevelRangeLow.ToString(), LevelRangeHigh.ToString() })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    }
+                }
+            }
+
+            // check that at least one of interest, country or field is filled
+            ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnInterestId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                ValidationColumn2 = ARow.Table.Columns[PPartnerInterestTable.ColumnCountryId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn2, out ValidationControlsData2))
+                {
+                    ValidationColumn3 = ARow.Table.Columns[PPartnerInterestTable.ColumnFieldKeyId];
+
+                    if (AValidationControlsDict.TryGetValue(ValidationColumn3, out ValidationControlsData3))
+                    {
+                        if ((ARow.IsInterestNull() || (ARow.Interest == String.Empty))
+                            && (ARow.IsCountryNull() || (ARow.Country == String.Empty))
+                            && (ARow.IsFieldKeyNull() || (ARow.FieldKey == 0)))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INTEREST_NO_DATA_SET_AT_ALL, new string[] { })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+
+                            // Handle addition to/removal from TVerificationResultCollection
+                            AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                        }
+                    }
+                }
+            }
+
+            // check that interest is filled if a category is set
+            if (AInterestCategory != "")
+            {
+                ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnInterestId];
+
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    if (ARow.IsInterestNull()
+                        || (ARow.Interest == String.Empty))
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INTEREST_NOT_SET, new string[] { AInterestCategory })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    }
+                }
             }
         }
     }

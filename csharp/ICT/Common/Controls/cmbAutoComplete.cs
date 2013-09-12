@@ -56,10 +56,10 @@ namespace Ict.Common.Controls
 
     /// <summary>
     /// The cmbAutoComplete ComboBox behaves just like the default ComboBox from .Net.
-    /// It does only have two additional Property, namely 'AcceptNewValues' and
+    /// It does only have two additional Properties, namely 'AcceptNewValues' and
     /// 'CaseSensitiveSearch'. If the 'AcceptNewValues' property is set to 'true',
     /// the user may add new items to the list of items of this ComboBox, otherwise
-    /// he cannot add new item. The 'CaseSensitiveSearch' property allows to switch
+    /// he cannot add a new item. The 'CaseSensitiveSearch' property allows to switch
     /// between a case sensitive search and a non case sensitive search in the items
     /// of the Combobox. However the ComboBox searches its internal data for the text
     /// being entered and returns the first occurance of that text. The searching is
@@ -1363,11 +1363,10 @@ namespace Ict.Common.Controls
         private void RestoreOriginalItem()
         {
             string mTestString = this.UInitialString;
-            Int32 mSelectedIndex = this.SelectedIndex;
 
-            // Get test for null first and then set to '' (empty string) otherwise trim would
-            // yield an exception.
-            if ((mTestString == null) || (mSelectedIndex < 0))
+            // if mTestString is NULL, set to '' (empty string)
+            // otherwise trim would yield an exception.
+            if (mTestString == null)
             {
                 mTestString = string.Empty;
             }

@@ -47,6 +47,7 @@ using System.Collections.Specialized;
 using System.Data.Odbc;
 using System.Data;
 using System.Diagnostics;
+using Ict.Petra.Server.MPartner.Partner.UIConnectors;
 
 namespace Ict.Petra.Server.MReporting.MPartner
 {
@@ -247,15 +248,9 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 }
                 else if (mRow["LabelDataType"].ToString() == "currency")
                 {
-                    // todo p_currency_code_c; using correct formatting
-                    // TLogging.Log(TVariant.Create(mRow['LabelValueCurrency']).ToString());
-                    // LabelValue := new TVariant(
-                    // FormatCurrency(
-                    // TVariant.Create(mRow['LabelValueCurrency']),
-                    // '#,##0.00;#,##0.00;0.00;0'));
-                    // if string comes in, TVariant converts it to a double, but leaves 0;
-                    // adding the string of the currency code helps for the moment
-                    LabelValue = new TVariant(new TVariant(mRow["LabelValueCurrency"]).ToString() + ' ' + mRow["CurrencyCode"].ToString());
+                    LabelValue = new TVariant(StringHelper.FormatUsingCurrencyCode(
+                            Convert.ToDecimal(mRow["LabelValueCurrency"]), mRow["CurrencyCode"].ToString()) +
+                        ' ' + mRow["CurrencyCode"].ToString());
                 }
                 else if (mRow["LabelDataType"].ToString() == "boolean")
                 {
@@ -715,6 +710,24 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 {
                     FieldName = GetPartnerShortName(Row.FieldKey);
                     break;
+                }
+            }
+
+            //
+            // If there was no result and the partner given is a family, I can see about the field for the family member with id=0.
+            if (FieldName == "")
+            {
+                PPartnerTable tbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, null);
+
+                if ((tbl.Rows.Count > 0) && (tbl[0].PartnerClass == TPartnerClass.FAMILY.ToString()))
+                {
+                    PPersonTable familyMembers = PPersonAccess.LoadViaPFamily(APartnerKey, null);
+                    familyMembers.DefaultView.RowFilter = "p_family_id_i = 0";
+
+                    if (familyMembers.DefaultView.Count > 0)
+                    {
+                        FieldName = GetFieldOfPartner(((PPersonRow)familyMembers.DefaultView[0].Row).PartnerKey);
+                    }
                 }
             }
 

@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2012
+// Copyright 2004-2013
 // This file is part of OpenPetra.org.
 //
 // OpenPetra.org is free software: you can redistribute it and/or modify
@@ -33,6 +33,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.GL;
+using Ict.Petra.Client.MFinance.Gui.Setup;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -58,6 +59,30 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             txtExchangeRate.TextChanged += new EventHandler(UpdateTotalAmount);
         }
 
+        private void LookupExchangeRate(Object sender, EventArgs e)
+        {
+            TFrmSetupDailyExchangeRate setupDailyExchangeRate =
+                new TFrmSetupDailyExchangeRate(FPetraUtilsObject.GetForm());
+
+            decimal selectedExchangeRate;
+            DateTime selectedEffectiveDate;
+            int selectedEffectiveTime;
+
+            if (setupDailyExchangeRate.ShowDialog(
+                    FLedgerNumber,
+                    DateTime.Now,
+                    txtCurrency.Text,
+                    1.0m,
+                    out selectedExchangeRate,
+                    out selectedEffectiveDate,
+                    out selectedEffectiveTime) == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            txtExchangeRate.NumberValueDecimal = selectedExchangeRate;
+        }
+
         private void ShowDataManual()
         {
             TFinanceControls.InitialiseAccountList(ref cmbBankAccount, FMainDS.AApDocument[0].LedgerNumber, true, false, true, true, "");
@@ -67,7 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdDetails.AddTextColumn("Type", FMainDS.AApDocumentPayment.ColumnDocType, 80);
 //          grdDetails.AddTextColumn("Discount used", FMainDS.AApDocumentPayment.ColumnUseDiscount, 80);
             grdDetails.AddCurrencyColumn("Amount", FMainDS.AApDocumentPayment.ColumnAmount);
-//          grdDetails.AddTextColumn("Currency", FMainDS.AApPayment.ColumnCurrencyCode, 50);  // There's no currencyCode in DocumentPayment!
+//          grdDetails.AddTextColumn("Currency", FMainDS.AApPayment.ColumnCurrencyCode, 50);
 
             grdPayments.AddTextColumn("Supplier", FMainDS.AApPayment.ColumnListLabel);
 
@@ -82,10 +107,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // If this payment has a payment number, it's because it's already been paid, so I need to display it read-only.
             if ((FMainDS.AApPayment.Rows.Count > 0) && (FMainDS.AApPayment[0].PaymentNumber > 0))
             {
+                txtPaymntNum.Text = FMainDS.AApPayment[0].PaymentNumber.ToString();
                 txtAmountToPay.Enabled = false;
                 txtChequeNumber.Enabled = false;
                 txtCurrency.Enabled = false;
                 txtExchangeRate.Enabled = false;
+                btnLookupExchangeRate.Enabled = false;
                 txtExchangeRate.NumberValueDecimal = FMainDS.AApPayment[0].ExchangeRateToBase;
 
                 txtReference.Enabled = false;
@@ -111,16 +138,54 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
+        private static bool CurrencyIsOkForPaying(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
+        {
+            if (AApDocument.CurrencyCode != Atds.AApSupplier[0].CurrencyCode)
+            {
+                System.Windows.Forms.MessageBox.Show(
+                    String.Format(Catalog.GetString("Document {0} cannot be paid because the supplier's currency has been changed to {1}."),
+                        AApDocument.DocumentCode, Atds.AApSupplier[0].CurrencyCode),
+                    Catalog.GetString("Pay Document"));
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="Atds"></param>
+        /// <param name="AdocumentRow"></param>
+        /// <returns></returns>
+        public static bool ApDocumentCanPay(AccountsPayableTDS Atds, AApDocumentRow AdocumentRow)
+        {
+            if (!CurrencyIsOkForPaying(Atds, AdocumentRow))
+            {
+                return false;
+            }
+
+            if ("|POSTED|PARTPAID|".IndexOf("|" + AdocumentRow.DocumentStatus) < 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// Set which payments should be paid; initialises the data of this screen
         /// </summary>
         /// <param name="ADataset"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADocumentsToPay"></param>
-        public void AddDocumentsToPayment(AccountsPayableTDS ADataset, Int32 ALedgerNumber, List <Int32>ADocumentsToPay)
+        /// <returns>true if there's something to pay</returns>
+        public bool AddDocumentsToPayment(AccountsPayableTDS ADataset, Int32 ALedgerNumber, List <Int32>ADocumentsToPay)
         {
             FMainDS = ADataset;
             FLedgerNumber = ALedgerNumber;
+            ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
+            FLedgerRow = Tbl[0];
 
             if (FMainDS.AApPayment == null)
             {
@@ -140,12 +205,30 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FMainDS.AApDocumentPayment.Clear();
             }
 
+            // I want to check that it'll be OK to pay these documents:
+            for (Int32 Idx = ADocumentsToPay.Count - 1; Idx >= 0; Idx--)
+            {
+                Int32 DocId = ADocumentsToPay[Idx];
+                AccountsPayableTDS tempDs = TRemote.MFinance.AP.WebConnectors.LoadAApDocument(ALedgerNumber, DocId);
+
+                if (!ApDocumentCanPay(tempDs, tempDs.AApDocument[0]))
+                {
+                    ADocumentsToPay.Remove(DocId);
+                }
+            }
+
+            if (ADocumentsToPay.Count == 0)
+            {
+                return false;
+            }
+
             TRemote.MFinance.AP.WebConnectors.CreatePaymentTableEntries(ref FMainDS, ALedgerNumber, ADocumentsToPay);
             chkPrintRemittance.Checked = true;
             chkClaimDiscount.Enabled = false;
             chkPrintCheque.Enabled = false;
             chkPrintLabel.Enabled = false;
             ShowDataManual();
+            return true;
         }
 
         private void UpdateTotalAmount(Object sender, EventArgs e)
@@ -186,7 +269,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // If this invoice is already partpaid, the outstanding amount box
             // should show the amount remaining to be paid.
             //
-            txtAmountToPay.Enabled = rbtPayAPartialAmount.Checked;
+            txtAmountToPay.Enabled = rbtPayPartialAmount.Checked;
 
             FSelectedDocumentRow.PayFullInvoice = rbtPayFullOutstandingAmount.Checked;
 
@@ -211,11 +294,21 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     AApSupplierRow supplier = TFrmAPMain.GetSupplier(FMainDS.AApSupplier, FSelectedPaymentRow.SupplierKey);
                     txtCurrency.Text = supplier.CurrencyCode;
-                    ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
-                    FLedgerRow = Tbl[0];
 
                     decimal CurrentRate = TExchangeRateCache.GetDailyExchangeRate(supplier.CurrencyCode, FLedgerRow.BaseCurrency, DateTime.Now);
                     txtExchangeRate.NumberValueDecimal = CurrentRate;
+                    cmbPaymentType.SetSelectedString(supplier.PaymentType);
+
+                    if (txtCurrency.Text == FLedgerRow.BaseCurrency)
+                    {
+                        txtExchangeRate.Enabled = false;
+                        btnLookupExchangeRate.Enabled = false;
+                    }
+                    else
+                    {
+                        txtExchangeRate.Enabled = true;
+                        btnLookupExchangeRate.Enabled = true;
+                    }
                 }
 
                 cmbBankAccount.SetSelectedString(FSelectedPaymentRow.BankAccount);
@@ -241,7 +334,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             FSelectedDocumentRow = (AccountsPayableTDSAApDocumentPaymentRow)SelectedGridRow[0].Row;
             rbtPayFullOutstandingAmount.Checked = FSelectedDocumentRow.PayFullInvoice;
-            rbtPayAPartialAmount.Checked = !rbtPayFullOutstandingAmount.Checked;
+            rbtPayPartialAmount.Checked = !rbtPayFullOutstandingAmount.Checked;
 
             EnablePartialPayment(null, null);
         }
@@ -300,19 +393,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 foreach (DataRowView rv in FMainDS.AApDocumentPayment.DefaultView)
                 {
                     AccountsPayableTDSAApDocumentPaymentRow DocPaymentRow = (AccountsPayableTDSAApDocumentPaymentRow)rv.Row;
+                    Boolean overPayment = (DocPaymentRow.DocType == "INVOICE") ?
+                                          (DocPaymentRow.Amount > DocPaymentRow.InvoiceTotal) : (DocPaymentRow.Amount < DocPaymentRow.InvoiceTotal);
 
-                    if (DocPaymentRow.Amount > DocPaymentRow.InvoiceTotal)
+                    if (overPayment)
                     {
                         String strMessage =
                             String.Format(Catalog.GetString(
-                                    "Payment of {0:n2} {1} to {2} is more than the due amount.\r\nPress OK to accept this amount."),
-                                DocPaymentRow.Amount, PaymentRow.CurrencyCode, PaymentRow.SupplierName);
+                                    "Payment of {0} {1} to {2}: Payment cannot be more than the due amount."),
+                                StringHelper.FormatUsingCurrencyCode(DocPaymentRow.Amount, PaymentRow.CurrencyCode),
+                                PaymentRow.CurrencyCode, PaymentRow.SupplierName);
 
-                        if (System.Windows.Forms.MessageBox.Show(strMessage, Catalog.GetString("OverPayment"), MessageBoxButtons.OKCancel)
-                            == DialogResult.Cancel)
-                        {
-                            return;
-                        }
+                        System.Windows.Forms.MessageBox.Show(strMessage, Catalog.GetString("OverPayment"));
+                        return;
                     }
                 }
             }
@@ -377,7 +470,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             FMainDS = TRemote.MFinance.AP.WebConnectors.LoadAPPayment(ALedgerNumber, APaymentNumber);
             FLedgerNumber = FMainDS.AApPayment[0].LedgerNumber;
-            ShowDataManual();
+            ALedgerTable Tbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
+            FLedgerRow = Tbl[0];
+            ShowData(FMainDS.AApSupplier[0]);
         }
 
         /// <summary>
@@ -510,6 +605,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Reverse Payment Failed"));
             }
+        }
+
+        private void OnChangePaymentType(object sender, EventArgs e)
+        {
+            txtChequeNumber.Enabled = (cmbPaymentType.GetSelectedString() == "Cheque");
         }
     }
 }

@@ -44,6 +44,37 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>event to signalize change in field applied for</summary>
         public event TDelegatePartnerChanged ApplicationFieldChanged;
 
+        #region Properties
+
+        /// return label text for "Field" field
+        public String FieldLabelText
+        {
+            get
+            {
+                return lblField.Text;
+            }
+        }
+
+        /// return code value for "Field"
+        public String FieldValueCode
+        {
+            get
+            {
+                return txtField.Text;
+            }
+        }
+
+        /// return label value for "Field"
+        public String FieldValueLabel
+        {
+            get
+            {
+                return txtField.LabelText;
+            }
+        }
+
+        #endregion
+
         #region Public Methods
 
         /// <summary>todoComment</summary>
@@ -113,6 +144,20 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void GetDataFromControlsManual(PmGeneralApplicationRow ARow)
         {
+            // need to make sure that partner key fields that are not referring to p_partner table
+            // but to other tables like p_unit or p_person are set to NULL when they are empty (and
+            // not to 0 as then foreign key constraints will fail)
+            if ((txtField.Text.Length != 0)
+                && (Convert.ToInt64(txtField.Text) == 0))
+            {
+                ARow.SetGenAppPossSrvUnitKeyNull();
+            }
+
+            if ((txtPlacementPerson.Text.Length != 0)
+                && (Convert.ToInt64(txtPlacementPerson.Text) == 0))
+            {
+                ARow.SetPlacementPartnerKeyNull();
+            }
         }
 
         private void ValidateDataManual(PmGeneralApplicationRow ARow)

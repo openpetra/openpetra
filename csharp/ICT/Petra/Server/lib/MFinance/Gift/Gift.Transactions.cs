@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -647,6 +647,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 //Can do this if needed: MainDS.DisableConstraints();
                 DBAccess.GDBAccessObj.SelectToTempTable(MainDS, sqlStmt, tempTableName, Transaction, parameters.ToArray(), 0, 0);
 
+                MainDS.Tables[tempTableName].Columns.Add("DonorDescription");
+
+                foreach (DataRow Row in MainDS.Tables[tempTableName].Rows)
+                {
+                    PPartnerTable Tbl = PPartnerAccess.LoadByPrimaryKey(Convert.ToInt64(Row["DonorKey"]), Transaction);
+                    Row["DonorDescription"] = Tbl[0].PartnerShortName;
+                }
+
                 MainDS.AcceptChanges();
             }
             finally
@@ -671,11 +679,42 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-            bool AllValidationsOK = true;
 
             AVerificationResult = new TVerificationResultCollection();
 
-            if (AInspectDS.AGiftBatch != null)
+            // make sure that empty tables are removed !! This can return NULL!
+            AInspectDS = AInspectDS.GetChangesTyped(true);
+
+            if (AInspectDS == null)
+            {
+                AVerificationResult.Add(new TVerificationResult(
+                        Catalog.GetString("Save Gift Batch"),
+                        Catalog.GetString("No changes - nothing to do"),
+                        TResultSeverity.Resv_Info));
+                return TSubmitChangesResult.scrNothingToBeSaved;
+            }
+
+            bool AllValidationsOK = true;
+
+            bool giftBatchTableInDataSet = (AInspectDS.AGiftBatch != null);
+            bool giftTableInDataSet = (AInspectDS.AGift != null);
+            bool giftDetailTableInDataSet = (AInspectDS.AGiftDetail != null);
+            bool recurrGiftBatchTableInDataSet = (AInspectDS.ARecurringGiftBatch != null);
+            bool recurrGiftTableInDataSet = (AInspectDS.ARecurringGift != null);
+            bool recurrGiftDetailTableInDataSet = (AInspectDS.ARecurringGiftDetail != null);
+
+            if (recurrGiftBatchTableInDataSet || recurrGiftTableInDataSet || recurrGiftDetailTableInDataSet)
+            {
+                if (giftBatchTableInDataSet || giftTableInDataSet || giftDetailTableInDataSet)
+                {
+                    throw new Exception(
+                        "SaveGiftBatchTDS: need to call GetChangesTyped before saving, otherwise confusion about recurring or normal gl batch");
+                }
+
+                return SaveRecurringGiftBatchTDS(ref AInspectDS, ref AVerificationResult);
+            }
+
+            if (giftBatchTableInDataSet)
             {
                 ValidateGiftBatch(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftBatch);
                 ValidateGiftBatchManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftBatch);
@@ -686,7 +725,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
 
-            if (AInspectDS.AGiftDetail != null)
+            if (giftDetailTableInDataSet)
             {
                 ValidateGiftDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftDetail);
                 ValidateGiftDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftDetail);
@@ -708,39 +747,61 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
 
-                if ((SubmissionResult == TSubmitChangesResult.scrOK) && AInspectDS.Tables.Contains("AGiftBatch")
-                    && AInspectDS.Tables.Contains("AGift"))
+                if ((SubmissionResult == TSubmitChangesResult.scrOK) && giftTableInDataSet)
                 {
-                    DataRow[] foundGiftForDeletion = AInspectDS.AGift.Select(String.Format("{0} = '{1}'",
-                            AGiftTable.GetGiftStatusDBName(),
-                            MFinanceConstants.MARKED_FOR_DELETION));
-
-                    if (foundGiftForDeletion.Length == 1)
+                    if (giftDetailTableInDataSet)
                     {
-                        //A gift has been deleted
-                        //Accept the deletion of the single details row
                         AInspectDS.AGiftDetail.AcceptChanges();
-                        AInspectDS.AGift.AcceptChanges();
-
-                        AGiftBatchTable clientBatchTable = (AGiftBatchTable)AInspectDS.AGiftBatch;
-                        AGiftBatchRow clientBatchRow = (AGiftBatchRow)clientBatchTable.Rows[0];
-
-                        AGiftRow giftRowClient = (AGiftRow)foundGiftForDeletion[0];
-
-                        giftRowClient.Delete();
-
-                        clientBatchRow.LastGiftNumber--;
-
-                        SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
-
-                        //Accept the deletion of the single details row
-                        AInspectDS.AGiftDetail.AcceptChanges();
-                        AInspectDS.AGift.AcceptChanges();
-                        AInspectDS.AGiftBatch.AcceptChanges();
                     }
 
-                    // Problem: unchanged rows will not arrive here? check after committing, and update the gift batch again
-                    // TODO: calculate hash of saved batch or batch of saved gift
+                    AInspectDS.AGift.AcceptChanges();
+
+                    if (AInspectDS.AGift.Count > 0)
+                    {
+                        AGiftRow tranR = (AGiftRow)AInspectDS.AGift.Rows[0];
+
+                        Int32 currentLedger = tranR.LedgerNumber;
+                        Int32 currentBatch = tranR.BatchNumber;
+                        Int32 giftToDelete = 0;
+
+                        try
+                        {
+                            DataRow[] foundGiftsForDeletion = AInspectDS.AGift.Select(String.Format("{0} = '{1}'",
+                                    AGiftTable.GetGiftStatusDBName(),
+                                    MFinanceConstants.MARKED_FOR_DELETION));
+
+                            if (foundGiftsForDeletion.Length > 0)
+                            {
+                                AGiftRow giftRowClient = null;
+
+                                for (int i = 0; i < foundGiftsForDeletion.Length; i++)
+                                {
+                                    //A gift has been deleted
+                                    giftRowClient = (AGiftRow)foundGiftsForDeletion[i];
+
+                                    giftToDelete = giftRowClient.GiftTransactionNumber;
+                                    TLogging.Log(String.Format("Gift to Delete: {0} from Batch: {1}",
+                                            giftToDelete,
+                                            currentBatch));
+
+                                    giftRowClient.Delete();
+                                }
+                            }
+
+                            SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                        }
+                        catch (Exception ex)
+                        {
+                            TLogging.Log("Saving DataSet: " + ex.Message);
+
+                            TLogging.Log(String.Format("Error trying to save changes: {0} in Batch: {1}",
+                                    giftToDelete,
+                                    currentBatch
+                                    ));
+
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
                 }
             }
 
@@ -760,19 +821,112 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static TSubmitChangesResult SaveRecurringGiftBatchTDS(ref GiftBatchTDS AInspectDS,
-            out TVerificationResultCollection AVerificationResult)
+        private static TSubmitChangesResult SaveRecurringGiftBatchTDS(ref GiftBatchTDS AInspectDS,
+            ref TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
-            SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+            bool AllValidationsOK = true;
 
-            if (SubmissionResult == TSubmitChangesResult.scrOK)
+            bool recurrGiftBatchTableInDataSet = (AInspectDS.ARecurringGiftBatch != null);
+            bool recurrGiftTableInDataSet = (AInspectDS.ARecurringGift != null);
+            bool recurrGiftDetailTableInDataSet = (AInspectDS.ARecurringGiftDetail != null);
+
+            if (recurrGiftBatchTableInDataSet)
             {
-                // TODO: check that gifts are in consecutive numbers?
-                // TODO: check that gift details are in consecutive numbers, no gift without gift details?
-                // Problem: unchanged rows will not arrive here? check after committing, and update the gift batch again
-                // TODO: calculate hash of saved batch or batch of saved gift
+                ValidateRecurringGiftBatch(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
+                ValidateRecurringGiftBatchManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
+
+                if (AVerificationResult.HasCriticalErrors)
+                {
+                    AllValidationsOK = false;
+                }
+            }
+
+            if (recurrGiftDetailTableInDataSet)
+            {
+                ValidateRecurringGiftDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftDetail);
+                ValidateRecurringGiftDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftDetail);
+
+                if (AVerificationResult.HasCriticalErrors)
+                {
+                    AllValidationsOK = false;
+                }
+            }
+
+            if (AVerificationResult.Count > 0)
+            {
+                // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
+                // Serialisation (needed for .NET Remoting).
+                TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
+            }
+
+            if (AllValidationsOK)
+            {
+                SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+
+                if ((SubmissionResult == TSubmitChangesResult.scrOK) && recurrGiftTableInDataSet && (AInspectDS.ARecurringGift.Count > 0))
+                {
+                    if (recurrGiftBatchTableInDataSet)
+                    {
+                        AInspectDS.ARecurringGiftBatch.AcceptChanges();
+                    }
+
+                    if (recurrGiftDetailTableInDataSet)
+                    {
+                        AInspectDS.ARecurringGiftDetail.AcceptChanges();
+                    }
+
+                    AInspectDS.ARecurringGift.AcceptChanges();
+
+                    if (AInspectDS.ARecurringGift.Count > 0)
+                    {
+                        ARecurringGiftRow tranR = (ARecurringGiftRow)AInspectDS.ARecurringGift.Rows[0];
+
+                        Int32 currentLedger = tranR.LedgerNumber;
+                        Int32 currentBatch = tranR.BatchNumber;
+                        Int32 giftToDelete = 0;
+
+                        try
+                        {
+                            DataRow[] foundGiftsForDeletion = AInspectDS.ARecurringGift.Select(String.Format("{0} = '{1}'",
+                                    ARecurringGiftTable.GetChargeStatusDBName(),
+                                    MFinanceConstants.MARKED_FOR_DELETION));
+
+                            if (foundGiftsForDeletion.Length > 0)
+                            {
+                                ARecurringGiftRow giftRowClient = null;
+
+                                for (int i = 0; i < foundGiftsForDeletion.Length; i++)
+                                {
+                                    //A gift has been deleted
+                                    giftRowClient = (ARecurringGiftRow)foundGiftsForDeletion[i];
+
+                                    giftToDelete = giftRowClient.GiftTransactionNumber;
+                                    TLogging.Log(String.Format("Gift to Delete: {0} from Batch: {1}",
+                                            giftToDelete,
+                                            currentBatch));
+
+                                    giftRowClient.Delete();
+                                }
+                            }
+
+                            SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                        }
+                        catch (Exception ex)
+                        {
+                            TLogging.Log("Saving DataSet: " + ex.Message);
+
+                            TLogging.Log(String.Format("Error trying to save changes: {0} in Batch: {1}",
+                                    giftToDelete,
+                                    currentBatch
+                                    ));
+
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                }
             }
 
             return SubmissionResult;
@@ -844,6 +998,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     transaction.DebitCreditIndicator = false;
                     transaction.TransactionAmount = 0;
                     transaction.AmountInBaseCurrency = 0;
+                    transaction.SystemGenerated = true;
                     transaction.TransactionDate = giftBatch.GlEffectiveDate;
 
                     GLDataset.ATransaction.Rows.Add(transaction);
@@ -868,6 +1023,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             transactionForTotals.TransactionNumber = ++journal.LastTransactionNumber;
             transactionForTotals.TransactionAmount = 0;
             transactionForTotals.TransactionDate = giftBatch.GlEffectiveDate;
+            transactionForTotals.SystemGenerated = true;
 
             foreach (GiftBatchTDSAGiftDetailRow giftdetail in AGiftDataset.AGiftDetail.Rows)
             {
@@ -1363,6 +1519,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             GiftBatchTDS MainDS = LoadGiftBatchData(ALedgerNumber, ABatchNumber);
 
+            AVerifications = new TVerificationResultCollection();
+
+            if (MainDS.AGiftBatch.Rows.Count < 1)
+            {
+                AVerifications.Add(
+                    new TVerificationResult(
+                        "Posting Gift Batch",
+                        String.Format("Unable to Load GiftBatchData ({0}, {1})",
+                            ALedgerNumber,
+                            ABatchNumber),
+                        TResultSeverity.Resv_Critical));
+                return null;
+            }
+
+            AGiftBatchRow GiftBatchRow = MainDS.AGiftBatch[0];
             // for calculation of admin fees
             AMotivationDetailFeeAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
             AFeesPayableAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
@@ -1374,35 +1545,33 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            AVerifications = new TVerificationResultCollection();
-
             // check that the Gift Batch BatchPeriod matches the date effective
             int DateEffectivePeriod, DateEffectiveYear;
-            TFinancialYear.IsValidPostingPeriod(MainDS.AGiftBatch[0].LedgerNumber,
-                MainDS.AGiftBatch[0].GlEffectiveDate,
+            TFinancialYear.IsValidPostingPeriod(GiftBatchRow.LedgerNumber,
+                GiftBatchRow.GlEffectiveDate,
                 out DateEffectivePeriod,
                 out DateEffectiveYear,
                 null);
 
-            if (MainDS.AGiftBatch[0].BatchPeriod != DateEffectivePeriod)
+            if (GiftBatchRow.BatchPeriod != DateEffectivePeriod)
             {
                 AVerifications.Add(
                     new TVerificationResult(
                         "Posting Gift Batch",
                         String.Format("Invalid gift batch period {0} for date {1:dd-MMM-yyyy}",
-                            MainDS.AGiftBatch[0].BatchPeriod,
-                            MainDS.AGiftBatch[0].GlEffectiveDate),
+                            GiftBatchRow.BatchPeriod,
+                            GiftBatchRow.GlEffectiveDate),
                         TResultSeverity.Resv_Critical));
                 return null;
             }
-            else if ((MainDS.AGiftBatch[0].HashTotal != 0) && (MainDS.AGiftBatch[0].BatchTotal != MainDS.AGiftBatch[0].HashTotal))
+            else if ((GiftBatchRow.HashTotal != 0) && (GiftBatchRow.BatchTotal != GiftBatchRow.HashTotal))
             {
                 AVerifications.Add(
                     new TVerificationResult(
                         "Posting Gift Batch",
                         String.Format("The gift batch total ({0}) does not equal the hash total ({1}).",
-                            MainDS.AGiftBatch[0].BatchTotal.ToString("C"),
-                            MainDS.AGiftBatch[0].HashTotal.ToString("C")),
+                            StringHelper.FormatUsingCurrencyCode(GiftBatchRow.BatchTotal, GiftBatchRow.CurrencyCode),
+                            StringHelper.FormatUsingCurrencyCode(GiftBatchRow.HashTotal, GiftBatchRow.CurrencyCode)),
                         TResultSeverity.Resv_Critical));
                 return null;
             }
@@ -1458,7 +1627,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 // TODO deal with different currencies; at the moment assuming base currency
                 //giftDetail.GiftAmount = giftDetail.GiftTransactionAmount;
-                giftDetail.GiftAmount = giftDetail.GiftTransactionAmount * MainDS.AGiftBatch[0].ExchangeRateToBase;
+                giftDetail.GiftAmount = giftDetail.GiftTransactionAmount * GiftBatchRow.ExchangeRateToBase;
 
                 // get all motivation detail fees for this gift
                 foreach (AMotivationDetailFeeRow motivationFeeRow in MainDS.AMotivationDetailFee.Rows)
@@ -1471,7 +1640,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             motivationFeeRow.FeeCode,
                             giftDetail.GiftAmount,
                             out AVerifications);
-                        AddToFeeTotals(MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, MainDS.AGiftBatch[0].BatchPeriod);
+                        AddToFeeTotals(MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, GiftBatchRow.BatchPeriod);
                     }
                 }
             }
@@ -1504,6 +1673,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static bool PostGiftBatches(Int32 ALedgerNumber, List <Int32>ABatchNumbers, out TVerificationResultCollection AVerifications)
         {
             AVerifications = new TVerificationResultCollection();
+            TVerificationResultCollection SingleVerificationResultCollection;
 
             bool NewTransaction;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
@@ -1523,7 +1693,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         Catalog.GetString("Posting gift batches"),
                         ABatchNumbers.IndexOf(BatchNumber) * 3);
 
-                    GiftBatchTDS MainDS = PrepareGiftBatchForPosting(ALedgerNumber, BatchNumber, out AVerifications);
+                    GiftBatchTDS MainDS = PrepareGiftBatchForPosting(ALedgerNumber, BatchNumber, out SingleVerificationResultCollection);
+
+                    AVerifications.AddCollection(SingleVerificationResultCollection);
 
                     if (MainDS == null)
                     {
@@ -1541,8 +1713,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     // save the batch
                     if (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
-                            out AVerifications) == TSubmitChangesResult.scrOK)
+                            out SingleVerificationResultCollection) == TSubmitChangesResult.scrOK)
                     {
+                        AVerifications.AddCollection(SingleVerificationResultCollection);
+
                         GLBatchNumbers.Add(batch.BatchNumber);
 
                         //
@@ -1562,13 +1736,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         MainDS.ThrowAwayAfterSubmitChanges = true;
 
-                        if (GiftBatchTDSAccess.SubmitChanges(MainDS, out AVerifications) != TSubmitChangesResult.scrOK)
+                        if (GiftBatchTDSAccess.SubmitChanges(MainDS, out SingleVerificationResultCollection) != TSubmitChangesResult.scrOK)
                         {
+                            AVerifications.AddCollection(SingleVerificationResultCollection);
                             return false;
                         }
                     }
                     else
                     {
+                        AVerifications.AddCollection(SingleVerificationResultCollection);
                         return false;
                     }
                 }
@@ -1579,13 +1755,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 // now post the GL batches
                 if (!TGLPosting.PostGLBatches(ALedgerNumber, GLBatchNumbers,
-                        out AVerifications))
+                        out SingleVerificationResultCollection))
                 {
+                    AVerifications.AddCollection(SingleVerificationResultCollection);
                     // Transaction will be rolled back, no open GL batch flying around
                     return false;
                 }
                 else
                 {
+                    AVerifications.AddCollection(SingleVerificationResultCollection);
+
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
@@ -1862,6 +2041,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         static partial void ValidateGiftDetail(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
         static partial void ValidateGiftDetailManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+
+        static partial void ValidateRecurringGiftBatch(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateRecurringGiftBatchManual(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateRecurringGiftDetail(TValidationControlsDict ValidationControlsDict,
+            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateRecurringGiftDetailManual(TValidationControlsDict ValidationControlsDict,
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
         #endregion Data Validation
