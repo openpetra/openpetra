@@ -213,7 +213,6 @@ namespace Ict.Petra.Shared.MPartner.Validation
             }
         }
 
-        
         /// <summary>
         /// Validates the Partner Detail data of a Partner of PartnerClass CHURCH.
         /// </summary>
@@ -225,7 +224,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         /// <returns>void</returns>
-        public static void ValidatePartnerChurchManual(object AContext, PChurchRow ARow, DataTable ADenominationCacheableDT, 
+        public static void ValidatePartnerChurchManual(object AContext, PChurchRow ARow, DataTable ADenominationCacheableDT,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
             DataColumn ValidationColumn;
@@ -243,23 +242,22 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                if (ADenominationCacheableDT != null) 
+                if (ADenominationCacheableDT != null)
                 {
-                    if (ADenominationCacheableDT.Rows.Count == 0) 
-                    {                        
+                    if (ADenominationCacheableDT.Rows.Count == 0)
+                    {
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_NO_DENOMINATIONS_SET_UP,
-                                String.Empty)),
-                        ValidationColumn, ValidationControlsData.ValidationControl);
-                            
-                    }    
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_NO_DENOMINATIONS_SET_UP,
+                                    String.Empty)),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
                 }
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
-        
+
         /// <summary>
         /// Validates the Partner data of a Partner.
         /// </summary>
