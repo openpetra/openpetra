@@ -40,16 +40,14 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 {
     public partial class TFrmConferenceMasterSettings
     {
-        private Int64 FPartnerKey;
+        /// PartnerKey for selected conference to be set from outside
+        public static Int64 FPartnerKey {
+            private get; set;
+        }
 
         private void InitializeManualCode()
         {
             string ConferenceName;
-
-            // retrieve conference key for selected conference from parent form
-            Form ParentForm = FPetraUtilsObject.GetCallerForm();
-
-            FPartnerKey = Convert.ToInt64(ParentForm.GetType().GetMethod("GetSelectedConferenceKey").Invoke(ParentForm, null));
 
             // load data into dataset
             FMainDS.Clear();
