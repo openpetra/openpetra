@@ -50,7 +50,4 @@ RootNode:
                 
         txtDetailSupplement: {Label=Charge, Width=100, Format=Currency}
         cmbDetailOutreachType: {Width=500, List=UserDefinedList, ClearIfSettingEmpty=true}
-        
-    Toolbar:
-        tbbNew:
-            Label: New Conference Standard Cost
+

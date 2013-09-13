@@ -45,6 +45,4 @@ RootNode:
                 Row0: [txtDetailOptionDays, txtDetailCharge]
         txtDetailOptionDays: {Label=Option Days, Width=40, Format=Integer}
         txtDetailCharge: {Label=Charge, Width=100, Format=Currency}
-    Toolbar:
-        tbbNew:
-            Label: New Conference Standard Cost
+
