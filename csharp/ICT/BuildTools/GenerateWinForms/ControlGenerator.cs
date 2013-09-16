@@ -191,7 +191,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             bool OverrideTextAlign = false;
             bool NoLabel = false;
 
-            Console.WriteLine("ButtonGenerator.SetControlProperties for Control " + ctrl.controlName);
+            TLogging.LogAtLevel(1, "ButtonGenerator.SetControlProperties for Control " + ctrl.controlName);
 
             if (!ctrl.HasAttribute("Width"))
             {
@@ -213,24 +213,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if (ctrl.IsOnHorizontalGridButtonPanel)
             {
-                Console.WriteLine("Setting Height for Control '" + ctrl.controlName + "' to 23 as it is on a horizontal Grid Button Panel");
+                TLogging.LogAtLevel(1, "Setting Height for Control '" + ctrl.controlName + "' to 23 as it is on a horizontal Grid Button Panel");
                 FDefaultHeight = 23;
 
                 if (!ctrl.HasAttribute("ImageAlign"))
                 {
                     if (NoLabel)
                     {
-//Console.WriteLine("Setting ImageAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.BottomCenter as it is on a horizontal Grid Button Panel (no Text)");
+                        //TLogging.LogAtLevel(1, "Setting ImageAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.BottomCenter as it is on a horizontal Grid Button Panel (no Text)");
                         writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.BottomCenter");
                     }
                     else
                     {
-//Console.WriteLine("Setting ImageAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.BottomLeft as it is on a horizontal Grid Button Panel");
+                        //TLogging.LogAtLevel(1, "Setting ImageAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.BottomLeft as it is on a horizontal Grid Button Panel");
                         writer.SetControlProperty(ctrl, "ImageAlign", "System.Drawing.ContentAlignment.BottomLeft");
 
                         // Note: In this case want the text centered on the Button, which the TextAlign Property will achieve.
                         // However, its default value is System.Drawing.ContentAlignment.MiddleCenter which means we don't need to explicitly write this out into the Designer file...
-//Console.WriteLine("Setting TextAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.MiddleCenter as it is on a horizontal Grid Button Panel");
+                        //TLogging.LogAtLevel(1, "Setting TextAlign Attribute of Control '" + ctrl.controlName + "' to System.Drawing.ContentAlignment.MiddleCenter as it is on a horizontal Grid Button Panel");
 //                        writer.SetControlProperty(ctrl, "TextAlign", "System.Drawing.ContentAlignment.MiddleCenter");
                     }
 

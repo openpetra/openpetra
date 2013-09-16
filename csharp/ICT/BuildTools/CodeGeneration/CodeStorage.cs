@@ -989,7 +989,7 @@ namespace Ict.Tools.CodeGeneration
         {
             get
             {
-                TLogging.Log("Control: " + this.controlName + "  is IsGridButtonPanel: " +
+                TLogging.LogAtLevel(1, "Control: " + this.controlName + "  is IsGridButtonPanel: " +
                     (this.controlName == STR_BUTTON_PANEL_NAME
                      || this.controlName == STR_DETAIL_BUTTON_PANEL_NAME
                      || this.controlName == STR_INNER_BUTTON_PANEL_NAME).ToString());
@@ -1034,7 +1034,7 @@ namespace Ict.Tools.CodeGeneration
         {
             get
             {
-                TLogging.Log("Control: " + this.controlName + "  is IsHorizontalGridButtonPanelStrict: " +
+                TLogging.LogAtLevel(1, "Control: " + this.controlName + "  is IsHorizontalGridButtonPanelStrict: " +
                     (IsGridButtonPanelStrict
                      && (HasAttribute("ControlsOrientation"))
                      && (GetAttribute("ControlsOrientation").ToLower() == "horizontal")).ToString());
@@ -1064,8 +1064,8 @@ namespace Ict.Tools.CodeGeneration
             get
             {
                 TControlDef ParentControl = FCodeStorage.GetControl(this.parentName);
-                TLogging.Log("IsOnHorizontalGridButtonPanel:   Control: " + this.controlName + "; Parent: " + this.parentName);
-                TLogging.Log("IsOnHorizontalGridButtonPanel result: " + (IsOnGridButtonPanel
+                TLogging.LogAtLevel(1, "IsOnHorizontalGridButtonPanel:   Control: " + this.controlName + "; Parent: " + this.parentName);
+                TLogging.LogAtLevel(1, "IsOnHorizontalGridButtonPanel result: " + (IsOnGridButtonPanel
                                                                          && ((ParentControl == null)
                                                                              || (ParentControl.HasAttribute("ControlsOrientation"))
                                                                              && (ParentControl.GetAttribute("ControlsOrientation").ToLower() ==

@@ -472,7 +472,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 foreach (TControlDef childCtrl in ctrl.Children)
                 {
-                    TLogging.Log("foreach (TControlDef childCtrl in ctrl.Children) -- Control: " + childCtrl.controlName);
+                    TLogging.LogAtLevel(1, "foreach (TControlDef childCtrl in ctrl.Children) -- Control: " + childCtrl.controlName);
 
                     if (!childCtrl.controlName.StartsWith("pnlEmpty"))
                     {
@@ -718,7 +718,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     FDefaultHeight = 28;
 
-                    Console.WriteLine("Adjusted Height of Panel '" + ctrl.controlName + "' as it is a horizontal Grid Button Panel");
+                    TLogging.LogAtLevel(1, "Adjusted Height of Panel '" + ctrl.controlName + "' as it is a horizontal Grid Button Panel");
                     writer.SetControlProperty(ctrl, "Size", "new System.Drawing.Size(" +
                         Width + ", " + FDefaultHeight.ToString() + ")");
 
@@ -1711,7 +1711,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         if (childCtrlName != "pnlButtonsInner")
                         {
                             TControlDef childCtrl = writer.CodeStorage.GetControl(childCtrlName);
-                            TLogging.Log("Iteration 0:  Child: '" + childCtrl.controlName + "'");
+                            TLogging.LogAtLevel(1, "Iteration 0:  Child: '" + childCtrl.controlName + "'");
 
                             pnlButtonsInner.Children.Add(childCtrl);
                             childCtrl.SetAttribute("Top", "3");
