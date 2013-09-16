@@ -185,6 +185,7 @@
           </queryDetail>
         </query>
       </calculation>
+
       <calculation id="Debits" returnsFormat="currency" returns="amount">
         <caption><value text="Debits"/></caption>
         <query>
@@ -193,6 +194,7 @@
           </queryDetail>
         </query>
       </calculation>
+
       <calculation id="Credits" returnsFormat="currency" returns="amount">
         <caption><value text="Credits"/></caption>
         <query>
@@ -201,6 +203,7 @@
           </queryDetail>
         </query>
       </calculation>
+
       <calculation id="Detail" returnsFormat="text" returns="text">
         <caption><value text="Detail"/></caption>
         <query>
@@ -260,7 +263,7 @@
         <lowerLevelReport level="AccountLevel1" calculation="SelectAccounts"/>
       </detail>
       <footer>
-        <field whichfield="column 0">
+        <field calculation="ClearAccountCodeAmount" whichfield="column 0">
           <value text="Grand Total: "/>
         </field>
         <field whichfield="column {param_column_Credits}">

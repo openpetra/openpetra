@@ -48,4 +48,4 @@ RootNode:
         txtDetailCurrencySymbol: {Label=Currency Symbol, Width=50}
         cmbDetailCountryCode: {Label=Country Code, List=CountryList, ColSpan=2}
         # TODO: should be nudNumberOfDecimals
-        txtDetailDisplayFormat: {Label=Number of Decimals, Width=180}
+        txtDetailDisplayFormat: {Width=180}

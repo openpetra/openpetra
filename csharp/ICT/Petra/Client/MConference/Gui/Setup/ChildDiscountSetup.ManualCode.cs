@@ -41,13 +41,9 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 {
     public partial class TFrmChildDiscountSetup
     {
-        private Int64 FPartnerKey;
-
-        /// constructor
-        public TFrmChildDiscountSetup(Form AParentForm, TSearchCriteria[] ASearchCriteria, long ASelectedConferenceKey) : base()
-        {
-            FPartnerKey = ASelectedConferenceKey;
-            Initialize(AParentForm, ASearchCriteria);
+        /// PartnerKey for selected conference to be set from outside
+        public static Int64 FPartnerKey {
+            private get; set;
         }
 
         private void InitializeManualCode()

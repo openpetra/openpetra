@@ -6,7 +6,7 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MConference.Data, Ict.Petra.Shared.MConference.Validation, Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.Interfaces.MConference]
     FormType: edit
     Template: windowMaintainTable
-    WindowWidth: 800
+    WindowWidth: 600
     WindowHeight: 500
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
@@ -56,6 +56,3 @@ RootNode:
             OptionalValues: [=ACCOMMODATION, CONFERENCE]
             Label: Apply discount to
         txtDetailDiscount: {Width=50, Format=PercentInteger}
-    Toolbar:
-        tbbNew:
-            Label: New Child Discount

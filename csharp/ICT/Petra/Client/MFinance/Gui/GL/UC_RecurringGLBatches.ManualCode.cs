@@ -163,36 +163,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ParseHashTotal(ARecurringBatchRow ARow)
         {
-            decimal correctHashValue = 0;
-            string hashTotal = txtDetailBatchControlTotal.Text.Trim();
-            decimal hashDecimalVal;
+            decimal correctHashValue = 0m;
 
             if (ARow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
             {
                 return;
             }
 
-            if ((hashTotal == null) || (hashTotal.Length == 0))
+            if ((txtDetailBatchControlTotal.NumberValueDecimal == null) || !txtDetailBatchControlTotal.NumberValueDecimal.HasValue)
             {
                 correctHashValue = 0m;
             }
             else
             {
-                if (!Decimal.TryParse(hashTotal, out hashDecimalVal))
-                {
-                    correctHashValue = 0m;
-                }
-                else
-                {
-                    correctHashValue = hashDecimalVal;
-                }
+                correctHashValue = txtDetailBatchControlTotal.NumberValueDecimal.Value;
             }
 
-            if (ARow.BatchControlTotal != correctHashValue)
-            {
-                ARow.BatchControlTotal = correctHashValue;
-                txtDetailBatchControlTotal.NumberValueDecimal = correctHashValue;
-            }
+            txtDetailBatchControlTotal.NumberValueDecimal = correctHashValue;
+            ARow.BatchControlTotal = correctHashValue;
         }
 
         private void ShowDetailsManual(ARecurringBatchRow ARow)
@@ -598,7 +586,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // set exchange rate to base to 1 as default if no journals with other currencies exist
                     foreach (ARecurringJournalRow JournalRow in FMainDS.ARecurringJournal.Rows)
                     {
-                        requestParams.Add("AExchangeRateToBaseForJournal" + JournalRow.JournalNumber.ToString(), 1);
+                        requestParams.Add("AExchangeRateToBaseForJournal" + JournalRow.JournalNumber.ToString(), 1.0);
                     }
                 }
                 else
@@ -650,14 +638,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ParentForm.ShowInTaskbar = true;
             }
 
-            if (SubmitCancelled)
-            {
-                MessageBox.Show(Catalog.GetString("Submission of recurring batch was cancelled"),
-                    Catalog.GetString("Cancelled"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-            }
-            else
+            if (!SubmitCancelled)
             {
                 TVerificationResultCollection AMessages;
 

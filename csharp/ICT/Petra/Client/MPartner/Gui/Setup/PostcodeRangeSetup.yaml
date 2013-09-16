@@ -12,7 +12,8 @@ RootNode:
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
-        actAccept: {ActionClick=BtnAccept_Click}
+        actAccept: {Label=&Accept, ActionClick=BtnAccept_Click}
+        actCancel: {Label=&Cancel, ActionClick=BtnCancel_Click}
     Controls:
         pnlContent:
             Controls: [pnlRegionName, pnlGrid, pnlDetails]
@@ -39,12 +40,17 @@ RootNode:
         btnDelete:
             Action: actDelete
             Width: 80
-        btnAccept: {Label=&Accept, Enabled=true}
-        btnCancel: {Label=&Cancel}
+        btnAccept:
+            Action: actAccept
+            Width: 80
+        btnCancel:
+            Action: actCancel
+            Width: 80
         grdDetails:
             Dock: Fill
             Columns: [DetailRange, DetailFrom, DetailTo]
             ActionFocusRow: FocusedRowChanged
+            SortOrder: DetailRange ASC
         pnlDetails:
             Dock: Bottom
             Controls:

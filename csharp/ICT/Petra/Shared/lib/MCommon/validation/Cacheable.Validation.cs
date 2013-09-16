@@ -84,7 +84,7 @@ namespace Ict.Petra.Shared.MCommon.Validation
 
                 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
-                    VerificationResult = TNumericalChecks.IsPositiveInteger(ARow.InternatTelephoneCode,
+                    VerificationResult = TNumericalChecks.IsPositiveOrZeroInteger(ARow.InternatTelephoneCode,
                         ValidationControlsData.ValidationControlLabel,
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 

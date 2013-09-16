@@ -72,6 +72,4 @@ RootNode:
         dtpDetailApplicable: {Label=Applicable, Width=100}
         txtDetailAmount: {Label=Amount, Width=90, Format=Currency}
         txtDetailPercent: {Label=Percentage, Width=60, Format=PercentInteger}
-    Toolbar:
-        tbbNew:
-            Label: New Early or Late Registration
+
