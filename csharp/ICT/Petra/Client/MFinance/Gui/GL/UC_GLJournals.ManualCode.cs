@@ -118,10 +118,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 AJournalTable.GetBatchNumberDBName(),
                 FBatchNumber);
             FMainDS.AJournal.DefaultView.RowFilter = rowFilter;
-            FFilterPanelControls.BaseOffFilter = rowFilter;
-            FFilterPanelControls.BaseOnFilter = rowFilter;
-
-            UpdateRecordNumberDisplay();
+            FFilterPanelControls.SetBaseFilter(rowFilter, true);
+            FCurrentActiveFilter = rowFilter;
 
             FMainDS.AJournal.DefaultView.Sort = String.Format("{0} DESC",
                 AJournalTable.GetJournalNumberDBName()
@@ -135,6 +133,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             ShowData();
+
+            UpdateRecordNumberDisplay();
+            SetRecordNumberDisplayProperties();
 
             SelectRowInGrid(1);
 

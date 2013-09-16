@@ -203,8 +203,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 // specify the filter and bind  the data
                 string filter = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), NewValue);
-                FFilterPanelControls.BaseOffFilter = filter;
-                FFilterPanelControls.BaseOnFilter = filter;
+                FFilterPanelControls.SetBaseFilter(filter, true);
                 ApplyFilter();
                 SelectRowInGrid(1);
             }
@@ -274,8 +273,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // Now we need to display the grid again based on the modified code
             _currentContactAttribute = NewCode;
             string filter = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), NewCode);
-            FFilterPanelControls.BaseOffFilter = filter;
-            FFilterPanelControls.BaseOnFilter = filter;
+            FFilterPanelControls.SetBaseFilter(filter, true);
             ApplyFilter();
             SelectRowInGrid(curRow);
 

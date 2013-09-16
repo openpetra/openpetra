@@ -197,8 +197,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void ClearTransactionDefaultView()
         {
             //FMainDS.ATransaction.DefaultView.RowFilter = String.Empty;
-            FFilterPanelControls.BaseOffFilter = String.Empty;
-            FFilterPanelControls.BaseOnFilter = String.Empty;
+            FFilterPanelControls.SetBaseFilter(String.Empty, true);
             ApplyFilter();
         }
 
@@ -216,8 +215,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FBatchNumber,
                     ATransactionTable.GetJournalNumberDBName(),
                     FJournalNumber);
-                FFilterPanelControls.BaseOffFilter = rowFilter;
-                FFilterPanelControls.BaseOnFilter = rowFilter;
+                FFilterPanelControls.SetBaseFilter(rowFilter, true);
                 FMainDS.ATransaction.DefaultView.RowFilter = rowFilter;
 
                 UpdateRecordNumberDisplay();

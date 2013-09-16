@@ -1100,8 +1100,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
 
-            FFilterPanelControls.BaseOffFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
-            FFilterPanelControls.BaseOnFilter = FFilterPanelControls.BaseOffFilter;
+            string rowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+            FFilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == 0) && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
             ApplyFilter();
             //FMainDS.ABatch.DefaultView.RowFilter = FFilterPanelControls.GetCurrentFilter();
             //UpdateRecordNumberDisplay();

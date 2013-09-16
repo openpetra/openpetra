@@ -175,6 +175,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             UpdateChangeableStatus();
 
+            UpdateRecordNumberDisplay();
+            SetRecordNumberDisplayProperties();
+
             grdDetails.Focus();
         }
 
@@ -195,8 +198,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void ClearTransactionDefaultView()
         {
             FMainDS.ARecurringTransaction.DefaultView.RowFilter = String.Empty;
-            FFilterPanelControls.BaseOffFilter = String.Empty;
-            FFilterPanelControls.BaseOnFilter = String.Empty;
+            FFilterPanelControls.SetBaseFilter(String.Empty, true);
         }
 
         private void SetTransactionDefaultView(bool AAscendingOrder = true)
@@ -214,10 +216,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ARecurringTransactionTable.GetJournalNumberDBName(),
                     FJournalNumber);
                 FMainDS.ARecurringTransaction.DefaultView.RowFilter = rowFilter;
-                FFilterPanelControls.BaseOffFilter = rowFilter;
-                FFilterPanelControls.BaseOnFilter = rowFilter;
-
-                UpdateRecordNumberDisplay();
+                FFilterPanelControls.SetBaseFilter(rowFilter, true);
+                FCurrentActiveFilter = rowFilter;
 
                 FMainDS.ARecurringTransaction.DefaultView.Sort = String.Format("{0} " + sort,
                     ARecurringTransactionTable.GetTransactionNumberDBName()

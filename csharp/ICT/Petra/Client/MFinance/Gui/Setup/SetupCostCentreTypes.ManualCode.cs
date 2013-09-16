@@ -45,8 +45,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FMainDS.ACostCentreTypes.DefaultView.RowFilter = rowFilter;
                 FMainDS.ACostCentreTypes.DefaultView.Sort = ACostCentreTypesTable.GetCostCentreTypeDBName();
 
-                FFilterPanelControls.BaseOffFilter = rowFilter;
-                FFilterPanelControls.BaseOnFilter = rowFilter;
+                FFilterPanelControls.SetBaseFilter(rowFilter, true);
             }
         }
 

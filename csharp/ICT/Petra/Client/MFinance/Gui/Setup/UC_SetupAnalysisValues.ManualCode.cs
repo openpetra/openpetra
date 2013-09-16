@@ -63,8 +63,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 string rowFilter = String.Format("{0} = '{1}'",
                     AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
                     FTypeCode);
-                FFilterPanelControls.BaseOffFilter = rowFilter;
-                FFilterPanelControls.BaseOnFilter = rowFilter;
+                FFilterPanelControls.SetBaseFilter(rowFilter, true);
                 ApplyFilter();
 
                 SelectRowInGrid(FPrevRowChangedRow);

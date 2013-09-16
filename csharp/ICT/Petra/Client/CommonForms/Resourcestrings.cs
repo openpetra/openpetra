@@ -34,11 +34,19 @@ namespace Ict.Petra.Client.CommonForms
         #region Find/Filter resourcestrings
 
         /// <summary>todoComment</summary>
-        public static readonly string StrFilterIsTurnedOff = Catalog.GetString("Filter is off.\r\n-> Click button to show the Filter Panel.");
+        public static readonly string StrFilterIsHidden = Catalog.GetString("Filter is hidden.");
 
         /// <summary>todoComment</summary>
-        public static readonly string StrFilterIsTurnedOn = Catalog.GetString(
-            "Filter is on.\r\nIf Filter Crieria are entered then the list will\r\nonly display records that match them.\r\n-> Click button to turn the Filter off.");
+        public static readonly string StrFilterClickToTurnOn = Catalog.GetString("-> Click button to show the Filter Panel.");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrFilterClickToTurnOff = Catalog.GetString("-> Click button to hide the Filter Panel.");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrFilterAllRecordsShown = Catalog.GetString("The current filter is showing all the relevant records.");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrFilterSomeRecordsHidden = Catalog.GetString("The current filter may be hiding some relevant records.");
 
         #endregion
     }

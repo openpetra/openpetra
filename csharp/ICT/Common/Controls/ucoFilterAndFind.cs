@@ -1088,8 +1088,6 @@ namespace Ict.Common.Controls
                 else
                 {
                     // ... always one up from the bottommost of the Controls in the Panel in case there is a 'Apply Filter' Button (which is always the bottommost Control)
-                    int tmp = AFilterPanel.Controls.GetChildIndex(BtnKeepFilterTurnedOn);
-
                     if (AFilterPanel.Controls.GetChildIndex(BtnKeepFilterTurnedOn) == AFilterPanel.Controls.Count - 1)
                     {
                         ControlsArray[0].Tag = ""; // remove any TSingleLineFlow.BeginGroupIndicator!
@@ -1238,8 +1236,6 @@ namespace Ict.Common.Controls
                 else
                 {
                     // ... always one up from the bottommost of the Controls in the Panel in case there is a 'Apply Filter' Button (which is always the bottommost Control)
-                    int tmp = AFilterPanel.Controls.GetChildIndex(LblFilterIsAlwaysTurnedOn);
-
                     if (AFilterPanel.Controls.GetChildIndex(LblFilterIsAlwaysTurnedOn) == AFilterPanel.Controls.Count - 1)
                     {
                         ControlsArray[0].Tag = ""; // remove any TSingleLineFlow.BeginGroupIndicator!

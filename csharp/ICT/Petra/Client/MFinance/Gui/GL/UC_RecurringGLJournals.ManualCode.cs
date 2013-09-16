@@ -118,6 +118,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ShowDetails(null);
             }
 
+            UpdateRecordNumberDisplay();
+            SetRecordNumberDisplayProperties();
+
             txtBatchNumber.Text = FBatchNumber.ToString();
         }
 
@@ -127,10 +130,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ARecurringJournalTable.GetBatchNumberDBName(),
                 FBatchNumber);
             FMainDS.ARecurringJournal.DefaultView.RowFilter = rowFilter;
-            FFilterPanelControls.BaseOffFilter = rowFilter;
-            FFilterPanelControls.BaseOnFilter = rowFilter;
-
-            UpdateRecordNumberDisplay();
+            FFilterPanelControls.SetBaseFilter(rowFilter, true);
+            FCurrentActiveFilter = rowFilter;
 
             FMainDS.ARecurringJournal.DefaultView.Sort = String.Format("{0} DESC",
                 ARecurringJournalTable.GetJournalNumberDBName()
