@@ -28,4 +28,18 @@
     <comment key="UC_PartnerRelationships.yaml" value="style='background:LightSkyBlue' |No Filter/Find planned for this screen" />
     <comment key="UC_Subscriptions.yaml" value="style='background:LightSkyBlue' |No Filter/Find planned for this screen" />
   </comments>
+
+  <mantis>
+    <feature key="CurrencyLanguageSetup.yaml" value="1348" />
+    <feature key="CurrencySetup.yaml" value="1349" />
+    <feature key="SetupCorporateExchangeRate.yaml" value="1350" />
+    <feature key="SetupDailyExchangeRate.yaml" value="1351" />
+    <feature key="EmailDestinationSetup.yaml" value="1352" />
+    <feature key="SetupAdminGrantsPayable.yaml" value="1355" />
+    <feature key="SetupAdminGrantsReceivable.yaml" value="1355" />
+    <feature key="MotivationGroupSetup.yaml" value="1356" />
+    <feature key="GiftMotivationSetup.yaml" value="1357" />
+    <feature key="UC_GiftBatches.yaml" value="1359" />
+    <feature key="UC_GiftTransactions.yaml" value="1359" />
+  </mantis>
 </rootnode>

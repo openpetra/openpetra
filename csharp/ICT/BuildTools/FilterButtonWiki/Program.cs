@@ -57,6 +57,7 @@ namespace Ict.Tools.FilterButtonWiki
 
         // our metadata Xml
         private static XmlNode FMetaDataComments;
+        private static XmlNode FMetaDataMantis;
 
         private static void CheckForIssues(List <string>AListToCheck, string ATitle)
         {
@@ -69,7 +70,7 @@ namespace Ict.Tools.FilterButtonWiki
                 "The table listings consist of only those files that have a grid, a details panel and a buttons panel.");
             FLogFile.WriteLine("{| border=\"1\" cellpadding=\"5\" cellspacing=\"0\"");
 
-            FLogFile.WriteLine("!Filename !! Has Grid !! Has Details !! Has Buttons !! Has All !! Has Filter/Find !! Has Manual RowFilter !! Comments");
+            FLogFile.WriteLine("!Filename !! Has Grid !! Has Details !! Has Buttons !! Has All !! Has Filter/Find !! Has Manual RowFilter !! Mantis !! Comments");
 
             foreach (string tryPath in AListToCheck)
             {
@@ -144,9 +145,14 @@ namespace Ict.Tools.FilterButtonWiki
                 FLogFile.WriteLine(bHasFilterFind ? "|style=\"background:LightSkyBlue\" |Yes" : "|No");
                 FLogFile.WriteLine(bHasManualRowFilter ? "|style=\"background:Yellow\" |Yes" : "|No");
 
-                // is there a comment for this file?
+                // is there a Mantis Bug?
                 FLogFile.Write("|");
                 string fileName = Path.GetFileName(AYAMLPath);
+                XmlNode featureNode = FMetaDataMantis.SelectSingleNode(String.Format("feature[@key='{0}']", fileName));
+                FLogFile.WriteLine(featureNode == null ? String.Empty : featureNode.Attributes["value"].Value);
+
+                // is there a comment for this file?
+                FLogFile.Write("|");
                 XmlNode commentNode = FMetaDataComments.SelectSingleNode(String.Format("comment[@key='{0}']", fileName));
                 FLogFile.WriteLine(commentNode == null ? String.Empty : commentNode.Attributes["value"].Value);
             }
@@ -173,6 +179,7 @@ namespace Ict.Tools.FilterButtonWiki
                 xmlDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><rootnode/>");
             }
             FMetaDataComments = xmlDoc.SelectSingleNode("//comments");
+            FMetaDataMantis = xmlDoc.SelectSingleNode("//mantis");
 
             // The output file is in the OpenPetra log folder
             using (FLogFile = new StreamWriter(Path.Combine(rootPath, @"log\FilterButtonWiki.txt")))
