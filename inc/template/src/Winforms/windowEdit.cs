@@ -76,6 +76,12 @@ namespace {#NAMESPACE}
       
 {#IFDEF DETAILTABLE}
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
+{#IFDEF GRIDSORT}
+      myDataView.Sort = "{#GRIDSORT}";
+{#ENDIF GRIDSORT}
+{#IFDEF GRIDFILTER}
+      myDataView.RowFilter = {#GRIDFILTER};
+{#ENDIF GRIDFILTER}
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
