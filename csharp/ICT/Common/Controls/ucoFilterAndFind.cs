@@ -1362,8 +1362,6 @@ namespace Ict.Common.Controls
         private void AddTabs()
         {
             Panel pnlFindOptions = new Panel();
-            Button btnResetFilterCode = new Button();
-            Button btnResetFilterName = new Button();
             Button btnFindNext = new Button();
             GroupBox grpFindDirection = new GroupBox();
             RadioButton rbtFindDirUp = new RadioButton();
