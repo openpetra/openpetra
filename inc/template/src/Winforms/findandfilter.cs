@@ -13,6 +13,61 @@ ImageList FFilterImages;
 private TFilterPanelControls FFilterPanelControls = new TFilterPanelControls();
 private TFindPanelControls FFindPanelControls = new TFindPanelControls();
 private bool FIsFilterFindInitialised = false;
+private string FCurrentActiveFilter = String.Empty;
+private string FPreviousFilterTooltip = String.Format("{0}{1}{2}", CommonFormsResourcestrings.StrFilterIsHidden, Environment.NewLine, CommonFormsResourcestrings.StrFilterClickToTurnOn);
+
+///<summary>
+/// Sets the image, font and color properties for the record counter label based on the current active filter string
+/// </summary>
+private void SetRecordNumberDisplayProperties()
+{
+    if (grdDetails.DataSource != null)
+    {
+        string recordsString;
+
+        if (lblRecordCounter.Font.Italic)
+        {
+            // Do we need to change from 'filtered'?
+            if ((FCurrentActiveFilter == FFilterPanelControls.BaseFilter) && FFilterPanelControls.BaseFilterShowsAllRecords)
+            {
+                // No filtering
+                lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+                lblRecordCounter.Font = new Font(lblRecordCounter.Font, FontStyle.Regular);
+                chkToggleFilter.Image = FFilterImages.Images[0]; // 'Filter is inactive' icon
+                recordsString = CommonFormsResourcestrings.StrFilterAllRecordsShown;
+            }
+            else
+            {
+                recordsString = CommonFormsResourcestrings.StrFilterSomeRecordsHidden;
+            }
+        }
+        else
+        {
+            // Do we need to change from 'not filtered'?
+            if ((FCurrentActiveFilter != FFilterPanelControls.BaseFilter) || !FFilterPanelControls.BaseFilterShowsAllRecords)
+            {
+                // Now we are filtering
+                lblRecordCounter.ForeColor = System.Drawing.Color.MidnightBlue;
+                lblRecordCounter.Font = new Font(lblRecordCounter.Font, FontStyle.Italic);
+                chkToggleFilter.Image = FFilterImages.Images[1];  // 'Filter is active' icon
+                recordsString = CommonFormsResourcestrings.StrFilterSomeRecordsHidden;
+            }
+            else
+            {
+                recordsString = CommonFormsResourcestrings.StrFilterAllRecordsShown;
+            }
+        }
+
+        string clickString = (pnlFilterAndFind.Width > 0) ? CommonFormsResourcestrings.StrFilterClickToTurnOff : CommonFormsResourcestrings.StrFilterClickToTurnOn;
+        string strToolTip = String.Format("{0}{1}{2}", recordsString, Environment.NewLine, clickString);
+
+        if (strToolTip != FPreviousFilterTooltip)
+        {
+            GetPetraUtilsObject().SetToolTip(chkToggleFilter, strToolTip);
+            FPreviousFilterTooltip = strToolTip;
+        }
+    }
+}
 
 ///<summary>
 /// Sets up the Filter Button and the Filter and Find UserControl.
@@ -32,7 +87,7 @@ private void SetupFilterAndFindControls()
     chkToggleFilter.MinimumSize = new Size(75, 22);             // To prevent shrinkage!
     chkToggleFilter.Click += delegate { ToggleFilter(); };
     
-    GetPetraUtilsObject().SetToolTip(chkToggleFilter, CommonFormsResourcestrings.StrFilterIsTurnedOff);
+    GetPetraUtilsObject().SetToolTip(chkToggleFilter, FPreviousFilterTooltip);
                                      
     // Prepare parameters for the UserControl that will display the Filter and Find Panels
     FFilterAndFindParameters = new TUcoFilterAndFind.FilterAndFindParameters(
@@ -146,39 +201,25 @@ private void ToggleFilter()
         {#FILTERTOGGLEDMANUAL}
 
         FucoFilterAndFind_ArgumentCtrlValueChanged(FucoFilterAndFind, new TUcoFilterAndFind.TContextEventExtControlValueArgs(TUcoFilterAndFind.EventContext.ecFilterTab, null, null, null));
-
-        lblRecordCounter.ForeColor = System.Drawing.Color.MidnightBlue;
-        lblRecordCounter.Font = new Font(lblRecordCounter.Font, FontStyle.Italic);
-
-        chkToggleFilter.Image =  FFilterImages.Images[1];  // 'Filter is active' icon
-        
-        GetPetraUtilsObject().SetToolTip(chkToggleFilter, CommonFormsResourcestrings.StrFilterIsTurnedOn);
     }
     else
     {
         // Collapse the filter panel and uncheck the button if there is no active filter
         pnlFilterAndFind.Width = 0;
         {#FILTERTOGGLEDMANUAL}
-        string filterWhileOff = FFilterPanelControls.GetCurrentFilter(
+        FCurrentActiveFilter = FFilterPanelControls.GetCurrentFilter(
             true,
             FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed,
             FucoFilterAndFind.ShowFilterIsAlwaysOnLabel);
 
-        ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView.RowFilter = filterWhileOff; 
+        ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView.RowFilter = FCurrentActiveFilter; 
 
-        if (filterWhileOff == FFilterPanelControls.BaseOffFilter)
-        {
-            chkToggleFilter.Checked = false;
-
-            lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
-            lblRecordCounter.Font = new Font(lblRecordCounter.Font, FontStyle.Regular);
-            chkToggleFilter.Image = FFilterImages.Images[0]; // 'Filter is inactive' icon
-        
-            GetPetraUtilsObject().SetToolTip(chkToggleFilter, CommonFormsResourcestrings.StrFilterIsTurnedOff);
-        }
+        chkToggleFilter.Checked = false;
     }       
 
     UpdateRecordNumberDisplay();
+    SetRecordNumberDisplayProperties();
+    SelectRowInGrid(FPrevRowChangedRow);
     pnlFilterAndFind.Visible = pnlFilterAndFind.Width > 0;
 }
 
@@ -240,12 +281,11 @@ void FucoFilterAndFind_ArgumentCtrlValueChanged(object sender, TUcoFilterAndFind
         ((FucoFilterAndFind.ShowFilterIsAlwaysOnLabel == TUcoFilterAndFind.FilterContext.None) ||
         (FucoFilterAndFind.ShowFilterIsAlwaysOnLabel == TUcoFilterAndFind.FilterContext.StandardFilterOnly)));
 
-    if ((sender is TUcoFilterAndFind) && (pnlFilterAndFind.Width > 0) && (DynamicStandardFilterPanel || DynamicExtraFilterPanel))
+    if ((sender is TUcoFilterAndFind) && (pnlFilterAndFind.Width > 0))
     {
-        if ((DynamicStandardFilterPanel &&
-            (FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.None ||
-            FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.ExtraFilterOnly)) ||
-            (DynamicExtraFilterPanel &&
+        if ((FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.None ||
+            FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.ExtraFilterOnly) ||
+            (FucoFilterAndFind.IsExtraFilterShown &&
             (FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.None ||
             FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed == TUcoFilterAndFind.FilterContext.StandardFilterOnly)))
         {
@@ -273,20 +313,22 @@ void FucoFilterAndFind_ArgumentCtrlValueChanged(object sender, TUcoFilterAndFind
 void FucoFilterAndFind_ApplyFilterClicked(object sender, TUcoFilterAndFind.TContextEventExtControlArgs e)
 {
     ApplyFilter();
+    SelectRowInGrid(FPrevRowChangedRow);
 }
 
 void ApplyFilter()
 {
     // Get the current filter and optionally call manual code so user can modify it, if necessary
-    string filter = FFilterPanelControls.GetCurrentFilter(
+    FCurrentActiveFilter = FFilterPanelControls.GetCurrentFilter(
         FucoFilterAndFind == null || FucoFilterAndFind.IsCollapsed,
         (FucoFilterAndFind == null) ? TUcoFilterAndFind.FilterContext.None : FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed,
         FFilterAndFindParameters.ShowFilterIsAlwaysOnLabelContext);
     {#APPLYFILTERMANUAL}
 
-    ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView.RowFilter = filter;
+    ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView.RowFilter = FCurrentActiveFilter;
 
     UpdateRecordNumberDisplay();
+    SetRecordNumberDisplayProperties();
 }
 
 

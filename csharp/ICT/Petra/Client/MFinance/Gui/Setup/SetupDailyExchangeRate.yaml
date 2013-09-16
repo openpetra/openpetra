@@ -15,11 +15,15 @@ RootNode:
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlDetails]
+            Controls: [pnlGridAndModal, pnlDetails]
+            Dock: Fill
+        pnlGridAndModal:
+            Controls: [pnlGrid, pnlModalButtons]
+            ControlsOrientation: horizontal
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlFilterAndFind, pnlButtons, grdDetails, pnlModalButtons]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
             FilterControls: [cmbDetailFromCurrencyCode, cmbDetailToCurrencyCode]
@@ -31,6 +35,7 @@ RootNode:
         pnlModalButtons:
             Dock: Right
             Controls: [btnClose, btnCancel]
+            Width: 100
         btnNew:
             Action: actNew
             Width: 80
