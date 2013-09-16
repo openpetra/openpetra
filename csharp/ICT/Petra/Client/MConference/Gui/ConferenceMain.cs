@@ -39,18 +39,28 @@ namespace Ict.Petra.Client.MConference.Gui
         /// PartnerKey for selected conference to be set from outside
         public static Int64 FPartnerKey;
 
+        private static string ERRORMESSAGE = String.Format("A conference must be selected before the setup screens can be used.");
+
         /// <summary>
         /// opens Early Late Registration screen for pre selected conference
         /// </summary>
         public static void EarlyLateRegistrationsForSelectedConference(Form AParentForm)
         {
-            TSearchCriteria[] Search = new TSearchCriteria[1];
-            Search[0] = new TSearchCriteria(PcEarlyLateTable.GetConferenceKeyDBName(), FPartnerKey);
+            if (FPartnerKey > 0)
+            {
+                TSearchCriteria[] Search = new TSearchCriteria[1];
+                Search[0] = new TSearchCriteria(PcEarlyLateTable.GetConferenceKeyDBName(), FPartnerKey);
 
-            TFrmEarlyLateRegistrationSetup.FPartnerKey = FPartnerKey;
-            TFrmEarlyLateRegistrationSetup frm = new TFrmEarlyLateRegistrationSetup(AParentForm, Search);
+                TFrmEarlyLateRegistrationSetup.FPartnerKey = FPartnerKey;
+                TFrmEarlyLateRegistrationSetup frm = new TFrmEarlyLateRegistrationSetup(AParentForm, Search);
 
-            frm.Show();
+                frm.Show();
+            }
+            else
+            {
+                MessageBox.Show(ERRORMESSAGE, String.Format("Early and Late Registrations"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         /// <summary>
@@ -58,13 +68,21 @@ namespace Ict.Petra.Client.MConference.Gui
         /// </summary>
         public static void StandardCostsForSelectedConference(Form AParentForm)
         {
-            TSearchCriteria[] Search = new TSearchCriteria[1];
-            Search[0] = new TSearchCriteria(PcConferenceCostTable.GetConferenceKeyDBName(), FPartnerKey);
+            if (FPartnerKey > 0)
+            {
+                TSearchCriteria[] Search = new TSearchCriteria[1];
+                Search[0] = new TSearchCriteria(PcConferenceCostTable.GetConferenceKeyDBName(), FPartnerKey);
 
-            TFrmConferenceStandardCostSetup.FPartnerKey = FPartnerKey;
-            TFrmConferenceStandardCostSetup frm = new TFrmConferenceStandardCostSetup(AParentForm, Search);
+                TFrmConferenceStandardCostSetup.FPartnerKey = FPartnerKey;
+                TFrmConferenceStandardCostSetup frm = new TFrmConferenceStandardCostSetup(AParentForm, Search);
 
-            frm.Show();
+                frm.Show();
+            }
+            else
+            {
+                MessageBox.Show(ERRORMESSAGE, String.Format("Conference Standard Costs"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         /// <summary>
@@ -72,14 +90,22 @@ namespace Ict.Petra.Client.MConference.Gui
         /// </summary>
         public static void ChildDiscountsForSelectedConference(Form AParentForm)
         {
-            TSearchCriteria[] Search = new TSearchCriteria[2];
-            Search[0] = new TSearchCriteria(PcDiscountTable.GetConferenceKeyDBName(), FPartnerKey);
-            Search[1] = new TSearchCriteria(PcDiscountTable.GetDiscountCriteriaCodeDBName(), "CHILD");
+            if (FPartnerKey > 0)
+            {
+                TSearchCriteria[] Search = new TSearchCriteria[2];
+                Search[0] = new TSearchCriteria(PcDiscountTable.GetConferenceKeyDBName(), FPartnerKey);
+                Search[1] = new TSearchCriteria(PcDiscountTable.GetDiscountCriteriaCodeDBName(), "CHILD");
 
-            TFrmChildDiscountSetup.FPartnerKey = FPartnerKey;
-            TFrmChildDiscountSetup frm = new TFrmChildDiscountSetup(AParentForm, Search);
+                TFrmChildDiscountSetup.FPartnerKey = FPartnerKey;
+                TFrmChildDiscountSetup frm = new TFrmChildDiscountSetup(AParentForm, Search);
 
-            frm.Show();
+                frm.Show();
+            }
+            else
+            {
+                MessageBox.Show(ERRORMESSAGE, String.Format("Child Discounts"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         /// <summary>
@@ -87,13 +113,40 @@ namespace Ict.Petra.Client.MConference.Gui
         /// </summary>
         public static void OutreachSupplementsForSelectedConference(Form AParentForm)
         {
-            TSearchCriteria[] Search = new TSearchCriteria[1];
-            Search[0] = new TSearchCriteria(PcSupplementTable.GetConferenceKeyDBName(), FPartnerKey);
+            if (FPartnerKey > 0)
+            {
+                TSearchCriteria[] Search = new TSearchCriteria[1];
+                Search[0] = new TSearchCriteria(PcSupplementTable.GetConferenceKeyDBName(), FPartnerKey);
 
-            TFrmOutreachSupplementSetup.FPartnerKey = FPartnerKey;
-            TFrmOutreachSupplementSetup frm = new TFrmOutreachSupplementSetup(AParentForm, Search);
+                TFrmOutreachSupplementSetup.FPartnerKey = FPartnerKey;
+                TFrmOutreachSupplementSetup frm = new TFrmOutreachSupplementSetup(AParentForm, Search);
 
-            frm.Show();
+                frm.Show();
+            }
+            else
+            {
+                MessageBox.Show(ERRORMESSAGE, String.Format("Outreach Supplements"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        /// <summary>
+        /// opens Master Settings screen for pre selected conference
+        /// </summary>
+        public static void MasterSettingsForSelectedConference(Form AParentForm)
+        {
+            if (FPartnerKey > 0)
+            {
+                TFrmConferenceMasterSettings.FPartnerKey = FPartnerKey;
+                TFrmConferenceMasterSettings frm = new TFrmConferenceMasterSettings(AParentForm);
+
+                frm.Show();
+            }
+            else
+            {
+                MessageBox.Show(ERRORMESSAGE, String.Format("Master Settings"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         /// <summary>

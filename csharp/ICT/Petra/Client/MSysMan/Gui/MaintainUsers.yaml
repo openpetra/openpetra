@@ -29,6 +29,7 @@
         grdDetails:
             Dock: Fill
             Columns: [DetailUserId, DetailFirstName, DetailLastName, DetailRetired, DetailLastLoginDate]
+            SortOrder: DetailUserId ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

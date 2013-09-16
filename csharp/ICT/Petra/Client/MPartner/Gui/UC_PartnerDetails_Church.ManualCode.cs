@@ -84,11 +84,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            TSharedPartnerValidation_Partner.ValidatePartnerChurchManual(this, ARow, 
+            TSharedPartnerValidation_Partner.ValidatePartnerChurchManual(this, ARow,
                 TDataCache.GetCacheableDataTableFromCache("DenominationList"),
                 ref VerificationResultCollection, FValidationControlsDict);
-        }        
-        
+        }
+
         #endregion
     }
 }
