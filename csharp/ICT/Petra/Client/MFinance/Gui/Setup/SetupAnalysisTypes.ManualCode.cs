@@ -89,8 +89,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// Performs checks to determine whether a deletion of the current
-        ///  row is permissable
+        /// Performs checks to determine whether a deletion of the current row is permissable
         /// </summary>
         /// <param name="ARowToDelete">the currently selected row to be deleted</param>
         /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>

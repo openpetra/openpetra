@@ -156,14 +156,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private bool PreDeleteManual(AAnalysisAttributeRow ARowToDelete, ref string ADeletionQuestion)
         {
+            // I can't delete any Analysis Type code that's been used in transactions.
             if ((ARowToDelete != null) && (ARowToDelete.RowState != DataRowState.Deleted))
             {
-                ADeletionQuestion = String.Format(
-                    Catalog.GetString("Confirm you want to Remove {0} from this account."),
-                    ARowToDelete.AnalysisTypeCode);
+                if (TRemote.MFinance.Setup.WebConnectors.CanDetachAnalysisType(ARowToDelete.LedgerNumber, ARowToDelete.AccountCode, ARowToDelete.AnalysisTypeCode))
+                {
+                    ADeletionQuestion = String.Format(
+                        Catalog.GetString("Confirm you want to Remove {0} from this account."),
+                        ARowToDelete.AnalysisTypeCode);
+                    return true;
+                }
+                else // The server reports that this can't be deleted because it's been using in transactions.
+                {
+                    MessageBox.Show(
+                        String.Format(Catalog.GetString("Analysis type {0} cannot be deleted because it has been used in tranactions."),
+                            ARowToDelete.AnalysisTypeCode),
+                        Catalog.GetString("Delete Analysis Type"));
+                }
             }
 
-            return true;
+            return false;
         }
 
         private bool DeleteRowManual(AAnalysisAttributeRow ARowToDelete, ref string ACompletionMessage)

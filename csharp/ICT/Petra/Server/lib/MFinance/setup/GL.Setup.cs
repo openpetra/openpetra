@@ -55,6 +55,9 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MFinance.AP.Data.Access;
+using Ict.Petra.Server.MCommon.Data.Cascading;
+using System.Collections.Generic;
 
 namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 {
@@ -1399,6 +1402,26 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
         #endregion Data Validation
+
+        /// <summary>
+        /// Find out whether I can detach this Analysis Type Code from this account
+        /// If it's been used in any transactions, I'm stuck with it.
+        /// Cascading checks AApAnalAttrib, ARecurringTransAnalAttrib and ATransAnalAttrib.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AAccountCode"></param>
+        /// <param name="AAnalysisTypeCode"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Boolean CanDetachAnalysisType(Int32 ALedgerNumber, String AAccountCode, String AAnalysisTypeCode)
+        {
+            List<TRowReferenceInfo> References;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            Int32 RefCount = AAnalysisAttributeCascading.CountByPrimaryKey(ALedgerNumber, AAnalysisTypeCode, AAccountCode, Transaction, true, out References);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return (RefCount==0);
+        }
 
         /// <summary>
         /// helper function for ExportAccountHierarchy
@@ -2788,7 +2811,22 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// Check if a account code for Ledger ALedgerNumber has analysis attributes set up
+        /// Get a list of Analysis Attributes that must be used with this account.
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static StringCollection RequiredAnalysisAttributesForAccount(Int32 ALedgerNumber, String AAccountCode)
+        {
+            StringCollection Ret = new StringCollection();
+            AAnalysisAttributeTable tbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AAccountCode, null);
+            foreach (AAnalysisAttributeRow Row in tbl.Rows)
+            {
+                Ret.Add(Row.AnalysisTypeCode);
+            }
+            return Ret;
+        }
+
+        /// <summary>
+        /// Check if this account code for Ledger ALedgerNumber requires one or more analysis attributes
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static bool HasAccountSetupAnalysisAttributes(Int32 ALedgerNumber, String AAccountCode)

@@ -117,7 +117,6 @@ namespace Ict.Petra.Server.MFinance.GL
                 AJournalRow NewJournal = null;
                 int BatchPeriodNumber = -1;
                 int BatchYearNr = -1;
-                String ImportedString = "";
                 //AGiftRow gift = null;
                 FImportMessage = Catalog.GetString("Parsing first line");
 
