@@ -186,21 +186,26 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         /// Check Discount Criteria row exists
         /// </summary>
         /// <param name="ADiscountCriteriaCode">Primary Key to check exists</param>
-        /// <param name="ADiscountCriteriaDescription">Criteria description to add if row does not exist</param>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static void CreateDiscountCriteriaIfNotExisting(string ADiscountCriteriaCode, string ADiscountCriteriaDescription)
+        public static bool CheckDiscountCriteriaCodeExists(string[] ADiscountCriteriaCode)
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
-            Boolean RowExists = false;
+            Boolean CriteriaCodeExists = true;
 
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             try
             {
-                RowExists = PcDiscountCriteriaAccess.Exists(ADiscountCriteriaCode, ReadTransaction);
+                foreach (string CriteriaCode in ADiscountCriteriaCode)
+                {
+                    if (!PcDiscountCriteriaAccess.Exists(CriteriaCode, ReadTransaction))
+                    {
+                        CriteriaCodeExists = false;
+                    }
+                }
             }
             catch (Exception e)
             {
@@ -211,65 +216,20 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CreateDiscountCriteriaIfNotExisting: rollback own transaction.");
+                    TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CheckDiscountCriteriaCodeExists: rollback own transaction.");
                 }
             }
 
-            // add row is it does not exist
-            if (!RowExists)
-            {
-                AddDiscountCriteriaCode(ADiscountCriteriaCode, ADiscountCriteriaDescription);
-            }
-        }
-
-        /// <summary>
-        /// Create new Discount Criteria row
-        /// </summary>
-        /// <param name="ADiscountCriteriaCode">Criteria code to add</param>
-        /// <param name="ADiscountCriteriaDescription">Criteria description to add</param>
-        /// <returns></returns>
-        [RequireModulePermission("PTNRUSER")]
-        private static void AddDiscountCriteriaCode(string ADiscountCriteriaCode, string ADiscountCriteriaDescription)
-        {
-            TDBTransaction Transaction;
-            PcDiscountCriteriaTable DiscountCriteriaTable = null;
-            TVerificationResultCollection VerificationResult;
-
-            Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            try
-            {
-                DiscountCriteriaTable = PcDiscountCriteriaAccess.LoadAll(Transaction);
-
-                // set column values
-                PcDiscountCriteriaRow AddRow = DiscountCriteriaTable.NewRowTyped();
-                AddRow.DiscountCriteriaCode = ADiscountCriteriaCode;
-                AddRow.DiscountCriteriaDesc = ADiscountCriteriaDescription;
-                AddRow.DeletableFlag = false;
-
-                // add new row to database table
-                DiscountCriteriaTable.Rows.Add(AddRow);
-                PcDiscountCriteriaAccess.SubmitChanges(DiscountCriteriaTable, Transaction, out VerificationResult);
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-                TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.AddDiscountCriteriaCode: commit own transaction.");
-            }
+            return CriteriaCodeExists;
         }
 
         /// <summary>
         /// Check Cost Type row exists
         /// </summary>
         /// <param name="ACostTypeCode">Primary Key to check exists</param>
-        /// <param name="ACostTypeDescription">Cost Type description to add if row does not exist</param>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static void CreateCostTypeIfNotExisting(string ACostTypeCode, string ACostTypeDescription)
+        public static bool CheckCostTypeExists(string ACostTypeCode)
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
@@ -291,55 +251,11 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CreateCostTypeIfNotExisting: rollback own transaction.");
+                    TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CheckCostTypeExists: rollback own transaction.");
                 }
             }
 
-            // add row is it does not exist
-            if (!RowExists)
-            {
-                AddCostTypeCode(ACostTypeCode, ACostTypeDescription);
-            }
-        }
-
-        /// <summary>
-        /// Create new Cost Type row
-        /// </summary>
-        /// <param name="ACostTypeCode">Cost Type Code to add</param>
-        /// <param name="ACostTypeDescription">Cost Type Description to add</param>
-        /// <returns></returns>
-        [RequireModulePermission("PTNRUSER")]
-        private static void AddCostTypeCode(string ACostTypeCode, string ACostTypeDescription)
-        {
-            TDBTransaction Transaction;
-            PcCostTypeTable CostTypeTable = null;
-            TVerificationResultCollection VerificationResult;
-
-            Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
-            try
-            {
-                CostTypeTable = PcCostTypeAccess.LoadAll(Transaction);
-
-                // set column values
-                PcCostTypeRow AddRow = CostTypeTable.NewRowTyped();
-                AddRow.CostTypeCode = ACostTypeCode;
-                AddRow.CostTypeDescription = ACostTypeDescription;
-                AddRow.DeletableFlag = false;
-
-                // add new row to database table
-                CostTypeTable.Rows.Add(AddRow);
-                PcCostTypeAccess.SubmitChanges(CostTypeTable, Transaction, out VerificationResult);
-            }
-            catch (Exception e)
-            {
-                TLogging.Log(e.ToString());
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-                TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.AddCostTypeCode: commit own transaction.");
-            }
+            return RowExists;
         }
 
         /// <summary>
