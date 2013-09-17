@@ -509,7 +509,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             if (BudgetPeriodRow != null)
             {
-            	retVal = (decimal)BudgetPeriodRow.BudgetBase;
+                retVal = (decimal)BudgetPeriodRow.BudgetBase;
             }
 
             return retVal;

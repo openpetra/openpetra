@@ -55,11 +55,6 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(FPartnerKey, out ConferenceName, out PartnerClass);
             this.Text = this.Text + " [" + ConferenceName + "]";
             txtConferenceName.Text = ConferenceName;
-
-            // create foreign keys if they do not already exist
-            TRemote.MConference.Conference.WebConnectors.CreateDiscountCriteriaIfNotExisting("CHILD", "Child");
-            TRemote.MConference.Conference.WebConnectors.CreateCostTypeIfNotExisting("ACCOMMODATION", "Extra accommodation costs");
-            TRemote.MConference.Conference.WebConnectors.CreateCostTypeIfNotExisting("CONFERENCE", "Additional costs for conference");
         }
 
         private void NewRowManual(ref PcDiscountRow ARow)
@@ -181,6 +176,18 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 
         private void ValidateDataDetailsManual(PcDiscountRow ARow)
         {
+            if (txtDetailDiscount.Text == "")
+            {
+                ARow.Discount = 0;
+                //txtDetailDiscount.Text = "0";
+            }
+
+            // check that default data exists in database
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TSharedConferenceValidation_Conference.ValidateChildDiscountSetup(this, ARow, ref VerificationResultCollection,
+                FPetraUtilsObject.ValidationControlsDict);
+
             EnableOrDisableCmb(ARow);
         }
     }

@@ -214,6 +214,51 @@ namespace Ict.Petra.Shared.MPartner.Validation
         }
 
         /// <summary>
+        /// Validates the Partner Detail data of a Partner of PartnerClass CHURCH.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="ADenominationCacheableDT">The contents of the Cacheable DataTable 'DenominationList'.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidatePartnerChurchManual(object AContext, PChurchRow ARow, DataTable ADenominationCacheableDT,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult = null;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // Special check: 'Denominations' must exist!
+            ValidationColumn = ARow.Table.Columns[PChurchTable.ColumnDenominationCodeId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ADenominationCacheableDT != null)
+                {
+                    if (ADenominationCacheableDT.Rows.Count == 0)
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_NO_DENOMINATIONS_SET_UP,
+                                    String.Empty)),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
+                }
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
         /// Validates the Partner data of a Partner.
         /// </summary>
         /// <param name="AContext">Context that describes where the data validation failed.</param>
@@ -1085,6 +1130,27 @@ namespace Ict.Petra.Shared.MPartner.Validation
                         AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
                     }
                 }
+            }
+
+            // 'Field' must be a valid UNIT partner (if set at all)
+            ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnFieldKeyId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (!ARow.IsFieldKeyNull())
+                {
+                    VerificationResult = IsValidPartner(
+                        ARow.FieldKey, new TPartnerClass[] { TPartnerClass.UNIT }, true, string.Empty,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl
+                        );
+                }
+
+                // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+                // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+                // ResultText!
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
         }
     }

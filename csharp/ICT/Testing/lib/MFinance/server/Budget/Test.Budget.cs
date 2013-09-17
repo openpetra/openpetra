@@ -82,7 +82,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
         public void T0_Consolidation()
         {
             // reset the database, so that there is no consolidated budget
-            //CommonNUnitFunctions.ResetDatabase();
+            CommonNUnitFunctions.ResetDatabase();
 
             string budgetTestFile = TAppSettingsManager.GetValue("GiftBatch.file",
                 CommonNUnitFunctions.rootPath + "/csharp/ICT/Testing/lib/MFinance/SampleData/BudgetImport-All.csv");
@@ -248,24 +248,24 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
         [Test]
         public void T1_AutoGenerationLoadData()
         {
-        	FMainDS = new BudgetTDS();
-        	
-        	FMainDS.Merge(TBudgetAutoGenerateWebConnector.LoadBudgetForAutoGenerate(FLedgerNumber));
-        	
-        	//Not needed
-        	FMainDS.RemoveTable("AGeneralLedgerMasterPeriod");
-        	
-        	string emptyTables = string.Empty;
-        	
-        	foreach (DataTable tb in FMainDS.Tables)
-        	{
-        		if (FMainDS.Tables[tb.TableName].Rows.Count == 0)
-        		{
-        			emptyTables += tb.TableName + "; ";
-        		}
-        	}
+            FMainDS = new BudgetTDS();
 
-        	Assert.IsEmpty(emptyTables, "Empty Budget Autogeneration Tables: " + emptyTables);
+            FMainDS.Merge(TBudgetAutoGenerateWebConnector.LoadBudgetForAutoGenerate(FLedgerNumber));
+
+            //Not needed
+            FMainDS.RemoveTable("AGeneralLedgerMasterPeriod");
+
+            string emptyTables = string.Empty;
+
+            foreach (DataTable tb in FMainDS.Tables)
+            {
+                if (FMainDS.Tables[tb.TableName].Rows.Count == 0)
+                {
+                    emptyTables += tb.TableName + "; ";
+                }
+            }
+
+            Assert.IsEmpty(emptyTables, "Empty Budget Autogeneration Tables: " + emptyTables);
         }
 
         /// <summary>
@@ -274,49 +274,51 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
         [Test]
         public void T2_AutoGenerationGenBudget()
         {
-			//FMainDS loaded in previous test
-			int budgetSequence = FMainDS.ABudget.Count > 0 ? FMainDS.ABudget[0].BudgetSequence: 0;
-        	string forecastType = MFinanceConstants.FORECAST_TYPE_BUDGET;
-        	
-        	if (FMainDS.ABudget.Count == 0)
-			{
-				return;
-			}
-        		    	
-        	Assert.IsTrue(TBudgetAutoGenerateWebConnector.GenBudgetForNextYear(FLedgerNumber, budgetSequence, forecastType),"Budget Autogenerate failed!");
+            //FMainDS loaded in previous test
+            int budgetSequence = FMainDS.ABudget.Count > 0 ? FMainDS.ABudget[0].BudgetSequence : 0;
+            string forecastType = MFinanceConstants.FORECAST_TYPE_BUDGET;
+
+            if (FMainDS.ABudget.Count == 0)
+            {
+                return;
+            }
+
+            Assert.IsTrue(TBudgetAutoGenerateWebConnector.GenBudgetForNextYear(FLedgerNumber,
+                    budgetSequence,
+                    forecastType), "Budget Autogenerate failed!");
         }
 
-        /// <summary>
-        /// test the budget autogeneration
-        /// </summary>
-        [Test]
-        public void T3_AutoGenerationGetBudgetAmount()
-        {
-			//FMainDS loaded in previous test
-        	if (FMainDS.ABudget.Count == 0)
-			{
-				return;
-			}
-        	
-			int budgetSequence = FMainDS.ABudget[0].BudgetSequence;
-			int periodNo = 1;
-
-			ABudgetPeriodRow bPRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] {budgetSequence, 1});
-        	
-        	if (bPRow == null)
-        	{
-        		Assert.IsNotNull(bPRow, String.Format("Cannot find budget period {0} value for budget sequence {1}", periodNo, budgetSequence));
-        		return;
-        	}
-        	
-        	decimal baseBudgetAmountFromTable = bPRow.BudgetBase;
-        	decimal baseBudgetAmountFromFunction = TBudgetAutoGenerateWebConnector.GetBudgetPeriodAmount(budgetSequence, 1);
-
-        	//Check if the value in the database equals that delivered by the function
-        	Assert.IsTrue(baseBudgetAmountFromTable == baseBudgetAmountFromFunction, String.Format("GetBudgetPeriod Failed. Base Amount in Table is {0}. Function returns: {1}",
-        		                                                                              baseBudgetAmountFromTable,
-        		                                                                              baseBudgetAmountFromFunction));
-        }
+//        /// <summary>
+//        /// test the budget autogeneration
+//        /// </summary>
+//        [Test]
+//        public void T3_AutoGenerationGetBudgetAmount()
+//        {
+//			//FMainDS loaded in previous test
+//              if (FMainDS.ABudget.Count == 0)
+//			{
+//				return;
+//			}
+//
+//			int budgetSequence = FMainDS.ABudget[0].BudgetSequence;
+//			int periodNo = 1;
+//
+//			ABudgetPeriodRow bPRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] {budgetSequence, 1});
+//
+//              if (bPRow == null)
+//              {
+//                      Assert.IsNotNull(bPRow, String.Format("Cannot find budget period {0} value for budget sequence {1}", periodNo, budgetSequence));
+//                      return;
+//              }
+//
+//              decimal baseBudgetAmountFromTable = bPRow.BudgetBase;
+//              decimal baseBudgetAmountFromFunction = TBudgetAutoGenerateWebConnector.GetBudgetPeriodAmount(budgetSequence, 1);
+//
+//              //Check if the value in the database equals that delivered by the function
+//              Assert.IsTrue(baseBudgetAmountFromTable == baseBudgetAmountFromFunction, String.Format("GetBudgetPeriod Failed. Base Amount in Table is {0}. Function returns: {1}",
+//                                                                                                    baseBudgetAmountFromTable,
+//                                                                                                    baseBudgetAmountFromFunction));
+//        }
 
         /// <summary>
         /// test the budget autogeneration
@@ -324,30 +326,30 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
         [Test]
         public void T4_AutoGenerationSetBudgetAmount()
         {
-			//FMainDS loaded in previous test
-        	if (FMainDS.ABudget.Count == 0)
-			{
-				return;
-			}
-        	
-			int budgetSequence = FMainDS.ABudget[0].BudgetSequence;
-        	
-        	ABudgetPeriodRow bPRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] {budgetSequence, 1});
-        	
-        	if (bPRow == null)
-        	{
-        		Assert.IsNotNull(bPRow, String.Format("Cannot find budget period 1 value for budget sequence {0}", budgetSequence));
-        		return;
-        	}
-        	
-			//Add 10 to Budget base value and check if it is written
-        	decimal budgetBase = bPRow.BudgetBase;
-        	TBudgetAutoGenerateWebConnector.SetBudgetPeriodBaseAmount(budgetSequence, 1, (budgetBase + 10));
-        	
-			decimal budgetBaseNew = TBudgetAutoGenerateWebConnector.GetBudgetPeriodAmount(budgetSequence, 1);
-			Assert.IsTrue(budgetBaseNew == (budgetBase + 10), String.Format("SetBudgetPeriod Failed. BudgetBase ({0}) has not been updated to: {1}",
-			                                                         budgetBase,
-			                                                        budgetBaseNew));
+            //FMainDS loaded in previous test
+            if (FMainDS.ABudget.Count == 0)
+            {
+                return;
+            }
+
+            int budgetSequence = FMainDS.ABudget[0].BudgetSequence;
+
+            ABudgetPeriodRow bPRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(new object[] { budgetSequence, 1 });
+
+            if (bPRow == null)
+            {
+                Assert.IsNotNull(bPRow, String.Format("Cannot find budget period 1 value for budget sequence {0}", budgetSequence));
+                return;
+            }
+
+            //Add 10 to Budget base value and check if it is written
+            decimal budgetBase = bPRow.BudgetBase;
+            TBudgetAutoGenerateWebConnector.SetBudgetPeriodBaseAmount(budgetSequence, 1, (budgetBase + 10));
+
+            decimal budgetBaseNew = TBudgetAutoGenerateWebConnector.GetBudgetPeriodAmount(budgetSequence, 1);
+            Assert.IsTrue(budgetBaseNew == (budgetBase + 10), String.Format("SetBudgetPeriod Failed. BudgetBase ({0}) has not been updated to: {1}",
+                    budgetBase,
+                    budgetBaseNew));
         }
     }
 }

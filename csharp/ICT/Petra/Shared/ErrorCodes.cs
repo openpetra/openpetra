@@ -143,6 +143,16 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Discount percentages cannot be greater than 100%")]
         public const String ERR_DISCOUNT_PERCENTAGE_GREATER_THAN_100 = "CON.00005V";
 
+        /// <summary>DiscountCriteraCode does not exist</summary>
+        [ErrCodeAttribute("Internal data is missing.",
+             ErrorMessageText = "Necessary internal data is missing from the database. A record is missing from the table PcDiscountCriteria.")]
+        public const String ERR_DISCOUNT_CRITERIA_CODE_DOES_NOT_EXIST = "CON.00006E";
+
+        /// <summary>CostTypeCode does not exist</summary>
+        [ErrCodeAttribute("Internal data is missing.",
+             ErrorMessageText = "Necessary internal data is missing from the database. A record is missing from the table PcCostType.")]
+        public const String ERR_COST_TYPE_CODE_DOES_NOT_EXIST = "CON.00007E";
+
         #endregion
 
         #region Finance Module-specific error codes
@@ -279,6 +289,13 @@ namespace Ict.Petra.Shared
         [ErrCodeAttribute("Level must be within valid range.",
              ErrorMessageText = "Level must be between {0} and {1}.")]
         public const String ERR_INTEREST_LEVEL_NOT_WITHIN_RANGE = "PARTN.00015V";
+
+        /// <summary>Partner of Partner Class Church: Denomination must be assigned, but no Denominations are set up to choose from.</summary>
+        [ErrCodeAttribute("Denominations must be set up.",
+             ErrorMessageText =
+                 "A Denomination must be assigned, but there are no Denominations set up to choose from. Please set up Denominations and then repeat the process!")
+        ]
+        public const String ERR_NO_DENOMINATIONS_SET_UP = "PARTN.00018V";
 
         #endregion
 

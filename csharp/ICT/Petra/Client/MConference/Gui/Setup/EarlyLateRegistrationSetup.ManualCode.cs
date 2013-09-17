@@ -46,8 +46,15 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             private get; set;
         }
 
-        private DateTime StartDate;
-        private DateTime EndDate;
+        /// Start date for selected conference to be set from outside
+        public static DateTime FStartDate {
+            private get; set;
+        }
+
+        /// End date for selected conference to be set from outside
+        public static DateTime FEndDate {
+            private get; set;
+        }
 
         private void InitializeManualCode()
         {
@@ -64,9 +71,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             txtConferenceName.Text = ConferenceName;
 
             // display the conference dates in a text box at the top of the screen
-            EndDate = TRemote.MConference.Conference.WebConnectors.GetEndDate(FPartnerKey);
-            StartDate = TRemote.MConference.Conference.WebConnectors.GetStartDate(FPartnerKey);
-            txtConferenceDates.Text = StartDate.ToShortDateString() + " to " + EndDate.ToShortDateString();
+            txtConferenceDates.Text = FStartDate.ToShortDateString() + " to " + FEndDate.ToShortDateString();
 
             // display the conference currency in a text box at the top of the screen and in pnlDetails
             TRemote.MConference.Conference.WebConnectors.GetCurrency(FPartnerKey, out CurrencyCode, out CurrencyName);
@@ -119,7 +124,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 
         private DateTime GetLatestAvailableEarlyDate(PcEarlyLateRow ARow)
         {
-            DateTime ApplicableDate = StartDate.AddDays(-1);
+            DateTime ApplicableDate = FStartDate.AddDays(-1);
 
             if (FMainDS.PcEarlyLate.Count >= 1)
             {
@@ -159,7 +164,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 
         private DateTime GetEarliestAvailableLateDate(PcEarlyLateRow ARow)
         {
-            DateTime ApplicableDate = StartDate.AddDays(-1);
+            DateTime ApplicableDate = FStartDate.AddDays(-1);
 
             DateTime LatestDate = ApplicableDate;
             DataRowCollection AllRecords = FMainDS.PcEarlyLate.Rows;
@@ -272,7 +277,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedConferenceValidation_Conference.ValidateEarlyLateRegistration(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict, GridData, EndDate);
+                FPetraUtilsObject.ValidationControlsDict, GridData, FEndDate);
         }
     }
 }

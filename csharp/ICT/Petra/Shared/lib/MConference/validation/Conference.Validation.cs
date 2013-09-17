@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
@@ -215,15 +216,86 @@ namespace Ict.Petra.Shared.MConference.Validation
             TScreenVerificationResult VerificationResult = null;
             DataColumn ValidationColumn;
 
+            List <string>CriteriaCodesUsed = new List <string>();
+
             foreach (PcDiscountRow Row in ADiscountTable.Rows)
             {
-                if ((Row.RowState != DataRowState.Deleted) && (Row.Discount > 100))
+                if ((Row.RowState != DataRowState.Deleted) && (Row.DiscountCriteriaCode != "CHILD"))
                 {
-                    ValidationColumn = Row.Table.Columns[PcDiscountTable.ColumnDiscountId];
+                    if (Row.Discount > 100)
+                    {
+                        ValidationColumn = Row.Table.Columns[PcDiscountTable.ColumnDiscountId];
+
+                        // displays a warning message
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
+                                    PetraErrorCodes.ERR_DISCOUNT_PERCENTAGE_GREATER_THAN_100)),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    }
+
+                    if (!CriteriaCodesUsed.Exists(element => element == Row.DiscountCriteriaCode))
+                    {
+                        CriteriaCodesUsed.Add(Row.DiscountCriteriaCode);
+                    }
+                }
+            }
+
+            string[] CriteriaCodesUsedArray = CriteriaCodesUsed.ToArray();
+
+            if (!TRemote.MConference.Conference.WebConnectors.CheckDiscountCriteriaCodeExists(CriteriaCodesUsedArray))
+            {
+                ValidationColumn = ADiscountTable.Columns[PcDiscountTable.ColumnDiscountCriteriaCodeId];
+
+                // displays a warning message
+                VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
+                            PetraErrorCodes.ERR_DISCOUNT_CRITERIA_CODE_DOES_NOT_EXIST)),
+                    ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the MConference Child Discount Setup screen data.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        public static void ValidateChildDiscountSetup(object AContext, PcDiscountRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            TValidationControlsData ValidationControlsData;
+            TScreenVerificationResult VerificationResult = null;
+            DataColumn ValidationColumn;
+
+            if (ARow.RowState != DataRowState.Deleted)
+            {
+                if (!TRemote.MConference.Conference.WebConnectors.CheckDiscountCriteriaCodeExists(new string[] { ARow.DiscountCriteriaCode }))
+                {
+                    ValidationColumn = ARow.Table.Columns[PcDiscountTable.ColumnDiscountCriteriaCodeId];
 
                     // displays a warning message
                     VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
-                                PetraErrorCodes.ERR_DISCOUNT_PERCENTAGE_GREATER_THAN_100)),
+                                PetraErrorCodes.ERR_DISCOUNT_CRITERIA_CODE_DOES_NOT_EXIST)),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
+
+                if (!TRemote.MConference.Conference.WebConnectors.CheckCostTypeExists(ARow.CostTypeCode))
+                {
+                    ValidationColumn = ARow.Table.Columns[PcDiscountTable.ColumnCostTypeCodeId];
+
+                    // displays a warning message
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext, ErrorCodes.GetErrorInfo(
+                                PetraErrorCodes.ERR_COST_TYPE_CODE_DOES_NOT_EXIST)),
                         ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition to/removal from TVerificationResultCollection

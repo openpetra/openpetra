@@ -809,27 +809,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 UpdateTransactionTotals();
             }
         }
-        
+
         private void CheckAmounts(System.Object sender, EventArgs e)
         {
-        	TTxtCurrencyTextBox currBox = (TTxtCurrencyTextBox)sender;
+            TTxtCurrencyTextBox currBox = (TTxtCurrencyTextBox)sender;
 
-        	bool isDebit = (currBox.Name == "txtDebitAmount");
-        	decimal valDebit = txtDebitAmount.NumberValueDecimal.Value;
-        	decimal valCredit = txtDebitAmount.NumberValueDecimal.Value;
-        	
-        	if (isDebit && valDebit > 0 && valCredit > 0)
-			{
-				txtCreditAmount.NumberValueDecimal = 0;
-			}
-        	else if (!isDebit && valDebit > 0 && valCredit > 0)
-        	{
-        		txtDebitAmount.NumberValueDecimal = 0;
-        	}
-        	else
-			{
-				//Do nothing
-			}
+            bool isDebit = (currBox.Name == "txtDebitAmount");
+            decimal valDebit = txtDebitAmount.NumberValueDecimal.Value;
+            decimal valCredit = txtDebitAmount.NumberValueDecimal.Value;
+
+            if (isDebit && (valDebit > 0) && (valCredit > 0))
+            {
+                txtCreditAmount.NumberValueDecimal = 0;
+            }
+            else if (!isDebit && (valDebit > 0) && (valCredit > 0))
+            {
+                txtDebitAmount.NumberValueDecimal = 0;
+            }
+            else
+            {
+                //Do nothing
+            }
         }
 
         /// <summary>
@@ -1331,7 +1331,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             //Local validation
-            if (((txtDebitAmount.NumberValueDecimal.Value == 0) && (txtCreditAmount.NumberValueDecimal.Value == 0)) || txtDebitAmount.NumberValueDecimal.Value < 0)
+            if (((txtDebitAmount.NumberValueDecimal.Value == 0)
+                 && (txtCreditAmount.NumberValueDecimal.Value == 0)) || (txtDebitAmount.NumberValueDecimal.Value < 0))
             {
                 TSharedFinanceValidation_GL.ValidateGLDetailManual(this, FBatchRow, ARow, txtDebitAmount, ref VerificationResultCollection,
                     FValidationControlsDict);
@@ -1343,9 +1344,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-            	//This is needed because the above runs many times during setting up the form
-            	VerificationResultCollection.Clear();
-            	TSharedFinanceValidation_GL.ValidateGLDetailManual(this, FBatchRow, ARow, null, ref VerificationResultCollection,
+                //This is needed because the above runs many times during setting up the form
+                VerificationResultCollection.Clear();
+                TSharedFinanceValidation_GL.ValidateGLDetailManual(this, FBatchRow, ARow, null, ref VerificationResultCollection,
                     FValidationControlsDict);
             }
 
@@ -1369,7 +1370,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // Handle addition/removal to/from TVerificationResultCollection
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
             }
-
         }
 
         /// <summary>

@@ -41,6 +41,9 @@ COPY pm_commitment_status FROM '{#ABSOLUTEBASEDATAPATH}/pm_commitment_status.csv
 COPY pt_travel_type FROM '{#ABSOLUTEBASEDATAPATH}/pt_travel_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY pt_assignment_type FROM '{#ABSOLUTEBASEDATAPATH}/pt_assignment_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY pt_position FROM '{#ABSOLUTEBASEDATAPATH}/pt_position.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY p_denomination FROM '{#ABSOLUTEBASEDATAPATH}/p_denomination.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY pc_discount_criteria FROM '{#ABSOLUTEBASEDATAPATH}/pc_discount_criteria.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+COPY pc_cost_type FROM '{#ABSOLUTEBASEDATAPATH}/pc_cost_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 
 INSERT INTO s_system_status(s_user_id_c,s_system_login_status_l) VALUES('SYSADMIN', true);
 INSERT INTO p_partner(p_partner_key_n, p_partner_short_name_c, p_status_code_c) VALUES(0, 'INVALID PARTNER', 'INACTIVE');
