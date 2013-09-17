@@ -143,6 +143,16 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Discount percentages cannot be greater than 100%")]
         public const String ERR_DISCOUNT_PERCENTAGE_GREATER_THAN_100 = "CON.00005V";
 
+        /// <summary>DiscountCriteraCode does not exist</summary>
+        [ErrCodeAttribute("Internal data is missing.",
+             ErrorMessageText = "Necessary internal data is missing from the database. A record is missing from the table PcDiscountCriteria.")]
+        public const String ERR_DISCOUNT_CRITERIA_CODE_DOES_NOT_EXIST = "CON.00006E";
+
+        /// <summary>CostTypeCode does not exist</summary>
+        [ErrCodeAttribute("Internal data is missing.",
+             ErrorMessageText = "Necessary internal data is missing from the database. A record is missing from the table PcCostType.")]
+        public const String ERR_COST_TYPE_CODE_DOES_NOT_EXIST = "CON.00007E";
+
         #endregion
 
         #region Finance Module-specific error codes
