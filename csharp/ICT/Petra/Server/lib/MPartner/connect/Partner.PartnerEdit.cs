@@ -2439,7 +2439,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 }
 
                 #endregion
-                
+
                 // Note: Locations and PartnerLocations are done sepearately in SubmitChangesAddresses!
                 if (AllSubmissionsOK == false)
                 {

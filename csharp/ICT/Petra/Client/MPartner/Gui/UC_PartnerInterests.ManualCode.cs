@@ -212,7 +212,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     if (ARow.FieldKey == 0)
                     {
-                       ARow.SetFieldKeyNull();
+                        ARow.SetFieldKeyNull();
                     }
                 }
             }

@@ -546,7 +546,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ReturnValue = false;
                 }
             }
-            
+
             return ReturnValue;
         }
 
