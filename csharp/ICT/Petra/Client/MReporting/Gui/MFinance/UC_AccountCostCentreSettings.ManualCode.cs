@@ -159,7 +159,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }
 
-                ACalculator.AddParameter("param_cost_centre_codes", clbCostCentres.GetCheckedStringList());
+                String CostCentreListTitle = clbCostCentres.GetCheckedStringList();
+                ACalculator.AddParameter("param_cost_centre_codes", CostCentreListTitle);
+                CostCentreListTitle = CostCentreListTitle.Replace("\"", "");
+                if (CostCentreListTitle.Length > 25)
+                {
+                    CostCentreListTitle = "Selected Cost Centres";
+                }
+                ACalculator.AddParameter("param_cost_centre_list_title", CostCentreListTitle);
+
                 ACalculator.AddParameter("param_cost_centre_code_start", "*NOTUSED*");
                 ACalculator.AddParameter("param_cost_centre_code_end", "*NOTUSED*");
                 ACalculator.AddParameter("param_rgrCostCentres", "CostCentreList");

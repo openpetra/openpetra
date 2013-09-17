@@ -122,7 +122,7 @@
         </fielddetail>
         <fielddetail condition="eq({param_rgrCostCentres},CostCentreList)">
           <value text="    Cost Centres: "/>
-          <value function="replace({param_cost_centre_codes},&quot;,)"/>
+          <value variable="param_cost_centre_list_title"/>
         </fielddetail>
       </field>
       <field whichfield="period3" align="right">
