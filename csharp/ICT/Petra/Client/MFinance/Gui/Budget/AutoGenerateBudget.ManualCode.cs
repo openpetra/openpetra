@@ -149,7 +149,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void GenerateBudget(Object sender, EventArgs e)
         {
-            string msg = string.Empty;
+            //Test
+            decimal baseBudgetAmountFromFunction = TRemote.MFinance.Budget.WebConnectors.GetBudgetPeriodAmount(145, 10);
+            
+            MessageBox.Show("baseBudgetAmountFromFunction: " + baseBudgetAmountFromFunction.ToString());
+        	//Test
+        	
+        	string msg = string.Empty;
 
             msg = "You can either consolidate all of your budgets";
             msg += " or just those that have changed since the last consolidation." + "\n\r\n\r";
@@ -194,7 +200,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     throw new InvalidOperationException("There are no budgets selected!");
                 }
 
-                Cursor.Current = Cursors.Default;
             }
             catch (InvalidOperationException ex)
             {

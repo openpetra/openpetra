@@ -97,8 +97,8 @@ RootNode:
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
         txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
         txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
-        txtDebitAmount: {Label=Dr Amount, Verification=PositiveCurrency, Format=Currency, NullValueAllowed=false}
-        txtCreditAmount: {Label=Cr Amount, Verification=PositiveCurrency, Format=Currency, NullValueAllowed=false}
+        txtDebitAmount: {Label=Dr Amount, Verification=PositiveCurrency, Format=Currency, NullValueAllowed=false, OnLeave=CheckAmounts}
+        txtCreditAmount: {Label=Cr Amount, Verification=PositiveCurrency, Format=Currency, NullValueAllowed=false, OnLeave=CheckAmounts}
         txtDebitAmountBase: {Label=Dr Amount, ReadOnly=true, Format=Currency}
         txtCreditAmountBase: {Label=Cr Amount, ReadOnly=true, Format=Currency}
         txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true, Format=Currency}
