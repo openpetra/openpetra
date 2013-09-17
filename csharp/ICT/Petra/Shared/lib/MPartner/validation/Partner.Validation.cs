@@ -1131,6 +1131,27 @@ namespace Ict.Petra.Shared.MPartner.Validation
                     }
                 }
             }
+            
+            // 'Field' must be a valid UNIT partner (if set at all)
+            ValidationColumn = ARow.Table.Columns[PPartnerInterestTable.ColumnFieldKeyId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (!ARow.IsFieldKeyNull())
+                {
+                    VerificationResult = IsValidPartner(
+                        ARow.FieldKey, new TPartnerClass[] { TPartnerClass.UNIT }, true, string.Empty,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl
+                        );
+                }
+                
+                // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+                // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+                // ResultText!
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
         }
     }
 }

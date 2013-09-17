@@ -536,6 +536,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucInterests))
+            {
+                TUC_PartnerInterests UCPartnerInterests =
+                    (TUC_PartnerInterests)FTabSetup[TDynamicLoadableUserControls.dlucInterests];
+
+                if (!UCPartnerInterests.ValidateAllData(false, AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+            }
+            
             return ReturnValue;
         }
 

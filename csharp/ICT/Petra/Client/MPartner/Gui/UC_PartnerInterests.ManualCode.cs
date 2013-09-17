@@ -97,16 +97,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void DataSavingStarted(System.Object sender, System.EventArgs e)
         {
-            GetDetailsFromControls(GetSelectedDetailRow());
-
-            // make sure that "field key" is set to null as 0 will give constraint error during save
-            foreach (PPartnerInterestRow row in FMainDS.PPartnerInterest.Rows)
-            {
-                if (row.FieldKey == 0)
-                {
-                    row.SetFieldKeyNull();
-                }
-            }
         }
 
         /// <summary>todoComment</summary>
@@ -216,6 +206,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void GetDetailDataFromControlsManual(PPartnerInterestRow ARow)
         {
+            if (ARow.RowState != DataRowState.Deleted)
+            {
+                if (!ARow.IsFieldKeyNull())
+                {
+                    if (ARow.FieldKey == 0)
+                    {
+                       ARow.SetFieldKeyNull();
+                    }
+                }
+            }
         }
 
         private void FilterInterestCombo(object sender, EventArgs e)
@@ -294,9 +294,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 PartnerInterestRow = (PPartnerInterestRow)row;
 
-                if (PartnerInterestRow.InterestNumber > HighestNumber)
+                if (PartnerInterestRow.RowState != DataRowState.Deleted)
                 {
-                    HighestNumber = PartnerInterestRow.InterestNumber;
+                    if (PartnerInterestRow.InterestNumber > HighestNumber)
+                    {
+                        HighestNumber = PartnerInterestRow.InterestNumber;
+                    }
                 }
             }
 
