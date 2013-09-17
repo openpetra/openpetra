@@ -41,7 +41,7 @@ RootNode:
         cmbPPartnerInterestInterestCategory: {ColSpan=2, Label=Interest Category, List=InterestCategoryList, OnChange=FilterInterestCombo, Validation=true}
         cmbPPartnerInterestInterest: {ColSpan=2, Label=Interest, List=InterestList, Validation=Pair(cmbPPartnerInterestInterestCategory)}
         cmbPPartnerInterestCountry: {ColSpan=2, Label=Country, List=CountryList, Validation=true}
-        txtPPartnerInterestFieldKey: {ColSpan=2, Label=Field, Type=PartnerKey}
+        txtPPartnerInterestFieldKey: {ColSpan=2, Label=Field, Type=PartnerKey, PartnerClass=UNIT}
         txtPPartnerInterestLevel: {Label=Level, Format=Integer, Width=30, Validation=true}
         lblInterestLevelExplanation:
         txtPPartnerInterestComment: {ColSpan=2, Label=Comment, Multiline=true, Stretch=fully}

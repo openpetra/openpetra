@@ -2,229 +2,223 @@
 <!DOCTYPE reports SYSTEM "../reports.dtd" >
 <reports>
 
-	<report id="Comments Report">
-		<description>
-			Report for Conference Attendees comments.
-			depends on conference.xml
-		</description>
-		<reportparameters>
-			<reportparameter name="param_chkHideNoComment"></reportparameter>
-		</reportparameters>
+    <report id="Comments Report">
+        <description>
+            Report for Conference Attendees comments.
+            depends on conference.xml
+        </description>
+        <reportparameters>
+            <reportparameter name="param_chkHideNoComment"></reportparameter>
+        </reportparameters>
 
-		<reportheader></reportheader>
-		<pageheader>
-			<field whichfield="title1"><value text="Comments Report"></value></field>
-			<field whichfield="title2"><value function="getSiteName()"></value></field>
-			<field whichfield="descr1">
-				<value text="Sorted by: "></value>
-				<value variable="param_sortby_readable"></value>
-			</field>
-			<field whichfield="descr2">
-				<fielddetail>
-					<value text="Selection: "></value>
-				</fielddetail>
-				<fielddetail condition="eq({param_attendeeselection}, one attendee)">
-					<value text="Partner: "></value><value variable="param_partnerkey"></value>
-				</fielddetail>
-				<fielddetail condition="eq({param_attendeeselection}, all attendees)">
-					<value text="All Attendees"></value>
-				</fielddetail>
-				<fielddetail condition="eq({param_attendeeselection}, from extract)">
-					<value text="Extract: "></value><value variable="param_extractname"></value>
-				</fielddetail>
-			</field>
-			<field whichfield="period1">
-				<fielddetail>
-					<switch><case condition="eq({param_conferenceselection}, one conference)">
-						<value text="Selected Conference: "></value>
-						<value variable="param_conferencename"></value>
-					</case></switch>
-				</fielddetail>
-				<fielddetail>
-					<switch><case condition="eq({param_conferenceselection}, all conferences)">
-						<value text="All Conferences selected"></value>
-					</case></switch>
-				</fielddetail>
-			</field>
-			<field whichfield="period2">
-				<fielddetail>
-					<switch><case condition="eq({param_conferenceselection}, one conference)">
-						<value text="Selected Outreach Options: "></value>
-						<value variable="param_conferenceoptionscode"></value>
-					</case></switch>
-				</fielddetail>
-			</field>
-		</pageheader>
+        <reportheader></reportheader>
+        <pageheader>
+            <field whichfield="title1"><value text="Comments Report"></value></field>
+            <field whichfield="title2"><value function="getSiteName()"></value></field>
+            <field whichfield="descr1">
+                <value text="Sorted by: "></value>
+                <value variable="param_sortby_readable"></value>
+            </field>
+            <field whichfield="descr2">
+                <fielddetail>
+                    <value text="Selection: "></value>
+                </fielddetail>
+                <fielddetail condition="eq({param_attendeeselection}, one attendee)">
+                    <value text="Partner: "></value><value variable="param_partnerkey"></value>
+                </fielddetail>
+                <fielddetail condition="eq({param_attendeeselection}, all attendees)">
+                    <value text="All Attendees"></value>
+                </fielddetail>
+                <fielddetail condition="eq({param_attendeeselection}, from extract)">
+                    <value text="Extract: "></value><value variable="param_extractname"></value>
+                </fielddetail>
+            </field>
+            <field whichfield="period1">
+                <fielddetail>
+                    <switch><case condition="eq({param_conferenceselection}, one conference)">
+                        <value text="Selected Conference: "></value>
+                        <value variable="param_conferencename"></value>
+                    </case></switch>
+                </fielddetail>
+                <fielddetail>
+                    <switch><case condition="eq({param_conferenceselection}, all conferences)">
+                        <value text="All Conferences selected"></value>
+                    </case></switch>
+                </fielddetail>
+            </field>
+            <field whichfield="period2">
+                <fielddetail>
+                    <switch><case condition="eq({param_conferenceselection}, one conference)">
+                        <value text="Selected Outreach Options: "></value>
+                        <value variable="param_conferenceoptionscode"></value>
+                    </case></switch>
+                </fielddetail>
+            </field>
+        </pageheader>
 
-		<calculations>
-	
-			<calculation id="Select Comments" returns="automatic" returnsFormat="row">
-				<query>
-					<queryDetail><value>
-						SELECT DISTINCT
-							PUB_p_partner.p_partner_key_n AS AttendeeKey,
-							PUB_p_partner.p_partner_short_name_c AS AttendeeName,
-							PUB_p_partner.p_partner_class_c AS AttendeeClass,
-							
-							PUB_p_person.p_gender_c AS Gender,
-							PUB_p_person.p_date_of_birth_d AS Birthday,
-							PUB_p_person.p_first_name_c AS FirstName,
-							PUB_p_person.p_prefered_name_c AS PreferredName,
-							PUB_p_person.p_family_name_c AS LastName,
-							PUB_p_person.p_marital_status_c AS MaritalStatus,
-							
-							PUB_p_unit.p_unit_name_c AS ConferenceName,
-							PUB_p_unit.p_partner_key_n AS ConferenceKey,
-							ChargedUnit.p_unit_name_c AS ChargedOffice,
-							PUB_pc_conference.pc_start_d AS StartDate,
-							PUB_pc_conference.pc_end_d AS EndDate,
-							
-							PUB_pm_general_application.pm_comment_c AS GeneralComment,
-							
-							PUB_pm_short_term_application.pm_arrival_d AS ArrivalDate,
-							PUB_pm_short_term_application.pm_arrival_hour_i,
-							PUB_pm_short_term_application.pm_arrival_minute_i,
-							PUB_pm_short_term_application.pm_departure_d AS DepartureDate,
-							PUB_pm_short_term_application.pm_departure_hour_i,
-							PUB_pm_short_term_application.pm_departure_minute_i,
-							PUB_pm_short_term_application.pt_arrival_point_code_c,
-							PUB_pm_short_term_application.pm_arrival_comments_c AS ArrivalComment,
-							PUB_pm_short_term_application.pt_departure_point_code_c,
-							PUB_pm_short_term_application.pm_departure_comments_c AS DepartureComment,
-							PUB_pm_short_term_application.pm_arrival_exp_d AS ArrivalExpectedDate,
-							PUB_pm_short_term_application.pm_arrival_exp_hour_i,
-							PUB_pm_short_term_application.pm_arrival_exp_minute_i,
-							PUB_pm_short_term_application.pm_departure_exp_d AS DepartureExpectedDate,
-							PUB_pm_short_term_application.pm_departure_exp_hour_i,
-							PUB_pm_short_term_application.pm_departure_exp_minute_i,
-							PUB_pm_short_term_application.pm_to_cong_travel_info_c AS ArrivalTravelDetails,
-							PUB_pm_short_term_application.pm_from_cong_travel_info_c AS DepartureTravelDetails,
-							PUB_pm_short_term_application.pt_travel_type_to_cong_code_c AS ArrivalTravelType,
-							PUB_pm_short_term_application.pt_travel_type_from_cong_code_c AS DepartureTravelType,
-							PUB_pm_short_term_application.pm_arrival_transport_needed_l,
-							PUB_pm_short_term_application.pm_departure_transport_needed_l,
-							PUB_pm_short_term_application.pm_confirmed_option_code_c AS OutreachCode,
-							PUB_pm_short_term_application.pm_st_congress_code_c AS ConferenceRole,
-							PUB_pm_short_term_application.pm_st_fg_code_c AS FellowshipGroup,
-							PUB_pm_short_term_application.pm_st_fg_leader_l,
-							
-							PUB_pc_attendee.pc_discovery_group_c AS DiscoveryGroup,
-							PUB_pc_attendee.pc_work_group_c AS WorkGroup,
-							PUB_pc_attendee.pc_arrival_group_c AS ArrivalGroup,
-							PUB_pc_attendee.pc_departure_group_c AS DepartureGroup,
-							PUB_pc_attendee.pc_registered_d AS RegistrationDate,
-							PUB_pc_attendee.pc_actual_arr_d AS ActualArrivingDate,
-							PUB_pc_attendee.pc_actual_dep_d AS ActualDepartureDate
-							
-						FROM   PUB_p_partner,
-							PUB_p_person,
-							PUB_p_unit,
-							PUB_p_unit AS ChargedUnit,
-							PUB_pc_attendee,
-							PUB_pc_conference,
-							PUB_pm_general_application,
-							PUB_pm_short_term_application
-					</value></queryDetail>
-					<queryDetail condition="eq({param_attendeeselection}, one attendee)"><value>
-						WHERE 
-							PUB_pc_attendee.p_partner_key_n  = {{param_partnerkey}}
-							AND
-					</value></queryDetail>
-					<queryDetail condition="eq({param_attendeeselection}, all attendees)"><value>
-						WHERE 
-					</value></queryDetail>
-					<queryDetail condition="eq({param_attendeeselection}, from extract)"><value>
-							, PUB_m_extract, PUB_m_extract_master
-						WHERE
-							 PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
-							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
-							AND PUB_m_extract_master.m_extract_name_c = {param_extractname}
-							AND
-					</value></queryDetail>
-					<queryDetail><value>
-							PUB_p_partner.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
-							AND PUB_p_person.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
-					</value></queryDetail>
-					
-					<queryDetail condition="eq({param_conferenceselection}, one conference)"><value>
-							AND PUB_pc_conference.pc_conference_key_n = {{param_conferencekey}}
-							AND PUB_pc_attendee.pc_conference_key_n = {{param_conferencekey}}
-							AND
-					</value></queryDetail>
-					<queryDetail condition="eq({param_conferenceselection}, one conference)">
-							<value function="csv" text="PUB_pm_short_term_application.pm_st_confirmed_option_n" 
-									variable="param_conferenceoptions" calculation="OR" format="Number">
-							</value>
-					</queryDetail>
-					
-					<queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
-							AND PUB_pc_conference.pc_outreach_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
-							AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
-					</value></queryDetail>
-					
-					<queryDetail><value>
-							AND PUB_p_unit.p_partner_key_n = PUB_pc_attendee.pc_conference_key_n
-							AND ChargedUnit.p_partner_key_n = PUB_pm_short_term_application.pm_st_field_charged_n
-							AND PUB_pm_short_term_application.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
-							AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i
-							AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n
-							AND NOT pm_general_application.pm_gen_app_delete_flag_l = 1
-							AND ( 	PUB_pm_general_application.pm_gen_application_status_c LIKE 'A%'
-									OR 
-									PUB_pm_general_application.pm_gen_application_status_c LIKE 'H%' )
-					</value></queryDetail>
-				</query>
-			</calculation> <!-- Select Comments -->
-			
-			<calculation id="GetCommnetDetails" returns="automatic" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value text="NO-SQL"/>
-						<value function="GetPassport({AttendeeKey})"/>
-						<value function="assign(ArrivalTime, formattime(:, {pm_arrival_hour_i}, {pm_arrival_minute_i}))"/>
-						<value function="assign(DepartureTime, formattime(:, {pm_departure_hour_i}, {pm_departure_minute_i}))"/>
-						<value function="assign(ArrivalExpectedTime, formattime(:, {pm_arrival_exp_hour_i}, {pm_arrival_exp_minute_i}))"/>
-						<value function="assign(DepartureExpectedTime, formattime(:, {pm_departure_exp_hour_i}, {pm_departure_exp_minute_i}))"/>
-						<value function="assign(Age, calculateAge({Birthday}))"/>
-						<value function="assign(ConferenceRoom, GetConferenceRoom({AttendeeKey}, {ConferenceKey}, No Room allocated))"/>
-						<value function="assign(ArrivalPoint, GetArrivalPoint({pt_arrival_point_code_c}))"/>
-						<value function="assign(DeparturePoint, GetArrivalPoint({pt_departure_point_code_c}))"/>
-						<value function="assign(ArrivalNeedsTransport, Yes)" condition="{pm_arrival_transport_needed_l}"/>
-						<value function="assign(ArrivalNeedsTransport, No)" condition="not({pm_arrival_transport_needed_l})"/>
-						<value function="assign(DepartureNeedsTransport, Yes)" condition="{pm_departure_transport_needed_l}"/>
-						<value function="assign(DepartureNeedsTransport, No)" condition="not({pm_departure_transport_needed_l})"/>
-						<value function="assign(GroupLeader, Yes)" condition="{pm_st_fg_leader_l}"/>
-						<value function="assign(GroupLeader, No)" condition="not({pm_st_fg_leader_l})"/>
-						<!-- Hide the rows that have no comment when the user sets this option -->
-						<value function="ConditionRow(not(and(eq({param_chkHideNoComment}, true), lt(length({GeneralComment}), 1))))"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Comments" returns="text" returnsFormat="text">
-				<caption><value text="Comments"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="GeneralComment"></value>
-					</queryDetail>
-				</query>
-			</calculation>
+        <calculations>
+    
+            <calculation id="Select Comments" returns="automatic" returnsFormat="row">
+                <query>
+                    <queryDetail><value>
+                        SELECT DISTINCT
+                            PUB_p_partner.p_partner_key_n AS AttendeeKey,
+                            PUB_p_partner.p_partner_short_name_c AS AttendeeName,
+                            PUB_p_partner.p_partner_class_c AS AttendeeClass,
+                            
+                            PUB_p_person.p_gender_c AS Gender,
+                            PUB_p_person.p_date_of_birth_d AS Birthday,
+                            PUB_p_person.p_first_name_c AS FirstName,
+                            PUB_p_person.p_prefered_name_c AS PreferredName,
+                            PUB_p_person.p_family_name_c AS LastName,
+                            PUB_p_person.p_marital_status_c AS MaritalStatus,
+                            
+                            PUB_p_unit.p_unit_name_c AS ConferenceName,
+                            PUB_p_unit.p_partner_key_n AS ConferenceKey,
+                            ChargedUnit.p_unit_name_c AS ChargedOffice,
+                            PUB_pc_conference.pc_start_d AS StartDate,
+                            PUB_pc_conference.pc_end_d AS EndDate,
+                            
+                            PUB_pm_general_application.pm_comment_c AS GeneralComment,
+                            
+                            PUB_pm_short_term_application.pm_arrival_d AS ArrivalDate,
+                            PUB_pm_short_term_application.pm_arrival_hour_i,
+                            PUB_pm_short_term_application.pm_arrival_minute_i,
+                            PUB_pm_short_term_application.pm_departure_d AS DepartureDate,
+                            PUB_pm_short_term_application.pm_departure_hour_i,
+                            PUB_pm_short_term_application.pm_departure_minute_i,
+                            PUB_pm_short_term_application.pt_arrival_point_code_c,
+                            PUB_pm_short_term_application.pm_arrival_comments_c AS ArrivalComment,
+                            PUB_pm_short_term_application.pt_departure_point_code_c,
+                            PUB_pm_short_term_application.pm_departure_comments_c AS DepartureComment,
+                            PUB_pm_short_term_application.pm_to_cong_travel_info_c AS ArrivalTravelDetails,
+                            PUB_pm_short_term_application.pm_from_cong_travel_info_c AS DepartureTravelDetails,
+                            PUB_pm_short_term_application.pt_travel_type_to_cong_code_c AS ArrivalTravelType,
+                            PUB_pm_short_term_application.pt_travel_type_from_cong_code_c AS DepartureTravelType,
+                            PUB_pm_short_term_application.pm_arrival_transport_needed_l,
+                            PUB_pm_short_term_application.pm_departure_transport_needed_l,
+                            PUB_pm_short_term_application.pm_confirmed_option_code_c AS OutreachCode,
+                            PUB_pm_short_term_application.pm_st_congress_code_c AS ConferenceRole,
+                            PUB_pm_short_term_application.pm_st_fg_code_c AS FellowshipGroup,
+                            PUB_pm_short_term_application.pm_st_fg_leader_l,
+                            
+                            PUB_pc_attendee.pc_discovery_group_c AS DiscoveryGroup,
+                            PUB_pc_attendee.pc_work_group_c AS WorkGroup,
+                            PUB_pc_attendee.pc_arrival_group_c AS ArrivalGroup,
+                            PUB_pc_attendee.pc_departure_group_c AS DepartureGroup,
+                            PUB_pc_attendee.pc_registered_d AS RegistrationDate,
+                            PUB_pc_attendee.pc_actual_arr_d AS ActualArrivingDate,
+                            PUB_pc_attendee.pc_actual_dep_d AS ActualDepartureDate
+                            
+                        FROM   PUB_p_partner,
+                            PUB_p_person,
+                            PUB_p_unit,
+                            PUB_p_unit AS ChargedUnit,
+                            PUB_pc_attendee,
+                            PUB_pc_conference,
+                            PUB_pm_general_application,
+                            PUB_pm_short_term_application
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_attendeeselection}, one attendee)"><value>
+                        WHERE 
+                            PUB_pc_attendee.p_partner_key_n  = {{param_partnerkey}}
+                            AND
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_attendeeselection}, all attendees)"><value>
+                        WHERE 
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_attendeeselection}, from extract)"><value>
+                            , PUB_m_extract, PUB_m_extract_master
+                        WHERE
+                             PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+                            AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+                            AND PUB_m_extract_master.m_extract_name_c = {param_extractname}
+                            AND
+                    </value></queryDetail>
+                    <queryDetail><value>
+                            PUB_p_partner.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
+                            AND PUB_p_person.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
+                    </value></queryDetail>
+                    
+                    <queryDetail condition="eq({param_conferenceselection}, one conference)"><value>
+                            AND PUB_pc_conference.pc_conference_key_n = {{param_conferencekey}}
+                            AND PUB_pc_attendee.pc_conference_key_n = {{param_conferencekey}}
+                            AND
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_conferenceselection}, one conference)">
+                            <value function="csv" text="PUB_pm_short_term_application.pm_st_confirmed_option_n" 
+                                    variable="param_conferenceoptions" calculation="OR" format="Number">
+                            </value>
+                    </queryDetail>
+                    
+                    <queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
+                            AND PUB_pc_conference.pc_outreach_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
+                            AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
+                    </value></queryDetail>
+                    
+                    <queryDetail><value>
+                            AND PUB_p_unit.p_partner_key_n = PUB_pc_attendee.pc_conference_key_n
+                            AND ChargedUnit.p_partner_key_n = PUB_pm_short_term_application.pm_st_field_charged_n
+                            AND PUB_pm_short_term_application.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
+                            AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i
+                            AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n
+                            AND NOT pm_general_application.pm_gen_app_delete_flag_l = 1
+                            AND (   PUB_pm_general_application.pm_gen_application_status_c LIKE 'A%'
+                                    OR 
+                                    PUB_pm_general_application.pm_gen_application_status_c LIKE 'H%' )
+                    </value></queryDetail>
+                </query>
+            </calculation> <!-- Select Comments -->
+            
+            <calculation id="GetCommnetDetails" returns="automatic" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value text="NO-SQL"/>
+                        <value function="GetPassport({AttendeeKey})"/>
+                        <value function="assign(ArrivalTime, formattime(:, {pm_arrival_hour_i}, {pm_arrival_minute_i}))"/>
+                        <value function="assign(DepartureTime, formattime(:, {pm_departure_hour_i}, {pm_departure_minute_i}))"/>
+                        <value function="assign(ArrivalExpectedTime, formattime(:, {pm_arrival_exp_hour_i}, {pm_arrival_exp_minute_i}))"/>
+                        <value function="assign(DepartureExpectedTime, formattime(:, {pm_departure_exp_hour_i}, {pm_departure_exp_minute_i}))"/>
+                        <value function="assign(Age, calculateAge({Birthday}))"/>
+                        <value function="assign(ConferenceRoom, GetConferenceRoom({AttendeeKey}, {ConferenceKey}, No Room allocated))"/>
+                        <value function="assign(ArrivalPoint, GetArrivalPoint({pt_arrival_point_code_c}))"/>
+                        <value function="assign(DeparturePoint, GetArrivalPoint({pt_departure_point_code_c}))"/>
+                        <value function="assign(ArrivalNeedsTransport, Yes)" condition="{pm_arrival_transport_needed_l}"/>
+                        <value function="assign(ArrivalNeedsTransport, No)" condition="not({pm_arrival_transport_needed_l})"/>
+                        <value function="assign(DepartureNeedsTransport, Yes)" condition="{pm_departure_transport_needed_l}"/>
+                        <value function="assign(DepartureNeedsTransport, No)" condition="not({pm_departure_transport_needed_l})"/>
+                        <value function="assign(GroupLeader, Yes)" condition="{pm_st_fg_leader_l}"/>
+                        <value function="assign(GroupLeader, No)" condition="not({pm_st_fg_leader_l})"/>
+                        <!-- Hide the rows that have no comment when the user sets this option -->
+                        <value function="ConditionRow(not(and(eq({param_chkHideNoComment}, true), lt(length({GeneralComment}), 1))))"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation align="left" id="Comments" returns="text" returnsFormat="text">
+                <caption><value text="Comments"></value></caption>
+                <query>
+                    <queryDetail>
+                        <value variable="GeneralComment"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
 
-		</calculations>
-		  
-		<levels>    
-			<level name="main">
-				<detail>
-					<lowerLevelReport calculation="Select Comments" level="Attendee Details"></lowerLevelReport>
-				</detail>
-			</level> <!-- main -->
+        </calculations>
+          
+        <levels>    
+            <level name="main">
+                <detail>
+                    <lowerLevelReport calculation="Select Comments" level="Attendee Details"></lowerLevelReport>
+                </detail>
+            </level> <!-- main -->
 
-			<level name="Attendee Details" identification="AttendeeKey">
-				<detail>
-					<field whichfield="Columns" calculation="GetCommnetDetails"></field>
-				</detail>
-			</level><!-- Attendee Details -->
+            <level name="Attendee Details" identification="AttendeeKey">
+                <detail>
+                    <field whichfield="Columns" calculation="GetCommnetDetails"></field>
+                </detail>
+            </level><!-- Attendee Details -->
 
-		</levels>
-	</report>
+        </levels>
+    </report>
 </reports>
