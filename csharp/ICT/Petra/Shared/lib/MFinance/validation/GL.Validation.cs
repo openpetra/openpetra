@@ -209,17 +209,17 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
-            // 'GL amount must be non-zero
-            ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnTransactionAmountId];
-            ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
-                ARow.TransactionNumber,
-                ARow.BatchNumber,
-                ARow.JournalNumber);
-
             //TransactionAmount is not in the dictionary so had to pass the control directly
             if (AControl != null)
             {
-                VerificationResult = TNumericalChecks.IsNonZeroDecimal(ARow.TransactionAmount,
+                // 'GL amount must be non-zero and positive
+                ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnTransactionAmountId];
+                ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                    ARow.TransactionNumber,
+                    ARow.BatchNumber,
+                    ARow.JournalNumber);
+
+                VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.TransactionAmount,
                     "Amount of " + ValidationContext,
                     AContext, ValidationColumn, AControl);
 
@@ -228,6 +228,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 {
                     VerifResultCollAddedCount++;
                 }
+
+                return VerifResultCollAddedCount == 0;
             }
 
             // 'Entered From Date' must be valid
