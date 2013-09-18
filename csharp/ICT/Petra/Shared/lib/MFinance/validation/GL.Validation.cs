@@ -294,6 +294,29 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
+            //TransactionAmount is not in the dictionary so had to pass the control directly
+            if (AControl != null)
+            {
+	            // 'GL amount must be non-zero
+	            ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnTransactionAmountId];
+	            ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+	                ARow.TransactionNumber,
+	                ARow.BatchNumber,
+	                ARow.JournalNumber);
+
+                VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.TransactionAmount,
+                    "Amount of " + ValidationContext,
+                    AContext, ValidationColumn, AControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
+                
+                return VerifResultCollAddedCount == 0;
+            }
+
             // Narrative must not be empty
             ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnNarrativeId];
             ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
@@ -309,27 +332,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
             {
                 VerifResultCollAddedCount++;
-            }
-
-            // 'GL amount must be non-zero
-            ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnTransactionAmountId];
-            ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
-                ARow.TransactionNumber,
-                ARow.BatchNumber,
-                ARow.JournalNumber);
-
-            //TransactionAmount is not in the dictionary so had to pass the control directly
-            if (AControl != null)
-            {
-                VerificationResult = TNumericalChecks.IsNonZeroDecimal(ARow.TransactionAmount,
-                    "Amount of " + ValidationContext,
-                    AContext, ValidationColumn, AControl);
-
-                // Handle addition/removal to/from TVerificationResultCollection
-                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
-                {
-                    VerifResultCollAddedCount++;
-                }
             }
 
             return VerifResultCollAddedCount == 0;

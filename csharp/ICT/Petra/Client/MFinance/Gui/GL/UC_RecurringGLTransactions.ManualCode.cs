@@ -62,6 +62,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private bool FAttributesGridEntered = false;
 
         private ARecurringBatchRow FBatchRow = null;
+        private decimal FDebitAmount = 0;
+        private decimal FCreditAmount = 0;
 
         /// <summary>
         /// load the transactions into the grid
@@ -768,6 +770,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             int counter = FPetraUtilsObject.VerificationResultCollection.Count;
 
+            if (sender.GetType() == typeof(TTxtCurrencyTextBox))
+            {
+            	CheckAmounts((TTxtCurrencyTextBox)sender);
+            }
+            
             ControlValidatedHandler(sender, e);
 
             //If no errors
@@ -775,6 +782,54 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 UpdateTransactionTotals();
             }
+        }
+
+        private void CheckAmounts(TTxtCurrencyTextBox ATxtCurrencyTextBox)
+        {
+            bool debitChanged = (ATxtCurrencyTextBox.Name == "txtDebitAmount");
+        	
+        	if (!debitChanged && ATxtCurrencyTextBox.Name != "txtCreditAmount")
+        	{
+        		return;
+        	}
+        	else if (ATxtCurrencyTextBox.NumberValueDecimal == null || !ATxtCurrencyTextBox.NumberValueDecimal.HasValue)
+            {
+            	ATxtCurrencyTextBox.NumberValueDecimal = 0;
+            }
+            
+        	decimal valDebit = txtDebitAmount.NumberValueDecimal.Value;
+            decimal valCredit = txtCreditAmount.NumberValueDecimal.Value;
+        	
+        	//If no changes then proceed no further
+            if (debitChanged && FDebitAmount == valDebit)
+        	{
+        		return;
+        	}
+        	else if (!debitChanged && FCreditAmount == valCredit)
+        	{
+        		return;
+        	}
+        	
+            if (debitChanged && ((valDebit > 0) && (valCredit > 0)))
+            {
+                txtCreditAmount.NumberValueDecimal = 0;
+            }
+            else if (!debitChanged && ((valDebit > 0) && (valCredit > 0)))
+            {
+                txtDebitAmount.NumberValueDecimal = 0;
+            }
+            else if (valDebit < 0)
+            {
+            	txtDebitAmount.NumberValueDecimal = 0;
+            }
+            else if (valCredit < 0)
+            {
+            	txtCreditAmount.NumberValueDecimal = 0;
+            }
+
+			//Reset class variables
+            FDebitAmount = txtDebitAmount.NumberValueDecimal.Value;
+			FCreditAmount = txtCreditAmount.NumberValueDecimal.Value;
         }
 
         /// <summary>
@@ -1273,6 +1328,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
+            //Local validation
+            if (((txtDebitAmount.NumberValueDecimal.Value == 0)
+                 && (txtCreditAmount.NumberValueDecimal.Value == 0)) || (txtDebitAmount.NumberValueDecimal.Value < 0))
+            {
+                TSharedFinanceValidation_GL.ValidateRecurringGLDetailManual(this, FBatchRow, ARow, txtDebitAmount, ref VerificationResultCollection,
+                    FValidationControlsDict);
+            }
+            else if (txtCreditAmount.NumberValueDecimal.Value < 0)
+            {
+                TSharedFinanceValidation_GL.ValidateRecurringGLDetailManual(this, FBatchRow, ARow, txtCreditAmount, ref VerificationResultCollection,
+                    FValidationControlsDict);
+            }
+            else
+            {
+            	//This is needed because the above runs many times during setting up the form
+                VerificationResultCollection.Clear();
+                TSharedFinanceValidation_GL.ValidateRecurringGLDetailManual(this, FBatchRow, ARow, null, ref VerificationResultCollection,
+                    FValidationControlsDict);
+            }
+
             // if "Reference" is mandatory then make sure it is set
             if (TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GLREFMANDATORY, "no") == "yes")
             {
@@ -1292,18 +1367,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
-            }
-
-            //Local validation
-            if ((txtDebitAmount.NumberValueDecimal == 0) && (txtCreditAmount.NumberValueDecimal == 0))
-            {
-                TSharedFinanceValidation_GL.ValidateRecurringGLDetailManual(this, FBatchRow, ARow, txtDebitAmount, ref VerificationResultCollection,
-                    FValidationControlsDict);
-            }
-            else
-            {
-                TSharedFinanceValidation_GL.ValidateRecurringGLDetailManual(this, FBatchRow, ARow, null, ref VerificationResultCollection,
-                    FValidationControlsDict);
             }
         }
 

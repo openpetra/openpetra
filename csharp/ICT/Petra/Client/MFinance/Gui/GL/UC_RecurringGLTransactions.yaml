@@ -94,7 +94,7 @@ RootNode:
                 Row3: [txtDebitTotalAmount]
                 Row4: [txtCreditTotalAmount]
         lblTransactionCurrency: {Label=TODOTransactionCurrency}
-        txtDebitAmount: {Label=Dr Amount, Verification=PositiveCurrency, Format=Currency, NullValueAllowed=false}
-        txtCreditAmount: {Label=Cr Amount, Verification=PositiveCurrency, Format=Currency, NullValueAllowed=false}
+        txtDebitAmount: {Label=Dr Amount, Format=Currency, NullValueAllowed=false}
+        txtCreditAmount: {Label=Cr Amount, Format=Currency, NullValueAllowed=false}
         txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true, Format=Currency}
         txtCreditTotalAmount: {Label=Credit Total, ReadOnly=true, Format=Currency}
