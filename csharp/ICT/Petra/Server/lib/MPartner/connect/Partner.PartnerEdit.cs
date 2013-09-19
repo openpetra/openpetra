@@ -2419,6 +2419,27 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 #endregion
 
+                #region Partner Interests
+
+                if (AInspectDS.Tables.Contains(PPartnerInterestTable.GetTableName()))
+                {
+                    foreach (PPartnerInterestRow row in AInspectDS.PPartnerInterest.Rows)
+                    {
+                        if (row.RowState != DataRowState.Deleted)
+                        {
+                            if (!row.IsFieldKeyNull())
+                            {
+                                if (row.FieldKey == 0)
+                                {
+                                    row.SetFieldKeyNull();
+                                }
+                            }
+                        }
+                    }
+                }
+
+                #endregion
+
                 // Note: Locations and PartnerLocations are done sepearately in SubmitChangesAddresses!
                 if (AllSubmissionsOK == false)
                 {

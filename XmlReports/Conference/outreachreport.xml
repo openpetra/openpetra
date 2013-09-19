@@ -3,20 +3,20 @@
 <reports>
 
   <report id="Outreach Report">
-	<description>
-		Report for the conference outreaches.
-		depends on conference.xml
-	</description>
-	<reportparameters>
-		<reportparameter name="param_selectedfieldkeys"/>
-		<reportparameter name="param_report_detail"/>
-		<reportparameter name="param_chkFinancialReport"/>
-		<reportparameter name="param_chkAcceptedApplications"/>
-		<reportparameter name="param_chkExtraCosts"/>
-		<reportparameter name="param_cmbSignOffLines"/>
-		<reportparameter name="param_selected_keys_csv"/>
-		<reportparameter name="param_cmbChargedFields"/>
-	</reportparameters>
+    <description>
+        Report for the conference outreaches.
+        depends on conference.xml
+    </description>
+    <reportparameters>
+        <reportparameter name="param_selectedfieldkeys"/>
+        <reportparameter name="param_report_detail"/>
+        <reportparameter name="param_chkFinancialReport"/>
+        <reportparameter name="param_chkAcceptedApplications"/>
+        <reportparameter name="param_chkExtraCosts"/>
+        <reportparameter name="param_cmbSignOffLines"/>
+        <reportparameter name="param_selected_keys_csv"/>
+        <reportparameter name="param_cmbChargedFields"/>
+    </reportparameters>
 
     <reportheader></reportheader>
     <pageheader>
@@ -48,638 +48,632 @@
           <value text="Selection: "></value>
         </fielddetail>
         <fielddetail condition="eq({param_attendeeselection}, one attendee)">
-		<value text="Partner: "></value><value variable="param_partnerkey"></value>
+        <value text="Partner: "></value><value variable="param_partnerkey"></value>
         </fielddetail>
         <fielddetail condition="eq({param_attendeeselection}, all attendees)">
-		<value text="All Attendees"></value>
+        <value text="All Attendees"></value>
         </fielddetail>
         <fielddetail condition="eq({param_attendeeselection}, from extract)">
-		 <value text="Extract: "></value><value variable="param_extractname"></value>
+         <value text="Extract: "></value><value variable="param_extractname"></value>
         </fielddetail>
         
       </field>
     </pageheader>
 
-		<calculations>
-	
-			<calculation id="SelectOutreaches" returns="automatic" returnsFormat="row">
-				<query>
-					<queryDetail><value>
-						SELECT DISTINCT
-							PUB_p_unit.p_outreach_code_c AS OutreachCode,
-							PUB_p_unit.p_unit_name_c AS OutreachName,
-							PUB_p_unit.p_partner_key_n AS OutreachKey
-						FROM   
-							PUB_p_unit
-						WHERE
-					</value></queryDetail>
-					<queryDetail>
-							<value function="csv" text="PUB_p_unit.p_outreach_code_c" 
-									variable="param_selected_keys_csv" calculation="OR">
-							</value>
-					</queryDetail>
-					<queryDetail><value>
-						ORDER BY PUB_p_unit.p_unit_name_c
-					</value></queryDetail>
-				</query>
-			</calculation> <!-- SelectOutreaches -->
-			
-			<calculation id="Select Attendees for field" returns="automatic" returnsFormat="row">
-				<query>
-					<queryDetail><value>
-						SELECT DISTINCT
-							PUB_p_partner.p_partner_key_n AS AttendeeKey,
-							PUB_p_partner.p_partner_short_name_c AS AttendeeName,
-							PUB_p_partner.p_partner_class_c AS AttendeeClass,
-							
-							PUB_p_person.p_gender_c AS Gender,
-							PUB_p_person.p_date_of_birth_d AS Birthday,
-							PUB_p_person.p_first_name_c AS FirstName,
-							PUB_p_person.p_prefered_name_c AS PreferredName,
-							PUB_p_person.p_family_name_c AS LastName,
-							PUB_p_person.p_marital_status_c AS MaritalStatus,
-							
-							PUB_p_unit.p_unit_name_c AS ConferenceName,
-							PUB_p_unit.p_partner_key_n AS ConferenceKey,
-							PUB_pc_conference.pc_start_d AS StartDate,
-							PUB_pc_conference.pc_end_d AS EndDate,
-							
-							PUB_pm_short_term_application.pm_arrival_d AS ArrivalDate,
-							PUB_pm_short_term_application.pm_arrival_hour_i,
-							PUB_pm_short_term_application.pm_arrival_minute_i,
-							PUB_pm_short_term_application.pm_departure_d AS DepartureDate,
-							PUB_pm_short_term_application.pm_departure_hour_i,
-							PUB_pm_short_term_application.pm_departure_minute_i,
-							PUB_pm_short_term_application.pt_arrival_point_code_c,
-							PUB_pm_short_term_application.pm_arrival_comments_c AS ArrivalComment,
-							PUB_pm_short_term_application.pt_departure_point_code_c,
-							PUB_pm_short_term_application.pm_departure_comments_c AS DepartureComment,
-							PUB_pm_short_term_application.pm_arrival_exp_d AS ArrivalExpectedDate,
-							PUB_pm_short_term_application.pm_arrival_exp_hour_i,
-							PUB_pm_short_term_application.pm_arrival_exp_minute_i,
-							PUB_pm_short_term_application.pm_departure_exp_d AS DepartureExpectedDate,
-							PUB_pm_short_term_application.pm_departure_exp_hour_i,
-							PUB_pm_short_term_application.pm_departure_exp_minute_i,
-							PUB_pm_short_term_application.pm_to_cong_travel_info_c AS ArrivalTravelDetails,
-							PUB_pm_short_term_application.pm_from_cong_travel_info_c AS DepartureTravelDetails,
-							PUB_pm_short_term_application.pt_travel_type_to_cong_code_c AS ArrivalTravelType,
-							PUB_pm_short_term_application.pt_travel_type_from_cong_code_c AS DepartureTravelType,
-							PUB_pm_short_term_application.pm_arrival_transport_needed_l,
-							PUB_pm_short_term_application.pm_departure_transport_needed_l,
-							
-							PUB_pm_short_term_application.pm_st_congress_code_c AS ConferenceRole,
-							PUB_pm_short_term_application.pm_st_fg_code_c AS FellowshipGroup,
-							PUB_pm_short_term_application.pm_st_fg_leader_l,
-							
-							PUB_pm_general_application.pm_gen_application_status_c AS ApplicationStatus,
-							PUB_pm_general_application.pm_application_key_i AS ApplicationKey,
-							PUB_pm_general_application.pm_registration_office_n AS RegistrationOffice,
-					
-							PUB_pc_attendee.pc_outreach_type_c AS OutreachType,
-							PUB_pc_attendee.pc_discovery_group_c AS DiscoveryGroup,
-							PUB_pc_attendee.pc_work_group_c AS WorkGroup,
-							PUB_pc_attendee.pc_arrival_group_c AS ArrivalGroup,
-							PUB_pc_attendee.pc_departure_group_c AS DepartureGroup,
-							PUB_pc_attendee.pc_registered_d AS RegistrationDate,
-							PUB_pc_attendee.pc_actual_arr_d AS ActualArrivingDate,
-							PUB_pc_attendee.pc_actual_dep_d AS ActualDepartureDate
-							
-						FROM   PUB_p_partner,
-							PUB_p_person,
-							PUB_p_family,
-							PUB_p_unit,
-							PUB_pc_attendee,
-							PUB_pc_conference,
-							PUB_pm_general_application,
-							PUB_pm_short_term_application
-					</value></queryDetail>
-					<queryDetail condition="eq({param_attendeeselection}, one attendee)"><value>
-						WHERE 
-							PUB_pc_attendee.p_partner_key_n  = {{param_partnerkey}}
-							AND
-					</value></queryDetail>
-					<queryDetail condition="eq({param_attendeeselection}, all attendees)"><value>
-						WHERE 
-					</value></queryDetail>
-					<queryDetail condition="eq({param_attendeeselection}, from extract)"><value>
-							, PUB_m_extract, PUB_m_extract_master
-						WHERE
-							 PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
-							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
-							AND PUB_m_extract_master.m_extract_name_c = {param_extractname}
-							AND
-					</value></queryDetail>
-					<queryDetail><value>
-							PUB_p_partner.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
-							AND PUB_p_person.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
-					</value></queryDetail>
-					
-					<queryDetail condition="eq({param_conferenceselection}, one conference)"><value>
-							AND PUB_pc_conference.pc_conference_key_n = {{param_conferencekey}}
-							AND PUB_pc_attendee.pc_conference_key_n = {{param_conferencekey}}
-							AND PUB_pm_short_term_application.pm_st_confirmed_option_n = {OutreachKey}
-					</value></queryDetail>
-					
-					<queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
-							AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
-							AND PUB_pc_conference.pc_outreach_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
-					</value></queryDetail>
-					
-					<queryDetail condition="eq({param_chkAcceptedApplications}, true))"><value>
-							AND ( 	PUB_pm_general_application.pm_gen_application_status_c LIKE 'A%'
-									OR 
-									PUB_pm_general_application.pm_gen_application_status_c LIKE 'H%' )
-					</value></queryDetail>
-					
-					<queryDetail><value>
-							AND PUB_p_family.p_partner_key_n = PUB_p_person.p_family_key_n
-							AND PUB_p_unit.p_partner_key_n = PUB_pc_attendee.pc_conference_key_n
-							AND PUB_pm_short_term_application.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
-							AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i
-							AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n
-							AND NOT PUB_pm_general_application.pm_gen_app_delete_flag_l = 1
-							
-							ORDER BY PUB_p_partner.p_partner_short_name_c
-					</value></queryDetail>
-					
-				</query>
-			</calculation> <!-- Select Attendees for field -->
-			
-			<calculation id="InitFieldCostsCalculation" returns="automatic" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value text="NO-SQL"/>
-						<value function="InitFieldCostsCalculation({param_conferencekey},)"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="PrintFieldFinancialCosts" returns="automatic" returnsFormat="text">
-				<query>
-					<queryDetail condition="eq({param_chkFinancialReport}, true)">
-						<value text="NO-SQL"/>
-						<value function="PrintFieldFinancialCosts({OutreachName})"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="GetExtraCosts" returns="automatic" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value text="NO-SQL"/>
-						<value function="GetExtraCosts({ConferenceKey},{AttendeeKey})"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="PrintSignOffLines" returns="automatic" returnsFormat="text">
-				<query>
-					<queryDetail condition="eq({param_cmbSignOffLines}, print Financial Sign Off Lines)">
-						<value text="NO-SQL"/>
-						<value function="PrintFinancialSignOffLines({OutreachName})"/>
-					</queryDetail>
-					<queryDetail condition="eq({param_cmbSignOffLines}, print Attendance Sign Off Lines)">
-						<value text="NO-SQL"/>
-						<value function="PrintAttendanceSignOffLines({OutreachName})"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="PrintFinalLines" returns="automatic" returnsFormat="text">
-				<query>
-					<queryDetail condition="eq({param_chkFinancialReport}, true)">
-						<value text="NO-SQL"/>
-						<value function="PrintFieldFinancialCosts(REPORT SUMMARY)"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="ClearFieldCostsCalculation" returns="automatic" returnsFormat="text">
-				<query>
-					<!-- After everything is done, clear the old calculations otherwise they will appear in a new report -->
-					<queryDetail>
-						<value text="NO-SQL"/>
-						<value function="ClearFieldCostsCalculation()"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="PrintEmptyLineInFieldReport" returns="automatic" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value text="NO-SQL"/>
-						<value function="PrintEmptyLineInFieldReport()"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="GetOtherDetailsForFields" returns="automatic" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value text="NO-SQL"/>
-						<value function="GetPassport({AttendeeKey})"/>
-						<value function="assign(ArrivalTime, formattime(:, {pm_arrival_hour_i}, {pm_arrival_minute_i}))"/>
-						<value function="assign(DepartureTime, formattime(:, {pm_departure_hour_i}, {pm_departure_minute_i}))"/>
-						<value function="assign(ArrivalExpectedTime, formattime(:, {pm_arrival_exp_hour_i}, {pm_arrival_exp_minute_i}))"/>
-						<value function="assign(DepartureExpectedTime, formattime(:, {pm_departure_exp_hour_i}, {pm_departure_exp_minute_i}))"/>
-						<value function="assign(Age, calculateAge({Birthday}))"/>
-						<value function="assign(ConferenceRoom, GetConferenceRoom({AttendeeKey}, {ConferenceKey}, No Room allocated))"/>
-						<value function="assign(ArrivalPoint, GetArrivalPoint({pt_arrival_point_code_c}))"/>
-						<value function="assign(DeparturePoint, GetArrivalPoint({pt_departure_point_code_c}))"/>
-						<value function="assign(ArrivalNeedsTransport, Yes)" condition="{pm_arrival_transport_needed_l}"/>
-						<value function="assign(ArrivalNeedsTransport, No)" condition="not({pm_arrival_transport_needed_l})"/>
-						<value function="assign(DepartureNeedsTransport, Yes)" condition="{pm_departure_transport_needed_l}"/>
-						<value function="assign(DepartureNeedsTransport, No)" condition="not({pm_departure_transport_needed_l})"/>
-						<value function="assign(GroupLeader, Yes)" condition="{pm_st_fg_leader_l}"/>
-						<value function="assign(GroupLeader, No)" condition="not({pm_st_fg_leader_l})"/>
-						<value function="assign(MissingInformation, GetMissingInfo({AttendeeKey}, {ApplicationKey}, {RegistrationOffice}))"/>
-						<value function="assign(DriverStatus, GetDriverStatus({AttendeeKey}))"/>
-						<value function="CalculateOneAttendeeFieldCost({Age}, {AttendeeKey}, {ApplicationKey}, {RegistrationOffice}, {OutreachKey}, {OutreachType}, {RegistrationDate} )"/>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Missing Information" returns="text" returnsFormat="text">
-				<caption><value text="Missing Information"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="MissingInformation"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Driver Status" returns="text" returnsFormat="#,##0.00">
-				<caption><value text="Driver Status"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="DriverStatus"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Application Key" returns="text" returnsFormat="text">
-				<caption><value text="Application Key"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="ApplicationKey"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-	
-			<calculation align="left" id="Application Status" returns="text" returnsFormat="text">
-				<caption><value text="Application Status"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="ApplicationStatus"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Finance Details" returns="text" returnsFormat="text">
-				<caption><value text="Finance Details"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="FinanceDetails"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Accommodation" returns="text" returnsFormat="text">
-				<caption><value text="Accommodation"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="AccommodationCost"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Registration Office" returns="text" returnsFormat="text">
-				<caption><value text="Registration Office"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="RegistrationOffice"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="Outreach Code" returns="text" returnsFormat="text">
-				<caption><value text="Outreach Code"></value></caption>
-				<query>
-					<queryDetail>
-						<value variable="OutreachCode"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation align="left" id="DummyValue0" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="DummyValue0"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation align="left" id="DummyValue1" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="DummyValue1"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation align="left" id="DummyValue2" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="DummyValue2"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation align="left" id="DummyValue3" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="DummyValue3"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation align="left" id="DummyValue4" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="DummyValue4"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation align="left" id="DummyValue5" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="DummyValue5"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation align="left" id="DummyValue6" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="DummyValue6"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation align="left" id="DummyValue7" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="DummyValue7"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation align="left" id="DummyValue8" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="DummyValue8"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation align="left" id="DummyValue9" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="DummyValue9"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation align="left" id="DummyValue10" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="DummyValue10"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation align="left" id="DummyValue11" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="DummyValue11"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation align="left" id="DummyValue12" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="DummyValue12"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation align="left" id="DummyValue13" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="DummyValue13"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation align="left" id="DummyValue14" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="DummyValue14"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation align="left" id="DummyValue15" returns="text" returnsFormat="text">
-				<query>
-					<queryDetail>
-						<value variable="DummyValue15"></value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-		</calculations>
+        <calculations>
+    
+            <calculation id="SelectOutreaches" returns="automatic" returnsFormat="row">
+                <query>
+                    <queryDetail><value>
+                        SELECT DISTINCT
+                            PUB_p_unit.p_outreach_code_c AS OutreachCode,
+                            PUB_p_unit.p_unit_name_c AS OutreachName,
+                            PUB_p_unit.p_partner_key_n AS OutreachKey
+                        FROM   
+                            PUB_p_unit
+                        WHERE
+                    </value></queryDetail>
+                    <queryDetail>
+                            <value function="csv" text="PUB_p_unit.p_outreach_code_c" 
+                                    variable="param_selected_keys_csv" calculation="OR">
+                            </value>
+                    </queryDetail>
+                    <queryDetail><value>
+                        ORDER BY PUB_p_unit.p_unit_name_c
+                    </value></queryDetail>
+                </query>
+            </calculation> <!-- SelectOutreaches -->
+            
+            <calculation id="Select Attendees for field" returns="automatic" returnsFormat="row">
+                <query>
+                    <queryDetail><value>
+                        SELECT DISTINCT
+                            PUB_p_partner.p_partner_key_n AS AttendeeKey,
+                            PUB_p_partner.p_partner_short_name_c AS AttendeeName,
+                            PUB_p_partner.p_partner_class_c AS AttendeeClass,
+                            
+                            PUB_p_person.p_gender_c AS Gender,
+                            PUB_p_person.p_date_of_birth_d AS Birthday,
+                            PUB_p_person.p_first_name_c AS FirstName,
+                            PUB_p_person.p_prefered_name_c AS PreferredName,
+                            PUB_p_person.p_family_name_c AS LastName,
+                            PUB_p_person.p_marital_status_c AS MaritalStatus,
+                            
+                            PUB_p_unit.p_unit_name_c AS ConferenceName,
+                            PUB_p_unit.p_partner_key_n AS ConferenceKey,
+                            PUB_pc_conference.pc_start_d AS StartDate,
+                            PUB_pc_conference.pc_end_d AS EndDate,
+                            
+                            PUB_pm_short_term_application.pm_arrival_d AS ArrivalDate,
+                            PUB_pm_short_term_application.pm_arrival_hour_i,
+                            PUB_pm_short_term_application.pm_arrival_minute_i,
+                            PUB_pm_short_term_application.pm_departure_d AS DepartureDate,
+                            PUB_pm_short_term_application.pm_departure_hour_i,
+                            PUB_pm_short_term_application.pm_departure_minute_i,
+                            PUB_pm_short_term_application.pt_arrival_point_code_c,
+                            PUB_pm_short_term_application.pm_arrival_comments_c AS ArrivalComment,
+                            PUB_pm_short_term_application.pt_departure_point_code_c,
+                            PUB_pm_short_term_application.pm_departure_comments_c AS DepartureComment,
+                            PUB_pm_short_term_application.pm_to_cong_travel_info_c AS ArrivalTravelDetails,
+                            PUB_pm_short_term_application.pm_from_cong_travel_info_c AS DepartureTravelDetails,
+                            PUB_pm_short_term_application.pt_travel_type_to_cong_code_c AS ArrivalTravelType,
+                            PUB_pm_short_term_application.pt_travel_type_from_cong_code_c AS DepartureTravelType,
+                            PUB_pm_short_term_application.pm_arrival_transport_needed_l,
+                            PUB_pm_short_term_application.pm_departure_transport_needed_l,
+                            
+                            PUB_pm_short_term_application.pm_st_congress_code_c AS ConferenceRole,
+                            PUB_pm_short_term_application.pm_st_fg_code_c AS FellowshipGroup,
+                            PUB_pm_short_term_application.pm_st_fg_leader_l,
+                            
+                            PUB_pm_general_application.pm_gen_application_status_c AS ApplicationStatus,
+                            PUB_pm_general_application.pm_application_key_i AS ApplicationKey,
+                            PUB_pm_general_application.pm_registration_office_n AS RegistrationOffice,
+                    
+                            PUB_pc_attendee.pc_outreach_type_c AS OutreachType,
+                            PUB_pc_attendee.pc_discovery_group_c AS DiscoveryGroup,
+                            PUB_pc_attendee.pc_work_group_c AS WorkGroup,
+                            PUB_pc_attendee.pc_arrival_group_c AS ArrivalGroup,
+                            PUB_pc_attendee.pc_departure_group_c AS DepartureGroup,
+                            PUB_pc_attendee.pc_registered_d AS RegistrationDate,
+                            PUB_pc_attendee.pc_actual_arr_d AS ActualArrivingDate,
+                            PUB_pc_attendee.pc_actual_dep_d AS ActualDepartureDate
+                            
+                        FROM   PUB_p_partner,
+                            PUB_p_person,
+                            PUB_p_family,
+                            PUB_p_unit,
+                            PUB_pc_attendee,
+                            PUB_pc_conference,
+                            PUB_pm_general_application,
+                            PUB_pm_short_term_application
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_attendeeselection}, one attendee)"><value>
+                        WHERE 
+                            PUB_pc_attendee.p_partner_key_n  = {{param_partnerkey}}
+                            AND
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_attendeeselection}, all attendees)"><value>
+                        WHERE 
+                    </value></queryDetail>
+                    <queryDetail condition="eq({param_attendeeselection}, from extract)"><value>
+                            , PUB_m_extract, PUB_m_extract_master
+                        WHERE
+                             PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+                            AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+                            AND PUB_m_extract_master.m_extract_name_c = {param_extractname}
+                            AND
+                    </value></queryDetail>
+                    <queryDetail><value>
+                            PUB_p_partner.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
+                            AND PUB_p_person.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
+                    </value></queryDetail>
+                    
+                    <queryDetail condition="eq({param_conferenceselection}, one conference)"><value>
+                            AND PUB_pc_conference.pc_conference_key_n = {{param_conferencekey}}
+                            AND PUB_pc_attendee.pc_conference_key_n = {{param_conferencekey}}
+                            AND PUB_pm_short_term_application.pm_st_confirmed_option_n = {OutreachKey}
+                    </value></queryDetail>
+                    
+                    <queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
+                            AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
+                            AND PUB_pc_conference.pc_outreach_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
+                    </value></queryDetail>
+                    
+                    <queryDetail condition="eq({param_chkAcceptedApplications}, true))"><value>
+                            AND (   PUB_pm_general_application.pm_gen_application_status_c LIKE 'A%'
+                                    OR 
+                                    PUB_pm_general_application.pm_gen_application_status_c LIKE 'H%' )
+                    </value></queryDetail>
+                    
+                    <queryDetail><value>
+                            AND PUB_p_family.p_partner_key_n = PUB_p_person.p_family_key_n
+                            AND PUB_p_unit.p_partner_key_n = PUB_pc_attendee.pc_conference_key_n
+                            AND PUB_pm_short_term_application.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
+                            AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i
+                            AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n
+                            AND NOT PUB_pm_general_application.pm_gen_app_delete_flag_l = 1
+                            
+                            ORDER BY PUB_p_partner.p_partner_short_name_c
+                    </value></queryDetail>
+                    
+                </query>
+            </calculation> <!-- Select Attendees for field -->
+            
+            <calculation id="InitFieldCostsCalculation" returns="automatic" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value text="NO-SQL"/>
+                        <value function="InitFieldCostsCalculation({param_conferencekey},)"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation id="PrintFieldFinancialCosts" returns="automatic" returnsFormat="text">
+                <query>
+                    <queryDetail condition="eq({param_chkFinancialReport}, true)">
+                        <value text="NO-SQL"/>
+                        <value function="PrintFieldFinancialCosts({OutreachName})"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation id="GetExtraCosts" returns="automatic" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value text="NO-SQL"/>
+                        <value function="GetExtraCosts({ConferenceKey},{AttendeeKey})"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation id="PrintSignOffLines" returns="automatic" returnsFormat="text">
+                <query>
+                    <queryDetail condition="eq({param_cmbSignOffLines}, print Financial Sign Off Lines)">
+                        <value text="NO-SQL"/>
+                        <value function="PrintFinancialSignOffLines({OutreachName})"/>
+                    </queryDetail>
+                    <queryDetail condition="eq({param_cmbSignOffLines}, print Attendance Sign Off Lines)">
+                        <value text="NO-SQL"/>
+                        <value function="PrintAttendanceSignOffLines({OutreachName})"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation id="PrintFinalLines" returns="automatic" returnsFormat="text">
+                <query>
+                    <queryDetail condition="eq({param_chkFinancialReport}, true)">
+                        <value text="NO-SQL"/>
+                        <value function="PrintFieldFinancialCosts(REPORT SUMMARY)"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation id="ClearFieldCostsCalculation" returns="automatic" returnsFormat="text">
+                <query>
+                    <!-- After everything is done, clear the old calculations otherwise they will appear in a new report -->
+                    <queryDetail>
+                        <value text="NO-SQL"/>
+                        <value function="ClearFieldCostsCalculation()"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation id="PrintEmptyLineInFieldReport" returns="automatic" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value text="NO-SQL"/>
+                        <value function="PrintEmptyLineInFieldReport()"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation id="GetOtherDetailsForFields" returns="automatic" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value text="NO-SQL"/>
+                        <value function="GetPassport({AttendeeKey})"/>
+                        <value function="assign(ArrivalTime, formattime(:, {pm_arrival_hour_i}, {pm_arrival_minute_i}))"/>
+                        <value function="assign(DepartureTime, formattime(:, {pm_departure_hour_i}, {pm_departure_minute_i}))"/>
+                        <value function="assign(ArrivalExpectedTime, formattime(:, {pm_arrival_exp_hour_i}, {pm_arrival_exp_minute_i}))"/>
+                        <value function="assign(DepartureExpectedTime, formattime(:, {pm_departure_exp_hour_i}, {pm_departure_exp_minute_i}))"/>
+                        <value function="assign(Age, calculateAge({Birthday}))"/>
+                        <value function="assign(ConferenceRoom, GetConferenceRoom({AttendeeKey}, {ConferenceKey}, No Room allocated))"/>
+                        <value function="assign(ArrivalPoint, GetArrivalPoint({pt_arrival_point_code_c}))"/>
+                        <value function="assign(DeparturePoint, GetArrivalPoint({pt_departure_point_code_c}))"/>
+                        <value function="assign(ArrivalNeedsTransport, Yes)" condition="{pm_arrival_transport_needed_l}"/>
+                        <value function="assign(ArrivalNeedsTransport, No)" condition="not({pm_arrival_transport_needed_l})"/>
+                        <value function="assign(DepartureNeedsTransport, Yes)" condition="{pm_departure_transport_needed_l}"/>
+                        <value function="assign(DepartureNeedsTransport, No)" condition="not({pm_departure_transport_needed_l})"/>
+                        <value function="assign(GroupLeader, Yes)" condition="{pm_st_fg_leader_l}"/>
+                        <value function="assign(GroupLeader, No)" condition="not({pm_st_fg_leader_l})"/>
+                        <value function="assign(MissingInformation, GetMissingInfo({AttendeeKey}, {ApplicationKey}, {RegistrationOffice}))"/>
+                        <value function="assign(DriverStatus, GetDriverStatus({AttendeeKey}))"/>
+                        <value function="CalculateOneAttendeeFieldCost({Age}, {AttendeeKey}, {ApplicationKey}, {RegistrationOffice}, {OutreachKey}, {OutreachType}, {RegistrationDate} )"/>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation align="left" id="Missing Information" returns="text" returnsFormat="text">
+                <caption><value text="Missing Information"></value></caption>
+                <query>
+                    <queryDetail>
+                        <value variable="MissingInformation"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation align="left" id="Driver Status" returns="text" returnsFormat="#,##0.00">
+                <caption><value text="Driver Status"></value></caption>
+                <query>
+                    <queryDetail>
+                        <value variable="DriverStatus"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation align="left" id="Application Key" returns="text" returnsFormat="text">
+                <caption><value text="Application Key"></value></caption>
+                <query>
+                    <queryDetail>
+                        <value variable="ApplicationKey"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+    
+            <calculation align="left" id="Application Status" returns="text" returnsFormat="text">
+                <caption><value text="Application Status"></value></caption>
+                <query>
+                    <queryDetail>
+                        <value variable="ApplicationStatus"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation align="left" id="Finance Details" returns="text" returnsFormat="text">
+                <caption><value text="Finance Details"></value></caption>
+                <query>
+                    <queryDetail>
+                        <value variable="FinanceDetails"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation align="left" id="Accommodation" returns="text" returnsFormat="text">
+                <caption><value text="Accommodation"></value></caption>
+                <query>
+                    <queryDetail>
+                        <value variable="AccommodationCost"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation align="left" id="Registration Office" returns="text" returnsFormat="text">
+                <caption><value text="Registration Office"></value></caption>
+                <query>
+                    <queryDetail>
+                        <value variable="RegistrationOffice"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation align="left" id="Outreach Code" returns="text" returnsFormat="text">
+                <caption><value text="Outreach Code"></value></caption>
+                <query>
+                    <queryDetail>
+                        <value variable="OutreachCode"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+            <calculation align="left" id="DummyValue0" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="DummyValue0"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            <calculation align="left" id="DummyValue1" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="DummyValue1"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            <calculation align="left" id="DummyValue2" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="DummyValue2"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            <calculation align="left" id="DummyValue3" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="DummyValue3"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            <calculation align="left" id="DummyValue4" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="DummyValue4"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            <calculation align="left" id="DummyValue5" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="DummyValue5"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            <calculation align="left" id="DummyValue6" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="DummyValue6"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            <calculation align="left" id="DummyValue7" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="DummyValue7"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            <calculation align="left" id="DummyValue8" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="DummyValue8"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            <calculation align="left" id="DummyValue9" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="DummyValue9"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            <calculation align="left" id="DummyValue10" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="DummyValue10"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            <calculation align="left" id="DummyValue11" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="DummyValue11"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            <calculation align="left" id="DummyValue12" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="DummyValue12"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            <calculation align="left" id="DummyValue13" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="DummyValue13"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            <calculation align="left" id="DummyValue14" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="DummyValue14"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            <calculation align="left" id="DummyValue15" returns="text" returnsFormat="text">
+                <query>
+                    <queryDetail>
+                        <value variable="DummyValue15"></value>
+                    </queryDetail>
+                </query>
+            </calculation>
+            
+        </calculations>
     
     <levels>    
-	<level name="main">
-		<detail>
-			<lowerLevelReport level="main2" calculation="SelectOutreaches"></lowerLevelReport>
-			<lowerLevelReport level="NoFieldLevel"></lowerLevelReport>
-			<lowerLevelReport level="DicountFlagExplanationLevel" condition="eq({param_report_detail}, Full)"></lowerLevelReport>
-			<lowerLevelReport level="DicountChildFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(C))"></lowerLevelReport>
-			<lowerLevelReport level="DicountWorkerFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(O))"></lowerLevelReport>
-			<lowerLevelReport level="DicountAppliedFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(*))"></lowerLevelReport>
-			<lowerLevelReport level="DicountPreFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(P))"></lowerLevelReport>
-			<lowerLevelReport level="DicountPostFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(T))"></lowerLevelReport>
-			<lowerLevelReport level="DicountEarlyFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(E))"></lowerLevelReport>
-			<lowerLevelReport level="DicountLateFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(L))"></lowerLevelReport>
-			<lowerLevelReport level="DummyLevel" calculation="ClearFieldCostsCalculation"></lowerLevelReport>
-		</detail>
-	</level> <!-- main -->
-	
-	<level name="main2">
-		<header>
-			<field whichfield="header 0" pos="0.0cm" width="12.0cm">
-				<value variable="OutreachCode"/>
-				<value text="   "/>
-				<value variable="OutreachName"/>
-			</field>
-		</header>
-		<detail>
-			<lowerLevelReport level="main3"></lowerLevelReport>
-			<lowerLevelReport calculation="PrintFieldFinancialCosts" level="DummyLevel"></lowerLevelReport>
-			<lowerLevelReport calculation="PrintSignOffLines" level="DummyLevel"></lowerLevelReport>
-			<lowerLevelReport calculation="PrintEmptyLineInFieldReport" level="DummyLevel"></lowerLevelReport>
-			
-		</detail>
-		<footer>
-			<!-- footer for the sign off part of the report -->
-			<field whichfield="column 0" pos="1.0cm" width="12.0cm" align="left"/>
-			<field whichfield="column 1" pos="5.0cm" width="4.0cm" align="left"/>
-			<field whichfield="column 2" pos="9.0cm" width="3.0cm" align="left"/>
-			<field whichfield="column 3" pos="12.0cm" width="2.0cm" align="left"/>
-			<field whichfield="column 4" pos="14.0cm" width="7cm" align="left"/>
-			<field whichfield="column 5" pos="21.0cm" width="3cm" align="left"/>
-		</footer>
-	</level> 
-	
-	<level name="NoFieldLevel">
-		<header>
-			<switch>
-				<case condition="HasReportSendingField(APPLICATIONS WITH NO SENDING FIELD)">
-			<field whichfield="header 0" pos="0.0cm" width="12.0cm">
-				<value text="APPLICATIONS WITH NO SENDING FIELD"/>
-			</field>
-				</case>
-			</switch>
-		</header>
-		<detail>
-			<!-- This level is used for the Summary lines and the "no field" lines-->
-			<lowerLevelReport calculation="PrintFinalLines" level="DummyLevel"></lowerLevelReport>
-		</detail>
-	</level> 
-	
-	<!-- These levels print the explanation of the flags in the finance details table at the end of the report -->
-	<level name="DicountFlagExplanationLevel">
-		
-		<header>
-			<field whichfield="header 0" pos="0.0cm" width="12.0cm" align="left">
-				<value text="Explanations for Finance Details Flags:"/>
-			</field>
-		</header>
-		<detail/>
-	</level>
-	<level name="DicountChildFlagExplanationLevel">
-		<header>
-			<field whichfield="header 0" pos="0.0cm" width="12.0cm" align="left">
-				<value text="C = Child"/>
-			</field>
-		</header>
-		<detail/>
-	</level>
-	<level name="DicountWorkerFlagExplanationLevel">
-		<header>
-			<field whichfield="header 0" pos="0.0cm" width="12.0cm" align="left">
-				<value text="O = Worker"/>
-			</field>
-		</header>
-		<detail/>
-	</level>
-	<level name="DicountAppliedFlagExplanationLevel">
-		<header>
-			<field whichfield="header 0" pos="0.0cm" width="12.0cm" align="left">
-				<value text="* = Discount applied"/>
-			</field>
-		</header>
-		<detail/>
-	</level>
-	<level name="DicountPreFlagExplanationLevel">
-		<header>
-			<field whichfield="header 0" pos="0.0cm" width="12.0cm" align="left">
-				<value text="P = Pre conference charges included"/>
-			</field>
-		</header>
-		<detail/>
-	</level>
-	<level name="DicountPostFlagExplanationLevel">
-		<header>
-			<field whichfield="header 0" pos="0.0cm" width="12.0cm" align="left">
-				<value text="T = Post conference charges included"/>
-			</field>
-		</header>
-		<detail/>
-	</level>
-	<level name="DicountEarlyFlagExplanationLevel">
-		<header>
-			<field whichfield="header 0" pos="0.0cm" width="12.0cm" align="left">
-				<value text="E = Early registration discount"/>
-			</field>
-		</header>
-		<detail/>
-	</level>
-	<level name="DicountLateFlagExplanationLevel">
-		<header>
-			<field whichfield="header 0" pos="0.0cm" width="12.0cm" align="left">
-				<value text="L = Late registration discount"/>
-			</field>
-		</header>
-		<detail/>
-	</level>
-	
-	<level name="main3">
-		<detail>
-			<lowerLevelReport calculation="InitFieldCostsCalculation" level="DummyLevel"></lowerLevelReport>
-			<lowerLevelReport calculation="Select Attendees for field" level="Attendee Detail Level" condition="eq({param_chkExtraCosts}, false)"></lowerLevelReport>
-			<lowerLevelReport calculation="Select Attendees for field" level="Attendee Detail Level With Extra Cost" condition="eq({param_chkExtraCosts}, true)"></lowerLevelReport>
-		</detail>
-		<footer>
-			<!-- footer for the financial part of the report -->
-			<field whichfield="column 0" pos="0.0cm" width="8.0cm" align="left"/>
-			<field whichfield="column 1" pos="1.0cm" width="1.5cm" align="right"/>
-			<field whichfield="column 2" pos="2.5cm" width="2cm" align="right"/>
-			<field whichfield="column 3" pos="4.5cm" width="2cm" align="right"/>
-			<field whichfield="column 4" pos="6.5cm" width="2cm" align="right"/>
-			<field whichfield="column 5" pos="8.5cm" width="2cm" align="right"/>
-			<field whichfield="column 6" pos="10.5cm" width="2cm" align="right"/>
-			<field whichfield="column 7" pos="12.5cm" width="2cm" align="right"/>
-			<field whichfield="column 8" pos="14.5cm" width="2cm" align="right"/>
-			<field whichfield="column 9" pos="16.5cm" width="2.5cm" align="right"/>
-			<field whichfield="column 10" pos="19.0cm" width="2.5cm" align="right"/>
-			<field whichfield="column 11" pos="21.5cm" width="2.5cm" align="right"/>
-			<field whichfield="column 12" pos="24.0cm" width="2.5cm" align="right"/>
-			<field whichfield="column 13" pos="26.5cm" width="2.5cm" align="right"/>
-		</footer>
-	</level> 
-	
-	<level name="Attendee Detail Level" identification="AttendeeKey">
-		<detail>
-			<switch>
-				<case condition="eq({param_report_detail}, Summary)">
-					<lowerLevelReport level="DummyLevel" calculation="GetOtherDetailsForFields"></lowerLevelReport>
-				</case>
-				<default>
-					<field whichfield="Columns" calculation="GetOtherDetailsForFields"></field>
-				</default>
-			</switch>
-		</detail>
-	</level>
-	
-	<level name="Attendee Detail Level With Extra Cost" identification="AttendeeKey">
-		<detail>
-			<lowerLevelReport level="Extra Cost Level"></lowerLevelReport>
-		</detail>
-		<footer>
-			<field whichfield="column 0" pos="1.0cm" width="2.0cm" align="left" calculation="GetExtraCosts"/>
-			<field whichfield="column 1" pos="3.0cm" width="4.0cm" align="left"/>
-			<field whichfield="column 2" pos="7.0cm" width="1.5cm" align="right"/>
-			<field whichfield="column 3" pos="9.0cm" width="10cm" align="left"/>
-		</footer>
-	</level>
-	
-	<level name="Extra Cost Level" identification="AttendeeKey">
-		<detail>
-			<switch>
-				<case condition="eq({param_report_detail}, Summary)">
-					<lowerLevelReport level="DummyLevel" calculation="GetOtherDetailsForFields"></lowerLevelReport>
-				</case>
-				<default>
-					<field whichfield="Columns" calculation="GetOtherDetailsForFields"></field>
-				</default>
-			</switch>
-		</detail>
-	</level>
-	
-	<level name="DummyLevel">
-		<detail>
-		</detail>
-	</level>
-	
+    <level name="main">
+        <detail>
+            <lowerLevelReport level="main2" calculation="SelectOutreaches"></lowerLevelReport>
+            <lowerLevelReport level="NoFieldLevel"></lowerLevelReport>
+            <lowerLevelReport level="DicountFlagExplanationLevel" condition="eq({param_report_detail}, Full)"></lowerLevelReport>
+            <lowerLevelReport level="DicountChildFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(C))"></lowerLevelReport>
+            <lowerLevelReport level="DicountWorkerFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(O))"></lowerLevelReport>
+            <lowerLevelReport level="DicountAppliedFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(*))"></lowerLevelReport>
+            <lowerLevelReport level="DicountPreFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(P))"></lowerLevelReport>
+            <lowerLevelReport level="DicountPostFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(T))"></lowerLevelReport>
+            <lowerLevelReport level="DicountEarlyFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(E))"></lowerLevelReport>
+            <lowerLevelReport level="DicountLateFlagExplanationLevel" condition="and(eq({param_report_detail}, Full), HasFieldReportDiscount(L))"></lowerLevelReport>
+            <lowerLevelReport level="DummyLevel" calculation="ClearFieldCostsCalculation"></lowerLevelReport>
+        </detail>
+    </level> <!-- main -->
+    
+    <level name="main2">
+        <header>
+            <field whichfield="header 0" pos="0.0cm" width="12.0cm">
+                <value variable="OutreachCode"/>
+                <value text="   "/>
+                <value variable="OutreachName"/>
+            </field>
+        </header>
+        <detail>
+            <lowerLevelReport level="main3"></lowerLevelReport>
+            <lowerLevelReport calculation="PrintFieldFinancialCosts" level="DummyLevel"></lowerLevelReport>
+            <lowerLevelReport calculation="PrintSignOffLines" level="DummyLevel"></lowerLevelReport>
+            <lowerLevelReport calculation="PrintEmptyLineInFieldReport" level="DummyLevel"></lowerLevelReport>
+            
+        </detail>
+        <footer>
+            <!-- footer for the sign off part of the report -->
+            <field whichfield="column 0" pos="1.0cm" width="12.0cm" align="left"/>
+            <field whichfield="column 1" pos="5.0cm" width="4.0cm" align="left"/>
+            <field whichfield="column 2" pos="9.0cm" width="3.0cm" align="left"/>
+            <field whichfield="column 3" pos="12.0cm" width="2.0cm" align="left"/>
+            <field whichfield="column 4" pos="14.0cm" width="7cm" align="left"/>
+            <field whichfield="column 5" pos="21.0cm" width="3cm" align="left"/>
+        </footer>
+    </level> 
+    
+    <level name="NoFieldLevel">
+        <header>
+            <switch>
+                <case condition="HasReportSendingField(APPLICATIONS WITH NO SENDING FIELD)">
+            <field whichfield="header 0" pos="0.0cm" width="12.0cm">
+                <value text="APPLICATIONS WITH NO SENDING FIELD"/>
+            </field>
+                </case>
+            </switch>
+        </header>
+        <detail>
+            <!-- This level is used for the Summary lines and the "no field" lines-->
+            <lowerLevelReport calculation="PrintFinalLines" level="DummyLevel"></lowerLevelReport>
+        </detail>
+    </level> 
+    
+    <!-- These levels print the explanation of the flags in the finance details table at the end of the report -->
+    <level name="DicountFlagExplanationLevel">
+        
+        <header>
+            <field whichfield="header 0" pos="0.0cm" width="12.0cm" align="left">
+                <value text="Explanations for Finance Details Flags:"/>
+            </field>
+        </header>
+        <detail/>
+    </level>
+    <level name="DicountChildFlagExplanationLevel">
+        <header>
+            <field whichfield="header 0" pos="0.0cm" width="12.0cm" align="left">
+                <value text="C = Child"/>
+            </field>
+        </header>
+        <detail/>
+    </level>
+    <level name="DicountWorkerFlagExplanationLevel">
+        <header>
+            <field whichfield="header 0" pos="0.0cm" width="12.0cm" align="left">
+                <value text="O = Worker"/>
+            </field>
+        </header>
+        <detail/>
+    </level>
+    <level name="DicountAppliedFlagExplanationLevel">
+        <header>
+            <field whichfield="header 0" pos="0.0cm" width="12.0cm" align="left">
+                <value text="* = Discount applied"/>
+            </field>
+        </header>
+        <detail/>
+    </level>
+    <level name="DicountPreFlagExplanationLevel">
+        <header>
+            <field whichfield="header 0" pos="0.0cm" width="12.0cm" align="left">
+                <value text="P = Pre conference charges included"/>
+            </field>
+        </header>
+        <detail/>
+    </level>
+    <level name="DicountPostFlagExplanationLevel">
+        <header>
+            <field whichfield="header 0" pos="0.0cm" width="12.0cm" align="left">
+                <value text="T = Post conference charges included"/>
+            </field>
+        </header>
+        <detail/>
+    </level>
+    <level name="DicountEarlyFlagExplanationLevel">
+        <header>
+            <field whichfield="header 0" pos="0.0cm" width="12.0cm" align="left">
+                <value text="E = Early registration discount"/>
+            </field>
+        </header>
+        <detail/>
+    </level>
+    <level name="DicountLateFlagExplanationLevel">
+        <header>
+            <field whichfield="header 0" pos="0.0cm" width="12.0cm" align="left">
+                <value text="L = Late registration discount"/>
+            </field>
+        </header>
+        <detail/>
+    </level>
+    
+    <level name="main3">
+        <detail>
+            <lowerLevelReport calculation="InitFieldCostsCalculation" level="DummyLevel"></lowerLevelReport>
+            <lowerLevelReport calculation="Select Attendees for field" level="Attendee Detail Level" condition="eq({param_chkExtraCosts}, false)"></lowerLevelReport>
+            <lowerLevelReport calculation="Select Attendees for field" level="Attendee Detail Level With Extra Cost" condition="eq({param_chkExtraCosts}, true)"></lowerLevelReport>
+        </detail>
+        <footer>
+            <!-- footer for the financial part of the report -->
+            <field whichfield="column 0" pos="0.0cm" width="8.0cm" align="left"/>
+            <field whichfield="column 1" pos="1.0cm" width="1.5cm" align="right"/>
+            <field whichfield="column 2" pos="2.5cm" width="2cm" align="right"/>
+            <field whichfield="column 3" pos="4.5cm" width="2cm" align="right"/>
+            <field whichfield="column 4" pos="6.5cm" width="2cm" align="right"/>
+            <field whichfield="column 5" pos="8.5cm" width="2cm" align="right"/>
+            <field whichfield="column 6" pos="10.5cm" width="2cm" align="right"/>
+            <field whichfield="column 7" pos="12.5cm" width="2cm" align="right"/>
+            <field whichfield="column 8" pos="14.5cm" width="2cm" align="right"/>
+            <field whichfield="column 9" pos="16.5cm" width="2.5cm" align="right"/>
+            <field whichfield="column 10" pos="19.0cm" width="2.5cm" align="right"/>
+            <field whichfield="column 11" pos="21.5cm" width="2.5cm" align="right"/>
+            <field whichfield="column 12" pos="24.0cm" width="2.5cm" align="right"/>
+            <field whichfield="column 13" pos="26.5cm" width="2.5cm" align="right"/>
+        </footer>
+    </level> 
+    
+    <level name="Attendee Detail Level" identification="AttendeeKey">
+        <detail>
+            <switch>
+                <case condition="eq({param_report_detail}, Summary)">
+                    <lowerLevelReport level="DummyLevel" calculation="GetOtherDetailsForFields"></lowerLevelReport>
+                </case>
+                <default>
+                    <field whichfield="Columns" calculation="GetOtherDetailsForFields"></field>
+                </default>
+            </switch>
+        </detail>
+    </level>
+    
+    <level name="Attendee Detail Level With Extra Cost" identification="AttendeeKey">
+        <detail>
+            <lowerLevelReport level="Extra Cost Level"></lowerLevelReport>
+        </detail>
+        <footer>
+            <field whichfield="column 0" pos="1.0cm" width="2.0cm" align="left" calculation="GetExtraCosts"/>
+            <field whichfield="column 1" pos="3.0cm" width="4.0cm" align="left"/>
+            <field whichfield="column 2" pos="7.0cm" width="1.5cm" align="right"/>
+            <field whichfield="column 3" pos="9.0cm" width="10cm" align="left"/>
+        </footer>
+    </level>
+    
+    <level name="Extra Cost Level" identification="AttendeeKey">
+        <detail>
+            <switch>
+                <case condition="eq({param_report_detail}, Summary)">
+                    <lowerLevelReport level="DummyLevel" calculation="GetOtherDetailsForFields"></lowerLevelReport>
+                </case>
+                <default>
+                    <field whichfield="Columns" calculation="GetOtherDetailsForFields"></field>
+                </default>
+            </switch>
+        </detail>
+    </level>
+    
+    <level name="DummyLevel">
+        <detail>
+        </detail>
+    </level>
+    
     </levels>
   </report>
 </reports>
