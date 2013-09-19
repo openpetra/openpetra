@@ -387,18 +387,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FPreviouslySelectedDetailRow != null)
             {
-                ANewRow.AccountCode = FPreviouslySelectedDetailRow.AccountCode;
                 ANewRow.CostCentreCode = FPreviouslySelectedDetailRow.CostCentreCode;
-
-                if (ARefJournalRow.JournalCreditTotal != ARefJournalRow.JournalDebitTotal)
-                {
-                    ANewRow.Reference = FPreviouslySelectedDetailRow.Reference;
-                    ANewRow.Narrative = FPreviouslySelectedDetailRow.Narrative;
-                    ANewRow.TransactionDate = FPreviouslySelectedDetailRow.TransactionDate;
-                    decimal Difference = ARefJournalRow.JournalDebitTotal - ARefJournalRow.JournalCreditTotal;
-                    ANewRow.TransactionAmount = Math.Abs(Difference);
-                    ANewRow.DebitCreditIndicator = Difference < 0;
-                }
             }
 
             FPreviouslySelectedDetailRow = (GLBatchTDSATransactionRow)ANewRow;
