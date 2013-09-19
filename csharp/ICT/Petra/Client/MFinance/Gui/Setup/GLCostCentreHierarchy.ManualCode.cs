@@ -97,12 +97,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// Make this account of child of the selected one in the hierarchy (from drag-drop).
+        /// Make this Cost Centre a child of the selected one in the hierarchy (from drag-drop).
         /// </summary>
         /// <param name="AChild"></param>
         /// <param name="ANewParent"></param>
         private void DoReassignment(TreeNode AChild, TreeNode ANewParent)
         {
+
+            if (((CostCentreNodeDetails)AChild.Tag).CostCentreRow.SystemCostCentreFlag)
+            {
+                MessageBox.Show(Catalog.GetString("This is a System Cost Code and cannot be moved."), Catalog.GetString("Re-assign Cost Code"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+
             if ((AChild != null) && (ANewParent != null))
             {
                 String PrevParent = AChild.Parent.Text;
@@ -146,6 +153,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             chkDetailCostCentreActiveFlag.CheckedChanged += new System.EventHandler(UpdateOnControlChanged);
             cmbDetailCostCentreType.SelectedIndexChanged += new System.EventHandler(UpdateOnControlChanged);
             FIAmUpdating = false;
+            txtDetailCostCentreCode.TextChanged += new EventHandler(txtDetailCostCentreCode_TextChanged);
+            FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnHierarchySaved);
 
             // AlanP March 2013:  Use a try/catch block because nUnit testing on this screen does not support Drag/Drop in multi-threaded model
             // It is easier to do this than to configure all the different test execution methods to use STA
@@ -160,6 +169,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 // ex.Message is: DragDrop registration did not succeed.
                 // Inner exception is: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made.
+            }
+        }
+
+        private void OnHierarchySaved (System.Object sender, TDataSavedEventArgs e)
+        {
+            SetPrimaryKeyReadOnly(false);
+        }
+
+        private void txtDetailCostCentreCode_TextChanged(object sender, EventArgs e)
+        {
+            if (FIAmUpdating)
+                return;
+
+            CostCentreNodeDetails nodeDetails = (CostCentreNodeDetails)FCurrentNode.Tag;
+            if (nodeDetails.CostCentreRow.SystemCostCentreFlag)
+            {
+                FIAmUpdating = true;
+                txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
+                FIAmUpdating = false;
+                MessageBox.Show(Catalog.GetString("System Cost Centre Code cannot be changed."),
+                    Catalog.GetString("Rename Cost Centre"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+
+            bool ICanEditCostCentreCode = (nodeDetails.IsNew || !FPetraUtilsObject.HasChanges);
+            btnRename.Visible = (strOldDetailCostCentreCode != txtDetailCostCentreCode.Text) && ICanEditCostCentreCode;
+            if (!nodeDetails.IsNew && FPetraUtilsObject.HasChanges) // The user wants to change a cost centre code, but I can't allow it.
+            {
+                FIAmUpdating = true;
+                txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
+                FIAmUpdating = false;
+                MessageBox.Show(Catalog.GetString("Cost Centre Codes cannot be changed while there are other unsaved changes.\r\nSave first, then rename the Cost Centre."),
+                    Catalog.GetString("Rename Cost Centre"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+
             }
         }
 
@@ -315,10 +360,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
             else
             {
-                // I may actually allow the user to change the primary key!
-                // But only if the selected record is new, or they have not made any other changes.
-                bool ICanEditCostCentreCode = ((CostCentreNodeDetails)FCurrentNode.Tag).IsNew || !FPetraUtilsObject.HasChanges;
-                SetPrimaryKeyReadOnly(!ICanEditCostCentreCode);
+                // I allow the user to attempt to change the primary key,
+                // but if the selected record is not new, AND they have made any other changes,
+                // the txtDetailCostCentreCode_TextChanged method will disallow any change.
+                SetPrimaryKeyReadOnly(false);
+                btnRename.Visible = false;
             }
         }
 
@@ -648,6 +694,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK)
                         {
                             txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
+                            btnRename.Visible = false;
                             return false;
                         }
                     }
@@ -712,11 +759,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                             // If this code was previously in the DB, I need to assume that there may be transactions posted against it.
                             // There's a server call I need to use, and after the call I need to re-load this page.
-                            // (No other changes will be lost, because the txtDetailCostCentreCode will have been ReadOnly if there were already changes.)
+                            // (No other changes will be lost, because the change would not have been allowed if there were already changes.)
+                            this.Cursor = Cursors.WaitCursor;
                             bool Success = TRemote.MFinance.Setup.WebConnectors.RenameCostCentreCode(strOldDetailCostCentreCode,
                                 strNewDetailCostCentreCode,
                                 FLedgerNumber,
                                 out VerificationResults);
+                            this.Cursor = Cursors.Default;
 
                             if (Success)
                             {
@@ -771,15 +820,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void GetDataFromControlsManual()
         {
-            if ((CheckCostCentreValueChanged())
+            if ((!CheckCostCentreValueChanged())
                 && (FCurrentNode != null))
             {
-                GetDetailsFromControls(GetSelectedDetailRowManual());
+                ACostCentreRow SelectedRow = GetSelectedDetailRowManual();
+                GetDetailsFromControls(SelectedRow);
 
                 //
                 // If I find that there's no data in the new node, I'll remove it right now.
-                ACostCentreRow SelectedRow = ((CostCentreNodeDetails)FCurrentNode.Tag).CostCentreRow;
-
                 if ((SelectedRow.CostCentreCode == "") && (SelectedRow.CostCentreName == ""))
                 {
                     if (DeleteDataFromSelectedRow(FCurrentNode))
@@ -815,25 +863,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if (!FIAmUpdating)
             {
-                GetDataFromControlsManual();
-
-                // If txtDetailCostCentreCode is not readonly it may have been changed.
-                // I'll just check that...
-                if (!txtDetailCostCentreCode.ReadOnly)
+                ACostCentreRow Row = GetSelectedDetailRowManual();
+                if (Row != null
+                    && cmbDetailCostCentreType.GetSelectedString() != Row.CostCentreType
+                    && Row.SystemCostCentreFlag)
                 {
-                    if (CheckCostCentreValueChanged())
-                    {
-                        return;
-                    }  // If the rename didn't happen, I can carry on...
-
+                    MessageBox.Show(
+                        Catalog.GetString(
+                            "This is a System Cost Centre and cannot be changed."),
+                        Catalog.GetString("Cost Centre Type"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Stop);
+                    FIAmUpdating = true;
+                    cmbDetailCostCentreType.SetSelectedString(Row.CostCentreType);
+                    FIAmUpdating = false;
                 }
 
+
+                if (CheckCostCentreValueChanged())
+                {
+                    return;
+                }  // If not changed, or the rename didn't happen, I can carry on...
+
+                GetDataFromControlsManual();
                 if (FCurrentNode != null)
                 {
-                    ACostCentreRow Row = GetSelectedDetailRowManual();
-                    FCurrentNode.Text = NodeLabel(Row);
+                    String NewNodeName = NodeLabel(Row);
+                    if ((FCurrentNode.Text != NewNodeName) 
+                        || (FCurrentNode.Name != Row.CostCentreCode) 
+                        || (cmbDetailCostCentreType.GetSelectedString() != Row.CostCentreType))
+                    {
+                        FPetraUtilsObject.SetChangedFlag();
+                    }
+                    FCurrentNode.Text = NewNodeName;
                     FCurrentNode.Name = Row.CostCentreCode;
-                    FPetraUtilsObject.SetChangedFlag();
                 }
             }
         } // UpdateOnControlChanged

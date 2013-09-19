@@ -27,12 +27,13 @@ RootNode:
         trvCostCentres: {Dock=Fill}
         pnlDetails: {Dock=Fill}
             Controls: 
-                Row0: [txtDetailCostCentreCode]
+                Row0: [txtDetailCostCentreCode, btnRename]
                 Row1: [cmbDetailCostCentreType]
                 Row2: [txtDetailCostCentreName]
                 Row3: [chkDetailCostCentreActiveFlag]
                 Row4: [pnlStatus]
         txtDetailCostCentreCode:
+        btnRename:
         cmbDetailCostCentreType:
             OptionalValues: [Local, Foreign]
         txtDetailCostCentreName:
