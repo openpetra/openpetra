@@ -297,12 +297,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
             //TransactionAmount is not in the dictionary so had to pass the control directly
             if (AControl != null)
             {
-	            // 'GL amount must be non-zero
-	            ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnTransactionAmountId];
-	            ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
-	                ARow.TransactionNumber,
-	                ARow.BatchNumber,
-	                ARow.JournalNumber);
+                // 'GL amount must be non-zero
+                ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnTransactionAmountId];
+                ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                    ARow.TransactionNumber,
+                    ARow.BatchNumber,
+                    ARow.JournalNumber);
 
                 VerificationResult = TNumericalChecks.IsPositiveDecimal(ARow.TransactionAmount,
                     "Amount of " + ValidationContext,
@@ -313,7 +313,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 {
                     VerifResultCollAddedCount++;
                 }
-                
+
                 return VerifResultCollAddedCount == 0;
             }
 

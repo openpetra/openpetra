@@ -794,9 +794,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (sender.GetType() == typeof(TTxtCurrencyTextBox))
             {
-            	CheckAmounts((TTxtCurrencyTextBox)sender);
+                CheckAmounts((TTxtCurrencyTextBox)sender);
             }
-            
+
             ControlValidatedHandler(sender, e);
 
             //If no errors
@@ -809,29 +809,29 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void CheckAmounts(TTxtCurrencyTextBox ATxtCurrencyTextBox)
         {
             bool debitChanged = (ATxtCurrencyTextBox.Name == "txtDebitAmount");
-        	
-        	if (!debitChanged && ATxtCurrencyTextBox.Name != "txtCreditAmount")
-        	{
-        		return;
-        	}
-        	else if (ATxtCurrencyTextBox.NumberValueDecimal == null || !ATxtCurrencyTextBox.NumberValueDecimal.HasValue)
+
+            if (!debitChanged && (ATxtCurrencyTextBox.Name != "txtCreditAmount"))
             {
-            	ATxtCurrencyTextBox.NumberValueDecimal = 0;
+                return;
             }
-            
-        	decimal valDebit = txtDebitAmount.NumberValueDecimal.Value;
+            else if ((ATxtCurrencyTextBox.NumberValueDecimal == null) || !ATxtCurrencyTextBox.NumberValueDecimal.HasValue)
+            {
+                ATxtCurrencyTextBox.NumberValueDecimal = 0;
+            }
+
+            decimal valDebit = txtDebitAmount.NumberValueDecimal.Value;
             decimal valCredit = txtCreditAmount.NumberValueDecimal.Value;
-        	
-        	//If no changes then proceed no further
-            if (debitChanged && FDebitAmount == valDebit)
-        	{
-        		return;
-        	}
-        	else if (!debitChanged && FCreditAmount == valCredit)
-        	{
-        		return;
-        	}
-        	
+
+            //If no changes then proceed no further
+            if (debitChanged && (FDebitAmount == valDebit))
+            {
+                return;
+            }
+            else if (!debitChanged && (FCreditAmount == valCredit))
+            {
+                return;
+            }
+
             if (debitChanged && ((valDebit > 0) && (valCredit > 0)))
             {
                 txtCreditAmount.NumberValueDecimal = 0;
@@ -842,16 +842,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else if (valDebit < 0)
             {
-            	txtDebitAmount.NumberValueDecimal = 0;
+                txtDebitAmount.NumberValueDecimal = 0;
             }
             else if (valCredit < 0)
             {
-            	txtCreditAmount.NumberValueDecimal = 0;
+                txtCreditAmount.NumberValueDecimal = 0;
             }
 
-			//Reset class variables
+            //Reset class variables
             FDebitAmount = txtDebitAmount.NumberValueDecimal.Value;
-			FCreditAmount = txtCreditAmount.NumberValueDecimal.Value;
+            FCreditAmount = txtCreditAmount.NumberValueDecimal.Value;
         }
 
         /// <summary>

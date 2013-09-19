@@ -119,7 +119,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-            	SelectRowInGrid(1);
+                SelectRowInGrid(1);
             }
 
             txtBatchNumber.Text = FBatchNumber.ToString();
