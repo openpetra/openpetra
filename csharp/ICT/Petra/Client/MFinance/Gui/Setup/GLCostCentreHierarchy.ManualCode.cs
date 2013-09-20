@@ -404,6 +404,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private static String NodeLabel(ACostCentreRow ADetailRow)
         {
+            if (ADetailRow.RowState.Equals(DataRowState.Deleted))
+            {
+                return "(Deleted)";
+            }
             string nodeLabel = ADetailRow.CostCentreCode;
 
             if (!ADetailRow.IsCostCentreNameNull())
