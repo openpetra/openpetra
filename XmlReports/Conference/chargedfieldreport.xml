@@ -300,8 +300,6 @@
                         <value function="GetPassport({AttendeeKey})"/>
                         <value function="assign(ArrivalTime, formattime(:, {pm_arrival_hour_i}, {pm_arrival_minute_i}))"/>
                         <value function="assign(DepartureTime, formattime(:, {pm_departure_hour_i}, {pm_departure_minute_i}))"/>
-                        <value function="assign(ArrivalExpectedTime, formattime(:, {pm_arrival_exp_hour_i}, {pm_arrival_exp_minute_i}))"/>
-                        <value function="assign(DepartureExpectedTime, formattime(:, {pm_departure_exp_hour_i}, {pm_departure_exp_minute_i}))"/>
                         <value function="assign(Age, calculateAge({Birthday}))"/>
                         <value function="assign(ConferenceRoom, GetConferenceRoom({AttendeeKey}, {ConferenceKey}, No Room allocated))"/>
                         <value function="assign(ArrivalPoint, GetArrivalPoint({pt_arrival_point_code_c}))"/>

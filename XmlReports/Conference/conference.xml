@@ -148,8 +148,6 @@
                         <value function="GetPassport({AttendeeKey})"/>
                         <value function="assign(ArrivalTime, formattime(:, {pm_arrival_hour_i}, {pm_arrival_minute_i}))"/>
                         <value function="assign(DepartureTime, formattime(:, {pm_departure_hour_i}, {pm_departure_minute_i}))"/>
-                        <value function="assign(ArrivalExpectedTime, formattime(:, {pm_arrival_exp_hour_i}, {pm_arrival_exp_minute_i}))"/>
-                        <value function="assign(DepartureExpectedTime, formattime(:, {pm_departure_exp_hour_i}, {pm_departure_exp_minute_i}))"/>
                         <value function="assign(Age, calculateAge({Birthday}))"/>
                         <value function="assign(ConferenceRoom, GetConferenceRoom({AttendeeKey}, {ConferenceKey}, No Room allocated))"/>
                         <value function="assign(ArrivalPoint, GetArrivalPoint({pt_arrival_point_code_c}))"/>
@@ -425,47 +423,11 @@
                 </query>
             </calculation>
             
-            <calculation align="left" id="Arrival Expected Date" returns="text" returnsFormat="formatteddate">
-                <caption><value text="Arr. Expected Date"></value></caption>
-                <query>
-                    <queryDetail>
-                        <value variable="ArrivalExpectedDate"></value>
-                    </queryDetail>
-                </query>
-            </calculation>
-            
-            <calculation align="left" id="Arrival Expected Time" returns="text" returnsFormat="text">
-                <caption><value text="Arr. Expected Time"></value></caption>
-                <query>
-                    <queryDetail>
-                        <value variable="ArrivalExpectedTime"></value>
-                    </queryDetail>
-                </query>
-            </calculation>
-            
             <calculation align="left" id="Arrival Details" returns="text" returnsFormat="text">
                 <caption><value text="Arrival Details"></value></caption>
                 <query>
                     <queryDetail>
                         <value variable="ArrivalTravelDetails"></value>
-                    </queryDetail>
-                </query>
-            </calculation>
-            
-            <calculation align="left" id="Departure Expected Date" returns="text" returnsFormat="formatteddate">
-                <caption><value text="Dep. Expected Date"></value></caption>
-                <query>
-                    <queryDetail>
-                        <value variable="DepartureExpectedDate"></value>
-                    </queryDetail>
-                </query>
-            </calculation>
-            
-            <calculation align="left" id="Departure Expected Time" returns="text" returnsFormat="text">
-                <caption><value text="Dep. Expected Time"></value></caption>
-                <query>
-                    <queryDetail>
-                        <value variable="DepartureExpectedTime"></value>
                     </queryDetail>
                 </query>
             </calculation>
