@@ -58,6 +58,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private bool FAttributesGridEntered = false;
 
         private ABatchRow FBatchRow = null;
+        private decimal FDebitAmount = 0;
+        private decimal FCreditAmount = 0;
 
         /// <summary>
         /// load the transactions into the grid
@@ -385,18 +387,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FPreviouslySelectedDetailRow != null)
             {
-                ANewRow.AccountCode = FPreviouslySelectedDetailRow.AccountCode;
                 ANewRow.CostCentreCode = FPreviouslySelectedDetailRow.CostCentreCode;
-
-                if (ARefJournalRow.JournalCreditTotal != ARefJournalRow.JournalDebitTotal)
-                {
-                    ANewRow.Reference = FPreviouslySelectedDetailRow.Reference;
-                    ANewRow.Narrative = FPreviouslySelectedDetailRow.Narrative;
-                    ANewRow.TransactionDate = FPreviouslySelectedDetailRow.TransactionDate;
-                    decimal Difference = ARefJournalRow.JournalDebitTotal - ARefJournalRow.JournalCreditTotal;
-                    ANewRow.TransactionAmount = Math.Abs(Difference);
-                    ANewRow.DebitCreditIndicator = Difference < 0;
-                }
             }
 
             FPreviouslySelectedDetailRow = (GLBatchTDSATransactionRow)ANewRow;
@@ -801,6 +792,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             int counter = FPetraUtilsObject.VerificationResultCollection.Count;
 
+            if (sender.GetType() == typeof(TTxtCurrencyTextBox))
+            {
+                CheckAmounts((TTxtCurrencyTextBox)sender);
+            }
+
             ControlValidatedHandler(sender, e);
 
             //If no errors
@@ -810,26 +806,52 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void CheckAmounts(System.Object sender, EventArgs e)
+        private void CheckAmounts(TTxtCurrencyTextBox ATxtCurrencyTextBox)
         {
-            TTxtCurrencyTextBox currBox = (TTxtCurrencyTextBox)sender;
+            bool debitChanged = (ATxtCurrencyTextBox.Name == "txtDebitAmount");
 
-            bool isDebit = (currBox.Name == "txtDebitAmount");
+            if (!debitChanged && (ATxtCurrencyTextBox.Name != "txtCreditAmount"))
+            {
+                return;
+            }
+            else if ((ATxtCurrencyTextBox.NumberValueDecimal == null) || !ATxtCurrencyTextBox.NumberValueDecimal.HasValue)
+            {
+                ATxtCurrencyTextBox.NumberValueDecimal = 0;
+            }
+
             decimal valDebit = txtDebitAmount.NumberValueDecimal.Value;
-            decimal valCredit = txtDebitAmount.NumberValueDecimal.Value;
+            decimal valCredit = txtCreditAmount.NumberValueDecimal.Value;
 
-            if (isDebit && (valDebit > 0) && (valCredit > 0))
+            //If no changes then proceed no further
+            if (debitChanged && (FDebitAmount == valDebit))
+            {
+                return;
+            }
+            else if (!debitChanged && (FCreditAmount == valCredit))
+            {
+                return;
+            }
+
+            if (debitChanged && ((valDebit > 0) && (valCredit > 0)))
             {
                 txtCreditAmount.NumberValueDecimal = 0;
             }
-            else if (!isDebit && (valDebit > 0) && (valCredit > 0))
+            else if (!debitChanged && ((valDebit > 0) && (valCredit > 0)))
             {
                 txtDebitAmount.NumberValueDecimal = 0;
             }
-            else
+            else if (valDebit < 0)
             {
-                //Do nothing
+                txtDebitAmount.NumberValueDecimal = 0;
             }
+            else if (valCredit < 0)
+            {
+                txtCreditAmount.NumberValueDecimal = 0;
+            }
+
+            //Reset class variables
+            FDebitAmount = txtDebitAmount.NumberValueDecimal.Value;
+            FCreditAmount = txtCreditAmount.NumberValueDecimal.Value;
         }
 
         /// <summary>

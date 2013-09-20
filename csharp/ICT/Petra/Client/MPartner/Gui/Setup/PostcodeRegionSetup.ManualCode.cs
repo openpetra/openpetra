@@ -77,15 +77,27 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private void ShowDetailsManual(PPostcodeRegionRow ARow)
         {
             grdRanges.Columns.Clear();
-            grdRanges.AddTextColumn(Catalog.GetString("Range Name"), FMainDS.PPostcodeRegionRange.ColumnRange, 240);
+            grdRanges.AddTextColumn(Catalog.GetString("Range Name"), FMainDS.PPostcodeRegionRange.ColumnRange, 260);
             grdRanges.AddTextColumn(Catalog.GetString("From"), FMainDS.PPostcodeRegionRange.ColumnFrom, 140);
             grdRanges.AddTextColumn(Catalog.GetString("To"), FMainDS.PPostcodeRegionRange.ColumnTo, 140);
             grdRanges.Selection.EnableMultiSelection = true;
 
             DataView MyDataView = FMainDS.PPostcodeRegionRange.DefaultView;
-            MyDataView.RowFilter = PPostcodeRegionRangeTable.GetRegionDBName() + " = " + "'" + ARow.Region + "'";
             MyDataView.AllowNew = false;
-            MyDataView.Sort = "p_range_c ASC";
+
+            // do not apply these properties if the grid is empty
+            if (ARow != null)
+            {
+                MyDataView.RowFilter = PPostcodeRegionRangeTable.GetRegionDBName() + " = " + "'" + ARow.Region + "'";
+                MyDataView.Sort = "p_range_c ASC";
+
+                btnAdd.Enabled = true;
+            }
+            else
+            {
+                btnAdd.Enabled = false;
+            }
+
             grdRanges.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
 
             MyDataView = FMainDS.PPostcodeRegion.DefaultView;
@@ -243,7 +255,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         {
             DeletePPostcodeRegionRange();
 
-            if (grdRanges.Rows.Count == 0)
+            if (grdRanges.Rows.Count < 2)
             {
                 btnRemove.Enabled = false;
             }
