@@ -202,7 +202,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             ParseHashTotal(ARow);
-            
+
             TSharedFinanceValidation_GL.ValidateGLBatchManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
 
@@ -579,11 +579,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     FPreviouslySelectedDetailRow.BeginEdit();
+
                     //Ensure validation passes
                     if (FPreviouslySelectedDetailRow.BatchDescription.Length == 0)
                     {
-                    	txtDetailBatchDescription.Text = " ";
+                        txtDetailBatchDescription.Text = " ";
                     }
+
                     FPreviouslySelectedDetailRow.BatchCreditTotal = 0;
                     FPreviouslySelectedDetailRow.BatchDebitTotal = 0;
                     FPreviouslySelectedDetailRow.BatchControlTotal = 0;

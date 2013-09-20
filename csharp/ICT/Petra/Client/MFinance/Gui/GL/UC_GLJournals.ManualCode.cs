@@ -387,20 +387,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     FPreviouslySelectedDetailRow.BeginEdit();
                     FPreviouslySelectedDetailRow.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
-                    
+
                     //Ensure validation passes
                     if (FPreviouslySelectedDetailRow.JournalDescription.Length == 0)
                     {
-                    	txtDetailJournalDescription.Text = " ";
+                        txtDetailJournalDescription.Text = " ";
                     }
-                    
+
                     if (FPreviouslySelectedDetailRow.ExchangeRateToBase == 0)
                     {
-                    	txtDetailExchangeRateToBase.NumberValueDecimal = 1;
+                        txtDetailExchangeRateToBase.NumberValueDecimal = 1;
                     }
-                    
+
                     ABatchRow batchrow = ((TFrmGLBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
-                    
+
                     batchrow.BatchCreditTotal -= FPreviouslySelectedDetailRow.JournalCreditTotal;
                     batchrow.BatchDebitTotal -= FPreviouslySelectedDetailRow.JournalDebitTotal;
 
