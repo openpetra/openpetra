@@ -96,9 +96,35 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRecord(System.Object sender, EventArgs e)
         {
-            if (this.CreateNewPmPersonSkill())
+            // show error message and so not allow a new record to be created if PtSkillCategory and/or PtSkillLevel are empty
+            if ((cmbSkillCode.Count > 0) && (cmbSkillLevel.Count > 0))
             {
-                cmbSkillCode.Focus();
+                if (this.CreateNewPmPersonSkill())
+                {
+                    cmbSkillCode.Focus();
+                }
+            }
+            else
+            {
+                string ErrorMessage;
+
+                if ((cmbSkillCode.Count == 0) && (cmbSkillLevel.Count == 0))
+                {
+                    ErrorMessage = String.Format(
+                        "'Skill Categories' and 'Skill Levels' in Personnel -> Setup must both contain at least one record in order to record a Person's Skills.");
+                }
+                else if (cmbSkillCode.Count == 0)
+                {
+                    ErrorMessage = String.Format(
+                        "'Skill Categories' in Personnel -> Setup must contain at least one record in order to record a Person's Skills.");
+                }
+                else
+                {
+                    ErrorMessage = String.Format(
+                        "'Skill Levels' in Personnel -> Setup must contain at least one record in order to record a Person's Skills.");
+                }
+
+                MessageBox.Show(ErrorMessage, String.Format("Person Skills"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
