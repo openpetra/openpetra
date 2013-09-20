@@ -42,6 +42,9 @@ namespace Ict.Tools.CodeGeneration
             /// <summary>Only NOT NULL checks</summary>
             advsNotNullChecks,
 
+            /// <summary>Only Date checks</summary>
+            advsDateChecks,
+
             /// <summary>Only String Lenght Checks</summary>
             advsStringLengthChecks,
 
@@ -123,6 +126,18 @@ namespace Ict.Tools.CodeGeneration
                 else if (ADBField.bNotNull)
                 {
                     AReasonForAutomValidation = "must have a value (NOT NULL constraint)";
+
+                    return true;
+                }
+            }
+
+            // Date checks
+            if ((AScope == TAutomDataValidationScope.advsDateChecks)
+                || (AScope == TAutomDataValidationScope.advsAll))
+            {
+                if (ADBField.strType == "date")
+                {
+                    AReasonForAutomValidation = "must represent a valid date";
 
                     return true;
                 }

@@ -51,6 +51,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
         {
             ProcessTemplate snippet = Template.GetSnippet("TABLEVALIDATION");
             string ReasonForAutomValidation;
+            bool CheckForEmptyDateGenerated;
 
             snippet.SetCodeletComment("TABLE_DESCRIPTION", currentTable.strDescription);
             snippet.SetCodelet("TABLENAME", currentTable.strDotNetName);
@@ -59,6 +60,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
             {
                 ProcessTemplate columnTemplate;
 
+                CheckForEmptyDateGenerated = false;
+                
                 // NOT NULL checks
                 if (TDataValidation.GenerateAutoValidationCodeForDBTableField(col, TDataValidation.TAutomDataValidationScope.advsNotNullChecks,
                         out ReasonForAutomValidation))
@@ -79,6 +82,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                         validateColumnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
 
                         columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);
+                        CheckForEmptyDateGenerated = true;
                     }
                     else
                     {
@@ -91,6 +95,26 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' " + ReasonForAutomValidation);
 
                     snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
+                }
+
+                if (!CheckForEmptyDateGenerated) 
+                {
+                    // Date checks
+                    if (TDataValidation.GenerateAutoValidationCodeForDBTableField(col, TDataValidation.TAutomDataValidationScope.advsDateChecks,
+                            out ReasonForAutomValidation))
+                    {
+                        columnTemplate = Template.GetSnippet("VALIDATECOLUMN2");
+                        columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
+    
+                        ProcessTemplate validateColumnTemplate = Template.GetSnippet("CHECKVALIDDATE");
+                        validateColumnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
+                        validateColumnTemplate.SetCodelet("COLUMNLENGTH", (col.iCharLength * 2).ToString());
+    
+                        columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);
+                        columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' " + ReasonForAutomValidation);
+    
+                        snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
+                    }                    
                 }
 
                 // String Length checks
