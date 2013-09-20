@@ -448,7 +448,6 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.DateOfIssue, ValidationControlsData.ValidationControlLabel,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
-
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
@@ -927,6 +926,13 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             }
 
             // 'Charged Field' must be a Partner of Class 'UNIT'
+            //
+            // HOWEVER, 'null' is a perfectly valid value for 'Charged Field' (according to WolfgangB).  
+            // If it is null then we must not call TSharedPartnerValidation_Partner.IsValidUNITPartner 
+            // as the attempt to retrieve 'ARow.StFieldCharged' would result in
+            // 'System.Data.StrongTypingException("Error: DB null", null)'!!!        
+            if (!ARow.IsStFieldChargedNull()) 
+            {
             ValidationColumn = ARow.Table.Columns[PmShortTermApplicationTable.ColumnStFieldChargedId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
@@ -941,6 +947,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 // ResultText!
                 AVerificationResultCollection.Remove(ValidationColumn);
                 AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+                }                
             }
 
             // 'Departure Date' must be later than 'Arrival Date'
