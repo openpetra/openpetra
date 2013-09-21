@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -361,7 +361,6 @@ namespace Ict.Petra.Server.MReporting
 
                 debit_credit_indicator = Parameters.Get("debit_credit_indicator", column, Depth).ToBool();
                 display = true;
-                newRow = null;
                 newRow = Results.AddRow(masterRow,
                     LineId,
                     display,

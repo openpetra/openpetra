@@ -326,9 +326,16 @@ namespace Ict.Petra.Shared.MReporting
             TVariant[] descr,
             TVariant[] column)
         {
-            TResult element;
+            foreach (TResult existingElement in results)
+            {
+                if (existingElement.code == code)
+                {
+                    throw new Exception("TResult.AddRow: duplicate row codes! there is already a row with code " +
+                        code);
+                }
+            }
 
-            element = new TResult(masterRow, childRow, display, depth, code, condition, debit_credit_indicator, header, descr, column);
+            TResult element = new TResult(masterRow, childRow, display, depth, code, condition, debit_credit_indicator, header, descr, column);
             results.Add(element);
             return element;
         }
@@ -934,6 +941,8 @@ namespace Ict.Petra.Shared.MReporting
                     useIndented = true;
                 }
             }
+
+            MaxDisplayColumns = AParameters.Get("MaxDisplayColumns").ToInt32();
 
             for (i = 0; i < MaxDisplayColumns; i++)
             {

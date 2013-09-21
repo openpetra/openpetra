@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -268,6 +268,11 @@ namespace Ict.Petra.Shared.MReporting
 
             foreach (TParameter element in parameters)
             {
+                if (element.paramType == ReportingConsts.CALCULATIONPARAMETERS)
+                {
+                    continue;
+                }
+
                 row = ReturnValue.NewRow();
                 row["name"] = element.name;
                 row["column"] = (System.Object)element.column;
@@ -1063,7 +1068,7 @@ namespace Ict.Petra.Shared.MReporting
         /// <param name="AWithDebugInfo">should internal values be printed, only true for Testing
         /// </param>
         /// <returns>void</returns>
-        public void Save(String filename, bool AWithDebugInfo)
+        public void Save(String filename, bool AWithDebugInfo = false)
         {
             XmlTextWriter textWriter;
 
@@ -1122,15 +1127,6 @@ namespace Ict.Petra.Shared.MReporting
 
             // close writer
             textWriter.Close();
-        }
-
-        /// <summary>
-        /// overload for save; no debug information will be added
-        /// </summary>
-        /// <param name="filename"></param>
-        public void Save(String filename)
-        {
-            Save(filename, false);
         }
 
         /// <summary>

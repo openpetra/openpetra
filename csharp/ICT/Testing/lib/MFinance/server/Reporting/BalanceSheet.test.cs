@@ -24,6 +24,7 @@
 using System;
 using System.Data;
 using System.Configuration;
+using System.Collections.Generic;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using System.IO;
@@ -34,6 +35,7 @@ using Ict.Testing.NUnitTools;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.DB;
+using Ict.Common.IO;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Server.App.Core;
@@ -100,6 +102,9 @@ namespace Tests.MFinance.Server.Reporting
             TParameterList Parameters = new TParameterList();
             string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/BalanceSheetDetail.xml";
             string resultFile = testFile.Replace(".xml", ".Results.xml");
+            string parameterFile = testFile.Replace(".xml", ".Parameters.xml");
+            string resultExpectedFile = testFile.Replace(".xml", ".Results.Expected.xml");
+            string parameterExpectedFile = testFile.Replace(".xml", ".Parameters.Expected.xml");
             Parameters.Load(testFile);
             Parameters.Add("param_ledger_number_i", FLedgerNumber);
             Parameters.Add("param_start_period_i", 1);
@@ -114,11 +119,38 @@ namespace Tests.MFinance.Server.Reporting
 
             Assert.IsTrue(ReportGenerator.GetSuccess(), "Report did not run successfully");
             TResultList Results = new TResultList();
-            TLogging.Log(ReportGenerator.GetResult().Rows.Count.ToString());
+
             Results.LoadFromDataTable(ReportGenerator.GetResult());
             Parameters.LoadFromDataTable(ReportGenerator.GetParameter());
 
-            Results.WriteCSV(Parameters, resultFile, ",", true, false);
+            if (!Parameters.Exists("ControlSource", ReportingConsts.HEADERPAGELEFT1, -1, eParameterFit.eBestFit))
+            {
+                Parameters.Add("ControlSource", new TVariant("Left1"), ReportingConsts.HEADERPAGELEFT1);
+            }
+
+            if (!Parameters.Exists("ControlSource", ReportingConsts.HEADERPAGELEFT2, -1, eParameterFit.eBestFit))
+            {
+                Parameters.Add("ControlSource", new TVariant("Left2"), ReportingConsts.HEADERPAGELEFT2);
+            }
+
+            Parameters.Save(parameterFile, false);
+            Results.WriteCSV(Parameters, resultFile, ",", false, false);
+
+            SortedList <string, string>ToReplace = new SortedList <string, string>();
+            ToReplace.Add("{ledgernumber}", FLedgerNumber.ToString());
+            Assert.True(TTextFile.SameContent(resultFile, resultExpectedFile, true, ToReplace),
+                "the file " + resultFile + " should have the same content as " + resultExpectedFile);
+
+            ToReplace = new SortedList <string, string>();
+            ToReplace.Add("{ledgernumber}", FLedgerNumber.ToString());
+            int currentYear = DateTime.Today.Year;
+            ToReplace.Add("{ThisYear}", currentYear.ToString());
+            ToReplace.Add("{PreviousYear}", (currentYear - 1).ToString());
+            Assert.True(TTextFile.SameContent(parameterFile, parameterExpectedFile, true, ToReplace),
+                "the file " + parameterFile + " should have the same content as " + parameterExpectedFile);
+
+            File.Delete(parameterFile);
+            File.Delete(resultFile);
         }
     }
 }

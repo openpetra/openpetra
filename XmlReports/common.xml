@@ -29,9 +29,10 @@
 			</calculation>
 
 			<calculation id="Select DetailAccountChildren"
-					returns="line_a_account_code_c, line_a_account_alias_c, account_code_short_desc, debit_credit_indicator"
+					returns="line_a_account_code_c"
 					returnsFormat="row">
 				<query>
+					<!-- getAllAccountDescendants will set the variables line_a_account_alias_c, account_code_short_desc, debit_credit_indicator -->
 					<queryDetail><value function="getAllAccountDescendants({{param_ledger_number_i}}, {line_a_account_code_c}, {{param_account_hierarchy_c}})"/>
 					</queryDetail>
 				</query>

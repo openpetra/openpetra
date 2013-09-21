@@ -1,0 +1,8 @@
+id,Left1,Left2,Actual 2013,Actual 2012,Actual End of 2012,Variance Actual 2013   to Actual 2012,Variance % Actual 2013   to Actual 2012
+6000,CASH,Cash & Bank,"100,00","0,00","0,00","100,00",0
+CASH,,,"100,00","0,00","0,00","100,00",0
+ASSETS,Total Assets,,"100,00","0,00","0,00","100,00",0
+LIABS,Total Liabilities,,"0,00","0,00","0,00","0,00",0
+PL,,,"100,00","0,00","0,00","100,00",0
+RET EARN,Equity,,"100,00","0,00","0,00","100,00",0
+[{ledgernumber}],TOTAL ASSETS - LIABILITIES,,"100,00","0,00","0,00","100,00",0

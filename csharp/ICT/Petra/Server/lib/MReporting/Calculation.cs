@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1259,13 +1259,13 @@ namespace Ict.Petra.Server.MReporting
                         // the parameters are stored first
                         Parameters.Add(strName, StringHelper.GetNextCSV(
                                 ref strSql).Trim(), -1, Depth + 1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
+                    }
 
-                        if (strLowerLevel != String.Empty)
-                        {
-                            TRptDataCalcLevel rptDataCalcLevel = new TRptDataCalcLevel(this);
-                            rptDataCalcLevel.Depth++;
-                            rptDataCalcLevel.Calculate(CurrentReport.GetLevel(strLowerLevel), masterRow);
-                        }
+                    if (strLowerLevel != String.Empty)
+                    {
+                        TRptDataCalcLevel rptDataCalcLevel = new TRptDataCalcLevel(this);
+                        rptDataCalcLevel.Depth++;
+                        rptDataCalcLevel.Calculate(CurrentReport.GetLevel(strLowerLevel), masterRow);
                     }
                 }
             }

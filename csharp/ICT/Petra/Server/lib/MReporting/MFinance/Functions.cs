@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -582,7 +582,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             }
             else
             {
-                situation.GetParameters().Add("glm_sequence_i", new TVariant(), col, -1);
+                situation.GetParameters().Add("glm_sequence_i", new TVariant(), col, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
                 situation.GetParameters().Add("debit_credit_indicator", new TVariant(), col, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
             }
 
@@ -721,13 +721,9 @@ namespace Ict.Petra.Server.MReporting.MFinance
             while (accountChildren.Length > 0)
             {
                 accountChild = StringHelper.GetNextCSV(ref accountChildren);
-                StringHelper.GetNextCSV(ref accountChildren);
-
-                // alias
-                StringHelper.GetNextCSV(ref accountChildren);
 
                 // accountChildAccountDescr
-                childDebitCreditIndicator = (StringHelper.GetNextCSV(ref accountChildren).ToUpper() == "TRUE");
+                childDebitCreditIndicator = situation.GetParameters().Get("debit_credit_indicator", situation.GetColumn()).ToBool();
                 subAccountPeriod = new TFinancialPeriod(
                     situation.GetDatabaseConnection(), pv_period_number_i, pv_year_i, periodParent.diffPeriod, periodParent.FCurrentFinancialYear,
                     periodParent.FCurrentPeriod, periodParent.FNumberAccountingPeriods, periodParent.FNumberForwardingPeriods,
@@ -1046,13 +1042,8 @@ namespace Ict.Petra.Server.MReporting.MFinance
             while (accountChildren.Length > 0)
             {
                 accountChild = StringHelper.GetNextCSV(ref accountChildren);
-                StringHelper.GetNextCSV(ref accountChildren);
 
-                // alias
-                StringHelper.GetNextCSV(ref accountChildren);
-
-                // accountChildAccountDescr
-                childDebitCreditIndicator = (StringHelper.GetNextCSV(ref accountChildren).ToUpper() == "TRUE");
+                childDebitCreditIndicator = situation.GetParameters().Get("debit_credit_indicator", situation.GetColumn()).ToBool();
                 subAccountStartPeriod = new TFinancialPeriod(
                     situation.GetDatabaseConnection(), pv_period_number_i, pv_year_i, StartPeriodParent.diffPeriod,
                     StartPeriodParent.FCurrentFinancialYear, StartPeriodParent.FCurrentPeriod, StartPeriodParent.FNumberAccountingPeriods,
@@ -1248,13 +1239,6 @@ namespace Ict.Petra.Server.MReporting.MFinance
                         ReturnValue =
                             StringHelper.AddCSV(ReturnValue,
                                 Convert.ToString(row["line_a_account_code_c"]));
-                        ReturnValue =
-                            StringHelper.AddCSV(ReturnValue,
-                                Convert.ToString(row["line_a_account_alias_c"]));
-                        ReturnValue =
-                            StringHelper.AddCSV(ReturnValue,
-                                Convert.ToString(row["account_code_short_desc"]));
-                        ReturnValue = StringHelper.AddCSV(ReturnValue, Convert.ToString(row["debit_credit_indicator"]));
                     }
                 }
             }
