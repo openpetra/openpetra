@@ -352,7 +352,18 @@ namespace Ict.Tools.DevelopersAssistant
                 return;                                                                         // no change
             }
 
-            if (!File.Exists(dlg.SelectedPath + @"\OpenPetra.Build"))
+            string tryPath = dlg.SelectedPath;
+            bool bValidChoice = true;
+            if (!File.Exists(tryPath + @"\OpenPetra.Build"))
+            {
+                tryPath = Path.Combine(tryPath, "trunk");
+                if (!File.Exists(tryPath + @"\OpenPetra.Build"))
+                {
+                    bValidChoice = false;
+                }
+            }
+
+            if (!bValidChoice)
             {
                 MessageBox.Show(
                     "The location that you have chosen is not a recognised OpenPetra source folder.  The file 'OpenPetra.Build' could not be found.",
@@ -362,7 +373,7 @@ namespace Ict.Tools.DevelopersAssistant
                 return;
             }
 
-            txtBranchLocation.Text = dlg.SelectedPath;
+            txtBranchLocation.Text = tryPath;
 
             SetBranchDependencies();
             SetEnabledStates();
@@ -1404,8 +1415,7 @@ namespace Ict.Tools.DevelopersAssistant
             OutputText.AppendText(OutputText.OutputStream.Both, String.Format("~~~~~~~~~~~~~~~~ {0} ...\r\n", task.LogText));
             dlg.Refresh();
 
-            if (NantExecutor.RunGenerateWinform(txtBranchLocation.Text, txtYAMLPath.Text, chkCompileWinform.Checked,
-                    chkStartClientAfterGenerateWinform.Checked))
+            if (NantExecutor.RunGenerateWinform(txtBranchLocation.Text, txtYAMLPath.Text))
             {
                 // It ran successfully - let us check the output ...
                 OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\csharp\ICT\Petra\Client\opda.txt", ref NumFailures, ref NumWarnings);
@@ -1415,7 +1425,42 @@ namespace Ict.Tools.DevelopersAssistant
                 NumFailures++;
             }
 
+            if ((NumFailures == 0) && ((NumWarnings == 0) || !chkTreatWarningsAsErrors.Checked) && chkCompileWinform.Checked)
+            {
+                RunNestedTask(NantTask.TaskItem.quickCompileClient, dlg, ref NumFailures, ref NumWarnings);
+
+                if ((NumFailures == 0) && ((NumWarnings == 0) || !chkTreatWarningsAsErrors.Checked) && chkStartClientAfterGenerateWinform.Checked)
+                {
+                    RunNestedTask(NantTask.TaskItem.startPetraClient, dlg, ref NumFailures, ref NumWarnings);
+                }
+            }
+
             dlg.Close();
+        }
+
+        /// <summary>
+        /// Method that will run a task inside the context of another task
+        /// </summary>
+        /// <param name="NestedTask">Task to run</param>
+        /// <param name="SplashDialog">Reference to the splash dialog that the parent task launched</param>
+        /// <param name="NumFailures">Ongoing number of failures</param>
+        /// <param name="NumWarnings">Ongoing number of errors/warnings</param>
+        private void RunNestedTask(NantTask.TaskItem NestedTask, ProgressDialog SplashDialog, ref int NumFailures, ref int NumWarnings)
+        {
+            NantTask nestedTask = new NantTask(NestedTask);
+            OutputText.AppendText(OutputText.OutputStream.Both, String.Format("~~~~~~~~~~~~~~~~ {0} ...\r\n", nestedTask.LogText));
+            SplashDialog.lblStatus.Text = nestedTask.StatusText;
+            SplashDialog.lblStatus.Refresh();
+
+            if (NantExecutor.RunGenericNantTarget(txtBranchLocation.Text, nestedTask.TargetName))
+            {
+                // It ran successfully - let us check the output ...
+                OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\opda.txt", ref NumFailures, ref NumWarnings);
+            }
+            else
+            {
+                NumFailures++;
+            }
         }
 
         // Generic method to run previewWinform because it is in a different disk location to all the rest and takes additional parameters.
