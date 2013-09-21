@@ -111,6 +111,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             // setup the logging to go to the FAsyncExecProgress.ProgressInformation
             TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusBar));
             Thread TheThread = new Thread(new ThreadStart(Run));
+            TheThread.CurrentCulture = Thread.CurrentThread.CurrentCulture;
             TheThread.Start();
         }
 

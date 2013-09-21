@@ -110,6 +110,8 @@ namespace Tests.MFinance.Server.Reporting
                 "4200", StandardCostCentre, "Expense Example", "Debit", MFinanceConstants.IS_DEBIT, 20);
             commonAccountingTool.CloseSaveAndPost();
 
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
+
             TReportGeneratorUIConnector ReportGenerator = new TReportGeneratorUIConnector();
             TParameterList Parameters = new TParameterList();
             string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/AccountDetail.xml";
@@ -147,7 +149,6 @@ namespace Tests.MFinance.Server.Reporting
                 Parameters.Add("ControlSource", new TVariant("Left2"), ReportingConsts.HEADERPAGELEFT2);
             }
 
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
             Parameters.Save(parameterFile, false);
             Results.WriteCSV(Parameters, resultFile, ",", false, false);
 

@@ -63,16 +63,16 @@
   <Parameter id="ControlSource" column="113" value="eString:Description" />
   <Parameter id="ColumnAlign" column="0" value="eString:right" />
   <Parameter id="ColumnCaption" column="0" value="eString:text:Actual {ThisYear}" />
-  <Parameter id="ColumnCaption2" column="0" value="eString:text:Januar" />
+  <Parameter id="ColumnCaption2" column="0" value="eString:text:January" />
   <Parameter id="ColumnCaption3" column="0" value="eString:text:" />
   <Parameter id="ColumnAlign" column="1" value="eString:right" />
   <Parameter id="ColumnCaption" column="1" value="eString:text:Budget {ThisYear}" />
-  <Parameter id="ColumnCaption2" column="1" value="eString:text:Januar" />
+  <Parameter id="ColumnCaption2" column="1" value="eString:text:January" />
   <Parameter id="ColumnCaption3" column="1" value="eString:text:" />
   <Parameter id="ColumnAlign" column="2" value="eString:right" />
   <Parameter id="ColumnCaption" column="2" value="eString:text:Variance %" />
-  <Parameter id="ColumnCaption2" column="2" value="eString:text:Actual {ThisYear} Januar " />
-  <Parameter id="ColumnCaption3" column="2" value="eString:text:to Budget {ThisYear} Januar " />
+  <Parameter id="ColumnCaption2" column="2" value="eString:text:Actual {ThisYear} January " />
+  <Parameter id="ColumnCaption3" column="2" value="eString:text:to Budget {ThisYear} January " />
   <Parameter id="ColumnShortCaption" column="2" value="eString:text:Variance %" />
   <Parameter id="ColumnShortCaption2" column="2" value="eString:text:Actual {ThisYear}" />
   <Parameter id="ColumnShortCaption3" column="2" value="eString:text:to Budget {ThisYear}" />
