@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using System.Configuration;
 using System.Collections.Generic;
+using System.Globalization;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 using System.IO;
@@ -144,6 +145,7 @@ namespace Tests.MFinance.Server.Reporting
                 Parameters.Add("ControlSource", new TVariant("Left2"), ReportingConsts.HEADERPAGELEFT2);
             }
 
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
             Parameters.Save(parameterFile, false);
             Results.WriteCSV(Parameters, resultFile, ",", false, false);
 

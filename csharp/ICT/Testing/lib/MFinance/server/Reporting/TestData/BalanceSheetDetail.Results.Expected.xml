@@ -1,11 +1,11 @@
 id,Left1,Left2,Actual {ThisYear},Actual {PreviousYear},Actual End of {PreviousYear},Variance Actual {ThisYear}   to Actual {PreviousYear},Variance % Actual {ThisYear}   to Actual {PreviousYear}
-6000,CASH,Petty Cash,"80,00","0,00","0,00","80,00",0
-6200,CASH,Bank Accounts Operational,"40,00","0,00","0,00","40,00",0
-CASH,,,"120,00","0,00","0,00","120,00",0
-ASSETS,Total Assets,,"120,00","0,00","0,00","120,00",0
-LIABS,Total Liabilities,,"0,00","0,00","0,00","0,00",0
-9700,9700S,Brought Forward 1st January,"40,00","0,00","0,00","40,00",0
-9700S,,,"40,00","0,00","0,00","40,00",0
-PL,,,"80,00","0,00","0,00","80,00",0
-RET EARN,Equity,,"120,00","0,00","0,00","120,00",0
-[{ledgernumber}],TOTAL ASSETS - LIABILITIES,,"120,00","0,00","0,00","120,00",0
+6000,CASH,Petty Cash,80.00,0.00,0.00,80.00,0
+6200,CASH,Bank Accounts Operational,40.00,0.00,0.00,40.00,0
+CASH,,,120.00,0.00,0.00,120.00,0
+ASSETS,Total Assets,,120.00,0.00,0.00,120.00,0
+LIABS,Total Liabilities,,0.00,0.00,0.00,0.00,0
+9700,9700S,Brought Forward 1st January,40.00,0.00,0.00,40.00,0
+9700S,,,40.00,0.00,0.00,40.00,0
+PL,,,80.00,0.00,0.00,80.00,0
+RET EARN,Equity,,120.00,0.00,0.00,120.00,0
+[{ledgernumber}],TOTAL ASSETS - LIABILITIES,,120.00,0.00,0.00,120.00,0
