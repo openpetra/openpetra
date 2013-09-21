@@ -330,8 +330,10 @@ namespace Ict.Petra.Shared.MReporting
             {
                 if (existingElement.code == code)
                 {
-                    throw new Exception("TResult.AddRow: duplicate row codes! there is already a row with code " +
+                    TLogging.Log("Warning: TResult.AddRow: duplicate row codes! there is already a row with code " +
                         code);
+                    // throw new Exception("TResult.AddRow: duplicate row codes! there is already a row with code " +
+                    //    code);
                 }
             }
 

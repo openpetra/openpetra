@@ -1,0 +1,25 @@
+id,Account,Description,Actual {ThisYear} Januar,Budget {ThisYear} Januar,Variance % Actual {ThisYear} Januar  to Budget {ThisYear} Januar,Actual {ThisYear} YTD,Budget {ThisYear} YTD,Variance % Actual {ThisYear} YTD  to Budget {ThisYear} YTD,Whole Year Budget {ThisYear}
+{ledgernumber}00/4200,4200,Administration: General,20.00,0.00,0,20.00,0.00,0,0.00
+{ledgernumber}00/4200S,,,20.00,0.00,0,20.00,0.00,0,0.00
+{ledgernumber}00/EXP,Total Expenditure,,20.00,0.00,0,20.00,0.00,0,0.00
+{ledgernumber}00/0100S,0100S,Support Gifts: local,100.00,0.00,0,100.00,0.00,0,0.00
+{ledgernumber}00/GIFT,,,100.00,0.00,0,100.00,0.00,0,0.00
+{ledgernumber}00/INC,Total Income,,100.00,0.00,0,100.00,0.00,0,0.00
+{ledgernumber}00,TOTAL SURPLUS / (DEFICIT),{Income minus expenses},80.00,0.00,0,80.00,0.00,0,0.00
+{ledgernumber}00S/4200,4200,Administration: General,20.00,0.00,0,20.00,0.00,0,0.00
+{ledgernumber}00S/4200S,,,20.00,0.00,0,20.00,0.00,0,0.00
+{ledgernumber}00S/EXP,Total Expenditure,,20.00,0.00,0,20.00,0.00,0,0.00
+{ledgernumber}00S/0100S,0100S,Support Gifts: local,100.00,0.00,0,100.00,0.00,0,0.00
+{ledgernumber}00S/GIFT,,,100.00,0.00,0,100.00,0.00,0,0.00
+{ledgernumber}00S/INC,Total Income,,100.00,0.00,0,100.00,0.00,0,0.00
+{ledgernumber}00S,TOTAL SURPLUS / (DEFICIT),{Income minus expenses},80.00,0.00,0,80.00,0.00,0,0.00
+ILT/EXP,Total Expenditure,,0.00,0.00,0,0.00,0.00,0,0.00
+ILT/INC,Total Income,,0.00,0.00,0,0.00,0.00,0,0.00
+ILT,TOTAL SURPLUS / (DEFICIT),{Income minus expenses},0.00,0.00,0,0.00,0.00,0,0.00
+[{ledgernumber}]/4200,4200,Administration: General,20.00,0.00,0,20.00,0.00,0,0.00
+[{ledgernumber}]/4200S,,,20.00,0.00,0,20.00,0.00,0,0.00
+[{ledgernumber}]/EXP,Total Expenditure,,20.00,0.00,0,20.00,0.00,0,0.00
+[{ledgernumber}]/0100S,0100S,Support Gifts: local,100.00,0.00,0,100.00,0.00,0,0.00
+[{ledgernumber}]/GIFT,,,100.00,0.00,0,100.00,0.00,0,0.00
+[{ledgernumber}]/INC,Total Income,,100.00,0.00,0,100.00,0.00,0,0.00
+[{ledgernumber}],TOTAL SURPLUS / (DEFICIT),{Income minus expenses},80.00,0.00,0,80.00,0.00,0,0.00

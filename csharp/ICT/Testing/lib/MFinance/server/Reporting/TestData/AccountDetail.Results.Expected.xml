@@ -1,0 +1,29 @@
+id,CostCentre/Account,Left2,Debits,Credits,,Start Balance,End Balance
+0100/{ledgernumber}00/Credit,31/01/{ThisYear},Credit,,-100.00,,Gift Example,,
+0100/{ledgernumber}00/Detail,Sub Total:,,0.00,-100.00,,,0.00,100.00
+0100/{ledgernumber}00/Net Balance,Net Balance:,,,-100.00,,,,
+"0100",Account Total:,,0.00,-100.00,,,0.00,100.00
+0100/Net Balance,Net Balance:,,,-100.00,,,,
+4200/{ledgernumber}00/Debit,31/01/{ThisYear},Debit,20.00,,,Expense Example,,
+4200/{ledgernumber}00/Detail,Sub Total:,,20.00,0.00,,,0.00,-20.00
+4200/{ledgernumber}00/Net Balance,Net Balance:,,20.00,,,,,
+4200,Account Total:,,20.00,0.00,,,0.00,-20.00
+4200/Net Balance,Net Balance:,,20.00,,,,,
+6000/{ledgernumber}00/Debit,31/01/{ThisYear},Debit,100.00,,,Gift Example,,
+6000/{ledgernumber}00/Credit,31/01/{ThisYear},Credit,,-20.00,,Expense Example,,
+6000/{ledgernumber}00/Detail,Sub Total:,,100.00,-20.00,,,0.00,-80.00
+6000/{ledgernumber}00/Net Balance,Net Balance:,,80.00,,,,,
+6000,Account Total:,,100.00,-20.00,,,0.00,-80.00
+6000/Net Balance,Net Balance:,,80.00,,,,,
+6200/{ledgernumber}00/Debit,31/01/{ThisYear},Debit,40.00,,,Start Balance,,
+6200/{ledgernumber}00/Detail,Sub Total:,,40.00,0.00,,,0.00,-40.00
+6200/{ledgernumber}00/Net Balance,Net Balance:,,40.00,,,,,
+6200,Account Total:,,40.00,0.00,,,0.00,-40.00
+6200/Net Balance,Net Balance:,,40.00,,,,,
+9700/{ledgernumber}00/Credit,31/01/{ThisYear},Credit,,-40.00,,Start Balance,,
+9700/{ledgernumber}00/Detail,Sub Total:,,0.00,-40.00,,,0.00,40.00
+9700/{ledgernumber}00/Net Balance,Net Balance:,,,-40.00,,,,
+9700,Account Total:,,0.00,-40.00,,,0.00,40.00
+9700/Net Balance,Net Balance:,,,-40.00,,,,
+GrandTotal,Grand Total:,,160.00,-160.00,,,0.00,0.00
+GrandTotalNetBalance,Net Balance:,,,0.00,,,,

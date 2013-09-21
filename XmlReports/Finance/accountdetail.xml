@@ -334,7 +334,7 @@
       </level>
       <!-- main -->
 
-      <level name="GrandTotalNetBalance" identification="">
+      <level name="GrandTotalNetBalance" identification="GrandTotalNetBalance">
         <header>
         </header>
         <detail>
@@ -355,7 +355,7 @@
       </level>
       <!-- GrandTotalNetBalance -->
 
-      <level name="GrandTotal" identification="">
+      <level name="GrandTotal" identification="GrandTotal">
         <header>
         </header>
         <detail>
@@ -396,7 +396,7 @@
       </level>
       <!-- GrandTotal -->
 
-      <level name="AccountDetailNetBalance" identification=""
+      <level name="AccountDetailNetBalance" identification="line_a_account_code_c, Net Balance"
           condition="HasChildColumns">
         <header>
         </header>
@@ -446,7 +446,7 @@
       </level>
       <!-- AccountDetail -->
 
-      <level name="CostCentreDetailNetBalance" identification="line_a_cost_centre_code_c"
+      <level name="CostCentreDetailNetBalance" identification="line_a_cost_centre_code_c, Net Balance"
           condition="HasChildColumns">
         <header>
         </header>
@@ -468,7 +468,7 @@
       <!-- CostCentreDetailNetBalance -->
 
 
-      <level name="CostCentreDetail" identification="line_a_cost_centre_code_c"
+      <level name="CostCentreDetail" identification="line_a_cost_centre_code_c, Detail"
           condition="HasChildRows">
         <header>
         </header>
@@ -497,7 +497,7 @@
       </level>
       <!-- CostCentreDetail -->
 
-      <level name="DetailNetBalance" identification="line_a_account_code_c, line_a_cost_centre_code_c"
+      <level name="DetailNetBalance" identification="line_a_account_code_c, line_a_cost_centre_code_c, Net Balance"
           condition = "HasChildColumns">
         <header>
         </header>
@@ -560,7 +560,7 @@
       </level>
       <!-- AnalysisTypeDetailNetBalance -->
 
-      <level name="AccountCostCentreDetail" identification="line_a_account_code_c, line_a_cost_centre_code_c"
+      <level name="AccountCostCentreDetail" identification="line_a_account_code_c, line_a_cost_centre_code_c, Detail"
         condition="HasColumns">
         <header>
           <field whichfield="header 0" pos="0 cm" width="3cm" align="left">
@@ -684,7 +684,7 @@
       </level>
       <!-- TransactionDetail -->
 
-      <level name="TransactionDetail2" identification="line_a_account_code_c, line_a_cost_centre_code_c, a_reference_c">
+      <level name="TransactionDetail2" identification="line_a_account_code_c, line_a_cost_centre_code_c, a_reference_c, Detail2">
         <header>
         </header>
         <detail>

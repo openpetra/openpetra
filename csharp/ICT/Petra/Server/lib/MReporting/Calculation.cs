@@ -185,7 +185,16 @@ namespace Ict.Petra.Server.MReporting
                     strId += '/';
                 }
 
-                strId += Parameters.Get(StringHelper.GetNextCSV(ref strIdentification).Trim(), -1, Depth).ToString(false);
+                string strTemp = StringHelper.GetNextCSV(ref strIdentification).Trim();
+
+                if (Parameters.Exists(strTemp, -1, Depth))
+                {
+                    strId += Parameters.Get(strTemp, -1, Depth).ToString(false);
+                }
+                else
+                {
+                    strId += strTemp;
+                }
             }
 
             this.LineId = thisRunningCode;
