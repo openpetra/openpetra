@@ -91,11 +91,22 @@ namespace Tests.MFinance.Server.Reporting
             commonAccountingTool.JournalDescription = "Test Data accounts";
             string strAccountBank = "6000";
             string StandardCostCentre = TGLTransactionWebConnector.GetStandardCostCentre(FLedgerNumber);
+
+            // Accounting of a start balance
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                "6200", StandardCostCentre, "Start Balance", "Debit", MFinanceConstants.IS_DEBIT, 40);
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                "9700", StandardCostCentre, "Start Balance", "Credit", MFinanceConstants.IS_CREDIT, 40);
             // Accounting of some gifts ...
             commonAccountingTool.AddBaseCurrencyTransaction(
                 strAccountBank, StandardCostCentre, "Gift Example", "Debit", MFinanceConstants.IS_DEBIT, 100);
             commonAccountingTool.AddBaseCurrencyTransaction(
                 "0100", StandardCostCentre, "Gift Example", "Credit", MFinanceConstants.IS_CREDIT, 100);
+            // Accounting of some expense ...
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                strAccountBank, StandardCostCentre, "Expense Example", "Credit", MFinanceConstants.IS_CREDIT, 20);
+            commonAccountingTool.AddBaseCurrencyTransaction(
+                "4200", StandardCostCentre, "Expense Example", "Debit", MFinanceConstants.IS_DEBIT, 20);
             commonAccountingTool.CloseSaveAndPost();
 
             TReportGeneratorUIConnector ReportGenerator = new TReportGeneratorUIConnector();
@@ -138,15 +149,14 @@ namespace Tests.MFinance.Server.Reporting
 
             SortedList <string, string>ToReplace = new SortedList <string, string>();
             ToReplace.Add("{ledgernumber}", FLedgerNumber.ToString());
-            Assert.True(TTextFile.SameContent(resultFile, resultExpectedFile, true, ToReplace),
-                "the file " + resultFile + " should have the same content as " + resultExpectedFile);
-
-            ToReplace = new SortedList <string, string>();
-            ToReplace.Add("{ledgernumber}", FLedgerNumber.ToString());
             int currentYear = DateTime.Today.Year;
             ToReplace.Add("{ThisYear}", currentYear.ToString());
             ToReplace.Add("{PreviousYear}", (currentYear - 1).ToString());
-            Assert.True(TTextFile.SameContent(parameterFile, parameterExpectedFile, true, ToReplace),
+
+            Assert.True(TTextFile.SameContent(resultFile, resultExpectedFile, true, ToReplace, true),
+                "the file " + resultFile + " should have the same content as " + resultExpectedFile);
+
+            Assert.True(TTextFile.SameContent(parameterFile, parameterExpectedFile, true, ToReplace, true),
                 "the file " + parameterFile + " should have the same content as " + parameterExpectedFile);
 
             File.Delete(parameterFile);

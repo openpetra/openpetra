@@ -1,8 +1,11 @@
-id,Left1,Left2,Actual 2013,Actual 2012,Actual End of 2012,Variance Actual 2013   to Actual 2012,Variance % Actual 2013   to Actual 2012
-6000,CASH,Cash & Bank,"100,00","0,00","0,00","100,00",0
-CASH,,,"100,00","0,00","0,00","100,00",0
-ASSETS,Total Assets,,"100,00","0,00","0,00","100,00",0
+id,Left1,Left2,Actual {ThisYear},Actual {PreviousYear},Actual End of {PreviousYear},Variance Actual {ThisYear}   to Actual {PreviousYear},Variance % Actual {ThisYear}   to Actual {PreviousYear}
+6000,CASH,Petty Cash,"80,00","0,00","0,00","80,00",0
+6200,CASH,Bank Accounts Operational,"40,00","0,00","0,00","40,00",0
+CASH,,,"120,00","0,00","0,00","120,00",0
+ASSETS,Total Assets,,"120,00","0,00","0,00","120,00",0
 LIABS,Total Liabilities,,"0,00","0,00","0,00","0,00",0
-PL,,,"100,00","0,00","0,00","100,00",0
-RET EARN,Equity,,"100,00","0,00","0,00","100,00",0
-[{ledgernumber}],TOTAL ASSETS - LIABILITIES,,"100,00","0,00","0,00","100,00",0
+9700,9700S,Brought Forward 1st January,"40,00","0,00","0,00","40,00",0
+9700S,,,"40,00","0,00","0,00","40,00",0
+PL,,,"80,00","0,00","0,00","80,00",0
+RET EARN,Equity,,"120,00","0,00","0,00","120,00",0
+[{ledgernumber}],TOTAL ASSETS - LIABILITIES,,"120,00","0,00","0,00","120,00",0

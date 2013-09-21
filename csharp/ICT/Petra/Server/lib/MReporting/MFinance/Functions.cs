@@ -722,8 +722,12 @@ namespace Ict.Petra.Server.MReporting.MFinance
             {
                 accountChild = StringHelper.GetNextCSV(ref accountChildren);
 
+                StringHelper.GetNextCSV(ref accountChildren);
+                // alias
+                StringHelper.GetNextCSV(ref accountChildren);
+
                 // accountChildAccountDescr
-                childDebitCreditIndicator = situation.GetParameters().Get("debit_credit_indicator", situation.GetColumn()).ToBool();
+                childDebitCreditIndicator = (StringHelper.GetNextCSV(ref accountChildren).ToUpper() == "TRUE");
                 subAccountPeriod = new TFinancialPeriod(
                     situation.GetDatabaseConnection(), pv_period_number_i, pv_year_i, periodParent.diffPeriod, periodParent.FCurrentFinancialYear,
                     periodParent.FCurrentPeriod, periodParent.FNumberAccountingPeriods, periodParent.FNumberForwardingPeriods,
@@ -1043,7 +1047,12 @@ namespace Ict.Petra.Server.MReporting.MFinance
             {
                 accountChild = StringHelper.GetNextCSV(ref accountChildren);
 
-                childDebitCreditIndicator = situation.GetParameters().Get("debit_credit_indicator", situation.GetColumn()).ToBool();
+                StringHelper.GetNextCSV(ref accountChildren);
+                // alias
+                StringHelper.GetNextCSV(ref accountChildren);
+
+                // accountChildAccountDescr
+                childDebitCreditIndicator = (StringHelper.GetNextCSV(ref accountChildren).ToUpper() == "TRUE");
                 subAccountStartPeriod = new TFinancialPeriod(
                     situation.GetDatabaseConnection(), pv_period_number_i, pv_year_i, StartPeriodParent.diffPeriod,
                     StartPeriodParent.FCurrentFinancialYear, StartPeriodParent.FCurrentPeriod, StartPeriodParent.FNumberAccountingPeriods,
@@ -1239,6 +1248,13 @@ namespace Ict.Petra.Server.MReporting.MFinance
                         ReturnValue =
                             StringHelper.AddCSV(ReturnValue,
                                 Convert.ToString(row["line_a_account_code_c"]));
+                        ReturnValue =
+                            StringHelper.AddCSV(ReturnValue,
+                                Convert.ToString(row["line_a_account_alias_c"]));
+                        ReturnValue =
+                            StringHelper.AddCSV(ReturnValue,
+                                Convert.ToString(row["account_code_short_desc"]));
+                        ReturnValue = StringHelper.AddCSV(ReturnValue, Convert.ToString(row["debit_credit_indicator"]));
                     }
                 }
             }
