@@ -161,7 +161,7 @@ namespace Ict.Common.Controls
 
         private static ColourInformation FColourInfo;
         private static bool FColourInfoSetup = false;
- 
+
         /// <summary>
         /// Used to refresh grid colours after they have been changed in user preferences.
         /// </summary>
