@@ -106,7 +106,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (((CostCentreNodeDetails)AChild.Tag).CostCentreRow.SystemCostCentreFlag)
             {
-                MessageBox.Show(Catalog.GetString("This is a System Cost Code and cannot be moved."), Catalog.GetString("Re-assign Cost Code"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show(Catalog.GetString("This is a System Cost Code and cannot be moved."), 
+                    Catalog.GetString("Re-assign Cost Code"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                ShowNodeSelected(null);
                 return;
             }
 

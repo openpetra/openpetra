@@ -39,6 +39,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Client.App.Core;
 using System.Drawing;
+using Ict.Petra.Shared.MFinance.Validation;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -53,6 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private Int32 FLedgerNumber;
         private string FSelectedHierarchy = "STANDARD";
+        private bool FIAmUpdating;
 
         // The routine ChangeAccountCodeValue() needs the old value of
         // txtDetailAccountCode and the new actual value.
@@ -245,6 +247,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if ((AChild != null) && (ANewParent != null))
             {
+                if (((AccountNodeDetails)AChild.Tag).AccountRow.SystemAccountFlag)
+                {
+                    MessageBox.Show(String.Format(Catalog.GetString("{0} is a System Account and cannot be moved."), 
+                            ((AccountNodeDetails)AChild.Tag).AccountRow.AccountCode),
+                        Catalog.GetString("Re-assign Account"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    ShowNodeSelected(null);
+                    return;
+                }
+
                 String PrevParent = AChild.Parent.Text;
                 String NewParentAccountCode = ((AccountNodeDetails)ANewParent.Tag).AccountRow.AccountCode;
                 TreeNode NewNode = (TreeNode)AChild.Clone();
@@ -265,6 +276,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void RunOnceOnActivationManual()
         {
+            FPetraUtilsObject.UnhookControl(txtDetailAccountCode, true); // I don't want changes in this edit box to cause SetChangedFlag - I'll set it myself.
+            txtDetailAccountCode.TextChanged += new EventHandler(txtDetailAccountCode_TextChanged);
+            chkDetailForeignCurrencyFlag.CheckedChanged += new EventHandler(chkDetailForeignCurrencyFlag_CheckedChanged);
+            FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnHierarchySaved);
+            FIAmUpdating = false;
+
             // AlanP March 2013:  Use a try/catch block because nUnit testing on this screen does not support Drag/Drop in multi-threaded model
             // It is easier to do this than to configure all the different test execution methods to use STA
             try
@@ -279,6 +296,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // ex.Message is: DragDrop registration did not succeed.
                 // Inner exception is: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made.
             }
+        }
+
+        void chkDetailForeignCurrencyFlag_CheckedChanged(object sender, EventArgs e)
+        {
+            cmbDetailForeignCurrencyCode.Enabled = chkDetailForeignCurrencyFlag.Checked;
+            String CurrencyLabel = (cmbDetailForeignCurrencyCode.Enabled ? GetSelectedDetailRowManual().ForeignCurrencyCode : "");
+            cmbDetailForeignCurrencyCode.SetSelectedString(CurrencyLabel, -1);
         }
 
         private void AutoFillDescriptions(object sender, EventArgs e)
@@ -418,6 +442,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FSelectedAccountRow = (GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(
                         new object[] { FLedgerNumber, CurrentReportingAccountCode });
                     GetDetailsFromControls(FSelectedAccountRow);
+                    if (!ValidateAllData(true, true))
+                    {
+                        treeViewCancelEventArgs.Cancel = true;
+                    }
                 }
             }
             catch (System.Data.ConstraintException)
@@ -467,10 +495,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             AccountNodeDetails NodeDetails = (AccountNodeDetails)FCurrentNode.Tag;
             // update detail panel
+            FIAmUpdating = true;
             ShowDetails((GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(new object[] {
                         FLedgerNumber,
                         NodeDetails.DetailRow.ReportingAccountCode
                     }));
+            FIAmUpdating = false;
 
             GetAccountCodeAttributes(ref NodeDetails);
             tbbAddNewAccount.Enabled = (NodeDetails.CanHaveChildren.HasValue ? NodeDetails.CanHaveChildren.Value : false);
@@ -485,10 +515,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void ValidateDataDetailsManual(GLSetupTDSAAccountRow ARow)
         {
-        }
+            TVerificationResultCollection VerificationResultCollection =  FPetraUtilsObject.VerificationResultCollection;
 
-        private void ValidateDataManual(GLSetupTDSAAccountRow ARow)
-        {
+            TSharedFinanceValidation_Setup.ValidateAccountDetailManual(
+                this, 
+                ARow, 
+                ref VerificationResultCollection, 
+                FPetraUtilsObject.ValidationControlsDict);
         }
 
         private void ShowDetailsManual(GLSetupTDSAAccountRow ARow)
@@ -507,13 +540,51 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ucoAccountAnalysisAttributes.Enabled = ARow.PostingStatus;
                 ucoAccountAnalysisAttributes.AccountCode = ARow.AccountCode;
 
-                chkDetailForeignCurrencyFlag.Enabled = ARow.PostingStatus;
+                chkDetailForeignCurrencyFlag.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag);
+                cmbDetailForeignCurrencyCode.Enabled = !ARow.SystemAccountFlag;
+                chkDetailAccountActiveFlag.Enabled = !ARow.SystemAccountFlag;
 
-                // I may actually allow the user to change the primary key!
-                // But only if the selected record is new, or they have not made any other changes.
-                bool ICanEditAccountCode = ((AccountNodeDetails)FCurrentNode.Tag).IsNew || !FPetraUtilsObject.HasChanges;
-                SetPrimaryKeyReadOnly(!ICanEditAccountCode);
+                // I allow the user to attempt to change the primary key,
+                // but if the selected record is not new, AND they have made any other changes,
+                // the txtDetailAccountCode_TextChanged method will disallow any change.
+                SetPrimaryKeyReadOnly(false);
+                btnRename.Visible = false;
             }
+        }
+
+        void txtDetailAccountCode_TextChanged(object sender, EventArgs e)
+        {
+            if (FIAmUpdating)
+                return;
+
+            AccountNodeDetails nodeDetails = (AccountNodeDetails)FCurrentNode.Tag;
+            if (nodeDetails.AccountRow.SystemAccountFlag)
+            {
+                FIAmUpdating = true;
+                txtDetailAccountCode.Text = strOldDetailAccountCode;
+                FIAmUpdating = false;
+                MessageBox.Show(Catalog.GetString("System Account Code cannot be changed."),
+                    Catalog.GetString("Rename Account"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+
+            bool ICanEditAccountCode = (nodeDetails.IsNew || !FPetraUtilsObject.HasChanges);
+            btnRename.Visible = (strOldDetailAccountCode != "") && (strOldDetailAccountCode != txtDetailAccountCode.Text) && ICanEditAccountCode;
+            if (!nodeDetails.IsNew && FPetraUtilsObject.HasChanges) // The user wants to change an Account code, but I can't allow it.
+            {
+                FIAmUpdating = true;
+                txtDetailAccountCode.Text = strOldDetailAccountCode;
+                FIAmUpdating = false;
+                MessageBox.Show(Catalog.GetString("Account Codes cannot be changed while there are other unsaved changes.\r\nSave first, then rename the Account."),
+                    Catalog.GetString("Rename Account"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            }
+        }
+
+        private void OnHierarchySaved(System.Object sender, TDataSavedEventArgs e)
+        {
+            SetPrimaryKeyReadOnly(false);
         }
 
         private void AddNewAccount(Object sender, EventArgs e)
@@ -724,19 +795,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         private void GetDataFromControlsManual()
         {
-            // TODO: report to (drag/drop)
-            // TODO: report order (drag/drop)
-            // TODO: posting/summary (new/delete)
-
-            // If txtDetailAccountCode is not readonly it may have been changed.
-            // Here it shall be tested ...
-            if (!txtDetailAccountCode.ReadOnly)
+            if (FCurrentNode != null)
             {
-                if ((ChangeAccountCodeValue())
-                    && (FCurrentNode != null))
-                {
-                    GetDetailsFromControls(GetSelectedDetailRowManual());
-                }
+                GetDetailsFromControls(GetSelectedDetailRowManual());
             }
         }
 
@@ -764,9 +825,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// ChangeAccountCodeValue shall be invoked if txtDetailAccountCode has been changed and
-        /// the field is left. This is normally done by the
-        /// ChangeAccountCodeValue(object sender, EventArgs e).
+        /// ChangeAccountCodeValue is invoked when txtDetailAccountCode is left
+        /// by ChangeAccountCodeValue(object sender, EventArgs e) (from YAML).
         ///
         /// But if the user invokes an other event - i.e. FileSave the FileSave-Event runs first.
         /// </summary>
@@ -781,6 +841,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 if (strNewDetailAccountCode != strOldDetailAccountCode)
                 {
+
                     if (strOldDetailAccountCode.IndexOf(Catalog.GetString("NewAccount")) < 0) // If they're just changing this from the initial value, don't show warning.
                     {
                         if (MessageBox.Show(String.Format(Catalog.GetString(
@@ -858,7 +919,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                             // If this code was previously in the DB, I need to assume that there may be transactions posted to it.
                             // There's a server call I need to use, and after the call I need to re-load this page.
-                            // (No other changes will be lost, because the txtDetailAccountCode will have been ReadOnly if there were already changes.)
+                            // (No other changes will be lost, because the txtDetailAccountCode_TextChanged would 
+                            // have disallowed the change if there were already changes.)
                             bool Success = TRemote.MFinance.Setup.WebConnectors.RenameAccountCode(strOldDetailAccountCode,
                                 strNewDetailAccountCode,
                                 FLedgerNumber,
@@ -866,6 +928,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                             if (Success)
                             {
+                                FIAmUpdating = true;
                                 FMainDS.Clear();
                                 FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));
                                 strOldDetailAccountCode = "";
@@ -874,6 +937,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 ShowDetailsManual(null);
                                 FStatus = "";
                                 txtStatus.Text = FStatus;
+                                FIAmUpdating = false;
                                 FPetraUtilsObject.HasChanges = false;
                                 FPetraUtilsObject.DisableSaveButton();
 
@@ -885,6 +949,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Rename Account"));
                             }
                         }
+                        btnRename.Visible = false;
                     } // if changeAccepted
 
                 } // if changed
