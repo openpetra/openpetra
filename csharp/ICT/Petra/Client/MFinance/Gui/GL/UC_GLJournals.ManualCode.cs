@@ -387,7 +387,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     FPreviouslySelectedDetailRow.BeginEdit();
                     FPreviouslySelectedDetailRow.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
+
+                    //Ensure validation passes
+                    if (FPreviouslySelectedDetailRow.JournalDescription.Length == 0)
+                    {
+                        txtDetailJournalDescription.Text = " ";
+                    }
+
+                    if (FPreviouslySelectedDetailRow.ExchangeRateToBase == 0)
+                    {
+                        txtDetailExchangeRateToBase.NumberValueDecimal = 1;
+                    }
+
                     ABatchRow batchrow = ((TFrmGLBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
+
                     batchrow.BatchCreditTotal -= FPreviouslySelectedDetailRow.JournalCreditTotal;
                     batchrow.BatchDebitTotal -= FPreviouslySelectedDetailRow.JournalDebitTotal;
 
@@ -463,7 +476,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void RefreshCurrencyAndExchangeRate(bool AFromUserAction = false)
+        private void RefreshCurrencyAndExchangeRate()
         {
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
             txtDetailExchangeRateToBase.BackColor =
@@ -473,11 +486,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals();
 
             btnGetSetExchangeRate.Enabled = (FPreviouslySelectedDetailRow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
-
-            if (AFromUserAction && btnGetSetExchangeRate.Enabled)
-            {
-                btnGetSetExchangeRate.Focus();
-            }
         }
 
         private void ResetCurrencyExchangeRate(object sender, EventArgs e)
@@ -494,7 +502,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FPreviouslySelectedDetailRow.TransactionCurrency,
                     batchrow.DateEffective);
 
-                RefreshCurrencyAndExchangeRate(true);
+                RefreshCurrencyAndExchangeRate();
             }
         }
 
