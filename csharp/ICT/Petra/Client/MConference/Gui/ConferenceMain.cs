@@ -38,7 +38,7 @@ namespace Ict.Petra.Client.MConference.Gui
     {
         /// PartnerKey for selected conference to be set from outside
         public static Int64 FPartnerKey;
-        
+
         private static string ERRORMESSAGE = String.Format("A conference must be selected before the setup screens can be used.");
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Ict.Petra.Client.MConference.Gui
             else
             {
                 MessageBox.Show(ERRORMESSAGE, String.Format("Early and Late Registrations"),
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -70,7 +70,7 @@ namespace Ict.Petra.Client.MConference.Gui
         {
             if (FPartnerKey > 0)
             {
-               TSearchCriteria[] Search = new TSearchCriteria[1];
+                TSearchCriteria[] Search = new TSearchCriteria[1];
                 Search[0] = new TSearchCriteria(PcConferenceCostTable.GetConferenceKeyDBName(), FPartnerKey);
 
                 TFrmConferenceStandardCostSetup.FPartnerKey = FPartnerKey;
@@ -81,7 +81,7 @@ namespace Ict.Petra.Client.MConference.Gui
             else
             {
                 MessageBox.Show(ERRORMESSAGE, String.Format("Conference Standard Costs"),
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -104,7 +104,7 @@ namespace Ict.Petra.Client.MConference.Gui
             else
             {
                 MessageBox.Show(ERRORMESSAGE, String.Format("Child Discounts"),
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -126,7 +126,7 @@ namespace Ict.Petra.Client.MConference.Gui
             else
             {
                 MessageBox.Show(ERRORMESSAGE, String.Format("Outreach Supplements"),
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -145,7 +145,7 @@ namespace Ict.Petra.Client.MConference.Gui
             else
             {
                 MessageBox.Show(ERRORMESSAGE, String.Format("Master Settings"),
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 

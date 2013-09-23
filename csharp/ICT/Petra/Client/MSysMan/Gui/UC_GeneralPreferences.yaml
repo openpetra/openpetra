@@ -18,7 +18,7 @@ RootNode:
         grpNumberOfPartners:
             Controls: [pnlNumberOfPartners]
             Width: 430
-            Height: 80
+            Height: 65
         pnlLanguage:
             Controls:
                 Row0: [cmbLanguage]
@@ -32,13 +32,15 @@ RootNode:
             Controls: 
                 Row0: [lblPartnerNumber, nudNumberOfPartners]
             Width: 410
-            Height: 60
+            Height: 45
             #Padding: 0, 5, 0, 5
 
         cmbLanguage: 
             Width: 204
             ActionClick: Language_Click
-        cmbCulture: {Width=204}
+        cmbCulture:
+            Width: 204
+            ActionClick: Language_Click
         lblLanguageNotFound: {Text="Language not found?"}
         lblLanguageNotFound2: 
             Text: "If your language is not available or the translation needs improving, please consider helping. See:"

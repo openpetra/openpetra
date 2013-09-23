@@ -1000,7 +1000,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     }
                     else
                     {
-                        periodValues[i - 1] = (currentPeriodAmount - priorPeriodAmount) / priorPeriodAmount * 100;
+                        if (priorPeriodAmount == 0)
+                        {
+                            periodValues[i - 1] = 0;
+                        }
+                        else
+                        {
+                            periodValues[i - 1] = (currentPeriodAmount - priorPeriodAmount) / priorPeriodAmount * 100;
+                        }
                     }
 
                     priorPeriodAmount = currentPeriodAmount;

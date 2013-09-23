@@ -66,11 +66,11 @@ OpenPetra:
                         PartnerByCommitment: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Commitment, ActionClick=TPersonnelMain.PartnerByCommitmentExtract}
                         PartnerByField: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Field, ActionClick=TPersonnelMain.PartnerByFieldExtract}
                     GenerateFinanceExtracts: {Label=Generate Finance Extract}
-                        RecipientByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Recipient by Field, ActionClick=TFinanceMain.RecipientByFieldExtract}
-                        DonorByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Field, ActionClick=TFinanceMain.DonorByFieldExtract}
-                        DonorByMotivation: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Motivation, ActionClick=TFinanceMain.DonorByMotivationExtract}
-                        DonorByAmount: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Amount, ActionClick=TFinanceMain.DonorByAmountExtract}
-                        DonorByMiscellaneous: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Miscellaneous, ActionClick=TFinanceMain.DonorByMiscellaneousExtract}
+                        RecipientByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Recipient by Field, ActionClick=TFinanceMain.RecipientByFieldExtractCrossLedger}
+                        DonorByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Field, ActionClick=TFinanceMain.DonorByFieldExtractCrossLedger}
+                        DonorByMotivation: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Motivation, ActionClick=TFinanceMain.DonorByMotivationExtractCrossLedger}
+                        DonorByAmount: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Amount, ActionClick=TFinanceMain.DonorByAmountExtractCrossLedger}
+                        DonorByMiscellaneous: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Miscellaneous, ActionClick=TFinanceMain.DonorByMiscellaneousExtractCrossLedger}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
                     PartnerReports:
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
@@ -169,6 +169,13 @@ OpenPetra:
                         FieldLeaderGiftSummary-2: {ActionOpenScreen=TFrmFieldLeaderGiftSummary_2}
                         TotalGiftsThroughField: {ActionOpenScreen=TFrmTotalGiftsThroughField}
                         OneYearMonthlyGiving: {ActionOpenScreen=TFrmOneYearMonthlyGiving}
+                    #Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts}
+                        #ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
+                        #RecipientByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Recipient by Field, ActionClick=TFinanceMain.RecipientByFieldExtract}
+                        #DonorByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Field, ActionClick=TFinanceMain.DonorByFieldExtract}
+                        #DonorByMotivation: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Motivation, ActionClick=TFinanceMain.DonorByMotivationExtract}
+                        #DonorByAmount: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Amount, ActionClick=TFinanceMain.DonorByAmountExtract}
+                        #DonorByMiscellaneous: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Miscellaneous, ActionClick=TFinanceMain.DonorByMiscellaneousExtract}
                 AccountsPayable: {Namespace=Ict.Petra.Client.MFinance.Gui.AP, DontShowNestedTasksAsLinks=true}
                     AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
@@ -223,13 +230,6 @@ OpenPetra:
                         IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
                         IncomeExpenseStatementMultiPeriod: {Label=Multi Period Statement, ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
                         IncomeExpenseStatementMultiLedger: {Label=Multi Ledger Statement, ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
-                    Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts}
-                        ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
-                        RecipientByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Recipient by Field, ActionClick=TFinanceMain.RecipientByFieldExtract}
-                        DonorByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Field, ActionClick=TFinanceMain.DonorByFieldExtract}
-                        DonorByMotivation: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Motivation, ActionClick=TFinanceMain.DonorByMotivationExtract}
-                        DonorByAmount: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Amount, ActionClick=TFinanceMain.DonorByAmountExtract}
-                        DonorByMiscellaneous: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Miscellaneous, ActionClick=TFinanceMain.DonorByMiscellaneousExtract}
                 #Reports:
                 Setup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     GeneralLedgerSetup:
@@ -391,7 +391,7 @@ OpenPetra:
                         OutreachReport: {ActionOpenScreen=TFrmOutreachReport}
                 Setup: {Namespace=Ict.Petra.Client.MConference.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     CurrentConference:
-                        MasterSettings: {Label=Conference Master Settings, Description=Maintain Conference Master Settings, ActionOpenScreen=TConferenceMain.MasterSettingsForSelectedConference}
+                        MasterSettings: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Conference Master Settings, Description=Maintain Conference Master Settings, ActionClick=TConferenceMain.MasterSettingsForSelectedConference}
                         ChildDiscount: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Child Discounts, Description=Maintain Child Discounts, ActionClick=TConferenceMain.ChildDiscountsForSelectedConference}
                         ConferenceStandardCost: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Conference Standard Costs, Description=Maintain Conference Standard Costs, ActionClick=TConferenceMain.StandardCostsForSelectedConference}
                         EarlyLateRegistration: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Early and Late Registrations, Description=Maintain Early and Late Registrations, ActionClick=TConferenceMain.EarlyLateRegistrationsForSelectedConference}
@@ -416,12 +416,11 @@ OpenPetra:
                         TopDonorReport: {ActionOpenScreen=TFrmTopDonorReport}
         Settings: {Icon=settings.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
             Main: {SkipThisLevel=true}
-                Safety: {DontShowNestedTasksAsLinks=true}
-                    SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
                 Preferences: {DontShowNestedTasksAsLinks=true}
                     UserPreferences:
-                        SetLanguageSettings: {Description="Switch to another language or culture settings", ActionOpenScreen=TFrmMaintainLanguageCulture}
                         SetUserPreferences: {Description="Maintain User Preferences", ActionOpenScreen=TFrmUserPreferences}
+                Safety: {DontShowNestedTasksAsLinks=true}
+                    SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
                 Export: {DontShowNestedTasksAsLinks=true, PermissionsRequired=FINANCE-1,PERSONNEL}
                     ExportDataToIntranet: {Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExport}
 

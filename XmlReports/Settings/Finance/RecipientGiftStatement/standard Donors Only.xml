@@ -20,7 +20,7 @@
   <Parameter id="ColumnWidth" column="3" value="eInteger:3" />
   <Parameter id="param_ytd" column="3" value="eString:false" />
   <Parameter id="param_calculation" column="4" value="eString:Country" />
-  <Parameter id="ColumnWidth" column="4" value="eDecimal:4609434218613702656" />
+  <Parameter id="ColumnWidth" column="4" value="eDecimal:4612811918334230528" />
   <Parameter id="param_ytd" column="4" value="eString:false" />
   <Parameter id="param_calculation" column="5" value="eString:Donor Key" />
   <Parameter id="param_ytd" column="5" value="eString:false" />

@@ -9,7 +9,7 @@ RootNode:
 
     Controls:
         pnlContent:
-            Controls: [tabGiftBatch, pnlDialogButtons]
+            Controls: [tabPreferences, pnlDialogButtons]
             Dock: Fill
         pnlDialogButtons:
             Controls: [pnlRightButtons, pnlLeftButtons]
@@ -25,7 +25,7 @@ RootNode:
             Dock: Right
             ControlsOrientation: horizontal
             Width: 150
-        tabGiftBatch:
+        tabPreferences:
             Dock: Fill
             DragTabPageEnabled: false     
         tpgGeneral: 
@@ -34,14 +34,29 @@ RootNode:
         tpgAppearance: 
             Label: Appearance
             Controls: [ucoAppearance]
+        tpgPartner: 
+            Label: Partner
+            Controls: [ucoPartner]
+            Enabled: false
+        tpgFinance: 
+            Label: Finance
+            Controls: [ucoFinance]
+            Enabled: false
         ucoGeneral:
             Type: Ict.Petra.Client.MSysMan.Gui.TUC_GeneralPreferences
             Dock: Fill
         ucoAppearance:
             Type: Ict.Petra.Client.MSysMan.Gui.TUC_AppearancePreferences
             Dock: Fill
+        ucoPartner:
+            Type: Ict.Petra.Client.MSysMan.Gui.TUC_PartnerPreferences
+            Dock: Fill
+        ucoFinance:
+            Type: Ict.Petra.Client.MSysMan.Gui.TUC_FinancePreferences
+            Dock: Fill
  
         btnHelp:
+            ActionClick: BtnHelp_Click
         btnOK:
             ActionClick: BtnOK_Click
         btnCancel:

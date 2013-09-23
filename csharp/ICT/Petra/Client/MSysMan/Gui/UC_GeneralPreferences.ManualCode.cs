@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       timop, peters
 //
 // Copyright 2004-2013 by OM International
 //
@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             cmbLanguage.SetSelectedString(LanguageCode);
 
             llbLaunchpadLink.Click += LaunchpadLinkClicked;
-            
+
             // Get the number of recent partners that the user has set, if not found take 10 as default value.
             nudNumberOfPartners.Value = TUserDefaults.GetInt16Default(MSysManConstants.USERDEFAULT_NUMBEROFRECENTPARTNERS, 10);
             nudNumberOfPartners.Maximum = 10;
@@ -106,12 +106,12 @@ namespace Ict.Petra.Client.MSysMan.Gui
         public void SetPrimaryKeyReadOnly(bool AReadOnly)
         {
         }
-        
+
         private void Language_Click(Object Sender, EventArgs e)
         {
             LanguageChanged = true;
         }
-        
+
         /// <summary>
         /// Saves any changed preferences to s_user_defaults
         /// </summary>
@@ -135,9 +135,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
             }
-            
+
             TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_NUMBEROFRECENTPARTNERS, nudNumberOfPartners.Value);
-            //TRemote.MPartner.Partner.WebConnectors.AddRecentlyUsedPartner
         }
 
         private Boolean ViewMode
@@ -185,9 +184,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
         public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
         {
-            bool ReturnValue = true;
-            
-            return ReturnValue;
+            return true;
         }
     }
 }

@@ -8,14 +8,15 @@ RootNode:
 
     Controls:
         pnlContent:
-            Controls: [grpNewPartners]
-        grpNewPartners:
-            Controls: [pnlNewPartners]
+            Controls: [grpLedgers]
+        grpLedgers:
+            Controls: [pnlLedgers]
             Width: 430
-            Height: 80
-        pnlNewPartners:
-            Controls: [cmbAcquisitionCode, cmbLanguageCode]
-            Width: 410
             Height: 60
-        cmbAcquisitionCode: {List=AcquisitionCodeList}
-        cmbLanguageCode: {List=LanguageCodeList}
+        pnlLedgers:
+            Controls: [cmbDefaultLedger]
+            Width: 410
+            Height: 40
+        cmbDefaultLedger:
+            List: LedgerNameList
+            Width: 390

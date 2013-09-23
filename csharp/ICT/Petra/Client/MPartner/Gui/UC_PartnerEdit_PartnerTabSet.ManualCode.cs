@@ -385,15 +385,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TDynamicLoadableUserControls.dlucPartnerDetailsChurch:
 
-                    if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsChurch))
+                    // Special case: The Church UserControl needs to always be initialised in order for the Validation to work also when the Tab was never switched to
+                    // (for checking for empty DenominationList CacheableDataTable)!
+                    if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucPartnerDetailsChurch))
                     {
-                        TUC_PartnerDetails_Church UCPartnerDetailsChurch =
-                            (TUC_PartnerDetails_Church)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsChurch];
+                        SetupVariableUserControlForTabPagePartnerDetails();
+                    }
 
-                        if (!UCPartnerDetailsChurch.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
-                        {
-                            ReturnValue = false;
-                        }
+                    TUC_PartnerDetails_Church UCPartnerDetailsChurch =
+                        (TUC_PartnerDetails_Church)FTabSetup[TDynamicLoadableUserControls.dlucPartnerDetailsChurch];
+
+                    if (!UCPartnerDetailsChurch.ValidateAllData(AProcessAnyDataValidationErrors, AValidateSpecificControl))
+                    {
+                        ReturnValue = false;
                     }
 
                     break;

@@ -22,29 +22,32 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
+//using Ict.Petra.Client.App.PetraClient;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MSysMan;
 
 namespace Ict.Petra.Client.MSysMan.Gui
 {
     /// manual methods for the generated window
-    public partial class TUC_PartnerPreferences
+    public partial class TUC_FinancePreferences
     {
+        private int FCurrentLedger;
+
         private void InitializeManualCode()
         {
-            // Hide invalid Acquisition Codes
-            cmbAcquisitionCode.Filter = PAcquisitionTable.GetValidAcquisitionDBName() + " <> 0";
-
-            // set values for controls
-            cmbAcquisitionCode.SetSelectedString(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_ACQUISITIONCODE, "MAILROOM"));
-            cmbLanguageCode.SetSelectedString(TUserDefaults.GetStringDefault(MSysManConstants.PARTNER_LANGUAGECODE, "99"));
+            FCurrentLedger = TLstTasks.CurrentLedger;
+            cmbDefaultLedger.SetSelectedInt32(FCurrentLedger);
         }
 
         /// <summary>
@@ -59,10 +62,23 @@ namespace Ict.Petra.Client.MSysMan.Gui
         /// Saves any changed preferences to s_user_defaults
         /// </summary>
         /// <returns>void</returns>
-        public void SavePartnerTab()
+        public bool SaveFinanceTab()
         {
-            TUserDefaults.SetDefault(TUserDefaults.PARTNER_ACQUISITIONCODE, cmbAcquisitionCode.GetSelectedString());
-            TUserDefaults.SetDefault(TUserDefaults.PARTNER_LANGUAGECODE, cmbLanguageCode.GetSelectedString());
+            int NewLedger = cmbDefaultLedger.GetSelectedInt32();
+
+            if (FCurrentLedger != NewLedger)
+            {
+                TUserDefaults.SetDefault(TUserDefaults.FINANCE_DEFAULT_LEDGERNUMBER, NewLedger);
+
+                // change the current ledger in the main window
+                Form MainWindow = FPetraUtilsObject.GetCallerForm();
+                PropertyInfo CurrentLedgerProperty = MainWindow.GetType().GetProperty("CurrentLedger");
+                CurrentLedgerProperty.SetValue(MainWindow, NewLedger, null);
+
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>

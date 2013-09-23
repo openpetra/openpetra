@@ -52,6 +52,3 @@ RootNode:
             OptionalValues: [=ACCOMMODATION, CONFERENCE]
             Label: Apply discount to
         txtDetailDiscount: {Width=50, Format=PercentInteger}
-    Toolbar:
-        tbbNew:
-            Label: New Child Discount

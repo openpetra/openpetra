@@ -30,6 +30,7 @@ using Ict.Common.Verification;
 using Ict.Common.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Validation;
@@ -51,12 +52,12 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 FViewMode = value;
             }
         }
-        
+
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
             ucoGeneral.SaveGeneralTab();
-            
-            if (ucoAppearance.SaveAppearanceTab())
+
+            if (ucoAppearance.SaveAppearanceTab() | ucoFinance.SaveFinanceTab())
             {
                 Form MainWindow = FPetraUtilsObject.GetCallerForm();
                 MethodInfo method = MainWindow.GetType().GetMethod("LoadNavigationUI");
@@ -73,109 +74,39 @@ namespace Ict.Petra.Client.MSysMan.Gui
                     method.Invoke(MainWindow, null);
                 }
             }
-            
+
+            ucoPartner.SavePartnerTab();
+
             Close();
         }
 
         private void InitializeManualCode()
         {
             this.AcceptButton = btnOK;
-            
-            //tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
         }
 
         private void RunOnceOnActivationManual()
         {
             ucoGeneral.Focus();
             HookupAllInContainer(ucoGeneral);
-            
+
             mnuMain.Enabled = false;
             mnuMain.Visible = false;
-        }
 
-        /*/// <summary>
-        /// activate the transactions tab and load the gift transactions of the batch
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="ABatchStatus"></param>
-        /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
-        public void LoadTransactions(Int32 ALedgerNumber,
-            Int32 ABatchNumber,
-            string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED,
-            bool AFromTabClick = true)
-        {*/
-            
-//            try
-//            {
-//                //this.tpgTransactions.Enabled = true;
-//                FPetraUtilsObject.DisableDataChangedEvent();
-//                this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus, AFromTabClick);
-//            }
-//            finally
-//            {
-//                FPetraUtilsObject.EnableDataChangedEvent();
-//            }
-        //}
-
-        /*/// this window contains 2 tabs
-        public enum eGiftTabs
-        {
-            /// list of batches
-            Batches,
-
-            /// list of transactions
-            Transactions
-        };
-
-        void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
-        {
-            FPetraUtilsObject.VerificationResultCollection.Clear();
-        }
-
-        bool FChangeTabEventHasRun = false;
-
-        private void SelectTabManual(int ASelectedTabIndex)
-        {
-            if (ASelectedTabIndex == (int)eGiftTabs.Batches)
+            if (UserInfo.GUserInfo.IsInModule("PTNRUSER"))
             {
-                SelectTab(eGiftTabs.Batches);
+                tpgPartner.Enabled = true;
             }
-            else
+
+            if (UserInfo.GUserInfo.IsInModule("FINANCE-1"))
             {
-                SelectTab(eGiftTabs.Transactions);
+                tpgFinance.Enabled = true;
             }
         }
 
-        /// <summary>
-        /// Switch to the given tab
-        /// </summary>
-        /// <param name="ATab"></param>
-        /// <param name="AFromTabClick"></param>
-        public void SelectTab(eGiftTabs ATab, bool AFromTabClick = true)
+        private void BtnHelp_Click(System.Object sender, System.EventArgs e)
         {
-            if (FChangeTabEventHasRun && AFromTabClick)
-            {
-                FChangeTabEventHasRun = false;
-                return;
-            }
-            else
-            {
-                FChangeTabEventHasRun = !AFromTabClick;
-            }
-
-            if (ATab == eGiftTabs.Batches)
-            {
-                //If from grid double click then invoke tab changed event
-                if (!AFromTabClick)
-                {
-                    this.tabGiftBatch.SelectedTab = this.tpgGeneral;
-                }
-            }
-            else if (ATab == eGiftTabs.Transactions)
-            {
-                
-            }
-        }*/
+            // TODO TCommonMenuCommands.PetraHelp.AboutAndHelp(this);
+        }
     }
 }
