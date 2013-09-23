@@ -349,7 +349,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
                 txtSpecialRoleCampaignAccommodation.NumberValueInt = 0;
             }
 
-            // get data from discount text boxesfor PcDiscount
+            // get data from discount text boxes for PcDiscount
             string[, ] Discounts =
             {
                 { "ROLE", "CONFERENCE", "PRE", txtSpecialRolePreAttendance.Text.TrimEnd(new char[] { ' ', '%' }) },
@@ -369,6 +369,11 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             for (int i = 0; i < 12; i++)
             {
                 DataRow RowExists = FMainDS.PcDiscount.Rows.Find(new object[] { FPartnerKey, Discounts[i, 0], Discounts[i, 1], Discounts[i, 2], -1 });
+
+                if (Discounts[i, 3] == "")
+                {
+                    Discounts[i, 3] = "0";
+                }
 
                 // create new row if needed
                 if ((RowExists == null) && (Convert.ToInt32(Discounts[i, 3]) != 0))

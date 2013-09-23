@@ -117,9 +117,13 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.tbtPrint.Text = Catalog.GetString("Print");
             this.tbtPrint.ToolTipText = Catalog.GetString("Print the report");
             this.tbtExportCSV.Text = Catalog.GetString("Export to CSV");
-            this.tbtExportCSV.ToolTipText = Catalog.GetString("Export to CSV or directly into Excel, if" + " it is available");
+            this.tbtExportCSV.ToolTipText = Catalog.GetString("Export to CSV text file");
+            this.tbtExportExcelFile.Text = Catalog.GetString("Export to Excel");
+            this.tbtExportExcelFile.ToolTipText = Catalog.GetString("Export to Excel xlsx file or directly into Excel, if" + " it is available");
             this.tbtExportText.Text = Catalog.GetString("Save as Text file");
             this.tbtExportText.ToolTipText = Catalog.GetString("Save as a text file (e.g. for email)");
+            this.tbtSendEmail.Text = Catalog.GetString("Send Email");
+            this.tbtSendEmail.ToolTipText = Catalog.GetString("Send the Report as an Email with Excel attachment");
             this.tbtGenerateChart.Text = Catalog.GetString("Generate Chart");
             this.tbtGenerateChart.ToolTipText = Catalog.GetString(
                 "Generates a chart in Excel (only ava" + "ilable yet for few reports at the moment)");

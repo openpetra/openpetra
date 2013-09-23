@@ -233,7 +233,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtFamilyPartnerBox.Name = "txtFamilyPartnerBox";
             this.txtFamilyPartnerBox.PartnerClass = "FAMILY";
             this.txtFamilyPartnerBox.PreventFaultyLeaving = false;
-            this.txtFamilyPartnerBox.ReadOnly = false;
+            this.txtFamilyPartnerBox.ReadOnly = true;
             this.txtFamilyPartnerBox.ShowLabel = true;
             this.txtFamilyPartnerBox.Size = new System.Drawing.Size(245, 23);
             this.txtFamilyPartnerBox.TabIndex = 6;
