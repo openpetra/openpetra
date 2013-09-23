@@ -123,6 +123,8 @@ namespace Tests.MFinance.Server.Reporting
             Parameters.Add("param_ledger_number_i", FLedgerNumber);
             Parameters.Add("param_start_period_i", 1);
             Parameters.Add("param_end_period_i", 1);
+            Parameters.Add("param_costcentreoptions", "SelectedCostCentres");
+            Parameters.Add("param_cost_centre_codes", StandardCostCentre);
 
             ReportGenerator.Start(Parameters.ToDataTable());
 

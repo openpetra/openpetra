@@ -11,7 +11,7 @@
   <Parameter id="param_start_period_i" value="eInteger:1" />
   <Parameter id="param_end_period_i" value="eInteger:1" />
   <Parameter id="param_year_i" value="eInteger:0" />
-  <Parameter id="param_costcentreoptions" value="eString:AllActiveCostCentres" />
+  <Parameter id="param_costcentreoptions" value="eString:SelectedCostCentres" />
   <Parameter id="param_cost_centre_summary" value="eBoolean:false" />
   <Parameter id="param_cost_centre_breakdown" value="eBoolean:false" />
   <Parameter id="ExcludeInactiveCostCentres" value="eBoolean:false" />
@@ -40,6 +40,7 @@
   <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
   <Parameter id="param_ledger_number_i" value="eInteger:{ledgernumber}" />
   <Parameter id="param_quarter" value="eString:false" />
+  <Parameter id="param_cost_centre_codes" value="eInteger:{ledgernumber}00" />
   <Parameter id="ColumnFormat" column="0" value="eString:currency" />
   <Parameter id="ColumnFormat" column="1" value="eString:currency" />
   <Parameter id="ColumnFormat" column="2" value="eString:percentage" />
