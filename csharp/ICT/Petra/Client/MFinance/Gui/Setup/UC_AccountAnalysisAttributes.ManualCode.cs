@@ -207,7 +207,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted))
             {
-                FPreviouslySelectedDetailRow.AnalysisTypeCode = cmbDetailAnalTypeCode.GetSelectedString();         //GetDataFromControls();
+                GetDetailDataFromControlsManual(FPreviouslySelectedDetailRow);
             }
         }
 
