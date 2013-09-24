@@ -339,6 +339,18 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
+        /// add the parameters from another list, overwriting existing values, but not deleting parameters as Copy does
+        /// </summary>
+        /// <param name="AOtherList"></param>
+        public void Add(TParameterList AOtherList)
+        {
+            foreach (TParameter element in AOtherList.parameters)
+            {
+                Add(element.name, element.value, element.column, element.level, element.subreport);
+            }
+        }
+
+        /// <summary>
         /// add all parameters that do not have an equivalent in this parameter list
         /// </summary>
         public void CopyMissing(TParameterList AOtherList)

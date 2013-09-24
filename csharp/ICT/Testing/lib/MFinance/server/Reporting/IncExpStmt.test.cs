@@ -82,90 +82,19 @@ namespace Tests.MFinance.Server.Reporting
         public void TestIncExpStatement()
         {
             // create a new ledger
-            FLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
+            FLedgerNumber = TReportTestingTools.SetupTestLedgerWithPostedBatches();
 
-            // post a sample batch
-            TCommonAccountingTool commonAccountingTool =
-                new TCommonAccountingTool(FLedgerNumber, "NUNIT");
-
-            commonAccountingTool.AddBaseCurrencyJournal();
-            commonAccountingTool.JournalDescription = "Test Data accounts";
-            string strAccountBank = "6000";
-            string StandardCostCentre = TGLTransactionWebConnector.GetStandardCostCentre(FLedgerNumber);
-
-            // Accounting of a start balance
-            commonAccountingTool.AddBaseCurrencyTransaction(
-                "6200", StandardCostCentre, "Start Balance", "Debit", MFinanceConstants.IS_DEBIT, 40);
-            commonAccountingTool.AddBaseCurrencyTransaction(
-                "9700", StandardCostCentre, "Start Balance", "Credit", MFinanceConstants.IS_CREDIT, 40);
-            // Accounting of some gifts ...
-            commonAccountingTool.AddBaseCurrencyTransaction(
-                strAccountBank, StandardCostCentre, "Gift Example", "Debit", MFinanceConstants.IS_DEBIT, 100);
-            commonAccountingTool.AddBaseCurrencyTransaction(
-                "0100", StandardCostCentre, "Gift Example", "Credit", MFinanceConstants.IS_CREDIT, 100);
-            // Accounting of some expense ...
-            commonAccountingTool.AddBaseCurrencyTransaction(
-                strAccountBank, StandardCostCentre, "Expense Example", "Credit", MFinanceConstants.IS_CREDIT, 20);
-            commonAccountingTool.AddBaseCurrencyTransaction(
-                "4200", StandardCostCentre, "Expense Example", "Debit", MFinanceConstants.IS_DEBIT, 20);
-            commonAccountingTool.CloseSaveAndPost();
-
-            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
-
-            TReportGeneratorUIConnector ReportGenerator = new TReportGeneratorUIConnector();
-            TParameterList Parameters = new TParameterList();
             string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/IncExpStmt.xml";
-            string resultFile = testFile.Replace(".xml", ".Results.xml");
-            string parameterFile = testFile.Replace(".xml", ".Parameters.xml");
-            string resultExpectedFile = testFile.Replace(".xml", ".Results.Expected.xml");
-            string parameterExpectedFile = testFile.Replace(".xml", ".Parameters.Expected.xml");
-            Parameters.Load(testFile);
-            Parameters.Add("param_ledger_number_i", FLedgerNumber);
-            Parameters.Add("param_start_period_i", 1);
-            Parameters.Add("param_end_period_i", 1);
-            Parameters.Add("param_costcentreoptions", "SelectedCostCentres");
-            Parameters.Add("param_cost_centre_codes", StandardCostCentre);
 
-            ReportGenerator.Start(Parameters.ToDataTable());
+            TParameterList SpecificParameters = new TParameterList();
+            SpecificParameters.Add("param_start_period_i", 1);
+            SpecificParameters.Add("param_end_period_i", 1);
+            SpecificParameters.Add("param_costcentreoptions", "SelectedCostCentres");
+            string StandardCostCentre = TGLTransactionWebConnector.GetStandardCostCentre(FLedgerNumber);
+            SpecificParameters.Add("param_cost_centre_codes", StandardCostCentre);
+            TReportTestingTools.CalculateReport(FLedgerNumber, testFile, SpecificParameters);
 
-            while (ReportGenerator.AsyncExecProgressServerSide.ProgressState == TAsyncExecProgressState.Aeps_Executing)
-            {
-                Thread.Sleep(500);
-            }
-
-            Assert.IsTrue(ReportGenerator.GetSuccess(), "Report did not run successfully");
-            TResultList Results = new TResultList();
-
-            Results.LoadFromDataTable(ReportGenerator.GetResult());
-            Parameters.LoadFromDataTable(ReportGenerator.GetParameter());
-
-            if (!Parameters.Exists("ControlSource", ReportingConsts.HEADERPAGELEFT1, -1, eParameterFit.eBestFit))
-            {
-                Parameters.Add("ControlSource", new TVariant("Left1"), ReportingConsts.HEADERPAGELEFT1);
-            }
-
-            if (!Parameters.Exists("ControlSource", ReportingConsts.HEADERPAGELEFT2, -1, eParameterFit.eBestFit))
-            {
-                Parameters.Add("ControlSource", new TVariant("Left2"), ReportingConsts.HEADERPAGELEFT2);
-            }
-
-            Parameters.Save(parameterFile, false);
-            Results.WriteCSV(Parameters, resultFile, ",", false, false);
-
-            SortedList <string, string>ToReplace = new SortedList <string, string>();
-            ToReplace.Add("{ledgernumber}", FLedgerNumber.ToString());
-            int currentYear = DateTime.Today.Year;
-            ToReplace.Add("{ThisYear}", currentYear.ToString());
-            ToReplace.Add("{PreviousYear}", (currentYear - 1).ToString());
-
-            Assert.True(TTextFile.SameContent(resultFile, resultExpectedFile, true, ToReplace, true),
-                "the file " + resultFile + " should have the same content as " + resultExpectedFile);
-
-            Assert.True(TTextFile.SameContent(parameterFile, parameterExpectedFile, true, ToReplace, true),
-                "the file " + parameterFile + " should have the same content as " + parameterExpectedFile);
-
-            File.Delete(parameterFile);
-            File.Delete(resultFile);
+            TReportTestingTools.TestResult(FLedgerNumber, testFile);
         }
     }
 }
