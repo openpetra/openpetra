@@ -82,6 +82,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         /// prints the current id of the row that is being calculated;
         /// this is not remoting the progress. useful for unit tests
         /// </summary>
+        [NoRemoting]
         public IAsynchronousExecutionProgress AsyncExecProgressServerSide
         {
             get
