@@ -49,6 +49,7 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MCommon;
+using Ict.Petra.Shared.MSysMan;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -994,7 +995,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             PartnerClasses.Add("*");
 
-            int MaxPartnersCount = mniFileRecentPartners.DropDownItems.Count;
+            int MaxPartnersCount = TUserDefaults.GetInt16Default(MSysManConstants.USERDEFAULT_NUMBEROFRECENTPARTNERS, 10);
             TServerLookup.TMPartner.GetRecentlyUsedPartners(MaxPartnersCount, PartnerClasses, out RecentlyUsedPartners);
 
             int Counter = 0;
@@ -1009,8 +1010,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 ++Counter;
             }
 
-            // If there a less partners than menu items, then disable them
-            for (; Counter < MaxPartnersCount; ++Counter)
+            // If there are less partners than menu items, then disable them
+            for (; Counter < mniFileRecentPartners.DropDownItems.Count; ++Counter)
             {
                 mniFileRecentPartners.DropDownItems[Counter].Enabled = false;
                 mniFileRecentPartners.DropDownItems[Counter].Visible = false;

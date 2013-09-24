@@ -1,0 +1,8 @@
+id,Account,Description,Actual {ThisYear} January,Budget {ThisYear} January,Variance % Actual {ThisYear} January  to Budget {ThisYear} January,Actual {ThisYear} YTD,Budget {ThisYear} YTD,Variance % Actual {ThisYear} YTD  to Budget {ThisYear} YTD,Whole Year Budget {ThisYear}
+{ledgernumber}00/4200,4200,Administration: General,20.00,0.00,0,20.00,0.00,0,0.00
+{ledgernumber}00/4200S,,,20.00,0.00,0,20.00,0.00,0,0.00
+{ledgernumber}00/EXP,Total Expenditure,,20.00,0.00,0,20.00,0.00,0,0.00
+{ledgernumber}00/0100S,0100S,Support Gifts: local,100.00,0.00,0,100.00,0.00,0,0.00
+{ledgernumber}00/GIFT,,,100.00,0.00,0,100.00,0.00,0,0.00
+{ledgernumber}00/INC,Total Income,,100.00,0.00,0,100.00,0.00,0,0.00
+{ledgernumber}00,TOTAL SURPLUS / (DEFICIT),{Income minus expenses},80.00,0.00,0,80.00,0.00,0,0.00

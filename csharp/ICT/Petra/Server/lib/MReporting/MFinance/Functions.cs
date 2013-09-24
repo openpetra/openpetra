@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -582,7 +582,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             }
             else
             {
-                situation.GetParameters().Add("glm_sequence_i", new TVariant(), col, -1);
+                situation.GetParameters().Add("glm_sequence_i", new TVariant(), col, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
                 situation.GetParameters().Add("debit_credit_indicator", new TVariant(), col, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
             }
 
@@ -721,8 +721,8 @@ namespace Ict.Petra.Server.MReporting.MFinance
             while (accountChildren.Length > 0)
             {
                 accountChild = StringHelper.GetNextCSV(ref accountChildren);
-                StringHelper.GetNextCSV(ref accountChildren);
 
+                StringHelper.GetNextCSV(ref accountChildren);
                 // alias
                 StringHelper.GetNextCSV(ref accountChildren);
 
@@ -1046,8 +1046,8 @@ namespace Ict.Petra.Server.MReporting.MFinance
             while (accountChildren.Length > 0)
             {
                 accountChild = StringHelper.GetNextCSV(ref accountChildren);
-                StringHelper.GetNextCSV(ref accountChildren);
 
+                StringHelper.GetNextCSV(ref accountChildren);
                 // alias
                 StringHelper.GetNextCSV(ref accountChildren);
 

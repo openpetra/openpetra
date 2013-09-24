@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -476,6 +476,11 @@ namespace Ict.Petra.Server.MReporting
         public TRptCalculation GetCalculation(string name)
         {
             if (rptGrpCalculation == null)
+            {
+                return null;
+            }
+
+            if ((name.Length == 0) || name.StartsWith("{") || (name == "true") || (name == "false"))
             {
                 return null;
             }

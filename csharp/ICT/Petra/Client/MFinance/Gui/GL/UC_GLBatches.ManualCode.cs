@@ -29,6 +29,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Collections;
+using System.Threading;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
@@ -931,21 +932,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     ArrayList compValues = value.ToComposite();
 
-                    message +=
-                        string.Format(
-                            "{0},{1},{2},{3},{4},{5}",
-                            ((TVariant)compValues[0]).ToString(),
-                            ((TVariant)compValues[1]).ToString(),
-                            ((TVariant)compValues[2]).ToString(),
-                            ((TVariant)compValues[3]).ToString(),
-                            StringHelper.FormatCurrency((TVariant)compValues[4], "currency"),
-                            StringHelper.FormatCurrency((TVariant)compValues[5], "currency")) +
-                        Environment.NewLine;
+                    string[] columns = new string[] {
+                        ((TVariant)compValues[0]).ToString(),
+                        ((TVariant)compValues[1]).ToString(),
+                        ((TVariant)compValues[2]).ToString(),
+                        ((TVariant)compValues[3]).ToString(),
+                        StringHelper.FormatCurrency((TVariant)compValues[4], "CurrencyCSV"),
+                        StringHelper.FormatCurrency((TVariant)compValues[5], "CurrencyCSV")
+                    };
+
+                    message += StringHelper.StrMerge(columns,
+                        Thread.CurrentThread.CurrentCulture.TextInfo.ListSeparator[0]) +
+                               Environment.NewLine;
                 }
 
                 string CSVFilePath = TClientSettings.PathLog + Path.DirectorySeparatorChar + "Batch" + FSelectedBatchNumber.ToString() +
                                      "_TestPosting.csv";
-                StreamWriter sw = new StreamWriter(CSVFilePath);
+                StreamWriter sw = new StreamWriter(CSVFilePath, false, System.Text.Encoding.UTF8);
                 sw.Write(message);
                 sw.Close();
 
