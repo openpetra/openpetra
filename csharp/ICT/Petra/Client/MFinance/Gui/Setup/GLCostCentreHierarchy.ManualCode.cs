@@ -604,7 +604,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if (CheckRow.CostCentreCode.IndexOf(newName) == 0)
                 {
                     MessageBox.Show(
-                        String.Format(Catalog.GetString("{0} is not a valid cost centre code.\r\nChange the code or remove it completely."),
+                        String.Format(Catalog.GetString("{0} is not a valid Cost Centre code."),
                             CheckRow.CostCentreCode),
                         Catalog.GetString("GL Cost Centre Hierarchy"),
                         MessageBoxButtons.OK,
@@ -617,7 +617,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     MessageBox.Show(
                         Catalog.GetString(
-                            "Cost centre code is empty.\r\nSupply a valid cost centre code or also remove the name to delete this record."),
+                            "Cost centre code is empty.\r\nSupply a valid cost centre code."),
                         Catalog.GetString("GL Cost Centre Hierarchy"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
@@ -648,11 +648,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// Delete the row in the editor
         /// NOTE: A cost centre with children cannot be deleted.
         /// </summary>
-        /// <param name="ASelectedNode">FCurrentNode</param>
-        /// <returns>true if the node was deleted</returns>
-        private bool DeleteDataFromSelectedRow(TreeNode ASelectedNode)
+        private void DeleteCostCentre (Object sender, EventArgs e)
         {
-            CostCentreNodeDetails NodeDetails = (CostCentreNodeDetails)ASelectedNode.Tag;
+            if (FCurrentNode == null)
+            {
+                return;
+            }
+            CostCentreNodeDetails NodeDetails = (CostCentreNodeDetails)FCurrentNode.Tag;
 
             GetCostCentreAttributes(ref NodeDetails);
 
@@ -660,12 +662,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 ACostCentreRow SelectedRow = NodeDetails.CostCentreRow;
                 SelectedRow.Delete();
-                return true;
+                TreeNode SelectThisNode = FCurrentNode.Parent;
+                FIAmDeleting = true;
+                trvCostCentres.Nodes.Remove(FCurrentNode);
+                FIAmDeleting = false;
+                trvCostCentres.SelectedNode = SelectThisNode;
+                FPetraUtilsObject.SetChangedFlag();
             }
             else
             {
                 MessageBox.Show(Catalog.GetString("This Cost Centre Code is in use and cannot be deleted."));
-                return false;
             }
         }
 
@@ -781,7 +787,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                     out NewTable);
                                 FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
                                 strOldDetailCostCentreCode = "";
+                                FIAmUpdating = true;
                                 txtDetailCostCentreCode.Text = "";
+                                FIAmUpdating = false;
                                 FPetraUtilsObject.HasChanges = false;
                                 PopulateTreeView();
                                 FCurrentNode = null;
@@ -826,30 +834,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void GetDataFromControlsManual()
         {
-            if ((!CheckCostCentreValueChanged())
-                && (FCurrentNode != null))
+            if (FCurrentNode != null)
             {
                 ACostCentreRow SelectedRow = GetSelectedDetailRowManual();
                 GetDetailsFromControls(SelectedRow);
-
-                //
-                // If I find that there's no data in the new node, I'll remove it right now.
-                if ((SelectedRow.CostCentreCode == "") && (SelectedRow.CostCentreName == ""))
-                {
-                    if (DeleteDataFromSelectedRow(FCurrentNode))
-                    {
-                        TreeNode SelectThisNode = FCurrentNode.Parent;
-                        FIAmDeleting = true;
-                        trvCostCentres.Nodes.Remove(FCurrentNode);
-                        FIAmDeleting = false;
-                        trvCostCentres.SelectedNode = SelectThisNode;
-                    }
-                    else // The node was not deleted, so I'll restore it as it was!
-                    {
-                        SelectedRow.CostCentreCode = strOldDetailCostCentreCode;
-                        SelectedRow.CostCentreName = strOldDetailCostCentreName;
-                    }
-                }
             }
         }
 

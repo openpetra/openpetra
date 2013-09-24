@@ -11,6 +11,7 @@ RootNode:
     WindowHeight: 500
     Actions:
         actAddNewCostCentre: {Label=Add Cost Centre, ActionClick=AddNewCostCentre}
+        actDeleteCostCentre: {Label=Delete Cost Centre, ActionClick=DeleteCostCentre}
         actExportHierarchy: {ActionClick=ExportHierarchy}
         actImportHierarchy: {ActionClick=ImportHierarchy}
         actLinkPartner: {ActionClick=LinkPartnerCostCentre}
@@ -37,7 +38,6 @@ RootNode:
         cmbDetailCostCentreType:
             OptionalValues: [Local, Foreign]
         txtDetailCostCentreName:
-        # TODO: system cost centre
         chkDetailCostCentreActiveFlag: {Label=Active}
         pnlStatus:
             Controls: [txtStatus]
@@ -52,6 +52,7 @@ RootNode:
 
     Toolbar:
         tbbAddNewCostCentre:
+        tbbDeleteCostCentre:
         tbbExportHierarchy:
         tbbImportHierarchy:
         tbbLinkPartner:
