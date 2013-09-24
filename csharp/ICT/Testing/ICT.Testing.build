@@ -32,6 +32,7 @@
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.AP.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.BankImport.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.CrossLedger.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Reporting.dll" />
 
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerExports.dll" />
     
