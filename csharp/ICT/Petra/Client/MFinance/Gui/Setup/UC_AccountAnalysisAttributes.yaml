@@ -33,6 +33,7 @@ RootNode:
                 Row0: [cmbDetailAnalTypeCode]
                 Row1: [chkDetailActive]
         cmbDetailAnalTypeCode:
+            Label: Analysis Type
             OnChange: OnDetailAnalysisTypeCodeChange
         chkDetailActive: {Label=Active}
     Toolbar:
