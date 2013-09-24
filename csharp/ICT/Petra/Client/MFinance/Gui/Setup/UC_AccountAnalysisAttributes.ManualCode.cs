@@ -3,6 +3,7 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
 // Copyright 2004-2012 by OM International
 //
@@ -67,25 +68,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// Loads all the currently assigned AnalTypeCodes into the Combo -
-        /// Even where some of these may not be valid DB values...
+        /// Loads all available AnalTypeCodes into the Combo
         /// </summary>
         private void LoadCmbAnalType()
         {
             cmbDetailAnalTypeCode.Items.Clear();
+            DataView MyView = new DataView(FMainDS.AAnalysisType);
+            MyView.Sort = AAnalysisTypeTable.GetAnalysisTypeCodeDBName();
 
-            foreach (AAnalysisTypeRow Row in FMainDS.AAnalysisType.Rows)
+            foreach (DataRowView rv in MyView)
             {
-                if (Row.RowState != DataRowState.Deleted)
-                {
-                    if (!cmbDetailAnalTypeCode.Items.Contains(Row.AnalysisTypeCode))
-                    {
-                        cmbDetailAnalTypeCode.Items.Add(Row.AnalysisTypeCode);
-                    }
-                }
+                AAnalysisTypeRow Row = (AAnalysisTypeRow)rv.Row;
+                cmbDetailAnalTypeCode.Items.Add(Row.AnalysisTypeCode);
             }
-
-            btnDelete.Enabled = (grdDetails.Rows.Count > 1);
         }
 
         /// <summary>
@@ -101,9 +96,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FLedgerNumber,
                     AAnalysisAttributeTable.GetAccountCodeDBName(),
                     FAccountCode);
+                FMainDS.AAnalysisAttribute.DefaultView.Sort =
+                    AAnalysisAttributeTable.GetLedgerNumberDBName() + ", " +
+                    AAnalysisAttributeTable.GetAnalysisTypeCodeDBName() + ", " +
+                    AAnalysisAttributeTable.GetAccountCodeDBName();
+
 
                 LoadCmbAnalType();
                 pnlDetails.Enabled = false;
+                btnDelete.Enabled = (grdDetails.Rows.Count > 1);
             }
         }
 
@@ -117,8 +118,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
 //          GetDataFromControls();
-            this.CreateNewAAnalysisAttribute();
+            CreateNewAAnalysisAttribute();
             pnlDetails.Enabled = true;
+            btnDelete.Enabled = true;
 
             SelectRowInGrid(grdDetails.Rows.Count);
         }
@@ -128,11 +130,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             string NewTypeCode = "Unassigned";
             int ItmIdx = -1;
             int FindAttempt = 0;
-
-            FMainDS.AAnalysisAttribute.DefaultView.Sort =
-                AAnalysisAttributeTable.GetLedgerNumberDBName() + ", " +
-                AAnalysisAttributeTable.GetAnalysisTypeCodeDBName() + ", " +
-                AAnalysisAttributeTable.GetAccountCodeDBName();
 
             do
             {

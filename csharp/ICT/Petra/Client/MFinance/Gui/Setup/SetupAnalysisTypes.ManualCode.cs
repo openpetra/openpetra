@@ -52,6 +52,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 Ict.Common.Data.TTypedDataTable TypedTable;
                 TRemote.MCommon.DataReader.WebConnectors.GetData(AAnalysisTypeTable.GetTableDBName(), null, out TypedTable);
                 FMainDS.AAnalysisType.Merge(TypedTable);
+                FMainDS.AAnalysisType.DefaultView.Sort = AAnalysisTypeTable.GetAnalysisTypeCodeDBName();
 
                 ucoValues.LedgerNumber = value;
                 ucoValues.LoadValues(FLedgerNumber);
