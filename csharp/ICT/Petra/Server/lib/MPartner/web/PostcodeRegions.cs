@@ -30,7 +30,6 @@ using Ict.Common.DB;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
-using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
