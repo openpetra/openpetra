@@ -91,17 +91,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (ARestrictToPartnerClasses == null)
             {
                 // No Cursor change if run from within NUnit Test without Main Form instance...
-                if (AParentForm != null) 
+                if (AParentForm != null)
                 {
-                    AParentForm.Cursor = Cursors.WaitCursor;    
-                }                
+                    AParentForm.Cursor = Cursors.WaitCursor;
+                }
 
                 TPartnerFindScreen PartnerFindForm = new TPartnerFindScreen(AParentForm);
                 PartnerFindForm.SetParameters(false, -1);
                 PartnerFindForm.Show();
 
                 // No Cursor change if run from within NUnit Test without Main Form instance...
-                if (AParentForm != null) 
+                if (AParentForm != null)
                 {
                     AParentForm.Cursor = Cursors.Default;
                 }
@@ -117,9 +117,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     // Open the Partner Edit screen
                     TFrmPartnerEdit PartnerEditForm;
-                    
+
                     // No Cursor change if run from within NUnit Test without Main Form instance...
-                    if (AParentForm != null) 
+                    if (AParentForm != null)
                     {
                         AParentForm.Cursor = Cursors.WaitCursor;
                     }
@@ -138,7 +138,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     // No Cursor change if run from within NUnit Test without Main Form instance...
-                    if (AParentForm != null) 
+                    if (AParentForm != null)
                     {
                         AParentForm.Cursor = Cursors.Default;
                     }
