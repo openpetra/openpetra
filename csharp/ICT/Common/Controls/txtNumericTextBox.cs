@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -123,10 +123,14 @@ namespace Ict.Common.Controls
 
             set
             {
-                if ((FControlMode == TNumericTextBoxMode.NormalTextBox)
-                    || (FControlMode == TNumericTextBoxMode.Currency))
+                if (FControlMode == TNumericTextBoxMode.NormalTextBox)
                 {
                     base.Text = value;
+                }
+                else
+                {
+                    throw new Exception(
+                        "to the developer: please use NumberValueDecimal or NumberValueInt to assign a value to the txtNumericTextBox");
                 }
             }
         }
