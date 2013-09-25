@@ -153,8 +153,7 @@ namespace Ict.Common.Controls
             {
                 if (value != null)
                 {
-                    ((TextBox)FTxtNumeric).Text = StringHelper.FormatCurrency(new TVariant(value), FCurrencyDisplayFormat);
-//                  ((TextBox)FTxtNumeric).Text = ((decimal)value).ToString(FTxtNumeric.Culture);
+                    FTxtNumeric.SetCurrencyValue(value.Value, FCurrencyDisplayFormat);
                 }
                 else
                 {

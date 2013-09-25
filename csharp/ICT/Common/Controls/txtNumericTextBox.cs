@@ -109,10 +109,11 @@ namespace Ict.Common.Controls
         #region Properties
 
         /// <summary>
-        /// This Property is ignored (!) unless ControlMode is 'NormalTextMode'! For all other cases, the value to be displayed needs to be set programmatically through the 'NumberValueDecimal' or 'NumberValueInt' Properties.
+        /// This Property throws an exception unless ControlMode is 'NormalTextMode'! For all other cases, the value to be displayed needs to be set programmatically through the 'NumberValueDecimal' or 'NumberValueInt' Properties or the 'SetCurrencyValue'
+        // method.
         /// </summary>
         [Description(
-             "This Property is ignored (!) unless ControlMode is 'NormalTextMode'! For all other cases, the value to be displayed needs to be set programmatically through the 'NumberValueDecimal' or 'NumberValueInt' Properties.")
+             "This Property throws an exception unless ControlMode is 'NormalTextMode'! For all other cases, the value to be displayed needs to be set programmatically through the 'NumberValueDecimal' or 'NumberValueInt' Properties or the 'SetCurrencyValue' method.")
         ]
         public override string Text
         {
@@ -130,9 +131,17 @@ namespace Ict.Common.Controls
                 else
                 {
                     throw new Exception(
-                        "to the developer: please use NumberValueDecimal or NumberValueInt to assign a value to the txtNumericTextBox");
+                        "to the developer: please use NumberValueDecimal or NumberValueInt or SetCurrencyValue to assign a value to the txtNumericTextBox");
                 }
             }
+        }
+
+        /// <summary>
+        /// set currency values with format
+        /// </summary>
+        public void SetCurrencyValue(decimal AValue, string ACurrencyFormat)
+        {
+            base.Text = StringHelper.FormatCurrency(new TVariant(AValue), ACurrencyFormat);
         }
 
         /// <summary>
