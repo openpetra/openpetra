@@ -109,8 +109,10 @@ namespace Ict.Common.Controls
         #region Properties
 
         /// <summary>
-        /// This Property throws an exception unless ControlMode is 'NormalTextMode'! For all other cases, the value to be displayed needs to be set programmatically through the 'NumberValueDecimal' or 'NumberValueInt' Properties or the 'SetCurrencyValue'
-        // method.
+        /// This Property throws an exception unless ControlMode is 'NormalTextMode'!
+        /// For all other cases, the value to be displayed needs to be set programmatically
+        /// through the 'NumberValueDecimal' or 'NumberValueInt' Properties or the 'SetCurrencyValue'
+        /// method.
         /// </summary>
         [Description(
              "This Property throws an exception unless ControlMode is 'NormalTextMode'! For all other cases, the value to be displayed needs to be set programmatically through the 'NumberValueDecimal' or 'NumberValueInt' Properties or the 'SetCurrencyValue' method.")
