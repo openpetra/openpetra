@@ -1,4 +1,4 @@
-﻿RootNode:
+RootNode:
     BaseYaml: ../ReportingForm.yaml
     UtilObjectClass: TFrmPetraReportingUtils
     InterfaceName: IFrmReporting
@@ -36,12 +36,6 @@
         Para6:
             Name: Arrival Details
             Parameter: 3.0
-        Para7:
-            Name: Arrival Expected Date
-            Parameter: 2.0
-        Para7a:
-            Name: Arrival Expected Time
-            Parameter: 2.0
         Para8:
             Name: Arrival Group
             Parameter: 3.0
@@ -81,12 +75,6 @@
         Para38:
             Name: Departure Details
             Parameter: 3.0
-        Para39:
-            Name: Departure Expected Date
-            Parameter: 2.0
-        Para40:
-            Name: Departure Expected Time
-            Parameter: 2.0
         Para41:
             Name: Departure Group
             Parameter: 3.0

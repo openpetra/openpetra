@@ -1,0 +1,21 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraUtils
+    Namespace: Ict.Petra.Client.MSysMan.Gui
+    UsingNamespaces: [Ict.Petra.Shared.MSysMan,Ict.Petra.Shared.MSysMan.Data,Ict.Petra.Shared.MSysMan.Validation]
+    FormType: dialog
+    Template: usercontrolUnbound
+
+    Controls:
+        pnlContent:
+            Controls: [grpNewPartners]
+        grpNewPartners:
+            Controls: [pnlNewPartners]
+            Width: 430
+            Height: 80
+        pnlNewPartners:
+            Controls: [cmbAcquisitionCode, cmbLanguageCode]
+            Width: 410
+            Height: 60
+        cmbAcquisitionCode: {List=AcquisitionCodeList}
+        cmbLanguageCode: {List=LanguageCodeList}

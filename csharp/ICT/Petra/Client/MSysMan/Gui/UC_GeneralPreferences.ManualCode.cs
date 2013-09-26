@@ -1,10 +1,10 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, peters
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,23 +24,19 @@
 using System;
 using System.Data;
 using System.Globalization;
-using System.Windows.Forms;
-using System.Threading;
 using System.IO;
-using GNU.Gettext;
+using System.Windows.Forms;
 using Ict.Common;
-using Ict.Common.Remoting.Shared;
-using Ict.Common.Remoting.Client;
-using Ict.Petra.Shared.Interfaces.MSysMan;
-using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared.MSysMan;
 
 namespace Ict.Petra.Client.MSysMan.Gui
 {
-    /// manual methods for the generated window
-    public partial class TFrmMaintainLanguageCulture
+    public partial class TUC_GeneralPreferences
     {
+        private bool LanguageChanged = false;
+
         private void InitializeManualCode()
         {
             DataTable CultureTable = new DataTable();
@@ -92,26 +88,63 @@ namespace Ict.Petra.Client.MSysMan.Gui
             cmbLanguage.SetSelectedString(LanguageCode);
 
             llbLaunchpadLink.Click += LaunchpadLinkClicked;
+
+            // Get the number of recent partners that the user has set, if not found take 10 as default value.
+            nudNumberOfPartners.Value = TUserDefaults.GetInt16Default(MSysManConstants.USERDEFAULT_NUMBEROFRECENTPARTNERS, 10);
+            nudNumberOfPartners.Maximum = 10;
         }
 
-        private void BtnOK_Click(Object Sender, EventArgs e)
+        /// <summary>
+        /// Gets the data from all UserControls on this TabControl.
+        /// </summary>
+        /// <returns>void</returns>
+        public void GetDataFromControls()
         {
-            string LanguageCode = cmbLanguage.GetSelectedString();
-            string CultureCode = cmbCulture.GetSelectedString();
+        }
 
-            // send to server
-            TRemote.MSysMan.Maintenance.WebConnectors.SetLanguageAndCulture(LanguageCode, CultureCode);
+        /// make sure that the primary key cannot be edited anymore
+        public void SetPrimaryKeyReadOnly(bool AReadOnly)
+        {
+        }
 
-            // set local settings for client
-            Catalog.Init(LanguageCode, CultureCode);
+        private void Language_Click(Object Sender, EventArgs e)
+        {
+            LanguageChanged = true;
+        }
 
-            // TODO: can we reload the main window with the new language?
-            MessageBox.Show(Catalog.GetString("Please restart the OpenPetra client to see the new language"),
-                Catalog.GetString("Restart the client"),
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+        /// <summary>
+        /// Saves any changed preferences to s_user_defaults
+        /// </summary>
+        /// <returns>void</returns>
+        public void SaveGeneralTab()
+        {
+            if (LanguageChanged)
+            {
+                string LanguageCode = cmbLanguage.GetSelectedString();
+                string CultureCode = cmbCulture.GetSelectedString();
 
-            Close();
+                // send to server
+                TRemote.MSysMan.Maintenance.WebConnectors.SetLanguageAndCulture(LanguageCode, CultureCode);
+
+                // set local settings for client
+                Catalog.Init(LanguageCode, CultureCode);
+
+                // TODO: can we reload the main window with the new language?
+                MessageBox.Show(Catalog.GetString("Please restart the OpenPetra client to see the new language"),
+                    Catalog.GetString("Restart the client"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+
+            TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_NUMBEROFRECENTPARTNERS, nudNumberOfPartners.Value);
+        }
+
+        private Boolean ViewMode
+        {
+            get
+            {
+                return ((TFrmUserPreferences)ParentForm).ViewMode;
+            }
         }
 
         /// <summary>
@@ -139,6 +172,19 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private void LaunchpadLinkClicked(object ASender, EventArgs e)
         {
             System.Diagnostics.Process.Start("https://translations.launchpad.net/openpetraorg/trunk/+pots/template1");
+        }
+
+        /// <summary>
+        /// Performs data validation.
+        /// </summary>
+        /// <param name="ARecordChangeVerification">Set to true if the data validation happens when the user is changing
+        /// to another record, otherwise set it to false.</param>
+        /// <param name="AProcessAnyDataValidationErrors">Set to true if data validation errors should be shown to the
+        /// user, otherwise set it to false.</param>
+        /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
+        public bool ValidateAllData(bool ARecordChangeVerification, bool AProcessAnyDataValidationErrors)
+        {
+            return true;
         }
     }
 }

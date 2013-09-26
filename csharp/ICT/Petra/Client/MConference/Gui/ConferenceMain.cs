@@ -25,9 +25,10 @@ using System.Windows.Forms;
 using System.Runtime.Serialization;
 using System;
 using Ict.Common;
-using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Client.MConference.Gui.Setup;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.MConference.Data;
 
 namespace Ict.Petra.Client.MConference.Gui
 {
@@ -46,12 +47,28 @@ namespace Ict.Petra.Client.MConference.Gui
         /// </summary>
         public static void EarlyLateRegistrationsForSelectedConference(Form AParentForm)
         {
+            DateTime StartDate = TRemote.MConference.Conference.WebConnectors.GetStartDate(FPartnerKey);
+            DateTime EndDate = TRemote.MConference.Conference.WebConnectors.GetEndDate(FPartnerKey);
+
+            // if one or both dates are missing for the selected conference then this screen will not open
+            if ((StartDate == DateTime.MinValue) || (EndDate == DateTime.MinValue))
+            {
+                MessageBox.Show("The selected conference is missing a start and/or an end date. " +
+                    "Go to the Conference Master Settings screen to assign a date before accessing this setup screen",
+                    String.Format("Early and Late Registrations"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                return;
+            }
+
             if (FPartnerKey > 0)
             {
                 TSearchCriteria[] Search = new TSearchCriteria[1];
                 Search[0] = new TSearchCriteria(PcEarlyLateTable.GetConferenceKeyDBName(), FPartnerKey);
 
                 TFrmEarlyLateRegistrationSetup.FPartnerKey = FPartnerKey;
+                TFrmEarlyLateRegistrationSetup.FStartDate = StartDate;
+                TFrmEarlyLateRegistrationSetup.FEndDate = EndDate;
                 TFrmEarlyLateRegistrationSetup frm = new TFrmEarlyLateRegistrationSetup(AParentForm, Search);
 
                 frm.Show();

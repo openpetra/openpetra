@@ -55,11 +55,6 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(FPartnerKey, out ConferenceName, out PartnerClass);
             this.Text = this.Text + " [" + ConferenceName + "]";
             txtConferenceName.Text = ConferenceName;
-
-            // create foreign keys if they do not already exist
-            TRemote.MConference.Conference.WebConnectors.CreateDiscountCriteriaIfNotExisting("CHILD", "Child");
-            TRemote.MConference.Conference.WebConnectors.CreateCostTypeIfNotExisting("ACCOMMODATION", "Extra accommodation costs");
-            TRemote.MConference.Conference.WebConnectors.CreateCostTypeIfNotExisting("CONFERENCE", "Additional costs for conference");
         }
 
         private void NewRowManual(ref PcDiscountRow ARow)
@@ -181,6 +176,47 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 
         private void ValidateDataDetailsManual(PcDiscountRow ARow)
         {
+            if (txtDetailDiscount.Text == "")
+            {
+                ARow.Discount = 0;
+            }
+
+            // check that default data exists in database
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            TValidationControlsData ValidationControlsData;
+            TScreenVerificationResult VerificationResult = null;
+            DataColumn ValidationColumn;
+
+            if (ARow.RowState != DataRowState.Deleted)
+            {
+                if (!TRemote.MConference.Conference.WebConnectors.CheckDiscountCriteriaCodeExists(new string[] { ARow.DiscountCriteriaCode }))
+                {
+                    ValidationColumn = ARow.Table.Columns[PcDiscountTable.ColumnDiscountCriteriaCodeId];
+
+                    // displays a warning message
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(this, ErrorCodes.GetErrorInfo(
+                                PetraErrorCodes.ERR_DISCOUNT_CRITERIA_CODE_DOES_NOT_EXIST)),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                }
+
+                if (!TRemote.MConference.Conference.WebConnectors.CheckCostTypeExists(ARow.CostTypeCode))
+                {
+                    ValidationColumn = ARow.Table.Columns[PcDiscountTable.ColumnCostTypeCodeId];
+
+                    // displays a warning message
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(this, ErrorCodes.GetErrorInfo(
+                                PetraErrorCodes.ERR_COST_TYPE_CODE_DOES_NOT_EXIST)),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                }
+            }
+
             EnableOrDisableCmb(ARow);
         }
     }

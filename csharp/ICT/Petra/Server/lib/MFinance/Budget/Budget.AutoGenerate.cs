@@ -72,6 +72,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
             ABudgetPeriodAccess.LoadAll(FMainDS, null);
             ALedgerAccess.LoadByPrimaryKey(FMainDS, ALedgerNumber, null);
+            ABudgetTypeAccess.LoadAll(FMainDS, null);
 
             // Accept row changes here so that the Client gets 'unmodified' rows
             FMainDS.AcceptChanges();
@@ -472,7 +473,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <param name="APeriodNumber"></param>
         /// <param name="ABudgetAmount"></param>
         /// <returns></returns>
-        private static decimal SetBudgetPeriodBaseAmount(int ABudgetSequence, int APeriodNumber, decimal ABudgetAmount)
+        [RequireModulePermission("FINANCE-3")]
+        public static decimal SetBudgetPeriodBaseAmount(int ABudgetSequence, int APeriodNumber, decimal ABudgetAmount)
         {
             decimal retVal = 0;
 
@@ -497,16 +499,17 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <param name="ABudgetSequence"></param>
         /// <param name="APeriodNumber"></param>
         /// <returns></returns>
-        private static decimal GetBudgetPeriodAmount(int ABudgetSequence, int APeriodNumber)
+        [RequireModulePermission("FINANCE-3")]
+        public static decimal GetBudgetPeriodAmount(int ABudgetSequence, int APeriodNumber)
         {
-            decimal retVal = 0;
+            decimal retVal = 0m;
 
             ABudgetPeriodTable BudgetPeriodTable = FMainDS.ABudgetPeriod;
             ABudgetPeriodRow BudgetPeriodRow = (ABudgetPeriodRow)BudgetPeriodTable.Rows.Find(new object[] { ABudgetSequence, APeriodNumber });
 
             if (BudgetPeriodRow != null)
             {
-                retVal = BudgetPeriodRow.BudgetBase;
+                retVal = (decimal)BudgetPeriodRow.BudgetBase;
             }
 
             return retVal;

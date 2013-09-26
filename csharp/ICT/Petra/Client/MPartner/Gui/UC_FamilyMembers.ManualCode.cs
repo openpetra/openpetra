@@ -802,7 +802,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 }
 
                                 if (MessageBox.Show(Catalog.GetString("The Family Change is done.\r\n\r\n" +
-                                            "Do you want to see the updated list of Family Members of the Family" +
+                                            "Do you want to see the updated list of Family Members of the Family " +
                                             "from where the Person record was moved from?"),
                                         Catalog.GetString("Family ID Change"),
                                         MessageBoxButtons.YesNo) == DialogResult.Yes)
@@ -1471,7 +1471,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 }
 
                                 if (MessageBox.Show(Catalog.GetString("The Family Change is done.\r\n\r\n" +
-                                            "Do you want to see the updated list of Family Members of the Family" +
+                                            "Do you want to see the updated list of Family Members of the Family " +
                                             "to which the Partner was moved to?"),
                                         Catalog.GetString("Family ID Change"),
                                         MessageBoxButtons.YesNo) == DialogResult.Yes)

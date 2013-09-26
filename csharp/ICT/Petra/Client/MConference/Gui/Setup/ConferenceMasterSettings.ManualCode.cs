@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using GNU.Gettext;
@@ -30,6 +31,7 @@ using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner.Gui;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MConference;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MConference.Validation;
@@ -349,7 +351,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
                 txtSpecialRoleCampaignAccommodation.NumberValueInt = 0;
             }
 
-            // get data from discount text boxesfor PcDiscount
+            // get data from discount text boxes for PcDiscount
             string[, ] Discounts =
             {
                 { "ROLE", "CONFERENCE", "PRE", txtSpecialRolePreAttendance.Text.TrimEnd(new char[] { ' ', '%' }) },
@@ -369,6 +371,11 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             for (int i = 0; i < 12; i++)
             {
                 DataRow RowExists = FMainDS.PcDiscount.Rows.Find(new object[] { FPartnerKey, Discounts[i, 0], Discounts[i, 1], Discounts[i, 2], -1 });
+
+                if (Discounts[i, 3] == "")
+                {
+                    Discounts[i, 3] = "0";
+                }
 
                 // create new row if needed
                 if ((RowExists == null) && (Convert.ToInt32(Discounts[i, 3]) != 0))
@@ -407,9 +414,50 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             PcDiscountTable DiscountTable = FMainDS.PcDiscount;
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            TValidationControlsData ValidationControlsData;
+            TScreenVerificationResult VerificationResult = null;
+            DataColumn ValidationColumn;
 
-            TSharedConferenceValidation_Conference.ValidateConferenceMasterSettings(this, DiscountTable, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+            List <string>CriteriaCodesUsed = new List <string>();
+
+            foreach (PcDiscountRow Row in DiscountTable.Rows)
+            {
+                if ((Row.RowState != DataRowState.Deleted) && (Row.DiscountCriteriaCode != "CHILD"))
+                {
+                    if (Row.Discount > 100)
+                    {
+                        ValidationColumn = Row.Table.Columns[PcDiscountTable.ColumnDiscountId];
+
+                        // displays a warning message
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(this, ErrorCodes.GetErrorInfo(
+                                    PetraErrorCodes.ERR_DISCOUNT_PERCENTAGE_GREATER_THAN_100)),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                    }
+
+                    if (!CriteriaCodesUsed.Exists(element => element == Row.DiscountCriteriaCode))
+                    {
+                        CriteriaCodesUsed.Add(Row.DiscountCriteriaCode);
+                    }
+                }
+            }
+
+            string[] CriteriaCodesUsedArray = CriteriaCodesUsed.ToArray();
+
+            if (!TRemote.MConference.Conference.WebConnectors.CheckDiscountCriteriaCodeExists(CriteriaCodesUsedArray))
+            {
+                ValidationColumn = DiscountTable.Columns[PcDiscountTable.ColumnDiscountCriteriaCodeId];
+
+                // displays a warning message
+                VerificationResult = new TScreenVerificationResult(new TVerificationResult(this, ErrorCodes.GetErrorInfo(
+                            PetraErrorCodes.ERR_DISCOUNT_CRITERIA_CODE_DOES_NOT_EXIST)),
+                    ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+            }
         }
     }
 }

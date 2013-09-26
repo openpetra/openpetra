@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Ict.Common.IO
 {
@@ -109,34 +110,31 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// check if the two text files have the same content
+        /// replace given strings
         /// </summary>
-        /// <param name="filename1"></param>
-        /// <param name="filename2"></param>
-        /// <returns></returns>
-        public static bool SameContent(String filename1, String filename2)
+        private static string ReplaceStrings(string ALine, SortedList <string, string>AToReplace)
         {
-            return SameContent(filename1, filename2, true);
-        }
+            if (AToReplace == null)
+            {
+                return ALine;
+            }
 
-        /// <summary>
-        /// make sure generated files are not rewritten if only the copyright has changed in the file header
-        /// </summary>
-        /// <param name="ALine"></param>
-        /// <returns></returns>
-        private static string ReplaceCopyRightYear(string ALine)
-        {
-            return ALine.Replace("2010", "2011");
+            foreach (string key in AToReplace.Keys)
+            {
+                ALine = ALine.Replace(key, AToReplace[key]);
+            }
+
+            return ALine;
         }
 
         /// <summary>
         /// check if the two text files have the same content
         /// </summary>
-        /// <param name="filename1"></param>
-        /// <param name="filename2"></param>
-        /// <param name="AIgnoreNewLine"></param>
-        /// <returns></returns>
-        public static bool SameContent(String filename1, String filename2, bool AIgnoreNewLine)
+        public static bool SameContent(String filename1,
+            String filename2,
+            bool AIgnoreNewLine = true,
+            SortedList <string, string>AToReplace = null,
+            bool AWithLogging = false)
         {
             StreamReader sr1;
             StreamReader sr2;
@@ -148,6 +146,12 @@ namespace Ict.Common.IO
                 if (((!System.IO.File.Exists(filename1))) && ((!System.IO.File.Exists(filename2))))
                 {
                     return true;
+                }
+
+                if (AWithLogging)
+                {
+                    TLogging.Log("TTextFile.SameContent: the files does not exist: " +
+                        (System.IO.File.Exists(filename1) ? filename2 : filename1));
                 }
 
                 return false;
@@ -172,8 +176,8 @@ namespace Ict.Common.IO
                     return false;
                 }
 
-                line = ReplaceCopyRightYear(sr1.ReadToEnd());
-                line2 = ReplaceCopyRightYear(sr2.ReadToEnd());
+                line = ReplaceStrings(sr1.ReadToEnd(), AToReplace);
+                line2 = ReplaceStrings(sr2.ReadToEnd(), AToReplace);
                 sr1.Close();
                 sr2.Close();
                 return line == line2;
@@ -182,13 +186,23 @@ namespace Ict.Common.IO
             line = "start";
             line2 = "start";
 
+            int linecounter = 0;
+
             while (true)
             {
-                line = ReplaceCopyRightYear(sr1.ReadLine());
-                line2 = ReplaceCopyRightYear(sr2.ReadLine());
+                linecounter++;
+                line = ReplaceStrings(sr1.ReadLine(), AToReplace);
+                line2 = ReplaceStrings(sr2.ReadLine(), AToReplace);
 
                 if (line.CompareTo(line2) != 0)
                 {
+                    if (AWithLogging)
+                    {
+                        TLogging.Log("TTextFile.SameContent: files are different, at line " + linecounter.ToString());
+                        TLogging.Log("TTextFile.SameContent:  first file: " + line);
+                        TLogging.Log("TTextFile.SameContent: second file: " + line2);
+                    }
+
                     sr1.Close();
                     sr2.Close();
                     return false;
@@ -205,6 +219,13 @@ namespace Ict.Common.IO
                     }
                     else
                     {
+                        if (AWithLogging)
+                        {
+                            TLogging.Log("TTextFile.SameContent: expected more lines; " +
+                                (sr2.EndOfStream ? filename1 : filename2) +
+                                " is longer than " + (sr2.EndOfStream ? filename2 : filename1));
+                        }
+
                         sr1.Close();
                         sr2.Close();
                         return false;

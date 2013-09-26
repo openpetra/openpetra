@@ -117,6 +117,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ShowDetails(null);
             }
+            else
+            {
+                SelectRowInGrid(1);
+            }
 
             UpdateRecordNumberDisplay();
             SetRecordNumberDisplayProperties();
