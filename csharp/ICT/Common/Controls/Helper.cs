@@ -489,6 +489,44 @@ namespace Ict.Common.Controls
             FBaseFilterShowsAllRecords = ABaseFilterShowsAllRecords;
         }
 
+        public void ClearAllDiscretionaryFilters()
+        {
+            List<TIndividualFilterFindPanel> SearchList;
+
+            for (int i = 0; i < 2; i++)
+            {
+                if (i == 0)
+                {
+                    SearchList = FStandardFilterPanels;
+                }
+                else
+                {
+                    SearchList = FExtraFilterPanels;
+                }
+
+                for (int k = 0; k < SearchList.Count; k++)
+                {
+                    TIndividualFilterFindPanel iffp = SearchList[k];
+                    if (iffp.HasClearButton)
+                    {
+                        if (iffp.FilterComparison == null)
+                        {
+                            continue;
+                        }
+
+                        if (iffp.PanelControl is CheckBox)
+                        {
+                            ((CheckBox)iffp.PanelControl).CheckState = CheckState.Indeterminate;
+                        }
+                        else
+                        {
+                            iffp.PanelControl.Text = String.Empty;
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Finds a panel containing the clone of a control (label or active control)
         /// </summary>
