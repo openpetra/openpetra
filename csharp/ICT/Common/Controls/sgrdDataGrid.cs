@@ -816,7 +816,7 @@ namespace Ict.Common.Controls
             this.SortableHeaders = true;
             this.KeepRowSelectedAfterSort = true;
             this.AutoFindColumn = -1;
-            this.Selection.FocusStyle = SourceGrid.FocusStyle.FocusFirstCellOnEnter | SourceGrid.FocusStyle.RemoveFocusCellOnLeave;
+            this.Selection.FocusStyle = FocusStyle.None;        // We handle all focus issues ourselves.  In a multi-selection world this is important
             this.Invalidate();
         }
 
@@ -1649,14 +1649,11 @@ namespace Ict.Common.Controls
                 }
             }
 
-            // These two calls will generate rowLeaving events ONLY WHEN the grid is the current focussed control.
-            // Normally when this is called from manual code the grid will not have the focus.  Instead the control
-            // whose click event you are responding to will be focussed, so these calls will simply select the desired row without
-            // any consequent events.
-            // When events are fired they will probably result in updating a details panel
-            // When events are not fired you may need to update the details manually
-            this.Selection.ResetSelection(false);
-            this.Selection.SelectRow(ARowNumberInGrid, true);
+            // This call will set the active cell.
+            // If the cell row to activate is not the current row a FocusRowLeaving event (which can be cancelled) will be fired.
+            // In all cases a SelectionChanged event will be fired after that, even if the row to select is the current row.
+            //  (This is a good thing because the data in the row may have changed)
+            this.Selection.Focus(new Position(ARowNumberInGrid, 0), true);
 
             // scroll to the row
             ShowCell(ARowNumberInGrid);
