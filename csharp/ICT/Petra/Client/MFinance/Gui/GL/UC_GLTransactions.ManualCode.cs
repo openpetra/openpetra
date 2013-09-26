@@ -215,14 +215,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FBatchNumber,
                     ATransactionTable.GetJournalNumberDBName(),
                     FJournalNumber);
-                FFilterPanelControls.SetBaseFilter(rowFilter, true);
-                FMainDS.ATransaction.DefaultView.RowFilter = rowFilter;
-
-                UpdateRecordNumberDisplay();
 
                 FMainDS.ATransaction.DefaultView.Sort = String.Format("{0} " + sort,
                     ATransactionTable.GetTransactionNumberDBName()
                     );
+
+                FFilterPanelControls.SetBaseFilter(rowFilter, true);
+                //FMainDS.ATransaction.DefaultView.RowFilter = rowFilter;
+                ApplyFilter();
+                UpdateRecordNumberDisplay();
+                SetRecordNumberDisplayProperties();
             }
         }
 
@@ -1142,19 +1144,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void SetJournalLastTransNumber()
         {
-            SetTransactionDefaultView(false);
+            string rowFilter = String.Format("{0}={1} And {2}={3}",
+                ATransactionTable.GetBatchNumberDBName(),
+                FBatchNumber,
+                ATransactionTable.GetJournalNumberDBName(),
+                FJournalNumber);
+            string sort = String.Format("{0} {1}", ATransactionTable.GetTransactionNumberDBName(), "DESC");
+            DataView dv = new DataView(FMainDS.ATransaction, rowFilter, sort, DataViewRowState.CurrentRows);
 
-            if (FMainDS.ATransaction.DefaultView.Count > 0)
+            if (dv.Count > 0)
             {
-                ATransactionRow transRow = (ATransactionRow)FMainDS.ATransaction.DefaultView[0].Row;
+                ATransactionRow transRow = (ATransactionRow)dv[0].Row;
                 FJournalRow.LastTransactionNumber = transRow.TransactionNumber;
             }
             else
             {
                 FJournalRow.LastTransactionNumber = 0;
             }
-
-            SetTransactionDefaultView(true);
         }
 
         /// <summary>
