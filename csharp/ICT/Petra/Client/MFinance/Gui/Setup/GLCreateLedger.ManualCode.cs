@@ -46,8 +46,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             nudLedgerNumber.Minimum = 1;
             nudLedgerNumber.Value = 99;
             dtpCalendarStartDate.Date = new DateTime(DateTime.Now.Year, 1, 1);
+            
+            // at the moment we only allow a maximum of 8 forward periods
+            nudNumberOfFwdPostingPeriods.Maximum = 8;
+            nudNumberOfFwdPostingPeriods.Minimum = 1;
             nudNumberOfFwdPostingPeriods.Value = 8;
+            
+            // only allow 12 or 13 periods for now (possibly 14 at a later time if needed)
+            nudNumberOfPeriods.Maximum = 13;
+            nudNumberOfPeriods.Minimum = 12;
             nudNumberOfPeriods.Value = 12;
+            
             nudCurrentPeriod.Value = 1;
             cmbBaseCurrency.SetSelectedString("EUR");
             cmbIntlCurrency.SetSelectedString("USD");
