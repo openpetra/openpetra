@@ -196,7 +196,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
+            if (strOldDetailCostCentreCode.IndexOf(Catalog.GetString("NewCostCentre")) == 0)  // This is the first time the name is being set?
+            {
+                return;
+            }
+
             bool ICanEditCostCentreCode = (nodeDetails.IsNew || !FPetraUtilsObject.HasChanges);
+
             btnRename.Visible = (strOldDetailCostCentreCode != txtDetailCostCentreCode.Text) && ICanEditCostCentreCode;
             if (!nodeDetails.IsNew && FPetraUtilsObject.HasChanges) // The user wants to change a cost centre code, but I can't allow it.
             {
@@ -275,11 +281,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (!CantDropHere)
             {
-                CostCentreNodeDetails NodeDetails = (CostCentreNodeDetails)FDragTarget.Tag;
+                CostCentreNodeDetails NodeDetails = GetCostCentreAttributes(FDragTarget);
                 //
                 // I will need to check whether it's OK re-order the world like this...
                 //
-                GetCostCentreAttributes(ref NodeDetails);
 
                 if (!NodeDetails.CanHaveChildren.Value)
                 {
@@ -443,20 +448,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         TreeNode FCurrentNode = null;
 
-        private void GetCostCentreAttributes(ref CostCentreNodeDetails ANodeDetails)
+        private CostCentreNodeDetails GetCostCentreAttributes(TreeNode ANode)
         {
-            if (!ANodeDetails.CanHaveChildren.HasValue || !ANodeDetails.CanDelete.HasValue)
+            CostCentreNodeDetails nodeDetails = (CostCentreNodeDetails)ANode.Tag;
+            if (nodeDetails.IsNew)
+            {
+                nodeDetails.CanHaveChildren = true;
+                nodeDetails.CanDelete = (ANode.Nodes.Count == 0);
+                return nodeDetails;
+            }
+
+            if (!nodeDetails.CanHaveChildren.HasValue || !nodeDetails.CanDelete.HasValue)
             {
                 bool RemoteCanBeParent = false;
                 bool RemoteCanDelete = false;
 
-                if (TRemote.MFinance.Setup.WebConnectors.GetCostCentreAttributes(FLedgerNumber, ANodeDetails.CostCentreRow.CostCentreCode,
+                if (TRemote.MFinance.Setup.WebConnectors.GetCostCentreAttributes(FLedgerNumber, nodeDetails.CostCentreRow.CostCentreCode,
                         out RemoteCanBeParent, out RemoteCanDelete))
                 {
-                    ANodeDetails.CanHaveChildren = RemoteCanBeParent;
-                    ANodeDetails.CanDelete = RemoteCanDelete;
+                    nodeDetails.CanHaveChildren = RemoteCanBeParent;
+                    nodeDetails.CanDelete = RemoteCanDelete;
                 }
             }
+            return nodeDetails;
         }
 
         private void TreeViewAfterSelect(object sender, TreeViewEventArgs e)
@@ -495,9 +509,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (ValidateAllData(true, true))
             {
-                CostCentreNodeDetails ParentNodeDetails = (CostCentreNodeDetails)FCurrentNode.Tag;
+                CostCentreNodeDetails ParentNodeDetails = GetCostCentreAttributes(FCurrentNode);
                 ACostCentreRow ParentRow = ParentNodeDetails.CostCentreRow;
-                GetCostCentreAttributes(ref ParentNodeDetails);
 
                 if (!ParentNodeDetails.CanHaveChildren.Value)
                 {
@@ -522,19 +535,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     newName += countNewCostCentre.ToString();
                 }
 
-                ACostCentreRow parentCostCentre =
-                    (ACostCentreRow)FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber, ParentRow.CostCentreCode });
-
                 ACostCentreRow newCostCentre = FMainDS.ACostCentre.NewRowTyped();
                 newCostCentre.CostCentreCode = newName;
                 newCostCentre.LedgerNumber = FLedgerNumber;
                 newCostCentre.CostCentreActiveFlag = true;
-                newCostCentre.CostCentreType = parentCostCentre.CostCentreType;
+                newCostCentre.CostCentreType = ParentRow.CostCentreType;
                 newCostCentre.PostingCostCentreFlag = true;
-                newCostCentre.CostCentreToReportTo = parentCostCentre.CostCentreCode;
+                newCostCentre.CostCentreToReportTo = ParentRow.CostCentreCode;
                 FMainDS.ACostCentre.Rows.Add(newCostCentre);
 
-                parentCostCentre.PostingCostCentreFlag = false;
+                ParentRow.PostingCostCentreFlag = false;
+                ParentNodeDetails.CanDelete = false;
 
                 trvCostCentres.BeginUpdate();
                 TreeNode newNode = FCurrentNode.Nodes.Add(newName);
@@ -654,19 +665,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 return;
             }
-            CostCentreNodeDetails NodeDetails = (CostCentreNodeDetails)FCurrentNode.Tag;
-
-            GetCostCentreAttributes(ref NodeDetails);
+            CostCentreNodeDetails NodeDetails = GetCostCentreAttributes(FCurrentNode);
 
             if (NodeDetails.CanDelete.Value)
             {
                 ACostCentreRow SelectedRow = NodeDetails.CostCentreRow;
-                SelectedRow.Delete();
-                TreeNode SelectThisNode = FCurrentNode.Parent;
+                TreeNode DeletedNode = FCurrentNode;
+                TreeNode ParentNode = FCurrentNode.Parent;
+                trvCostCentres.SelectedNode = ParentNode;
                 FIAmDeleting = true;
-                trvCostCentres.Nodes.Remove(FCurrentNode);
+                trvCostCentres.Nodes.Remove(DeletedNode);
+                SelectedRow.Delete();
                 FIAmDeleting = false;
-                trvCostCentres.SelectedNode = SelectThisNode;
+
+                                                     // If just I added a sub-tree and I decide I don't want it, I might be about to remove the parent too.
+                GetCostCentreAttributes(ParentNode); // This will set CanDelete in the parent if it is new and has no further children.
+
                 FPetraUtilsObject.SetChangedFlag();
             }
             else

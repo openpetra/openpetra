@@ -10,10 +10,10 @@ RootNode:
     WindowWidth: 680
     WindowHeight: 650
     Actions:
-        actAddNewAccount: {Label=Add Account, ActionClick=AddNewAccount}
-        actDeleteUnusedAccount: {Label=Delete Account, Help=This only works for accounts that have not been used yet; otherwise deactivate the account, ActionClick=DeleteUnusedAccount}
-        actImportHierarchy: {Help: This only works for accounts that have no transactions yet, ActionClick=ImportHierarchy}
-        actExportHierarchy: {ActionClick=ExportHierarchy}
+        actAddNewAccount: {Label=&Add Account, ActionClick=AddNewAccount}
+        actDeleteUnusedAccount: {Label=&Delete Account, Help=This only works for accounts that have not been used yet; otherwise deactivate the account, ActionClick=DeleteUnusedAccount}
+        actImportHierarchy: {Label=&Import Hierarchy, Help: This only works for accounts that have no transactions yet, ActionClick=ImportHierarchy}
+        actExportHierarchy: {Label=&Export Hierarchy, ActionClick=ExportHierarchy}
     Controls:
         pnlContent:
             Controls: [sptAccountSplitter]

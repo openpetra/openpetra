@@ -10,11 +10,11 @@ RootNode:
     WindowWidth: 600
     WindowHeight: 500
     Actions:
-        actAddNewCostCentre: {Label=Add Cost Centre, ActionClick=AddNewCostCentre}
-        actDeleteCostCentre: {Label=Delete Cost Centre, ActionClick=DeleteCostCentre}
-        actExportHierarchy: {ActionClick=ExportHierarchy}
-        actImportHierarchy: {ActionClick=ImportHierarchy}
-        actLinkPartner: {ActionClick=LinkPartnerCostCentre}
+        actAddNewCostCentre: {Label=&Add Cost Centre, ActionClick=AddNewCostCentre}
+        actDeleteCostCentre: {Label=&Delete Cost Centre, ActionClick=DeleteCostCentre}
+        actExportHierarchy: {Label=&Export Hierarchy, ActionClick=ExportHierarchy}
+        actImportHierarchy: {Label=&Import Hierarchy, ActionClick=ImportHierarchy}
+        actLinkPartner: {Label=&Link Partners, ActionClick=LinkPartnerCostCentre}
     Controls:
         pnlContent:
             Controls: [sptSplitter]
