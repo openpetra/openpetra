@@ -93,11 +93,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             public AAccountHierarchyDetailRow DetailRow;
         };
 
-        private void InitializeManualCode()
-        {
-            txtDetailEngAccountCodeLongDesc.LostFocus += new EventHandler(AutoFillDescriptions);
-        }
-
         //
         // Drag and drop methods
         // (Mostly copied from Microsoft example code) :
@@ -279,6 +274,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             txtDetailAccountCode.TextChanged += new EventHandler(txtDetailAccountCode_TextChanged);
             chkDetailForeignCurrencyFlag.CheckedChanged += new EventHandler(chkDetailForeignCurrencyFlag_CheckedChanged);
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnHierarchySaved);
+            FPetraUtilsObject.ControlChanged += new TValueChangedHandler(FPetraUtilsObject_ControlChanged);
+            txtDetailEngAccountCodeLongDesc.LostFocus += new EventHandler(AutoFillDescriptions);
+
             FIAmUpdating = false;
             FNameForNewAccounts = Catalog.GetString("NewAccount");
 
@@ -296,6 +294,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // ex.Message is: DragDrop registration did not succeed.
                 // Inner exception is: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made.
             }
+        }
+
+        void FPetraUtilsObject_ControlChanged(Control Sender)
+        {
+            FCurrentNode.Text = NodeLabel(txtDetailAccountCode.Text, txtDetailEngAccountCodeShortDesc.Text);
         }
 
         void chkDetailForeignCurrencyFlag_CheckedChanged(object sender, EventArgs e)
@@ -323,6 +326,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 txtDetailAccountCodeShortDesc.Text = NewText;
             }
+            FPetraUtilsObject_ControlChanged(txtDetailEngAccountCodeLongDesc);
         }
 
         /// <summary>
@@ -471,6 +475,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             return nodeDetails;
         }
 
+        private String NodeLabel(String name, String Descr)
+        {
+            string Label = name;
+
+            if (Descr != "")
+            {
+                Label += " (" + Descr + ")";
+            }
+            return Label;
+        }
+
         private String NodeLabel(AAccountRow ARow)
         {
             if (ARow == null)
@@ -483,13 +498,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return "(deleted)";
             }
 
-            string Label = ARow.AccountCode;
-
-            if (!ARow.IsAccountCodeShortDescNull())
-            {
-                Label += " (" + ARow.AccountCodeShortDesc + ")";
-            }
-            return Label;
+            return NodeLabel(ARow.AccountCode, ARow.AccountCodeShortDesc);
         }
 
         private void TreeViewAfterSelect(object sender, TreeViewEventArgs treeViewEventArgs)
@@ -559,7 +568,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 // I allow the user to attempt to change the primary key,
                 // but if the selected record is not new, AND they have made any other changes,
-                // the txtDetailAccountCode_TextChanged method will disallow any change.
+                // the txtDetailAccountCode _TextChanged method will disallow any change.
                 SetPrimaryKeyReadOnly(false);
                 btnRename.Visible = false;
             }
@@ -584,6 +593,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (strOldDetailAccountCode.IndexOf(Catalog.GetString(FNameForNewAccounts)) == 0)  // This is the first time the name is being set?
             {
+                FPetraUtilsObject_ControlChanged(txtDetailAccountCode);
                 return;
             }
 
@@ -597,6 +607,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 MessageBox.Show(Catalog.GetString("Account Codes cannot be changed while there are other unsaved changes.\r\nSave first, then rename the Account."),
                     Catalog.GetString("Rename Account"),
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            }
+            else
+            {
+                FPetraUtilsObject_ControlChanged(txtDetailAccountCode);
             }
         }
 
@@ -613,6 +627,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
+            ValidateAllData(true, false);
             string newName = FNameForNewAccounts;
             Int32 countNewAccount = 0;
 
@@ -796,7 +811,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 AccountToBeDeleted.Delete();
                 FPetraUtilsObject.SetChangedFlag();
 
-                // if parent of deleted node has no children, mark as posting account
+                // If the parent of the deleted node has no further children, mark it as posting account.
                 // TODO: this also works only if there is just one account hierarchy
                 if (trvAccounts.SelectedNode.Nodes.Count == 0)
                 {
@@ -809,13 +824,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// This routine is the manual part of FileSave()
+        /// Called from ValidateAllData
         /// </summary>
         private void GetDataFromControlsManual()
         {
             if (FCurrentNode != null)
             {
+                AutoFillDescriptions(null, null);
                 GetDetailsFromControls(GetSelectedDetailRowManual());
+                FCurrentNode.Text = NodeLabel(GetSelectedDetailRowManual());
             }
         }
 
@@ -826,9 +843,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return null;
             }
 
-            return (GLSetupTDSAAccountRow)FMainDS.AAccount.Rows.Find(
-                new object[] { FLedgerNumber,
-                               ((AccountNodeDetails)FCurrentNode.Tag).DetailRow.ReportingAccountCode });
+            return (GLSetupTDSAAccountRow)((AccountNodeDetails)FCurrentNode.Tag).AccountRow;
         }
 
         /// <summary>
