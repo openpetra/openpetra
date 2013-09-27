@@ -337,6 +337,11 @@ useful parameters
   <nant inheritall="false" target="test-without-display" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
 </target>
 
+<target name="test-main-navigation-screens" depends="initConfigFiles">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+  <nant inheritall="false" target="test-main-navigation-screens" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
+</target>
+
 <target name="enable-sqlite-config-for-jenkins">
     <echo file="OpenPetra.build.config">&lt;?xml version="1.0"?>
 &lt;project name="OpenPetra-userconfig">
