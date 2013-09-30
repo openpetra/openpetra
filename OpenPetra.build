@@ -28,6 +28,8 @@ list of available commands:
   deleteBakFiles: delete all backup files
   initConfigFiles: write and overwrite the config files for client, server and testing, and the version.txt
   test: will run the NUnit tests
+      nant test-without-display             runs all basic tests (excl. GUI tests)
+      nant test-main-navigation-screens     tests the opening of all screens from the main menu
   devzip: build a zip file for developers for easy start
 
 compat:
