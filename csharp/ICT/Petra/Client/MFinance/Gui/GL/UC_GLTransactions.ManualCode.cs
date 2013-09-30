@@ -591,13 +591,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             int analTypeCodeValuesCount = FCacheDS.AFreeformAnalysis.DefaultView.Count;
 
+            string[] analTypeValues = new string[analTypeCodeValuesCount];
+
             if (analTypeCodeValuesCount == 0)
             {
                 MessageBox.Show("No analysis attribute type codes present!");
-                return;
             }
+            FCacheDS.AFreeformAnalysis.DefaultView.Sort = AFreeformAnalysisTable.GetAnalysisValueDBName();
 
-            string[] analTypeValues = new string[analTypeCodeValuesCount];
 
             int counter = 0;
 
@@ -605,16 +606,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 AFreeformAnalysisRow faRow = (AFreeformAnalysisRow)dvr.Row;
                 analTypeValues[counter] = faRow.AnalysisValue;
-
                 counter++;
             }
 
             //Refresh the combo values
             FAnalAttribTypeVal.StandardValuesExclusive = true;
             FAnalAttribTypeVal.StandardValues = analTypeValues;
-            Int32 RowNumber;
 
-            RowNumber = grdAnalAttributes.GetFirstHighlightedRowIndex();
+            Int32 RowNumber = grdAnalAttributes.GetFirstHighlightedRowIndex();
             FAnalAttribTypeVal.EnableEdit = true;
             FAnalAttribTypeVal.EditableMode = EditableMode.Focus;
             grdAnalAttributes.Selection.Focus(new Position(RowNumber, grdAnalAttributes.Columns.Count - 1), true);
