@@ -175,6 +175,9 @@ namespace Tests.MainNavigationScreens
         // be a way of telling NUnit to execute a single method with 1..n Cultures,
         // accoring to the authors of NUnit...
         
+        /// <summary>
+        /// Runs the <see cref="TestOpenAllWindows" /> Method under en_US Culture. 
+        /// </summary>
         [Test]
         [SetCulture("en-US")]
         public void TestOpenAllWindows_en_US()
@@ -182,6 +185,9 @@ namespace Tests.MainNavigationScreens
             TestOpenAllWindows();
         }
         
+        /// <summary>
+        /// Runs the <see cref="TestOpenAllWindows" /> Method under en_GB Culture. 
+        /// </summary>
         [Test]
         [SetCulture("en-GB")]
         public void TestOpenAllWindows_en_GB()
@@ -189,6 +195,9 @@ namespace Tests.MainNavigationScreens
             TestOpenAllWindows();
         }
         
+        /// <summary>
+        /// Runs the <see cref="TestOpenAllWindows" /> Method under de_DE Culture. 
+        /// </summary>
         [Test]
         [SetCulture("de-DE")]
         public void TestOpenAllWindows_de_DE()
@@ -196,6 +205,9 @@ namespace Tests.MainNavigationScreens
             TestOpenAllWindows();
         }
         
+        /// <summary>
+        /// Runs the <see cref="TestOpenAllWindows" /> Method under de_AT Culture. 
+        /// </summary>
         [Test]
         [SetCulture("de-AT")]
         public void TestOpenAllWindows_de_AT()
@@ -203,6 +215,9 @@ namespace Tests.MainNavigationScreens
             TestOpenAllWindows();
         }
         
+        /// <summary>
+        /// Runs the <see cref="TestOpenAllWindows" /> Method under fr_FR Culture. 
+        /// </summary>
         [Test]
         [SetCulture("fr-FR")]
         public void TestOpenAllWindows_fr_FR()
