@@ -463,7 +463,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             && !((childctrl.HasAttribute("StartNewButtonGroup"))
                                  && (childctrl.GetAttribute("StartNewButtonGroup").ToLower() == "true")))
                         {
-                            TLogging.LogAtLevel(1, 
+                            TLogging.LogAtLevel(1,
                                 "Adjusted ControlLeftPosition for Control '" + childctrl.controlName +
                                 "' as it is on a horizontal Grid Button Panel.");
                             ControlLeftPosition -= 8;

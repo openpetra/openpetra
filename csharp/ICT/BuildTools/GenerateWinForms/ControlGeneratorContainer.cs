@@ -1146,7 +1146,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         if (FCodeStorage.FControlList[controlName].GetAttribute("NoLabel", "false").ToLower() == "true")
                         {
                             // The cloned-from control has no label so we can only do domething if the YAML specifies a label text
-                            if (controlAttributes != null && controlAttributes["Label"] != null)
+                            if ((controlAttributes != null) && (controlAttributes["Label"] != null))
                             {
                                 // the cloned-from control has no label so we will need to create one to clone from
                                 CreateCloneableControl(writer, lblName, "Label", controlAttributes["Label"].Value, ATargetCodelet);
