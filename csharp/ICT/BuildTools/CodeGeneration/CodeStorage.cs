@@ -1066,10 +1066,11 @@ namespace Ict.Tools.CodeGeneration
                 TControlDef ParentControl = FCodeStorage.GetControl(this.parentName);
                 TLogging.LogAtLevel(1, "IsOnHorizontalGridButtonPanel:   Control: " + this.controlName + "; Parent: " + this.parentName);
                 TLogging.LogAtLevel(1, "IsOnHorizontalGridButtonPanel result: " + (IsOnGridButtonPanel
-                                                                         && ((ParentControl == null)
-                                                                             || (ParentControl.HasAttribute("ControlsOrientation"))
-                                                                             && (ParentControl.GetAttribute("ControlsOrientation").ToLower() ==
-                                                                                 "horizontal"))).ToString());
+                                                                                   && ((ParentControl == null)
+                                                                                       || (ParentControl.HasAttribute("ControlsOrientation"))
+                                                                                       && (ParentControl.GetAttribute("ControlsOrientation").ToLower()
+                                                                                           ==
+                                                                                           "horizontal"))).ToString());
                 return IsOnGridButtonPanel
                        && ((ParentControl == null)
                            || (ParentControl.HasAttribute("ControlsOrientation"))
