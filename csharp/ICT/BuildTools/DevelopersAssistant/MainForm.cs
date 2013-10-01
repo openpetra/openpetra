@@ -354,9 +354,11 @@ namespace Ict.Tools.DevelopersAssistant
 
             string tryPath = dlg.SelectedPath;
             bool bValidChoice = true;
+
             if (!File.Exists(tryPath + @"\OpenPetra.Build"))
             {
                 tryPath = Path.Combine(tryPath, "trunk");
+
                 if (!File.Exists(tryPath + @"\OpenPetra.Build"))
                 {
                     bValidChoice = false;
@@ -1205,23 +1207,7 @@ namespace Ict.Tools.DevelopersAssistant
             int NumFailures = 0;
             int NumWarnings = 0;
 
-            if (chkAutoStartServer.Checked && chkStartClientAfterGenerateWinform.Checked)
-            {
-                // This is a case where we need to auto-start the server first
-                GetServerState();
-
-                if (!_serverIsRunning)
-                {
-                    RunSimpleNantTarget(new NantTask(NantTask.TaskItem.startPetraServer), ref NumFailures, ref NumWarnings);
-                }
-            }
-
-            // Now we are ready to perform the original task
-            if (NumFailures == 0)
-            {
-                // This is the one that is different from the rest
-                RunGenerateWinform(ref NumFailures, ref NumWarnings);
-            }
+            RunGenerateWinform(ref NumFailures, ref NumWarnings);
 
             txtOutput.Text = (chkVerbose.Checked) ? OutputText.VerboseOutput : OutputText.ConciseOutput;
 
@@ -1431,6 +1417,13 @@ namespace Ict.Tools.DevelopersAssistant
 
                 if ((NumFailures == 0) && ((NumWarnings == 0) || !chkTreatWarningsAsErrors.Checked) && chkStartClientAfterGenerateWinform.Checked)
                 {
+                    GetServerState();
+
+                    if (!_serverIsRunning)
+                    {
+                        RunNestedTask(NantTask.TaskItem.startPetraServer, dlg, ref NumFailures, ref NumWarnings);
+                    }
+
                     RunNestedTask(NantTask.TaskItem.startPetraClient, dlg, ref NumFailures, ref NumWarnings);
                 }
             }
@@ -1448,18 +1441,36 @@ namespace Ict.Tools.DevelopersAssistant
         private void RunNestedTask(NantTask.TaskItem NestedTask, ProgressDialog SplashDialog, ref int NumFailures, ref int NumWarnings)
         {
             NantTask nestedTask = new NantTask(NestedTask);
+
             OutputText.AppendText(OutputText.OutputStream.Both, String.Format("~~~~~~~~~~~~~~~~ {0} ...\r\n", nestedTask.LogText));
             SplashDialog.lblStatus.Text = nestedTask.StatusText;
             SplashDialog.lblStatus.Refresh();
 
-            if (NantExecutor.RunGenericNantTarget(txtBranchLocation.Text, nestedTask.TargetName))
+            if (NestedTask == NantTask.TaskItem.startPetraServer)
             {
-                // It ran successfully - let us check the output ...
-                OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\opda.txt", ref NumFailures, ref NumWarnings);
+                if (NantExecutor.StartServer(txtBranchLocation.Text, _localSettings.MinimiseServerAtStartup))
+                {
+                    // It ran successfully - let us check the output ...
+                    OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\opda.txt", ref NumFailures, ref NumWarnings);
+                    GetServerState();
+                    SetEnabledStates();
+                }
+                else
+                {
+                    NumFailures++;
+                }
             }
             else
             {
-                NumFailures++;
+                if (NantExecutor.RunGenericNantTarget(txtBranchLocation.Text, nestedTask.TargetName))
+                {
+                    // It ran successfully - let us check the output ...
+                    OutputText.AddLogFileOutput(txtBranchLocation.Text + @"\opda.txt", ref NumFailures, ref NumWarnings);
+                }
+                else
+                {
+                    NumFailures++;
+                }
             }
         }
 

@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -197,7 +198,23 @@ namespace Ict.Tools.DevelopersAssistant
         /// <returns>True if nant.bat was launched successfully.  Check the log file to see if the command actually succeeded.</returns>
         public static bool RunGenericNantTarget(string BranchLocation, string NantTarget)
         {
-            return LaunchExe("nant.bat", String.Format("{0}  -logfile:opda.txt", NantTarget), BranchLocation);
+            if ((NantTarget == "test-main-navigation-screens-core") && !IsServerRunning())
+            {
+                // Final chance to start the server for any task that requires it
+                StartServer(BranchLocation, true);
+            }
+
+            PlatformID platform = Environment.OSVersion.Platform;
+
+            if ((platform == PlatformID.MacOSX) || (platform == PlatformID.Unix))
+            {
+                // Unix does not support the redirect character, so we use the logfile command line - but this gives less output
+                return LaunchExe("nant.bat", String.Format("{0}  -logfile:opda.txt", NantTarget), BranchLocation);
+            }
+            else
+            {
+                return LaunchExe("nant.bat", String.Format("{0} > opda.txt", NantTarget), BranchLocation);
+            }
         }
 
         /// <summary>
@@ -218,7 +235,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             string initialDir = System.IO.Path.Combine(BranchLocation, "csharp\\ICT\\Petra\\Client");
 
-            return LaunchExe("nant.bat", String.Format("generateWinform  -D:file={0}  -D:donotcompile=true  -logfile:opda.txt",
+            return LaunchExe("nant.bat", String.Format("generateWinformNoCompile  -D:file={0}  -logfile:opda.txt",
                     YAMLPath), initialDir);
         }
 

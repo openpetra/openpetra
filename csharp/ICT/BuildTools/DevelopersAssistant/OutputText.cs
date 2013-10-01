@@ -236,12 +236,14 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 using (StreamReader sr = new StreamReader(path))
                 {
-                    return sr.ReadToEnd();
+                    string content = sr.ReadToEnd();
+                    sr.Close();
+                    return content;
                 }
             }
             catch (Exception)
             {
-                return "";
+                return String.Empty;
             }
         }
 
