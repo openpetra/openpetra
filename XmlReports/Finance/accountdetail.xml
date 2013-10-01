@@ -224,7 +224,7 @@
           </queryDetail>
         </query>
       </calculation>
-
+<!--
       <calculation id="Transaction Currency"
           returnsFormat="text" returns="text" align="left">
         <caption>
@@ -236,11 +236,12 @@
           </queryDetail>
         </query>
       </calculation>
+-->
 
       <calculation id="Transaction Narrative"
           returnsFormat="text" returns="text" align="left">
         <caption>
-          <value text=" "/>
+          <value text="Narrative"/>
         </caption>
         <query>
           <queryDetail>
@@ -385,10 +386,10 @@
             <value function="getSumLower2Report({{lineId}}, {{column}})"/>
           </field>
           <if condition="not(isNull(param_start_period_i))" >
-            <field whichfield="column 4" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
+            <field whichfield="column 3" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
               <value function="getSumLower2Report({{lineId}}, {{column}})"/>
             </field>
-            <field whichfield="column 5" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
+            <field whichfield="column 4" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
               <value function="getSumLower2Report({{lineId}}, {{column}})"/>
             </field>
           </if>
@@ -435,10 +436,10 @@
             <value function="getSumLower2Report({{lineId}}, {{column}})"/>
           </field>
           <if condition="not(isNull(param_start_period_i))" >
-            <field whichfield="column 4" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
+            <field whichfield="column 3" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
               <value function="getSumLower2Report({{lineId}}, {{column}})"/>
             </field>
-            <field whichfield="column 5" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
+            <field whichfield="column 4" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
               <value function="getSumLower2Report({{lineId}}, {{column}})"/>
             </field>
           </if>
@@ -486,10 +487,10 @@
             <value function="getSumLower2Report({{lineId}}, {{column}})"/>
           </field>
           <if condition="not(isNull(param_start_period_i))" >
-            <field whichfield="column 4" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
+            <field whichfield="column 3" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
               <value function="getSumLower2Report({{lineId}}, {{column}})"/>
             </field>
-            <field whichfield="column 5" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
+            <field whichfield="column 4" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
               <value function="getSumLower2Report({{lineId}}, {{column}})"/>
             </field>
           </if>
@@ -598,10 +599,10 @@
             </field>
           </if>
           <if condition="not(isNull(param_start_period_i))" >
-            <field calculation="GetGLMSequences" whichfield="column 4" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
+            <field calculation="GetGLMSequences" whichfield="column 3" format ="#,##0.00 CR;#,##0.00 DR;0.00; ">
               <value calculation="Start Balance CostCentre"/>
             </field>
-            <field calculation="GetGLMSequences" whichfield="column 5" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
+            <field calculation="GetGLMSequences" whichfield="column 4" format="#,##0.00 CR;#,##0.00 DR;0.00; ">
               <value calculation="End Balance CostCentre"/>
             </field>
           </if>
