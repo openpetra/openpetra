@@ -70,7 +70,8 @@ namespace Ict.Tools.FilterButtonWiki
                 "The table listings consist of only those files that have a grid, a details panel and a buttons panel.");
             FLogFile.WriteLine("{| border=\"1\" cellpadding=\"5\" cellspacing=\"0\"");
 
-            FLogFile.WriteLine("!Filename !! Has Grid !! Has Details !! Has Buttons !! Has All !! Has Filter/Find !! Has Manual RowFilter !! Mantis !! Comments");
+            FLogFile.WriteLine(
+                "!Filename !! Has Grid !! Has Details !! Has Buttons !! Has All !! Has Filter/Find !! Has Manual RowFilter !! Mantis !! Comments");
 
             foreach (string tryPath in AListToCheck)
             {
@@ -90,72 +91,72 @@ namespace Ict.Tools.FilterButtonWiki
             }
 
             using (StreamReader srManual = new StreamReader(manualPath))
-            using (StreamReader srYAML = new StreamReader(AYAMLPath))
-            {
-                string yml = srYAML.ReadToEnd();
-                string manual = srManual.ReadToEnd();
-
-                string shortYAMLPath = AYAMLPath.Substring(FBaseClientPath.Length + 1);
-
-                bool bHasGrid = yml.Contains("grdDetails:");
-                bool bHasDetails = yml.Contains("pnlDetails:");
-                bool bHasButtons = yml.Contains("pnlButtons:") || yml.Contains("pnlDetailButtons");
-                bool bHasFilterFind = yml.Contains("[pnlFilterAndFind,");
-                bool bHasManualRowFilter = manual.Contains(".RowFilter = ");
-
-                if (!bHasGrid && !bHasDetails && !bHasButtons)
+                using (StreamReader srYAML = new StreamReader(AYAMLPath))
                 {
-                    return;
+                    string yml = srYAML.ReadToEnd();
+                    string manual = srManual.ReadToEnd();
+
+                    string shortYAMLPath = AYAMLPath.Substring(FBaseClientPath.Length + 1);
+
+                    bool bHasGrid = yml.Contains("grdDetails:");
+                    bool bHasDetails = yml.Contains("pnlDetails:");
+                    bool bHasButtons = yml.Contains("pnlButtons:") || yml.Contains("pnlDetailButtons");
+                    bool bHasFilterFind = yml.Contains("[pnlFilterAndFind,");
+                    bool bHasManualRowFilter = manual.Contains(".RowFilter = ");
+
+                    if (!bHasGrid && !bHasDetails && !bHasButtons)
+                    {
+                        return;
+                    }
+
+                    if (bHasGrid)
+                    {
+                        FGridCount++;
+                    }
+
+                    if (bHasDetails)
+                    {
+                        FPnlDetailsCount++;
+                    }
+
+                    if (bHasButtons)
+                    {
+                        FPnlButtonsCount++;
+                    }
+
+                    if (bHasFilterFind)
+                    {
+                        FPnlFilterFindCount++;
+                    }
+
+                    if (bHasButtons && bHasDetails && bHasGrid)
+                    {
+                        FCountWithAll++;
+                    }
+
+                    // Start new row: col1 is filename
+                    FLogFile.WriteLine("|-");
+                    FLogFile.WriteLine("|{0}", shortYAMLPath);
+
+                    // Col2: HasGrid, Col3: Haspnldetails, Col4: Has pnlButtons, Col5: HasAll, Col6: Has pnlFilterFind, Col7: Manual RowFilter, Col8: Comment
+                    FLogFile.WriteLine(bHasGrid ? "|Yes" : "|No");
+                    FLogFile.WriteLine(bHasDetails ? "|Yes" : "|No");
+                    FLogFile.WriteLine(bHasButtons ? "|Yes" : "|No");
+                    FLogFile.WriteLine(bHasGrid && bHasButtons && bHasDetails ? "|Yes" : "|style=\"background:LightSkyBlue\" |No");
+                    FLogFile.WriteLine(bHasFilterFind ? "|style=\"background:LightSkyBlue\" |Yes" : "|No");
+                    FLogFile.WriteLine(bHasManualRowFilter ? "|style=\"background:Yellow\" |Yes" : "|No");
+
+                    // is there a Mantis Bug?
+                    FLogFile.Write("|");
+                    string fileName = Path.GetFileName(AYAMLPath);
+                    XmlNode featureNode = FMetaDataMantis.SelectSingleNode(String.Format("feature[@key='{0}']", fileName));
+                    FLogFile.WriteLine(featureNode == null ? String.Empty : featureNode.Attributes["value"].Value);
+
+                    // is there a comment for this file?
+                    FLogFile.Write("|");
+                    XmlNode commentNode = FMetaDataComments.SelectSingleNode(String.Format("comment[@key='{0}']", fileName));
+                    FLogFile.WriteLine(commentNode == null ? String.Empty : commentNode.Attributes["value"].Value);
                 }
-
-                if (bHasGrid)
-                {
-                    FGridCount++;
-                }
-
-                if (bHasDetails)
-                {
-                    FPnlDetailsCount++;
-                }
-
-                if (bHasButtons)
-                {
-                    FPnlButtonsCount++;
-                }
-
-                if (bHasFilterFind)
-                {
-                    FPnlFilterFindCount++;
-                }
-
-                if (bHasButtons && bHasDetails && bHasGrid)
-                {
-                    FCountWithAll++;
-                }
-
-                // Start new row: col1 is filename
-                FLogFile.WriteLine("|-");
-                FLogFile.WriteLine("|{0}", shortYAMLPath);
-
-                // Col2: HasGrid, Col3: Haspnldetails, Col4: Has pnlButtons, Col5: HasAll, Col6: Has pnlFilterFind, Col7: Manual RowFilter, Col8: Comment
-                FLogFile.WriteLine(bHasGrid ? "|Yes" : "|No");
-                FLogFile.WriteLine(bHasDetails ? "|Yes" : "|No");
-                FLogFile.WriteLine(bHasButtons ? "|Yes" : "|No");
-                FLogFile.WriteLine(bHasGrid && bHasButtons && bHasDetails ? "|Yes" : "|style=\"background:LightSkyBlue\" |No");
-                FLogFile.WriteLine(bHasFilterFind ? "|style=\"background:LightSkyBlue\" |Yes" : "|No");
-                FLogFile.WriteLine(bHasManualRowFilter ? "|style=\"background:Yellow\" |Yes" : "|No");
-
-                // is there a Mantis Bug?
-                FLogFile.Write("|");
-                string fileName = Path.GetFileName(AYAMLPath);
-                XmlNode featureNode = FMetaDataMantis.SelectSingleNode(String.Format("feature[@key='{0}']", fileName));
-                FLogFile.WriteLine(featureNode == null ? String.Empty : featureNode.Attributes["value"].Value);
-
-                // is there a comment for this file?
-                FLogFile.Write("|");
-                XmlNode commentNode = FMetaDataComments.SelectSingleNode(String.Format("comment[@key='{0}']", fileName));
-                FLogFile.WriteLine(commentNode == null ? String.Empty : commentNode.Attributes["value"].Value);
-            }
         }
 
         /// <summary>
@@ -170,6 +171,7 @@ namespace Ict.Tools.FilterButtonWiki
 
             XmlDocument xmlDoc = new XmlDocument();
             string metaDataPath = Path.Combine(rootPath, @"csharp\ICT\BuildTools\FilterButtonWiki\wiki.metadata.xml");
+
             if (File.Exists(metaDataPath))
             {
                 xmlDoc.Load(metaDataPath);
@@ -178,6 +180,7 @@ namespace Ict.Tools.FilterButtonWiki
             {
                 xmlDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><rootnode/>");
             }
+
             FMetaDataComments = xmlDoc.SelectSingleNode("//comments");
             FMetaDataMantis = xmlDoc.SelectSingleNode("//mantis");
 
