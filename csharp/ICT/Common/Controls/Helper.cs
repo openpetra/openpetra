@@ -489,6 +489,10 @@ namespace Ict.Common.Controls
             FBaseFilterShowsAllRecords = ABaseFilterShowsAllRecords;
         }
 
+        /// <summary>
+        /// This method clears the text (or sets checkbox state to indeterminate) on all controls that have a clear button and a filter comparison.
+        /// As the items are cleared an argumentPanelChange event will be fired.
+        /// </summary>
         public void ClearAllDiscretionaryFilters()
         {
             List<TIndividualFilterFindPanel> SearchList;
