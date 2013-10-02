@@ -2349,12 +2349,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             PPartnerTypeAccess.LoadViaPPartner(MainDS, PartnerKey, null);
             PPartnerTypeRow partnerTypeRow;
 
-            if (MainDS.PPartnerType.Rows.Count > 0)
-            {
-                partnerTypeRow = MainDS.PPartnerType[0];
-                partnerTypeRow.TypeCode = MPartnerConstants.PARTNERTYPE_LEDGER;
-            }
-            else
+            // only create special type "LEDGER" if it does not exist yet
+            if (MainDS.PPartnerType.Rows.Find(new object [] {PartnerKey, MPartnerConstants.PARTNERTYPE_LEDGER}) == null)
             {
                 partnerTypeRow = MainDS.PPartnerType.NewRowTyped();
                 partnerTypeRow.PartnerKey = PartnerKey;
