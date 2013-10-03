@@ -188,7 +188,7 @@ namespace Ict.Petra.Shared
         [ErrCodeAttribute("Period date range incorrect.",
              ErrorMessageText = "Period {0} must end one day before the next period begins.")]
         public const String ERR_PERIOD_DATE_RANGE = "FIN.00006V";
-        
+
         #endregion
 
         #region Partner Module-specific error codes

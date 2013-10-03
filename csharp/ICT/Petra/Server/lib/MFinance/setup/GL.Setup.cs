@@ -215,7 +215,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
 
             LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            
+
             if (LedgerTable.Count > 0)
             {
                 LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
@@ -229,7 +229,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             return NumberOfAccountingPeriods;
         }
-        
+
         /// <summary>
         /// returns true if subsystem is activated for given ledger
         /// </summary>
@@ -973,7 +973,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
                 LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
 
-                // initialize variables for accounting periods and forward periods                
+                // initialize variables for accounting periods and forward periods
                 CurrentNumberPeriods = LedgerRow.NumberOfAccountingPeriods;
                 NewNumberPeriods = ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberOfAccountingPeriods;
 
@@ -989,39 +989,38 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     CurrentCalendarStartDate = ((AAccountingPeriodRow)CalendarTable.Rows[0]).PeriodStartDate;
                 }
 
-                // update accounting periods (calendar): 
+                // update accounting periods (calendar):
                 // this only needs to be done if the calendar mode is changed
-                // or if calendar mode is monthly and the start date has changed 
+                // or if calendar mode is monthly and the start date has changed
                 // or if not monthly and number of periods has changed
                 if (((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode != LedgerRow.CalendarMode)
                 {
                     CreateCalendar = true;
                 }
-                else if (   ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode
+                else if (((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode
                          && (ACalendarStartDate != CurrentCalendarStartDate))
                 {
                     CreateCalendar = true;
                 }
-                else if (   !((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode
+                else if (!((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode
                          && (NewNumberPeriods != CurrentNumberPeriods))
                 {
                     CreateCalendar = true;
                 }
-                
-                if (   !CreateCalendar
-                    && NewNumberFwdPostingPeriods < CurrentNumberFwdPostingPeriods)
+
+                if (!CreateCalendar
+                    && (NewNumberFwdPostingPeriods < CurrentNumberFwdPostingPeriods))
                 {
                     CreateCalendar = true;
                 }
 
-                if (   !CreateCalendar
-                    && NewNumberFwdPostingPeriods > CurrentNumberFwdPostingPeriods)
+                if (!CreateCalendar
+                    && (NewNumberFwdPostingPeriods > CurrentNumberFwdPostingPeriods))
                 {
                     // in this case only extend the periods (as there may already be existing transactions)
                     ExtendFwdPeriods = true;
                 }
 
-                
                 // now perform the actual update of accounting periods (calendar)
                 if (CreateCalendar)
                 {
@@ -1047,15 +1046,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         NewAccountingPeriodRow.LedgerNumber = ALedgerNumber;
                         NewAccountingPeriodRow.AccountingPeriodNumber = Period;
                         NewAccountingPeriodRow.PeriodStartDate = PeriodStartDate;
-                        
-                        if (   ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberOfAccountingPeriods == 13 
-                            && Period == 12)
+
+                        if ((((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberOfAccountingPeriods == 13)
+                            && (Period == 12))
                         {
                             // in case of 12 periods the second last period represents the last month except for the very last day
                             NewAccountingPeriodRow.PeriodEndDate = PeriodStartDate.AddMonths(1).AddDays(-2);
                         }
-                        else if (   ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberOfAccountingPeriods == 13 
-                                 && Period == 13)
+                        else if ((((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberOfAccountingPeriods == 13)
+                                 && (Period == 13))
                         {
                             // in case of 13 periods the last period just represents the very last day of the financial year
                             NewAccountingPeriodRow.PeriodEndDate = PeriodStartDate;
@@ -1074,11 +1073,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                         TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
-                    
+
                     CurrentNumberPeriods = NewNumberPeriods;
                 }
 
-                
                 // check if any new forwarding periods need to be created
                 if (CreateCalendar || ExtendFwdPeriods)
                 {
@@ -1193,13 +1191,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                     NewGLMPeriodTable.Rows.Add(NewGLMPeriodRow);
                                 }
                             }
-                            
+
                             // remove periods if the number of periods + forwarding periods has been reduced
                             int NumberOfExistingPeriods = LedgerRow.NumberOfAccountingPeriods + LedgerRow.NumberFwdPostingPeriods;
+
                             while ((NewNumberPeriods + NewNumberFwdPostingPeriods) < NumberOfExistingPeriods)
                             {
                                 AGeneralLedgerMasterPeriodAccess.DeleteByPrimaryKey(GLMPeriodRow.GlmSequence, NumberOfExistingPeriods, Transaction);
-                                
+
                                 NumberOfExistingPeriods--;
                             }
                         }
@@ -2349,6 +2348,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ledgerRow.CountryCode = ACountryCode;
             ledgerRow.ForexGainsLossesAccount = "5003";
             ledgerRow.PartnerKey = PartnerKey;
+
             if (ANumberOfPeriods == 12)
             {
                 ledgerRow.CalendarMode = true;
@@ -2357,6 +2357,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             {
                 ledgerRow.CalendarMode = false;
             }
+
             MainDS.ALedger.Rows.Add(ledgerRow);
 
             PPartnerRow partnerRow;
@@ -2383,7 +2384,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             PPartnerTypeRow partnerTypeRow;
 
             // only create special type "LEDGER" if it does not exist yet
-            if (MainDS.PPartnerType.Rows.Find(new object [] {PartnerKey, MPartnerConstants.PARTNERTYPE_LEDGER}) == null)
+            if (MainDS.PPartnerType.Rows.Find(new object[] { PartnerKey, MPartnerConstants.PARTNERTYPE_LEDGER }) == null)
             {
                 partnerTypeRow = MainDS.PPartnerType.NewRowTyped();
                 partnerTypeRow.PartnerKey = PartnerKey;
@@ -2471,14 +2472,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 accountingPeriodRow.LedgerNumber = ANewLedgerNumber;
                 accountingPeriodRow.AccountingPeriodNumber = periodNumber;
                 accountingPeriodRow.PeriodStartDate = periodStartDate;
-                if (   ANumberOfPeriods == 13 
-                    && periodNumber == 12)
+
+                if ((ANumberOfPeriods == 13)
+                    && (periodNumber == 12))
                 {
                     // in case of 12 periods the second last period represents the last month except for the very last day
                     accountingPeriodRow.PeriodEndDate = periodStartDate.AddMonths(1).AddDays(-2);
                 }
-                else if (   ANumberOfPeriods == 13 
-                         && periodNumber == 13)
+                else if ((ANumberOfPeriods == 13)
+                         && (periodNumber == 13))
                 {
                     // in case of 13 periods the last period just represents the very last day of the financial year
                     accountingPeriodRow.PeriodEndDate = periodStartDate;
@@ -2487,6 +2489,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 {
                     accountingPeriodRow.PeriodEndDate = periodStartDate.AddMonths(1).AddDays(-1);
                 }
+
                 accountingPeriodRow.AccountingPeriodDesc = periodStartDate.ToString("MMMM");
                 MainDS.AAccountingPeriod.Rows.Add(accountingPeriodRow);
                 periodStartDate = accountingPeriodRow.PeriodEndDate.AddDays(1);

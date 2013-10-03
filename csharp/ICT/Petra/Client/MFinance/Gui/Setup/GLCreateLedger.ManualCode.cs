@@ -46,24 +46,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             nudLedgerNumber.Minimum = 1;
             nudLedgerNumber.Value = 99;
             dtpCalendarStartDate.Date = new DateTime(DateTime.Now.Year, 1, 1);
-            
+
             // at the moment we only allow a maximum of 8 forward periods
             nudNumberOfFwdPostingPeriods.Maximum = 8;
             nudNumberOfFwdPostingPeriods.Minimum = 1;
             nudNumberOfFwdPostingPeriods.Value = 8;
-            
+
             // only allow 12 or 13 periods for now (possibly 14 at a later time if needed)
             nudNumberOfPeriods.Maximum = 13;
             nudNumberOfPeriods.Minimum = 12;
             nudNumberOfPeriods.Value = 12;
-            
+
             nudCurrentPeriod.Value = 1;
             cmbBaseCurrency.SetSelectedString("EUR");
             cmbIntlCurrency.SetSelectedString("USD");
             cmbCountryCode.SetSelectedString("DE");
 
             ActivateGiftReceipting_Changed(null, null);
-            
+
             nudLedgerNumber.KeyDown += numericUpDown_KeyDown;
             nudNumberOfFwdPostingPeriods.KeyDown += numericUpDown_KeyDown;
             nudNumberOfPeriods.KeyDown += numericUpDown_KeyDown;
@@ -203,18 +203,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 Close();
             }
         }
-        
+
         /// <summary>
         /// Checks for only up to 4 digits and no negatives
         /// in a Numeric Up/Down box
         /// </summary>
         private void numericUpDown_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!(e.KeyData == Keys.Back || e.KeyData == Keys.Delete))
+            if (!((e.KeyData == Keys.Back) || (e.KeyData == Keys.Delete)))
             {
                 if (sender == nudLedgerNumber)
                 {
-                    if (nudLedgerNumber.Text.Length >= 4 || e.KeyValue == 109)
+                    if ((nudLedgerNumber.Text.Length >= 4) || (e.KeyValue == 109))
                     {
                         e.SuppressKeyPress = true;
                         e.Handled = true;
@@ -222,7 +222,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
                 else if (sender == nudNumberOfFwdPostingPeriods)
                 {
-                    if (nudNumberOfFwdPostingPeriods.Text.Length >= 2 || e.KeyValue == 109)
+                    if ((nudNumberOfFwdPostingPeriods.Text.Length >= 2) || (e.KeyValue == 109))
                     {
                         e.SuppressKeyPress = true;
                         e.Handled = true;
@@ -230,7 +230,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
                 else if (sender == nudNumberOfPeriods)
                 {
-                    if (nudNumberOfPeriods.Text.Length >= 2 || e.KeyValue == 109)
+                    if ((nudNumberOfPeriods.Text.Length >= 2) || (e.KeyValue == 109))
                     {
                         e.SuppressKeyPress = true;
                         e.Handled = true;
@@ -238,13 +238,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
                 else if (sender == nudCurrentPeriod)
                 {
-                    if (nudCurrentPeriod.Text.Length >= 2 || e.KeyValue == 109)
+                    if ((nudCurrentPeriod.Text.Length >= 2) || (e.KeyValue == 109))
                     {
                         e.SuppressKeyPress = true;
                         e.Handled = true;
                     }
                 }
             }
-        }        
+        }
     }
 }

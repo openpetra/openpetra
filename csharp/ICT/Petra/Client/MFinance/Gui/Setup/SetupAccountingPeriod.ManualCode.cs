@@ -69,13 +69,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 LoadDataAndFinishScreenSetup();
 
-                // activate filter so that forward periods are not shown (they need to be in dataset though as they will 
+                // activate filter so that forward periods are not shown (they need to be in dataset though as they will
                 // be modified alongside the normal periods if dates change)
                 FNumberOfAccountingPeriods = TRemote.MFinance.Setup.WebConnectors.NumberOfAccountingPeriods(FLedgerNumber);
                 FMainDS.AAccountingPeriod.DefaultView.RowFilter = String.Format("{0}>={1} AND {0}<={2}",
                     AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),
                     "1", FNumberOfAccountingPeriods);
-                
+
                 ReadOnly = !TRemote.MFinance.Setup.WebConnectors.IsCalendarChangeAllowed(FLedgerNumber);
             }
         }
@@ -112,14 +112,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             AAccountingPeriodRow FwdPeriodRow;
             AAccountingPeriodRow PeriodRow;
 
-
             // make sure that changes in period dates are applied to existing forward periods
             foreach (DataRow row in FMainDS.AAccountingPeriod.Rows)
             {
                 FwdPeriodRow = (AAccountingPeriodRow)row;
+
                 if (FwdPeriodRow.AccountingPeriodNumber > FNumberOfAccountingPeriods)
                 {
-                    PeriodRow = (AAccountingPeriodRow)FMainDS.AAccountingPeriod.Rows.Find(new object[] {FLedgerNumber, (FwdPeriodRow.AccountingPeriodNumber - FNumberOfAccountingPeriods)});
+                    PeriodRow =
+                        (AAccountingPeriodRow)FMainDS.AAccountingPeriod.Rows.Find(new object[] { FLedgerNumber,
+                                                                                                 (FwdPeriodRow.AccountingPeriodNumber -
+                                                                                                  FNumberOfAccountingPeriods) });
                     FwdPeriodRow.PeriodStartDate = PeriodRow.PeriodStartDate.AddYears(1);
                     FwdPeriodRow.PeriodEndDate = PeriodRow.PeriodEndDate.AddYears(1);
                 }
@@ -140,10 +143,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (FDuringSave)
             {
                 AAccountingPeriodRow PeriodRow;
-                
+
                 foreach (DataRow row in FMainDS.AAccountingPeriod.Rows)
                 {
                     PeriodRow = (AAccountingPeriodRow)row;
+
                     if (PeriodRow.AccountingPeriodNumber <= FNumberOfAccountingPeriods)
                     {
                         // only check gap to next record as otherwise messages would appear twice
@@ -153,11 +157,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
             else
             {
-                // if not within save process then 
+                // if not within save process then
                 ValidateRecord(ARow, true, true);
             }
         }
-        
+
         private void ValidateRecord(AAccountingPeriodRow ARow, Boolean ACheckGapToPrevious, Boolean ACheckGapToNext)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
@@ -168,7 +172,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             DataRow OtherDataRow;
 
             string CurrentDateRangeErrorCode;
-            
+
             if (FDuringSave)
             {
                 CurrentDateRangeErrorCode = PetraErrorCodes.ERR_PERIOD_DATE_RANGE;
@@ -177,7 +181,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 CurrentDateRangeErrorCode = PetraErrorCodes.ERR_PERIOD_DATE_RANGE_WARNING;
             }
-            
+
             // first run through general checks related to the current AccountingPeriod row
             TSharedFinanceValidation_GLSetup.ValidateAccountingPeriod(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
@@ -188,7 +192,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (ACheckGapToPrevious)
             {
                 ValidationColumn = ARow.Table.Columns[AAccountingPeriodTable.ColumnPeriodStartDateId];
-    
+
                 if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
                     if (!ARow.IsPeriodStartDateNull()
@@ -196,11 +200,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         OtherDataRow = FMainDS.AAccountingPeriod.Rows.Find(
                             new string[] { FLedgerNumber.ToString(), (ARow.AccountingPeriodNumber - 1).ToString() });
-    
+
                         if (OtherDataRow != null)
                         {
                             OtherRow = (AAccountingPeriodRow)OtherDataRow;
-    
+
                             if (OtherRow.PeriodEndDate != ARow.PeriodStartDate.Date.AddDays(-1))
                             {
                                 VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
@@ -212,19 +216,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             {
                                 VerificationResult = null;
                             }
-    
+
                             // Handle addition/removal to/from TVerificationResultCollection
                             VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
                         }
                     }
                 }
             }
-            
+
             // check that there is no gap to next accounting period
             if (ACheckGapToNext)
             {
                 ValidationColumn = ARow.Table.Columns[AAccountingPeriodTable.ColumnPeriodEndDateId];
-    
+
                 if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
                     if (!ARow.IsPeriodEndDateNull()
@@ -232,11 +236,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         OtherDataRow = FMainDS.AAccountingPeriod.Rows.Find(
                             new string[] { FLedgerNumber.ToString(), (ARow.AccountingPeriodNumber + 1).ToString() });
-    
+
                         if (OtherDataRow != null)
                         {
                             OtherRow = (AAccountingPeriodRow)OtherDataRow;
-    
+
                             if (OtherRow.PeriodStartDate != ARow.PeriodEndDate.Date.AddDays(1))
                             {
                                 VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
@@ -248,7 +252,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             {
                                 VerificationResult = null;
                             }
-    
+
                             // Handle addition/removal to/from TVerificationResultCollection
                             VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
                         }
@@ -256,6 +260,5 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
             }
         }
-        
     }
 }
