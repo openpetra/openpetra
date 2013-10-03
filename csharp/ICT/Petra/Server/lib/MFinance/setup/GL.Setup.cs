@@ -198,6 +198,39 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
+        /// returns number of accounting periods for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static int NumberOfAccountingPeriods(Int32 ALedgerNumber)
+        {
+            Boolean NewTransaction;
+            int NumberOfAccountingPeriods = 0;
+            ALedgerTable LedgerTable;
+            ALedgerRow LedgerRow;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+
+            LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+            
+            if (LedgerTable.Count > 0)
+            {
+                LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
+                NumberOfAccountingPeriods = LedgerRow.NumberOfAccountingPeriods;
+            }
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return NumberOfAccountingPeriods;
+        }
+        
+        /// <summary>
         /// returns true if subsystem is activated for given ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
