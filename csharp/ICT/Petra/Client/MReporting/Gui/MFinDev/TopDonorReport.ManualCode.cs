@@ -56,7 +56,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             if ((rbtTopDonor.Checked)
                 || (rbtBottomDonor.Checked))
             {
-                txtToPercentage.Text = "0";
+                txtToPercentage.NumberValueInt = 0;
                 txtToPercentage.Enabled = false;
             }
             else if (rbtMiddleDonor.Checked)

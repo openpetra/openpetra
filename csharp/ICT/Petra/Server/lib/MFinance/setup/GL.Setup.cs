@@ -1729,6 +1729,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             newAccountHDetail.AccountHierarchyCode = AMainDS.AAccountHierarchy[0].AccountHierarchyCode;
             newAccountHDetail.AccountCodeToReportTo = AParentAccountCode;
             newAccountHDetail.ReportingAccountCode = AccountCode;
+            newAccountHDetail.ReportOrder = AMainDS.AAccountHierarchyDetail.Rows.Count;
 
             AMainDS.AAccountHierarchyDetail.Rows.Add(newAccountHDetail);
 

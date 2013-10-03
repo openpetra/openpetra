@@ -10,6 +10,6 @@
         <Table sqltable="s_group_table_access_permission"/>
         <Table sqltable="s_user_module_access_permission"/>
         <Table sqltable="s_user_table_access_permission"/>
-    </DataSet> 
+    </DataSet>
     
 </PetraDataSets>

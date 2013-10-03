@@ -1265,7 +1265,7 @@ namespace Ict.Petra.Client.CommonControls
                     break;
 
                 case TListTableEnum.LedgerNameList:
-                    this.ColumnWidthCol1 = 40;
+                    this.ColumnWidthCol1 = 55;
                     this.ColumnWidthCol2 = 200;
                     break;
 

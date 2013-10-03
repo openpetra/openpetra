@@ -153,8 +153,7 @@ namespace Ict.Common.Controls
             {
                 if (value != null)
                 {
-                    ((TextBox)FTxtNumeric).Text = StringHelper.FormatCurrency(new TVariant(value), FCurrencyDisplayFormat);
-//                  ((TextBox)FTxtNumeric).Text = ((decimal)value).ToString(FTxtNumeric.Culture);
+                    FTxtNumeric.SetCurrencyValue(value.Value, FCurrencyDisplayFormat);
                 }
                 else
                 {
@@ -344,7 +343,6 @@ namespace Ict.Common.Controls
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
-            this.FTxtNumeric.Text = Catalog.GetString("1,234.00");
             this.FLblCurrency.Text = Catalog.GetString("WWW");
             #endregion
 

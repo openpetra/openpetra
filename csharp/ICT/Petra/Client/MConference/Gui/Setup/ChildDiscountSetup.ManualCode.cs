@@ -179,14 +179,43 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             if (txtDetailDiscount.Text == "")
             {
                 ARow.Discount = 0;
-                //txtDetailDiscount.Text = "0";
             }
 
             // check that default data exists in database
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            TSharedConferenceValidation_Conference.ValidateChildDiscountSetup(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+            TValidationControlsData ValidationControlsData;
+            TScreenVerificationResult VerificationResult = null;
+            DataColumn ValidationColumn;
+
+            if (ARow.RowState != DataRowState.Deleted)
+            {
+                if (!TRemote.MConference.Conference.WebConnectors.CheckDiscountCriteriaCodeExists(new string[] { ARow.DiscountCriteriaCode }))
+                {
+                    ValidationColumn = ARow.Table.Columns[PcDiscountTable.ColumnDiscountCriteriaCodeId];
+
+                    // displays a warning message
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(this, ErrorCodes.GetErrorInfo(
+                                PetraErrorCodes.ERR_DISCOUNT_CRITERIA_CODE_DOES_NOT_EXIST)),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                }
+
+                if (!TRemote.MConference.Conference.WebConnectors.CheckCostTypeExists(ARow.CostTypeCode))
+                {
+                    ValidationColumn = ARow.Table.Columns[PcDiscountTable.ColumnCostTypeCodeId];
+
+                    // displays a warning message
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(this, ErrorCodes.GetErrorInfo(
+                                PetraErrorCodes.ERR_COST_TYPE_CODE_DOES_NOT_EXIST)),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                }
+            }
 
             EnableOrDisableCmb(ARow);
         }

@@ -30,7 +30,7 @@ using Ict.Common.DB;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
-using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MConference.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -40,7 +40,6 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MConference;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Server.App.Core.Security;
 
 
 namespace Ict.Petra.Server.MConference.Conference.WebConnectors
