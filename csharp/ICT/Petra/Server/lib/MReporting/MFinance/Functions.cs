@@ -515,24 +515,28 @@ namespace Ict.Petra.Server.MReporting.MFinance
             return ReturnValue;
         }
 
+        //
+        // Modified Oct 2013 to use the first pair of Currency columns, rather than only the first two values.
+        //
         private decimal GetNetBalance(int line)
         {
-            decimal ReturnValue;
-            decimal col1;
-            decimal col2;
-            TResult element;
-
-            ReturnValue = 0.0M;
-            element = situation.GetResults().GetFirstChildRow(line);
+            TResult element = situation.GetResults().GetFirstChildRow(line);
 
             if (element != null)
             {
-                col1 = element.column[0].ToDecimal();
-                col2 = element.column[1].ToDecimal();
-                ReturnValue = col1 + col2;
+                Int32 Offset;
+                for (Offset = 0; Offset < element.column.Length; Offset++)
+                {
+                    if (element.column[Offset].TypeVariant == eVariantTypes.eCurrency)
+                    {
+                    decimal col1 = element.column[Offset].ToDecimal();
+                    decimal col2 = element.column[Offset + 1].ToDecimal();
+                    return col1 + col2;
+                    }
+                }
             }
 
-            return ReturnValue;
+            return 0.0M;
         }
 
         /// <summary>
