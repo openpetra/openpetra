@@ -101,10 +101,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             FHas13Periods = (FNumberOfPeriods == 13);
             FHas14Periods = (FNumberOfPeriods == 14);
 
-            FCostCentreTable = (ACostCentreTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
-                FLedgerNumber);
-            FAccountTable = (AAccountTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
-
             // to get an empty ABudgetFee table, instead of null reference
             FMainDS.Merge(new BudgetTDS());
 
@@ -122,11 +118,48 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             SelectRowInGrid(1);
 
+            RefreshComboLabels();
+
             FLoadCompleted = true;
         }
 
+        private void RefreshComboLabels()
+        {
+            //Force a refresh of the combo labels if the first highlighted row contains inactive codes
+            // as the colour does not show up for a first row
+            if (!AccountIsActive(cmbDetailAccountCode.GetSelectedString()) && cmbDetailAccountCode.AttachedLabel.BackColor != System.Drawing.Color.PaleVioletRed)
+            {
+				cmbDetailAccountCode.AttachedLabel.BackColor = System.Drawing.Color.PaleVioletRed;
+            }
+            if (!CostCentreIsActive(cmbDetailCostCentreCode.GetSelectedString()) && cmbDetailCostCentreCode.AttachedLabel.BackColor != System.Drawing.Color.PaleVioletRed)
+            {
+				cmbDetailCostCentreCode.AttachedLabel.BackColor = System.Drawing.Color.PaleVioletRed;
+            }
+        }
+        
         private void SetupExtraGridFunctionality()
         {
+			//Populate CostCentreList variable
+            DataTable costCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+                FLedgerNumber);
+            
+            ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
+            FMainDS.Tables.Add(tmpCostCentreTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref costCentreList, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpCostCentreTable.TableName);
+            
+            FCostCentreTable = (ACostCentreTable)costCentreList;
+
+			//Populate AccountList variable
+            DataTable accountList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+            
+            AAccountTable tmpAccountTable = new AAccountTable();
+            FMainDS.Tables.Add(tmpAccountTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref accountList, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpAccountTable.TableName);
+            
+            FAccountTable = (AAccountTable)accountList;
+
             //Prepare grid to highlight inactive accounts/cost centres
             // Create a cell view for special conditions
             SourceGrid.Cells.Views.Cell strikeoutCell = new SourceGrid.Cells.Views.Cell();
@@ -150,9 +183,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 return !CostCentreIsActive(costCentreCode);
             };
 
-            // Add the condition to the columns that it should apply to
-            grdDetails.Columns[0].Conditions.Add(conditionCostCentreCodeActive);
-            grdDetails.Columns[1].Conditions.Add(conditionAccountCodeActive);
+			//Add conditions to columns
+            int indexOfCostCentreCodeDataColumn = 0;
+            int indexOfAccountCodeDataColumn = 1;
+
+            grdDetails.Columns[indexOfCostCentreCodeDataColumn].Conditions.Add(conditionCostCentreCodeActive);
+            grdDetails.Columns[indexOfAccountCodeDataColumn].Conditions.Add(conditionAccountCodeActive);
         }
 
         private void SetBudgetDefaultView()
@@ -1428,7 +1464,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private bool AccountIsActive(string AAccountCode = "")
         {
-            bool retVal = false;
+            bool retVal = true;
 
             AAccountRow currentAccountRow = null;
 

@@ -200,6 +200,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ValidateDataDetailsManual(ABatchRow ARow)
         {
+            if ((ARow == null) || (ARow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return;
+            }
+
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             ParseHashTotal(ARow);

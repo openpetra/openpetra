@@ -414,6 +414,15 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// the label attached to the combobox
+        public Label AttachedLabel
+        {
+            get
+            {
+                return this.lblDescription;
+            }
+        }
+
         /// the text displayed in the combobox label including an inactive prefix
         public string LabelTextFull
         {
@@ -688,8 +697,26 @@ namespace Ict.Common.Controls
             lblDescription.Visible = false;
             this.Invalidate();
         }
-
+        
+        /// <summary>
+        /// Clear all the contents of the combobox
+        /// </summary>
+        public void Clear()
+        {
+            this.cmbCombobox.DataSource = null;
+            this.cmbCombobox.Text = string.Empty;
+        }
+        
         #region Event handling
+
+        /// <summary>
+        /// Forces a refresh of the combobox label
+        /// </summary>
+        public void RefreshLabel()
+        {
+        	RefreshLabel(null, null);
+        	this.Invalidate();
+        }
 
         private void RefreshLabel(object sender, EventArgs e)
         {

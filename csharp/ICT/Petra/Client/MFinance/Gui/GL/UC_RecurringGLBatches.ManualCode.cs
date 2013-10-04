@@ -70,14 +70,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (grdDetails.Rows.Count > 1)
             {
                 ((TFrmRecurringGLBatch) this.ParentForm).EnableJournals();
+                EnableTransactionTabForBatch();
             }
             else
             {
                 ClearControls();
                 ((TFrmRecurringGLBatch) this.ParentForm).DisableJournals();
+	            ((TFrmRecurringGLBatch) this.ParentForm).DisableTransactions();
             }
-
-            ((TFrmRecurringGLBatch) this.ParentForm).DisableTransactions();
 
             ShowData();
 
@@ -105,6 +105,48 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public GLBatchTDS RecurringBatchFMainDS()
         {
             return FMainDS;
+        }
+
+        /// <summary>
+        /// Enable the transaction tab
+        /// </summary>
+        public void EnableTransactionTabForBatch()
+        {
+            bool enable = false;
+
+            //If a single journal exists and it is not status=Cancelled then enable transactions tab
+            if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.LastJournal == 1))
+            {
+                LoadJournalsForCurrentBatch();
+
+                ARecurringJournalRow rJ = (ARecurringJournalRow)FMainDS.ARecurringJournal.DefaultView[0].Row;
+
+                enable = (rJ.JournalStatus != MFinanceConstants.BATCH_CANCELLED);
+            }
+
+            if (enable)
+            {
+                ((TFrmRecurringGLBatch) this.ParentForm).EnableTransactions();
+            }
+            else
+            {
+                ((TFrmRecurringGLBatch) this.ParentForm).DisableTransactions();
+            }
+        }
+
+        private void LoadJournalsForCurrentBatch()
+        {
+            //Current Batch number
+            Int32 batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+
+            FMainDS.ARecurringJournal.DefaultView.RowFilter = String.Format("{0}={1}",
+                ARecurringTransactionTable.GetBatchNumberDBName(),
+                batchNumber);
+
+            if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
+            {
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournal(FLedgerNumber, batchNumber));
+            }
         }
 
         /// <summary>
