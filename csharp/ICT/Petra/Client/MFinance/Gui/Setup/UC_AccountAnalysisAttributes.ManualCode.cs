@@ -173,7 +173,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // I can't delete any Analysis Type code that's been used in transactions.
             if ((ARowToDelete != null) && (ARowToDelete.RowState != DataRowState.Deleted))
             {
-                if (TRemote.MFinance.Setup.WebConnectors.CanDetachAnalysisType(ARowToDelete.LedgerNumber, ARowToDelete.AccountCode, ARowToDelete.AnalysisTypeCode))
+                if (TRemote.MFinance.Setup.WebConnectors.CanDetachAnalysisType(ARowToDelete.LedgerNumber, ARowToDelete.AccountCode,
+                        ARowToDelete.AnalysisTypeCode))
                 {
                     ADeletionQuestion = String.Format(
                         Catalog.GetString("Confirm you want to Remove {0} from this account."),
@@ -221,13 +222,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted))
             {
-                AvoidSelectingingDuplicateAnalysisType(FPreviouslySelectedDetailRow, FPreviouslySelectedDetailRow.AnalysisTypeCode, cmbDetailAnalTypeCode.Text);
+                AvoidSelectingingDuplicateAnalysisType(FPreviouslySelectedDetailRow,
+                    FPreviouslySelectedDetailRow.AnalysisTypeCode,
+                    cmbDetailAnalTypeCode.Text);
             }
         }
 
         private void AvoidSelectingingDuplicateAnalysisType(AAnalysisAttributeRow ARow, String APreviousValue, String ARequestedValue)
         {
-
             string FilterString = String.Format("{0}={3} and {1}='{4}' and {2}='{5}'",
                 AAnalysisAttributeTable.GetLedgerNumberDBName(),
                 AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
@@ -236,6 +238,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ARequestedValue,
                 FAccountCode);
             DataView FilterView = new DataView(FMainDS.AAnalysisAttribute);
+
             FilterView.RowFilter = FilterString;
             Boolean CantUseName = (FilterView.Count > 0);
 
@@ -250,6 +253,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 ARow.AnalysisTypeCode = ARequestedValue;
             }
+
             ARow.EndEdit(); // Apply these changes now!
         }
 

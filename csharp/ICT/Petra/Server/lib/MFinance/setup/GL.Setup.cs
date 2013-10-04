@@ -201,6 +201,39 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
+        /// returns number of accounting periods for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static int NumberOfAccountingPeriods(Int32 ALedgerNumber)
+        {
+            Boolean NewTransaction;
+            int NumberOfAccountingPeriods = 0;
+            ALedgerTable LedgerTable;
+            ALedgerRow LedgerRow;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+
+            LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+
+            if (LedgerTable.Count > 0)
+            {
+                LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
+                NumberOfAccountingPeriods = LedgerRow.NumberOfAccountingPeriods;
+            }
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return NumberOfAccountingPeriods;
+        }
+
+        /// <summary>
         /// returns true if subsystem is activated for given ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -915,14 +948,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AGeneralLedgerMasterPeriodRow TempGLMPeriodRow;
             AGeneralLedgerMasterPeriodRow NewGLMPeriodRow;
 
+            int CurrentNumberPeriods;
+            int NewNumberPeriods;
             int CurrentNumberFwdPostingPeriods;
             int NewNumberFwdPostingPeriods;
             int CurrentLastFwdPeriod;
             int NewLastFwdPeriod;
             int Period;
+            Boolean ExtendFwdPeriods = false;
             DateTime PeriodStartDate;
             DateTime CurrentCalendarStartDate;
-            Boolean CreateDefaultCalendar = false;
+            Boolean CreateCalendar = false;
 
             AVerificationResult = new TVerificationResultCollection();
 
@@ -940,6 +976,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
                 LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
 
+                // initialize variables for accounting periods and forward periods
+                CurrentNumberPeriods = LedgerRow.NumberOfAccountingPeriods;
+                NewNumberPeriods = ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberOfAccountingPeriods;
+
+                CurrentNumberFwdPostingPeriods = LedgerRow.NumberFwdPostingPeriods;
+                NewNumberFwdPostingPeriods = ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberFwdPostingPeriods;
+
                 // retrieve currently saved calendar start date (start date of financial year)
                 AAccountingPeriodTable CalendarTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
                 CurrentCalendarStartDate = DateTime.MinValue;
@@ -949,32 +992,40 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     CurrentCalendarStartDate = ((AAccountingPeriodRow)CalendarTable.Rows[0]).PeriodStartDate;
                 }
 
-                // update accounting periods (calendar): this only needs to be done if the calendar mode is changed
+                // update accounting periods (calendar):
+                // this only needs to be done if the calendar mode is changed
                 // or if calendar mode is monthly and the start date has changed
+                // or if not monthly and number of periods has changed
                 if (((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode != LedgerRow.CalendarMode)
                 {
-                    if (!((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode)
-                    {
-                        // non-monthly: no need to modify accounting periods as they can be used as basis for calendar
-                        // however, if no accounting periods exist yet then make sure they are created based on month initially
-                        if (AAccountingPeriodAccess.CountViaALedger(ALedgerNumber, Transaction) == 0)
-                        {
-                            CreateDefaultCalendar = true;
-                        }
-                    }
-                    else
-                    {
-                        CreateDefaultCalendar = true;
-                    }
+                    CreateCalendar = true;
                 }
                 else if (((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode
                          && (ACalendarStartDate != CurrentCalendarStartDate))
                 {
-                    CreateDefaultCalendar = true;
+                    CreateCalendar = true;
+                }
+                else if (!((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode
+                         && (NewNumberPeriods != CurrentNumberPeriods))
+                {
+                    CreateCalendar = true;
+                }
+
+                if (!CreateCalendar
+                    && (NewNumberFwdPostingPeriods < CurrentNumberFwdPostingPeriods))
+                {
+                    CreateCalendar = true;
+                }
+
+                if (!CreateCalendar
+                    && (NewNumberFwdPostingPeriods > CurrentNumberFwdPostingPeriods))
+                {
+                    // in this case only extend the periods (as there may already be existing transactions)
+                    ExtendFwdPeriods = true;
                 }
 
                 // now perform the actual update of accounting periods (calendar)
-                if (CreateDefaultCalendar)
+                if (CreateCalendar)
                 {
                     // first make sure all accounting period records are deleted
                     if (AAccountingPeriodAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
@@ -992,39 +1043,63 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     PeriodStartDate = ACalendarStartDate;
 
-                    for (Period = 1; Period <= 12 + LedgerRow.NumberFwdPostingPeriods; Period++)
+                    for (Period = 1; Period <= NewNumberPeriods; Period++)
                     {
                         NewAccountingPeriodRow = NewAccountingPeriodTable.NewRowTyped();
                         NewAccountingPeriodRow.LedgerNumber = ALedgerNumber;
                         NewAccountingPeriodRow.AccountingPeriodNumber = Period;
                         NewAccountingPeriodRow.PeriodStartDate = PeriodStartDate;
-                        NewAccountingPeriodRow.PeriodEndDate = PeriodStartDate.AddMonths(1).AddDays(-1);
+
+                        if ((((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberOfAccountingPeriods == 13)
+                            && (Period == 12))
+                        {
+                            // in case of 12 periods the second last period represents the last month except for the very last day
+                            NewAccountingPeriodRow.PeriodEndDate = PeriodStartDate.AddMonths(1).AddDays(-2);
+                        }
+                        else if ((((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberOfAccountingPeriods == 13)
+                                 && (Period == 13))
+                        {
+                            // in case of 13 periods the last period just represents the very last day of the financial year
+                            NewAccountingPeriodRow.PeriodEndDate = PeriodStartDate;
+                        }
+                        else
+                        {
+                            NewAccountingPeriodRow.PeriodEndDate = PeriodStartDate.AddMonths(1).AddDays(-1);
+                        }
+
                         NewAccountingPeriodRow.AccountingPeriodDesc = PeriodStartDate.ToString("MMMM");
                         NewAccountingPeriodTable.Rows.Add(NewAccountingPeriodRow);
-                        PeriodStartDate = PeriodStartDate.AddMonths(1);
+                        PeriodStartDate = NewAccountingPeriodRow.PeriodEndDate.AddDays(1);
                     }
 
                     AAccountingPeriodAccess.SubmitChanges(NewAccountingPeriodTable, Transaction, out AVerificationResult);
 
                     TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                         TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
+
+                    CurrentNumberPeriods = NewNumberPeriods;
                 }
 
                 // check if any new forwarding periods need to be created
-                CurrentNumberFwdPostingPeriods = LedgerRow.NumberFwdPostingPeriods;
-                NewNumberFwdPostingPeriods = ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberFwdPostingPeriods;
-
-                if (NewNumberFwdPostingPeriods > CurrentNumberFwdPostingPeriods)
+                if (CreateCalendar || ExtendFwdPeriods)
                 {
                     // now create new forwarding posting periods (if at all needed)
                     NewAccountingPeriodTable = new AAccountingPeriodTable();
 
-                    Period = LedgerRow.NumberOfAccountingPeriods + CurrentNumberFwdPostingPeriods + 1;
+                    // if calendar was created then there are no forward periods yet
+                    if (CreateCalendar)
+                    {
+                        Period = CurrentNumberPeriods + 1;
+                    }
+                    else
+                    {
+                        Period = CurrentNumberPeriods + CurrentNumberFwdPostingPeriods + 1;
+                    }
 
-                    while (Period <= LedgerRow.NumberOfAccountingPeriods + NewNumberFwdPostingPeriods)
+                    while (Period <= NewNumberPeriods + NewNumberFwdPostingPeriods)
                     {
                         AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                            Period - LedgerRow.NumberOfAccountingPeriods,
+                            Period - CurrentNumberPeriods,
                             Transaction);
                         AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
 
@@ -1118,6 +1193,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                                     NewGLMPeriodTable.Rows.Add(NewGLMPeriodRow);
                                 }
+                            }
+
+                            // remove periods if the number of periods + forwarding periods has been reduced
+                            int NumberOfExistingPeriods = LedgerRow.NumberOfAccountingPeriods + LedgerRow.NumberFwdPostingPeriods;
+
+                            while ((NewNumberPeriods + NewNumberFwdPostingPeriods) < NumberOfExistingPeriods)
+                            {
+                                AGeneralLedgerMasterPeriodAccess.DeleteByPrimaryKey(GLMPeriodRow.GlmSequence, NumberOfExistingPeriods, Transaction);
+
+                                NumberOfExistingPeriods--;
                             }
                         }
                     }
@@ -1415,12 +1500,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static Boolean CanDetachAnalysisType(Int32 ALedgerNumber, String AAccountCode, String AAnalysisTypeCode)
         {
-            List<TRowReferenceInfo> References;
+            List <TRowReferenceInfo>References;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            Int32 RefCount = AAnalysisAttributeCascading.CountByPrimaryKey(ALedgerNumber, AAnalysisTypeCode, AAccountCode, Transaction, true, out References);
+            Int32 RefCount = AAnalysisAttributeCascading.CountByPrimaryKey(ALedgerNumber,
+                AAnalysisTypeCode,
+                AAccountCode,
+                Transaction,
+                true,
+                out References);
             DBAccess.GDBAccessObj.RollbackTransaction();
-            return (RefCount==0);
+            return RefCount == 0;
         }
 
         /// <summary>
@@ -2287,6 +2377,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ledgerRow.CountryCode = ACountryCode;
             ledgerRow.ForexGainsLossesAccount = "5003";
             ledgerRow.PartnerKey = PartnerKey;
+
+            if (ANumberOfPeriods == 12)
+            {
+                ledgerRow.CalendarMode = true;
+            }
+            else
+            {
+                ledgerRow.CalendarMode = false;
+            }
+
             MainDS.ALedger.Rows.Add(ledgerRow);
 
             PPartnerRow partnerRow;
@@ -2312,12 +2412,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             PPartnerTypeAccess.LoadViaPPartner(MainDS, PartnerKey, null);
             PPartnerTypeRow partnerTypeRow;
 
-            if (MainDS.PPartnerType.Rows.Count > 0)
-            {
-                partnerTypeRow = MainDS.PPartnerType[0];
-                partnerTypeRow.TypeCode = MPartnerConstants.PARTNERTYPE_LEDGER;
-            }
-            else
+            // only create special type "LEDGER" if it does not exist yet
+            if (MainDS.PPartnerType.Rows.Find(new object[] { PartnerKey, MPartnerConstants.PARTNERTYPE_LEDGER }) == null)
             {
                 partnerTypeRow = MainDS.PPartnerType.NewRowTyped();
                 partnerTypeRow.PartnerKey = PartnerKey;
@@ -2396,6 +2492,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             // create calendar
             // at the moment we only support financial years that start on the first day of a month
+            // and currently only 12 or 13 periods are allowed and a maximum of 8 forward periods
             DateTime periodStartDate = ACalendarStartDate;
 
             for (Int32 periodNumber = 1; periodNumber <= ANumberOfPeriods + ANumberOfFwdPostingPeriods; periodNumber++)
@@ -2404,10 +2501,27 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 accountingPeriodRow.LedgerNumber = ANewLedgerNumber;
                 accountingPeriodRow.AccountingPeriodNumber = periodNumber;
                 accountingPeriodRow.PeriodStartDate = periodStartDate;
-                accountingPeriodRow.PeriodEndDate = periodStartDate.AddMonths(1).AddDays(-1);
+
+                if ((ANumberOfPeriods == 13)
+                    && (periodNumber == 12))
+                {
+                    // in case of 12 periods the second last period represents the last month except for the very last day
+                    accountingPeriodRow.PeriodEndDate = periodStartDate.AddMonths(1).AddDays(-2);
+                }
+                else if ((ANumberOfPeriods == 13)
+                         && (periodNumber == 13))
+                {
+                    // in case of 13 periods the last period just represents the very last day of the financial year
+                    accountingPeriodRow.PeriodEndDate = periodStartDate;
+                }
+                else
+                {
+                    accountingPeriodRow.PeriodEndDate = periodStartDate.AddMonths(1).AddDays(-1);
+                }
+
                 accountingPeriodRow.AccountingPeriodDesc = periodStartDate.ToString("MMMM");
                 MainDS.AAccountingPeriod.Rows.Add(accountingPeriodRow);
-                periodStartDate = periodStartDate.AddMonths(1);
+                periodStartDate = accountingPeriodRow.PeriodEndDate.AddDays(1);
             }
 
             AAccountingSystemParameterRow accountingSystemParameterRow = MainDS.AAccountingSystemParameter.NewRowTyped();
@@ -2819,10 +2933,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             StringCollection Ret = new StringCollection();
             AAnalysisAttributeTable tbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AAccountCode, null);
+
             foreach (AAnalysisAttributeRow Row in tbl.Rows)
             {
                 Ret.Add(Row.AnalysisTypeCode);
             }
+
             return Ret;
         }
 

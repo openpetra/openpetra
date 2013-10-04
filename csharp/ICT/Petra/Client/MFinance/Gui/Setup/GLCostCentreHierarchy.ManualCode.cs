@@ -103,10 +103,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="ANewParent"></param>
         private void DoReassignment(TreeNode AChild, TreeNode ANewParent)
         {
-
             if (((CostCentreNodeDetails)AChild.Tag).CostCentreRow.SystemCostCentreFlag)
             {
-                MessageBox.Show(Catalog.GetString("This is a System Cost Code and cannot be moved."), 
+                MessageBox.Show(Catalog.GetString("This is a System Cost Code and cannot be moved."),
                     Catalog.GetString("Re-assign Cost Code"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 ShowNodeSelected(null);
                 return;
@@ -174,7 +173,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
-        private void OnHierarchySaved (System.Object sender, TDataSavedEventArgs e)
+        private void OnHierarchySaved(System.Object sender, TDataSavedEventArgs e)
         {
             SetPrimaryKeyReadOnly(false);
         }
@@ -182,9 +181,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void txtDetailCostCentreCode_TextChanged(object sender, EventArgs e)
         {
             if (FIAmUpdating)
+            {
                 return;
+            }
 
             CostCentreNodeDetails nodeDetails = (CostCentreNodeDetails)FCurrentNode.Tag;
+
             if (nodeDetails.CostCentreRow.SystemCostCentreFlag)
             {
                 FIAmUpdating = true;
@@ -204,15 +206,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             bool ICanEditCostCentreCode = (nodeDetails.IsNew || !FPetraUtilsObject.HasChanges);
 
             btnRename.Visible = (strOldDetailCostCentreCode != txtDetailCostCentreCode.Text) && ICanEditCostCentreCode;
+
             if (!nodeDetails.IsNew && FPetraUtilsObject.HasChanges) // The user wants to change a cost centre code, but I can't allow it.
             {
                 FIAmUpdating = true;
                 txtDetailCostCentreCode.Text = strOldDetailCostCentreCode;
                 FIAmUpdating = false;
-                MessageBox.Show(Catalog.GetString("Cost Centre Codes cannot be changed while there are other unsaved changes.\r\nSave first, then rename the Cost Centre."),
+                MessageBox.Show(Catalog.GetString(
+                        "Cost Centre Codes cannot be changed while there are other unsaved changes.\r\nSave first, then rename the Cost Centre."),
                     Catalog.GetString("Rename Cost Centre"),
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
-
             }
         }
 
@@ -415,6 +418,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 return "(Deleted)";
             }
+
             string nodeLabel = ADetailRow.CostCentreCode;
 
             if (!ADetailRow.IsCostCentreNameNull())
@@ -451,6 +455,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private CostCentreNodeDetails GetCostCentreAttributes(TreeNode ANode)
         {
             CostCentreNodeDetails nodeDetails = (CostCentreNodeDetails)ANode.Tag;
+
             if (nodeDetails.IsNew)
             {
                 nodeDetails.CanHaveChildren = true;
@@ -470,6 +475,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     nodeDetails.CanDelete = RemoteCanDelete;
                 }
             }
+
             return nodeDetails;
         }
 
@@ -659,12 +665,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// Delete the row in the editor
         /// NOTE: A cost centre with children cannot be deleted.
         /// </summary>
-        private void DeleteCostCentre (Object sender, EventArgs e)
+        private void DeleteCostCentre(Object sender, EventArgs e)
         {
             if (FCurrentNode == null)
             {
                 return;
             }
+
             CostCentreNodeDetails NodeDetails = GetCostCentreAttributes(FCurrentNode);
 
             if (NodeDetails.CanDelete.Value)
@@ -678,7 +685,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 SelectedRow.Delete();
                 FIAmDeleting = false;
 
-                                                     // If just I added a sub-tree and I decide I don't want it, I might be about to remove the parent too.
+                // If just I added a sub-tree and I decide I don't want it, I might be about to remove the parent too.
                 GetCostCentreAttributes(ParentNode); // This will set CanDelete in the parent if it is new and has no further children.
 
                 FPetraUtilsObject.SetChangedFlag();
@@ -872,8 +879,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (!FIAmUpdating)
             {
                 ACostCentreRow Row = GetSelectedDetailRowManual();
-                if (Row != null
-                    && cmbDetailCostCentreType.GetSelectedString() != Row.CostCentreType
+
+                if ((Row != null)
+                    && (cmbDetailCostCentreType.GetSelectedString() != Row.CostCentreType)
                     && Row.SystemCostCentreFlag)
                 {
                     MessageBox.Show(
@@ -887,22 +895,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FIAmUpdating = false;
                 }
 
-
                 if (CheckCostCentreValueChanged())
                 {
                     return;
                 }  // If not changed, or the rename didn't happen, I can carry on...
 
                 GetDataFromControlsManual();
+
                 if (FCurrentNode != null)
                 {
                     String NewNodeName = NodeLabel(Row);
-                    if ((FCurrentNode.Text != NewNodeName) 
-                        || (FCurrentNode.Name != Row.CostCentreCode) 
+
+                    if ((FCurrentNode.Text != NewNodeName)
+                        || (FCurrentNode.Name != Row.CostCentreCode)
                         || (cmbDetailCostCentreType.GetSelectedString() != Row.CostCentreType))
                     {
                         FPetraUtilsObject.SetChangedFlag();
                     }
+
                     FCurrentNode.Text = NewNodeName;
                     FCurrentNode.Name = Row.CostCentreCode;
                 }

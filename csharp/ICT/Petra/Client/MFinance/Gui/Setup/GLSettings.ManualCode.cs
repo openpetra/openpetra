@@ -70,7 +70,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if (!FCalendarChangeAllowed)
                 {
                     rgrCalendarModeRadio.Enabled = false;
-                    nudNumberOfPeriods.Enabled = false;
+                    nudNumberOfAccountingPeriods.Enabled = false;
                     dtpFinancialYearStartDate.Enabled = false;
                     nudCurrentPeriod.Enabled = false;
                     btnViewCalendar.Text = Catalog.GetString("View Calendar");
@@ -146,8 +146,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 nudCurrentPeriod.Maximum = ParameterRow.NumberOfAccountingPeriods;
                 nudCurrentPeriod.Minimum = 1;
-                nudNumberOfPeriods.Maximum = ParameterRow.NumberOfAccountingPeriods;
-                nudNumberOfPeriods.Minimum = 1;
+                nudNumberOfAccountingPeriods.Maximum = 13;
+                //nudNumberOfAccountingPeriods.Maximum = ParameterRow.NumberOfAccountingPeriods;
+                nudNumberOfAccountingPeriods.Minimum = 12;
+                nudNumberFwdPostingPeriods.Maximum = 8;
                 //nudNumberFwdPostingPeriods.Maximum = MFinanceConstants.MAX_PERIODS - ((ALedgerRow)ADataSet.ALedger.Rows[0]).NumberOfAccountingPeriods;
                 nudActualsDataRetention.Maximum = ParameterRow.ActualsDataRetention;
                 nudActualsDataRetention.Minimum = 1;
@@ -180,17 +182,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 if (LedgerRow.IsNumberOfAccountingPeriodsNull())
                 {
-                    nudNumberOfPeriods.Value = 0;
+                    nudNumberOfAccountingPeriods.Value = 0;
                 }
                 else
                 {
-                    if (LedgerRow.NumberOfAccountingPeriods > nudNumberOfPeriods.Maximum)
+                    if (LedgerRow.NumberOfAccountingPeriods > nudNumberOfAccountingPeriods.Maximum)
                     {
-                        nudNumberOfPeriods.Value = nudNumberOfPeriods.Maximum;
+                        nudNumberOfAccountingPeriods.Value = nudNumberOfAccountingPeriods.Maximum;
                     }
                     else
                     {
-                        nudNumberOfPeriods.Value = LedgerRow.NumberOfAccountingPeriods;
+                        nudNumberOfAccountingPeriods.Value = LedgerRow.NumberOfAccountingPeriods;
                     }
                 }
 
@@ -344,19 +346,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void CalendarModeChanged(System.Object sender, EventArgs e)
         {
-            nudNumberOfPeriods.Enabled = !rbtMonthly.Checked;
+            nudNumberOfAccountingPeriods.Enabled = !rbtMonthly.Checked;
 
             if (rbtMonthly.Checked)
             {
-                nudNumberOfPeriods.Enabled = false;
-                nudNumberOfPeriods.Value = 12;
+                nudNumberOfAccountingPeriods.Enabled = false;
+                nudNumberOfAccountingPeriods.Value = 12;
                 dtpFinancialYearStartDate.Enabled = true;
                 btnViewCalendar.Text = Catalog.GetString("View Calendar");
                 FEditCalendar = false;
             }
             else
             {
-                nudNumberOfPeriods.Enabled = true;
+                nudNumberOfAccountingPeriods.Enabled = true;
                 dtpFinancialYearStartDate.Enabled = false;
                 btnViewCalendar.Text = Catalog.GetString("Edit Calendar");
                 FEditCalendar = true;
@@ -365,7 +367,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (!FCalendarChangeAllowed)
             {
                 rgrCalendarModeRadio.Enabled = false;
-                nudNumberOfPeriods.Enabled = false;
+                nudNumberOfAccountingPeriods.Enabled = false;
                 dtpFinancialYearStartDate.Enabled = false;
                 nudCurrentPeriod.Enabled = false;
                 btnViewCalendar.Text = Catalog.GetString("View Calendar");

@@ -1247,13 +1247,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void ReconcileTransAnalysisAttributes()
         {
             string currentAccountCode = cmbDetailAccountCode.GetSelectedString();
+
             if ((FPreviouslySelectedDetailRow == null) || (currentAccountCode == null)
                 || (currentAccountCode == string.Empty))
             {
                 return;
             }
 
-            StringCollection RequiredAnalattrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber, currentAccountCode);
+            StringCollection RequiredAnalattrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
+                currentAccountCode);
             Int32 currentTransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
             SetTransAnalAttributeDefaultView(currentTransactionNumber);
 
@@ -1266,6 +1268,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 foreach (DataRowView rv in FMainDS.ARecurringTransAnalAttrib.DefaultView)
                 {
                     ARecurringTransAnalAttribRow row = (ARecurringTransAnalAttribRow)rv.Row;
+
                     if (!RequiredAnalattrCodes.Contains(row.AnalysisTypeCode))
                     {
                         existingListIsOk = false;

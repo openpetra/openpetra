@@ -525,13 +525,14 @@ namespace Ict.Petra.Server.MReporting.MFinance
             if (element != null)
             {
                 Int32 Offset;
+
                 for (Offset = 0; Offset < element.column.Length; Offset++)
                 {
                     if (element.column[Offset].TypeVariant == eVariantTypes.eCurrency)
                     {
-                    decimal col1 = element.column[Offset].ToDecimal();
-                    decimal col2 = element.column[Offset + 1].ToDecimal();
-                    return col1 + col2;
+                        decimal col1 = element.column[Offset].ToDecimal();
+                        decimal col2 = element.column[Offset + 1].ToDecimal();
+                        return col1 + col2;
                     }
                 }
             }

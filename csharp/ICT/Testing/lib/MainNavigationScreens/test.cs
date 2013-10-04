@@ -92,7 +92,7 @@ namespace Tests.MainNavigationScreens
             //sw.Close();
 
             FNavigator = MainMenuNode.OwnerDocument.CreateNavigator();
-            
+
             TLogging.Log("Test Setup finished..." + Environment.NewLine);
         }
 
@@ -115,8 +115,8 @@ namespace Tests.MainNavigationScreens
         [Test]
         public void TestLoopThroughUINavigation()
         {
-            TLogging.Log("Running test 'TestLoopThroughUINavigation'..." + Environment.NewLine);            
-            
+            TLogging.Log("Running test 'TestLoopThroughUINavigation'..." + Environment.NewLine);
+
             // get all nodes that have an attribute ActionOpenScreen
             XPathExpression expr = FNavigator.Compile("//*[@ActionOpenScreen]");
             XPathNodeIterator iterator = FNavigator.Select(expr);
@@ -141,7 +141,7 @@ namespace Tests.MainNavigationScreens
         public void TestPermissionsSystemManager()
         {
             TLogging.Log("Running test 'TestPermissionsSystemManager'..." + Environment.NewLine);
-            
+
             Assert.AreEqual("demo", UserInfo.GUserInfo.UserID.ToLower(), "Test should be run with DEMO user");
 
             //change demo's permissions in the xml back to normal
@@ -174,9 +174,9 @@ namespace Tests.MainNavigationScreens
         // than using the 'SetCulture' Attribute; once NUnit 3 is out there might
         // be a way of telling NUnit to execute a single method with 1..n Cultures,
         // accoring to the authors of NUnit...
-        
+
         /// <summary>
-        /// Runs the <see cref="TestOpenAllWindows" /> Method under en_US Culture. 
+        /// Runs the <see cref="TestOpenAllWindows" /> Method under en_US Culture.
         /// </summary>
         [Test]
         [SetCulture("en-US")]
@@ -184,9 +184,9 @@ namespace Tests.MainNavigationScreens
         {
             TestOpenAllWindows();
         }
-        
+
         /// <summary>
-        /// Runs the <see cref="TestOpenAllWindows" /> Method under en_GB Culture. 
+        /// Runs the <see cref="TestOpenAllWindows" /> Method under en_GB Culture.
         /// </summary>
         [Test]
         [SetCulture("en-GB")]
@@ -194,9 +194,9 @@ namespace Tests.MainNavigationScreens
         {
             TestOpenAllWindows();
         }
-        
+
         /// <summary>
-        /// Runs the <see cref="TestOpenAllWindows" /> Method under de_DE Culture. 
+        /// Runs the <see cref="TestOpenAllWindows" /> Method under de_DE Culture.
         /// </summary>
         [Test]
         [SetCulture("de-DE")]
@@ -204,9 +204,9 @@ namespace Tests.MainNavigationScreens
         {
             TestOpenAllWindows();
         }
-        
+
         /// <summary>
-        /// Runs the <see cref="TestOpenAllWindows" /> Method under de_AT Culture. 
+        /// Runs the <see cref="TestOpenAllWindows" /> Method under de_AT Culture.
         /// </summary>
         [Test]
         [SetCulture("de-AT")]
@@ -214,9 +214,9 @@ namespace Tests.MainNavigationScreens
         {
             TestOpenAllWindows();
         }
-        
+
         /// <summary>
-        /// Runs the <see cref="TestOpenAllWindows" /> Method under fr_FR Culture. 
+        /// Runs the <see cref="TestOpenAllWindows" /> Method under fr_FR Culture.
         /// </summary>
         [Test]
         [SetCulture("fr-FR")]
@@ -230,8 +230,9 @@ namespace Tests.MainNavigationScreens
         /// </summary>
         private void TestOpenAllWindows()
         {
-            TLogging.Log(String.Format("Running test 'TestOpenAllWindows' with Culture '{0}'...", Thread.CurrentThread.CurrentCulture.ToString()) + Environment.NewLine);
-            
+            TLogging.Log(String.Format("Running test 'TestOpenAllWindows' with Culture '{0}'...",
+                    Thread.CurrentThread.CurrentCulture.ToString()) + Environment.NewLine);
+
             // get all nodes that have an attribute ActionOpenScreen
             XPathExpression expr = FNavigator.Compile("//*[@ActionOpenScreen]");
             XPathNodeIterator iterator = FNavigator.Select(expr);
@@ -424,8 +425,8 @@ namespace Tests.MainNavigationScreens
         [Test]
         public void TestBrokenClientPermissions()
         {
-            TLogging.Log("Running test 'TestBrokenClientPermissions'..." + Environment.NewLine);            
-                        
+            TLogging.Log("Running test 'TestBrokenClientPermissions'..." + Environment.NewLine);
+
             // Give the user access at the client end to open the screen
             TLstTasks.Init(UserInfo.GUserInfo.UserID, TruePermission);
 

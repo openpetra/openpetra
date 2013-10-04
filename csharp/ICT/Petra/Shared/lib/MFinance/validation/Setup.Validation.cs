@@ -67,6 +67,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     DataColumn ValidationColumn = ARow.Table.Columns[AAccountTable.ColumnForeignCurrencyCodeId];
 
                     Control targetControl = null;
+
                     if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                     {
                         targetControl = ValidationControlsData.ValidationControl;
@@ -82,7 +83,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
                 }
             }
-
         }
     }
 }

@@ -102,6 +102,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             String CostCentreListTitle;
+
             if (rbtAllCostCentres.Checked || rbtAllActiveCostCentres.Checked)
             {
                 CostCentreListTitle = clbCostCentres.GetAllStringList();
@@ -110,12 +111,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 CostCentreListTitle = clbCostCentres.GetCheckedStringList();
             }
+
             ACalculator.AddParameter("param_cost_centre_codes", CostCentreListTitle);
             CostCentreListTitle = CostCentreListTitle.Replace("\"", "");
+
             if (CostCentreListTitle.Length > 25)
             {
                 CostCentreListTitle = "Selected Cost Centres";
             }
+
             ACalculator.AddParameter("param_cost_centre_list_title", CostCentreListTitle);
 
             ACalculator.AddParameter("param_cost_centre_summary", chkCostCentreBreakdown.Checked);

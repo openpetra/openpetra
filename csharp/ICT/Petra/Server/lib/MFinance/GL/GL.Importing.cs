@@ -222,7 +222,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             MainDS.AJournal.Rows.Add(NewJournal);
 
-                            NewJournal.JournalDescription = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("description"), AJournalTable.GetJournalDescriptionLength());
+                            NewJournal.JournalDescription = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString(
+                                    "description"), AJournalTable.GetJournalDescriptionLength());
 
                             if ((NewJournal.JournalDescription == null)
                                 || (NewJournal.JournalDescription == ""))
@@ -232,10 +233,13 @@ namespace Ict.Petra.Server.MFinance.GL
                                 throw new Exception();
                             }
 
-                            NewJournal.SubSystemCode = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("sub system code"), AJournalTable.GetSubSystemCodeLength());
-                            NewJournal.TransactionTypeCode = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("transaction type"), AJournalTable.GetTransactionTypeCodeLength());
+                            NewJournal.SubSystemCode = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString(
+                                    "sub system code"), AJournalTable.GetSubSystemCodeLength());
+                            NewJournal.TransactionTypeCode = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString(
+                                    "transaction type"), AJournalTable.GetTransactionTypeCodeLength());
                             NewJournal.TransactionCurrency =
-                                ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("transaction currency"), AJournalTable.GetTransactionCurrencyLength());
+                                ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString(
+                                        "transaction currency"), AJournalTable.GetTransactionCurrencyLength());
                             NewJournal.ExchangeRateToBase = ImportDecimal(Catalog.GetString("journal") + " - " + Catalog.GetString("exchange rate"));
                             NewJournal.DateEffective = ImportDate(Catalog.GetString("journal") + " - " + Catalog.GetString("effective date"));
 
@@ -520,7 +524,6 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
 
                 MainDS.AcceptChanges();
-
             }
             catch (Exception ex)
             {
@@ -613,10 +616,11 @@ namespace Ict.Petra.Server.MFinance.GL
                 return null;
             }
 
-            if (AmaximumLength > 0 && sReturn.Length > AmaximumLength)
+            if ((AmaximumLength > 0) && (sReturn.Length > AmaximumLength))
             {
                 throw new Exception(String.Format(Catalog.GetString("Maximum field length ({0}) exceeded."), AmaximumLength));
             }
+
             return sReturn;
         }
 

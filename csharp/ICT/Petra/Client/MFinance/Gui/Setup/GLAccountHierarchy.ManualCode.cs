@@ -243,7 +243,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 if (((AccountNodeDetails)AChild.Tag).AccountRow.SystemAccountFlag)
                 {
-                    MessageBox.Show(String.Format(Catalog.GetString("{0} is a System Account and cannot be moved."), 
+                    MessageBox.Show(String.Format(Catalog.GetString("{0} is a System Account and cannot be moved."),
                             ((AccountNodeDetails)AChild.Tag).AccountRow.AccountCode),
                         Catalog.GetString("Re-assign Account"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     ShowNodeSelected(null);
@@ -326,6 +326,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 txtDetailAccountCodeShortDesc.Text = NewText;
             }
+
             FPetraUtilsObject_ControlChanged(txtDetailEngAccountCodeLongDesc);
         }
 
@@ -437,6 +438,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     String CurrentReportingAccountCode = NodeDetails.DetailRow.ReportingAccountCode;
                     FSelectedAccountRow = (GLSetupTDSAAccountRow)NodeDetails.AccountRow;
                     GetDetailsFromControls(FSelectedAccountRow);
+
                     if (!ValidateAllData(true, true))
                     {
                         treeViewCancelEventArgs.Cancel = true;
@@ -453,6 +455,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private AccountNodeDetails GetAccountCodeAttributes(TreeNode ANode)
         {
             AccountNodeDetails nodeDetails = (AccountNodeDetails)ANode.Tag;
+
             if (nodeDetails.IsNew)
             {
                 nodeDetails.CanHaveChildren = true;
@@ -472,6 +475,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     nodeDetails.CanDelete = RemoteCanDelete;
                 }
             }
+
             return nodeDetails;
         }
 
@@ -483,6 +487,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 Label += " (" + Descr + ")";
             }
+
             return Label;
         }
 
@@ -537,12 +542,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void ValidateDataDetailsManual(GLSetupTDSAAccountRow ARow)
         {
-            TVerificationResultCollection VerificationResultCollection =  FPetraUtilsObject.VerificationResultCollection;
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedFinanceValidation_Setup.ValidateAccountDetailManual(
-                this, 
-                ARow, 
-                ref VerificationResultCollection, 
+                this,
+                ARow,
+                ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
         }
 
@@ -577,9 +582,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         void txtDetailAccountCode_TextChanged(object sender, EventArgs e)
         {
             if (FIAmUpdating)
+            {
                 return;
+            }
 
             AccountNodeDetails nodeDetails = (AccountNodeDetails)FCurrentNode.Tag;
+
             if (nodeDetails.AccountRow.SystemAccountFlag)
             {
                 FIAmUpdating = true;
@@ -599,12 +607,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             bool ICanEditAccountCode = (nodeDetails.IsNew || !FPetraUtilsObject.HasChanges);
             btnRename.Visible = (strOldDetailAccountCode != "") && (strOldDetailAccountCode != txtDetailAccountCode.Text) && ICanEditAccountCode;
+
             if (!nodeDetails.IsNew && FPetraUtilsObject.HasChanges) // The user wants to change an Account code, but I can't allow it.
             {
                 FIAmUpdating = true;
                 txtDetailAccountCode.Text = strOldDetailAccountCode;
                 FIAmUpdating = false;
-                MessageBox.Show(Catalog.GetString("Account Codes cannot be changed while there are other unsaved changes.\r\nSave first, then rename the Account."),
+                MessageBox.Show(Catalog.GetString(
+                        "Account Codes cannot be changed while there are other unsaved changes.\r\nSave first, then rename the Account."),
                     Catalog.GetString("Rename Account"),
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
@@ -874,7 +884,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 if (strNewDetailAccountCode != strOldDetailAccountCode)
                 {
-
                     if (strOldDetailAccountCode.IndexOf(FNameForNewAccounts) < 0) // If they're just changing this from the initial value, don't show warning.
                     {
                         if (MessageBox.Show(String.Format(Catalog.GetString(
@@ -952,7 +961,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                             // If this code was previously in the DB, I need to assume that there may be transactions posted to it.
                             // There's a server call I need to use, and after the call I need to re-load this page.
-                            // (No other changes will be lost, because the txtDetailAccountCode_TextChanged would 
+                            // (No other changes will be lost, because the txtDetailAccountCode_TextChanged would
                             // have disallowed the change if there were already changes.)
                             bool Success = TRemote.MFinance.Setup.WebConnectors.RenameAccountCode(strOldDetailAccountCode,
                                 strNewDetailAccountCode,
@@ -982,6 +991,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 MessageBox.Show(VerificationResults.BuildVerificationResultString(), Catalog.GetString("Rename Account"));
                             }
                         }
+
                         btnRename.Visible = false;
                     } // if changeAccepted
 
