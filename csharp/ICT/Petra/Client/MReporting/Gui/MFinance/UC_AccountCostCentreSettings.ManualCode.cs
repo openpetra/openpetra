@@ -159,7 +159,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }
 
-                ACalculator.AddParameter("param_cost_centre_codes", clbCostCentres.GetCheckedStringList());
+                String CostCentreListTitle = clbCostCentres.GetCheckedStringList();
+                ACalculator.AddParameter("param_cost_centre_codes", CostCentreListTitle);
+                CostCentreListTitle = CostCentreListTitle.Replace("\"", "");
+
+                if (CostCentreListTitle.Length > 25)
+                {
+                    CostCentreListTitle = "Selected Cost Centres";
+                }
+
+                ACalculator.AddParameter("param_cost_centre_list_title", CostCentreListTitle);
+
                 ACalculator.AddParameter("param_cost_centre_code_start", "*NOTUSED*");
                 ACalculator.AddParameter("param_cost_centre_code_end", "*NOTUSED*");
                 ACalculator.AddParameter("param_rgrCostCentres", "CostCentreList");
@@ -187,34 +197,34 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalculator.AddParameter("param_depth", "standard");
 
             /* layout */
-            ACalculator.AddColumnLayout(0, 6, 0, 2);
-            ACalculator.AddColumnLayout(1, 8, 0, 3);
-            ACalculator.AddColumnLayout(2, 11, 0, 1);
-            ACalculator.AddColumnLayout(3, 12, 0, 7);
-//            ACalculator.AddColumnLayout(4, 13, 0, 3);
-//            ACalculator.AddColumnLayout(5, 16, 0, 3);
-            ACalculator.AddColumnLayout(4, 19, 0, 3);
-            ACalculator.AddColumnLayout(5, 22, 0, 3);
 
-            if (FReportWithBalance == true)
-            {
-                ACalculator.SetMaxDisplayColumns(6);
-            }
-            else
-            {
-                ACalculator.SetMaxDisplayColumns(4);
-            }
-
-            ACalculator.AddColumnCalculation(0, "Debit");
-            ACalculator.AddColumnCalculation(1, "Credit");
-//          ACalculator.AddColumnCalculation(2, "Transaction Currency");
-            ACalculator.AddColumnCalculation(3, "Transaction Narrative");
-
-            if (FReportWithBalance == true)
-            {
-                ACalculator.AddColumnCalculation(4, "Start Balance");
-                ACalculator.AddColumnCalculation(5, "End Balance");
-            }
+/*
+ *          ACalculator.AddColumnLayout(0, 6, 0, 2);
+ *          ACalculator.AddColumnLayout(1, 8, 0, 2);
+ *          ACalculator.AddColumnLayout(2, 10, 0, 1);
+ *          ACalculator.AddColumnLayout(3, 11, 0, 6);
+ *          ACalculator.AddColumnLayout(4, 17, 0, 2);
+ *          ACalculator.AddColumnLayout(5, 19, 0, 2);
+ *
+ *          if (FReportWithBalance == true)
+ *          {
+ *              ACalculator.SetMaxDisplayColumns(6);
+ *          }
+ *          else
+ *          {
+ *              ACalculator.SetMaxDisplayColumns(4);
+ *          }
+ *
+ *          ACalculator.AddColumnCalculation(0, "Debit");
+ *          ACalculator.AddColumnCalculation(1, "Credit");
+ *          ACalculator.AddColumnCalculation(3, "Transaction Narrative");
+ *
+ *          if (FReportWithBalance == true)
+ *          {
+ *              ACalculator.AddColumnCalculation(4, "Start Balance");
+ *              ACalculator.AddColumnCalculation(5, "End Balance");
+ *          }
+ */
         }
 
         /// <summary>

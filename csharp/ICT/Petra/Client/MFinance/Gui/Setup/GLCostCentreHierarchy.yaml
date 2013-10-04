@@ -10,10 +10,11 @@ RootNode:
     WindowWidth: 600
     WindowHeight: 500
     Actions:
-        actAddNewCostCentre: {Label=Add Cost Centre, ActionClick=AddNewCostCentre}
-        actExportHierarchy: {ActionClick=ExportHierarchy}
-        actImportHierarchy: {ActionClick=ImportHierarchy}
-        actLinkPartner: {ActionClick=LinkPartnerCostCentre}
+        actAddNewCostCentre: {Label=&Add Cost Centre, ActionClick=AddNewCostCentre}
+        actDeleteCostCentre: {Label=&Delete Cost Centre, ActionClick=DeleteCostCentre}
+        actExportHierarchy: {Label=&Export Hierarchy, ActionClick=ExportHierarchy}
+        actImportHierarchy: {Label=&Import Hierarchy, ActionClick=ImportHierarchy}
+        actLinkPartner: {Label=&Link Partners, ActionClick=LinkPartnerCostCentre}
     Controls:
         pnlContent:
             Controls: [sptSplitter]
@@ -27,16 +28,16 @@ RootNode:
         trvCostCentres: {Dock=Fill}
         pnlDetails: {Dock=Fill}
             Controls: 
-                Row0: [txtDetailCostCentreCode]
+                Row0: [txtDetailCostCentreCode, btnRename]
                 Row1: [cmbDetailCostCentreType]
                 Row2: [txtDetailCostCentreName]
                 Row3: [chkDetailCostCentreActiveFlag]
                 Row4: [pnlStatus]
         txtDetailCostCentreCode:
+        btnRename:
         cmbDetailCostCentreType:
             OptionalValues: [Local, Foreign]
         txtDetailCostCentreName:
-        # TODO: system cost centre
         chkDetailCostCentreActiveFlag: {Label=Active}
         pnlStatus:
             Controls: [txtStatus]
@@ -51,6 +52,7 @@ RootNode:
 
     Toolbar:
         tbbAddNewCostCentre:
+        tbbDeleteCostCentre:
         tbbExportHierarchy:
         tbbImportHierarchy:
         tbbLinkPartner:

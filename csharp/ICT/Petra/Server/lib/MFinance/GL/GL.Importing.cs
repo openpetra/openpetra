@@ -102,6 +102,7 @@ namespace Ict.Petra.Server.MFinance.GL
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             Int32 RowNumber = 0;
+            bool ok = false;
 
             try
             {
@@ -116,10 +117,8 @@ namespace Ict.Petra.Server.MFinance.GL
                 AJournalRow NewJournal = null;
                 int BatchPeriodNumber = -1;
                 int BatchYearNr = -1;
-                String ImportedString = "";
                 //AGiftRow gift = null;
                 FImportMessage = Catalog.GetString("Parsing first line");
-                bool ok = false;
 
                 while ((FImportLine = sr.ReadLine()) != null)
                 {
@@ -146,17 +145,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             MainDS.ABatch.Rows.Add(NewBatch);
                             NewJournal = null;
 
-                            ImportedString = ImportString(Catalog.GetString("batch description"));
-
-                            if ((ImportedString != null) && (ImportedString.Length > ABatchTable.GetBatchDescriptionLength()))
-                            {
-                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Batch"),
-                                        String.Format(Catalog.GetString("Description is longer than {0} chars."),
-                                            ABatchTable.GetBatchDescriptionLength()),
-                                        TResultSeverity.Resv_Critical));
-                            }
-
-                            NewBatch.BatchDescription = ImportedString;
+                            NewBatch.BatchDescription = ImportString(Catalog.GetString("batch description"), ABatchTable.GetBatchDescriptionLength());
 
                             if ((NewBatch.BatchDescription == null)
                                 || (NewBatch.BatchDescription == ""))
@@ -233,17 +222,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             MainDS.AJournal.Rows.Add(NewJournal);
 
-                            ImportedString = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("description"));
-
-                            if ((ImportedString != null) && (ImportedString.Length > AJournalTable.GetJournalDescriptionLength()))
-                            {
-                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Journal"),
-                                        String.Format(Catalog.GetString("Description is longer than {0} chars."),
-                                            AJournalTable.GetJournalDescriptionLength()),
-                                        TResultSeverity.Resv_Critical));
-                            }
-
-                            NewJournal.JournalDescription = ImportedString;
+                            NewJournal.JournalDescription = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString(
+                                    "description"), AJournalTable.GetJournalDescriptionLength());
 
                             if ((NewJournal.JournalDescription == null)
                                 || (NewJournal.JournalDescription == ""))
@@ -253,10 +233,13 @@ namespace Ict.Petra.Server.MFinance.GL
                                 throw new Exception();
                             }
 
-                            NewJournal.SubSystemCode = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("sub system code"));
-                            NewJournal.TransactionTypeCode = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("transaction type"));
+                            NewJournal.SubSystemCode = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString(
+                                    "sub system code"), AJournalTable.GetSubSystemCodeLength());
+                            NewJournal.TransactionTypeCode = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString(
+                                    "transaction type"), AJournalTable.GetTransactionTypeCodeLength());
                             NewJournal.TransactionCurrency =
-                                ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString("transaction currency"));
+                                ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString(
+                                        "transaction currency"), AJournalTable.GetTransactionCurrencyLength());
                             NewJournal.ExchangeRateToBase = ImportDecimal(Catalog.GetString("journal") + " - " + Catalog.GetString("exchange rate"));
                             NewJournal.DateEffective = ImportDate(Catalog.GetString("journal") + " - " + Catalog.GetString("effective date"));
 
@@ -319,7 +302,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewJournal.LastTransactionNumber++;
                             MainDS.ATransaction.Rows.Add(NewTransaction);
 
-                            NewTransaction.CostCentreCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("cost centre"));
+                            NewTransaction.CostCentreCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("cost centre"),
+                                ATransactionTable.GetCostCentreCodeLength());
 
                             ACostCentreRow costcentre = (ACostCentreRow)SetupDS.ACostCentre.Rows.Find(new object[] { LedgerNumber,
                                                                                                                      NewTransaction.CostCentreCode });
@@ -344,7 +328,8 @@ namespace Ict.Petra.Server.MFinance.GL
                                         TResultSeverity.Resv_Critical));
                             }
 
-                            NewTransaction.AccountCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("account code"));
+                            NewTransaction.AccountCode = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("account code"),
+                                ATransactionTable.GetAccountCodeLength());
 
                             AAccountRow account = (AAccountRow)SetupDS.AAccount.Rows.Find(new object[] { LedgerNumber, NewTransaction.AccountCode });
 
@@ -368,28 +353,11 @@ namespace Ict.Petra.Server.MFinance.GL
                                         TResultSeverity.Resv_Critical));
                             }
 
-                            ImportedString = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("narrative"));
+                            NewTransaction.Narrative = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("narrative"),
+                                ATransactionTable.GetNarrativeLength());
 
-                            if ((ImportedString != null) && (ImportedString.Length > ATransactionTable.GetNarrativeLength()))
-                            {
-                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        String.Format(Catalog.GetString("Narrative is longer than {0} chars."),
-                                            ATransactionTable.GetNarrativeLength()),
-                                        TResultSeverity.Resv_Critical));
-                            }
-
-                            NewTransaction.Narrative = ImportedString;
-                            ImportedString = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("reference"));
-
-                            if ((ImportedString != null) && (ImportedString.Length > ATransactionTable.GetReferenceLength()))
-                            {
-                                AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        String.Format(Catalog.GetString("Reference is longer than {0} chars."),
-                                            ATransactionTable.GetReferenceLength()),
-                                        TResultSeverity.Resv_Critical));
-                            }
-
-                            NewTransaction.Reference = ImportedString;
+                            NewTransaction.Reference = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("reference"),
+                                ATransactionTable.GetReferenceLength());
 
                             DateTime TransactionDate = ImportDate(Catalog.GetString("transaction") + " - " + Catalog.GetString("date"));
                             //
@@ -556,18 +524,6 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
 
                 MainDS.AcceptChanges();
-
-                if (ok)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    AMessages.Add(new TVerificationResult("Import",
-                            Catalog.GetString("Data could not be saved."),
-                            TResultSeverity.Resv_Critical));
-                }
             }
             catch (Exception ex)
             {
@@ -597,7 +553,17 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                 };
 
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                if (ok)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    AMessages.Add(new TVerificationResult("Import",
+                            Catalog.GetString("Data could not be saved."),
+                            TResultSeverity.Resv_Critical));
+                }
             }
 
             TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
@@ -640,7 +606,7 @@ namespace Ict.Petra.Server.MFinance.GL
             return String.Empty;
         }
 
-        private String ImportString(String message)
+        private String ImportString(String message, Int32 AmaximumLength = -1)
         {
             FImportMessage = String.Format(Catalog.GetString("Parsing the {0}:"), message);
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
@@ -648,6 +614,11 @@ namespace Ict.Petra.Server.MFinance.GL
             if (sReturn.Length == 0)
             {
                 return null;
+            }
+
+            if ((AmaximumLength > 0) && (sReturn.Length > AmaximumLength))
+            {
+                throw new Exception(String.Format(Catalog.GetString("Maximum field length ({0}) exceeded."), AmaximumLength));
             }
 
             return sReturn;

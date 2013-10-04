@@ -23,7 +23,7 @@ RootNode:
         tpgGeneralSettings:
             Label: General Settings
             Controls: [grpReportType, grpDateSelection, rgrDonorSelection, grpCurrencySelection]
-            
+
         tpgColumnSettings:
             Label: Column Settings
             Controls: [uco_Columns]
@@ -86,7 +86,7 @@ RootNode:
         cmbCurrency:
             ParameterName: param_currency
             OptionalValues: [=Base, International]
-        
+
         tpgAdditionalSettings:
             Label: Additional Settings
             Controls: [rgrFormatCurrency]
@@ -103,10 +103,10 @@ RootNode:
         rbtCurrencyThousands:
             Label: Only Thousands
             ParameterValue: CurrencyThousands
-        
+
         tpgFields:
             Label: Fields
-            Controls: [rgrFields]
+            Controls: [rgrFields, clbFields]
         rgrFields:
             Label: Select Receiving Fields
             Controls: [rbtAllFields, rbtSelectedFields]
@@ -116,15 +116,13 @@ RootNode:
             ParameterValue: all_fields
         rbtSelectedFields:
             Label: Selected Fields
-            Controls: [clbFields]
             ParameterValue: selected_fields
         clbFields:
             List: UserDefinedList
             NoLabel:true
-            Dock: Fill
             Width: 365
             Height: 300
-            
+
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para0:
             Name: Donor Name
