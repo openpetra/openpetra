@@ -93,6 +93,7 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>todoComment</summary>
         public event TDataSavingStartHandler DataSavingStarted;
 
+        /// <summary>Fired when any control is changed</summary>
         public event TValueChangedHandler ControlChanged;
 
         /// <summary>todoComment</summary>
