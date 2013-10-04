@@ -57,7 +57,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private bool FIAmUpdating;
 
         private String strOldDetailCostCentreCode; // this string is used to detect that the user has renamed an existing Cost Centre.
-        private String strOldDetailCostCentreName;
 
         private string FRecentlyUpdatedDetailCostCentreCode = INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE;
 
@@ -502,7 +501,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ShowDetails(TempRow);
             FIAmUpdating = false;
             strOldDetailCostCentreCode = TempRow.CostCentreCode;
-            strOldDetailCostCentreName = TempRow.CostCentreName;
         }
 
         private void AddNewCostCentre(Object sender, EventArgs e)
