@@ -697,7 +697,7 @@ namespace Ict.Common.Controls
             lblDescription.Visible = false;
             this.Invalidate();
         }
-        
+
         /// <summary>
         /// Clear all the contents of the combobox
         /// </summary>
@@ -706,7 +706,7 @@ namespace Ict.Common.Controls
             this.cmbCombobox.DataSource = null;
             this.cmbCombobox.Text = string.Empty;
         }
-        
+
         #region Event handling
 
         /// <summary>
@@ -714,8 +714,8 @@ namespace Ict.Common.Controls
         /// </summary>
         public void RefreshLabel()
         {
-        	RefreshLabel(null, null);
-        	this.Invalidate();
+            RefreshLabel(null, null);
+            this.Invalidate();
         }
 
         private void RefreshLabel(object sender, EventArgs e)

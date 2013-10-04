@@ -66,8 +66,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
 
-		private bool FActiveOnly = false;
-		
+        private bool FActiveOnly = false;
+
         /// <summary>
         /// Flags whether all the gift batch rows for this form have finished loading
         /// </summary>
@@ -195,7 +195,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // if this form is readonly, then we need all codes, because old codes might have been used
             bool ActiveOnly = this.Enabled;
             SetupAccountAndCostCentreCombos(ActiveOnly);
-            
+
             cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
             TFinanceControls.InitialiseMethodOfPaymentCodeList(ref cmbDetailMethodOfPaymentCode, ActiveOnly);
 
@@ -221,43 +221,44 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void SetupAccountAndCostCentreCombos(bool AActiveOnly = true, AGiftBatchRow ARow = null)
         {
-        	if (!FBatchLoaded || FActiveOnly != AActiveOnly)
-        	{
-        		FActiveOnly = AActiveOnly;
-	        	cmbDetailBankCostCentre.Clear();
-	        	cmbDetailBankAccountCode.Clear();
-	        	TFinanceControls.InitialiseAccountList(ref cmbDetailBankAccountCode, FLedgerNumber, true, false, AActiveOnly, true, true);
-	            TFinanceControls.InitialiseCostCentreList(ref cmbDetailBankCostCentre, FLedgerNumber, true, false, AActiveOnly, true, true);
+            if (!FBatchLoaded || (FActiveOnly != AActiveOnly))
+            {
+                FActiveOnly = AActiveOnly;
+                cmbDetailBankCostCentre.Clear();
+                cmbDetailBankAccountCode.Clear();
+                TFinanceControls.InitialiseAccountList(ref cmbDetailBankAccountCode, FLedgerNumber, true, false, AActiveOnly, true, true);
+                TFinanceControls.InitialiseCostCentreList(ref cmbDetailBankCostCentre, FLedgerNumber, true, false, AActiveOnly, true, true);
 
-	        	if (ARow != null)
-	        	{
-		            cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1);
-		            cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
-	        	}
-        	}
+                if (ARow != null)
+                {
+                    cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1);
+                    cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
+                }
+            }
         }
 
         private void SetupExtraGridFunctionality()
         {
-			//Populate CostCentreList variable
+            //Populate CostCentreList variable
             DataTable costCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
                 FLedgerNumber);
-            
+
             ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
+
             FMainDS.Tables.Add(tmpCostCentreTable);
             DataUtilities.ChangeDataTableToTypedDataTable(ref costCentreList, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
             FMainDS.RemoveTable(tmpCostCentreTable.TableName);
-            
+
             FCostCentreTable = (ACostCentreTable)costCentreList;
 
-			//Populate AccountList variable
+            //Populate AccountList variable
             DataTable accountList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
-            
+
             AAccountTable tmpAccountTable = new AAccountTable();
             FMainDS.Tables.Add(tmpAccountTable);
             DataUtilities.ChangeDataTableToTypedDataTable(ref accountList, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
             FMainDS.RemoveTable(tmpAccountTable.TableName);
-            
+
             FAccountTable = (AAccountTable)accountList;
             //Prepare grid to highlight inactive accounts/cost centres
             // Create a cell view for special conditions
@@ -282,14 +283,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return !CostCentreIsActive(costCentreCode);
             };
 
-			//Add conditions to columns
+            //Add conditions to columns
             int indexOfCostCentreCodeDataColumn = 7;
             int indexOfAccountCodeDataColumn = 8;
 
             grdDetails.Columns[indexOfCostCentreCodeDataColumn].Conditions.Add(conditionCostCentreCodeActive);
             grdDetails.Columns[indexOfAccountCodeDataColumn].Conditions.Add(conditionAccountCodeActive);
         }
-        
+
         private bool AccountIsActive(string AAccountCode = "")
         {
             bool retVal = true;
@@ -308,7 +309,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FAccountTable != null)
             {
-            	currentAccountRow = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, AAccountCode });
+                currentAccountRow = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, AAccountCode });
             }
 
             if (currentAccountRow != null)
@@ -337,9 +338,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FCostCentreTable != null)
             {
-            	currentCostCentreRow = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber, ACostCentreCode });
+                currentCostCentreRow = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber, ACostCentreCode });
             }
-            
 
             if (currentCostCentreRow != null)
             {
@@ -348,7 +348,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             return retVal;
         }
-        
+
         void RefreshPeriods(Object sender, EventArgs e)
         {
             TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref cmbPeriod, FLedgerNumber, cmbYear.GetSelectedInt32());

@@ -87,7 +87,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED,
             string AJournalStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
-			FLoadCompleted = false;           
+            FLoadCompleted = false;
             FBatchRow = GetBatchRow();
 
             //Check if the same batch is selected, so no need to apply filter
@@ -103,7 +103,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     GetDetailsFromControls(GetSelectedDetailRow());
                 }
 
-				FLoadCompleted = true;
+                FLoadCompleted = true;
                 return;
             }
 
@@ -163,8 +163,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber);
                 }
 
-	            SetupExtraGridFunctionality();
-	            
+                SetupExtraGridFunctionality();
+
                 TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
                     true, false, ActiveOnly, false, AForeignCurrencyName, true);
                 TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
@@ -770,25 +770,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void SetupExtraGridFunctionality()
         {
-			//Populate CostCentreList variable
+            //Populate CostCentreList variable
             DataTable costCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
                 FLedgerNumber);
-            
+
             ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
+
             FMainDS.Tables.Add(tmpCostCentreTable);
             DataUtilities.ChangeDataTableToTypedDataTable(ref costCentreList, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
             FMainDS.RemoveTable(tmpCostCentreTable.TableName);
-            
+
             FCostCentreTable = (ACostCentreTable)costCentreList;
 
-			//Populate AccountList variable
+            //Populate AccountList variable
             DataTable accountList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
-            
+
             AAccountTable tmpAccountTable = new AAccountTable();
             FMainDS.Tables.Add(tmpAccountTable);
             DataUtilities.ChangeDataTableToTypedDataTable(ref accountList, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
             FMainDS.RemoveTable(tmpAccountTable.TableName);
-            
+
             FAccountTable = (AAccountTable)accountList;
             //Prepare grid to highlight inactive accounts/cost centres
             // Create a cell view for special conditions
@@ -813,14 +814,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return !CostCentreIsActive(costCentreCode);
             };
 
-			//Add conditions to columns
+            //Add conditions to columns
             int indexOfCostCentreCodeDataColumn = 1;
             int indexOfAccountCodeDataColumn = 2;
 
             grdDetails.Columns[indexOfCostCentreCodeDataColumn].Conditions.Add(conditionCostCentreCodeActive);
             grdDetails.Columns[indexOfAccountCodeDataColumn].Conditions.Add(conditionAccountCodeActive);
         }
-        
+
         private bool AccountIsActive(string AAccountCode = "")
         {
             bool retVal = true;
@@ -839,7 +840,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FAccountTable != null)
             {
-            	currentAccountRow = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, AAccountCode });
+                currentAccountRow = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, AAccountCode });
             }
 
             if (currentAccountRow != null)
@@ -868,9 +869,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FCostCentreTable != null)
             {
-            	currentCostCentreRow = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber, ACostCentreCode });
+                currentCostCentreRow = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber, ACostCentreCode });
             }
-            
 
             if (currentCostCentreRow != null)
             {
@@ -879,7 +879,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             return retVal;
         }
-        
+
         private void ControlHasChanged(System.Object sender, EventArgs e)
         {
             int counter = FPetraUtilsObject.VerificationResultCollection.Count;

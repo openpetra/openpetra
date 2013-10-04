@@ -32,6 +32,7 @@ using System.Collections;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Data;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
@@ -52,6 +53,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FLedgerNumber = -1;
         private Int32 FSelectedBatchNumber = -1;
         private DateTime FDefaultDate = DateTime.Today;
+
+        private ACostCentreTable FCostCentreTable = null;
+        private AAccountTable FAccountTable = null;
+
 
         /// <summary>
         /// load the batches into the grid
@@ -76,7 +81,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ClearControls();
                 ((TFrmRecurringGLBatch) this.ParentForm).DisableJournals();
-	            ((TFrmRecurringGLBatch) this.ParentForm).DisableTransactions();
+                ((TFrmRecurringGLBatch) this.ParentForm).DisableTransactions();
             }
 
             ShowData();
@@ -88,6 +93,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 );
 
             grdDetails.Focus();
+
+            SetAccountCostCentreTableVariables();
         }
 
         /// reset the control
@@ -585,11 +592,29 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            // now load journals for this batch so we know if exchange rate needs to be set in case of different currency
-            GLBatchTDS TempDS = TRemote.MFinance.GL.WebConnectors.LoadARecurringJournal(FLedgerNumber, FSelectedBatchNumber);
-            FMainDS.Merge(TempDS);
+            //Make sure all data is loaded for batch
+            //clear any journals from other batches
+            FMainDS.ARecurringTransAnalAttrib.Clear();
+            FMainDS.ARecurringTransaction.Clear();
+            FMainDS.ARecurringJournal.Clear();
+            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndContent(FLedgerNumber, FSelectedBatchNumber));
+//            // now load journals for this batch, if necessary, so we know if exchange rate needs to be set in case of different currency
+//            FMainDS.ARecurringJournal.DefaultView.RowFilter = String.Format("{0}={1}",
+//                                                                            ARecurringJournalTable.GetBatchNumberDBName(),
+//                                                                           FSelectedBatchNumber);
+//
+//            if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
+//			{
+//
+//			}
+//
+//            //Reset row filter
+//            FMainDS.ARecurringJournal.DefaultView.RowFilter = string.Empty;
+
+            bool inactiveCodefound = false;
 
             // check how many journals have currency different from base currency
+            // check for inactive accounts or cost centres
             foreach (ARecurringJournalRow JournalRow in FMainDS.ARecurringJournal.Rows)
             {
                 if ((JournalRow.BatchNumber == FSelectedBatchNumber)
@@ -597,6 +622,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     NumberOfNonBaseCurrencyJournals++;
                 }
+
+                foreach (ARecurringTransactionRow transRow in FMainDS.ARecurringTransaction.Rows)
+                {
+                    if (!AccountIsActive(transRow.AccountCode) || !CostCentreIsActive(transRow.CostCentreCode))
+                    {
+                        inactiveCodefound = true;
+
+                        MessageBox.Show(String.Format(Catalog.GetString(
+                                    "Recurring batch no. {0} cannot be submitted because transaction {1} in Journal {2} contains an inactive account or cost centre code"),
+                                FSelectedBatchNumber,
+                                JournalRow.JournalNumber,
+                                transRow.TransactionNumber),
+                            Catalog.GetString("Inactive Account/Cost Centre Code"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                        break;
+                    }
+                }
+
+                if (inactiveCodefound)
+                {
+                    break;
+                }
+            }
+
+            if (inactiveCodefound)
+            {
+                return;
             }
 
             Hashtable requestParams = new Hashtable();
@@ -698,6 +750,69 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             Catalog.GetString("Reasons:"), AMessages));
                 }
             }
+        }
+
+        private void SetAccountCostCentreTableVariables()
+        {
+            //Populate CostCentreList variable
+            DataTable costCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+                FLedgerNumber);
+
+            ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
+
+            FMainDS.Tables.Add(tmpCostCentreTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref costCentreList, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpCostCentreTable.TableName);
+
+            FCostCentreTable = (ACostCentreTable)costCentreList;
+
+            //Populate AccountList variable
+            DataTable accountList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+
+            AAccountTable tmpAccountTable = new AAccountTable();
+            FMainDS.Tables.Add(tmpAccountTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref accountList, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpAccountTable.TableName);
+
+            FAccountTable = (AAccountTable)accountList;
+        }
+
+        private bool AccountIsActive(string AAccountCode)
+        {
+            bool retVal = true;
+
+            AAccountRow currentAccountRow = null;
+
+            if (FAccountTable != null)
+            {
+                currentAccountRow = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, AAccountCode });
+            }
+
+            if (currentAccountRow != null)
+            {
+                retVal = currentAccountRow.AccountActiveFlag;
+            }
+
+            return retVal;
+        }
+
+        private bool CostCentreIsActive(string ACostCentreCode)
+        {
+            bool retVal = true;
+
+            ACostCentreRow currentCostCentreRow = null;
+
+            if (FCostCentreTable != null)
+            {
+                currentCostCentreRow = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber, ACostCentreCode });
+            }
+
+            if (currentCostCentreRow != null)
+            {
+                retVal = currentCostCentreRow.CostCentreActiveFlag;
+            }
+
+            return retVal;
         }
 
         private int CurrentRowIndex()

@@ -127,37 +127,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             //Force a refresh of the combo labels if the first highlighted row contains inactive codes
             // as the colour does not show up for a first row
-            if (!AccountIsActive(cmbDetailAccountCode.GetSelectedString()) && cmbDetailAccountCode.AttachedLabel.BackColor != System.Drawing.Color.PaleVioletRed)
+            if (!AccountIsActive(cmbDetailAccountCode.GetSelectedString())
+                && (cmbDetailAccountCode.AttachedLabel.BackColor != System.Drawing.Color.PaleVioletRed))
             {
-				cmbDetailAccountCode.AttachedLabel.BackColor = System.Drawing.Color.PaleVioletRed;
+                cmbDetailAccountCode.AttachedLabel.BackColor = System.Drawing.Color.PaleVioletRed;
             }
-            if (!CostCentreIsActive(cmbDetailCostCentreCode.GetSelectedString()) && cmbDetailCostCentreCode.AttachedLabel.BackColor != System.Drawing.Color.PaleVioletRed)
+
+            if (!CostCentreIsActive(cmbDetailCostCentreCode.GetSelectedString())
+                && (cmbDetailCostCentreCode.AttachedLabel.BackColor != System.Drawing.Color.PaleVioletRed))
             {
-				cmbDetailCostCentreCode.AttachedLabel.BackColor = System.Drawing.Color.PaleVioletRed;
+                cmbDetailCostCentreCode.AttachedLabel.BackColor = System.Drawing.Color.PaleVioletRed;
             }
         }
-        
+
         private void SetupExtraGridFunctionality()
         {
-			//Populate CostCentreList variable
+            //Populate CostCentreList variable
             DataTable costCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
                 FLedgerNumber);
-            
+
             ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
+
             FMainDS.Tables.Add(tmpCostCentreTable);
             DataUtilities.ChangeDataTableToTypedDataTable(ref costCentreList, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
             FMainDS.RemoveTable(tmpCostCentreTable.TableName);
-            
+
             FCostCentreTable = (ACostCentreTable)costCentreList;
 
-			//Populate AccountList variable
+            //Populate AccountList variable
             DataTable accountList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
-            
+
             AAccountTable tmpAccountTable = new AAccountTable();
             FMainDS.Tables.Add(tmpAccountTable);
             DataUtilities.ChangeDataTableToTypedDataTable(ref accountList, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
             FMainDS.RemoveTable(tmpAccountTable.TableName);
-            
+
             FAccountTable = (AAccountTable)accountList;
 
             //Prepare grid to highlight inactive accounts/cost centres
@@ -183,7 +187,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 return !CostCentreIsActive(costCentreCode);
             };
 
-			//Add conditions to columns
+            //Add conditions to columns
             int indexOfCostCentreCodeDataColumn = 0;
             int indexOfAccountCodeDataColumn = 1;
 
