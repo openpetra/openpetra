@@ -1476,6 +1476,12 @@ namespace Ict.Common.Printing
         /// remove all elments with given name or class
         public static string RemoveElement(string AHtmlMessage, string AElementName, string AAttributeName, string ADivID, out string AElementCode)
         {
+            if (AHtmlMessage.Length == 0)
+            {
+                AElementCode = string.Empty;
+                return string.Empty;
+            }
+
             // use xml tree to avoid whitespace differences etc?
             XmlDocument htmlDoc = Ict.Common.Printing.TPrinterHtml.ParseHtml(AHtmlMessage);
 
