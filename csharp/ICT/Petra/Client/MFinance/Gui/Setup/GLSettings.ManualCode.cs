@@ -120,6 +120,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             grpDataRetention.Location =
                 new System.Drawing.Point(grpDataRetention.Location.X, grpDataRetention.Location.Y - (int)(3.5 * HeightDifference));
+
+            nudNumberOfAccountingPeriods.KeyDown += numericUpDown_KeyDown;
+            nudNumberFwdPostingPeriods.KeyDown += numericUpDown_KeyDown;
+            nudCurrentPeriod.KeyDown += numericUpDown_KeyDown;
+            nudActualsDataRetention.KeyDown += numericUpDown_KeyDown;
+            nudGiftDataRetention.KeyDown += numericUpDown_KeyDown;
         }
 
         /// <summary>
@@ -144,16 +150,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 ParameterRow = (AAccountingSystemParameterRow)ADataSet.AAccountingSystemParameter.Rows[0];
 
-                nudCurrentPeriod.Maximum = ParameterRow.NumberOfAccountingPeriods;
+                nudCurrentPeriod.Maximum = 13; // must not be greater than number of periods allowed
                 nudCurrentPeriod.Minimum = 1;
                 nudNumberOfAccountingPeriods.Maximum = 13;
                 //nudNumberOfAccountingPeriods.Maximum = ParameterRow.NumberOfAccountingPeriods;
                 nudNumberOfAccountingPeriods.Minimum = 12;
                 nudNumberFwdPostingPeriods.Maximum = 8;
                 //nudNumberFwdPostingPeriods.Maximum = MFinanceConstants.MAX_PERIODS - ((ALedgerRow)ADataSet.ALedger.Rows[0]).NumberOfAccountingPeriods;
-                nudActualsDataRetention.Maximum = ParameterRow.ActualsDataRetention;
+                //nudActualsDataRetention.Maximum = ParameterRow.ActualsDataRetention; // do not limit at the moment
                 nudActualsDataRetention.Minimum = 1;
-                nudGiftDataRetention.Maximum = ParameterRow.GiftDataRetention;
+                //nudGiftDataRetention.Maximum = ParameterRow.GiftDataRetention; // do not limit at the moment
                 nudGiftDataRetention.Minimum = 1;
 
                 // comment out budget data retention settings for now until they are properly used in OpenPetra
@@ -484,6 +490,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // Handle addition/removal to/from TVerificationResultCollection
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
             }
+
+            // check that current period is not greater than number of ledger periods
+            ValidationColumn = ARow.Table.Columns[ALedgerTable.ColumnNumberOfAccountingPeriodsId];
+
+            if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.CurrentPeriod > ARow.NumberOfAccountingPeriods)
+                {
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_CURRENT_PERIOD_TOO_LATE)),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+                else
+                {
+                    VerificationResult = null;
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+            }
         }
 
         private void UseDefaultFwdPostingPeriodsChanged(Object sender, EventArgs e)
@@ -502,6 +528,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 else
                 {
                     nudNumberFwdPostingPeriods.Value = 2;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Checks for limited number of digits and no negatives
+        /// in a Numeric Up/Down box
+        /// </summary>
+        private void numericUpDown_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (!((e.KeyData == Keys.Back) || (e.KeyData == Keys.Delete)))
+            {
+                if ((sender == nudNumberOfAccountingPeriods)
+                    || (sender == nudNumberFwdPostingPeriods)
+                    || (sender == nudCurrentPeriod)
+                    || (sender == nudActualsDataRetention)
+                    || (sender == nudGiftDataRetention))
+                {
+                    if ((((NumericUpDown)sender).Text.Length >= 2) || (e.KeyValue == 109))
+                    {
+                        e.SuppressKeyPress = true;
+                        e.Handled = true;
+                    }
                 }
             }
         }
