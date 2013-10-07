@@ -1384,6 +1384,13 @@ namespace {#NAMESPACE}
                 FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
             }                
         }
+        else
+        {
+            // validation failed
+            ReturnValue = false;
+            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+        }
+
 
         return ReturnValue;
     }

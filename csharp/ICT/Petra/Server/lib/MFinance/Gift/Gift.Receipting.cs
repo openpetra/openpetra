@@ -81,60 +81,65 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            // get the local country code
-            string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
-
-            // first get all donors in the given date range
-            string SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonors.sql");
-
-            OdbcParameter[] parameters = new OdbcParameter[3];
-            parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
-            parameters[0].Value = ALedgerNumber;
-            parameters[1] = new OdbcParameter("StartDate", OdbcType.Date);
-            parameters[1].Value = AStartDate;
-            parameters[2] = new OdbcParameter("EndDate", OdbcType.Date);
-            parameters[2].Value = AEndDate;
-
-            DataTable donorkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "DonorKeys", Transaction, parameters);
-
-            string ResultDocument = "";
-
-            foreach (DataRow donorrow in donorkeys.Rows)
+            try
             {
-                Int64 donorKey = Convert.ToInt64(donorrow[0]);
-                string donorName = donorrow[1].ToString();
+                // get the local country code
+                string LocalCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(Transaction);
 
-                SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonationsOfDonor.sql");
-                parameters = new OdbcParameter[4];
+                // first get all donors in the given date range
+                string SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonors.sql");
+
+                OdbcParameter[] parameters = new OdbcParameter[3];
                 parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
                 parameters[0].Value = ALedgerNumber;
                 parameters[1] = new OdbcParameter("StartDate", OdbcType.Date);
                 parameters[1].Value = AStartDate;
                 parameters[2] = new OdbcParameter("EndDate", OdbcType.Date);
                 parameters[2].Value = AEndDate;
-                parameters[3] = new OdbcParameter("DonorKey", OdbcType.BigInt);
-                parameters[3].Value = donorKey;
 
-                // TODO: should we print each gift detail, or just one row per gift?
-                DataTable donations = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Donations", Transaction, parameters);
+                DataTable donorkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "DonorKeys", Transaction, parameters);
 
-                if (donations.Rows.Count > 0)
+                string ResultDocument = "";
+
+                foreach (DataRow donorrow in donorkeys.Rows)
                 {
-                    string letter = FormatLetter(donorKey, donorName, donations, BaseCurrency, AHTMLTemplate, LocalCountryCode, Transaction);
+                    Int64 donorKey = Convert.ToInt64(donorrow[0]);
+                    string donorName = donorrow[1].ToString();
 
-                    if (TFormLettersTools.AttachNextPage(ref ResultDocument, letter))
+                    SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonationsOfDonor.sql");
+                    parameters = new OdbcParameter[4];
+                    parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
+                    parameters[0].Value = ALedgerNumber;
+                    parameters[1] = new OdbcParameter("StartDate", OdbcType.Date);
+                    parameters[1].Value = AStartDate;
+                    parameters[2] = new OdbcParameter("EndDate", OdbcType.Date);
+                    parameters[2].Value = AEndDate;
+                    parameters[3] = new OdbcParameter("DonorKey", OdbcType.BigInt);
+                    parameters[3].Value = donorKey;
+
+                    // TODO: should we print each gift detail, or just one row per gift?
+                    DataTable donations = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "Donations", Transaction, parameters);
+
+                    if (donations.Rows.Count > 0)
                     {
-                        // TODO: store somewhere that the receipt has been printed?
-                        // TODO also store each receipt with the donor in document management, and in contact management?
+                        string letter = FormatLetter(donorKey, donorName, donations, BaseCurrency, AHTMLTemplate, LocalCountryCode, Transaction);
+
+                        if (TFormLettersTools.AttachNextPage(ref ResultDocument, letter))
+                        {
+                            // TODO: store somewhere that the receipt has been printed?
+                            // TODO also store each receipt with the donor in document management, and in contact management?
+                        }
                     }
                 }
+
+                TFormLettersTools.CloseDocument(ref ResultDocument);
+
+                return ResultDocument;
             }
-
-            TFormLettersTools.CloseDocument(ref ResultDocument);
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
-            return ResultDocument;
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
         }
 
         private static string GetStringOrEmpty(object obj)

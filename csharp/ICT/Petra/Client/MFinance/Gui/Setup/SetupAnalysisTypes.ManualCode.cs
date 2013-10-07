@@ -52,6 +52,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 Ict.Common.Data.TTypedDataTable TypedTable;
                 TRemote.MCommon.DataReader.WebConnectors.GetData(AAnalysisTypeTable.GetTableDBName(), null, out TypedTable);
                 FMainDS.AAnalysisType.Merge(TypedTable);
+                FMainDS.AAnalysisType.DefaultView.Sort = AAnalysisTypeTable.GetAnalysisTypeCodeDBName();
 
                 ucoValues.LedgerNumber = value;
                 ucoValues.LoadValues(FLedgerNumber);
@@ -91,8 +92,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// Performs checks to determine whether a deletion of the current
-        ///  row is permissable
+        /// Performs checks to determine whether a deletion of the current row is permissable
         /// </summary>
         /// <param name="ARowToDelete">the currently selected row to be deleted</param>
         /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>

@@ -292,7 +292,7 @@ namespace Ict.Petra.Client.App.Formatting
                         ReturnValue = true;
                         return ReturnValue;
                     }
-                    else if ((AParseDate == "=") || (AParseDate == "+") || (AParseDate.ToLower() == "today"))
+                    else if ((AParseDate == "=") || (AParseDate == "+") || (AParseDate.ToLower() == Catalog.GetString("today").ToLower()))
                     {
                         AParsedDate = DateTime.Now.ToString("D");
                         ReturnValue = true;

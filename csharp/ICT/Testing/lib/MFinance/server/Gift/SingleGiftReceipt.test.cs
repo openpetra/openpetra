@@ -43,9 +43,9 @@ using Ict.Petra.Server.App.Core;
 
 namespace Tests.MFinance.Server.Gift
 {
-    /// This will test the generation of the annual gift receipts on the server
+    /// This will test the generation of a gift receipt for a single gift on the server
     [TestFixture]
-    public class TGiftAnnualReceiptTest
+    public class TGiftSingleGiftReceiptTest
     {
         Int32 FLedgerNumber = -1;
 
@@ -70,60 +70,23 @@ namespace Tests.MFinance.Server.Gift
         }
 
         /// <summary>
-        /// prepare the test case
-        /// </summary>
-        public static bool ImportAndPostGiftBatch(int ALedgerNumber, out TVerificationResultCollection VerificationResult)
-        {
-            TGiftImporting importer = new TGiftImporting();
-
-            string testFile = TAppSettingsManager.GetValue("GiftBatch.file", "../../csharp/ICT/Testing/lib/MFinance/SampleData/sampleGiftBatch.csv");
-
-            StreamReader sr = new StreamReader(testFile);
-            string FileContent = sr.ReadToEnd();
-
-            FileContent = FileContent.Replace("{ledgernumber}", ALedgerNumber.ToString());
-
-            sr.Close();
-
-            Hashtable parameters = new Hashtable();
-            parameters.Add("Delimiter", ",");
-            parameters.Add("ALedgerNumber", ALedgerNumber);
-            parameters.Add("DateFormatString", "yyyy-MM-dd");
-            parameters.Add("NumberFormat", "American");
-            parameters.Add("NewLine", Environment.NewLine);
-
-            importer.ImportGiftBatches(parameters, FileContent, out VerificationResult);
-
-            int BatchNumber = importer.GetLastGiftBatchNumber();
-
-            if (!TGiftTransactionWebConnector.PostGiftBatch(ALedgerNumber, BatchNumber, out VerificationResult))
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// print annual receipt
+        /// print single gift receipt
         /// </summary>
         [Test]
-        public void TestAnnualReceipt()
+        public void TestSingleReceipt()
         {
             CommonNUnitFunctions.ResetDatabase();
 
             // import a test gift batch
             TVerificationResultCollection VerificationResult;
 
-            if (!ImportAndPostGiftBatch(FLedgerNumber, out VerificationResult))
+            if (!TGiftAnnualReceiptTest.ImportAndPostGiftBatch(FLedgerNumber, out VerificationResult))
             {
                 Assert.Fail("ImportAndPostGiftBatch failed: " + VerificationResult.BuildVerificationResultString());
             }
 
-            // TODO test reversed gifts
-
             string formletterTemplateFile = TAppSettingsManager.GetValue("ReceiptTemplate.file",
-                "../../csharp/ICT/Testing/lib/MFinance/SampleData/AnnualReceiptTemplate.html");
+                "../../csharp/ICT/Testing/lib/MFinance/SampleData/SingleGiftReceiptTemplate.html");
             Encoding encodingOfHTMLfile = TTextFile.GetFileEncoding(formletterTemplateFile);
             StreamReader sr = new StreamReader(formletterTemplateFile, encodingOfHTMLfile, false);
             string FileContent = sr.ReadToEnd();
@@ -131,35 +94,29 @@ namespace Tests.MFinance.Server.Gift
             sr.Close();
 
             string formletterExpectedFile = TAppSettingsManager.GetValue("ReceiptExptected.file",
-                "../../csharp/ICT/Testing/lib/MFinance/SampleData/AnnualReceiptExpected.html");
+                "../../csharp/ICT/Testing/lib/MFinance/SampleData/SingleGiftReceiptExpected.html");
 
             Catalog.Init("de-DE", "de-DE");
-            sr = new StreamReader(formletterExpectedFile, encodingOfHTMLfile, false);
-            string ExpectedFormletterContent = sr.ReadToEnd().
-                                               Replace("#TODAY#", DateTime.Now.ToString("d. MMMM yyyy")).
-                                               Replace("#THISYEAR#", DateTime.Today.Year.ToString());
-            sr.Close();
-
-            StreamWriter sw = new StreamWriter(formletterExpectedFile + ".updated", false, encodingOfHTMLfile);
-            sw.WriteLine(ExpectedFormletterContent);
-            sw.Close();
 
             TLanguageCulture.SetLanguageAndCulture("de-DE", "de-DE");
 
             string receipts =
                 TReceiptingWebConnector.CreateAnnualGiftReceipts(FLedgerNumber,
                     new DateTime(DateTime.Today.Year, 1, 1), new DateTime(DateTime.Today.Year, 12, 31), FileContent);
-            sw = new StreamWriter(formletterExpectedFile + ".new", false, encodingOfHTMLfile);
+            StreamWriter sw = new StreamWriter(formletterExpectedFile + ".new", false, encodingOfHTMLfile);
             sw.WriteLine(receipts);
             sw.WriteLine();
             sw.Close();
 
+            SortedList <string, string>ToReplace = new SortedList <string, string>();
+            ToReplace.Add("#TODAY#", DateTime.Now.ToString("d. MMMM yyyy"));
+            ToReplace.Add("#THISYEAR#", DateTime.Today.Year.ToString());
+
             Assert.IsTrue(
-                TTextFile.SameContent(formletterExpectedFile + ".updated", formletterExpectedFile + ".new"),
+                TTextFile.SameContent(formletterExpectedFile, formletterExpectedFile + ".new", true, ToReplace, true),
                 "receipt was not printed as expected, check " + formletterExpectedFile + ".new");
 
             File.Delete(formletterExpectedFile + ".new");
-            File.Delete(formletterExpectedFile + ".updated");
         }
     }
 }

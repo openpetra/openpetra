@@ -948,13 +948,13 @@ namespace {#NAMESPACE}
         {            
             if (AIsNewRow)
             {
-				{#SAVEDETAILS}
+                {#SAVEDETAILS}
             }
             else
             {
                 object[] beforeEdit = ARow.ItemArray;
-				ARow.BeginEdit();
-				{#SAVEDETAILS}
+                ARow.BeginEdit();
+                {#SAVEDETAILS}
                 if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
                 {
                     ARow.CancelEdit();
@@ -965,7 +965,7 @@ namespace {#NAMESPACE}
                 }
             }
         }
-    }							
+    }                           
 {#IFDEF GENERATECONTROLUPDATEDATAHANDLER}
 
     private void ControlUpdateDataHandler(object sender, EventArgs e)
@@ -1342,6 +1342,13 @@ namespace {#NAMESPACE}
                 FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
             }                
         }
+        else
+        {
+            // validation failed
+            ReturnValue = false;
+            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+        }
+
 
         return ReturnValue;
     }
