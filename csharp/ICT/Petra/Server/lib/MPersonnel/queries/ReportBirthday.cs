@@ -244,11 +244,17 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 foreach (DataRow r in resultTable.Rows)
                 {
                     int age = 0;
-                    DateTime BDay = Convert.ToDateTime(r["DOB"]);
 
-                    while (BDay.AddYears(age) <= AParameters.Get("param_dtpToDate").ToDate())
+                    if (r["DOB"] != DBNull.Value)
                     {
-                        age++;
+                        DateTime BDay = Convert.ToDateTime(r["DOB"]);
+                        DateTime AgeDay = AParameters.Get("param_dtpToDate").ToDate();
+                        age = AgeDay.Year - BDay.Year;
+
+                        if (AgeDay.DayOfYear < BDay.DayOfYear) // If you haven't had your birthday yet, I'll sub 1 from your age.
+                        {
+                            age -= 1;
+                        }
                     }
 
                     r["Age"] = age;

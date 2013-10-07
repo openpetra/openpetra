@@ -374,7 +374,7 @@
           <value variable="SupplierKey" format="partnerKey"/>
           <value text=" "/>
           <value variable="SupplierName"/>
-          <value function="ConditionRow(true)"/>
+          <value condition="ConditionRow(true)" text =""/>
         </field>
       </header>
       <detail>

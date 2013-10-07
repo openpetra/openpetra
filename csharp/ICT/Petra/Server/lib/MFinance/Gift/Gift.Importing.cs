@@ -199,8 +199,9 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             totalBatchAmount = 0;
 
-                            string BatchDescription = ImportString(Catalog.GetString("batch description"));
-                            string BankAccountCode = ImportString(Catalog.GetString("bank account code"));
+
+                            string BatchDescription = ImportString(Catalog.GetString("batch description"), AGiftBatchTable.GetBatchDescriptionLength());
+                            string BankAccountCode = ImportString(Catalog.GetString("bank account code"), AGiftBatchTable.GetBankAccountCodeLength());
                             decimal HashTotal = ImportDecimal(Catalog.GetString("hash total"));
                             DateTime GlEffectiveDate = ImportDate(Catalog.GetString("effective Date"));
                             FImportMessage = "Creating new batch";
@@ -214,7 +215,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftBatch.BatchDescription = BatchDescription;
                             giftBatch.BankAccountCode = BankAccountCode;
                             giftBatch.HashTotal = HashTotal;
-                            giftBatch.CurrencyCode = ImportString(Catalog.GetString("currency code"));
+                            giftBatch.CurrencyCode = ImportString(Catalog.GetString("currency code"), AGiftBatchTable.GetCurrencyCodeLength());
                             giftBatch.ExchangeRateToBase = ImportDecimal(Catalog.GetString("exchange rate to base"));
 
                             if (giftBatch.ExchangeRateToBase > 10000000)  // Huge numbers here indicate that the decimal comma/point is incorrect.
@@ -226,8 +227,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 return false;
                             }
 
-                            giftBatch.BankCostCentre = ImportString(Catalog.GetString("bank cost centre"));
-                            giftBatch.GiftType = ImportString(Catalog.GetString("gift type"));
+                            giftBatch.BankCostCentre = ImportString(Catalog.GetString("bank cost centre"), AGiftBatchTable.GetBankCostCentreLength());
+                            giftBatch.GiftType = ImportString(Catalog.GetString("gift type"), AGiftBatchTable.GetGiftTypeLength());
                             FImportMessage = Catalog.GetString("Saving gift batch");
 
                             if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
@@ -277,10 +278,11 @@ namespace Ict.Petra.Server.MFinance.Gift
                             gift.DonorKey = ImportInt64(Catalog.GetString("donor key"));
                             ImportString(Catalog.GetString("short name of donor (unused)")); // unused
 
-                            gift.MethodOfGivingCode = ImportString(Catalog.GetString("method of giving Code"));
-                            gift.MethodOfPaymentCode = ImportString(Catalog.GetString("method Of Payment Code"));
-                            gift.Reference = ImportString(Catalog.GetString("reference"));
-                            gift.ReceiptLetterCode = ImportString(Catalog.GetString("receipt letter code"));
+                            gift.MethodOfGivingCode = ImportString(Catalog.GetString("method of giving Code"), AGiftTable.GetMethodOfGivingCodeLength());
+                            gift.MethodOfPaymentCode = ImportString(Catalog.GetString(
+                                    "method Of Payment Code"), AGiftTable.GetMethodOfPaymentCodeLength());
+                            gift.Reference = ImportString(Catalog.GetString("reference"), AGiftTable.GetReferenceLength());
+                            gift.ReceiptLetterCode = ImportString(Catalog.GetString("receipt letter code"), AGiftTable.GetReceiptLetterCodeLength());
 
                             if (FExtraColumns)
                             {
@@ -342,8 +344,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                             }
 
                             giftDetails.ConfidentialGiftFlag = ImportBoolean(Catalog.GetString("confidential gift"));
-                            giftDetails.MotivationGroupCode = ImportString(Catalog.GetString("motivation group code"));
-                            giftDetails.MotivationDetailCode = ImportString(Catalog.GetString("motivation detail"));
+                            giftDetails.MotivationGroupCode = ImportString(Catalog.GetString(
+                                    "motivation group code"), AGiftDetailTable.GetMotivationGroupCodeLength());
+                            giftDetails.MotivationDetailCode = ImportString(Catalog.GetString(
+                                    "motivation detail"), AGiftDetailTable.GetMotivationDetailCodeLength());
 
                             if (giftDetails.MotivationGroupCode == "") // Perhaps this CSV file is a summary, and can't be imported?
                             {
@@ -355,7 +359,8 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             if (FExtraColumns)
                             {
-                                giftDetails.CostCentreCode = ImportString(Catalog.GetString("cost centre code"));
+                                giftDetails.CostCentreCode = ImportString(Catalog.GetString(
+                                        "cost centre code"), AGiftDetailTable.GetCostCentreCodeLength());
                             }
                             else
                             {
@@ -364,16 +369,18 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 giftDetails.CostCentreCode = InferCostCentre(giftDetails);
                             }
 
-                            giftDetails.GiftCommentOne = ImportString(Catalog.GetString("comment one"));
-                            giftDetails.CommentOneType = ImportString(Catalog.GetString("comment one type"));
+                            giftDetails.GiftCommentOne = ImportString(Catalog.GetString("comment one"), AGiftDetailTable.GetGiftCommentOneLength());
+                            giftDetails.CommentOneType = ImportString(Catalog.GetString("comment one type"), AGiftDetailTable.GetCommentOneTypeLength());
 
 
                             giftDetails.MailingCode = ImportString(Catalog.GetString("mailing code"));
 
-                            giftDetails.GiftCommentTwo = ImportString(Catalog.GetString("gift comment two"));
-                            giftDetails.CommentTwoType = ImportString(Catalog.GetString("comment two type"));
-                            giftDetails.GiftCommentThree = ImportString(Catalog.GetString("gift comment three"));
-                            giftDetails.CommentThreeType = ImportString(Catalog.GetString("comment three type"));
+                            giftDetails.GiftCommentTwo = ImportString(Catalog.GetString("gift comment two"), AGiftDetailTable.GetGiftCommentTwoLength());
+                            giftDetails.CommentTwoType = ImportString(Catalog.GetString("comment two type"), AGiftDetailTable.GetCommentTwoTypeLength());
+                            giftDetails.GiftCommentThree = ImportString(Catalog.GetString(
+                                    "gift comment three"), AGiftDetailTable.GetGiftCommentThreeLength());
+                            giftDetails.CommentThreeType = ImportString(Catalog.GetString(
+                                    "comment three type"), AGiftDetailTable.GetCommentThreeTypeLength());
                             giftDetails.TaxDeductable = ImportBoolean(Catalog.GetString("tax deductable"));
 
                             gift.DateEntered = giftBatch.GlEffectiveDate;
@@ -465,18 +472,13 @@ namespace Ict.Petra.Server.MFinance.Gift
                         Catalog.GetString(FImportMessage) + FNewLine + speakingExceptionText,
                         TResultSeverity.Resv_Critical));
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                     Catalog.GetString("Exception Occurred"),
                     0);
 
                 return false;
             }
-            finally  //Can't use return with Finally
+            finally
             {
                 try
                 {
@@ -588,7 +590,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             return ex.Message;
         }
 
-        private String ImportString(String message)
+        private String ImportString(String message, Int32 AmaximumLength = -1)
         {
             FImportMessage = String.Format(Catalog.GetString("Parsing the {0}:"), message);
             String sReturn = StringHelper.GetNextCSV(ref FImportLine, FDelimiter);
@@ -596,6 +598,11 @@ namespace Ict.Petra.Server.MFinance.Gift
             if (sReturn.Length == 0)
             {
                 return null;
+            }
+
+            if ((AmaximumLength > 0) && (sReturn.Length > AmaximumLength))
+            {
+                throw new Exception(String.Format(Catalog.GetString("Maximum field length ({0}) exceeded."), AmaximumLength));
             }
 
             return sReturn;

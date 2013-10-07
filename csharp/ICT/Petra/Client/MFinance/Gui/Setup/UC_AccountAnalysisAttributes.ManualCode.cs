@@ -3,6 +3,7 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
 // Copyright 2004-2012 by OM International
 //
@@ -46,29 +47,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
+                FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
             }
         }
 
-        /// <summary>
-        /// Loads all the currently assigned AnalTypeCodes into the Combo -
-        /// Even where some of these may not be valid DB values...
-        /// </summary>
-        private void LoadCmbAnalType()
+        //
+        // Before the dataset is saved, I'll go through and pull out anything that still says, "Unassigned".
+        void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
         {
-            cmbDetailAnalTypeCode.Items.Clear();
-
             foreach (AAnalysisTypeRow Row in FMainDS.AAnalysisType.Rows)
             {
                 if (Row.RowState != DataRowState.Deleted)
                 {
-                    if (!cmbDetailAnalTypeCode.Items.Contains(Row.AnalysisTypeCode))
+                    if (Row.AnalysisTypeCode.StartsWith("Unassigned"))
                     {
-                        cmbDetailAnalTypeCode.Items.Add(Row.AnalysisTypeCode);
+                        Row.Delete();
                     }
                 }
             }
+        }
 
-            btnDelete.Enabled = (grdDetails.Rows.Count > 1);
+        /// <summary>
+        /// Loads all available AnalTypeCodes into the Combo
+        /// </summary>
+        private void LoadCmbAnalType()
+        {
+            cmbDetailAnalTypeCode.Items.Clear();
+            DataView MyView = new DataView(FMainDS.AAnalysisType);
+            MyView.Sort = AAnalysisTypeTable.GetAnalysisTypeCodeDBName();
+
+            foreach (DataRowView rv in MyView)
+            {
+                AAnalysisTypeRow Row = (AAnalysisTypeRow)rv.Row;
+                cmbDetailAnalTypeCode.Items.Add(Row.AnalysisTypeCode);
+            }
         }
 
         /// <summary>
@@ -84,9 +96,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FLedgerNumber,
                     AAnalysisAttributeTable.GetAccountCodeDBName(),
                     FAccountCode);
+                FMainDS.AAnalysisAttribute.DefaultView.Sort =
+                    AAnalysisAttributeTable.GetLedgerNumberDBName() + ", " +
+                    AAnalysisAttributeTable.GetAnalysisTypeCodeDBName() + ", " +
+                    AAnalysisAttributeTable.GetAccountCodeDBName();
+
 
                 LoadCmbAnalType();
                 pnlDetails.Enabled = false;
+                btnDelete.Enabled = (grdDetails.Rows.Count > 1);
             }
         }
 
@@ -100,8 +118,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
 //          GetDataFromControls();
-            this.CreateNewAAnalysisAttribute();
+            CreateNewAAnalysisAttribute();
             pnlDetails.Enabled = true;
+            btnDelete.Enabled = true;
 
             SelectRowInGrid(grdDetails.Rows.Count);
         }
@@ -111,11 +130,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             string NewTypeCode = "Unassigned";
             int ItmIdx = -1;
             int FindAttempt = 0;
-
-            FMainDS.AAnalysisAttribute.DefaultView.Sort =
-                AAnalysisAttributeTable.GetLedgerNumberDBName() + ", " +
-                AAnalysisAttributeTable.GetAnalysisTypeCodeDBName() + ", " +
-                AAnalysisAttributeTable.GetAccountCodeDBName();
 
             do
             {
@@ -156,14 +170,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private bool PreDeleteManual(AAnalysisAttributeRow ARowToDelete, ref string ADeletionQuestion)
         {
+            // I can't delete any Analysis Type code that's been used in transactions.
             if ((ARowToDelete != null) && (ARowToDelete.RowState != DataRowState.Deleted))
             {
-                ADeletionQuestion = String.Format(
-                    Catalog.GetString("Confirm you want to Remove {0} from this account."),
-                    ARowToDelete.AnalysisTypeCode);
+                if (TRemote.MFinance.Setup.WebConnectors.CanDetachAnalysisType(ARowToDelete.LedgerNumber, ARowToDelete.AccountCode,
+                        ARowToDelete.AnalysisTypeCode))
+                {
+                    ADeletionQuestion = String.Format(
+                        Catalog.GetString("Confirm you want to Remove {0} from this account."),
+                        ARowToDelete.AnalysisTypeCode);
+                    return true;
+                }
+                else // The server reports that this can't be deleted because it's been using in transactions.
+                {
+                    MessageBox.Show(
+                        String.Format(Catalog.GetString("Analysis type {0} cannot be deleted because it has been used in tranactions."),
+                            ARowToDelete.AnalysisTypeCode),
+                        Catalog.GetString("Delete Analysis Type"));
+                }
             }
 
-            return true;
+            return false;
         }
 
         private bool DeleteRowManual(AAnalysisAttributeRow ARowToDelete, ref string ACompletionMessage)
@@ -195,8 +222,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted))
             {
-                FPreviouslySelectedDetailRow.AnalysisTypeCode = cmbDetailAnalTypeCode.GetSelectedString();         //GetDataFromControls();
+                AvoidSelectingingDuplicateAnalysisType(FPreviouslySelectedDetailRow,
+                    FPreviouslySelectedDetailRow.AnalysisTypeCode,
+                    cmbDetailAnalTypeCode.Text);
             }
+        }
+
+        private void AvoidSelectingingDuplicateAnalysisType(AAnalysisAttributeRow ARow, String APreviousValue, String ARequestedValue)
+        {
+            string FilterString = String.Format("{0}={3} and {1}='{4}' and {2}='{5}'",
+                AAnalysisAttributeTable.GetLedgerNumberDBName(),
+                AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
+                AAnalysisAttributeTable.GetAccountCodeDBName(),
+                FLedgerNumber,
+                ARequestedValue,
+                FAccountCode);
+            DataView FilterView = new DataView(FMainDS.AAnalysisAttribute);
+
+            FilterView.RowFilter = FilterString;
+            Boolean CantUseName = (FilterView.Count > 0);
+
+            ARow.BeginEdit();
+
+            if (CantUseName)
+            {
+                ARow.AnalysisTypeCode = APreviousValue;
+                cmbDetailAnalTypeCode.Text = APreviousValue;
+            }
+            else
+            {
+                ARow.AnalysisTypeCode = ARequestedValue;
+            }
+
+            ARow.EndEdit(); // Apply these changes now!
         }
 
         private void GetDetailDataFromControlsManual(AAnalysisAttributeRow ARow)
@@ -208,43 +266,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // The row is being edited right now, (It's in a BeginEdit ... EndEdit bracket) so it doesn't show up in the DefaultView.
                 // I need to call EndEdit, but I'll give this row a "safe" value first.
 
-                string TempEdit = cmbDetailAnalTypeCode.Text;
-                string PreviousValue = ARow.AnalysisTypeCode;
+                String RequestedValue = cmbDetailAnalTypeCode.Text;
+                String PreviousValue = ARow.AnalysisTypeCode;
                 ARow.AnalysisTypeCode = "temp_edit";
                 ARow.EndEdit();
 
-                string FilterString = String.Format("{0}={3} and {1}='{4}' and {2}='{5}'",
-                    AAnalysisAttributeTable.GetLedgerNumberDBName(),
-                    AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
-                    AAnalysisAttributeTable.GetAccountCodeDBName(),
-                    FLedgerNumber,
-                    TempEdit,
-                    FAccountCode);
-                FMainDS.AAnalysisAttribute.DefaultView.RowFilter = FilterString;
-                //            TLogging.Log("Check for unique TypeCode (" + TempEdit + ") : " + FMainDS.AAnalysisAttribute.DefaultView.Count + " Matches.");
-                Boolean MustReplaceName = (FMainDS.AAnalysisAttribute.DefaultView.Count > 0);
+                AvoidSelectingingDuplicateAnalysisType(ARow, PreviousValue, RequestedValue);
 
-                FMainDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
-                    AAnalysisAttributeTable.GetLedgerNumberDBName(),
-                    FLedgerNumber,
-                    AAnalysisAttributeTable.GetAccountCodeDBName(),
-                    FAccountCode);
-
-                ARow.BeginEdit();
-
-                if (MustReplaceName)
-                {
-                    ARow.AnalysisTypeCode = PreviousValue;
-                    cmbDetailAnalTypeCode.Text = PreviousValue;
-                    //                TLogging.Log("Replace name: " + ARow.AnalysisTypeCode);
-                }
-                else
-                {
-                    ARow.AnalysisTypeCode = TempEdit;
-                    //                TLogging.Log("Keep name: " + ARow.AnalysisTypeCode);
-                }
-
-                ARow.EndEdit(); // Apply these changes now!
                 ARow.BeginEdit();
             }
         }
