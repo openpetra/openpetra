@@ -120,13 +120,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             grpDataRetention.Location =
                 new System.Drawing.Point(grpDataRetention.Location.X, grpDataRetention.Location.Y - (int)(3.5 * HeightDifference));
-            
+
             nudNumberOfAccountingPeriods.KeyDown += numericUpDown_KeyDown;
             nudNumberFwdPostingPeriods.KeyDown += numericUpDown_KeyDown;
             nudCurrentPeriod.KeyDown += numericUpDown_KeyDown;
             nudActualsDataRetention.KeyDown += numericUpDown_KeyDown;
             nudGiftDataRetention.KeyDown += numericUpDown_KeyDown;
-            
         }
 
         /// <summary>
@@ -507,7 +506,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     VerificationResult = null;
                 }
-            
+
                 // Handle addition/removal to/from TVerificationResultCollection
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
             }
@@ -532,7 +531,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
             }
         }
-        
+
         /// <summary>
         /// Checks for limited number of digits and no negatives
         /// in a Numeric Up/Down box
@@ -541,11 +540,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if (!((e.KeyData == Keys.Back) || (e.KeyData == Keys.Delete)))
             {
-                if (   sender == nudNumberOfAccountingPeriods
-                    || sender == nudNumberFwdPostingPeriods
-                    || sender == nudCurrentPeriod
-                    || sender == nudActualsDataRetention
-                    || sender == nudGiftDataRetention)
+                if ((sender == nudNumberOfAccountingPeriods)
+                    || (sender == nudNumberFwdPostingPeriods)
+                    || (sender == nudCurrentPeriod)
+                    || (sender == nudActualsDataRetention)
+                    || (sender == nudGiftDataRetention))
                 {
                     if ((((NumericUpDown)sender).Text.Length >= 2) || (e.KeyValue == 109))
                     {

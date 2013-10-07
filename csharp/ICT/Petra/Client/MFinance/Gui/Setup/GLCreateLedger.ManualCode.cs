@@ -140,7 +140,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             /* hourglass cursor */
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
-            
+
             if (!TRemote.MFinance.Setup.WebConnectors.CreateNewLedger(
                     Convert.ToInt32(nudLedgerNumber.Value),
                     txtLedgerName.Text,
@@ -158,7 +158,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 /* normal mouse cursor */
                 System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
-                
+
                 if (VerificationResult != null)
                 {
                     MessageBox.Show(
@@ -175,7 +175,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 /* normal mouse cursor */
                 System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
-            
+
                 MessageBox.Show(String.Format(Catalog.GetString(
                             "Ledger {0} ({1}) has been created successfully and is now the current Ledger.\r\n\r\nPermissions for users to be able to access this Ledger can be assigned in the System Manager Module."),
                         txtLedgerName.Text,
