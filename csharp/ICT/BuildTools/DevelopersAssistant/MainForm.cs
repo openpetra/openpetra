@@ -873,6 +873,7 @@ namespace Ict.Tools.DevelopersAssistant
         private void linkLabelStartServer_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             int NumFailures = 0;
             int NumWarnings = 0;
 
@@ -898,11 +899,14 @@ namespace Ict.Tools.DevelopersAssistant
 
                 PrepareWarnings();
             }
+
+            TickTimer.Enabled = true;
         }
 
         private void linkLabelStopServer_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             int NumFailures = 0;
             int NumWarnings = 0;
 
@@ -928,11 +932,14 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 SetEnabledStates();
             }
+
+            TickTimer.Enabled = true;
         }
 
         private void linkLabelRestartServer_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             int NumFailures = 0;
             int NumWarnings = 0;
 
@@ -958,6 +965,7 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             PrepareWarnings();
+            TickTimer.Enabled = true;
         }
 
         private void btnCodeGeneration_Click(object sender, EventArgs e)
@@ -965,6 +973,7 @@ namespace Ict.Tools.DevelopersAssistant
             DateTime dtStart = DateTime.UtcNow;
 
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             NantTask task = new NantTask(cboCodeGeneration.Items[cboCodeGeneration.SelectedIndex].ToString());
             int NumFailures = 0;
             int NumWarnings = 0;
@@ -1009,6 +1018,8 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 FlashWindow.Flash(this, 5);
             }
+
+            TickTimer.Enabled = true;
         }
 
         private void btnCompilation_Click(object sender, EventArgs e)
@@ -1016,6 +1027,7 @@ namespace Ict.Tools.DevelopersAssistant
             DateTime dtStart = DateTime.UtcNow;
 
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             NantTask task = new NantTask(cboCompilation.Items[cboCompilation.SelectedIndex].ToString());
             int NumFailures = 0;
             int NumWarnings = 0;
@@ -1051,6 +1063,8 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 FlashWindow.Flash(this, 5);
             }
+
+            TickTimer.Enabled = true;
         }
 
         private void btnMiscellaneous_Click(object sender, EventArgs e)
@@ -1058,6 +1072,7 @@ namespace Ict.Tools.DevelopersAssistant
             DateTime dtStart = DateTime.UtcNow;
 
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             NantTask task = new NantTask(cboMiscellaneous.Items[cboMiscellaneous.SelectedIndex].ToString());
             int NumFailures = 0;
             int NumWarnings = 0;
@@ -1114,6 +1129,8 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 FlashWindow.Flash(this, 5);
             }
+
+            TickTimer.Enabled = true;
         }
 
         private void btnDatabase_Click(object sender, EventArgs e)
@@ -1121,6 +1138,7 @@ namespace Ict.Tools.DevelopersAssistant
             DateTime dtStart = DateTime.UtcNow;
 
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             NantTask task = new NantTask(cboDatabase.Items[cboDatabase.SelectedIndex].ToString());
             int NumFailures = 0;
             int NumWarnings = 0;
@@ -1156,11 +1174,14 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 FlashWindow.Flash(this, 5);
             }
+
+            TickTimer.Enabled = true;
         }
 
         private void btnStartClient_Click(object sender, EventArgs e)
         {
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             DateTime dtStart = DateTime.UtcNow;
             NantTask task = new NantTask(NantTask.TaskItem.startPetraClient);
             int NumFailures = 0;
@@ -1197,6 +1218,8 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 FlashWindow.Flash(this, 5);
             }
+
+            TickTimer.Enabled = true;
         }
 
         private void btnGenerateWinform_Click(object sender, EventArgs e)
@@ -1204,6 +1227,7 @@ namespace Ict.Tools.DevelopersAssistant
             DateTime dtStart = DateTime.UtcNow;
 
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             int NumFailures = 0;
             int NumWarnings = 0;
 
@@ -1223,11 +1247,14 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 FlashWindow.Flash(this, 5);
             }
+
+            TickTimer.Enabled = true;
         }
 
         private void btnPreviewWinform_Click(object sender, EventArgs e)
         {
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             int NumFailures = 0;
             int NumWarnings = 0;
 
@@ -1241,6 +1268,7 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             PrepareWarnings();
+            TickTimer.Enabled = true;
         }
 
         private void btnRunSequence_Click(object sender, EventArgs e)
@@ -1508,6 +1536,7 @@ namespace Ict.Tools.DevelopersAssistant
             DateTime dtStart = DateTime.UtcNow;
 
             OutputText.ResetOutput();
+            TickTimer.Enabled = false;
             bool bShowOutputTab = false;
 
             for (int i = 0; i < Sequence.Count; i++)
@@ -1593,6 +1622,8 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 FlashWindow.Flash(this, 5);
             }
+
+            TickTimer.Enabled = true;
         }
 
         // Call this method at the end of a task or sequence of tasks to initialise the verbose output warnings handler.
@@ -1731,6 +1762,38 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             return path;
+        }
+
+        private void TickTimer_Tick(object sender, EventArgs e)
+        {
+            // Every 10 seconds we just check that opda.txt got deleted.  Some tasks lock it until they are complete.
+            // For example StartPetraClient: nant does not complete until the client window closes
+            // There are two places to look ...
+            string path = Path.Combine(txtBranchLocation.Text, "opda.txt");
+
+            if (File.Exists(path))
+            {
+                try
+                {
+                    File.Delete(path);
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            path = Path.Combine(txtBranchLocation.Text, @"csharp\ICT\Petra\Client\opda.txt");
+
+            if (File.Exists(path))
+            {
+                try
+                {
+                    File.Delete(path);
+                }
+                catch (Exception)
+                {
+                }
+            }
         }
     }
 }

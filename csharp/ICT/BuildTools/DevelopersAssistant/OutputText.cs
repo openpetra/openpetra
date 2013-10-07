@@ -143,7 +143,14 @@ namespace Ict.Tools.DevelopersAssistant
                 AppendText(OutputStream.Both,
                     String.Format("~~~~~~~ {0} succeeded, {1} failed, {2} warning(s) or error(s)\r\n\r\n", NumSucceeded, NumFailures, NumWarnings));
 
-                File.Delete(path);
+                try
+                {
+                    // we may not be able to delete it at this point - if not the timer will delete it later
+                    File.Delete(path);
+                }
+                catch (Exception)
+                {
+                }
             }
         }
 
@@ -234,7 +241,9 @@ namespace Ict.Tools.DevelopersAssistant
         {
             try
             {
-                using (StreamReader sr = new StreamReader(path))
+                // This lets us read the file even if nant has got it 'locked'
+                using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                using (StreamReader sr = new StreamReader(fs, Encoding.Default))
                 {
                     string content = sr.ReadToEnd();
                     sr.Close();
