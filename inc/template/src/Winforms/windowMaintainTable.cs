@@ -3,6 +3,8 @@
 // DO NOT edit manually, DO NOT edit with the designer
 //
 {#GPLFILEHEADER}
+
+#region Usings
 using System;
 using System.Drawing;
 using System.Collections;
@@ -32,6 +34,7 @@ using Ict.Petra.Client.CommonControls;
 using {#SHAREDVALIDATIONNAMESPACEMODULE};
 {#ENDIF SHAREDVALIDATIONNAMESPACEMODULE}
 {#USINGNAMESPACES}
+#endregion
 
 namespace {#NAMESPACE}
 {
@@ -39,6 +42,7 @@ namespace {#NAMESPACE}
   /// auto generated: {#FORMTITLE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
   {
+#region Declarations
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
 {#IFDEF SHOWDETAILS}       
     private DataColumn FPrimaryKeyColumn = null;
@@ -55,7 +59,9 @@ namespace {#NAMESPACE}
 {#IFDEF FILTERANDFIND}
     {#FILTERANDFINDDECLARATIONS}
 {#ENDIF FILTERANDFIND}
+#endregion
 
+#region Constructor and Initial Setup
     /// constructor
     public {#CLASSNAME}(Form AParentForm) : base()
     {
@@ -101,8 +107,8 @@ namespace {#NAMESPACE}
       {#INITMANUALCODE}
 {#IFDEF SAVEDETAILS}
       grdDetails.Enter += new EventHandler(grdDetails_Enter);
-      grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
-      {#SELECTIONCHANGEDEVENT}
+      grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(grdDetails_FocusRowLeaving);
+      grdDetails.Selection.SelectionChanged += new RangeRegionChangedEventHandler(grdDetails_SelectionChanged);
       {#GRIDMULTISELECTION}
 {#ENDIF SAVEDETAILS}
       
@@ -138,10 +144,10 @@ namespace {#NAMESPACE}
 {#IFDEF FILTERANDFIND}
       SetupFilterAndFindControls();
 {#ENDIF FILTERANDFIND}
-      SelectRowInGrid(1);
    }
+#endregion
 
-    #region Show Method overrides
+#region Show Method overrides
 
     /// <summary>
     /// Override of Form.Show(IWin32Window owner) Method. Caters for singleton Forms.
@@ -188,8 +194,9 @@ namespace {#NAMESPACE}
         this.Show(null);
     }
 
-    #endregion
+#endregion
 
+#region Event Handlers
     {#EVENTHANDLERSIMPLEMENTATION}
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
@@ -197,6 +204,9 @@ namespace {#NAMESPACE}
         // TODO? Save Window position
 
     }
+#endregion
+
+#region CreateNewRecord
 
     /// <summary>
     /// This automatically generated method creates a new record of {#DETAILTABLE}, highlights it in the grid
@@ -212,42 +222,82 @@ namespace {#NAMESPACE}
             FMainDS.{#DETAILTABLE}.Rows.Add(NewRow);
             
             FPetraUtilsObject.SetChangedFlag();
-
-            grdDetails.DataSource = null;
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.{#DETAILTABLE}.DefaultView);
+{#IFDEF FILTERANDFIND}
             
+            if (!SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1))
+            {
+                if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
+                {
+                    MessageBox.Show(
+                        Catalog.GetString("A new record has been added but the current Filter is preventing it from being displayed.  The Filter will be reset so that you can continue to edit the new record."),
+                        Catalog.GetString("Add New Record"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    FFilterPanelControls.ClearAllDiscretionaryFilters();
+                    SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
+                }
+            }
+{#ENDIF FILTERANDFIND}
+{#IFNDEF FILTERANDFIND}
             SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
+{#ENDIFN FILTERANDFIND}
             
             Control[] pnl = this.Controls.Find("pnlDetails", true);
             if (pnl.Length > 0)
             {
                 //Look for Key & Description fields
                 Control keyControl = null;
-                foreach (Control detailsCtrl in pnl[0].Controls)
-                {
-                    if (keyControl == null && (detailsCtrl is TextBox || detailsCtrl is ComboBox || detailsCtrl is TCmbAutoPopulated))
-                    {
-                        keyControl = detailsCtrl;
-                    }
-
-                    if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Descr") && detailsCtrl.Text == string.Empty)
-                    {
-                        detailsCtrl.Text = Catalog.GetString("PLEASE ENTER DESCRIPTION");
-                        break;
-                    }
-                }
+                bool foundDescription = false;
+                InitialiseNewRecord(pnl[0], ref keyControl, ref foundDescription);
 
                 ValidateAllData(true, false);
                 if (keyControl != null) keyControl.Focus();
             }
             
-            return true;
+{#IFDEF BUTTONPANEL}
+            UpdateRecordNumberDisplay();
+
+{#ENDIF BUTTONPANEL}
+           return true;
         }
         else
         {
             return false;
         }
     }
+
+    private void InitialiseNewRecord(Control APanel, ref Control AKeyControl, ref bool AFoundDescription)
+    {
+        foreach (Control detailsCtrl in APanel.Controls)
+        {
+            if (detailsCtrl is Panel)
+            {
+                // If the control is a panel we call ourself recursively
+                InitialiseNewRecord(detailsCtrl, ref AKeyControl, ref AFoundDescription);
+                
+                if (AFoundDescription)
+                {
+                    break;
+                }
+
+                continue;
+            }
+
+            if (AKeyControl == null && (detailsCtrl is TextBox || detailsCtrl is ComboBox || detailsCtrl is TCmbAutoPopulated))
+            {
+                AKeyControl = detailsCtrl;
+            }
+
+            if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Desc") && detailsCtrl.Text == string.Empty)
+            {
+                detailsCtrl.Text = Catalog.GetString("PLEASE ENTER DESCRIPTION");
+                AFoundDescription = true;
+                break;
+            }
+        }
+    }
+#endregion
+
+#region Grid Row Selection and Discovery
 
     /// <summary>
     /// Selects the specified grid row and shows the details for the row in the details panel.
@@ -261,14 +311,7 @@ namespace {#NAMESPACE}
     /// <param name="ARowIndex">The row index to select.  Data rows start at 1</param>
     private void SelectRowInGrid(int ARowIndex)
     {
-        int nPrevRowChangedRow = FPrevRowChangedRow;
         grdDetails.SelectRowInGrid(ARowIndex, true);
-        if (nPrevRowChangedRow == FPrevRowChangedRow)
-        {
-            // No row change occurred, so we still need to show details, because the data may be different
-            //Console.WriteLine("{0}:  SRIG: ShowDetails for {1}", DateTime.Now.Millisecond, ARowIndex);
-            ShowDetails(ARowIndex);
-        }
     }
 
     /// <summary>
@@ -277,7 +320,8 @@ namespace {#NAMESPACE}
     /// If the grid is not displaying the specified data row, the first row will be selected, if it exists.
     /// </summary>
     /// <param name="ARowNumberInTable">Table row number (0-based)</param>
-    private void SelectDetailRowByDataTableIndex(Int32 ARowNumberInTable)
+    /// <returns>True if the record is displayed in the grid, False otherwise</returns>
+    private bool SelectDetailRowByDataTableIndex(Int32 ARowNumberInTable)
     {
         Int32 RowNumberGrid = -1;
         for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
@@ -300,6 +344,8 @@ namespace {#NAMESPACE}
         }
 
         SelectRowInGrid(RowNumberGrid);
+
+        return RowNumberGrid >= 0;
     }
 
     /// <summary>
@@ -367,7 +413,9 @@ namespace {#NAMESPACE}
         return FPrevRowChangedRow;
     }
 {#ENDIF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
+#endregion
 
+#region Show and Undo Data
 
     private void SetPrimaryKeyReadOnly(bool AReadOnly)
     {
@@ -389,7 +437,12 @@ namespace {#NAMESPACE}
         {#UNDODATA}
     }
 {#ENDIF UNDODATA}
+#endregion
 {#IFDEF SHOWDETAILS}
+
+#region Details Panel, Show details, grid events and delete records
+
+    #region Show Details
 
     /// <summary>
     /// Use this override to Show the Details for a specified row in the grid.
@@ -465,6 +518,10 @@ namespace {#NAMESPACE}
         }
         {#ENABLEDELETEBUTTON}FPetraUtilsObject.EnableDataChangedEvent();
     }
+{#CANDELETESELECTION}
+    #endregion
+
+    #region Grid events
 
     /// <summary>
     /// A reference to the Typed Data Row object from the grid whose Details are currently displayed.
@@ -478,75 +535,60 @@ namespace {#NAMESPACE}
     /// </summary>
     private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
     
+    /// <summary>
+    /// This variable may become obsolete in future.  It used to hold the most recent row passed as the parameter to the FocusedRowChanged event.
+    /// However we no longer use this event.  If you want to know the current row index use GetSelectedRowIndex() instead.
+    /// </summary>
+    private int FPrevRowChangedRow = -1;
+    
 {#IFDEF SAVEDETAILS}
+    /// <summary>
+    /// Fired when the user tabs to, or clicks in, the grid
+    /// </summary>
     private void grdDetails_Enter(object sender, EventArgs e)
     {
         if (FPetraUtilsObject.VerificationResultCollection.Count > 0)
         {
-            // No need to focus the row if there are no errors.  This allows the user to have scrolled the view-port away from the selected row and keep it there.
-            grdDetails.Selection.Focus(new SourceGrid.Position(FPrevRowChangedRow, 0), false);
-            //Console.WriteLine("{0}: GridFocus - setting Selection.Focus to {1},0", DateTime.Now.Millisecond, FPrevRowChangedRow);
-        }
-    }
-{#SELECTIONCHANGEDHANDLER}
-
-    /// <summary>
-    /// Used for determining the time elapsed between FocusRowLeaving Events.
-    /// </summary>
-    private DateTime FDtPrevLeaving = DateTime.UtcNow;
-    private int FPrevLeavingFrom = -1;
-    private int FPrevLeavingTo = -1;
-
-    /// FocusedRowLeaving can be called multiple times (e.g. 3 or 4) for just one FocusedRowChanged event.
-    /// The key is not to cancel the extra events, but to ensure that we only ValidateAllData once.
-    /// We ignore any event that is leaving to go to row # -1
-    /// We validate on the first of a cascade of events that leave to a real row.
-    /// We detect a duplicate event by testing for the elapsed time since the event we validated on...
-    /// If the elapsed time is &lt; 2 ms it is a duplicate, because repeat keypresses are separated by 30 ms
-    /// and these duplicates come with a gap of fractions of a microsecond, so 2 ms is a very long time!
-    /// All we do is store the previous row from/to and the previous UTC time
-    /// These three form level variables are totally private to this event call.
-    private void FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
-    {        
-        if (!grdDetails.Sorting && e.ProposedRow >= 0)
-        {
-            double elapsed = (DateTime.UtcNow - FDtPrevLeaving).TotalMilliseconds;
-            bool bIsDuplicate = (e.Row == FPrevLeavingFrom && e.ProposedRow == FPrevLeavingTo && elapsed < 2.0);
-            if (!bIsDuplicate)
-            {
-                //Console.WriteLine("{0}: FocusRowLeaving: from {1} to {2}", DateTime.Now.Millisecond, e.Row, e.ProposedRow);
-                if (!ValidateAllData(true, true))
-                {
-                    //Console.WriteLine("{0}:    --- Cancelled", DateTime.Now.Millisecond);
-                    e.Cancel = true;
-                }
-            }
-            FPrevLeavingFrom = e.Row;
-            FPrevLeavingTo = e.ProposedRow;
-            FDtPrevLeaving = DateTime.UtcNow;
+            // No need to show the cell if there are no errors.  This allows the user to have scrolled the view-port away from the selected row and keep it there.
+            grdDetails.ShowCell(FPrevRowChangedRow);
         }
     }
 
-{#ENDIF SAVEDETAILS}
     /// <summary>
-    /// This variable is managed by the generated code.  It is used to manage row changed events, including changes that occur in data validation on sorted grids.
-    /// Do not set this variable in manual code.
-    /// You may read the variable.  Its value always tracks the index of the highlighted grid row.
+    /// This is the main event handler for changes in the grid selection
     /// </summary>
-    private int FPrevRowChangedRow = -1;
-    private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
+    private void grdDetails_SelectionChanged(object sender, RangeRegionChangedEventArgs e)
     {
-        // The FocusedRowChanged event simply calls ShowDetails for the new 'current' row implied by e.Row
-        // We do get a duplicate event if the user tabs round all the controls multiple times
-        // It is not advisable to call it on duplicate events because that would re-populate the controls from the table, 
-        //   which may not now be up to date, so we compare e.Row and FPrevRowChangedRow first.
-        if (!grdDetails.Sorting && e.Row != FPrevRowChangedRow)
+        int gridRow = grdDetails.Selection.ActivePosition.Row;
+        if (grdDetails.Sorting)
         {
-            //Console.WriteLine("{0}:   FRC ShowDetails for {1}", DateTime.Now.Millisecond, e.Row);
-            ShowDetails(e.Row);
+            // No need to ShowDetails - just update our (obsolete) variable
+            FPrevRowChangedRow = gridRow;
         }
-        FPrevRowChangedRow = e.Row;
+        else
+        {
+            ShowDetails(gridRow);
+            // Console.WriteLine("{0}: SelectionChanged: ShowDetails() for row {1}", DateTime.Now.Millisecond, gridRow);
+        }
     }
+
+    /// <summary>
+    /// FocusedRowLeaving is called when the user (or code) requests a change to the selected row.
+    /// </summary>
+    private void grdDetails_FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
+    {        
+        //Console.WriteLine("{0}: FocusRowLeaving: from {1} to {2}", DateTime.Now.Millisecond, e.Row, e.ProposedRow);
+        if (!ValidateAllData(true, true))
+        {
+            e.Cancel = true;
+        }
+    }
+{#ENDIF SAVEDETAILS}
+    
+    #endregion
+
+    #region Delete Records
+
 {#DELETERECORD}
     /// <summary>
     /// Standard method to delete the Data Row whose Details are currently displayed.
@@ -635,6 +677,9 @@ namespace {#NAMESPACE}
                     SelectRowInGrid(FPrevRowChangedRow);
                     // Clear any errors left over from  the deleted row
                     FPetraUtilsObject.VerificationResultCollection.Clear();
+{#IFDEF BUTTONPANEL}
+                    UpdateRecordNumberDisplay();
+{#ENDIF BUTTONPANEL}
                 }
             }
 
@@ -737,6 +782,9 @@ namespace {#NAMESPACE}
 
                 this.Cursor = Cursors.Default;
                 SelectRowInGrid(FPrevRowChangedRow);
+{#IFDEF BUTTONPANEL}
+                UpdateRecordNumberDisplay();
+{#ENDIF BUTTONPANEL}
 
                 if (recordsDeleted > 0 && CompletionMessage.Length > 0)
                 {
@@ -900,7 +948,12 @@ namespace {#NAMESPACE}
             }
         }
     }
+#endregion
+
+#endregion
 {#ENDIF SHOWDETAILS}
+
+#region Get data
 {#IFDEF MASTERTABLE}
 
     /// This method may throw an exception at ARow.EndEdit()
@@ -967,6 +1020,7 @@ namespace {#NAMESPACE}
             }
         }
     }
+
 {#IFDEF GENERATECONTROLUPDATEDATAHANDLER}
 
     private void ControlUpdateDataHandler(object sender, EventArgs e)
@@ -983,8 +1037,11 @@ namespace {#NAMESPACE}
     }
 {#ENDIF GENERATECONTROLUPDATEDATAHANDLER}
 {#ENDIF SAVEDETAILS}
-
+#endregion
 {#IFDEF BUTTONPANEL}
+
+#region Button Panel
+
     ///<summary>
     /// Finish the set up of the Button Panel.
     /// </summary>
@@ -1010,13 +1067,17 @@ namespace {#NAMESPACE}
             lblRecordCounter.Text = String.Format(Catalog.GetPluralString("{0} record", "{0} records", RecordCount, true), RecordCount);
         }                
     }        
-
+#endregion
 {#ENDIF BUTTONPANEL}
-
 {#IFDEF FILTERANDFIND}
+
+#region Filter and Find
     {#FILTERANDFINDMETHODS}
+#endregion
 {#ENDIF FILTERANDFIND}    
    
+#region Validation
+
     /// <summary>
     /// Performs data validation.
     /// </summary>
@@ -1058,7 +1119,7 @@ namespace {#NAMESPACE}
         if (FPreviouslySelectedDetailRow != null)
         {
             bool bGotConstraintException = false;
-            int prevRowChangedRowBeforeValidation = FPrevRowChangedRow;
+            int prevRowBeforeValidation = FPrevRowChangedRow;
 // :WMT:GetDetailsFromControls
             try
             {
@@ -1093,19 +1154,13 @@ namespace {#NAMESPACE}
             }
 
             // Validation might have moved the row, so we need to locate it again
-            // If it has moved we will call SelectRowInGrid (with events) to highlight the new row.
-            // This will result in us getting called a second time (from FocusedRowLeaving), but the move will not be repeated a second time.
-            // We thus avoid a cyclic loop and a stack overflow, yet never need to turn events off, or make a move without events
-            // Note that we can (and must) set FPrevRowChangedRow here only because validation never actually changes the row object or the displayed details.
-            FPrevRowChangedRow = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1;
-            if (FPrevRowChangedRow == prevRowChangedRowBeforeValidation)
+            // If it has moved we will call the special grid-sorting method ReselectGridRowAfterSort to highlight the new row.
+            // This will give rise to a Selection_Changed event with a new ActivePosition but the grdDetails.Sorting property will be True
+            int newRowAfterValidation = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow, prevRowBeforeValidation - 1) + 1;
+            if (newRowAfterValidation != prevRowBeforeValidation)
             {
-                //Console.WriteLine("{0}:    Validation: validated row is at {1}. No move required.  ProcessErrors={2}", DateTime.Now.Millisecond, FPrevRowChangedRow, AProcessAnyDataValidationErrors.ToString());
-            }
-            else
-            {
-                grdDetails.SelectRowInGrid(FPrevRowChangedRow);
-                //Console.WriteLine("{0}:    Validation: validated row is at {1}. Moved 'with events'.  ProcessErrors={2}", DateTime.Now.Millisecond, FPrevRowChangedRow, AProcessAnyDataValidationErrors.ToString());
+                grdDetails.ReselectGridRowAfterSort(newRowAfterValidation);
+                //Console.WriteLine("{0}:    Validation: validated row moved to {1}.", DateTime.Now.Millisecond, newRowAfterValidation);
             }
 {#IFDEF PERFORMUSERCONTROLVALIDATION}
 
@@ -1134,12 +1189,14 @@ namespace {#NAMESPACE}
 
         return ReturnValue;
     }
+#endregion
 
 #region Implement interface functions
 
     /// auto generated
     public void RunOnceOnActivation()
     {
+        SelectRowInGrid(1);
         {#RUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
     }
@@ -1354,7 +1411,7 @@ namespace {#NAMESPACE}
 
 #endregion
 
-#region Data Validation
+#region Data Validation Control Handlers
     
     private void ControlValidatedHandler(object sender, EventArgs e)
     {
@@ -1496,24 +1553,25 @@ if (!rowToDelete.{#DELETEABLEFLAG})
     continue;
 }
 
-{##SNIPSELECTIONCHANGEDHANDLER}
+{##SNIPCANDELETESELECTION}
 
     /// <summary>
-    /// This method is required where the table has a deletable_flag column
-    /// It ensures the correct enabled/disabled state of the delete button by calling ShowDetails() on the current row
+    /// Returns true if all the selected rows can be deleted.
     /// </summary>
-        private void Selection_SelectionChanged(object sender, RangeRegionChangedEventArgs e)
+    private bool CanDeleteSelection()
     {
-        if (e.RemovedRange != null && e.RemovedRange.GetRowsIndex().Length > 0 && e.RemovedRange.GetColumnsIndex().Length > 1 && grdDetails.Selection.EnableMultiSelection == true)
+        // This table has a {#DELETEABLEFLAG} column
+        DataRowView[] selectedRows = grdDetails.SelectedDataRowsAsDataRowView;
+
+        foreach (DataRowView drv in selectedRows)
         {
-            // This is called when the user CTRL+clicks the mouse to un-highlight a row
-            ShowDetails();
+            if ((({#DETAILTABLE}Row)drv.Row).{#DELETEABLEFLAG})
+            {
+                return true;
+            }
         }
-        else if (e.AddedRange != null && e.AddedRange.GetRowsIndex().Length > 0 && grdDetails.Selection.EnableMultiSelection == true)
-        {
-            // This is called (possibly several times) and is required for handling the case where the user is using SHIFT+up/down 
-            ShowDetails();
-        }
+
+        return false;
     }
 
 

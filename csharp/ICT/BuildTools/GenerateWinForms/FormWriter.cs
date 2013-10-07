@@ -983,8 +983,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("INITUSERCONTROLS", "");
             FTemplate.AddToCodelet("INITMANUALCODE", "");
             FTemplate.AddToCodelet("GRIDMULTISELECTION", "");
-            FTemplate.AddToCodelet("SELECTIONCHANGEDEVENT", "");
-            FTemplate.AddToCodelet("SELECTIONCHANGEDHANDLER", "");
             FTemplate.AddToCodelet("RUNONCEONACTIVATIONMANUAL", "");
             FTemplate.AddToCodelet("EXITMANUALCODE", "");
             FTemplate.AddToCodelet("CANCLOSEMANUAL", "");
@@ -993,6 +991,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("DELETEREFERENCECOUNT", "");
             FTemplate.AddToCodelet("MULTIDELETEREFERENCECOUNT", "");
             FTemplate.AddToCodelet("ENABLEDELETEBUTTON", "");
+            FTemplate.AddToCodelet("CANDELETESELECTION", "");
             FTemplate.AddToCodelet("PREDELETEMANUAL", "");
             FTemplate.AddToCodelet("DELETEROWMANUAL", "");
             FTemplate.AddToCodelet("POSTDELETEMANUAL", "");
@@ -1318,39 +1317,49 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         FCodeStorage.GetAttribute("DetailTable"));
                     FTemplate.AddToCodelet("DELETERECORD", deleteRecord);
 
-                    ProcessTemplate snippet = FTemplate.GetSnippet("SNIPMULTIDELETEDELETABLE");
+                    ProcessTemplate snippetMultiDelete = FTemplate.GetSnippet("SNIPMULTIDELETEDELETABLE");
+                    ProcessTemplate snippetCanDelete = FTemplate.GetSnippet("SNIPCANDELETESELECTION");
+                    bool bRequiresCanDeleteSelection = false;
 
                     // Write the one-line codelet that handles enable/disable of the delete button
-                    string enableDelete = "btnDelete.Enabled = ";
-                    string enableDeleteExtra = "((grdDetails.SelectedDataRows.Length > 1)";
+                    string enableDelete = "btnDelete.Enabled = pnlDetails.Enabled";
+                    string enableDeleteExtra = " && CanDeleteSelection()";
 
                     if (FCodeStorage.FControlList.ContainsKey("chkDetailDeletable")
                         || FCodeStorage.FControlList.ContainsKey("chkDeletable"))
                     {
-                        enableDeleteExtra += " || ((ARow != null) && (ARow.Deletable == true))) && ";
                         enableDelete += enableDeleteExtra;
-                        snippet.SetCodelet("DELETEABLEFLAG", "Deletable");
-                        FTemplate.InsertSnippet("MULTIDELETEDELETABLE", snippet);
+                        snippetMultiDelete.SetCodelet("DELETEABLEFLAG", "Deletable");
+                        FTemplate.InsertSnippet("MULTIDELETEDELETABLE", snippetMultiDelete);
+                        snippetCanDelete.SetCodelet("DELETEABLEFLAG", "Deletable");
+                        bRequiresCanDeleteSelection = true;
                     }
                     else if (FCodeStorage.FControlList.ContainsKey("chkDetailDeletableFlag")
                              || FCodeStorage.FControlList.ContainsKey("chkDeletableFlag"))
                     {
-                        enableDeleteExtra += " || ((ARow != null) && (ARow.DeletableFlag == true))) && ";
                         enableDelete += enableDeleteExtra;
-                        snippet.SetCodelet("DELETEABLEFLAG", "DeletableFlag");
-                        FTemplate.InsertSnippet("MULTIDELETEDELETABLE", snippet);
+                        snippetMultiDelete.SetCodelet("DELETEABLEFLAG", "DeletableFlag");
+                        FTemplate.InsertSnippet("MULTIDELETEDELETABLE", snippetMultiDelete);
+                        snippetCanDelete.SetCodelet("DELETEABLEFLAG", "DeletableFlag");
+                        bRequiresCanDeleteSelection = true;
                     }
                     else if (FCodeStorage.FControlList.ContainsKey("chkDetailTypeDeletable"))
                     {
-                        enableDeleteExtra += " || ((ARow != null) && (ARow.TypeDeletable == true))) && ";
                         enableDelete += enableDeleteExtra;
-                        snippet.SetCodelet("DELETEABLEFLAG", "TypeDeletable");
-                        FTemplate.InsertSnippet("MULTIDELETEDELETABLE", snippet);
+                        snippetMultiDelete.SetCodelet("DELETEABLEFLAG", "TypeDeletable");
+                        FTemplate.InsertSnippet("MULTIDELETEDELETABLE", snippetMultiDelete);
+                        snippetCanDelete.SetCodelet("DELETEABLEFLAG", "TypeDeletable");
+                        bRequiresCanDeleteSelection = true;
                     }
 
-                    enableDelete += "pnlDetails.Enabled;" + Environment.NewLine;
-
+                    enableDelete += ";" + Environment.NewLine;
                     FTemplate.AddToCodelet("ENABLEDELETEBUTTON", enableDelete);
+
+                    if (bRequiresCanDeleteSelection)
+                    {
+                        snippetCanDelete.SetCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
+                        FTemplate.InsertSnippet("CANDELETESELECTION", snippetCanDelete);
+                    }
                 }
             }
 

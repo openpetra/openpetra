@@ -8,8 +8,6 @@ ImageList FFilterImages;
 #endregion
 
 {##FILTERANDFINDMETHODS}
-#region Filter and Find
-
 private TFilterPanelControls FFilterPanelControls = new TFilterPanelControls();
 private TFindPanelControls FFindPanelControls = new TFindPanelControls();
 private bool FIsFilterFindInitialised = false;
@@ -331,8 +329,6 @@ void ApplyFilter()
     SetRecordNumberDisplayProperties();
 }
 
-
-#endregion
 
 {##SNIPCLONELABEL}
 TCloneFilterFindControl.ShallowClone<Label>({#CLONEDFROMLABEL}, T{#PANELTYPE}PanelControls.{#PANELTYPEUC}_NAME_SUFFIX),
