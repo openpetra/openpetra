@@ -138,6 +138,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 StartingReceiptNumber = Convert.ToInt32(txtStartingReceiptNumber.NumberValueInt) - 1;
             }
 
+            /* hourglass cursor */
+            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
+            
             if (!TRemote.MFinance.Setup.WebConnectors.CreateNewLedger(
                     Convert.ToInt32(nudLedgerNumber.Value),
                     txtLedgerName.Text,
@@ -153,6 +156,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     chkActivateAccountsPayable.Checked,
                     out VerificationResult))
             {
+                /* normal mouse cursor */
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+                
                 if (VerificationResult != null)
                 {
                     MessageBox.Show(
@@ -167,6 +173,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
             else
             {
+                /* normal mouse cursor */
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
+            
                 MessageBox.Show(String.Format(Catalog.GetString(
                             "Ledger {0} ({1}) has been created successfully and is now the current Ledger.\r\n\r\nPermissions for users to be able to access this Ledger can be assigned in the System Manager Module."),
                         txtLedgerName.Text,
@@ -205,7 +214,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// Checks for only up to 4 digits and no negatives
+        /// Checks for limited number of digits and no negatives
         /// in a Numeric Up/Down box
         /// </summary>
         private void numericUpDown_KeyDown(object sender, KeyEventArgs e)
