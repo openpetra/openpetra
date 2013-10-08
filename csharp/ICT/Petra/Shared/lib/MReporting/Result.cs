@@ -326,6 +326,9 @@ namespace Ict.Petra.Shared.MReporting
             TVariant[] descr,
             TVariant[] column)
         {
+//
+// I wonder why we care about this "duplicate code"? Certainly this code generates lots of warnings, but reports are still generated OK:
+/*
             foreach (TResult existingElement in results)
             {
                 if (existingElement.code == code)
@@ -336,7 +339,7 @@ namespace Ict.Petra.Shared.MReporting
                     //    code);
                 }
             }
-
+*/
             TResult element = new TResult(masterRow, childRow, display, depth, code, condition, debit_credit_indicator, header, descr, column);
             results.Add(element);
             return element;

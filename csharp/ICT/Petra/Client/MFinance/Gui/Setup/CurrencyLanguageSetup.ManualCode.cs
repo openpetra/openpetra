@@ -70,6 +70,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             rbtNumeric.CheckedChanged += new EventHandler(rbtNumeric_CheckedChanged);
             rbtPerHundred.CheckedChanged += new EventHandler(rbtPerHundred_CheckedChanged);
             rbtWords.CheckedChanged += new EventHandler(rbtWords_CheckedChanged);
+
+            txtDetailUnitLabelSingular.GotFocus += new EventHandler(txtCtrl_Enter);
+            txtDetailUnitLabelPlural.GotFocus += new EventHandler(txtCtrl_Enter);
+            txtDetailDecimalLabelSingular.GotFocus += new EventHandler(txtCtrl_Enter);
+            txtDetailDecimalLabelPlural.GotFocus += new EventHandler(txtCtrl_Enter);
+
+        }
+
+        void txtCtrl_Enter(object sender, EventArgs e)
+        {
+            ((TextBox)sender).SelectAll();
         }
 
         private void NewRowManual(ref ACurrencyLanguageRow ARow)
