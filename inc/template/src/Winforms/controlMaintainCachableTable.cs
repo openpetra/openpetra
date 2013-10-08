@@ -188,8 +188,8 @@ namespace {#NAMESPACE}
                 if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
                 {
                     MessageBox.Show(
-                        Catalog.GetString("A new record has been added but the current Filter is preventing it from being displayed.  The Filter will be reset so that you can continue to edit the new record."),
-                        Catalog.GetString("Add New Record"),
+                        MCommonResourcestrings.StrNewRecordIsFiltered,
+                        MCommonResourcestrings.StrAddNewRecordTitle,
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     FFilterPanelControls.ClearAllDiscretionaryFilters();
                     SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
@@ -248,7 +248,7 @@ namespace {#NAMESPACE}
 
             if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Desc") && detailsCtrl.Text == string.Empty)
             {
-                detailsCtrl.Text = Catalog.GetString("PLEASE ENTER DESCRIPTION");
+                detailsCtrl.Text = MCommonResourcestrings.StrPleaseEnterDescription;
                 AFoundDescription = true;
                 break;
             }
@@ -477,7 +477,7 @@ namespace {#NAMESPACE}
                 // But this is our ultimate fallback position.  This creates an exception message that simply lists all the primary key fields in a friendly format
                 FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
                     bGotConstraintException ? new TScreenVerificationResult(this, null,
-                    String.Format(Catalog.GetString("You have attempted to create a duplicate record.  Please ensure that you have unique input data for the field(s) {0}."), FDefaultDuplicateRecordHint),
+                    String.Format(MCommonResourcestrings.StrDuplicateRecordNotAllowed, FDefaultDuplicateRecordHint),
                     CommonErrorCodes.ERR_DUPLICATE_RECORD, null, TResultSeverity.Resv_Critical) : null, null);
             }
             else
@@ -712,15 +712,15 @@ namespace {#NAMESPACE}
                 && (VerificationResults.Count > 0))
             {
                 MessageBox.Show(Messages.BuildMessageFromVerificationResult(
-                        Catalog.GetString("Record cannot be deleted!") +
+                        MCommonResourcestrings.StrRecordCannotBeDeleted +
                         Environment.NewLine +
-                        Catalog.GetPluralString("Reason:", "Reasons:", VerificationResults.Count),
+                        Catalog.GetPluralString(MCommonResourcestrings.StrReasonColon, MCommonResourcestrings.StrReasonsColon, VerificationResults.Count),
                         VerificationResults),
-                        Catalog.GetString("Record Deletion"));
+                        MCommonResourcestrings.StrRecordDeletionTitle);
                 return;
             }
 
-            string DeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            string DeletionQuestion = MCommonResourcestrings.StrDefaultDeletionQuestion;
             if ((FPrimaryKeyControl != null) && (FPrimaryKeyLabel != null))
             {
                 DeletionQuestion += String.Format("{0}{0}({1} {2})",
@@ -736,7 +736,7 @@ namespace {#NAMESPACE}
             if(AllowDeletion)
             {
                 if ((MessageBox.Show(DeletionQuestion,
-                         Catalog.GetString("Confirm Delete"),
+                         MCommonResourcestrings.StrConfirmDeleteTitle,
                          MessageBoxButtons.YesNo,
                          MessageBoxIcon.Question,
                          MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
@@ -755,9 +755,9 @@ namespace {#NAMESPACE}
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(String.Format(Catalog.GetString("An error occurred while deleting this record.{0}{0}{1}"),
+                        MessageBox.Show(String.Format(MCommonResourcestrings.StrErrorWhileDeleting,
                             Environment.NewLine, ex.Message),
-                            Catalog.GetString("Error"),
+                            MCommonResourcestrings.StrGenericError,
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Warning);
                     }
@@ -783,17 +783,16 @@ namespace {#NAMESPACE}
 {#IFNDEF POSTDELETEMANUAL}
             if(DeletionPerformed && CompletionMessage.Length > 0)
             {
-                MessageBox.Show(CompletionMessage,
-                                 Catalog.GetString("Deletion Completed"));
+                MessageBox.Show(CompletionMessage, MCommonResourcestrings.StrDeletionCompletedTitle);
             }
 {#ENDIFN POSTDELETEMANUAL}
         }
         else
         {
-            string DeletionQuestion = String.Format(Catalog.GetString("Do you want to delete the {0} highlighted rows?{1}{1}"), HighlightedRows.Length, Environment.NewLine);
-            DeletionQuestion += Catalog.GetString("Each record will be checked to confirm that it can be deleted.");
+            string DeletionQuestion = String.Format(MCommonResourcestrings.StrMultiRowDeletionQuestion, HighlightedRows.Length, Environment.NewLine);
+            DeletionQuestion += MCommonResourcestrings.StrMultiRowDeletionCheck;
             if (MessageBox.Show(DeletionQuestion,
-                    Catalog.GetString("Confirm Delete"),
+                    MCommonResourcestrings.StrConfirmDeleteTitle,
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question,
                     MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
@@ -882,8 +881,7 @@ namespace {#NAMESPACE}
 
                 if (recordsDeleted > 0 && CompletionMessage.Length > 0)
                 {
-                    MessageBox.Show(CompletionMessage,
-                                     Catalog.GetString("Deletion Completed"));
+                    MessageBox.Show(CompletionMessage, MCommonResourcestrings.StrDeletionCompletedTitle);
                 }
 
                 //  Show the results of the multi-deletion
@@ -891,32 +889,32 @@ namespace {#NAMESPACE}
                 
                 if (recordsDeleted > 0)
                 {
-                    string s1 = Catalog.GetPluralString("record", "records", recordsDeleted);
-                    string s2 = Catalog.GetPluralString("was", "were", recordsDeleted);
-                    results = String.Format(Catalog.GetString("{0} {1} {2} successfully deleted."), recordsDeleted, s1, s2);
+                    results = String.Format(
+                            Catalog.GetPluralString(MCommonResourcestrings.StrRecordSuccessfullyDeleted, MCommonResourcestrings.StrRecordsSuccessfullyDeleted, recordsDeleted),
+                            recordsDeleted);
                 }
                 else
                 {
-                    results = "No records were deleted.";
-                }
+                    results = MCommonResourcestrings.StrNoRecordsWereDeleted;                }
                 
                 if (recordsUndeletable > 0)
                 {
-                    string s1 = Catalog.GetPluralString("record", "records", recordsUndeletable);
-                    string s2 = Catalog.GetPluralString("it is marked", "they are marked", recordsUndeletable);
-                    results += String.Format(Catalog.GetString("{0}{1} {2} could not be deleted because {3} as non-deletable."),
+                    results += String.Format(
+                        Catalog.GetPluralString(MCommonResourcestrings.StrRowNotDeletedBecauseNonDeletable,
+                                                MCommonResourcestrings.StrRowsNotDeletedBecauseNonDeletable,
+                                                recordsUndeletable),
                         Environment.NewLine,
-                        recordsUndeletable,
-                        s1, s2);
+                        recordsUndeletable);
                 }
 
                 if (recordsDeleteDisallowed > 0)
                 {
-                    string s1 = Catalog.GetPluralString("record was not be deleted", "records were not be deleted", recordsUndeletable);
-                    results += String.Format(Catalog.GetString("{0}{1} {2} because deletion was not allowed."),
+                    results += String.Format(
+                        Catalog.GetPluralString(MCommonResourcestrings.StrRowNotDeletedBecauseDeleteNotAllowed,
+                                                MCommonResourcestrings.StrRowsNotDeletedBecauseDeleteNotAllowed,
+                                                recordsDeleteDisallowed),
                         Environment.NewLine,
-                        recordsDeleteDisallowed,
-                        s1);
+                        recordsDeleteDisallowed);
                 }
 
                 bool showCancel = false;
@@ -924,42 +922,42 @@ namespace {#NAMESPACE}
                 if (listConflicts.Count > 0)
                 {
                     showCancel = true;
-                    string s1 = Catalog.GetPluralString("record", "records", listConflicts.Count);
-                    string s2 = Catalog.GetPluralString("it is referenced", "they are referenced", listConflicts.Count);
-                    results += String.Format(Catalog.GetString("{0}{1} {2} could not be deleted because {3} by at least one other table."),
+                    results += String.Format(
+                        Catalog.GetPluralString(MCommonResourcestrings.StrRowNotDeletedBecauseReferencedElsewhere,
+                                                MCommonResourcestrings.StrRowsNotDeletedBecauseReferencedElsewhere,
+                                                listConflicts.Count),
                         Environment.NewLine,
-                        listConflicts.Count,
-                        s1, s2);
+                        listConflicts.Count);
                 }
                 
                 if (listExceptions.Count > 0)
                 {
                     showCancel = true;
-                    string s1 = Catalog.GetPluralString("record", "records", listExceptions.Count);
-                    results += String.Format(Catalog.GetString("{0}{1} {2} could not be deleted because the delete action failed unexpectedly."),
+                    results += String.Format(
+                        Catalog.GetPluralString(MCommonResourcestrings.StrRowNotDeletedDueToUnexpectedException,
+                                                MCommonResourcestrings.StrRowNotDeletedDueToUnexpectedException,
+                                                listExceptions.Count),
                         Environment.NewLine,
-                        listExceptions.Count,
-                        s1);
+                        listExceptions.Count);
                 }
                 
                 if (showCancel)
                 {
-                    results += String.Format(Catalog.GetString("{0}{0}Click OK to review the details, or Cancel to return direct to the data screen"),
-                        Environment.NewLine);
+                    results += String.Format(MCommonResourcestrings.StrClickToReviewDeletionOrCancel, Environment.NewLine);
 
                     if (MessageBox.Show(results,
-                            Catalog.GetString("Delete Action Summary"),
+                            MCommonResourcestrings.StrDeleteActionSummaryTitle,
                             MessageBoxButtons.OKCancel,
                             MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.OK)
                     {
-                        ReviewMultiDeleteResults(listConflicts, Catalog.GetString("Rows in this table that are referenced by other tables"));
-                        ReviewMultiDeleteResults(listExceptions, Catalog.GetString("Unexpected Exceptions"));
+                        ReviewMultiDeleteResults(listConflicts, MCommonResourcestrings.StrRowsReferencedByOtherTables);
+                        ReviewMultiDeleteResults(listExceptions, MCommonResourcestrings.StrExceptions);
                     }
                 }
                 else
                 {
                     MessageBox.Show(results,
-                        Catalog.GetString("Delete Action Summary"),
+                        MCommonResourcestrings.StrDeleteActionSummaryTitle,
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
                 }
@@ -1025,20 +1023,21 @@ namespace {#NAMESPACE}
             string s1 = result.RecordID;
             string s2 = result.Result;
 
-            string details = String.Format(Catalog.GetString("{0}: {1} of {2}{3}Record: {4}{3}{5}"),
+            string details = String.Format(MCommonResourcestrings.StrItemXofYRecordColon,
                 ATitle, item, allItemsCount, Environment.NewLine, s1, s2);
 
             if (item < allItemsCount)
             {
-                details += String.Format(Catalog.GetString("{0}{0}Click OK to review the next detail or Cancel to finish."), Environment.NewLine);
-                if (MessageBox.Show(details, Catalog.GetString("More Details About Rows Not Deleted"), MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.Cancel)
+                details += String.Format(MCommonResourcestrings.StrViewNextDetailOrCancel, Environment.NewLine);
+                if (MessageBox.Show(details, MCommonResourcestrings.StrMoreDetailsAboutRowsNotDeleted, MessageBoxButtons.OKCancel)
+                    == System.Windows.Forms.DialogResult.Cancel)
                 {
                     break;
                 }
             }
             else
             {
-                MessageBox.Show(details, Catalog.GetString("More Details About Rows Not Deleted"), MessageBoxButtons.OK);
+                MessageBox.Show(details, MCommonResourcestrings.StrMoreDetailsAboutRowsNotDeleted, MessageBoxButtons.OK);
             }
         }
     }
@@ -1155,7 +1154,9 @@ namespace {#NAMESPACE}
         if (grdDetails.DataSource != null) 
         {
             RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
-            lblRecordCounter.Text = String.Format(Catalog.GetPluralString("{0} record", "{0} records", RecordCount, true), RecordCount);
+            lblRecordCounter.Text = String.Format(
+                Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount, true),
+                RecordCount);
         }                
     }
 #endregion
