@@ -189,6 +189,11 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Period {0} must end one day before the next period begins.")]
         public const String ERR_PERIOD_DATE_RANGE = "FIN.00006V";
 
+        /// <summary>Period date ranges need to make sure that there is no overlap and no gaps in calendar.</summary>
+        [ErrCodeAttribute("Current Period incorrect.",
+             ErrorMessageText = "Current Period cannot be greater than Number of Periods.")]
+        public const String ERR_CURRENT_PERIOD_TOO_LATE = "FIN.00007V";
+
         #endregion
 
         #region Partner Module-specific error codes

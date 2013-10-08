@@ -47,8 +47,8 @@ RootNode:
         
         cmbBaseCurrency: {List=CurrencyCodeList}
         cmbIntlCurrency: {List=CurrencyCodeList}
-        nudNumberOfAccountingPeriods: {Label=Number of Periods}
-        nudCurrentPeriod: {Label=Current Period}
+        nudNumberOfAccountingPeriods: {Label=Number of Periods, Validation=true}
+        nudCurrentPeriod: {Label=Current Period, Validation=true}
         btnViewCalendar: {Label=View Calendar, ActionClick=OnBtnCalendar}
         dtpFinancialYearStartDate: {Label=First Day of the Financial Year, Align=bottom}
         chkSuspenseAccountFlag: {Label=Allow use of suspense accounts?, CheckBoxAttachedLabel=right, Validation=true}
