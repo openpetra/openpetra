@@ -24,19 +24,17 @@
 using System;
 using System.Runtime.Serialization;
 
-/*
- * Contains Exceptions that can be passed from the Server to the Client via
- * .NET Remoting.
- *
- * These Exceptions are Petra-specific, but not specific to a certain
- * Petra Module (Partner, Finance, etc).
- *
- * @Comment Put remotable Exceptions which are specific to a certain Petra Module
- *          into shared Petra Module DLLs - eg Ict_Petra_Shared_MPartner,
- *          Ict_Petra_Shared_MFinance...
- *
- */
-namespace Ict.Common.Remoting.Shared
+// This Namespace contains Exceptions that can be passed from the Server to the Client 
+// via .NET Remoting.
+// 
+// These Exceptions are OpenPetra-specific, but not specific to a certain
+// OpenPetra Module (Partner, Finance, etc).
+//
+// Comment:
+// Put remotable Exceptions which are specific to a certain Petra Module
+// into shared Petra Module DLLs - eg Ict.Petra.Shared.MPartner, Ict.Petra.Shared.MFinance...
+
+namespace Ict.Common.Exceptions
 {
     #region OutOfRangeException
 

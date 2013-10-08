@@ -26,6 +26,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.Collections.Generic;
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;

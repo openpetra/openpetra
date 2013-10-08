@@ -27,7 +27,7 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using Ict.Common;
-using Ict.Common.Remoting.Shared;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;

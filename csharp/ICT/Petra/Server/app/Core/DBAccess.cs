@@ -26,6 +26,7 @@ using System.Runtime.Serialization;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.DB.DBCaching;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;

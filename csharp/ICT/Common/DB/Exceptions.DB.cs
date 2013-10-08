@@ -27,7 +27,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
-namespace Ict.Common.DB
+namespace Ict.Common.DB.Exceptions
 {
     #region EDBConnectionNotEstablishedException
 
