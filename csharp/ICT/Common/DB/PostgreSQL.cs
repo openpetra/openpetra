@@ -28,14 +28,16 @@ using System.Data.Odbc;
 using System.Data.Common;
 using System.Collections;
 using System.Text;
+using System.Text.RegularExpressions;
 using Npgsql;
 using NpgsqlTypes;
-using System.Text.RegularExpressions;
+
+using Ict.Common.DB.Exceptions;
 
 namespace Ict.Common.DB
 {
     /// <summary>
-    /// this class allows access to PostgreSQL databases
+    /// Allows access to PostgreSQL databases using the 'Npgsql' .NET Data Provider.
     /// </summary>
     public class TPostgreSQL : IDataBaseRDBMS
     {
@@ -44,7 +46,7 @@ namespace Ict.Common.DB
 #endif
 
         /// <summary>
-        /// Create a PostgreSQL connection using the Npgsql .NET Data Provider.
+        /// Creates a PostgreSQL connection using the 'Npgsql' .NET Data Provider.
         /// </summary>
         /// <param name="AServer">The Database Server</param>
         /// <param name="APort">the port that the db server is running on</param>
@@ -53,9 +55,10 @@ namespace Ict.Common.DB
         /// <param name="APassword">The password for opening the PostgreSQL connection</param>
         /// <param name="AConnectionString">The connection string; if it is not empty, it will overrule the previous parameters</param>
         /// <param name="AStateChangeEventHandler">for connection state changes</param>
-        /// <returns>NpgsqlConnection, but not opened yet (null if connection could not be established).
+        /// <returns>
+        /// Instantiated NpgsqlConnection, but not opened yet (null if connection could not be established).
         /// </returns>
-        public IDbConnection GetConnection(String AServer, String APort,
+        public DbConnection GetConnection(String AServer, String APort,
             String ADatabaseName,
             String AUsername, ref String APassword,
             ref String AConnectionString,
@@ -110,14 +113,14 @@ namespace Ict.Common.DB
 
             if (TheConnection != null)
             {
-                /* Somehow the StateChange Event is never fired for an NpgsqlConnection, although it is documented.
-                 * As a result of that we cannot rely on the FConnectionReady variable to contain valid values for
-                 * NpgsqlConnection. Therefore I (ChristianK) wrote a wrapper routine, ConnectionReady, which
-                 * handles this difference. FConnectionReady must therefore never be inquired directly, but only
-                 * through calling ConnectionReady()!
-                 */
+                // Somehow the StateChange Event is never fired for an NpgsqlConnection, although it is documented.
+                // As a result of that we cannot rely on the FConnectionReady variable to contain valid values for
+                // NpgsqlConnection. Therefore I (ChristianK) wrote a wrapper routine, ConnectionReady, which
+                // handles this difference. FConnectionReady must therefore never be inquired directly, but only
+                // through calling ConnectionReady()!
+                // (As of Npgsql 2.0.11.92 the Event still isn't raised)            
 
-                // TODO: need to test this
+                // TODO: need to test this again
                 ((NpgsqlConnection)TheConnection).StateChange += AStateChangeEventHandler;
             }
 
@@ -125,7 +128,7 @@ namespace Ict.Common.DB
         }
 
         /// init the connection after it was opened
-        public void InitConnection(IDbConnection AConnection)
+        public void InitConnection(DbConnection AConnection)
         {
         }
 
@@ -367,17 +370,17 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// create a IDbCommand object
-        /// this formats the sql query for PostgreSQL, and transforms the parameters
+        /// Creates a DbCommand object.
+        /// This formats the sql query for PostgreSQL, and transforms the parameters.
         /// </summary>
         /// <param name="ACommandText"></param>
         /// <param name="AConnection"></param>
         /// <param name="AParametersArray"></param>
         /// <param name="ATransaction"></param>
-        /// <returns></returns>
-        public IDbCommand NewCommand(ref string ACommandText, IDbConnection AConnection, DbParameter[] AParametersArray, TDBTransaction ATransaction)
+        /// <returns>Instantiated NpgsqlCommand.</returns>
+        public DbCommand NewCommand(ref string ACommandText, DbConnection AConnection, DbParameter[] AParametersArray, TDBTransaction ATransaction)
         {
-            IDbCommand ObjReturn = null;
+            DbCommand ObjReturn = null;
 
             ACommandText = FormatQueryRDBMSSpecific(ACommandText);
 
@@ -428,25 +431,30 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// create an IDbDataAdapter for PostgreSQL
+        /// Creates a DbDataAdapter for PostgreSQL.
         /// </summary>
-        /// <returns></returns>
-        public IDbDataAdapter NewAdapter()
+        /// <remarks>
+        /// <b>Important:</b> Since an object that derives from DbDataAdapter is returned you ought to
+        /// <em>call .Dispose()</em> on the returned object to release its resouces! (DbDataAdapter inherits 
+        /// from DataAdapter which itself inherits from Component, which implements IDisposable!)
+        /// </remarks>
+        /// <returns>Instantiated NpgsqlDataAdapter.</returns>
+        public DbDataAdapter NewAdapter()
         {
-            IDbDataAdapter TheAdapter = new NpgsqlDataAdapter();
+            DbDataAdapter TheAdapter = new NpgsqlDataAdapter();
 
             return TheAdapter;
         }
 
         /// <summary>
-        /// fill an IDbDataAdapter that was created with NewAdapter
+        /// Fills a DbDataAdapter that was created with the <see cref="NewAdapter" /> Method.
         /// </summary>
         /// <param name="TheAdapter"></param>
         /// <param name="AFillDataSet"></param>
         /// <param name="AStartRecord"></param>
         /// <param name="AMaxRecords"></param>
         /// <param name="ADataTableName"></param>
-        public void FillAdapter(IDbDataAdapter TheAdapter,
+        public void FillAdapter(DbDataAdapter TheAdapter,
             ref DataSet AFillDataSet,
             Int32 AStartRecord,
             Int32 AMaxRecords,
@@ -470,14 +478,14 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// overload of FillAdapter, just for one table
-        /// IDbDataAdapter was created with NewAdapter
+        /// Fills a DbDataAdapter that was created with the <see cref="NewAdapter" /> Method.
         /// </summary>
+        /// <remarks>Overload of FillAdapter, just for one table.</remarks>
         /// <param name="TheAdapter"></param>
         /// <param name="AFillDataTable"></param>
         /// <param name="AStartRecord"></param>
         /// <param name="AMaxRecords"></param>
-        public void FillAdapter(IDbDataAdapter TheAdapter,
+        public void FillAdapter(DbDataAdapter TheAdapter,
             ref DataTable AFillDataTable,
             Int32 AStartRecord,
             Int32 AMaxRecords)
@@ -510,9 +518,8 @@ namespace Ict.Common.DB
         /// <param name="ATransaction">An instantiated Transaction in which the Query
         /// to the DB will be enlisted.</param>
         /// <param name="ADatabase">the database object that can be used for querying</param>
-        /// <param name="AConnection"></param>
         /// <returns>Sequence Value.</returns>
-        public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
+        public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase)
         {
             // TODO problem: sequence should be committed? separate transaction?
             // see also http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=44
@@ -527,9 +534,8 @@ namespace Ict.Common.DB
         /// <param name="ATransaction">An instantiated Transaction in which the Query
         /// to the DB will be enlisted.</param>
         /// <param name="ADatabase">the database object that can be used for querying</param>
-        /// <param name="AConnection"></param>
         /// <returns>Sequence Value.</returns>
-        public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
+        public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase)
         {
             return Convert.ToInt64(ADatabase.ExecuteScalar("SELECT last_value FROM " + ASequenceName + "", ATransaction));
         }
@@ -540,7 +546,6 @@ namespace Ict.Common.DB
         public void RestartSequence(String ASequenceName,
             TDBTransaction ATransaction,
             TDataBase ADatabase,
-            IDbConnection AConnection,
             Int64 ARestartValue)
         {
             ADatabase.ExecuteScalar(

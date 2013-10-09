@@ -35,13 +35,13 @@ using System.Text.RegularExpressions;
 namespace Ict.Common.DB
 {
     /// <summary>
-    /// this class allows access to SQLite databases on Windows and Linux, using Mono.Data.Sqlite
+    /// Allows access to SQLite databases on Windows and Linux, using the 'Mono.Data.Sqlite' .NET Data Provider.
     /// </summary>
     public class TSQLite : IDataBaseRDBMS
     {
         /// <summary>
-        /// Create a SQLite connection using Mono.Data.Sqlite.
-        /// this works on Windows (with the sqlite3.dll) and on Linux
+        /// Create a SQLite connection using the 'Mono.Data.Sqlite' .NET Data Provider.
+        /// This works on Windows (with the sqlite3.dll) and on Linux.
         /// </summary>
         /// <param name="AServer">The Database file</param>
         /// <param name="APort">the port that the db server is running on</param>
@@ -50,8 +50,9 @@ namespace Ict.Common.DB
         /// <param name="APassword">The password for opening the database</param>
         /// <param name="AConnectionString">not in use</param>
         /// <param name="AStateChangeEventHandler">for connection state changes</param>
-        /// <returns>the connection</returns>
-        public IDbConnection GetConnection(String AServer, String APort,
+        /// <returns>Instantiated SqliteConnection, but not opened yet (null if connection could not be established).
+        /// </returns>
+        public DbConnection GetConnection(String AServer, String APort,
             String ADatabaseName,
             String AUsername, ref String APassword,
             ref String AConnectionString,
@@ -124,7 +125,7 @@ namespace Ict.Common.DB
         /// <summary>
         /// enforce foreign key constraints
         /// </summary>
-        public void InitConnection(IDbConnection AConnection)
+        public void InitConnection(DbConnection AConnection)
         {
             string enforceForeignKeyConstraints = "PRAGMA foreign_keys = ON;";
 
@@ -241,17 +242,17 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// create a IDbCommand object
-        /// this formats the sql query for SQLite, and transforms the parameters
+        /// Creates a DbCommand object.
+        /// This formats the sql query for SQLite, and transforms the parameters.
         /// </summary>
         /// <param name="ACommandText"></param>
         /// <param name="AConnection"></param>
         /// <param name="AParametersArray"></param>
         /// <param name="ATransaction"></param>
-        /// <returns></returns>
-        public IDbCommand NewCommand(ref string ACommandText, IDbConnection AConnection, DbParameter[] AParametersArray, TDBTransaction ATransaction)
+        /// <returns>Instantiated SqliteCommand.</returns>
+        public DbCommand NewCommand(ref string ACommandText, DbConnection AConnection, DbParameter[] AParametersArray, TDBTransaction ATransaction)
         {
-            IDbCommand ObjReturn = null;
+            DbCommand ObjReturn = null;
 
             ACommandText = FormatQueryRDBMSSpecific(ACommandText);
 
@@ -287,53 +288,52 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// create an IDbDataAdapter for SQLite
+        /// Creates a DbDataAdapter for SQLite.
         /// </summary>
-        /// <returns></returns>
-        public IDbDataAdapter NewAdapter()
+        /// <remarks>
+        /// <b>Important:</b> Since an object that derives from DbDataAdapter is returned you ought to
+        /// <em>call .Dispose()</em> on the returned object to release its resouces! (DbDataAdapter inherits 
+        /// from DataAdapter which itself inherits from Component, which implements IDisposable!)
+        /// </remarks> 
+        /// <returns>Instantiated SqliteDataAdapter.</returns>
+        public DbDataAdapter NewAdapter()
         {
-            IDbDataAdapter TheAdapter = new SqliteDataAdapter();
+            DbDataAdapter TheAdapter = new SqliteDataAdapter();
 
             return TheAdapter;
         }
 
         /// <summary>
-        /// fill an IDbDataAdapter that was created with NewAdapter
+        /// Fills a DbDataAdapter that was created with the <see cref="NewAdapter" /> Method.
         /// </summary>
         /// <param name="TheAdapter"></param>
         /// <param name="AFillDataSet"></param>
         /// <param name="AStartRecord"></param>
         /// <param name="AMaxRecords"></param>
         /// <param name="ADataTableName"></param>
-        public void FillAdapter(IDbDataAdapter TheAdapter,
+        public void FillAdapter(DbDataAdapter TheAdapter,
             ref DataSet AFillDataSet,
             Int32 AStartRecord,
             Int32 AMaxRecords,
             string ADataTableName)
         {
             ((SqliteDataAdapter)TheAdapter).Fill(AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
-
-            TheAdapter.SelectCommand.Dispose();
-            ((SqliteDataAdapter)TheAdapter).Dispose();
         }
 
         /// <summary>
-        /// overload of FillAdapter, just for one table
-        /// IDbDataAdapter was created with NewAdapter
+        /// Fills a DbDataAdapter that was created with the <see cref="NewAdapter" /> Method.
         /// </summary>
+        /// <remarks>Overload of FillAdapter, just for one table.</remarks>
         /// <param name="TheAdapter"></param>
         /// <param name="AFillDataTable"></param>
         /// <param name="AStartRecord"></param>
         /// <param name="AMaxRecords"></param>
-        public void FillAdapter(IDbDataAdapter TheAdapter,
+        public void FillAdapter(DbDataAdapter TheAdapter,
             ref DataTable AFillDataTable,
             Int32 AStartRecord,
             Int32 AMaxRecords)
         {
             ((SqliteDataAdapter)TheAdapter).Fill(AFillDataTable);
-
-            TheAdapter.SelectCommand.Dispose();
-            ((SqliteDataAdapter)TheAdapter).Dispose();
         }
 
         /// <summary>
@@ -360,17 +360,17 @@ namespace Ict.Common.DB
         /// <param name="ATransaction">An instantiated Transaction in which the Query
         /// to the DB will be enlisted.</param>
         /// <param name="ADatabase">the database object that can be used for querying</param>
-        /// <param name="AConnection"></param>
         /// <returns>Sequence Value.</returns>
-        public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
+        public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase)
         {
             string stmt = "INSERT INTO " + ASequenceName + " VALUES(NULL, -1);";
 
-            using (SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)AConnection))
+            using (SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)ATransaction.Connection))
             {
-                cmd.ExecuteNonQuery();
-                return GetCurrentSequenceValue(ASequenceName, ATransaction, ADatabase, AConnection);
+                cmd.ExecuteNonQuery();              
             }
+            
+            return GetCurrentSequenceValue(ASequenceName, ATransaction, ADatabase);
         }
 
         /// <summary>
@@ -380,13 +380,12 @@ namespace Ict.Common.DB
         /// <param name="ATransaction">An instantiated Transaction in which the Query
         /// to the DB will be enlisted.</param>
         /// <param name="ADatabase">the database object that can be used for querying</param>
-        /// <param name="AConnection"></param>
         /// <returns>Sequence Value.</returns>
-        public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
+        public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase)
         {
             string stmt = "SELECT MAX(sequence) FROM " + ASequenceName + ";";
 
-            using (SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)AConnection))
+            using (SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)ATransaction.Connection))
             {
                 return Convert.ToInt64(cmd.ExecuteScalar());
             }
@@ -398,7 +397,6 @@ namespace Ict.Common.DB
         public void RestartSequence(String ASequenceName,
             TDBTransaction ATransaction,
             TDataBase ADatabase,
-            IDbConnection AConnection,
             Int64 ARestartValue)
         {
             ADatabase.ExecuteNonQuery("DELETE FROM " + ASequenceName + ";", ATransaction);
@@ -435,8 +433,10 @@ namespace Ict.Common.DB
             if (AExeVersion.FileMajorPart == 0)
             {
                 DBAccess.GDBAccessObj.CloseDBConnection();
-                throw new Exception(String.Format("Unsupported upgrade: Please rename your file {0} so that we can start with a fresh database!",
-                        AHostOrFile));
+                
+                throw new Exception(String.Format(Catalog.GetString("Unsupported upgrade: Please rename the file {0} so that we can start with a fresh database!" + 
+                    Environment.NewLine + "Please restart the OpenPetra Client after that."),
+                    AHostOrFile));
             }
 
             string dbpatchfilePath = Path.GetDirectoryName(TAppSettingsManager.GetValue("Server.SQLiteBaseFile"));
@@ -487,14 +487,17 @@ namespace Ict.Common.DB
                     string newVersionSql =
                         String.Format("UPDATE s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion';",
                             AExeVersion.ToStringDotsHyphen());
+                    
                     DBAccess.GDBAccessObj.ExecuteNonQuery(newVersionSql, transaction);
+                    
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
                 else
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    throw new Exception(String.Format("Cannot connect to old database (version {0}), there are some missing sql patch files",
-                            ADBVersion));
+                    
+                    throw new Exception(String.Format(Catalog.GetString("Cannot connect to old database (version {0}), there are some missing sql patch files"),
+                        ADBVersion));
                 }
             }
             catch (Exception)
