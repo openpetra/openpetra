@@ -931,7 +931,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             ReturnValue = "";
             strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
                      StringHelper.IntToStr(ledgernumber) + " and PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
-            tab = situation.GetDatabaseConnection().SelectDT(strSql, "", situation.GetDatabaseConnection().Transaction);
+            tab = situation.GetDatabaseConnection().SelectDT(strSql, "GetLedgerName_TempTable", situation.GetDatabaseConnection().Transaction);
 
             if (tab.Rows.Count > 0)
             {
@@ -1107,7 +1107,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             strSql = "SELECT SUM(a_budget_base_n) " + "FROM PUB_a_general_ledger_master_period " + "WHERE a_glm_sequence_i = " +
                      StringHelper.IntToStr(startperiod.realGlmSequence.glmSequence) + ' ' + "AND a_period_number_i >= " + StringHelper.IntToStr(
                 startperiod.realPeriod) + ' ' + "AND a_period_number_i <= " + StringHelper.IntToStr(endperiod.realPeriod);
-            tab = situation.GetDatabaseConnection().SelectDT(strSql, "", situation.GetDatabaseConnection().Transaction);
+            tab = situation.GetDatabaseConnection().SelectDT(strSql, "GetBudget_TempTable", situation.GetDatabaseConnection().Transaction);
 
             if (tab.Rows.Count > 0)
             {
