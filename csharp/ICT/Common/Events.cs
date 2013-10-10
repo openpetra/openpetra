@@ -65,6 +65,11 @@ namespace Ict.Common
     /// <summary>
     /// todoComment
     /// </summary>
+    public delegate void TValueChangedHandler(Control Sender);
+
+    /// <summary>
+    /// todoComment
+    /// </summary>
     public delegate void TDataSavingStartHandler(System.Object Sender, System.EventArgs e);
 
     /// <summary>

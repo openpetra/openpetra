@@ -1,4 +1,4 @@
- //
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -478,7 +478,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             "Recurring batch no. {0} cannot be submitted because it contains an inactive bank account or cost centre code"),
                         FPreviouslySelectedDetailRow.BatchNumber),
                     Catalog.GetString("Inactive Bank Account/Cost Centre Code"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-            	return;
+                return;
             }
 
             TFrmRecurringGiftBatchSubmit submitForm = new TFrmRecurringGiftBatchSubmit(FPetraUtilsObject.GetForm());

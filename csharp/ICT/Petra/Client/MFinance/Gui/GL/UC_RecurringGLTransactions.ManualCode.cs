@@ -43,6 +43,7 @@ using SourceGrid.Cells;
 using SourceGrid.Cells.Editors;
 using SourceGrid.Cells.Controllers;
 using System.ComponentModel;
+using System.Collections.Specialized;
 
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
@@ -1374,68 +1375,66 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void ReconcileTransAnalysisAttributes(bool AIsAddition = false)
+        private void ReconcileTransAnalysisAttributes()
         {
-            if ((FPreviouslySelectedDetailRow == null) || (cmbDetailAccountCode.GetSelectedString() == null)
-                || (cmbDetailAccountCode.GetSelectedString() == string.Empty))
+            string currentAccountCode = cmbDetailAccountCode.GetSelectedString();
+
+            if ((FPreviouslySelectedDetailRow == null) || (currentAccountCode == null)
+                || (currentAccountCode == string.Empty))
             {
                 return;
             }
 
+            StringCollection RequiredAnalattrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
+                currentAccountCode);
             Int32 currentTransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
-            string currentAccountCode = cmbDetailAccountCode.GetSelectedString();
-
             SetTransAnalAttributeDefaultView(currentTransactionNumber);
-            DataView attrView = FMainDS.ARecurringTransAnalAttrib.DefaultView;
 
-            if ((currentAccountCode != FPreviouslySelectedDetailRow.AccountCode)
-                || (TRemote.MFinance.Setup.WebConnectors.HasAccountSetupAnalysisAttributes(FLedgerNumber, currentAccountCode) && (attrView.Count == 0)))
+            //
+            // If the AnalysisType list I'm currently using is the same as the list of required types, I can keep it (with any existing values).
+            Boolean existingListIsOk = (RequiredAnalattrCodes.Count == FMainDS.ATransAnalAttrib.DefaultView.Count);
+
+            if (existingListIsOk)
             {
-                //Delete all existing attribute values
-                //-----------------------------------
-
-                ARecurringTransAnalAttribRow attrRowCurrent = null;
-
-                if (!AIsAddition)
+                foreach (DataRowView rv in FMainDS.ARecurringTransAnalAttrib.DefaultView)
                 {
-                    foreach (DataRowView gv in attrView)
+                    ARecurringTransAnalAttribRow row = (ARecurringTransAnalAttribRow)rv.Row;
+
+                    if (!RequiredAnalattrCodes.Contains(row.AnalysisTypeCode))
                     {
-                        attrRowCurrent = (ARecurringTransAnalAttribRow)gv.Row;
-                        attrRowCurrent.Delete();
+                        existingListIsOk = false;
+                        break;
                     }
                 }
+            }
 
-                attrView.RowFilter = String.Empty;
+            if (existingListIsOk)
+            {
+                return;
+            }
 
-                if (TRemote.MFinance.Setup.WebConnectors.HasAccountSetupAnalysisAttributes(FLedgerNumber, currentAccountCode))
-                {
-                    //Retrieve the analysis attributes for the supplied account
-                    DataView analAttrView = FCacheDS.AAnalysisAttribute.DefaultView;
-                    analAttrView.RowFilter = String.Format("{0} = '{1}'",
-                        AAnalysisAttributeTable.GetAccountCodeDBName(),
-                        currentAccountCode);
+            //
+            // Delete any existing Analysis Type records and re-create the list (Removing any prior selections by the user).
 
-                    if (analAttrView.Count > 0)
-                    {
-                        for (int i = 0; i < analAttrView.Count; i++)
-                        {
-                            //Read the Type Code for each attribute row
-                            AAnalysisAttributeRow analAttrRow = (AAnalysisAttributeRow)analAttrView[i].Row;
-                            string analysisTypeCode = analAttrRow.AnalysisTypeCode;
+            foreach (DataRowView rv in FMainDS.ARecurringTransAnalAttrib.DefaultView)
+            {
+                ARecurringTransAnalAttribRow attrRowCurrent = (ARecurringTransAnalAttribRow)rv.Row;
+                attrRowCurrent.Delete();
+            }
 
-                            //Create a new TypeCode for this account
-                            ARecurringTransAnalAttribRow newRow = FMainDS.ARecurringTransAnalAttrib.NewRowTyped(true);
-                            newRow.LedgerNumber = FLedgerNumber;
-                            newRow.BatchNumber = FBatchNumber;
-                            newRow.JournalNumber = FJournalNumber;
-                            newRow.TransactionNumber = currentTransactionNumber;
-                            newRow.AnalysisTypeCode = analysisTypeCode;
-                            newRow.AccountCode = currentAccountCode;
+            FMainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Empty;
 
-                            FMainDS.ARecurringTransAnalAttrib.Rows.Add(newRow);
-                        }
-                    }
-                }
+            foreach (String analysisTypeCode in RequiredAnalattrCodes)
+            {
+                ARecurringTransAnalAttribRow newRow = FMainDS.ARecurringTransAnalAttrib.NewRowTyped(true);
+                newRow.LedgerNumber = FLedgerNumber;
+                newRow.BatchNumber = FBatchNumber;
+                newRow.JournalNumber = FJournalNumber;
+                newRow.TransactionNumber = currentTransactionNumber;
+                newRow.AnalysisTypeCode = analysisTypeCode;
+                newRow.AccountCode = currentAccountCode;
+
+                FMainDS.ATransAnalAttrib.Rows.Add(newRow);
             }
         }
 

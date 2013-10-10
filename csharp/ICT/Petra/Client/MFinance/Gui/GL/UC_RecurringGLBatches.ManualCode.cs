@@ -594,26 +594,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // now load journals/transactions for this batch, if necessary, so we know if exchange rate needs to be set in case of different currency
             FMainDS.ARecurringJournal.DefaultView.RowFilter = String.Format("{0}={1}",
-                                                                            ARecurringJournalTable.GetBatchNumberDBName(),
-                                                                           FSelectedBatchNumber);
+                ARecurringJournalTable.GetBatchNumberDBName(),
+                FSelectedBatchNumber);
             FMainDS.ARecurringTransaction.DefaultView.RowFilter = String.Format("{0}={1}",
-                                                                            ARecurringTransactionTable.GetBatchNumberDBName(),
-                                                                           FSelectedBatchNumber);
+                ARecurringTransactionTable.GetBatchNumberDBName(),
+                FSelectedBatchNumber);
 
             if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
-			{
-	            //Make sure all data is loaded for batch
-	            //clear any journals from other batches
-	            FMainDS.ARecurringTransAnalAttrib.Clear();
-	            FMainDS.ARecurringTransaction.Clear();
-	            FMainDS.ARecurringJournal.Clear();
-	            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndContent(FLedgerNumber, FSelectedBatchNumber));
-			}
+            {
+                //Make sure all data is loaded for batch
+                //clear any journals from other batches
+                FMainDS.ARecurringTransAnalAttrib.Clear();
+                FMainDS.ARecurringTransaction.Clear();
+                FMainDS.ARecurringJournal.Clear();
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndContent(FLedgerNumber, FSelectedBatchNumber));
+            }
             else if (FMainDS.ARecurringTransaction.DefaultView.Count == 0)
             {
-	            FMainDS.ARecurringTransAnalAttrib.Clear();
-	            FMainDS.ARecurringTransaction.Clear();
-	            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringBatchAndContent(FLedgerNumber, FSelectedBatchNumber));
+                FMainDS.ARecurringTransAnalAttrib.Clear();
+                FMainDS.ARecurringTransaction.Clear();
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringBatchAndContent(FLedgerNumber, FSelectedBatchNumber));
             }
 
             //Reset row filter

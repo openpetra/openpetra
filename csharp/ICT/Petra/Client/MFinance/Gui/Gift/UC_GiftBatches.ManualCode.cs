@@ -125,6 +125,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 String.Format("{0}={1}", AGiftBatchTable.GetBatchNumberDBName(), ABatchNumber);
             Int32 RowToSelect = GetDataTableRowIndexByPrimaryKeys(ALedgerNumber, ABatchNumber);
 
+            RefreshBankCostCentreAndAccountCodes();
             SetupExtraGridFunctionality();
 
             // if this form is readonly, then we need all codes, because old codes might have been used
@@ -190,6 +191,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AGiftBatchTable.GetBatchNumberDBName()
                 );
 
+            RefreshBankCostCentreAndAccountCodes();
             SetupExtraGridFunctionality();
 
             // if this form is readonly, then we need all codes, because old codes might have been used
@@ -237,7 +239,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void SetupExtraGridFunctionality()
+        private void RefreshBankCostCentreAndAccountCodes()
         {
             //Populate CostCentreList variable
             DataTable costCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
@@ -260,6 +262,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FMainDS.RemoveTable(tmpAccountTable.TableName);
 
             FAccountTable = (AAccountTable)accountList;
+        }
+        
+        private void SetupExtraGridFunctionality()
+        {
             //Prepare grid to highlight inactive accounts/cost centres
             // Create a cell view for special conditions
             SourceGrid.Cells.Views.Cell strikeoutCell = new SourceGrid.Cells.Views.Cell();
@@ -1020,16 +1026,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             TVerificationResultCollection Verifications;
 
-            if (FPetraUtilsObject.HasChanges)
+            // save first, then post
+            if (!((TFrmGiftBatch)ParentForm).SaveChanges())
             {
-                // save first, then post
-                if (!((TFrmGiftBatch)ParentForm).SaveChanges())
-                {
-                    // saving failed, therefore do not try to post
-                    MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
-                        Catalog.GetString("Please first save the batch, and then post it!"));
-                    return;
-                }
+                // saving failed, therefore do not try to post
+                MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
+                    Catalog.GetString("Please first save the batch, and then post it!"));
+                return;
             }
 
             //Read current rows position ready to reposition after removal of posted row from grid
@@ -1289,8 +1292,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Hash total special case in view of the textbox handling
             ParseHashTotal(ARow);
 
+            //Check if the user has made a Bank Cost Centre or Account Code inactive
+            RefreshBankCostCentreAndAccountCodes();
+
             TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, ARow, ref VerificationResultCollection,
-                FValidationControlsDict);
+                FValidationControlsDict, FAccountTable, FCostCentreTable);
         }
 
         private void ParseHashTotal(AGiftBatchRow ARow)
