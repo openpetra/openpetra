@@ -38,6 +38,7 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
@@ -364,7 +365,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 newBatchRow.BatchPeriod = periodNumber;
             }
 
-            SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
+            if (!SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1))
+            {
+                if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
+                {
+                    MessageBox.Show(
+                        MCommonResourcestrings.StrNewRecordIsFiltered,
+                        MCommonResourcestrings.StrAddNewRecordTitle,
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    FFilterPanelControls.ClearAllDiscretionaryFilters();
+                    SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
+                }
+            }
 
             FPreviouslySelectedDetailRow.DateEffective = FDefaultDate;
             dtpDetailDateEffective.Date = FDefaultDate;
