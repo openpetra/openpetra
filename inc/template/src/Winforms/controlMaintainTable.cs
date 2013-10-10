@@ -25,6 +25,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared;
 using GNU.Gettext;
 using SourceGrid;
