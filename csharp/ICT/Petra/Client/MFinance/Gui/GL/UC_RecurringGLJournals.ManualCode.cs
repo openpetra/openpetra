@@ -133,6 +133,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             string rowFilter = string.Format("{0} = {1}",
                 ARecurringJournalTable.GetBatchNumberDBName(),
                 FBatchNumber);
+
             FMainDS.ARecurringJournal.DefaultView.RowFilter = rowFilter;
             FFilterPanelControls.SetBaseFilter(rowFilter, true);
             FCurrentActiveFilter = rowFilter;

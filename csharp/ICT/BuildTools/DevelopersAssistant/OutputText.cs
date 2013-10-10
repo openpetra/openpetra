@@ -243,12 +243,12 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 // This lets us read the file even if nant has got it 'locked'
                 using (FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                using (StreamReader sr = new StreamReader(fs, Encoding.Default))
-                {
-                    string content = sr.ReadToEnd();
-                    sr.Close();
-                    return content;
-                }
+                    using (StreamReader sr = new StreamReader(fs, Encoding.Default))
+                    {
+                        string content = sr.ReadToEnd();
+                        sr.Close();
+                        return content;
+                    }
             }
             catch (Exception)
             {

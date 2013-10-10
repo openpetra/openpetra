@@ -1372,12 +1372,12 @@ namespace Ict.Common.Controls
         /// <param name="e"></param>
         protected override void OnSortingRangeRows(SourceGrid.SortRangeRowsEventArgs e)
         {
-            FRowSelectedBeforeSort = (DataRowView)this.Rows.IndexToDataSourceRow(this.Selection.ActivePosition.Row);
+            FRowSelectedBeforeSort = (DataRowView) this.Rows.IndexToDataSourceRow(this.Selection.ActivePosition.Row);
             base.OnSortingRangeRows(e);
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         public void ReselectGridRowAfterSort(Int32 ARowNumberInGrid)
         {

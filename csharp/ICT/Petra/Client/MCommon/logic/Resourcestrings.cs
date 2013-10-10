@@ -158,7 +158,8 @@ namespace Ict.Petra.Client.MCommon
         #region Auto-generated Record Creation
 
         /// <summary>todoComment</summary>
-        public static readonly string StrNewRecordIsFiltered = Catalog.GetString("A new record has been added but the current Filter is preventing it from being displayed.  The Filter will be reset so that you can continue to edit the new record.");
+        public static readonly string StrNewRecordIsFiltered = Catalog.GetString(
+            "A new record has been added but the current Filter is preventing it from being displayed.  The Filter will be reset so that you can continue to edit the new record.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrAddNewRecordTitle = Catalog.GetString("Add New Record");
@@ -199,7 +200,8 @@ namespace Ict.Petra.Client.MCommon
         public static readonly String StrNoRecordsWereDeleted = Catalog.GetString("No records were deleted.");
 
         /// <summary>todoComment</summary>
-        public static readonly String StrClickToReviewDeletionOrCancel = Catalog.GetString("{0}{0}Click OK to review the details, or Cancel to return direct to the data screen");
+        public static readonly String StrClickToReviewDeletionOrCancel = Catalog.GetString(
+            "{0}{0}Click OK to review the details, or Cancel to return direct to the data screen");
 
         /// <summary>todoComment</summary>
         public static readonly String StrDeleteActionSummaryTitle = Catalog.GetString("Delete Action Summary");
@@ -236,28 +238,35 @@ namespace Ict.Petra.Client.MCommon
         public static readonly String StrRecordsSuccessfullyDeleted = "{0} records were successfully deleted.";
 
         /// <summary>todoComment</summary>
-        public static readonly String StrRowNotDeletedBecauseNonDeletable = "{0}{1} record could not be deleted because it is marked as non-deletable.";
+        public static readonly String StrRowNotDeletedBecauseNonDeletable =
+            "{0}{1} record could not be deleted because it is marked as non-deletable.";
 
         /// <summary>todoComment</summary>
-        public static readonly String StrRowsNotDeletedBecauseNonDeletable = "{0}{1} records could not be deleted because they are marked as non-deletable.";
+        public static readonly String StrRowsNotDeletedBecauseNonDeletable =
+            "{0}{1} records could not be deleted because they are marked as non-deletable.";
 
         /// <summary>todoComment</summary>
         public static readonly String StrRowNotDeletedBecauseDeleteNotAllowed = "{0}{1} record was not be deleted because deletion was not allowed.";
 
         /// <summary>todoComment</summary>
-        public static readonly String StrRowsNotDeletedBecauseDeleteNotAllowed = "{0}{1} records were not be deleted because deletion was not allowed.";
+        public static readonly String StrRowsNotDeletedBecauseDeleteNotAllowed =
+            "{0}{1} records were not be deleted because deletion was not allowed.";
 
         /// <summary>todoComment</summary>
-        public static readonly String StrRowNotDeletedBecauseReferencedElsewhere = "{0}{1} record could not be deleted because it is referenced by at least one other table.";
+        public static readonly String StrRowNotDeletedBecauseReferencedElsewhere =
+            "{0}{1} record could not be deleted because it is referenced by at least one other table.";
 
         /// <summary>todoComment</summary>
-        public static readonly String StrRowsNotDeletedBecauseReferencedElsewhere = "{0}{1} records could not be deleted because they are referenced by at least one other table.";
+        public static readonly String StrRowsNotDeletedBecauseReferencedElsewhere =
+            "{0}{1} records could not be deleted because they are referenced by at least one other table.";
 
         /// <summary>todoComment</summary>
-        public static readonly String StrRowNotDeletedDueToUnexpectedException = "{0}{1} record could not be deleted because the delete action failed unexpectedly.";
+        public static readonly String StrRowNotDeletedDueToUnexpectedException =
+            "{0}{1} record could not be deleted because the delete action failed unexpectedly.";
 
         /// <summary>todoComment</summary>
-        public static readonly String StrRowsNotDeletedDueToUnexpectedException = "{0}{1} records could not be deleted because the delete action failed unexpectedly.";
+        public static readonly String StrRowsNotDeletedDueToUnexpectedException =
+            "{0}{1} records could not be deleted because the delete action failed unexpectedly.";
 
         #endregion
 
@@ -266,7 +275,8 @@ namespace Ict.Petra.Client.MCommon
         #region Auto-generated Validation
 
         /// <summary>todoComment</summary>
-        public static readonly string StrDuplicateRecordNotAllowed = Catalog.GetString("You have attempted to create a duplicate record.  Please ensure that you have unique input data for the field(s) {0}.");
+        public static readonly string StrDuplicateRecordNotAllowed = Catalog.GetString(
+            "You have attempted to create a duplicate record.  Please ensure that you have unique input data for the field(s) {0}.");
 
         #endregion
     }

@@ -59,7 +59,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FTypeCode = value;
-                
+
                 string rowFilter = String.Format("{0} = '{1}'",
                     AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
                     FTypeCode);

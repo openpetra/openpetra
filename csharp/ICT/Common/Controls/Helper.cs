@@ -443,23 +443,25 @@ namespace Ict.Common.Controls
         /// Gets the current filter from all the inputs on the filter panel
         /// </summary>
         /// <returns>The current filter from all the inputs on the filter panel</returns>
-        public string GetCurrentFilter(bool AIsCollapsed, TUcoFilterAndFind.FilterContext AKeepFilterOnButtonDepressedContext, TUcoFilterAndFind.FilterContext AFilterAlwaysOnLabelContext)
+        public string GetCurrentFilter(bool AIsCollapsed,
+            TUcoFilterAndFind.FilterContext AKeepFilterOnButtonDepressedContext,
+            TUcoFilterAndFind.FilterContext AFilterAlwaysOnLabelContext)
         {
             // Start with the base filter
             string filter = FBaseFilter;
 
-            bool bIgnoreStandardFilter = (AIsCollapsed &&
-                (AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.None ||
-                AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly) &&
-                (AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.None ||
-                AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly));
+            bool bIgnoreStandardFilter = (AIsCollapsed
+                                          && (AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.None
+                                              || AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly)
+                                          && (AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.None
+                                              || AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly));
             string stdFilter = (bIgnoreStandardFilter) ? String.Empty : GetCurrentFilter(FStandardFilterPanels);
 
-            bool bIgnoreExtraFilter = (AIsCollapsed &&
-                (AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.None ||
-                AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.StandardFilterOnly) &&
-                (AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.None ||
-                AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.StandardFilterOnly));
+            bool bIgnoreExtraFilter = (AIsCollapsed
+                                       && (AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.None
+                                           || AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.StandardFilterOnly)
+                                       && (AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.None
+                                           || AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.StandardFilterOnly));
             string extFilter = (bIgnoreExtraFilter) ? String.Empty : GetCurrentFilter(FExtraFilterPanels);
 
             if ((filter.Length > 0) && (stdFilter.Length > 0))
@@ -495,7 +497,7 @@ namespace Ict.Common.Controls
         /// </summary>
         public void ClearAllDiscretionaryFilters()
         {
-            List<TIndividualFilterFindPanel> SearchList;
+            List <TIndividualFilterFindPanel>SearchList;
 
             for (int i = 0; i < 2; i++)
             {
@@ -511,6 +513,7 @@ namespace Ict.Common.Controls
                 for (int k = 0; k < SearchList.Count; k++)
                 {
                     TIndividualFilterFindPanel iffp = SearchList[k];
+
                     if (iffp.HasClearButton)
                     {
                         if (iffp.FilterComparison == null)

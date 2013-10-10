@@ -84,7 +84,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             // Get a view on the journals for the specified batch
-            DataView dv = new DataView(FMainDS.AJournal, String.Format("{0}={1}", AJournalTable.GetBatchNumberDBName(), ABatchNumber), "", DataViewRowState.CurrentRows);
+            DataView dv = new DataView(FMainDS.AJournal, String.Format("{0}={1}",
+                    AJournalTable.GetBatchNumberDBName(), ABatchNumber), "", DataViewRowState.CurrentRows);
 
             //Check if same Journals as previously selected
             if ((FLedgerNumber == ALedgerNumber) && !batchChanged && (FBatchStatus == ABatchStatus) && (dv.Count > 0))
@@ -124,11 +125,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // only load from server if there are no journals loaded yet for this batch
             // otherwise we would overwrite journals that have already been modified
             dv = FMainDS.AJournal.DefaultView;
+
             if (dv.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndContent(ALedgerNumber, ABatchNumber));
             }
-            
+
             // Now set up the complete current filter
             FFilterPanelControls.SetBaseFilter(dv.RowFilter, true);
             ApplyFilter();
