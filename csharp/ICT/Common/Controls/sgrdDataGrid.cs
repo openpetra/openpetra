@@ -1625,6 +1625,7 @@ namespace Ict.Common.Controls
                 if (dv[Counter2].Row == ADataRow)
                 {
                     RowIndex = Counter2;
+                    break;
                 }
             }
 
