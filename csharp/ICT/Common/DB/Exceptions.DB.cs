@@ -538,4 +538,52 @@ namespace Ict.Common.DB.Exceptions
         }
     }
     #endregion
+    
+    #region EDBUnsupportedDBUpgradeException
+
+    /// <summary>
+    /// Thrown if we cannot upgrade the DB to a newer version of OpenPetra.
+    /// </summary>
+    [Serializable()]
+    public class EDBUnsupportedDBUpgradeException : ApplicationException
+    {
+        /// <summary>
+        /// Default Constructor.
+        /// </summary>
+        public EDBUnsupportedDBUpgradeException() : base()
+        {
+            TLogging.Log("Upgrading the database to a newer version of OpenPetra is not supported.");
+        }
+
+        /// <summary>
+        /// Use this to pass on a message with the Exception.
+        /// </summary>
+        /// <param name="msg">Exception message.</param>
+        public EDBUnsupportedDBUpgradeException(string msg) : base(msg)
+        {
+        }
+
+
+        /// <summary>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </summary>
+        /// <param name="info">The object that holds the serialized object data.</param>
+        /// <param name="context">The contextual information about the source or destination.</param>
+        public EDBUnsupportedDBUpgradeException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+
+        /// <summary>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </summary>
+        /// <param name="info">The <see cref="SerializationInfo" /> that holds the
+        /// serialized object data about the exception being thrown. </param>
+        /// <param name="context">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+        }
+    }
+    
+    #endregion    
 }
