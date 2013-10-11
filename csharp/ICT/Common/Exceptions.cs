@@ -24,7 +24,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Ict.Common.Remoting.Shared
+namespace Ict.Common.Exceptions
 {
     #region EPetraSecurityException
 

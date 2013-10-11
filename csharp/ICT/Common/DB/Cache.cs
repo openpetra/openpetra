@@ -62,7 +62,7 @@ namespace Ict.Common.DB.DBCaching
         /// </summary>
         /// <param name="db"></param>
         /// <param name="sql"></param>
-        /// <param name="ATable">can already have some prepared columns; optional parameter, can be nil
+        /// <param name="ATable">can already have some prepared columns; optional parameter, can be null
         /// </param>
         /// <returns>void</returns>
         public DataSet GetDataSet(DB.TDataBase db, String sql, DataTable ATable)

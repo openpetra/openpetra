@@ -22,44 +22,60 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Net;
+using System.Collections;
 using System.Data;
 using System.Data.Odbc;
 using System.Data.Common;
-using System.Collections;
+using System.Net;
 using System.Text.RegularExpressions;
+
 using MySql.Data.MySqlClient;
+
+using Ict.Common.DB.Exceptions;
 
 namespace Ict.Common.DB
 {
     /// <summary>
-    /// this class allows access to MySQL databases
+    /// Allows access to MySQL databases using the 'MySQL AB ADO.Net Driver for MySQL' .NET Data Provider.
     /// </summary>
     public class TMySQL : IDataBaseRDBMS
     {
         /// <summary>
-        /// connect to the database
+        /// Creates a MySqlConnection connection using the 'MySQL AB ADO.Net Driver for MySQL' .NET Data Provider.
         /// </summary>
-        /// <param name="AServer"></param>
-        /// <param name="APort"></param>
-        /// <param name="ADatabaseName"></param>
-        /// <param name="AUsername"></param>
-        /// <param name="APassword"></param>
-        /// <param name="AConnectionString"></param>
-        /// <param name="AStateChangeEventHandler"></param>
-        /// <returns></returns>
-        public IDbConnection GetConnection(String AServer, String APort,
+        /// <param name="AServer">Database Server.</param>
+        /// <param name="APort">Port that the DB server is running on.</param>
+        /// <param name="ADatabaseName">Name of the database that we want to connect to.</param>
+        /// <param name="AUsername">Username for opening the MySQL connection.</param>
+        /// <param name="APassword">Password for opening the MySQL connection.</param>
+        /// <param name="AConnectionString">Connection string; if it is not empty, it will
+        /// overrule the previous parameters.</param>
+        /// <param name="AStateChangeEventHandler">Event Handler for connection state changes.</param>
+        /// <returns>
+        /// Instantiated MySqlConnection, but not opened yet (null if connection could not be established).
+        /// </returns>
+        public DbConnection GetConnection(String AServer, String APort,
             String ADatabaseName,
             String AUsername, ref String APassword,
             ref String AConnectionString,
             StateChangeEventHandler AStateChangeEventHandler)
         {
-            if (AConnectionString == "")
+            MySqlConnection TheConnection = null;
+
+            if (String.IsNullOrEmpty(AConnectionString))
             {
+                if (AUsername == "")
+                {
+                    throw new ArgumentException("AUsername", "AUsername must not be null or an empty string!");
+                }
+
+                if (APassword == "")
+                {
+                    throw new ArgumentException("APassword", "APassword must not be null or an empty string!");
+                }
+
                 AConnectionString = "SERVER=" + AServer + ";" + "DATABASE=" + ADatabaseName + ";" + "UID=" + AUsername + ";" + "PASSWORD=";
             }
-
-            MySqlConnection TheConnection = null;
 
             try
             {
@@ -82,25 +98,30 @@ namespace Ict.Common.DB
             return TheConnection;
         }
 
-        /// init the connection after it was opened
-        public void InitConnection(IDbConnection AConnection)
+        /// <summary>
+        /// Initialises the connection after it was opened. Doesn't do anything with MySQL!
+        /// </summary>
+        /// <param name="AConnection">DB Connection.</param>
+        public void InitConnection(DbConnection AConnection)
         {
         }
 
         /// <summary>
-        /// format an error message if the exception is of type MySqlException
+        /// Formats an error message if the Exception is of Type 'MySqlException'.
         /// </summary>
         /// <param name="AException"></param>
         /// <param name="AErrorMessage"></param>
-        /// <returns>true if this is an NpgsqlException</returns>
+        /// <returns>True if this is an MySqlException.</returns>
         public bool LogException(Exception AException, ref string AErrorMessage)
         {
             if (AException is MySqlException)
             {
                 MySqlException exp = (MySqlException)AException;
+
                 AErrorMessage = AErrorMessage +
                                 "Message: " + exp.Message + Environment.NewLine +
                                 "MySQL Error Number: " + exp.Number.ToString() + Environment.NewLine;
+
                 return true;
             }
 
@@ -108,11 +129,11 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// format the sql query so that it works for MySQL
-        /// see also the comments for TDataBase.FormatQueryRDBMSSpecific
+        /// Formats a SQL query so that it works for MySQL.
+        /// See also the comments for TDataBase.FormatQueryRDBMSSpecific.
         /// </summary>
-        /// <param name="ASqlQuery"></param>
-        /// <returns></returns>
+        /// <param name="ASqlQuery">SQL Query.</param>
+        /// <returns>Formatted SQL Query.</returns>
         public String FormatQueryRDBMSSpecific(String ASqlQuery)
         {
             string ReturnValue = ASqlQuery;
@@ -153,10 +174,15 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// TODOComment
+        /// Converts an Array of DbParameter (eg. OdbcParameter) to an Array
+        /// of NpgsqlParameter. If the Parameters don't have a name yet, they
+        /// are given one because MySQL needs named Parameters.
+        /// <para>Furthermore, the parameter placeholders '?' in the the passed in
+        /// <paramref name="ASqlStatement" /> are replaced with MySQL
+        /// '?paramX' placeholders (where 'paramX' is the name of the Parameter).</para>
         /// </summary>
         /// <param name="AParameterArray">Array of DbParameter that is to be converted.</param>
-        /// <param name="ASqlStatement">SQL Statement that is to be converted.</param>
+        /// <param name="ASqlStatement">SQL Statement. It will be converted!</param>
         /// <returns>Array of MysqlParameter (converted from <paramref name="AParameterArray" />.</returns>
         public DbParameter[] ConvertOdbcParameters(DbParameter[] AParameterArray, ref string ASqlStatement)
         {
@@ -347,17 +373,17 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// create a IDbCommand object
-        /// this formats the sql query for MySQL, and transforms the parameters
+        /// Creates a DbCommand object.
+        /// This formats the sql query for MySQL, and transforms the parameters.
         /// </summary>
         /// <param name="ACommandText"></param>
         /// <param name="AConnection"></param>
         /// <param name="AParametersArray"></param>
         /// <param name="ATransaction"></param>
-        /// <returns></returns>
-        public IDbCommand NewCommand(ref string ACommandText, IDbConnection AConnection, DbParameter[] AParametersArray, TDBTransaction ATransaction)
+        /// <returns>Instantiated MySqlCommand.</returns>
+        public DbCommand NewCommand(ref string ACommandText, DbConnection AConnection, DbParameter[] AParametersArray, TDBTransaction ATransaction)
         {
-            IDbCommand ObjReturn = null;
+            DbCommand ObjReturn = null;
 
             ACommandText = FormatQueryRDBMSSpecific(ACommandText);
 
@@ -371,6 +397,13 @@ namespace Ict.Common.DB
             if ((AParametersArray != null)
                 && (AParametersArray.Length > 0))
             {
+                // Check for characters that indicate a parameter in query text
+                if (ACommandText.IndexOf('?') == -1)
+                {
+                    throw new EDBParameterisedQueryMissingParameterPlaceholdersException(
+                        "Question marks (?) must be present in query text if Parameters are passed in");
+                }
+
                 if (AParametersArray != null)
                 {
                     MySQLParametersArray = (MySqlParameter[])ConvertOdbcParameters(AParametersArray, ref ACommandText);
@@ -392,25 +425,30 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// create an IDbDataAdapter for MySQL
+        /// Creates a DbDataAdapter for MySQL.
         /// </summary>
-        /// <returns></returns>
-        public IDbDataAdapter NewAdapter()
+        /// <remarks>
+        /// <b>Important:</b> Since an object that derives from DbDataAdapter is returned you ought to
+        /// <em>call .Dispose()</em> on the returned object to release its resouces! (DbDataAdapter inherits
+        /// from DataAdapter which itself inherits from Component, which implements IDisposable!)
+        /// </remarks>
+        /// <returns>Instantiated MySqlDataAdapter.</returns>
+        public DbDataAdapter NewAdapter()
         {
-            IDbDataAdapter TheAdapter = new MySqlDataAdapter();
+            DbDataAdapter TheAdapter = new MySqlDataAdapter();
 
             return TheAdapter;
         }
 
         /// <summary>
-        /// fill an IDbDataAdapter that was created with NewAdapter
+        /// Fills a DbDataAdapter that was created with the <see cref="NewAdapter" /> Method.
         /// </summary>
         /// <param name="TheAdapter"></param>
         /// <param name="AFillDataSet"></param>
         /// <param name="AStartRecord"></param>
         /// <param name="AMaxRecords"></param>
         /// <param name="ADataTableName"></param>
-        public void FillAdapter(IDbDataAdapter TheAdapter,
+        public void FillAdapter(DbDataAdapter TheAdapter,
             ref DataSet AFillDataSet,
             Int32 AStartRecord,
             Int32 AMaxRecords,
@@ -420,26 +458,26 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// overload of FillAdapter, just for one table
-        /// IDbDataAdapter was created with NewAdapter
+        /// Fills a DbDataAdapter that was created with the <see cref="NewAdapter" /> Method.
         /// </summary>
+        /// <remarks>Overload of FillAdapter, just for one table.</remarks>
         /// <param name="TheAdapter"></param>
         /// <param name="AFillDataTable"></param>
         /// <param name="AStartRecord"></param>
         /// <param name="AMaxRecords"></param>
-        public void FillAdapter(IDbDataAdapter TheAdapter,
+        public void FillAdapter(DbDataAdapter TheAdapter,
             ref DataTable AFillDataTable,
             Int32 AStartRecord,
             Int32 AMaxRecords)
         {
-            ((MySqlDataAdapter)TheAdapter).Fill(AFillDataTable);
+            ((MySqlDataAdapter)TheAdapter).Fill(AStartRecord, AMaxRecords, AFillDataTable);
         }
 
         /// <summary>
-        /// some databases have some problems with certain Isolation levels
+        /// Some RDMBS's have some problems with certain Isolation Levels - not so MySQL.
         /// </summary>
-        /// <param name="AIsolationLevel"></param>
-        /// <returns>true if isolation level was modified</returns>
+        /// <param name="AIsolationLevel">Isolation Level.</param>
+        /// <returns>True if Isolation Level was modified.</returns>
         public bool AdjustIsolationLevel(ref IsolationLevel AIsolationLevel)
         {
             // all isolation levels work fine for MySQL
@@ -452,16 +490,18 @@ namespace Ict.Common.DB
         /// <param name="ASequenceName">Name of the Sequence.</param>
         /// <param name="ATransaction">An instantiated Transaction in which the Query
         /// to the DB will be enlisted.</param>
-        /// <param name="ADatabase">the database object that can be used for querying</param>
-        /// <param name="AConnection"></param>
+        /// <param name="ADatabase">Database object that can be used for querying.</param>
         /// <returns>Sequence Value.</returns>
-        public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
+        public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase)
         {
             string stmt = "INSERT INTO " + ASequenceName + " VALUES(NULL, -1);";
-            MySqlCommand cmd = new MySqlCommand(stmt, (MySqlConnection)AConnection);
 
-            cmd.ExecuteNonQuery();
-            return GetCurrentSequenceValue(ASequenceName, ATransaction, ADatabase, AConnection);
+            using (MySqlCommand cmd = new MySqlCommand(stmt, (MySqlConnection)ATransaction.Connection))
+            {
+                cmd.ExecuteNonQuery();
+            }
+
+            return GetCurrentSequenceValue(ASequenceName, ATransaction, ADatabase);
         }
 
         /// <summary>
@@ -470,24 +510,24 @@ namespace Ict.Common.DB
         /// <param name="ASequenceName">Name of the Sequence.</param>
         /// <param name="ATransaction">An instantiated Transaction in which the Query
         /// to the DB will be enlisted.</param>
-        /// <param name="ADatabase">the database object that can be used for querying</param>
-        /// <param name="AConnection"></param>
+        /// <param name="ADatabase">Database object that can be used for querying.</param>
         /// <returns>Sequence Value.</returns>
-        public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
+        public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase)
         {
             string stmt = "SELECT MAX(sequence) FROM " + ASequenceName + ";";
-            MySqlCommand cmd = new MySqlCommand(stmt, (MySqlConnection)AConnection);
 
-            return Convert.ToInt64(cmd.ExecuteScalar());
+            using (MySqlCommand cmd = new MySqlCommand(stmt, (MySqlConnection)ATransaction.Connection))
+            {
+                return Convert.ToInt64(cmd.ExecuteScalar());
+            }
         }
 
         /// <summary>
-        /// restart a sequence with the given value
+        /// Restart a sequence with the given value.
         /// </summary>
         public void RestartSequence(String ASequenceName,
             TDBTransaction ATransaction,
             TDataBase ADatabase,
-            IDbConnection AConnection,
             Int64 ARestartValue)
         {
             ADatabase.ExecuteNonQuery("DELETE FROM " + ASequenceName + ";", ATransaction);
@@ -495,7 +535,7 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// Replace DAYOFYEAR(p_param) with DATE_FORMAT(p_param, %j)
+        /// Replace DAYOFYEAR(p_param) with DATE_FORMAT(p_param, %j).
         /// </summary>
         /// <param name="ASqlCommand"></param>
         /// <returns></returns>
@@ -522,7 +562,7 @@ namespace Ict.Common.DB
         public void UpdateDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion,
             string AHostOrFile, string ADatabasePort, string ADatabaseName, string AUsername, string APassword)
         {
-            throw new Exception(
+            throw new EDBUnsupportedDBUpgradeException(
                 "Cannot connect to old database, please restore the latest clean demo database or run nant patchDatabase");
         }
     }

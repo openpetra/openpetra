@@ -24,6 +24,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Data.Common;
 using System.Data.Odbc;
 using System.Runtime.Serialization;
 
@@ -94,7 +95,7 @@ namespace Ict.Common.DB
         /// <param name="AStateChangeEventHandler">for connection state changes</param>
         /// <returns>Opened Connection (null if connection could not be established).
         /// </returns>
-        public IDbConnection GetConnection(IDataBaseRDBMS ADataBaseRDBMS,
+        public DbConnection GetConnection(IDataBaseRDBMS ADataBaseRDBMS,
             String AServer,
             String APort,
             String ADatabaseName,
@@ -113,7 +114,7 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// Closes a DB connection.
+        /// Closes a DB connection. Also calls the <c>Dispose()</c> Method on the DB connection object.
         /// </summary>
         /// <remarks>
         /// Although the .NET FCL allows the <see cref="IDbConnection.Close" /> method to be
