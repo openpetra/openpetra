@@ -1,491 +1,491 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE reports SYSTEM "../reports.dtd">
 <reports>
-	<report id="FieldLeaderGiftSummary">
-		<description>
-			This report is for your local cost centres only, and prints the gift information which is found on the
-			HOSAs for foreign ledgers. It lists all the people on your field with their total gifts for this period, the
-			previous year and current year, and is sorted alphabetically.
-		</description>
-		<reportparameters>
-			<reportparameter name="param_ledger_number_i"/>
-			<reportparameter name="param_currency"/>
-			<reportparameter name="param_from_date"/>
-			<reportparameter name="param_to_date"/> 
-			<reportparameter name="param_field_selection"/> 
-			<reportparameter name="param_gift_amount_column"/> 
-			<reportparameter name="Year0"/> 
-			<reportparameter name="Year1"/> 
-			<reportparameter name="Year2"/> 
-			<reportparameter name="Year3"/> 
-			<reportparameter name="param_txtYears"/> 
-		</reportparameters>
-		
-		<reportheader/>
-		<pageheader>
-			<field whichfield="title1">
-				<value text="Field Leader Gift Summary" />
-			</field>
-			
-			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
-			<field whichfield="descr1">
-				<value text="Ledger "/>
-				<value variable="param_ledger_number_i"/>
-				<value text="   "/>
-				<value function="getLedgerName({{param_ledger_number_i}})"/>
-			</field>
-			<field whichfield="descr2">
-				<fielddetail condition="eq({param_field_selection}, all_fields)">
-					<value text="All Fields"/>
-				</fielddetail>
-				<fielddetail condition="eq({param_field_selection}, selected_fields)">
-					<value text="Fields: "/>
-					<value variable="param_clbFields"/>
-				</fielddetail>
-			</field>
-			<field whichfield="period1">
-				<fielddetail>
-					<value text="Date Range: "/>
-					<value variable="param_from_date" format="formatteddate"/>
-					<value text=" To: "/>
-					<value variable="param_to_date" format="formatteddate"/>
-				</fielddetail>
-			</field>
-			<field whichfield="period3">
-				<value text="Currency: "/>
-				<value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
-			</field>
-			
-		</pageheader>
+  <report id="FieldLeaderGiftSummary">
+    <description>
+      This report is for your local cost centres only, and prints the gift information which is found on the
+      HOSAs for foreign ledgers. It lists all the people on your field with their total gifts for this period, the
+      previous year and current year, and is sorted alphabetically.
+    </description>
+    <reportparameters>
+      <reportparameter name="param_ledger_number_i"/>
+      <reportparameter name="param_currency"/>
+      <reportparameter name="param_from_date"/>
+      <reportparameter name="param_to_date"/> 
+      <reportparameter name="param_field_selection"/> 
+      <reportparameter name="param_gift_amount_column"/> 
+      <reportparameter name="Year0"/> 
+      <reportparameter name="Year1"/> 
+      <reportparameter name="Year2"/> 
+      <reportparameter name="Year3"/> 
+      <reportparameter name="param_txtYears"/> 
+    </reportparameters>
 
-		<calculations>
-		
-			<calculation id="SelectFields" returns="FieldKey, FieldName" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value>
-						SELECT DISTINCT
-							partner.p_partner_key_n AS FieldKey,
-							partner.p_partner_short_name_c AS FieldName
-						FROM
-							PUB_p_partner as partner
-						WHERE
-						</value>
-					</queryDetail>
-					<queryDetail>
-						<value function="csv" text="partner.p_partner_key_n" 
-								variable="param_clbFields" calculation="OR" format="Number">
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<!-- Select Donors in a given period of time -->
-			<calculation id="SelectPartners" returns="PartnerKey, PartnerName, PartnerClass, MotivationGroup, MotivationDetail" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value>
-						SELECT DISTINCT
-							PUB_p_partner.p_partner_key_n AS PartnerKey,
-							PUB_p_partner.p_partner_short_name_c AS PartnerName,
-							PUB_p_partner.p_partner_class_c AS PartnerClass,
-							detail.a_motivation_group_code_c AS MotivationGroup,
-							detail.a_motivation_detail_code_c AS MotivationDetail
-						FROM
-							PUB_a_gift as gift, 
-							PUB_a_gift_detail as detail,
-							PUB_a_gift_batch,
-							PUB_p_partner
-						WHERE
-								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND detail.a_batch_number_i = gift.a_batch_number_i
-							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
-							AND detail.a_recipient_ledger_number_n = {{FieldKey}}
-							AND detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
-							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_p_partner.p_partner_key_n = detail.p_recipient_key_n
-						ORDER BY
-							PUB_p_partner.p_partner_short_name_c
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectPartnerGift" returns="GiftAmount" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-							SELECT SUM (detail.a_gift_amount_n) AS GiftAmount
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-							SELECT SUM (detail.a_gift_amount_intl_n) AS GiftAmount
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift as gift, 
-							PUB_a_gift_detail as detail,
-							PUB_a_gift_batch
-						WHERE
-								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND detail.a_batch_number_i = gift.a_batch_number_i
-							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
-							AND detail.a_recipient_ledger_number_n = {{FieldKey}}
-							AND detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND detail.a_motivation_group_code_c = {MotivationGroup}
-							AND detail.a_motivation_detail_code_c = {MotivationDetail}
-							AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
-							AND detail.p_recipient_key_n = {{PartnerKey}}
-							AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
-							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectAmount0" returns="Amount0" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-							SELECT SUM (detail.a_gift_amount_n) AS Amount0
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-							SELECT SUM (detail.a_gift_amount_intl_n) AS Amount0
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift as gift, 
-							PUB_a_gift_detail as detail,
-							PUB_a_gift_batch
-						WHERE
-								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND detail.a_batch_number_i = gift.a_batch_number_i
-							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
-							AND detail.a_recipient_ledger_number_n = {{FieldKey}}
-							AND detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND detail.a_motivation_group_code_c = {MotivationGroup}
-							AND detail.a_motivation_detail_code_c = {MotivationDetail}
-							AND gift.a_date_entered_d BETWEEN #{{Year0}}-01-01# AND #{{Year0}}-12-31#
-							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
-							AND detail.p_recipient_key_n = {{PartnerKey}}
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectAmount1" returns="Amount1" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-							SELECT SUM (detail.a_gift_amount_n) AS Amount1
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-							SELECT SUM (detail.a_gift_amount_intl_n) AS Amount1
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift as gift, 
-							PUB_a_gift_detail as detail,
-							PUB_a_gift_batch
-						WHERE
-								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND detail.a_batch_number_i = gift.a_batch_number_i
-							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
-							AND detail.a_recipient_ledger_number_n = {{FieldKey}}
-							AND detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND detail.a_motivation_group_code_c = {MotivationGroup}
-							AND detail.a_motivation_detail_code_c = {MotivationDetail}
-							AND gift.a_date_entered_d BETWEEN #{{Year1}}-01-01# AND #{{Year1}}-12-31#
-							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
-							AND detail.p_recipient_key_n = {{PartnerKey}}
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectAmount2" returns="Amount2" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-							SELECT SUM (detail.a_gift_amount_n) AS Amount2
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-							SELECT SUM (detail.a_gift_amount_intl_n) AS Amount2
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift as gift, 
-							PUB_a_gift_detail as detail,
-							PUB_a_gift_batch
-						WHERE
-								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND detail.a_batch_number_i = gift.a_batch_number_i
-							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
-							AND detail.a_recipient_ledger_number_n = {{FieldKey}}
-							AND detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND detail.a_motivation_group_code_c = {MotivationGroup}
-							AND detail.a_motivation_detail_code_c = {MotivationDetail}
-							AND gift.a_date_entered_d BETWEEN #{{Year2}}-01-01# AND #{{Year2}}-12-31#
-							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
-							AND detail.p_recipient_key_n = {{PartnerKey}}
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectAmount3" returns="Amount3" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-							SELECT SUM (detail.a_gift_amount_n) AS Amount3
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-							SELECT SUM (detail.a_gift_amount_intl_n) AS Amount3
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift as gift, 
-							PUB_a_gift_detail as detail,
-							PUB_a_gift_batch
-						WHERE
-								detail.a_ledger_number_i = gift.a_ledger_number_i
-							AND detail.a_batch_number_i = gift.a_batch_number_i
-							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
-							AND detail.a_recipient_ledger_number_n = {{FieldKey}}
-							AND detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND detail.a_motivation_group_code_c = {MotivationGroup}
-							AND detail.a_motivation_detail_code_c = {MotivationDetail}
-							AND gift.a_date_entered_d BETWEEN #{{Year3}}-01-01# AND #{{Year3}}-12-31#
-							AND gift.a_ledger_number_i ={{param_ledger_number_i}}
-							AND detail.p_recipient_key_n = {{PartnerKey}}
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="Partner Key" returnsFormat="partnerkey" returns="text">
-				<caption><value text="Partner Key"/></caption>
-				<query>
-					<queryDetail><value variable="PartnerKey"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="Partner Name" returnsFormat="text" returns="text">
-				<caption><value text="Partner Name"/></caption>
-				<query>
-					<queryDetail><value variable="PartnerName"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="Partner Class" returnsFormat="text" returns="text">
-				<caption><value text="Partner Class"/></caption>
-				<query>
-					<queryDetail><value variable="PartnerClass"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="Field" returnsFormat="partnerkey" returns="text">
-				<caption><value text="Field"/></caption>
-				<query>
-					<queryDetail><value variable="FieldKey"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="Field Name" returnsFormat="text" returns="text">
-				<caption><value text="Field Name"/></caption>
-				<query>
-					<queryDetail><value variable="FieldName"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="Gift Amount" returnsFormat="currency" returns="amount">
-				<caption><value text="Gift Amount"/></caption>
-				<query>
-					<queryDetail><value variable="GiftAmount"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="Motivation Detail" returnsFormat="text" returns="text">
-				<caption><value text="Motivation Detail"/></caption>
-				<query>
-					<queryDetail><value variable="MotivationDetail"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="Motivation Group" returnsFormat="text" returns="text">
-				<caption><value text="Motivation Group"/></caption>
-				<query>
-					<queryDetail><value variable="MotivationGroup"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
+    <reportheader/>
+    <pageheader>
+      <field whichfield="title1">
+        <value text="Field Leader Gift Summary" />
+      </field>
+
+      <field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+      <field whichfield="descr1">
+        <value text="Ledger "/>
+        <value variable="param_ledger_number_i"/>
+        <value text="   "/>
+        <value function="getLedgerName({{param_ledger_number_i}})"/>
+      </field>
+      <field whichfield="descr2">
+        <fielddetail condition="eq({param_field_selection}, all_fields)">
+          <value text="All Fields"/>
+        </fielddetail>
+        <fielddetail condition="eq({param_field_selection}, selected_fields)">
+          <value text="Fields: "/>
+          <value variable="param_clbFields"/>
+        </fielddetail>
+      </field>
+      <field whichfield="period1">
+        <fielddetail>
+          <value text="Date Range: "/>
+          <value variable="param_from_date" format="formatteddate"/>
+          <value text=" To: "/>
+          <value variable="param_to_date" format="formatteddate"/>
+        </fielddetail>
+      </field>
+      <field whichfield="period3">
+        <value text="Currency: "/>
+        <value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
+      </field>
+
+    </pageheader>
+
+    <calculations>
+
+      <calculation id="SelectFields" returns="FieldKey, FieldName" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+            SELECT DISTINCT
+              partner.p_partner_key_n AS FieldKey,
+              partner.p_partner_short_name_c AS FieldName
+            FROM
+              PUB_p_partner as partner
+            WHERE
+            </value>
+          </queryDetail>
+          <queryDetail>
+            <value function="csv" text="partner.p_partner_key_n" 
+                variable="param_clbFields" calculation="OR" format="Number">
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <!-- Select Donors in a given period of time -->
+      <calculation id="SelectPartners" returns="PartnerKey, PartnerName, PartnerClass, MotivationGroup, MotivationDetail" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+            SELECT DISTINCT
+              PUB_p_partner.p_partner_key_n AS PartnerKey,
+              PUB_p_partner.p_partner_short_name_c AS PartnerName,
+              PUB_p_partner.p_partner_class_c AS PartnerClass,
+              detail.a_motivation_group_code_c AS MotivationGroup,
+              detail.a_motivation_detail_code_c AS MotivationDetail
+            FROM
+              PUB_a_gift as gift, 
+              PUB_a_gift_detail as detail,
+              PUB_a_gift_batch,
+              PUB_p_partner
+            WHERE
+                detail.a_ledger_number_i = gift.a_ledger_number_i
+              AND detail.a_batch_number_i = gift.a_batch_number_i
+              AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+              AND detail.a_recipient_ledger_number_n = {{FieldKey}}
+              AND detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+              AND gift.a_ledger_number_i ={{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
+              AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_p_partner.p_partner_key_n = detail.p_recipient_key_n
+            ORDER BY
+              PUB_p_partner.p_partner_short_name_c
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectPartnerGift" returns="GiftAmount" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+              SELECT SUM (detail.a_gift_amount_n) AS GiftAmount
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+              SELECT SUM (detail.a_gift_amount_intl_n) AS GiftAmount
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift as gift, 
+              PUB_a_gift_detail as detail,
+              PUB_a_gift_batch
+            WHERE
+                detail.a_ledger_number_i = gift.a_ledger_number_i
+              AND detail.a_batch_number_i = gift.a_batch_number_i
+              AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+              AND detail.a_recipient_ledger_number_n = {{FieldKey}}
+              AND detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND detail.a_motivation_group_code_c = {MotivationGroup}
+              AND detail.a_motivation_detail_code_c = {MotivationDetail}
+              AND gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+              AND gift.a_ledger_number_i ={{param_ledger_number_i}}
+              AND detail.p_recipient_key_n = {{PartnerKey}}
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
+              AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectAmount0" returns="Amount0" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+              SELECT SUM (detail.a_gift_amount_n) AS Amount0
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+              SELECT SUM (detail.a_gift_amount_intl_n) AS Amount0
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift as gift, 
+              PUB_a_gift_detail as detail,
+              PUB_a_gift_batch
+            WHERE
+                detail.a_ledger_number_i = gift.a_ledger_number_i
+              AND detail.a_batch_number_i = gift.a_batch_number_i
+              AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+              AND detail.a_recipient_ledger_number_n = {{FieldKey}}
+              AND detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND detail.a_motivation_group_code_c = {MotivationGroup}
+              AND detail.a_motivation_detail_code_c = {MotivationDetail}
+              AND gift.a_date_entered_d BETWEEN #{{Year0}}-01-01# AND #{{Year0}}-12-31#
+              AND gift.a_ledger_number_i ={{param_ledger_number_i}}
+              AND detail.p_recipient_key_n = {{PartnerKey}}
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectAmount1" returns="Amount1" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+              SELECT SUM (detail.a_gift_amount_n) AS Amount1
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+              SELECT SUM (detail.a_gift_amount_intl_n) AS Amount1
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift as gift, 
+              PUB_a_gift_detail as detail,
+              PUB_a_gift_batch
+            WHERE
+                detail.a_ledger_number_i = gift.a_ledger_number_i
+              AND detail.a_batch_number_i = gift.a_batch_number_i
+              AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+              AND detail.a_recipient_ledger_number_n = {{FieldKey}}
+              AND detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND detail.a_motivation_group_code_c = {MotivationGroup}
+              AND detail.a_motivation_detail_code_c = {MotivationDetail}
+              AND gift.a_date_entered_d BETWEEN #{{Year1}}-01-01# AND #{{Year1}}-12-31#
+              AND gift.a_ledger_number_i ={{param_ledger_number_i}}
+              AND detail.p_recipient_key_n = {{PartnerKey}}
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectAmount2" returns="Amount2" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+              SELECT SUM (detail.a_gift_amount_n) AS Amount2
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+              SELECT SUM (detail.a_gift_amount_intl_n) AS Amount2
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift as gift, 
+              PUB_a_gift_detail as detail,
+              PUB_a_gift_batch
+            WHERE
+                detail.a_ledger_number_i = gift.a_ledger_number_i
+              AND detail.a_batch_number_i = gift.a_batch_number_i
+              AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+              AND detail.a_recipient_ledger_number_n = {{FieldKey}}
+              AND detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND detail.a_motivation_group_code_c = {MotivationGroup}
+              AND detail.a_motivation_detail_code_c = {MotivationDetail}
+              AND gift.a_date_entered_d BETWEEN #{{Year2}}-01-01# AND #{{Year2}}-12-31#
+              AND gift.a_ledger_number_i ={{param_ledger_number_i}}
+              AND detail.p_recipient_key_n = {{PartnerKey}}
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectAmount3" returns="Amount3" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+              SELECT SUM (detail.a_gift_amount_n) AS Amount3
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+              SELECT SUM (detail.a_gift_amount_intl_n) AS Amount3
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift as gift, 
+              PUB_a_gift_detail as detail,
+              PUB_a_gift_batch
+            WHERE
+                detail.a_ledger_number_i = gift.a_ledger_number_i
+              AND detail.a_batch_number_i = gift.a_batch_number_i
+              AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+              AND detail.a_recipient_ledger_number_n = {{FieldKey}}
+              AND detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND detail.a_motivation_group_code_c = {MotivationGroup}
+              AND detail.a_motivation_detail_code_c = {MotivationDetail}
+              AND gift.a_date_entered_d BETWEEN #{{Year3}}-01-01# AND #{{Year3}}-12-31#
+              AND gift.a_ledger_number_i ={{param_ledger_number_i}}
+              AND detail.p_recipient_key_n = {{PartnerKey}}
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="Partner Key" returnsFormat="partnerkey" returns="text">
+        <caption><value text="Partner Key"/></caption>
+        <query>
+          <queryDetail><value variable="PartnerKey"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+      <calculation id="Partner Name" returnsFormat="text" returns="text">
+        <caption><value text="Partner Name"/></caption>
+        <query>
+          <queryDetail><value variable="PartnerName"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+      <calculation id="Partner Class" returnsFormat="text" returns="text">
+        <caption><value text="Partner Class"/></caption>
+        <query>
+          <queryDetail><value variable="PartnerClass"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+      <calculation id="Field" returnsFormat="partnerkey" returns="text">
+        <caption><value text="Field"/></caption>
+        <query>
+          <queryDetail><value variable="FieldKey"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+      <calculation id="Field Name" returnsFormat="text" returns="text">
+        <caption><value text="Field Name"/></caption>
+        <query>
+          <queryDetail><value variable="FieldName"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+      <calculation id="Gift Amount" returnsFormat="currency" returns="amount">
+        <caption><value text="Gift Amount"/></caption>
+        <query>
+          <queryDetail><value variable="GiftAmount"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+      <calculation id="Motivation Detail" returnsFormat="text" returns="text">
+        <caption><value text="Motivation Detail"/></caption>
+        <query>
+          <queryDetail><value variable="MotivationDetail"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+      <calculation id="Motivation Group" returnsFormat="text" returns="text">
+        <caption><value text="Motivation Group"/></caption>
+        <query>
+          <queryDetail><value variable="MotivationGroup"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
     </calculations>
-			
-		<levels>		
-			<level name="main">
-				<detail>
-					<lowerLevelReport level="FieldLevel" calculation="SelectFields"></lowerLevelReport>
-				</detail>
-			</level>
-			
-			<level name="FieldLevel">
-				<header>
-					<field whichfield="header 1" pos="0cm" width="8cm">
-						<value text="Field: "/>
-						<value variable="FieldKey" format="partnerKey"/>
-						<value text="   "/>
-						<value variable="FieldName"/>
-					</field>
-				</header>
-				<detail>
-					<lowerLevelReport level="YearLevel" calculation="SelectPartners"></lowerLevelReport>
-				</detail>
-				<footer line="below" space="below">
-				</footer>
-			</level>
-			
-			<level name="YearLevel">
-				<detail>
-					<lowerLevelReport level="PartnerLevel3" condition="eq({param_txtYears}, 4)"></lowerLevelReport>
-					<lowerLevelReport level="PartnerLevel2" condition="eq({param_txtYears}, 3)"></lowerLevelReport>
-					<lowerLevelReport level="PartnerLevel1" condition="eq({param_txtYears}, 2)"></lowerLevelReport>
-					<lowerLevelReport level="PartnerLevel0" condition="eq({param_txtYears}, 1)"></lowerLevelReport>
-				</detail>
-				<footer space="below">
-				</footer>
-			</level>
-			
-			<level name="PartnerLevel3">
-				<detail>
-					<lowerLevelReport level="PartnerLevel2"></lowerLevelReport>
-				</detail>
-				<footer>
-					<field whichfield="column 2" width="8cm">
-						<value text="Total for calender year: "/>
-						<value variable="Year3"/>
-						<value text="-01-01 to "/>
-						<value variable="Year3"/>
-						<value text="-12-31" />
-					</field>
-					<field whichfield="column {param_gift_amount_column}" calculation="SelectAmount3">
-						<value variable="Amount3"/>
-					</field>
-				</footer>
-			</level>
-			
-			<level name="PartnerLevel2">
-				<detail>
-					<lowerLevelReport level="PartnerLevel1"></lowerLevelReport>
-				</detail>
-				<footer>
-					<field whichfield="column 2" width="8cm">
-						<value text="Total for calender year: "/>
-						<value variable="Year2"/>
-						<value text="-01-01 to "/>
-						<value variable="Year2"/>
-						<value text="-12-31" />
-					</field>
-					<field whichfield="column {param_gift_amount_column}" calculation="SelectAmount2">
-						<value variable="Amount2"/>
-					</field>
-				</footer>
-			</level>
-			
-			<level name="PartnerLevel1">
-				<detail>
-					<lowerLevelReport level="PartnerLevel0"></lowerLevelReport>
-				</detail>
-				<footer>
-					<field whichfield="column 2" width="8cm">
-						<value text="Total for calender year: "/>
-						<value variable="Year1"/>
-						<value text="-01-01 to "/>
-						<value variable="Year1"/>
-						<value text="-12-31" />
-					</field>
-					<field whichfield="column {param_gift_amount_column}" calculation="SelectAmount1">
-						<value variable="Amount1"/>
-					</field>
-				</footer>
-			</level>
-			
-			<level name="PartnerLevel0">
-				<detail>
-					<lowerLevelReport level="PartnerLevel"></lowerLevelReport>
-				</detail>
-				<footer>
-					<field whichfield="column 2" width="8cm">
-						<value text="Total for calender year: "/>
-						<value variable="Year0"/>
-						<value text="-01-01 to "/>
-						<value variable="Year0"/>
-						<value text="-12-31" />
-					</field>
-					<field whichfield="column {param_gift_amount_column}" calculation="SelectAmount0">
-						<value variable="Amount0"/>
-					</field>
-				</footer>
-			</level>
-			
-			<level name="PartnerLevel">
-				<header>
-				</header>
-				<detail>
-					<lowerLevelReport level="GiftLevel" calculation="SelectPartnerGift"></lowerLevelReport>
-				</detail>
-				<footer>
-					<field whichfield="column 2" width="8cm">
-						<value text="Total for report period: "/>
-					</field>
-					<field whichfield="column {param_gift_amount_column}" pos="indented" line="above">
-						<value function="getSumLowerReport({{lineId}}, {param_gift_amount_column})"/>
-					</field>
-				</footer>
-			</level>
-			
-			<level name="GiftLevel">
-				<detail>
-					<field whichfield="columns"/>
-				</detail>
-			</level>
-		</levels>
-	</report>
+
+    <levels>    
+      <level name="main">
+        <detail>
+          <lowerLevelReport level="FieldLevel" calculation="SelectFields"></lowerLevelReport>
+        </detail>
+      </level>
+
+      <level name="FieldLevel">
+        <header>
+          <field whichfield="header 1" pos="0cm" width="8cm">
+            <value text="Field: "/>
+            <value variable="FieldKey" format="partnerKey"/>
+            <value text="   "/>
+            <value variable="FieldName"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="YearLevel" calculation="SelectPartners"></lowerLevelReport>
+        </detail>
+        <footer line="below" space="below">
+        </footer>
+      </level>
+
+      <level name="YearLevel">
+        <detail>
+          <lowerLevelReport level="PartnerLevel3" condition="eq({param_txtYears}, 4)"></lowerLevelReport>
+          <lowerLevelReport level="PartnerLevel2" condition="eq({param_txtYears}, 3)"></lowerLevelReport>
+          <lowerLevelReport level="PartnerLevel1" condition="eq({param_txtYears}, 2)"></lowerLevelReport>
+          <lowerLevelReport level="PartnerLevel0" condition="eq({param_txtYears}, 1)"></lowerLevelReport>
+        </detail>
+        <footer space="below">
+        </footer>
+      </level>
+
+      <level name="PartnerLevel3">
+        <detail>
+          <lowerLevelReport level="PartnerLevel2"></lowerLevelReport>
+        </detail>
+        <footer>
+          <field whichfield="column 2" width="8cm">
+            <value text="Total for calender year: "/>
+            <value variable="Year3"/>
+            <value text="-01-01 to "/>
+            <value variable="Year3"/>
+            <value text="-12-31" />
+          </field>
+          <field whichfield="column {param_gift_amount_column}" calculation="SelectAmount3">
+            <value variable="Amount3"/>
+          </field>
+        </footer>
+      </level>
+
+      <level name="PartnerLevel2">
+        <detail>
+          <lowerLevelReport level="PartnerLevel1"></lowerLevelReport>
+        </detail>
+        <footer>
+          <field whichfield="column 2" width="8cm">
+            <value text="Total for calender year: "/>
+            <value variable="Year2"/>
+            <value text="-01-01 to "/>
+            <value variable="Year2"/>
+            <value text="-12-31" />
+          </field>
+          <field whichfield="column {param_gift_amount_column}" calculation="SelectAmount2">
+            <value variable="Amount2"/>
+          </field>
+        </footer>
+      </level>
+
+      <level name="PartnerLevel1">
+        <detail>
+          <lowerLevelReport level="PartnerLevel0"></lowerLevelReport>
+        </detail>
+        <footer>
+          <field whichfield="column 2" width="8cm">
+            <value text="Total for calender year: "/>
+            <value variable="Year1"/>
+            <value text="-01-01 to "/>
+            <value variable="Year1"/>
+            <value text="-12-31" />
+          </field>
+          <field whichfield="column {param_gift_amount_column}" calculation="SelectAmount1">
+            <value variable="Amount1"/>
+          </field>
+        </footer>
+      </level>
+
+      <level name="PartnerLevel0">
+        <detail>
+          <lowerLevelReport level="PartnerLevel"></lowerLevelReport>
+        </detail>
+        <footer>
+          <field whichfield="column 2" width="8cm">
+            <value text="Total for calender year: "/>
+            <value variable="Year0"/>
+            <value text="-01-01 to "/>
+            <value variable="Year0"/>
+            <value text="-12-31" />
+          </field>
+          <field whichfield="column {param_gift_amount_column}" calculation="SelectAmount0">
+            <value variable="Amount0"/>
+          </field>
+        </footer>
+      </level>
+
+      <level name="PartnerLevel">
+        <header>
+        </header>
+        <detail>
+          <lowerLevelReport level="GiftLevel" calculation="SelectPartnerGift"></lowerLevelReport>
+        </detail>
+        <footer>
+          <field whichfield="column 2" width="8cm">
+            <value text="Total for report period: "/>
+          </field>
+          <field whichfield="column {param_gift_amount_column}" pos="indented" line="above">
+            <value function="getSumLowerReport({{lineId}}, {param_gift_amount_column})"/>
+          </field>
+        </footer>
+      </level>
+
+      <level name="GiftLevel">
+        <detail>
+          <field whichfield="columns"/>
+        </detail>
+      </level>
+    </levels>
+  </report>
 </reports>
