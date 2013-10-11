@@ -444,7 +444,7 @@ namespace Ict.Petra.Client.App.Core
                 {
                     // most probably a permission problem: System.Runtime.Remoting.RemotingException: Requested Service not found
                     throw new Exception(Catalog.GetString("You do not have enough permissions to access the Finance module:") + "\n" + Exc.ToString());
-                }                
+                }
                 catch (Exception)
                 {
                     throw;
@@ -605,6 +605,7 @@ namespace Ict.Petra.Client.App.Core
             {
                 // Ignore that Exception; it just means that the Cacheable DataTable
                 // hasn't been loaded into the local CacheManager yet  so no updating is necessary.
+
                 /* TLogging.Log('TDataCache.ReloadCacheTable: Should refresh Cacheable DataTable ''' + ACacheableTableName + ''', but the DataTable isn''t cached yet > not doing anything (this is expected behaviour and doesn''t mean an error
                  *happened!).'); */
             }
@@ -638,6 +639,7 @@ namespace Ict.Petra.Client.App.Core
             {
                 // Ignore that Exception; it just means that the Cacheable DataTable
                 // hasn't been loaded into the local CacheManager yet  so no updating is necessary.
+
                 /* TLogging.Log('TDataCache.ReloadCacheTable: Should refresh Cacheable DataTable ''' + ACacheableTableName + ''', but the DataTable isn''t cached yet > not doing anything (this is expected behaviour and doesn''t mean an error
                  *happened!).'); */
             }
@@ -653,7 +655,6 @@ namespace Ict.Petra.Client.App.Core
                 CacheableMFinanceTable = (TCacheableFinanceTablesEnum)Enum.Parse(typeof(TCacheableFinanceTablesEnum), ACacheableTableName);
                 try
                 {
-
                     TMFinance.GetCacheableFinanceTable(CacheableMFinanceTable, Convert.ToInt32(AFilterCriteria));
                 }
                 catch (Exception Exc)

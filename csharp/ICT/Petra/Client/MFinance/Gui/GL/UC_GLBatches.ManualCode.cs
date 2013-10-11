@@ -200,6 +200,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ValidateDataDetailsManual(ABatchRow ARow)
         {
+            if ((ARow == null) || (ARow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return;
+            }
+
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             ParseHashTotal(ARow);
@@ -664,20 +669,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private bool SaveBatchForPosting()
         {
-            if (FPetraUtilsObject.HasChanges)
+            // save first, then post
+            if (!((TFrmGLBatch)ParentForm).SaveChanges())
             {
-                // save first, then post
-                if (!((TFrmGLBatch)ParentForm).SaveChanges())
-                {
-                    // saving failed, therefore do not try to post
-                    MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
-                        Catalog.GetString("Please first save the batch, and then post it!"),
-                        Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return false;
-                }
+                // saving failed, therefore do not try to post
+                MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
+                    Catalog.GetString("Please first save the batch, and then post it!"),
+                    Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
-
-            return true;
+            else
+            {
+                return true;
+            }
         }
 
         private void ReverseBatch(System.Object sender, EventArgs e)

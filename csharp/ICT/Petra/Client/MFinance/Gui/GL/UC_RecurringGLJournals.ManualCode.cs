@@ -238,6 +238,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 //Can't cancel an already cancelled row
                 btnDelete.Enabled = (ARow.JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
+                ((TFrmRecurringGLBatch)ParentForm).EnableTransactions();
 
                 if (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
                 {
