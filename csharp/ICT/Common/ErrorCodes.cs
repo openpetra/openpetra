@@ -91,6 +91,11 @@ namespace Ict.Common
              FullDescription = "The value entered is not a number in the required number format.")]
         public const String ERR_INVALIDNUMBER = "GENC.00005V";
 
+        /// <summary>Invalid value entered.</summary>
+        [ErrCodeAttribute("Invalid value entered.",
+             FullDescription = "The value you selected is not valid. Please choose a valid value.")]
+        public const String ERR_INVALIDVALUE = "GENC.00019V";
+
         /// <summary>Invalid numbers entered (numbers do not conform to a certain rule).</summary>
         [ErrCodeAttribute("Invalid numbers entered.",
              FullDescription = "The numeric values entered do not conform to a certain rule (that rule should be mentioned in the error message).")]
