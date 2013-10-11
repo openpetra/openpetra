@@ -390,7 +390,6 @@ namespace Ict.Petra.Server.MFinance.Gift
             {
                 WriteStringQuoted(giftBatch.CurrencyCode);
             }
-            WriteStringQuoted(giftBatch.CurrencyCode);
             WriteGeneralNumber(giftBatch.ExchangeRateToBase);
             WriteStringQuoted(giftBatch.BankCostCentre);
             WriteStringQuoted(giftBatch.GiftType, true);
