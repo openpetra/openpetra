@@ -1546,7 +1546,22 @@ namespace Ict.Common.DB
                           AppDomain.CurrentDomain.ToString() + " ).";
                 }
 
-                FTransaction.Rollback();
+                // Attempt to roll back the DB Transaction. 
+                try 
+                {
+                    FTransaction.Rollback();    
+                } 
+                catch (Exception Exc) 
+                {
+                    // This catch block will handle any errors that may have occurred 
+                    // on the server that would cause the rollback to fail, such as 
+                    // a closed connection.
+                    //
+                    // MSDN says: "Try/Catch exception handling should always be used when rolling back a 
+                    // transaction. A Rollback generates an InvalidOperationException if the connection is 
+                    // terminated or if the transaction has already been rolled back on the server."
+                    TLogging.Log("An Exception occured while an attempt to roll back a DB Transaction was made: " + Exc.ToString());
+                }                
 
                 FTransaction.Dispose();
 
