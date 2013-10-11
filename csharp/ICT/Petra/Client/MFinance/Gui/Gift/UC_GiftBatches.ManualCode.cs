@@ -263,7 +263,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FAccountTable = (AAccountTable)accountList;
         }
-        
+
         private void SetupExtraGridFunctionality()
         {
             //Prepare grid to highlight inactive accounts/cost centres

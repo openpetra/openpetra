@@ -198,58 +198,58 @@ namespace Ict.Common.Verification
 
         #endregion
 
-		#region ValidateValue
-		
-		/// <summary>
-		/// Used for checking if a particular lookup value relates to an inactive record
-		/// </summary>
-		/// <param name="ALedgerNumber"></param>
-		/// <param name="ADataTable"></param>
-		/// <param name="AKeyValue"></param>
-		/// <param name="AActiveColumn"></param>
-		/// <param name="AResultContext"></param>
-		/// <param name="AResultColumn"></param>
-		/// <param name="AResultControl"></param>
-		/// <returns></returns>
-		public static TVerificationResult ValidateValueIsActive(Int32 ALedgerNumber, DataTable ADataTable, String AKeyValue,
-		                String AActiveColumn, object AResultContext = null, System.Data.DataColumn AResultColumn = null,
-		                System.Windows.Forms.Control AResultControl = null)
-		{
+        #region ValidateValue
+
+        /// <summary>
+        /// Used for checking if a particular lookup value relates to an inactive record
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ADataTable"></param>
+        /// <param name="AKeyValue"></param>
+        /// <param name="AActiveColumn"></param>
+        /// <param name="AResultContext"></param>
+        /// <param name="AResultColumn"></param>
+        /// <param name="AResultControl"></param>
+        /// <returns></returns>
+        public static TVerificationResult ValidateValueIsActive(Int32 ALedgerNumber, DataTable ADataTable, String AKeyValue,
+            String AActiveColumn, object AResultContext = null, System.Data.DataColumn AResultColumn = null,
+            System.Windows.Forms.Control AResultControl = null)
+        {
             TVerificationResult ReturnValue;
 
-            DataRow foundRow = ADataTable.Rows.Find(new object[] {ALedgerNumber, AKeyValue});
-			
+            DataRow foundRow = ADataTable.Rows.Find(new object[] { ALedgerNumber, AKeyValue });
+
             if (foundRow != null)
             {
-            	bool isActive = (bool)foundRow[AActiveColumn];
-            	
-            	if (!isActive)
-            	{
-	                ReturnValue = new TVerificationResult(AResultContext,
-	                    ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDVALUE,
-	                        StrStringInvalidValue, new string[] { AKeyValue }));
-            		
-	                if (AResultColumn != null)
-	                {
-	                    ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
-	                }
-            	}
-            	else
-            	{
-            		ReturnValue = null;
-            	}
+                bool isActive = (bool)foundRow[AActiveColumn];
+
+                if (!isActive)
+                {
+                    ReturnValue = new TVerificationResult(AResultContext,
+                        ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDVALUE,
+                            StrStringInvalidValue, new string[] { AKeyValue }));
+
+                    if (AResultColumn != null)
+                    {
+                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                    }
+                }
+                else
+                {
+                    ReturnValue = null;
+                }
             }
             else
             {
-            	ReturnValue = null;
+                ReturnValue = null;
             }
-            
+
             return ReturnValue;
-		}
-		
-		#endregion		
-        
-        
+        }
+
+        #endregion
+
+
         #region ValidateEmail
 
         /// <summary>

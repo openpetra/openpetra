@@ -680,7 +680,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-            	return true;
+                return true;
             }
         }
 

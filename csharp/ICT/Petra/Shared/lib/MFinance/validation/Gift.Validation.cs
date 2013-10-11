@@ -51,8 +51,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AAccountTableRef">Account Table</param>
         /// <param name="ACostCentreTableRef">Cost centre table</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
-        public static bool ValidateGiftBatchManual(object AContext, AGiftBatchRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict, AAccountTable AAccountTableRef = null, ACostCentreTable ACostCentreTableRef = null)
+        public static bool ValidateGiftBatchManual(object AContext,
+            AGiftBatchRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection,
+            TValidationControlsDict AValidationControlsDict,
+            AAccountTable AAccountTableRef = null,
+            ACostCentreTable ACostCentreTableRef = null)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -69,14 +73,20 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // Bank Account Code must be active
             ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnBankAccountCodeId];
             ValidationContext = ARow.BankAccountCode;
-            
+
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-            	VerificationResult = (TScreenVerificationResult)TStringChecks.ValidateValueIsActive(ARow.LedgerNumber, AAccountTableRef, ValidationContext.ToString(),
-            	                                   AAccountTable.GetAccountActiveFlagDBName(), AContext, ValidationColumn,ValidationControlsData.ValidationControl);
+                VerificationResult = (TScreenVerificationResult)TStringChecks.ValidateValueIsActive(ARow.LedgerNumber,
+                    AAccountTableRef,
+                    ValidationContext.ToString(),
+                    AAccountTable.GetAccountActiveFlagDBName(),
+                    AContext,
+                    ValidationColumn,
+                    ValidationControlsData.ValidationControl);
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                if (VerificationResult != null && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                if ((VerificationResult != null)
+                    && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
                 {
                     VerifResultCollAddedCount++;
                 }
@@ -85,14 +95,20 @@ namespace Ict.Petra.Shared.MFinance.Validation
             // Bank Cost Centre Code must be active
             ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnBankCostCentreId];
             ValidationContext = ARow.BankCostCentre;
-            
+
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-            	VerificationResult = (TScreenVerificationResult)TStringChecks.ValidateValueIsActive(ARow.LedgerNumber, ACostCentreTableRef, ValidationContext.ToString(),
-            	                                   ACostCentreTable.GetCostCentreActiveFlagDBName(), AContext, ValidationColumn,ValidationControlsData.ValidationControl);
+                VerificationResult = (TScreenVerificationResult)TStringChecks.ValidateValueIsActive(ARow.LedgerNumber,
+                    ACostCentreTableRef,
+                    ValidationContext.ToString(),
+                    ACostCentreTable.GetCostCentreActiveFlagDBName(),
+                    AContext,
+                    ValidationColumn,
+                    ValidationControlsData.ValidationControl);
 
                 // Handle addition/removal to/from TVerificationResultCollection
-                if (VerificationResult != null && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                if ((VerificationResult != null)
+                    && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
                 {
                     VerifResultCollAddedCount++;
                 }
