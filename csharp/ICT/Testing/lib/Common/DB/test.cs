@@ -36,6 +36,7 @@ using Ict.Common.Data;
 using Npgsql;
 using NpgsqlTypes;
 using Mono.Data.Sqlite;
+using MySql.Data.MySqlClient;
 
 namespace Ict.Common.DB.Testing
 {
@@ -289,5 +290,97 @@ namespace Ict.Common.DB.Testing
 
             DBAccess.GDBAccessObj.RollbackTransaction();
         }
+        
+        /// <summary>
+        /// Tests that TDataBase.ExecuteNonQuery is working fine when a previous call to TDataBase.ExecuteNonQuery  
+        /// raised an Exception in the RDBMS driver.
+        /// </summary>
+        /// <remarks>
+        /// Similar tests for other public Methods of the TDataBase class could be written to ensure that that class itself
+        /// plus the DB connection aren't left in some 'troublesome state' after RDBMS-level Exceptions have been raised.
+        /// </remarks>
+        [Test]
+        public void TestDBAccess_working_after_ExecuteNonQuery_threw_DBLevel_Exception()
+        {
+            TDBTransaction t;
+            string sql;
+
+            try
+            {
+                TLogging.Log("Attempting to run BREAKING INSERT command using ExecuteNonQuery...");
+                
+                // Arrange #1
+                
+                // p_type_description_c must not be null, hence an Exception will be thrown when that SQL command is executed
+                sql =
+                    "INSERT INTO p_type(p_type_code_c, p_type_description_c) " +
+                    "VALUES ('TEST_EXECUTENONQUERY', NULL)";  
+                
+                t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                
+                // Act #1                       
+                
+                // We expect that ExecuteNonQuery will throw a not-null constraint exception - and this is *what we want*!                
+                DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+                
+                // Should not get here (as an Exception will be raised by ExecuteNonQuery!)
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Npgsql.NpgsqlException)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            catch (Mono.Data.Sqlite.SqliteException)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            catch (MySql.Data.MySqlClient.MySqlException)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }            
+            catch (Exception)
+            {
+                throw;
+            }
+
+            try
+            {               
+                TLogging.Log("Running WORKING INSERT command using ExecuteNonQuery...");
+                
+                // Arrange #2
+                sql =
+                    "INSERT INTO p_type(p_type_code_c, p_type_description_c) " +
+                    "VALUES ('TEST_EXECUTENONQUERY', 'Test should be fine')";
+    
+                t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                                
+                // Act #2 AND Assert
+                
+                // We expect that ExecuteNonQuery *will work* after the previous execution threw an Exception and the
+                // Transaction it was enlisted it was rolled back.
+                // Should it throw an Exception of Type 'System.InvalidOperationException' then the likely cause for
+                // that would be that the underlying IDbCommand Object that is used by ExecuteNonQuery was not correctly 
+                // disposed of!
+                Assert.DoesNotThrow(delegate { DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t); }, 
+                    "No Exception should have been thrown by the call to the ExecuteNonQuery Method, but an Exception WAS thrown!");
+                
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception)
+            {
+                throw;
+            }            
+            
+            // UNDO the test
+            t = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            sql = "DELETE FROM p_type" +
+                  " WHERE p_type_code_c = 'TEST_EXECUTENONQUERY' AND p_type_description_c = NULL";
+            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+            sql = "DELETE FROM p_type" +
+                  " WHERE p_type_code_c = 'TEST_EXECUTENONQUERY' AND p_type_description_c = 'Test should be fine'";
+            DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+            
+            DBAccess.GDBAccessObj.CommitTransaction();
+        }        
     }
 }
