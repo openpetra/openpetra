@@ -294,9 +294,9 @@ namespace Ict.Common.DB
         /// </summary>
         /// <remarks>
         /// <b>Important:</b> Since an object that derives from DbDataAdapter is returned you ought to
-        /// <em>call .Dispose()</em> on the returned object to release its resouces! (DbDataAdapter inherits 
+        /// <em>call .Dispose()</em> on the returned object to release its resouces! (DbDataAdapter inherits
         /// from DataAdapter which itself inherits from Component, which implements IDisposable!)
-        /// </remarks> 
+        /// </remarks>
         /// <returns>Instantiated SqliteDataAdapter.</returns>
         public DbDataAdapter NewAdapter()
         {
@@ -369,9 +369,9 @@ namespace Ict.Common.DB
 
             using (SqliteCommand cmd = new SqliteCommand(stmt, (SqliteConnection)ATransaction.Connection))
             {
-                cmd.ExecuteNonQuery();              
+                cmd.ExecuteNonQuery();
             }
-            
+
             return GetCurrentSequenceValue(ASequenceName, ATransaction, ADatabase);
         }
 
@@ -435,10 +435,11 @@ namespace Ict.Common.DB
             if (AExeVersion.FileMajorPart == 0)
             {
                 DBAccess.GDBAccessObj.CloseDBConnection();
-                
-                throw new EDBUnsupportedDBUpgradeException(String.Format(Catalog.GetString("Unsupported upgrade: Please rename the file {0} so that we can start with a fresh database!" + 
-                    Environment.NewLine + "Please restart the OpenPetra Client after that."),
-                    AHostOrFile));
+
+                throw new EDBUnsupportedDBUpgradeException(String.Format(Catalog.GetString(
+                            "Unsupported upgrade: Please rename the file {0} so that we can start with a fresh database!" +
+                            Environment.NewLine + "Please restart the OpenPetra Client after that."),
+                        AHostOrFile));
             }
 
             string dbpatchfilePath = Path.GetDirectoryName(TAppSettingsManager.GetValue("Server.SQLiteBaseFile"));
@@ -452,60 +453,61 @@ namespace Ict.Common.DB
                 {
                     // run all available patches. for each release there could be a patch file
                     string[] sqlFiles = Directory.GetFiles(dbpatchfilePath, "*.sql");
-    
+
                     bool foundUpdate = true;
-    
+
                     // run through all sql files until we have no matching update files anymore
                     while (foundUpdate)
                     {
                         foundUpdate = false;
-    
+
                         foreach (string sqlFile in sqlFiles)
                         {
                             if (!sqlFile.EndsWith("pg.sql") && (new TPatchFileVersionInfo(ADBVersion)).PatchApplies(sqlFile, AExeVersion))
                             {
                                 foundUpdate = true;
                                 StreamReader sr = new StreamReader(sqlFile);
-    
+
                                 while (!sr.EndOfStream)
                                 {
                                     string line = sr.ReadLine().Trim();
-    
+
                                     if (!line.StartsWith("--"))
                                     {
                                         DBAccess.GDBAccessObj.ExecuteNonQuery(line, transaction);
                                     }
                                 }
-    
+
                                 sr.Close();
                                 ADBVersion = TPatchFileVersionInfo.GetLatestPatchVersionFromDiffZipName(sqlFile);
                             }
                         }
                     }
-    
+
                     if (ADBVersion.Compare(AExeVersion) == 0)
                     {
                         // if patches have been applied successfully, update the database version
                         string newVersionSql =
                             String.Format("UPDATE s_system_defaults SET s_default_value_c = '{0}' WHERE s_default_code_c = 'CurrentDatabaseVersion';",
                                 AExeVersion.ToStringDotsHyphen());
-                        
+
                         DBAccess.GDBAccessObj.ExecuteNonQuery(newVersionSql, transaction);
-                        
+
                         DBAccess.GDBAccessObj.CommitTransaction();
                     }
                     else
                     {
                         DBAccess.GDBAccessObj.RollbackTransaction();
-                        
-                        throw new Exception(String.Format(Catalog.GetString("Cannot connect to old database (version {0}), there are some missing sql patch files"),
-                            ADBVersion));
+
+                        throw new Exception(String.Format(Catalog.GetString(
+                                    "Cannot connect to old database (version {0}), there are some missing sql patch files"),
+                                ADBVersion));
                     }
                 }
                 catch (Exception)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
-    
+
                     throw;
                 }
             }

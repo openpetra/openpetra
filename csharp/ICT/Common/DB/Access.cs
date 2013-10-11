@@ -151,7 +151,7 @@ namespace Ict.Common.DB
         /// <param name="APassword"></param>
         /// <param name="AConnectionString"></param>
         /// <param name="AStateChangeEventHandler"></param>
-        /// <returns>Instantiated object (derived from <see cref="DbConnection" />) - its actual Type depends 
+        /// <returns>Instantiated object (derived from <see cref="DbConnection" />) - its actual Type depends
         /// on the RDBMS that we are connected to at runtime!</returns>
         DbConnection GetConnection(String AServer, String APort,
             String ADatabaseName,
@@ -202,14 +202,14 @@ namespace Ict.Common.DB
         /// <param name="AConnection"></param>
         /// <param name="AParametersArray"></param>
         /// <param name="ATransaction"></param>
-        /// <returns>Instantiated object (derived from <see cref="DbCommand" />) - its actual Type depends 
+        /// <returns>Instantiated object (derived from <see cref="DbCommand" />) - its actual Type depends
         /// on the RDBMS that we are connected to at runtime!</returns>
         DbCommand NewCommand(ref string ACommandText, DbConnection AConnection, DbParameter[] AParametersArray, TDBTransaction ATransaction);
 
         /// <summary>
         /// Creates a <see cref="DbDataAdapter" /> object.
         /// </summary>
-        /// <returns>Instantiated object (derived from <see cref="DbDataAdapter" />) - its actual Type depends 
+        /// <returns>Instantiated object (derived from <see cref="DbDataAdapter" />) - its actual Type depends
         /// on the RDBMS that we are connected to at runtime!</returns>
         DbDataAdapter NewAdapter();
 
@@ -276,7 +276,7 @@ namespace Ict.Common.DB
         void UpdateDatabase(TFileVersionInfo ADBVersion, TFileVersionInfo AExeVersion,
             string AHostOrFile, string ADatabasePort, string ADatabaseName, string AUsername, string APassword);
     }
-    
+
     /// <summary>
     /// Contains functions that open and close the connection to the DB, allow
     /// execution of SQL statements and creation of DB Transactions.
@@ -305,10 +305,10 @@ namespace Ict.Common.DB
         /// <summary>
         /// Tells whether the DB connection is ready to accept commands or whether it is busy.
         /// </summary>
-        /// <remarks>The FConnectionReady variable must never be inquired directly, but only through 
+        /// <remarks>The FConnectionReady variable must never be inquired directly, but only through
         /// calling ConnectionReady()! (See remarks for <see cref="OnStateChangedHandler" />.)</remarks>
         private bool FConnectionReady = false;
-        
+
         /// <summary>References the type of RDBMS that we are currently connected to</summary>
         private TDBType FDbType;
 
@@ -535,11 +535,11 @@ namespace Ict.Common.DB
             }
             catch (Exception exp)
             {
-                if (FSqlConnection != null) 
+                if (FSqlConnection != null)
                 {
                     FSqlConnection.Dispose();
                 }
-                
+
                 FSqlConnection = null;
 
                 LogException(exp,
@@ -566,7 +566,7 @@ namespace Ict.Common.DB
             TDBTransaction transaction;
             TFileVersionInfo dbversion;
             TFileVersionInfo serverExeInfo;
-            
+
             if (TAppSettingsManager.GetValue("action", string.Empty, false) == "patchDatabase")
             {
                 // we want to upgrade the database, so don't check for the database version
@@ -580,8 +580,8 @@ namespace Ict.Common.DB
                 // now check if the database is 'up to date'; otherwise run db patch against it
                 DBPatchVersion =
                     Convert.ToString(DBAccess.GDBAccessObj.ExecuteScalar(
-                        "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
-                        transaction));
+                            "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
+                            transaction));
             }
             catch (Exception)
             {
@@ -731,7 +731,7 @@ namespace Ict.Common.DB
         /// </summary>
         /// <remarks>
         /// <b>Important:</b> Since an object that derives from <see cref="DbCommand" /> is returned you ought to
-        /// <em>call .Dispose()</em> on the returned object to release its resouces! (<see cref="DbCommand" /> inherits 
+        /// <em>call .Dispose()</em> on the returned object to release its resouces! (<see cref="DbCommand" /> inherits
         /// from <see cref="System.ComponentModel.Component" />, which implements <see cref="IDisposable" />!)
         /// </remarks>
         /// <param name="ACommandText">Command Text</param>
@@ -739,7 +739,7 @@ namespace Ict.Common.DB
         /// should not be enlisted in a transaction.</param>
         /// <param name="AParametersArray">An array holding 1..n instantiated DbParameter
         /// (including Parameter Value)</param>
-        /// <returns>Instantiated object (derived from DbCommand) - its actual Type depends 
+        /// <returns>Instantiated object (derived from DbCommand) - its actual Type depends
         /// on the RDBMS that we are connected to at runtime!</returns>
         public DbCommand Command(String ACommandText, TDBTransaction ATransaction, DbParameter[] AParametersArray)
         {
@@ -819,7 +819,7 @@ namespace Ict.Common.DB
             }
 
             FLastDBAction = DateTime.Now;
-            
+
             return ObjReturn;
         }
 
@@ -849,9 +849,9 @@ namespace Ict.Common.DB
             DataSet ObjReturn;
 
             ObjReturn = Select(InputDataSet, ASqlStatement, ADataTableName, AReadTransaction, AParametersArray);
-            
+
             InputDataSet.Dispose();
-            
+
             return ObjReturn;
         }
 
@@ -904,7 +904,7 @@ namespace Ict.Common.DB
             System.Int32 AMaxRecords = 0)
         {
             DataSet ObjReturn = null;
-            
+
             if (AFillDataSet == null)
             {
                 throw new ArgumentNullException("AFillDataSet", "AFillDataSet must not be null!");
@@ -928,13 +928,13 @@ namespace Ict.Common.DB
                     {
                         TLogging.Log(((this.GetType().FullName + ".Select: now filling DbDataAdapter('" + ADataTableName) + "')..."));
                     }
-            
+
                     using (TheAdapter.SelectCommand)
-                    { 
+                    {
                         FDataBaseRDBMS.FillAdapter(TheAdapter, ref AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
                     }
                 }
-                
+
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(((this.GetType().FullName + ".Select: finished filling DbDataAdapter(DataTable '" +
@@ -943,7 +943,7 @@ namespace Ict.Common.DB
                     NpgsqlEventLog.Level = LogLevel.None;
 #endif
                 }
-                
+
                 ObjReturn = AFillDataSet;
             }
             catch (Exception exp)
@@ -1011,21 +1011,21 @@ namespace Ict.Common.DB
                     {
                         TLogging.Log(((this.GetType().FullName + ".SelectToTempTable: now filling DbDataAdapter('" + ADataTempTableName) + "')..."));
                     }
-    
+
                     //Make sure that any previous temp table of the same name is removed first!
                     if (AFillDataSet.Tables.Contains(ADataTempTableName))
                     {
                         AFillDataSet.Tables.Remove(ADataTempTableName);
                     }
-    
+
                     AFillDataSet.Tables.Add(ADataTempTableName);
-                    
+
                     using (TheAdapter.SelectCommand)
-                    {    
+                    {
                         FDataBaseRDBMS.FillAdapter(TheAdapter, ref AFillDataSet, AStartRecord, AMaxRecords, ADataTempTableName);
                     }
                 }
-                
+
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(((this.GetType().FullName + ".SelectToTempTable: finished filling DbDataAdapter(DataTable '" +
@@ -1064,11 +1064,11 @@ namespace Ict.Common.DB
         /// </summary>
         /// <remarks>
         /// <b>Important:</b> Since an object that derives from <see cref="DbDataAdapter" /> is returned you ought to
-        /// <em>call .Dispose()</em> on the returned object to release its resouces! (<see cref="DbDataAdapter" /> inherits 
-        /// from <see cref="DataAdapter" /> which itself inherits from <see cref="System.ComponentModel.Component" />, which 
-        /// implements <see cref="IDisposable" />. 
-        /// <p><b>ALSO</b>, the returned object contains an instance of DbCommand in its SelectCommand Property which itself 
-        /// inherits from <see cref="System.ComponentModel.Component" />, which implements <see cref="IDisposable" /> so you 
+        /// <em>call .Dispose()</em> on the returned object to release its resouces! (<see cref="DbDataAdapter" /> inherits
+        /// from <see cref="DataAdapter" /> which itself inherits from <see cref="System.ComponentModel.Component" />, which
+        /// implements <see cref="IDisposable" />.
+        /// <p><b>ALSO</b>, the returned object contains an instance of DbCommand in its SelectCommand Property which itself
+        /// inherits from <see cref="System.ComponentModel.Component" />, which implements <see cref="IDisposable" /> so you
         /// ought to <em>call .Dispose()</em> on the object held in the SelectCommand Property to release its resouces, too!).</p>
         /// </remarks>
         /// <param name="ASqlStatement">SQL statement</param>
@@ -1078,13 +1078,13 @@ namespace Ict.Common.DB
         /// (including parameter Value)</param>
         /// <returns>
         /// Instantiated object (derived from <see cref="DbDataAdapter" />. It contains an instantiated object derived from
-        /// <see cref="DbCommand" /> in its SelectCommand Property, too! The Type of both the instantiated object and the object 
+        /// <see cref="DbCommand" /> in its SelectCommand Property, too! The Type of both the instantiated object and the object
         /// held in the SelectCommand Property depend on the RDBMS that we are connected to at runtime!
         /// </returns>
         public DbDataAdapter SelectDA(String ASqlStatement, TDBTransaction AReadTransaction, DbParameter[] AParametersArray = null)
         {
             DbCommand TheCommand;
-            
+
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
                 TLogging.Log("Entering " + this.GetType().FullName + ".SelectDA()...");
@@ -1168,14 +1168,14 @@ namespace Ict.Common.DB
             {
                 throw new ArgumentException("ADataTableName", "A name for the DataTable must be submitted!");
             }
-            
+
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
             {
                 LogSqlStatement(this.GetType().FullName + ".SelectDTInternal()", ASqlStatement, AParametersArray);
             }
 
             ObjReturn = new DataTable(ADataTableName);
-            
+
             try
             {
                 using (DbDataAdapter TheAdapter = SelectDA(ASqlStatement, AReadTransaction, AParametersArray))
@@ -1185,7 +1185,7 @@ namespace Ict.Common.DB
                         FDataBaseRDBMS.FillAdapter(TheAdapter, ref ObjReturn, 0, 0);
                     }
                 }
-                
+
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(((this.GetType().FullName + ".SelectDTInternal: finished filling DbDataAdapter(DataTable " +
@@ -1220,11 +1220,11 @@ namespace Ict.Common.DB
             DbParameter[] AParametersArray,
             int AStartRecord, int AMaxRecords)
         {
-            if (ATypedDataTable == null) 
+            if (ATypedDataTable == null)
             {
                 throw new ArgumentException("ATypedDataTable", "ATypedDataTable must not be null");
             }
-            
+
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
             {
                 LogSqlStatement(this.GetType().FullName + ".SelectDT()", ASqlStatement, AParametersArray);
@@ -1239,7 +1239,7 @@ namespace Ict.Common.DB
                         FDataBaseRDBMS.FillAdapter(TheAdapter, ref ATypedDataTable, AStartRecord, AMaxRecords);
                     }
                 }
-                
+
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(((this.GetType().FullName + ".SelectDT: finished filling DbDataAdapter(DataTable '" +
@@ -1285,7 +1285,7 @@ namespace Ict.Common.DB
 
             if (this.Transaction != null)
             {
-                throw new Exception("BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction " + 
+                throw new Exception("BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction " +
                     "as concurrent transactions are not supported");
             }
 
@@ -1305,7 +1305,7 @@ namespace Ict.Common.DB
                     TLogging.Log("DB Transaction started (in Appdomain " + AppDomain.CurrentDomain.ToString() + " ).");
                     TLogging.Log("Start of stack trace.->");
                     TLogging.LogStackTrace(TLoggingType.ToLogfile);
-                    TLogging.Log("<- End of stack trace");                    
+                    TLogging.Log("<- End of stack trace");
                 }
             }
             catch (System.InvalidOperationException exp)
@@ -1320,7 +1320,7 @@ namespace Ict.Common.DB
                     // Note: If this fails again, an Exception is thrown as if there was
                     // no ARetryAfterXSecWhenUnsuccessful specfied!
                     ReturnValue = BeginTransaction(-1);
-                    
+
                     return ReturnValue;
                 }
                 else
@@ -1339,11 +1339,14 @@ namespace Ict.Common.DB
 
                     if (FSqlConnection == null)
                     {
-                        TLogging.Log("BeginTransaction: Attempting to reconnect to the database as the DB connection isn't available! (FSqlConnection is null!)");
+                        TLogging.Log(
+                            "BeginTransaction: Attempting to reconnect to the database as the DB connection isn't available! (FSqlConnection is null!)");
                     }
                     else
                     {
-                        TLogging.Log("BeginTransaction: Attempting to reconnect to the database as the DB connection isn't allowing the start of a DB Transaction! (Connection State: " + FSqlConnection.State.ToString("G") + ")");
+                        TLogging.Log(
+                            "BeginTransaction: Attempting to reconnect to the database as the DB connection isn't allowing the start of a DB Transaction! (Connection State: "
+                            + FSqlConnection.State.ToString("G") + ")");
 
                         if (FSqlConnection.State == ConnectionState.Broken)
                         {
@@ -1361,10 +1364,10 @@ namespace Ict.Common.DB
                     catch (Exception e2)
                     {
                         TLogging.Log("BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
-                        
+
                         throw;
-                    }                        
-                    
+                    }
+
                     return BeginTransaction(ARetryAfterXSecWhenUnsuccessful);
                 }
 
@@ -1372,7 +1375,7 @@ namespace Ict.Common.DB
             }
 
             FLastDBAction = DateTime.Now;
-            
+
             return new TDBTransaction(FTransaction);
         }
 
@@ -1397,7 +1400,7 @@ namespace Ict.Common.DB
 
             if (this.Transaction != null)
             {
-                throw new Exception("BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction " + 
+                throw new Exception("BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction " +
                     "as concurrent transactions are not supported");
             }
 
@@ -1437,7 +1440,7 @@ namespace Ict.Common.DB
                     // Note: If this fails again, an Exception is thrown as if there was
                     // no ARetryAfterXSecWhenUnsuccessful specfied!
                     ReturnValue = BeginTransaction(AIsolationLevel, -1);
-                    
+
                     return ReturnValue;
                 }
                 else
@@ -1453,14 +1456,17 @@ namespace Ict.Common.DB
                     // Reconnect to the database
                     //
                     TLogging.Log(exp.Message);
-                                        
+
                     if (FSqlConnection == null)
                     {
-                        TLogging.Log("BeginTransaction: Attempting to reconnect to the database as the DB connection isn't available! (FSqlConnection is null!)");
+                        TLogging.Log(
+                            "BeginTransaction: Attempting to reconnect to the database as the DB connection isn't available! (FSqlConnection is null!)");
                     }
                     else
                     {
-                        TLogging.Log("BeginTransaction: Attempting to reconnect to the database as the DB connection isn't allowing the start of a DB Transaction! (Connection State: " + FSqlConnection.State.ToString("G") + ")");
+                        TLogging.Log(
+                            "BeginTransaction: Attempting to reconnect to the database as the DB connection isn't allowing the start of a DB Transaction! (Connection State: "
+                            + FSqlConnection.State.ToString("G") + ")");
 
                         if (FSqlConnection.State == ConnectionState.Broken)
                         {
@@ -1478,7 +1484,7 @@ namespace Ict.Common.DB
                     catch (Exception e2)
                     {
                         TLogging.Log("BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
-                        
+
                         throw;
                     }
 
@@ -1489,7 +1495,7 @@ namespace Ict.Common.DB
             }
 
             FLastDBAction = DateTime.Now;
-            
+
             return new TDBTransaction(FTransaction);
         }
 
@@ -1510,17 +1516,17 @@ namespace Ict.Common.DB
                 }
 
                 FTransaction.Commit();
-                
+
                 FTransaction.Dispose();
 
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
                 {
                     TLogging.Log(msg);
                 }
-            
+
                 FLastDBAction = DateTime.Now;
             }
-            
+
             FTransaction = null;
         }
 
@@ -1539,19 +1545,19 @@ namespace Ict.Common.DB
                     msg = "DB Transaction with IsolationLevel '" + FTransaction.IsolationLevel.ToString() + "' rolled back (in Appdomain " +
                           AppDomain.CurrentDomain.ToString() + " ).";
                 }
-    
+
                 FTransaction.Rollback();
-                
+
                 FTransaction.Dispose();
-                
+
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
                 {
                     TLogging.Log(msg);
                 }
-                
+
                 FLastDBAction = DateTime.Now;
             }
-            
+
             FTransaction = null;
         }
 
@@ -1655,7 +1661,7 @@ namespace Ict.Common.DB
                 }
 
                 TheTransaction = BeginTransaction(ADesiredIsolationLevel);
-                
+
                 ANewTransaction = true;
             }
             else
@@ -1743,32 +1749,32 @@ namespace Ict.Common.DB
             if (ConnectionReady())
             {
                 using (DbCommand TransactionCommand = Command(ASqlStatement, ATransaction, AParametersArray))
-                {   
+                {
                     if (TransactionCommand == null)
                     {
                         // should never get here
                         return 0;
                     }
-    
+
                     try
                     {
                         int NumberOfRowsAffected = TransactionCommand.ExecuteNonQuery();
-    
+
                         if (TLogging.DebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
                         {
                             TLogging.Log("Number of rows affected: " + NumberOfRowsAffected.ToString());
                         }
-    
+
                         if (ACommitTransaction)
                         {
                             CommitTransaction();
                         }
-    
+
                         return NumberOfRowsAffected;
                     }
                     catch (Exception exp)
                     {
-                        LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error executing non-query SQL statement.");                    
+                        LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error executing non-query SQL statement.");
                     }
                 }
             }
@@ -1790,7 +1796,7 @@ namespace Ict.Common.DB
         /// <param name="AStatementHashTable">A HashTable. Key: a unique identifier;
         /// Value: an instantiated <see cref="TSQLBatchStatementEntry" /> object.
         /// </param>
-        /// <returns>void</returns> 
+        /// <returns>void</returns>
         public void ExecuteNonQueryBatch(Hashtable AStatementHashTable)
         {
             if (ConnectionReady())
@@ -1874,7 +1880,7 @@ namespace Ict.Common.DB
             if (ConnectionReady())
             {
                 SqlCommandNumber = 0;
-                
+
                 try
                 {
                     BatchStatementEntryIterator = AStatementHashTable.GetEnumerator();
@@ -1884,10 +1890,10 @@ namespace Ict.Common.DB
                         BatchStatementEntryValue = (TSQLBatchStatementEntry)BatchStatementEntryIterator.Value;
                         CurrentBatchEntryKey = BatchStatementEntryIterator.Key.ToString();
                         CurrentBatchEntrySQLStatement = BatchStatementEntryValue.SQLStatement;
-                        
+
                         ExecuteNonQuery(CurrentBatchEntrySQLStatement, ATransaction,
                             BatchStatementEntryValue.Parameters);
-                        
+
                         SqlCommandNumber = SqlCommandNumber + 1;
                     }
 
@@ -1938,7 +1944,7 @@ namespace Ict.Common.DB
         /// <returns>Single result as object.</returns>
         public object ExecuteScalar(String ASqlStatement, IsolationLevel AIsolationLevel, DbParameter[] AParametersArray = null)
         {
-            object ReturnValue = null;       
+            object ReturnValue = null;
 
             if (ConnectionReady())
             {
@@ -2012,26 +2018,26 @@ namespace Ict.Common.DB
                         // should never get here
                         return null;
                     }
-    
+
                     try
                     {
                         if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                         {
                             TLogging.Log(this.GetType().FullName + ".ExecuteScalar: now calling Command.ExecuteScalar...");
                         }
-    
+
                         ReturnValue = TransactionCommand.ExecuteScalar();
-    
+
                         if (ReturnValue == null)
                         {
                             throw new Exception("Execute Scalar returned no value");
                         }
-    
+
                         if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                         {
                             TLogging.Log(this.GetType().FullName + ".ExecuteScalar: finished calling Command.ExecuteScalar");
                         }
-    
+
                         if (ACommitTransaction)
                         {
                             CommitTransaction();
@@ -2079,8 +2085,8 @@ namespace Ict.Common.DB
             string stmt = "";
 
             ASqlFilename = TAppSettingsManager.GetValue("SqlFiles.Path", ".") +
-                Path.DirectorySeparatorChar +
-                ASqlFilename;
+                           Path.DirectorySeparatorChar +
+                           ASqlFilename;
 
             // Console.WriteLine("reading " + ASqlFilename);
             using (StreamReader reader = new StreamReader(ASqlFilename))
@@ -2089,9 +2095,9 @@ namespace Ict.Common.DB
                 {
                     throw new Exception("cannot open file " + ASqlFilename);
                 }
-    
+
                 Regex DecommenterRegex = new Regex(@"\s--.*");
-    
+
                 while ((line = reader.ReadLine()) != null)
                 {
                     if (!line.Trim().StartsWith("--"))
@@ -2099,7 +2105,7 @@ namespace Ict.Common.DB
                         stmt += DecommenterRegex.Replace(line.Trim(), "") + Environment.NewLine;
                     }
                 }
-    
+
                 reader.Close();
             }
 
@@ -2152,24 +2158,24 @@ namespace Ict.Common.DB
                 List <OdbcParameter>NewParametersArray = new List <OdbcParameter>();
                 String NewCommandText = "";
 
-                using (IEnumerator <OdbcParameter>ParametersEnumerator = ((IEnumerable <OdbcParameter>)AParametersArray).GetEnumerator())
+                using (IEnumerator <OdbcParameter>ParametersEnumerator = ((IEnumerable <OdbcParameter> )AParametersArray).GetEnumerator())
                 {
                     foreach (String SqlPart in ACommandText.Split(new Char[] { '?' }))
                     {
                         NewCommandText += SqlPart;
-    
+
                         if (!ParametersEnumerator.MoveNext())
                         {
                             /* We're at the end of the string/parameter array */
                             continue;
                         }
-    
+
                         OdbcParameter param = ParametersEnumerator.Current;
-    
+
                         if (param.Value is TDbListParameterValue)
                         {
                             Boolean first = true;
-    
+
                             foreach (OdbcParameter subparam in (TDbListParameterValue)param.Value)
                             {
                                 if (first)
@@ -2180,17 +2186,17 @@ namespace Ict.Common.DB
                                 {
                                     NewCommandText += ", ";
                                 }
-    
+
                                 NewCommandText += "?";
-    
+
                                 NewParametersArray.Add(subparam);
                             }
-    
+
                             /* We had an empty list. */
                             if (first)
                             {
                                 NewCommandText += "?";
-    
+
                                 /* `column IN ()' is invalid, use `column IN (NULL)' */
                                 param.Value = DBNull.Value;
                                 NewParametersArray.Add(param);
@@ -2202,14 +2208,14 @@ namespace Ict.Common.DB
                             NewParametersArray.Add(param);
                         }
                     }
-    
+
                     /* Catch any leftover parameters? */
                     while (ParametersEnumerator.MoveNext())
                     {
                         NewParametersArray.Add(ParametersEnumerator.Current);
                     }
                 }
-                
+
                 ACommandText = NewCommandText;
                 AParametersArray = NewParametersArray.ToArray();
 
@@ -2305,7 +2311,7 @@ namespace Ict.Common.DB
         {
             String Line = "";
             int MaxRows = 10;
-            
+
             foreach (DataColumn column in ATable.Columns)
             {
                 Line = Line + ' ' + column.ColumnName;
@@ -2363,7 +2369,7 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace(" OR ", Environment.NewLine + "OR ");
             ReturnValue = ReturnValue.Replace(" GROUP BY ", Environment.NewLine + "GROUP BY ");
             ReturnValue = ReturnValue.Replace(" ORDER BY ", Environment.NewLine + "ORDER BY ");
-            
+
             return ReturnValue;
         }
 
@@ -2526,7 +2532,7 @@ namespace Ict.Common.DB
                 ASqlStatement = FDataBaseRDBMS.FormatQueryRDBMSSpecific(ASqlStatement);
 
                 FormattedSqlStatement = "The SQL Statement was: " + Environment.NewLine +
-                    ASqlStatement + Environment.NewLine;
+                                        ASqlStatement + Environment.NewLine;
 
                 if (AParametersArray != null)
                 {
@@ -2571,7 +2577,7 @@ namespace Ict.Common.DB
         }
     }
 
-    
+
     #region TSQLBatchStatementEntry
 
     /// <summary>
@@ -2622,7 +2628,7 @@ namespace Ict.Common.DB
             FParametersArray = AParametersArray;
         }
     }
-    
+
     #endregion
 
     /// <summary>
@@ -2693,15 +2699,15 @@ namespace Ict.Common.DB
         /// <summary>
         /// Constructor for a <see cref="TDBTransaction" /> Object.
         /// </summary>
-        /// <param name="ATransaction">The concrete DbTransaction Object that <see cref="TDBTransaction" /> 
+        /// <param name="ATransaction">The concrete DbTransaction Object that <see cref="TDBTransaction" />
         /// should represent.</param>
         public TDBTransaction(DbTransaction ATransaction)
         {
             FWrappedTransaction = ATransaction;
         }
-        
+
         #region Dispose pattern
-        
+
         /// <summary>
         /// Releases all resources used by the <see cref="TDBTransaction" />
         /// (these are really only resources held by the <see cref="WrappedTransaction" />
@@ -2712,26 +2718,26 @@ namespace Ict.Common.DB
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-    
+
         /// <summary>
         /// Releases the unmanaged resources used by the  <see cref="TDBTransaction" />
         /// (these are really only resources held by the <see cref="WrappedTransaction" />
         /// and optionally releases the managed resources of that object.
         /// </summary>
-        /// <param name="ADisposing">True to release both managed and unmanaged resources; 
+        /// <param name="ADisposing">True to release both managed and unmanaged resources;
         /// false to release only unmanaged resources.</param>
         protected virtual void Dispose(bool ADisposing)
         {
             if (ADisposing)
             {
-                if (FWrappedTransaction != null) 
+                if (FWrappedTransaction != null)
                 {
                     FWrappedTransaction.Dispose();
                 }
             }
         }
 
-        #endregion        
+        #endregion
     }
 
 
@@ -2789,7 +2795,7 @@ namespace Ict.Common.DB
             SubValues = value;
         }
 
-        IEnumerator <OdbcParameter>IEnumerable <OdbcParameter>.GetEnumerator()
+        IEnumerator <OdbcParameter>IEnumerable <OdbcParameter> .GetEnumerator()
         {
             UInt32 Counter = 0;
 
@@ -2812,7 +2818,7 @@ namespace Ict.Common.DB
         /// </summary>
         public IEnumerator GetEnumerator()
         {
-            return ((IEnumerable <OdbcParameter>)this).GetEnumerator();
+            return ((IEnumerable <OdbcParameter> ) this).GetEnumerator();
         }
 
         /// <summary>
@@ -2830,7 +2836,9 @@ namespace Ict.Common.DB
         /// </summary>
         public static OdbcParameter OdbcListParameterValue(String name, OdbcType type, IEnumerable value)
         {
-            return new OdbcParameter(name, type) {Value = new TDbListParameterValue(name, type, value)};
+            return new OdbcParameter(name, type) {
+                       Value = new TDbListParameterValue(name, type, value)
+            };
         }
     }
 }

@@ -48,7 +48,7 @@ namespace Ict.Common.DB
         /// <param name="ADatabaseName">Name of the database that we want to connect to.</param>
         /// <param name="AUsername">Username for opening the MySQL connection.</param>
         /// <param name="APassword">Password for opening the MySQL connection.</param>
-        /// <param name="AConnectionString">Connection string; if it is not empty, it will 
+        /// <param name="AConnectionString">Connection string; if it is not empty, it will
         /// overrule the previous parameters.</param>
         /// <param name="AStateChangeEventHandler">Event Handler for connection state changes.</param>
         /// <returns>
@@ -74,9 +74,9 @@ namespace Ict.Common.DB
                     throw new ArgumentException("APassword", "APassword must not be null or an empty string!");
                 }
 
-                AConnectionString = "SERVER=" + AServer + ";" + "DATABASE=" + ADatabaseName + ";" + "UID=" + AUsername + ";" + "PASSWORD=";                
+                AConnectionString = "SERVER=" + AServer + ";" + "DATABASE=" + ADatabaseName + ";" + "UID=" + AUsername + ";" + "PASSWORD=";
             }
-            
+
             try
             {
                 TheConnection = new MySqlConnection(AConnectionString + APassword + ";");
@@ -117,11 +117,11 @@ namespace Ict.Common.DB
             if (AException is MySqlException)
             {
                 MySqlException exp = (MySqlException)AException;
-                
+
                 AErrorMessage = AErrorMessage +
                                 "Message: " + exp.Message + Environment.NewLine +
                                 "MySQL Error Number: " + exp.Number.ToString() + Environment.NewLine;
-                
+
                 return true;
             }
 
@@ -403,7 +403,7 @@ namespace Ict.Common.DB
                     throw new EDBParameterisedQueryMissingParameterPlaceholdersException(
                         "Question marks (?) must be present in query text if Parameters are passed in");
                 }
-                                
+
                 if (AParametersArray != null)
                 {
                     MySQLParametersArray = (MySqlParameter[])ConvertOdbcParameters(AParametersArray, ref ACommandText);
@@ -429,9 +429,9 @@ namespace Ict.Common.DB
         /// </summary>
         /// <remarks>
         /// <b>Important:</b> Since an object that derives from DbDataAdapter is returned you ought to
-        /// <em>call .Dispose()</em> on the returned object to release its resouces! (DbDataAdapter inherits 
+        /// <em>call .Dispose()</em> on the returned object to release its resouces! (DbDataAdapter inherits
         /// from DataAdapter which itself inherits from Component, which implements IDisposable!)
-        /// </remarks> 
+        /// </remarks>
         /// <returns>Instantiated MySqlDataAdapter.</returns>
         public DbDataAdapter NewAdapter()
         {
@@ -441,7 +441,7 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// Fills a DbDataAdapter that was created with the <see cref="NewAdapter" /> Method. 
+        /// Fills a DbDataAdapter that was created with the <see cref="NewAdapter" /> Method.
         /// </summary>
         /// <param name="TheAdapter"></param>
         /// <param name="AFillDataSet"></param>
@@ -495,12 +495,12 @@ namespace Ict.Common.DB
         public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase)
         {
             string stmt = "INSERT INTO " + ASequenceName + " VALUES(NULL, -1);";
-        
+
             using (MySqlCommand cmd = new MySqlCommand(stmt, (MySqlConnection)ATransaction.Connection))
             {
                 cmd.ExecuteNonQuery();
             }
-            
+
             return GetCurrentSequenceValue(ASequenceName, ATransaction, ADatabase);
         }
 
@@ -515,7 +515,7 @@ namespace Ict.Common.DB
         public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase)
         {
             string stmt = "SELECT MAX(sequence) FROM " + ASequenceName + ";";
-            
+
             using (MySqlCommand cmd = new MySqlCommand(stmt, (MySqlConnection)ATransaction.Connection))
             {
                 return Convert.ToInt64(cmd.ExecuteScalar());

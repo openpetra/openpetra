@@ -55,10 +55,10 @@ namespace Ict.Common.DB
         /// <param name="ADatabaseName">Name of the database that we want to connect to.</param>
         /// <param name="AUsername">Username for opening the PostgreSQL connection.</param>
         /// <param name="APassword">Password for opening the PostgreSQL connection.</param>
-        /// <param name="AConnectionString">Connection string; if it is not empty, it will 
+        /// <param name="AConnectionString">Connection string; if it is not empty, it will
         /// overrule the previous parameters.</param>
-        /// <param name="AStateChangeEventHandler">Event Handler for connection state changes 
-        /// (NOTE: This doesn't work yet with the Npgsql driver - see code comments in this Methods' 
+        /// <param name="AStateChangeEventHandler">Event Handler for connection state changes
+        /// (NOTE: This doesn't work yet with the Npgsql driver - see code comments in this Methods'
         /// source code)!</param>
         /// <returns>
         /// Instantiated NpgsqlConnection, but not opened yet (null if connection could not be established).
@@ -91,10 +91,10 @@ namespace Ict.Common.DB
                 }
 
                 // TODO: Make 'ConnectionLifeTime' and 'CommandTimeout' configurable somehow. That would allow
-                // us to cater better for server environments where the server is quite busy and the RDBMS could 
+                // us to cater better for server environments where the server is quite busy and the RDBMS could
                 // therefore be slow to respond! See https://tracker.openpetra.org/view.php?id=2330.
                 AConnectionString = "Server=" + AServer + ";Port=" + APort + ";User Id=" + AUsername +
-                    ";Database=" + ADatabaseName + ";ConnectionLifeTime=60;CommandTimeout=3600;Password=";                
+                                    ";Database=" + ADatabaseName + ";ConnectionLifeTime=60;CommandTimeout=3600;Password=";
             }
 
             try
@@ -121,7 +121,7 @@ namespace Ict.Common.DB
                 // NpgsqlConnection. Therefore I (ChristianK) wrote a wrapper routine, ConnectionReady, which
                 // handles this difference. FConnectionReady must therefore never be inquired directly, but only
                 // through calling ConnectionReady()!
-                // (As of Npgsql 2.0.11.92 the Event still isn't raised)            
+                // (As of Npgsql 2.0.11.92 the Event still isn't raised)
 
                 // TODO: need to test this again
                 ((NpgsqlConnection)TheConnection).StateChange += AStateChangeEventHandler;
@@ -151,12 +151,12 @@ namespace Ict.Common.DB
                 for (int Counter = 0; Counter <= ((NpgsqlException)AException).Errors.Count - 1; Counter += 1)
                 {
                     AErrorMessage = AErrorMessage +
-                        "Index #" + Counter.ToString() + Environment.NewLine +
-                        "Message: " + ((NpgsqlException)AException)[Counter].Message + Environment.NewLine +
-                        "Detail: " + ((NpgsqlException)AException)[Counter].Detail.ToString() + Environment.NewLine +
-                        "Where: " + ((NpgsqlException)AException)[Counter].Where + Environment.NewLine +
-                        "SQL: " + ((NpgsqlException)AException)[Counter].ErrorSql + Environment.NewLine +
-                        "Position in SQL: " + ((NpgsqlException)AException)[Counter].Position + Environment.NewLine;
+                                    "Index #" + Counter.ToString() + Environment.NewLine +
+                                    "Message: " + ((NpgsqlException)AException)[Counter].Message + Environment.NewLine +
+                                    "Detail: " + ((NpgsqlException)AException)[Counter].Detail.ToString() + Environment.NewLine +
+                                    "Where: " + ((NpgsqlException)AException)[Counter].Where + Environment.NewLine +
+                                    "SQL: " + ((NpgsqlException)AException)[Counter].ErrorSql + Environment.NewLine +
+                                    "Position in SQL: " + ((NpgsqlException)AException)[Counter].Position + Environment.NewLine;
                 }
 
                 return true;
@@ -415,7 +415,7 @@ namespace Ict.Common.DB
                     throw new EDBParameterisedQueryMissingParameterPlaceholdersException(
                         "Question marks (?) must be present in query text if Parameters are passed in");
                 }
-                
+
                 if (AParametersArray != null)
                 {
                     NpgsqlParametersArray = (NpgsqlParameter[])ConvertOdbcParameters(AParametersArray, ref ACommandText);
@@ -441,7 +441,7 @@ namespace Ict.Common.DB
         /// </summary>
         /// <remarks>
         /// <b>Important:</b> Since an object that derives from DbDataAdapter is returned you ought to
-        /// <em>call .Dispose()</em> on the returned object to release its resouces! (DbDataAdapter inherits 
+        /// <em>call .Dispose()</em> on the returned object to release its resouces! (DbDataAdapter inherits
         /// from DataAdapter which itself inherits from Component, which implements IDisposable!)
         /// </remarks>
         /// <returns>Instantiated NpgsqlDataAdapter.</returns>
@@ -514,7 +514,7 @@ namespace Ict.Common.DB
         public bool AdjustIsolationLevel(ref IsolationLevel AIsolationLevel)
         {
             // All isolation levels work fine for PostgreSQL (though internally the Npgsql driver only
-            // supports ReadCommited and Serializable [see Npgsql driver source code: Method 
+            // supports ReadCommited and Serializable [see Npgsql driver source code: Method
             // 'internal NpgsqlTransaction(NpgsqlConnection conn, IsolationLevel isolation)' in NpgsqlTransaction.cs]!)
             return false;
         }

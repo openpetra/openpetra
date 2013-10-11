@@ -538,7 +538,7 @@ namespace Ict.Common.DB.Exceptions
         }
     }
     #endregion
-    
+
     #region EDBUnsupportedDBUpgradeException
 
     /// <summary>
@@ -563,7 +563,6 @@ namespace Ict.Common.DB.Exceptions
         {
         }
 
-
         /// <summary>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
         /// </summary>
@@ -584,6 +583,6 @@ namespace Ict.Common.DB.Exceptions
             base.GetObjectData(info, context);
         }
     }
-    
-    #endregion    
+
+    #endregion
 }

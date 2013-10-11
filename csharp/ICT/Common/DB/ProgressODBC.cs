@@ -231,9 +231,9 @@ namespace Ict.Common.DB
         /// </summary>
         /// <remarks>
         /// <b>Important:</b> Since an object that derives from DbDataAdapter is returned you ought to
-        /// <em>call .Dispose()</em> on the returned object to release its resouces! (DbDataAdapter inherits 
+        /// <em>call .Dispose()</em> on the returned object to release its resouces! (DbDataAdapter inherits
         /// from DataAdapter which itself inherits from Component, which implements IDisposable!)
-        /// </remarks> 
+        /// </remarks>
         /// <returns>Instantiated OdbcDataAdapter.</returns>
         public DbDataAdapter NewAdapter()
         {

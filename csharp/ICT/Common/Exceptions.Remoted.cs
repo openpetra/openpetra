@@ -24,9 +24,9 @@
 using System;
 using System.Runtime.Serialization;
 
-// This Namespace contains Exceptions that can be passed from the Server to the Client 
+// This Namespace contains Exceptions that can be passed from the Server to the Client
 // via .NET Remoting.
-// 
+//
 // These Exceptions are OpenPetra-specific, but not specific to a certain
 // OpenPetra Module (Partner, Finance, etc).
 //

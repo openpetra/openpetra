@@ -268,7 +268,7 @@ namespace Ict.Petra.Server.App.Core.Security
             {
                 throw;
             }
-            
+
             return ReturnValue;
         }
 
