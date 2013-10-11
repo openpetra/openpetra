@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Text.RegularExpressions;
 using Ict.Common.Verification;
 using GNU.Gettext;
@@ -61,6 +62,9 @@ namespace Ict.Common.Verification
 
         private static readonly string StrStringTooLong = Catalog.GetString(
             "The value you entered for {0} is too long - it's maximum length is {1} characters, but you entered {2} characters.");
+
+        private static readonly string StrStringInvalidValue = Catalog.GetString(
+            "The value you entered for {0} is currently inactive.");
 
         #endregion
 
@@ -193,6 +197,58 @@ namespace Ict.Common.Verification
         }
 
         #endregion
+
+        #region ValidateValue
+
+        /// <summary>
+        /// Used for checking if a particular lookup value relates to an inactive record
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ADataTable"></param>
+        /// <param name="AKeyValue"></param>
+        /// <param name="AActiveColumn"></param>
+        /// <param name="AResultContext"></param>
+        /// <param name="AResultColumn"></param>
+        /// <param name="AResultControl"></param>
+        /// <returns></returns>
+        public static TVerificationResult ValidateValueIsActive(Int32 ALedgerNumber, DataTable ADataTable, String AKeyValue,
+            String AActiveColumn, object AResultContext = null, System.Data.DataColumn AResultColumn = null,
+            System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue;
+
+            DataRow foundRow = ADataTable.Rows.Find(new object[] { ALedgerNumber, AKeyValue });
+
+            if (foundRow != null)
+            {
+                bool isActive = (bool)foundRow[AActiveColumn];
+
+                if (!isActive)
+                {
+                    ReturnValue = new TVerificationResult(AResultContext,
+                        ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_INVALIDVALUE,
+                            StrStringInvalidValue, new string[] { AKeyValue }));
+
+                    if (AResultColumn != null)
+                    {
+                        ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+                    }
+                }
+                else
+                {
+                    ReturnValue = null;
+                }
+            }
+            else
+            {
+                ReturnValue = null;
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion
+
 
         #region ValidateEmail
 
