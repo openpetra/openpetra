@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -79,31 +79,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             NewRow.GlEffectiveDate = ADateEffective;
             NewRow.ExchangeRateToBase = 1.0M;
             NewRow.BatchDescription = "PLEASE ENTER A DESCRIPTION";
-            // TODO: bank account as a parameter, set on the gift matching screen, etc
-            NewRow.BankAccountCode = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
-                SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString());
-
-            if (NewRow.BankAccountCode.Length == 0)
-            {
-                // use the first bank account
-                AAccountPropertyTable accountProperties = AAccountPropertyAccess.LoadViaALedger(ALedgerNumber, Transaction);
-                accountProperties.DefaultView.RowFilter = AAccountPropertyTable.GetPropertyCodeDBName() + " = '" +
-                                                          MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT + "' and " +
-                                                          AAccountPropertyTable.GetPropertyValueDBName() + " = 'true'";
-
-                if (accountProperties.DefaultView.Count > 0)
-                {
-                    NewRow.BankAccountCode = ((AAccountPropertyRow)accountProperties.DefaultView[0].Row).AccountCode;
-                }
-                else
-                {
-                    // needed for old Petra 2.x database
-                    NewRow.BankAccountCode = "6000";
-                }
-
-                // TODO? TSystemDefaultsCache.GSystemDefaultsCache.SetDefault(SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString(), NewRow.BankAccountCode);
-            }
-
+            NewRow.BankAccountCode = TLedgerInfo.GetDefaultBankAccount(ALedgerNumber);
             NewRow.BankCostCentre = TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
             NewRow.CurrencyCode = LedgerTable[0].BaseCurrency;
             MainDS.AGiftBatch.Rows.Add(NewRow);
@@ -131,32 +107,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             LedgerTable[0].LastRecGiftBatchNumber++;
             NewRow.BatchNumber = LedgerTable[0].LastRecGiftBatchNumber;
             NewRow.BatchDescription = Catalog.GetString("Please enter recurring batch description");
-
-            // TODO: bank account as a parameter, set on the gift matching screen, etc
-            NewRow.BankAccountCode = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
-                SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString());
-
-            if (NewRow.BankAccountCode.Length == 0)
-            {
-                // use the first bank account
-                AAccountPropertyTable accountProperties = AAccountPropertyAccess.LoadViaALedger(ALedgerNumber, Transaction);
-                accountProperties.DefaultView.RowFilter = AAccountPropertyTable.GetPropertyCodeDBName() + " = '" +
-                                                          MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT + "' and " +
-                                                          AAccountPropertyTable.GetPropertyValueDBName() + " = 'true'";
-
-                if (accountProperties.DefaultView.Count > 0)
-                {
-                    NewRow.BankAccountCode = ((AAccountPropertyRow)accountProperties.DefaultView[0].Row).AccountCode;
-                }
-                else
-                {
-                    // needed for old Petra 2.x database
-                    NewRow.BankAccountCode = "6000";
-                }
-
-                // TODO? TSystemDefaultsCache.GSystemDefaultsCache.SetDefault(SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString(), NewRow.BankAccountCode);
-            }
-
+            NewRow.BankAccountCode = TLedgerInfo.GetDefaultBankAccount(ALedgerNumber);
             NewRow.BankCostCentre = TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
             NewRow.CurrencyCode = LedgerTable[0].BaseCurrency;
             MainDS.ARecurringGiftBatch.Rows.Add(NewRow);
