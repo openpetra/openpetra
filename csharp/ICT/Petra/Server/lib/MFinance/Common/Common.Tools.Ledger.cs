@@ -318,6 +318,52 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             return String.Format("{0:##00}00", ALedgerNumber);
         }
+
+        /// <summary>
+        /// get the default bank account for this ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        public static string GetDefaultBankAccount(int ALedgerNumber)
+        {
+            string BankAccountCode = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
+                SharedConstants.SYSDEFAULT_GIFTBANKACCOUNT + ALedgerNumber.ToString());
+
+            if (BankAccountCode.Length == 0)
+            {
+                bool NewTransaction;
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+
+                try
+                {
+                    // use the first bank account
+                    AAccountPropertyTable accountProperties = AAccountPropertyAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                    accountProperties.DefaultView.RowFilter = AAccountPropertyTable.GetPropertyCodeDBName() + " = '" +
+                                                              MFinanceConstants.ACCOUNT_PROPERTY_BANK_ACCOUNT + "' and " +
+                                                              AAccountPropertyTable.GetPropertyValueDBName() + " = 'true'";
+
+                    if (accountProperties.DefaultView.Count > 0)
+                    {
+                        BankAccountCode = ((AAccountPropertyRow)accountProperties.DefaultView[0].Row).AccountCode;
+                    }
+                    else
+                    {
+                        // needed for old Petra 2.x database
+                        BankAccountCode = "6000";
+                    }
+                }
+                finally
+                {
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+                }
+            }
+
+            return BankAccountCode;
+        }
     }
 
     /// <summary>
