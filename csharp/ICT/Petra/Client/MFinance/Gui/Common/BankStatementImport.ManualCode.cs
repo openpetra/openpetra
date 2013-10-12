@@ -979,7 +979,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                     rowToPrint = rowToPrint.Replace("#RECIPIENTDESCRIPTION", "<br/><br/><br/>");
                 }
 
-                if (!match.IsDonorKeyNull() && (match.DonorKey > 0))
+                if ((match != null) && !match.IsDonorKeyNull() && (match.DonorKey > 0))
                 {
                     string DonorDescription = "<br/>" + thinLine + match.DonorKey.ToString() + " " + match.DonorShortName;
 
