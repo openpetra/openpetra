@@ -111,7 +111,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.AddPartnerKeyColumn("Field", FMainDS.PPartnerInterest.ColumnFieldKey);
             grdDetails.AddTextColumn("Level", FMainDS.PPartnerInterest.ColumnLevel);
             grdDetails.AddTextColumn("Comment", FMainDS.PPartnerInterest.ColumnComment);
-            
+
             OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpInterests));
 
             // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
@@ -242,7 +242,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // reset list of levels
             cmbPPartnerInterestLevel.Text = "";
             cmbPPartnerInterestLevel.Items.Clear();
-            
+
             if ((CategoryRow != null)
                 && !CategoryRow.IsLevelRangeLowNull()
                 && !CategoryRow.IsLevelRangeHighNull())
@@ -252,15 +252,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     cmbPPartnerInterestLevel.Items.Add(ii);
                 }
-                
+
                 txtInterestLevelExplanation.Text = CategoryRow.LevelDescriptions;
             }
             else
             {
                 txtInterestLevelExplanation.Text = "";
             }
-            
-            if (   GetSelectedDetailRow() != null
+
+            if ((GetSelectedDetailRow() != null)
                 && !GetSelectedDetailRow().IsLevelNull())
             {
                 cmbPPartnerInterestLevel.SetSelectedInt32(GetSelectedDetailRow().Level);

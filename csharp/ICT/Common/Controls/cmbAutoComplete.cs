@@ -977,7 +977,7 @@ namespace Ict.Common.Controls
 
                 return -1;
             }
-            
+
             foreach (object Item in Items)
             {
                 TmpRowView = (System.Data.DataRowView)Item;
@@ -1136,7 +1136,7 @@ namespace Ict.Common.Controls
                     return Convert.ToInt64(Items[this.SelectedIndex]);
                 }
             }
-            
+
             if (ColumnNumber == -1)
             {
                 ColumnNumber = GetColumnNr(ValueMember);
