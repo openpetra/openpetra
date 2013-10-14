@@ -118,6 +118,13 @@ namespace Ict.Common.IO
 
             try
             {
+                // TODO there seems to be problems with the dtd file on Mono; so no validation there for the moment
+                // also see http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=52
+                if (Ict.Common.Utilities.DetermineExecutingCLR() == TExecutingCLREnum.eclrMono)
+                {
+                    withValidation = false;
+                }
+
                 XmlReaderSettings settings = new XmlReaderSettings();
                 settings.IgnoreWhitespace = false;
                 settings.DtdProcessing = withValidation ? DtdProcessing.Parse : DtdProcessing.Ignore;
