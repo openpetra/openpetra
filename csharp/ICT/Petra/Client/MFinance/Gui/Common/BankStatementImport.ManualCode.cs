@@ -730,7 +730,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         private void ExportGiftBatchThread()
         {
             TVerificationResultCollection VerificationResult;
-            Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS,
+            Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(
                 FLedgerNumber,
                 CurrentStatement.StatementKey,
                 -1,

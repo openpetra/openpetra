@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -182,7 +182,7 @@ namespace Tests.MFinance.Server.BankImport
                 TBankImportWebConnector.GetBankStatementTransactionsAndMatches(
                     StatementKey, FLedgerNumber);
 
-            Int32 GiftBatchNumber = TBankImportWebConnector.CreateGiftBatch(FMainDS,
+            Int32 GiftBatchNumber = TBankImportWebConnector.CreateGiftBatch(
                 FLedgerNumber,
                 StatementKey,
                 -1,
