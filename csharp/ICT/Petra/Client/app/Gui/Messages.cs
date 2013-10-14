@@ -24,7 +24,7 @@
 using System;
 using System.Windows.Forms;
 using Ict.Common.Verification;
-using Ict.Common.Remoting.Shared;
+using Ict.Common.Exceptions;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MPartner;

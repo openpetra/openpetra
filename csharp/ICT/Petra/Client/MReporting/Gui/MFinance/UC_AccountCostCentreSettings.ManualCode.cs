@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -119,7 +119,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }
 
-                ACalculator.AddParameter("param_account_codes", clbAccountCodes.GetCheckedStringList());
+                ACalculator.AddStringParameter("param_account_codes", clbAccountCodes.GetCheckedStringList());
                 // need to set NOTUSED,
                 // otherwise the report generator cannot find the parameter,
                 // and complains in the log file and on the status bar about the missing parameter
@@ -160,7 +160,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
 
                 String CostCentreListTitle = clbCostCentres.GetCheckedStringList();
-                ACalculator.AddParameter("param_cost_centre_codes", CostCentreListTitle);
+                ACalculator.AddStringParameter("param_cost_centre_codes", CostCentreListTitle);
                 CostCentreListTitle = CostCentreListTitle.Replace("\"", "");
 
                 if (CostCentreListTitle.Length > 25)

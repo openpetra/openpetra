@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -112,7 +112,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 CostCentreListTitle = clbCostCentres.GetCheckedStringList();
             }
 
-            ACalculator.AddParameter("param_cost_centre_codes", CostCentreListTitle);
+            ACalculator.AddStringParameter("param_cost_centre_codes", CostCentreListTitle);
             CostCentreListTitle = CostCentreListTitle.Replace("\"", "");
 
             if (CostCentreListTitle.Length > 25)

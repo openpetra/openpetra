@@ -30,6 +30,7 @@ using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Shared.MFinance.Validation
 {
@@ -47,9 +48,15 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
+        /// <param name="AAccountTableRef">Account Table</param>
+        /// <param name="ACostCentreTableRef">Cost centre table</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
-        public static bool ValidateGiftBatchManual(object AContext, AGiftBatchRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        public static bool ValidateGiftBatchManual(object AContext,
+            AGiftBatchRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection,
+            TValidationControlsDict AValidationControlsDict,
+            AAccountTable AAccountTableRef = null,
+            ACostCentreTable ACostCentreTableRef = null)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -61,6 +68,50 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if ((ARow.RowState == DataRowState.Deleted) || (ARow.BatchStatus == MFinanceConstants.BATCH_POSTED))
             {
                 return true;
+            }
+
+            // Bank Account Code must be active
+            ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnBankAccountCodeId];
+            ValidationContext = ARow.BankAccountCode;
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = (TScreenVerificationResult)TStringChecks.ValidateValueIsActive(ARow.LedgerNumber,
+                    AAccountTableRef,
+                    ValidationContext.ToString(),
+                    AAccountTable.GetAccountActiveFlagDBName(),
+                    AContext,
+                    ValidationColumn,
+                    ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if ((VerificationResult != null)
+                    && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
+            }
+
+            // Bank Cost Centre Code must be active
+            ValidationColumn = ARow.Table.Columns[AGiftBatchTable.ColumnBankCostCentreId];
+            ValidationContext = ARow.BankCostCentre;
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = (TScreenVerificationResult)TStringChecks.ValidateValueIsActive(ARow.LedgerNumber,
+                    ACostCentreTableRef,
+                    ValidationContext.ToString(),
+                    ACostCentreTable.GetCostCentreActiveFlagDBName(),
+                    AContext,
+                    ValidationColumn,
+                    ValidationControlsData.ValidationControl);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if ((VerificationResult != null)
+                    && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
             }
 
             // 'Exchange Rate' must be greater than 0
