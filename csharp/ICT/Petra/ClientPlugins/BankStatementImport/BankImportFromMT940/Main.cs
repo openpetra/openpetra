@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -115,6 +115,30 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// this non interactive function can be used from the unit tests
+        /// </summary>
+        public BankImportTDS ImportBankStatementNonInteractive(Int32 ALedgerNumber, string ABankAccountCode,
+            string ABankStatementFilename)
+        {
+            BankImportTDS MainDS = new BankImportTDS();
+
+            // import file
+            if (!ImportFromFile(ABankStatementFilename,
+                    ABankAccountCode,
+                    ref MainDS))
+            {
+                return null;
+            }
+
+            foreach (AEpStatementRow stmt in MainDS.AEpStatement.Rows)
+            {
+                stmt.LedgerNumber = ALedgerNumber;
+            }
+
+            return MainDS;
         }
 
         private int FStatementKey = -1;

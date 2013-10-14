@@ -650,7 +650,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
         private void CreateGiftBatchThread()
         {
             TVerificationResultCollection VerificationResult;
-            Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(FMainDS,
+            Int32 GiftBatchNumber = TRemote.MFinance.ImportExport.WebConnectors.CreateGiftBatch(
                 FLedgerNumber,
                 CurrentStatement.StatementKey,
                 -1,
@@ -671,7 +671,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 else
                 {
                     MessageBox.Show(
-                        VerificationResult.BuildVerificationResultString(),
+                        Catalog.GetString("Unknown error"),
                         Catalog.GetString("Problem: No gift batch has been created"));
                 }
             }
