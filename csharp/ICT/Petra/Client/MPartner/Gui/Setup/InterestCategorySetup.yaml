@@ -52,5 +52,8 @@ RootNode:
         txtDetailCategory: {Label=Category, CharacterCasing=Upper}
         txtDetailDescription: {Label=Description, Width=310}
         txtDetailLevelDescriptions:
+            Height: 100
+            Multiline: true
+            ScrollBars: Vertical
         txtDetailLevelRangeLow: {Format=Integer, Label=Level Range Lower, Width=30}
         txtDetailLevelRangeHigh: {Format=Integer, Label=Level Range Upper, Width=30}
