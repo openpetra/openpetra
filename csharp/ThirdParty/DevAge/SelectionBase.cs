@@ -190,18 +190,25 @@ namespace SourceGrid.Selection
 			}
 			else
 			{
-				if (pCellToActivate.IsEmpty() == false)
-				{
-					DeselectOldRangeAndSelectActiveCell();
-					
-					//I check if the grid still has the focus, otherwise I force it
-					if (Grid.ContainsFocus)
-						return true;
-					else
-						return Grid.Focus();
-				}
-				else
-					return true;
+                // The cell to activate is the same as the active position
+                if (pCellToActivate.IsEmpty() == false)
+                {
+                    DeselectOldRangeAndSelectActiveCell();
+
+                    //I check if the grid still has the focus, otherwise I force it
+                    if (Grid.ContainsFocus)
+                        return true;
+                    else
+                        return Grid.Focus();
+                }
+                else
+                {
+                    // AlanP Sep 2013
+                    // Even though we are activating an empty position when the position is already empty
+                    // we will fire off a selectionChanged event because this is useful on an empty grid when the main screen activates for the first time
+                    OnSelectionChanged(new RangeRegionChangedEventArgs(Range.Empty, Range.Empty));
+                    return true;
+                }
 			}
 		}
 		

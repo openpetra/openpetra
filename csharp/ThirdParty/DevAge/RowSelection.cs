@@ -53,7 +53,7 @@ namespace SourceGrid.Selection
                 // AlanP: Sep 2013.  No need for this line now - see below
                 // var activePosition = this.ActivePosition;
                 if (this.EnableMultiSelection == false)
-					this.Grid.Selection.ResetSelection(false);
+					this.Grid.Selection.ResetSelection(false, true);    // AlanP: Sep 2013 - don't propagate events from this reset
 				// continue with adding selection
 				mList.AddRange(rowRange);
 
