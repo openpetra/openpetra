@@ -294,7 +294,7 @@
             <value text="Total this report"/>
           </field>
           <field whichfield="column 6" format="currency" pos="indented">
-            <value function="getSumLowerReport({{lineId}}, 6)"/>
+            <value function="getSumLowerReport2({{lineId}}, 6)"/>
             <value text=" "/>
             <value variable="PaymentCurrency"/>
           </field>

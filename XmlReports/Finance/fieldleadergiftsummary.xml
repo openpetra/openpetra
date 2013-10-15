@@ -308,6 +308,7 @@
           </queryDetail>                                          
         </query>
       </calculation>
+
       <calculation id="Partner Name" returnsFormat="text" returns="text">
         <caption><value text="Partner Name"/></caption>
         <query>
@@ -315,6 +316,7 @@
           </queryDetail>                                          
         </query>
       </calculation>
+
       <calculation id="Partner Class" returnsFormat="text" returns="text">
         <caption><value text="Partner Class"/></caption>
         <query>
@@ -322,6 +324,7 @@
           </queryDetail>                                          
         </query>
       </calculation>
+
       <calculation id="Field" returnsFormat="partnerkey" returns="text">
         <caption><value text="Field"/></caption>
         <query>
@@ -329,6 +332,7 @@
           </queryDetail>                                          
         </query>
       </calculation>
+
       <calculation id="Field Name" returnsFormat="text" returns="text">
         <caption><value text="Field Name"/></caption>
         <query>
@@ -336,6 +340,7 @@
           </queryDetail>                                          
         </query>
       </calculation>
+
       <calculation id="Gift Amount" returnsFormat="currency" returns="amount">
         <caption><value text="Gift Amount"/></caption>
         <query>
@@ -343,6 +348,7 @@
           </queryDetail>                                          
         </query>
       </calculation>
+
       <calculation id="Motivation Detail" returnsFormat="text" returns="text">
         <caption><value text="Motivation Detail"/></caption>
         <query>
@@ -350,6 +356,7 @@
           </queryDetail>                                          
         </query>
       </calculation>
+
       <calculation id="Motivation Group" returnsFormat="text" returns="text">
         <caption><value text="Motivation Group"/></caption>
         <query>
