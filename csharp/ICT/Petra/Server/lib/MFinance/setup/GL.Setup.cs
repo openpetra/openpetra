@@ -2929,14 +2929,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// Get a list of Analysis Attributes that must be used with this account.
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static StringCollection RequiredAnalysisAttributesForAccount(Int32 ALedgerNumber, String AAccountCode)
+        public static StringCollection RequiredAnalysisAttributesForAccount(Int32 ALedgerNumber, String AAccountCode, Boolean AActiveOnly = false)
         {
             StringCollection Ret = new StringCollection();
             AAnalysisAttributeTable tbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AAccountCode, null);
 
             foreach (AAnalysisAttributeRow Row in tbl.Rows)
             {
-                Ret.Add(Row.AnalysisTypeCode);
+                if (!AActiveOnly || Row.Active)
+                {
+                	Ret.Add(Row.AnalysisTypeCode);
+                }
             }
 
             return Ret;
