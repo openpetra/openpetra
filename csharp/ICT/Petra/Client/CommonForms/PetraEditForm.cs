@@ -404,6 +404,32 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
+        /// Returns a reference to the control that has the focus on the specified container.  The method is recursive so looks in its own container controls.
+        /// </summary>
+        /// <param name="AContainerControl">The container control to search (often pnlDetails)</param>
+        /// <returns>The focused control or null if no control has the focus</returns>
+        public Control GetFocusedControl(Control AContainerControl)
+        {
+            foreach (Control c in AContainerControl.Controls)
+            {
+                if (c.Controls.Count > 0)
+                {
+                    Control c1 = GetFocusedControl(c);
+                    if (c1 != null)
+                    {
+                        return c1;
+                    }
+                }
+                else if (c.Focused)
+                {
+                    return c;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Recursively clears the content of all the controls in the specified container without
         /// </summary>
         /// <param name="AParentControl">The container control whose controls are to be cleared (often this will be pnlDetails)</param>
