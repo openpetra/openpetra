@@ -2115,7 +2115,7 @@ namespace Ict.Common.Controls
 
                 if (ContainingPanel != null)
                 {
-                    FindNextClicked(this, new TContextEventExtSearchDirectionArgs(EventContext.ecFindPanel,
+                    FindNextClicked(ClickedButton, new TContextEventExtSearchDirectionArgs(EventContext.ecFindPanel,
                             ((RadioButton)ContainingPanel.Controls["grpFindDirection"].Controls["rbtFindDirUp"]).Checked));
                 }
             }
