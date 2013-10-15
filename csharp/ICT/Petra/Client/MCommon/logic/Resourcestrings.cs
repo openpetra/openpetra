@@ -278,6 +278,13 @@ namespace Ict.Petra.Client.MCommon
         public static readonly string StrDuplicateRecordNotAllowed = Catalog.GetString(
             "You have attempted to create a duplicate record.  Please ensure that you have unique input data for the field(s) {0}.");
 
+        /// <summary>todoComment</summary>
+        public static readonly string StrEditedRecordIsFiltered = Catalog.GetString(
+            "The record has been edited but the current Filter is preventing it from being displayed.  The Filter will be reset so that you can continue to edit the record.");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrEditRecordTitle = Catalog.GetString("Edit Record");
+
         #endregion
     }
 }
