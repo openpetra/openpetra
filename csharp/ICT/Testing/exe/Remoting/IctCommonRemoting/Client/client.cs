@@ -26,6 +26,7 @@ using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
 using Tests.IctCommonRemoting.Interface;

@@ -23,7 +23,7 @@
 //
 using System;
 using System.Runtime.Serialization;
-using Ict.Common.Remoting.Shared;
+using Ict.Common.Exceptions;
 using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Shared.MPartner

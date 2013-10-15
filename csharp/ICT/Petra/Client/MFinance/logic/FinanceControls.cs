@@ -293,12 +293,14 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AExcludePosting"></param>
         /// <param name="AActiveOnly"></param>
         /// <param name="ABankAccountOnly"></param>
+        /// <param name="AIndicateInactive">Determines whether or not to show inactive accounts as inactive</param>
         public static void InitialiseAccountList(ref TClbVersatile AControl,
             Int32 ALedgerNumber,
             bool APostingOnly,
             bool AExcludePosting,
             bool AActiveOnly,
-            bool ABankAccountOnly)
+            bool ABankAccountOnly,
+            bool AIndicateInactive = false)
         {
             string CheckedMember = "CHECKED";
             string DisplayMember = AAccountTable.GetAccountCodeShortDescDBName();
@@ -311,6 +313,19 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+
+            //Highlight inactive Accounts
+            if (!AActiveOnly && AIndicateInactive)
+            {
+                foreach (DataRow rw in NewTable.Rows)
+                {
+                    if ((rw[AAccountTable.ColumnAccountActiveFlagId] != null) && (rw[AAccountTable.ColumnAccountActiveFlagId].ToString() == "False"))
+                    {
+                        rw[AAccountTable.ColumnAccountCodeShortDescId] = "<" + Catalog.GetString("INACTIVE") + "> " +
+                                                                         rw[AAccountTable.ColumnAccountCodeShortDescId];
+                    }
+                }
+            }
 
             AControl.Columns.Clear();
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
@@ -347,7 +362,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             emptyRow[ACostCentreTable.ColumnCostCentreNameId] = Catalog.GetString("Select a valid cost centre");
             Table.Rows.Add(emptyRow);
 
-            //Highlight inactive Accounts
+            //Highlight inactive Cost Centres
             if (!AActiveOnly && AIndicateInactive)
             {
                 foreach (DataRow rw in Table.Rows)
