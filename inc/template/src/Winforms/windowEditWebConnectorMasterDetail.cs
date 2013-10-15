@@ -80,7 +80,7 @@ namespace {#NAMESPACE}
 {#IFDEF SAVEDETAILS}
       grdDetails.Enter += new EventHandler(grdDetails_Enter);
       grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(grdDetails_FocusRowLeaving);
-      grdDetails.Selection.SelectionChanged += new RangeRegionChangedEventHandler(grdDetails_SelectionChanged);
+      grdDetails.Selection.SelectionChanged += new RangeRegionChangedEventHandler(grdDetails_RowSelected);
       {#GRIDMULTISELECTION}
 {#ENDIF SAVEDETAILS}
 
@@ -244,11 +244,20 @@ namespace {#NAMESPACE}
             {
                 //Look for Key & Description fields
                 Control keyControl = null;
-                bool foundDescription = false;
-                InitialiseNewRecord(pnl[0], ref keyControl, ref foundDescription);
+                Control descriptionControl = null;
+                GetKeyControlsOnPanel(pnl[0], ref keyControl, ref descriptionControl);
+
+                if ((descriptionControl != null) && (descriptionControl.Text == String.Empty))
+                {
+                    descriptionControl.Text = MCommonResourcestrings.StrPleaseEnterDescription;
+                }
 
                 ValidateAllData(true, false);
-                if (keyControl != null) keyControl.Focus();
+
+                if (keyControl != null)
+                {
+                    keyControl.Focus();
+                }
             }
         
 {#IFDEF BUTTONPANEL}
@@ -263,16 +272,24 @@ namespace {#NAMESPACE}
         }
     }
 
-    private void InitialiseNewRecord(Control APanel, ref Control AKeyControl, ref bool AFoundDescription)
+    /// <summary>
+    /// A generic method to discover the key controls on a Panel (usually pnlDetails).
+    /// </summary>
+    /// <param name="APanel">A reference to the Panel to search</param>
+    /// <param name="AKeyControl">Initialise this to null.  On return it will contain a reference to the 'prime' control (if found) editable by the user.</param>
+    /// <param name="ADescriptionControl">Initialise this to null.  On return it will contain a reference to the TextBox control (if found)
+    ///    that corresponds to a 'Description' column in the database.</param>
+    /// <param name="ASkipSearchForDescription">You can set this to True if you only need to know the KeyControl.</param>
+      private void GetKeyControlsOnPanel(Control APanel, ref Control AKeyControl, ref Control ADescriptionControl, bool ASkipSearchForDescription = false)
     {
         foreach (Control detailsCtrl in APanel.Controls)
         {
             if (detailsCtrl is Panel)
             {
                 // If the control is a panel we call ourself recursively
-                InitialiseNewRecord(detailsCtrl, ref AKeyControl, ref AFoundDescription);
-                
-                if (AFoundDescription)
+                GetKeyControlsOnPanel(detailsCtrl, ref AKeyControl, ref ADescriptionControl, ASkipSearchForDescription);
+
+                if ((ADescriptionControl != null) || ((AKeyControl != null) && ASkipSearchForDescription))
                 {
                     break;
                 }
@@ -283,12 +300,16 @@ namespace {#NAMESPACE}
             if (AKeyControl == null && (detailsCtrl is TextBox || detailsCtrl is ComboBox || detailsCtrl is TCmbAutoPopulated))
             {
                 AKeyControl = detailsCtrl;
+
+                if (ASkipSearchForDescription)
+                {
+                    break;
+                }
             }
 
-            if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Desc") && detailsCtrl.Text == string.Empty)
+            if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Desc"))
             {
-                detailsCtrl.Text = MCommonResourcestrings.StrPleaseEnterDescription;
-                AFoundDescription = true;
+                ADescriptionControl = detailsCtrl;
                 break;
             }
         }
@@ -597,7 +618,7 @@ namespace {#NAMESPACE}
     /// <summary>
     /// This is the main event handler for changes in the grid selection
     /// </summary>
-    private void grdDetails_SelectionChanged(object sender, RangeRegionChangedEventArgs e)
+    private void grdDetails_RowSelected(object sender, RangeRegionChangedEventArgs e)
     {
         int gridRow = grdDetails.Selection.ActivePosition.Row;
         if (grdDetails.Sorting)
@@ -608,7 +629,7 @@ namespace {#NAMESPACE}
         else
         {
             ShowDetails(gridRow);
-            // Console.WriteLine("{0}: SelectionChanged: ShowDetails() for row {1}", DateTime.Now.Millisecond, gridRow);
+            // Console.WriteLine("{0}: RowSelected: ShowDetails() for row {1}", DateTime.Now.Millisecond, gridRow);
         }
     }
 
@@ -1185,12 +1206,50 @@ namespace {#NAMESPACE}
 
             // Validation might have moved the row, so we need to locate it again
             // If it has moved we will call the special grid-sorting method ReselectGridRowAfterSort to highlight the new row.
-            // This will give rise to a Selection_Changed event with a new ActivePosition but the grdDetails.Sorting property will be True
+            // This will give rise to a Selection_SelectionChanged event with a new ActivePosition but the grdDetails.Sorting property will be True
+            // Furthermore with Filter/Find we need to be sure that we have not lost the row altogether by using a different row filter
+            //  and we also need to protect against recursively call ReselectGridRowAfterSort
             int newRowAfterValidation = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow, prevRowBeforeValidation - 1) + 1;
-            if (newRowAfterValidation != prevRowBeforeValidation)
+            if (newRowAfterValidation == 0)
             {
-                grdDetails.ReselectGridRowAfterSort(newRowAfterValidation);
-                //Console.WriteLine("{0}:    Validation: validated row moved to {1}.", DateTime.Now.Millisecond, newRowAfterValidation);
+{#IFDEF FILTERANDFIND}
+                // The row is no longer in the view - probably because the new data values are being filtered out
+                if ((FCurrentActiveFilter != FFilterPanelControls.BaseFilter) || !FFilterPanelControls.BaseFilterShowsAllRecords)
+                {
+                    // Remember the control with the focus
+                    Control c = FPetraUtilsObject.GetFocusedControl(pnlDetails);
+                    MessageBox.Show(MCommonResourcestrings.StrEditedRecordIsFiltered, MCommonResourcestrings.StrEditRecordTitle, 
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Clear the filters without selecting a new row
+                    FClearingDiscretionaryFilters = true;
+                    FFilterPanelControls.ClearAllDiscretionaryFilters();
+                    FClearingDiscretionaryFilters = false;
+
+                    // Now find the row again - this time we should succeed
+                    newRowAfterValidation = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow, prevRowBeforeValidation - 1) + 1;
+
+                    // Select the row
+                    grdDetails.ReselectGridRowAfterSort(newRowAfterValidation);
+                    
+                    // Put the focus back again on the editable control
+                    if (c != null)
+                    {
+                        c.Focus();
+                    }
+                }
+{#ENDIF FILTERANDFIND}
+{#IFNDEF FILTERANDFIND}
+                // There is no Filter/Find on this screen so we should never take this code path
+{#ENDIFN FILTERANDFIND}
+            }
+            else
+            {
+                if ((newRowAfterValidation != prevRowBeforeValidation) && !grdDetails.Sorting)
+                {
+                    grdDetails.ReselectGridRowAfterSort(newRowAfterValidation);
+                    //Console.WriteLine("{0}:    Validation: validated row moved to {1}.", DateTime.Now.Millisecond, newRowAfterValidation);
+                }
             }
 {#ENDIF SHOWDETAILS}
 {#IFDEF PERFORMUSERCONTROLVALIDATION}

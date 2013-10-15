@@ -11,6 +11,7 @@ ImageList FFilterImages;
 private TFilterPanelControls FFilterPanelControls = new TFilterPanelControls();
 private TFindPanelControls FFindPanelControls = new TFindPanelControls();
 private bool FIsFilterFindInitialised = false;
+private bool FClearingDiscretionaryFilters = false;
 private string FCurrentActiveFilter = String.Empty;
 private string FPreviousFilterTooltip = String.Format("{0}{1}{2}", CommonFormsResourcestrings.StrFilterIsHidden, Environment.NewLine, CommonFormsResourcestrings.StrFilterClickToTurnOn);
 
@@ -233,6 +234,7 @@ void FucoFilterAndFind_FindNextClicked(object sender, TUcoFilterAndFind.TContext
                 if ({#ISMATCHINGROW}(rowView.Row))
                 {
                     SelectRowInGrid(rowNum);
+                    ((Control)sender).Focus();
                     return;
                 }
             }
@@ -245,6 +247,7 @@ void FucoFilterAndFind_FindNextClicked(object sender, TUcoFilterAndFind.TContext
                 if ({#ISMATCHINGROW}(rowView.Row))
                 {
                     SelectRowInGrid(rowNum);
+                    ((Control)sender).Focus();
                     return;
                 }
             }
@@ -302,16 +305,30 @@ void FucoFilterAndFind_ArgumentCtrlValueChanged(object sender, TUcoFilterAndFind
         Console.WriteLine("Applying the filter dynamically, due to a control value change");
     }
 
-    if (!FucoFilterAndFind.IgnoreValueChangedEvent)
+    if ((DynamicStandardFilterPanel || DynamicExtraFilterPanel) && !FucoFilterAndFind.IgnoreValueChangedEvent && !FClearingDiscretionaryFilters)
     {
-        SelectRowInGrid(FPrevRowChangedRow);
+        // If we are dynamic filtering we try to re-select the row we highlighted before - otherwise we keep the highlight in the same position
+        //  However, if we are clearing the filter or the userControl is sending duplicate events, we skip this step
+        int newRowAfterFiltering = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow, FPrevRowChangedRow - 1) + 1;
+        SelectRowInGrid(newRowAfterFiltering == 0 ? FPrevRowChangedRow : newRowAfterFiltering);
+
+        if (sender as TUcoFilterAndFind == null)
+        {
+            ((Control)sender).Focus();
+        }
     }
 }
 
 void FucoFilterAndFind_ApplyFilterClicked(object sender, TUcoFilterAndFind.TContextEventExtControlArgs e)
 {
     ApplyFilter();
-    SelectRowInGrid(FPrevRowChangedRow);
+    int newRowAfterFiltering = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow, FPrevRowChangedRow - 1) + 1;
+    SelectRowInGrid(newRowAfterFiltering == 0 ? FPrevRowChangedRow : newRowAfterFiltering);
+
+    if (sender as TUcoFilterAndFind == null)
+    {
+        ((Control)sender).Focus();
+    }
 }
 
 void ApplyFilter()
