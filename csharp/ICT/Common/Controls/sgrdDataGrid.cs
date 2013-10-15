@@ -1611,7 +1611,7 @@ namespace Ict.Common.Controls
             int RowIndex = -1;
             DataView dv = (this.DataSource as BoundDataView).DataView;
 
-            if (AHintRowToTryFirst >= 0)
+            if ((AHintRowToTryFirst >= 0) && (AHintRowToTryFirst < dv.Count))
             {
                 if (dv[AHintRowToTryFirst].Row == ADataRow)
                 {
