@@ -26,6 +26,7 @@ using System.Data;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;

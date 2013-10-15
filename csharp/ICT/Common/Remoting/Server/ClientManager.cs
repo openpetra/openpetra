@@ -32,6 +32,7 @@ using System.Security.Principal;
 using System.Resources;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using System.Threading;

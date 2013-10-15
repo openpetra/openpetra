@@ -397,7 +397,7 @@ ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.Text);
 {#CONTROLNAME}.NumberValueDecimal = AParameters.Get("{#PARAMNAME}").ToDecimal();
 
 {##TCLBVERSATILEREADCONTROLS}
-ACalc.AddParameter("{#PARAMNAME}", this.{#CONTROLNAME}.GetCheckedStringList());
+ACalc.AddStringParameter("{#PARAMNAME}", this.{#CONTROLNAME}.GetCheckedStringList());
 
 {##TCLBVERSATILESETCONTROLS}
 {#CONTROLNAME}.SetCheckedStringList(AParameters.Get("{#PARAMNAME}").ToString());

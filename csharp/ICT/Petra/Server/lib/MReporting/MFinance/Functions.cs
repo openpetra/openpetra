@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -515,24 +515,29 @@ namespace Ict.Petra.Server.MReporting.MFinance
             return ReturnValue;
         }
 
+        //
+        // Modified Oct 2013 to use the first pair of Currency columns, rather than only the first two values.
+        //
         private decimal GetNetBalance(int line)
         {
-            decimal ReturnValue;
-            decimal col1;
-            decimal col2;
-            TResult element;
-
-            ReturnValue = 0.0M;
-            element = situation.GetResults().GetFirstChildRow(line);
+            TResult element = situation.GetResults().GetFirstChildRow(line);
 
             if (element != null)
             {
-                col1 = element.column[0].ToDecimal();
-                col2 = element.column[1].ToDecimal();
-                ReturnValue = col1 + col2;
+                Int32 Offset;
+
+                for (Offset = 0; Offset < element.column.Length; Offset++)
+                {
+                    if (element.column[Offset].TypeVariant == eVariantTypes.eCurrency)
+                    {
+                        decimal col1 = element.column[Offset].ToDecimal();
+                        decimal col2 = element.column[Offset + 1].ToDecimal();
+                        return col1 + col2;
+                    }
+                }
             }
 
-            return ReturnValue;
+            return 0.0M;
         }
 
         /// <summary>
@@ -582,7 +587,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             }
             else
             {
-                situation.GetParameters().Add("glm_sequence_i", new TVariant(), col, -1);
+                situation.GetParameters().Add("glm_sequence_i", new TVariant(), col, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
                 situation.GetParameters().Add("debit_credit_indicator", new TVariant(), col, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
             }
 
@@ -721,8 +726,8 @@ namespace Ict.Petra.Server.MReporting.MFinance
             while (accountChildren.Length > 0)
             {
                 accountChild = StringHelper.GetNextCSV(ref accountChildren);
-                StringHelper.GetNextCSV(ref accountChildren);
 
+                StringHelper.GetNextCSV(ref accountChildren);
                 // alias
                 StringHelper.GetNextCSV(ref accountChildren);
 
@@ -931,7 +936,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             ReturnValue = "";
             strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
                      StringHelper.IntToStr(ledgernumber) + " and PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
-            tab = situation.GetDatabaseConnection().SelectDT(strSql, "", situation.GetDatabaseConnection().Transaction);
+            tab = situation.GetDatabaseConnection().SelectDT(strSql, "GetLedgerName_TempTable", situation.GetDatabaseConnection().Transaction);
 
             if (tab.Rows.Count > 0)
             {
@@ -1046,8 +1051,8 @@ namespace Ict.Petra.Server.MReporting.MFinance
             while (accountChildren.Length > 0)
             {
                 accountChild = StringHelper.GetNextCSV(ref accountChildren);
-                StringHelper.GetNextCSV(ref accountChildren);
 
+                StringHelper.GetNextCSV(ref accountChildren);
                 // alias
                 StringHelper.GetNextCSV(ref accountChildren);
 
@@ -1107,7 +1112,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             strSql = "SELECT SUM(a_budget_base_n) " + "FROM PUB_a_general_ledger_master_period " + "WHERE a_glm_sequence_i = " +
                      StringHelper.IntToStr(startperiod.realGlmSequence.glmSequence) + ' ' + "AND a_period_number_i >= " + StringHelper.IntToStr(
                 startperiod.realPeriod) + ' ' + "AND a_period_number_i <= " + StringHelper.IntToStr(endperiod.realPeriod);
-            tab = situation.GetDatabaseConnection().SelectDT(strSql, "", situation.GetDatabaseConnection().Transaction);
+            tab = situation.GetDatabaseConnection().SelectDT(strSql, "GetBudget_TempTable", situation.GetDatabaseConnection().Transaction);
 
             if (tab.Rows.Count > 0)
             {

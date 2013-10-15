@@ -29,6 +29,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Collections.Generic;
 using System.Collections;
+using System.Threading;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
@@ -199,6 +200,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ValidateDataDetailsManual(ABatchRow ARow)
         {
+            if ((ARow == null) || (ARow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return;
+            }
+
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             ParseHashTotal(ARow);
@@ -663,20 +669,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private bool SaveBatchForPosting()
         {
-            if (FPetraUtilsObject.HasChanges)
+            // save first, then post
+            if (!((TFrmGLBatch)ParentForm).SaveChanges())
             {
-                // save first, then post
-                if (!((TFrmGLBatch)ParentForm).SaveChanges())
-                {
-                    // saving failed, therefore do not try to post
-                    MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
-                        Catalog.GetString("Please first save the batch, and then post it!"),
-                        Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return false;
-                }
+                // saving failed, therefore do not try to post
+                MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
+                    Catalog.GetString("Please first save the batch, and then post it!"),
+                    Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
-
-            return true;
+            else
+            {
+                return true;
+            }
         }
 
         private void ReverseBatch(System.Object sender, EventArgs e)
@@ -931,21 +936,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     ArrayList compValues = value.ToComposite();
 
-                    message +=
-                        string.Format(
-                            "{0},{1},{2},{3},{4},{5}",
-                            ((TVariant)compValues[0]).ToString(),
-                            ((TVariant)compValues[1]).ToString(),
-                            ((TVariant)compValues[2]).ToString(),
-                            ((TVariant)compValues[3]).ToString(),
-                            StringHelper.FormatCurrency((TVariant)compValues[4], "currency"),
-                            StringHelper.FormatCurrency((TVariant)compValues[5], "currency")) +
-                        Environment.NewLine;
+                    string[] columns = new string[] {
+                        ((TVariant)compValues[0]).ToString(),
+                        ((TVariant)compValues[1]).ToString(),
+                        ((TVariant)compValues[2]).ToString(),
+                        ((TVariant)compValues[3]).ToString(),
+                        StringHelper.FormatCurrency((TVariant)compValues[4], "CurrencyCSV"),
+                        StringHelper.FormatCurrency((TVariant)compValues[5], "CurrencyCSV")
+                    };
+
+                    message += StringHelper.StrMerge(columns,
+                        Thread.CurrentThread.CurrentCulture.TextInfo.ListSeparator[0]) +
+                               Environment.NewLine;
                 }
 
                 string CSVFilePath = TClientSettings.PathLog + Path.DirectorySeparatorChar + "Batch" + FSelectedBatchNumber.ToString() +
                                      "_TestPosting.csv";
-                StreamWriter sw = new StreamWriter(CSVFilePath);
+                StreamWriter sw = new StreamWriter(CSVFilePath, false, System.Text.Encoding.UTF8);
                 sw.Write(message);
                 sw.Close();
 

@@ -579,6 +579,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 String.Format(Catalog.GetString("bank import for date {0}"), stmt.Date.ToShortDateString()));
 
             AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
+            giftbatchRow.BankAccountCode = stmt.BankAccountCode;
 
             decimal HashTotal = 0.0M;
 

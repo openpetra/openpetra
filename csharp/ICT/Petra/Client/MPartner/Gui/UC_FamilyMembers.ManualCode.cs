@@ -283,7 +283,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                grpChangeFamilyID.Visible = false;
+                grpFamilyID.Visible = false;
                 grpFamilyMembersModify.Visible = false;
                 btnFamilyIDHelp.Visible = false;
 
@@ -586,18 +586,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                 " This number is used to identify the family members within a Family. " +
                 "\r\n" + " * Family ID's 0 and 1 are used for parents; " + "\r\n" +
                 "    FamilyID's 2, 3, 4 ... 9 are used for children. " + "\r\n" +
-                " * All gifts to this Family will be assigned to the to the Field in the Commitment" +
+                " * All gifts to this Family will be assigned to the Field in the Commitment" +
                 "\r\n" +
-                "    Record of the family member with the the lowest FamilyID of those who have a" +
+                "    Record of the family member with the the lowest Family ID" +
                 "\r\n" +
-                "    current Commitment Record." +
+                "    of those who have a current Commitment Record." +
                 "\r\n" +
                 "\r\n" +
-                " This system needs to be consistently applied to all Families." +
+                " This system needs to be consistently applied to all Families, to ensure that" +
                 "\r\n" +
-                " This ensures that gifts go to the correct Field, and that family members are" +
+                " gifts go to the correct Field, and that family members are" +
                 "\r\n" +
-                " always listed in the same order on screen as well as on reports! ");
+                " always listed in the same order on screen and on reports.");
 
             MessageBox.Show(StrFamilyIDExplained, Catalog.GetString("Family ID Explained"));
         }
@@ -1834,7 +1834,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 /* need to disable all Buttons that allow modification of p_person record */
                 CustomEnablingDisabling.DisableControl(grpFamily, btnChangeFamily);
-                CustomEnablingDisabling.DisableControlGroup(grpChangeFamilyID);
+                CustomEnablingDisabling.DisableControlGroup(grpFamilyID);
                 CustomEnablingDisabling.DisableControlGroup(grpFamilyMembersModify);
             }
         }

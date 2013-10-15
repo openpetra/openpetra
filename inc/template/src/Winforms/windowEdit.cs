@@ -19,8 +19,9 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Data;
-using Ict.Common.Remoting.Shared;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Remoting.Shared;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -423,7 +424,7 @@ namespace {#NAMESPACE}
     /// so that the reference to the row object is updated automatically.
     /// </summary>
     private {#DETAILTABLE}Row FPreviouslySelectedDetailRow = null;
-	
+    
 {#IFDEF SAVEDETAILS}
     private void grdDetails_Enter(object sender, EventArgs e)
     {
@@ -490,7 +491,7 @@ namespace {#NAMESPACE}
             ShowDetails(e.Row);
         }
         FPrevRowChangedRow = e.Row;
-	}
+    }
 {#DELETERECORD}
     /// <summary>
     /// Standard method to delete the Data Row whose Details are currently displayed.
@@ -893,13 +894,13 @@ namespace {#NAMESPACE}
         {            
             if (AIsNewRow)
             {
-				{#SAVEDETAILS}
+                {#SAVEDETAILS}
             }
             else
             {
                 object[] beforeEdit = ARow.ItemArray;
-				ARow.BeginEdit();
-				{#SAVEDETAILS}
+                ARow.BeginEdit();
+                {#SAVEDETAILS}
                 if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
                 {
                     ARow.CancelEdit();
@@ -910,7 +911,7 @@ namespace {#NAMESPACE}
                 }
             }
         }
-    }							
+    }                           
 {#IFDEF GENERATECONTROLUPDATEDATAHANDLER}
 
     private void ControlUpdateDataHandler(object sender, EventArgs e)
@@ -1249,6 +1250,13 @@ namespace {#NAMESPACE}
                 FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
             }                
         }
+        else
+        {
+            // validation failed
+            ReturnValue = false;
+            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+        }
+
 
         return ReturnValue;
     }

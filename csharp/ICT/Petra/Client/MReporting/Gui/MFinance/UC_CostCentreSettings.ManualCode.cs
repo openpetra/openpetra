@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -101,14 +101,26 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_costcentreoptions", "SelectedCostCentres");
             }
 
+            String CostCentreListTitle;
+
             if (rbtAllCostCentres.Checked || rbtAllActiveCostCentres.Checked)
             {
-                ACalculator.AddParameter("param_cost_centre_codes", clbCostCentres.GetAllStringList());
+                CostCentreListTitle = clbCostCentres.GetAllStringList();
             }
             else
             {
-                ACalculator.AddParameter("param_cost_centre_codes", clbCostCentres.GetCheckedStringList());
+                CostCentreListTitle = clbCostCentres.GetCheckedStringList();
             }
+
+            ACalculator.AddStringParameter("param_cost_centre_codes", CostCentreListTitle);
+            CostCentreListTitle = CostCentreListTitle.Replace("\"", "");
+
+            if (CostCentreListTitle.Length > 25)
+            {
+                CostCentreListTitle = "Selected Cost Centres";
+            }
+
+            ACalculator.AddParameter("param_cost_centre_list_title", CostCentreListTitle);
 
             ACalculator.AddParameter("param_cost_centre_summary", chkCostCentreBreakdown.Checked);
             ACalculator.AddParameter("param_cost_centre_breakdown", chkCostCentreBreakdown.Checked);

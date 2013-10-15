@@ -26,6 +26,7 @@ using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.DB;
 using System.Windows.Forms;
+using Ict.Common.DB.Exceptions;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MSysMan;
 using Ict.Petra.Client.App.Core.RemoteObjects;

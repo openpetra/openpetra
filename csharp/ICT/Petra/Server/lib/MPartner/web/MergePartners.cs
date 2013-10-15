@@ -63,7 +63,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
     /// </summary>
     public class TMergePartnersWebConnector
     {
-        private static StreamWriter MyWriter;
+        // TODO private static StreamWriter MyWriter;
 
         /// <summary>
         /// returns the supplier currency for a partner if it is a supplier
@@ -107,10 +107,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             /* // TODO write original data to xml file
-            string path = Directory.GetCurrentDirectory();
-            path = Directory.GetParent(path).FullName;
-            path = Directory.GetParent(path).FullName;
-            FileStream outStream = File.Create(Path.Combine(path, "log\\OriginalRecordsBeforeMerge.xml"));
+            string path = "../../log/OriginalRecordsBeforeMerge.xml";
+            FileStream outStream = File.Create(Path.GetFullPath(path);
             MyWriter = new StreamWriter(outStream, Encoding.UTF8);*/
 
             try

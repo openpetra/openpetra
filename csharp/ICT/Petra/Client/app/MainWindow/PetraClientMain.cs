@@ -156,7 +156,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
                     FLoginSuccessful = true;
 
-                    Ict.Petra.Client.MSysMan.Gui.TFrmMaintainLanguageCulture.InitLanguageAndCulture();
+                    Ict.Petra.Client.MSysMan.Gui.TUC_GeneralPreferences.InitLanguageAndCulture();
                 }
             }
             catch (Exception exp)

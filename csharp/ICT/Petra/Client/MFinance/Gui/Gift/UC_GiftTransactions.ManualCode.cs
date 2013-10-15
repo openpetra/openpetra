@@ -533,7 +533,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FPreviouslySelectedDetailRow == null)
             {
-                txtGiftTotal.Text = "";
+                txtGiftTotal.NumberValueDecimal = 0;
                 txtBatchTotal.NumberValueDecimal = 0;
 
                 //If all details have been deleted

@@ -20,7 +20,7 @@
   <Parameter id="param_chkSelectTypes" value="eString:false" />
   <Parameter id="param_partnertypelist" value="eString:false" />
   <Parameter id="param_calculation" column="0" value="eString:Partner Name" />
-  <Parameter id="ColumnWidth" column="0" value="eInteger:4" />
+  <Parameter id="ColumnWidth" column="0" value="eDecimal:4616752568008179712" />
   <Parameter id="param_calculation" column="1" value="eString:Partner Key" />
   <Parameter id="ColumnWidth" column="1" value="eInteger:2" />
   <Parameter id="param_calculation" column="2" value="eString:Date of Birth" />

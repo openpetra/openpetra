@@ -335,7 +335,7 @@ namespace Ict.Petra.Server.MReporting.Calculator
             // Get the number of accounting and forwarding periods from the given ledger
             strSql = "SELECT a_number_fwd_posting_periods_i, a_number_of_accounting_periods_i, a_current_period_i, a_current_financial_year_i " +
                      "FROM PUB_a_ledger WHERE a_ledger_number_i = " + ledgernr.ToString();
-            tab = DatabaseConnection.SelectDT(strSql, "", DatabaseConnection.Transaction);
+            tab = DatabaseConnection.SelectDT(strSql, "InitParameterLedger_TempTable", DatabaseConnection.Transaction);
 
             if (tab.Rows.Count == 1)
             {

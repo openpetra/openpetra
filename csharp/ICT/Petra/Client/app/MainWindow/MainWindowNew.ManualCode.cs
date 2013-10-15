@@ -587,11 +587,20 @@ namespace Ict.Petra.Client.App.PetraClient
         }
 
         /// <summary>
-        /// Keep Conference module in view after a new conference has been selected.
+        /// This was added for use after a new conference has been selected.
+        /// IT ONLY WORKS IF THE USER HAS CONFERENCE ACCESS!
         /// </summary>
         public void SelectConferenceFolder()
         {
             lstFolders.SelectFolder(4);
+        }
+
+        /// <summary>
+        /// This was added for use after user preferences have been set.
+        /// </summary>
+        public void SelectSettingsFolder()
+        {
+            lstFolders.SelectFolder(6);
         }
 
         /// <summary>

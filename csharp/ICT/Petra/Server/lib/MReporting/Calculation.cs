@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -185,7 +185,16 @@ namespace Ict.Petra.Server.MReporting
                     strId += '/';
                 }
 
-                strId += Parameters.Get(StringHelper.GetNextCSV(ref strIdentification).Trim(), -1, Depth).ToString(false);
+                string strTemp = StringHelper.GetNextCSV(ref strIdentification).Trim();
+
+                if (Parameters.Exists(strTemp, -1, Depth))
+                {
+                    strId += Parameters.Get(strTemp, -1, Depth).ToString(false);
+                }
+                else
+                {
+                    strId += strTemp;
+                }
             }
 
             this.LineId = thisRunningCode;
@@ -1259,13 +1268,13 @@ namespace Ict.Petra.Server.MReporting
                         // the parameters are stored first
                         Parameters.Add(strName, StringHelper.GetNextCSV(
                                 ref strSql).Trim(), -1, Depth + 1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
+                    }
 
-                        if (strLowerLevel != String.Empty)
-                        {
-                            TRptDataCalcLevel rptDataCalcLevel = new TRptDataCalcLevel(this);
-                            rptDataCalcLevel.Depth++;
-                            rptDataCalcLevel.Calculate(CurrentReport.GetLevel(strLowerLevel), masterRow);
-                        }
+                    if (strLowerLevel != String.Empty)
+                    {
+                        TRptDataCalcLevel rptDataCalcLevel = new TRptDataCalcLevel(this);
+                        rptDataCalcLevel.Depth++;
+                        rptDataCalcLevel.Calculate(CurrentReport.GetLevel(strLowerLevel), masterRow);
                     }
                 }
             }
@@ -1324,7 +1333,7 @@ namespace Ict.Petra.Server.MReporting
                 }
                 else if (strSql.Length > 0)
                 {
-                    DataTable tab = DatabaseConnection.SelectDT(strSql, "", DatabaseConnection.Transaction);
+                    DataTable tab = DatabaseConnection.SelectDT(strSql, "EvaluateCalculation_TempTable", DatabaseConnection.Transaction);
                     string strReturns = rptCalculation.strReturns;
 
                     if (strReturns.ToLower() == "automatic")

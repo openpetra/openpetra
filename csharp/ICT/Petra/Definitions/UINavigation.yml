@@ -417,10 +417,11 @@ OpenPetra:
                         TopDonorReport: {ActionOpenScreen=TFrmTopDonorReport}
         Settings: {Icon=settings.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
             Main: {SkipThisLevel=true}
+                Preferences: {DontShowNestedTasksAsLinks=true}
+                    UserPreferences:
+                        SetUserPreferences: {Description="Maintain User Preferences", ActionOpenScreen=TFrmUserPreferences}
                 Safety: {DontShowNestedTasksAsLinks=true}
                     SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
-                Language: {DontShowNestedTasksAsLinks=true}
-                    SetLanguageSettings: {Description="Switch to another language or culture settings", ActionOpenScreen=TFrmMaintainLanguageCulture}
                 Export: {DontShowNestedTasksAsLinks=true, PermissionsRequired=FINANCE-1,PERSONNEL}
                     ExportDataToIntranet: {Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExport}
 

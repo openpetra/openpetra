@@ -92,6 +92,8 @@ namespace Tests.MainNavigationScreens
             //sw.Close();
 
             FNavigator = MainMenuNode.OwnerDocument.CreateNavigator();
+
+            TLogging.Log("Test Setup finished..." + Environment.NewLine);
         }
 
         /// <summary>
@@ -113,6 +115,8 @@ namespace Tests.MainNavigationScreens
         [Test]
         public void TestLoopThroughUINavigation()
         {
+            TLogging.Log("Running test 'TestLoopThroughUINavigation'..." + Environment.NewLine);
+
             // get all nodes that have an attribute ActionOpenScreen
             XPathExpression expr = FNavigator.Compile("//*[@ActionOpenScreen]");
             XPathNodeIterator iterator = FNavigator.Select(expr);
@@ -136,6 +140,8 @@ namespace Tests.MainNavigationScreens
         [Test]
         public void TestPermissionsSystemManager()
         {
+            TLogging.Log("Running test 'TestPermissionsSystemManager'..." + Environment.NewLine);
+
             Assert.AreEqual("demo", UserInfo.GUserInfo.UserID.ToLower(), "Test should be run with DEMO user");
 
             //change demo's permissions in the xml back to normal
@@ -162,12 +168,71 @@ namespace Tests.MainNavigationScreens
             }
         }
 
+        // Run Method 'TestOpenAllWindows' in the context of different Cultures.
+        //
+        // Note: At the time of this writing (Oct. 2013) there is no better way
+        // than using the 'SetCulture' Attribute; once NUnit 3 is out there might
+        // be a way of telling NUnit to execute a single method with 1..n Cultures,
+        // accoring to the authors of NUnit...
+
+        /// <summary>
+        /// Runs the <see cref="TestOpenAllWindows" /> Method under en_US Culture.
+        /// </summary>
+        [Test]
+        [SetCulture("en-US")]
+        public void TestOpenAllWindows_en_US()
+        {
+            TestOpenAllWindows();
+        }
+
+        /// <summary>
+        /// Runs the <see cref="TestOpenAllWindows" /> Method under en_GB Culture.
+        /// </summary>
+        [Test]
+        [SetCulture("en-GB")]
+        public void TestOpenAllWindows_en_GB()
+        {
+            TestOpenAllWindows();
+        }
+
+        /// <summary>
+        /// Runs the <see cref="TestOpenAllWindows" /> Method under de_DE Culture.
+        /// </summary>
+        [Test]
+        [SetCulture("de-DE")]
+        public void TestOpenAllWindows_de_DE()
+        {
+            TestOpenAllWindows();
+        }
+
+        /// <summary>
+        /// Runs the <see cref="TestOpenAllWindows" /> Method under de_AT Culture.
+        /// </summary>
+        [Test]
+        [SetCulture("de-AT")]
+        public void TestOpenAllWindows_de_AT()
+        {
+            TestOpenAllWindows();
+        }
+
+        /// <summary>
+        /// Runs the <see cref="TestOpenAllWindows" /> Method under fr_FR Culture.
+        /// </summary>
+        [Test]
+        [SetCulture("fr-FR")]
+        public void TestOpenAllWindows_fr_FR()
+        {
+            TestOpenAllWindows();
+        }
+
         /// <summary>
         /// verify that all windows open either without error or with proper exception handling
         /// </summary>
-        [Test]
-        public void TestOpenAllWindows()
+        private void TestOpenAllWindows()
         {
+            TLogging.Log(String.Format("Running test 'TestOpenAllWindows' with Culture '{0}'...",
+                    Thread.CurrentThread.CurrentCulture.ToString()) + Environment.NewLine);
+
             // get all nodes that have an attribute ActionOpenScreen
             XPathExpression expr = FNavigator.Compile("//*[@ActionOpenScreen]");
             XPathNodeIterator iterator = FNavigator.Select(expr);
@@ -360,6 +425,8 @@ namespace Tests.MainNavigationScreens
         [Test]
         public void TestBrokenClientPermissions()
         {
+            TLogging.Log("Running test 'TestBrokenClientPermissions'..." + Environment.NewLine);
+
             // Give the user access at the client end to open the screen
             TLstTasks.Init(UserInfo.GUserInfo.UserID, TruePermission);
 

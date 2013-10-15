@@ -81,18 +81,30 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Opens the Partner Find screen (or activates it in case a non-modal instance was already open and
         /// ARestrictToPartnerClasses is null). If ARestrictToPartnerClasses isn't null then the screen is opened modally.
         /// </summary>
+        /// <remarks>
+        /// For NUnit tests that just try to open the Partner Find screen but which don't instantiate a Main Form
+        /// we need to ignore the <paramref name="AParentForm" /> Argument as it will be null in those cases!
+        /// </remarks>
         /// <returns>void</returns>
         public static void FindPartnerOfClass(Form AParentForm, string ARestrictToPartnerClasses = null)
         {
             if (ARestrictToPartnerClasses == null)
             {
-                AParentForm.Cursor = Cursors.WaitCursor;
+                // No Cursor change if run from within NUnit Test without Main Form instance...
+                if (AParentForm != null)
+                {
+                    AParentForm.Cursor = Cursors.WaitCursor;
+                }
 
                 TPartnerFindScreen PartnerFindForm = new TPartnerFindScreen(AParentForm);
                 PartnerFindForm.SetParameters(false, -1);
                 PartnerFindForm.Show();
 
-                AParentForm.Cursor = Cursors.Default;
+                // No Cursor change if run from within NUnit Test without Main Form instance...
+                if (AParentForm != null)
+                {
+                    AParentForm.Cursor = Cursors.Default;
+                }
             }
             else
             {
@@ -106,7 +118,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // Open the Partner Edit screen
                     TFrmPartnerEdit PartnerEditForm;
 
-                    AParentForm.Cursor = Cursors.WaitCursor;
+                    // No Cursor change if run from within NUnit Test without Main Form instance...
+                    if (AParentForm != null)
+                    {
+                        AParentForm.Cursor = Cursors.WaitCursor;
+                    }
 
                     PartnerEditForm = new TFrmPartnerEdit(AParentForm);
                     PartnerEditForm.SetParameters(TScreenMode.smEdit, PartnerKey, LocationPK.SiteKey, LocationPK.LocationKey);
@@ -121,7 +137,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                         TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, PartnerKey);
                     }
 
-                    AParentForm.Cursor = Cursors.Default;
+                    // No Cursor change if run from within NUnit Test without Main Form instance...
+                    if (AParentForm != null)
+                    {
+                        AParentForm.Cursor = Cursors.Default;
+                    }
                 }
             }
         }

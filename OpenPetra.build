@@ -28,6 +28,8 @@ list of available commands:
   deleteBakFiles: delete all backup files
   initConfigFiles: write and overwrite the config files for client, server and testing, and the version.txt
   test: will run the NUnit tests
+      nant test-without-display             runs all basic tests (excl. GUI tests)
+      nant test-main-navigation-screens     tests the opening of all screens from the main menu
   devzip: build a zip file for developers for easy start
 
 compat:
@@ -335,6 +337,11 @@ useful parameters
 <target name="test-without-display" depends="initConfigFiles">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
   <nant inheritall="false" target="test-without-display" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
+</target>
+
+<target name="test-main-navigation-screens" depends="initConfigFiles">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+  <nant inheritall="false" target="test-main-navigation-screens" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
 </target>
 
 <target name="enable-sqlite-config-for-jenkins">

@@ -65,8 +65,8 @@ RootNode:
                 Row6: [cmbDetailMethodOfPaymentCode]
                 Row7: [rgrDetailGiftType]
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2, Validation=true}
-        cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, ColSpan=2}
-        cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, ColSpan=2}
+        cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, ColSpan=2, Validation=true}
+        cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, ColSpan=2, Validation=true}
         dtpDetailGlEffectiveDate: {Label=GL Effective Date, OnChange=UpdateBatchPeriod, Validation=true}
         lblValidDateRange:
         txtDetailHashTotal: {Label=Hash Total, Format=Currency, NullValueAllowed=false, OnChange=HashTotalChanged, Validation=true}

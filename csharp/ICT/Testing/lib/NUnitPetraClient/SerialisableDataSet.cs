@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Common.Data;
 using Ict.Common.IO;
 using Ict.Common.Verification;
