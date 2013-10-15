@@ -81,6 +81,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             try
             {
+                // Must not throw away the changes because we need the correct statement keys
+                AStatementAndTransactionsDS.DontThrowAwayAfterSubmitChanges = true;
                 SubmissionResult = BankImportTDSAccess.SubmitChanges(AStatementAndTransactionsDS, out AVerificationResult);
 
                 AFirstStatementKey = -1;
@@ -162,6 +164,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             }
 
             TVerificationResultCollection VerificationResult;
+            MainDS.ThrowAwayAfterSubmitChanges = true;
             BankImportTDSAccess.SubmitChanges(MainDS, out VerificationResult);
 
             return !VerificationResult.HasCriticalErrors;
@@ -464,6 +467,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         {
             TVerificationResultCollection VerificationResult;
 
+            AMainDS.ThrowAwayAfterSubmitChanges = true;
             return BankImportTDSAccess.SubmitChanges(AMainDS, out VerificationResult) == TSubmitChangesResult.scrOK;
         }
 

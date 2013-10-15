@@ -2188,7 +2188,7 @@ namespace Ict.Common.Data
 
             short TableId = Convert.ToInt16(ATable.GetType().GetField("TableId").GetValue(null));
 
-            if (!ATable.ThrowAwayAfterSubmitChanges && (ATable.Rows.Count > 1000))
+            if (!ATable.ThrowAwayAfterSubmitChanges && !ATable.DontThrowAwayAfterSubmitChanges && (ATable.Rows.Count > 1000))
             {
                 TLogging.Log(
                     "Warning to the developer: Saving " + ATable.Rows.Count.ToString() + " records to table " + ATable.TableName +
