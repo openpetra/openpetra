@@ -259,6 +259,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (ARow == null)
             {
+                EnableButtonControl(false);
+                ClearDetailControls();
                 return;
             }
 
@@ -560,11 +562,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 try
                 {
+                    // AlanP: commented out calls that just set FPreviouslySelectedDetailRow to null
                     //Load all journals for current Batch
                     //clear any transactions currently being editied in the Transaction Tab
-                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+                    //((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                     //clear any journals currently being editied in the Journals Tab
-                    ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
+                    //((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
 
                     //Clear Journals etc for current Batch
                     FMainDS.ATransAnalAttrib.Clear();
@@ -774,28 +777,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // refresh the grid, to reflect that the batch has been posted
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(FLedgerNumber, ReversalGLBatch));
 
-                    this.FPreviouslySelectedDetailRow = null;
-                    ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
-                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+                    // AlanP: You must not set FPreviouslySelectedDetailRow = null because it is owned by grid events
+                    //this.FPreviouslySelectedDetailRow = null;
+                    //((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
+                    //((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
                     LoadBatches(FLedgerNumber);
 
+                    // AlanP - commenting out most of this because it should be unnecessary - or should move to ShowDetailsManual()
                     //Select unposted batch row in same index position as batch just posted
-                    grdDetails.DataSource = null;
-                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+                    //grdDetails.DataSource = null;
+                    //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
 
-                    if (grdDetails.Rows.Count > 1)
-                    {
-                        //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
-                        // such that a removal of a row is not detected
+                    //if (grdDetails.Rows.Count > 1)
+                    //{
+                    //    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+                    //    // such that a removal of a row is not detected
                         SelectRowInGrid(newCurrentRowPos);
-                    }
-                    else
-                    {
-                        EnableButtonControl(false);
-                        ClearDetailControls();
-                        pnlDetails.Enabled = false;
-                    }
+                    //}
+                    //else
+                    //{
+                    //    EnableButtonControl(false);
+                    //    ClearDetailControls();
+                    //    pnlDetails.Enabled = false;
+                    //}
                 }
             }
         }
@@ -865,28 +870,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // make sure that the current dataset is clean,
                     // otherwise the next save would try to modify the posted batch, even though no values have been changed
                     FMainDS.AcceptChanges();
-                    this.FPreviouslySelectedDetailRow = null;
-                    ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
-                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+
+                    // AlanP: You must not set FPreviouslySelectedDetailRow = null because it is owned by grid events
+                    //this.FPreviouslySelectedDetailRow = null;
+                    //((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
+                    //((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
                     LoadBatches(FLedgerNumber);
 
-                    //Select unposted batch row in same index position as batch just posted
-                    grdDetails.DataSource = null;
-                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+                    // AlanP - commenting out most of this because it should be unnecessary - or should move to ShowDetailsManual()
+                    ////Select unposted batch row in same index position as batch just posted
+                    //grdDetails.DataSource = null;
+                    //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
 
-                    if (grdDetails.Rows.Count > 1)
-                    {
-                        //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
-                        // such that a removal of a row is not detected
+                    //if (grdDetails.Rows.Count > 1)
+                    //{
+                    //    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+                    //    // such that a removal of a row is not detected
                         SelectRowInGrid(newCurrentRowPos);
-                    }
-                    else
-                    {
-                        EnableButtonControl(false);
-                        ClearDetailControls();
-                        pnlDetails.Enabled = false;
-                    }
+                    //}
+                    //else
+                    //{
+                    //    EnableButtonControl(false);
+                    //    ClearDetailControls();
+                    //    pnlDetails.Enabled = false;
+                    //}
                 }
             }
         }
@@ -1126,9 +1134,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 btnNew.Enabled = true;
             }
 
-            FPreviouslySelectedDetailRow = null;
-            grdDetails.DataSource = null;
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+            // AlanP Commented out because should be unnecessary
+            //FPreviouslySelectedDetailRow = null;
+            //grdDetails.DataSource = null;
+            //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
 
             string rowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
             FFilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == 0) && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
