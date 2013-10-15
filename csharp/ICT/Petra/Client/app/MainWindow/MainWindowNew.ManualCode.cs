@@ -245,7 +245,7 @@ namespace Ict.Petra.Client.App.PetraClient
         // displays information about the currently selected conference in the navigation panel
         private static void AddConferenceInformation(XmlNode AMenuNode)
         {
-            FConferenceKey = TUserDefaults.GetInt64Default("LastConferenceWorkedWith");
+            FConferenceKey = TUserDefaults.GetInt64Default("LASTCONFERENCEWORKEDWITH");
 
             // Set PartnerKey in conference setup screens for selected conference
             Ict.Petra.Client.MConference.Gui.TConferenceMain.FPartnerKey = FConferenceKey;

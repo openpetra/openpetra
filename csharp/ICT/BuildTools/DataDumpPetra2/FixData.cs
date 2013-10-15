@@ -459,6 +459,11 @@ namespace Ict.Tools.DataDumpPetra2
                 return TFinanceGeneralLedgerUpgrader.FixABudgetType(AColumnNames, ref ANewRow);
             }
 
+            if (ATableName == "a_account")
+            {
+                return TFinanceGeneralLedgerUpgrader.FixABudgetType(AColumnNames, ref ANewRow);
+            }
+
             if (ATableName == "a_motivation_detail")
             {
                 return TFinanceGeneralLedgerUpgrader.FixAMotivationDetail(AColumnNames, ref ANewRow);

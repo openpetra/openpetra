@@ -60,4 +60,10 @@ namespace Ict.Petra.Client.CommonControls.Logic
         out String[] RangeFrom,
         out String[] RangeTo,
         Form AParentForm);
+
+    /// <summary>Delegate for a call to open a Modal Range Find screen</summary>
+    public delegate bool TDelegateOpenGetMergeDataDialog(long AFromPartnerKey,
+        long AToPartnerKey,
+        string ADataType,
+        Form AParentForm);
 }
