@@ -4,12 +4,13 @@
     <comment key="SetupCorporateExchangeRate.yaml" value="style='background:Orange' |Have not completed integration with manual row filter" />
     <comment key="SetupDailyExchangeRate.yaml" value="style='background:Orange' |Have not completed integration with manual row filter" />
     <comment key="SetupAnalysisTypes.yaml" value="Multiple changes to the YAML to incorporate a splitter panel containing two grids" />
-    <comment key="PersonnelStaffData.yaml" value="This screen is inaccessible to the Open Petra Menu" />
+    <comment key="PersonnelStaffData.yaml" value="style='background:LightSkyBlue' |This screen is inaccessible to the Open Petra Menu" />
     <comment key="ApplicationTypeSetup.yaml" value="style='background:Orange' |Still needs filtering by radio button cloning" />
     <comment key="EarlyLateRegistrationSetup.yaml" value="style='background:Orange' |Still needs filtering by radio button cloning" />
     <comment key="ConferenceStandardCostSetup.yaml" value="style='background:Orange' |Has a currency text box that is not implemented (but not required?)" />
     <comment key="SetupSuspenseAccount.yaml" value="style='background:Orange' |Requires manual code to get description column from another location" />
     <comment key="ContactAttributeSetup.yaml" value="Multiple changes to the YAML to incorporate a splitter panel containing two grids" />
+    <comment key="UC_GLBatches.yaml" value="Requires testing to ensure manual code file functionality still works as before but with new filter panel" />
     
     
     <!-- Partner Edit screens are not going to have Filter/Find -->
@@ -30,16 +31,114 @@
   </comments>
 
   <mantis>
-    <feature key="CurrencyLanguageSetup.yaml" value="1348" />
+    <!-- Common -->
     <feature key="CurrencySetup.yaml" value="1349" />
+    <feature key="CountrySetup.yaml" value="1656" />
+    <feature key="FrequencySetup.yaml" value="" />
+    <feature key="LanguageCodeSetup.yaml" value="1388" />
+    <feature key="LocalDataFieldSetup.yaml" value="" />
+    <feature key="InternationalPostalTypeSetup.yaml" value="1404" />
+    <!-- Finance -->
+    <feature key="EmailDestinationSetup.yaml" value="1352" />
+    <feature key="CurrencyLanguageSetup.yaml" value="1348" />
     <feature key="SetupCorporateExchangeRate.yaml" value="1350" />
     <feature key="SetupDailyExchangeRate.yaml" value="1351" />
-    <feature key="EmailDestinationSetup.yaml" value="1352" />
     <feature key="SetupAdminGrantsPayable.yaml" value="1355" />
     <feature key="SetupAdminGrantsReceivable.yaml" value="1355" />
+    <feature key="SetupCostCentreTypes.yaml" value="2121" />
+    <feature key="SetupMethodOfGiving.yaml" value="" />
+    <feature key="SetupMethodOfPayment.yaml" value="" />
+    <feature key="SetupSuspenseAccount.yaml" value="2120" />
     <feature key="MotivationGroupSetup.yaml" value="1356" />
     <feature key="GiftMotivationSetup.yaml" value="1357" />
-    <feature key="UC_GiftBatches.yaml" value="1359" />
-    <feature key="UC_GiftTransactions.yaml" value="1359" />
+    <feature key="UC_GiftBatches.yaml" value="1359 and 1361" />
+    <feature key="UC_GiftTransactions.yaml" value="" />
+    <feature key="UC_RecurringGiftBatches.yaml" value="1363 and 2122" />
+    <feature key="UC_RecurringGiftTransactions.yaml" value="1363" />
+    <feature key="UC_GLAttributes.yaml" value="" />
+    <feature key="UC_GLBatches.yaml" value="1366" />
+    <feature key="UC_GLJournals.yaml" value="1367" />
+    <feature key="UC_GLTransactions.yaml" value="1368" />
+    <feature key="UC_RecurringGLAttributes.yaml" value="" />
+    <feature key="UC_RecurringGLBatches.yaml" value="1370" />
+    <feature key="UC_RecurringGLJournals.yaml" value="1372" />
+    <feature key="UC_RecurringGLTransactions.yaml" value="1374" />
+    <feature key="UC_AccountAnalysisAttributes.yaml" value="2124" />
+    <feature key="UC_SetupAnalysisValues.yaml" value="2125" />
+    <feature key="UC_ContactAttributeDetail.yaml" value="" />
+    <!-- Partner -->
+    <feature key="AcquisitionCodeSetup.yaml" value="1757" />
+    <feature key="AddresseeTypeSetup.yaml" value="1406" />
+    <feature key="BusinessCodeSetup.yaml" value="1760" />
+    <feature key="ContactAttributeSetup.yaml" value="" />
+    <feature key="ContactMethodSetup.yaml" value="1662" />
+    <feature key="DenominationCodeSetup.yaml" value="1392" />
+    <feature key="InterestCategorySetup.yaml" value="1769" />
+    <feature key="InterestSetup.yaml" value="1772" />
+    <feature key="LocalDataOptionListNameSetup.yaml" value="" />
+    <feature key="LocalDataOptionsSetup.yaml" value="" />
+    <feature key="LocationTypeSetup.yaml" value="1408" />
+    <feature key="MaritalStatusSetup.yaml" value="1763" />
+    <feature key="OccupationCodeSetup.yaml" value="1659" />
+    <feature key="PartnerStatusSetup.yaml" value="1754" />
+    <feature key="PartnerTypeSetup.yaml" value="1390" />
+    <feature key="PostcodeRangeSetup.yaml" value="" />
+    <feature key="PublicationCostSetup.yaml" value="1398" />
+    <feature key="PublicationSetup.yaml" value="1396" />
+    <feature key="ReasonSubscriptionCancelledSetup.yaml" value="1402" />
+    <feature key="ReasonSubscriptionGivenSetup.yaml" value="1400" />
+    <feature key="RelationCategorySetup.yaml" value="1394" />
+    <feature key="RelationshipSetup.yaml" value="1394" />
+    
+    <!-- Personnel -->
+    <feature key="AbilityAreaSetup.yaml" value="" />
+    <feature key="AbilityLevelSetup.yaml" value="" />
+    <feature key="ApplicantStatusSetup.yaml" value="" />
+    <feature key="ArrivalDeparturePointSetup.yaml" value="" />
+    <feature key="Country_EventLevelSetup.yaml" value="" />
+    <feature key="DocumentTypeCategorySetup.yaml" value="" />
+    <feature key="DocumentTypeSetup.yaml" value="1426" />
+    <feature key="DriverStatusSetup.yaml" value="" />
+    <feature key="EventRoleSetup.yaml" value="" />
+    <feature key="JobAssignmentTypeSetup.yaml" value="1727" />
+    <feature key="LanguageLevelSetup.yaml" value="1733" />
+    <feature key="LeadershipRatingSetup.yaml" value="" />
+    <feature key="OrganisationContactSetup.yaml" value="1700" />
+    <feature key="PassportTypeSetup.yaml" value="" />
+    <feature key="PositionSetup.yaml" value="1724" />
+    <feature key="ProfessionalAreaSetup.yaml" value="" />
+    <feature key="QualificationLevelSetup.yaml" value="1713" />
+    <feature key="SkillCategorySetup.yaml" value="" />
+    <feature key="SkillLevelSetup.yaml" value="" />
+    <feature key="TransportTypeSetup.yaml" value="" />
+    <!-- Sysman -->
+    <feature key="LanguageSpecificSetup.yaml" value="2231" />
+    <feature key="SecurityGroupSetup.yaml" value="2201" />
+    
+    <!-- Features with no screen -->
+    <featurenoscreen key="1668" value="1348 Form Letter Body" />
+    <featurenoscreen key="1671" value="1353 Form Letter Design" />
+    <featurenoscreen key="1674" value="1358 Form Letter Formality" />
+    <featurenoscreen key="1677" value="1363 Form Letter Customized Greeting" />
+    <featurenoscreen key="1680" value="1368 Form Letter Insert" />
+    <featurenoscreen key="1716" value="1665 Vision Areas (Screen no longer exists in OP)" />
+    <featurenoscreen key="1719" value="1670 Vision Levels (Screen no longer exists in OP)" />
+    <featurenoscreen key="1730" value="1689 Leaving Codes (Screen no longer exists in OP)" />
+    <featurenoscreen key="2075" value="17 Accounts - Display Hierarchy" />
+    <featurenoscreen key="2102" value="2182 Print Badges (all or limited to an extract)" />
+    <featurenoscreen key="2104" value="2189 Room Allocation" />
+    <featurenoscreen key="2106" value="2211 Edit Attendee" />
+    <featurenoscreen key="2107" value="2310 Rooms (Create/Update/Delete)" />
+    <featurenoscreen key="2108" value="1012 Maintain Contacts" />
+    <featurenoscreen key="2110" value="1327 Addresses - Address Layout" />
+    <featurenoscreen key="2112" value="1372 Mail Merge Forms" />
+    <featurenoscreen key="2123" value="2487 Display Balances - Foreign Currency Accounts" />
+    <featurenoscreen key="2210" value="1767 Print Management - Create/Update/Delete Form" />
+    <featurenoscreen key="2214" value="1775 Label (Create/Update/Delete)" />
+    <featurenoscreen key="2218" value="1782 View Report Files" />
+    <featurenoscreen key="2225" value="1808 Logon Message" />
+    <featurenoscreen key="2234" value="1825 Batch Job" />
+    <featurenoscreen key="2240" value="1838 Print dialog functionality" />
+    <featurenoscreen key="2242" value="1846 Reprint Reports" />
   </mantis>
 </rootnode>
