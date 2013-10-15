@@ -188,7 +188,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                     }
                     else
                     {
-                        // TODO: this could be IBAN/BIC, if it starts with a letter
+                        // TODO: this could be the IBAN, if it starts with a letter
                         row.BankAccountNumber = tr.accountCode;
                     }
 
@@ -198,6 +198,7 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                     }
                     else
                     {
+                        // this could be the BIC
                         row.BranchCode = tr.bankCode;
                     }
 
@@ -211,7 +212,10 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
                         || (row.TransactionTypeCode == "053")
                         || (row.TransactionTypeCode == "067")
                         || (row.TransactionTypeCode == "068")
-                        || (row.TransactionTypeCode == "069"))
+                        || (row.TransactionTypeCode == "069")
+                        || (row.TransactionTypeCode == "166") /* SEPA Credit Transfer */
+                        || (row.TransactionTypeCode == "169") /* SEPA Credit Transfer Donation */
+                        )
                     {
                         row.TransactionTypeCode += MFinanceConstants.BANK_STMT_POTENTIAL_GIFT;
                     }
