@@ -793,7 +793,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     //{
                     //    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
                     //    // such that a removal of a row is not detected
-                        SelectRowInGrid(newCurrentRowPos);
+                    SelectRowInGrid(newCurrentRowPos);
                     //}
                     //else
                     //{
@@ -887,7 +887,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     //{
                     //    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
                     //    // such that a removal of a row is not detected
-                        SelectRowInGrid(newCurrentRowPos);
+                    SelectRowInGrid(newCurrentRowPos);
                     //}
                     //else
                     //{

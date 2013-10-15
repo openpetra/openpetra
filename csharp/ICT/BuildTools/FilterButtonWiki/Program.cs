@@ -56,8 +56,8 @@ namespace Ict.Tools.FilterButtonWiki
         private static int FCountWithAll;
         private static int FCountWithNoMantisCase;
         private static StreamWriter FLogFile;
-        private static SortedList<int, int> FMantisCasesDone = new SortedList <int, int>();
-        private static SortedList<int, int> FMantisCasesOpen = new SortedList <int, int>();
+        private static SortedList <int, int>FMantisCasesDone = new SortedList <int, int>();
+        private static SortedList <int, int>FMantisCasesOpen = new SortedList <int, int>();
 
         // our metadata Xml
         private static XmlNode FMetaDataComments;
@@ -95,133 +95,137 @@ namespace Ict.Tools.FilterButtonWiki
             }
 
             using (StreamReader srManual = new StreamReader(manualPath))
-            using (StreamReader srYAML = new StreamReader(AYAMLPath))
-            {
-                string yml = srYAML.ReadToEnd();
-                string manual = srManual.ReadToEnd();
-
-                string shortYAMLPath = AYAMLPath.Substring(FBaseClientPath.Length + 1);
-
-                bool bHasGrid = yml.Contains("grdDetails:");
-                bool bHasDetails = yml.Contains("pnlDetails:");
-                bool bHasButtons = yml.Contains("pnlButtons:") || yml.Contains("pnlDetailButtons");
-                bool bHasFilterFind = yml.Contains("[pnlFilterAndFind,");
-                bool bHasManualRowFilter = manual.Contains(".RowFilter = ");
-
-                if (!bHasGrid && !bHasDetails && !bHasButtons)
+                using (StreamReader srYAML = new StreamReader(AYAMLPath))
                 {
-                    return;
-                }
+                    string yml = srYAML.ReadToEnd();
+                    string manual = srManual.ReadToEnd();
 
-                if (bHasGrid)
-                {
-                    FGridCount++;
-                }
+                    string shortYAMLPath = AYAMLPath.Substring(FBaseClientPath.Length + 1);
 
-                if (bHasDetails)
-                {
-                    FPnlDetailsCount++;
-                }
+                    bool bHasGrid = yml.Contains("grdDetails:");
+                    bool bHasDetails = yml.Contains("pnlDetails:");
+                    bool bHasButtons = yml.Contains("pnlButtons:") || yml.Contains("pnlDetailButtons");
+                    bool bHasFilterFind = yml.Contains("[pnlFilterAndFind,");
+                    bool bHasManualRowFilter = manual.Contains(".RowFilter = ");
 
-                if (bHasButtons)
-                {
-                    FPnlButtonsCount++;
-                }
+                    if (!bHasGrid && !bHasDetails && !bHasButtons)
+                    {
+                        return;
+                    }
 
-                if (bHasFilterFind)
-                {
-                    FPnlFilterFindCount++;
-                }
+                    if (bHasGrid)
+                    {
+                        FGridCount++;
+                    }
 
-                if (bHasButtons && bHasDetails && bHasGrid)
-                {
-                    FCountWithAll++;
-                }
+                    if (bHasDetails)
+                    {
+                        FPnlDetailsCount++;
+                    }
 
-                // Start new row: col1 is filename
-                FLogFile.WriteLine("|-");
-                FLogFile.WriteLine("|{0}", shortYAMLPath);
+                    if (bHasButtons)
+                    {
+                        FPnlButtonsCount++;
+                    }
 
-                // Col2: HasGrid, Col3: Haspnldetails, Col4: Has pnlButtons, Col5: HasAll, Col6: Has pnlFilterFind, Col7: Manual RowFilter, Col8: Comment
-                bool bHasBlueColumn = false;
-                string strColContent;
-                FLogFile.WriteLine(bHasGrid ? "|Yes" : "|No");
-                FLogFile.WriteLine(bHasDetails ? "|Yes" : "|No");
-                FLogFile.WriteLine(bHasButtons ? "|Yes" : "|No");
+                    if (bHasFilterFind)
+                    {
+                        FPnlFilterFindCount++;
+                    }
 
-                if (bHasGrid && bHasButtons && bHasDetails)
-                {
-                    strColContent = "|Yes";
-                }
-                else
-                {
-                    strColContent = "|style=\"background:LightSkyBlue\" |No";
-                    bHasBlueColumn = true;
-                }
-                FLogFile.WriteLine(strColContent);
+                    if (bHasButtons && bHasDetails && bHasGrid)
+                    {
+                        FCountWithAll++;
+                    }
 
-                if (bHasFilterFind)
-                {
-                    strColContent = "|style=\"background:LightSkyBlue\" |Yes";
-                    bHasBlueColumn = true;
-                }
-                else
-                {
-                    strColContent = "|No";
-                }
+                    // Start new row: col1 is filename
+                    FLogFile.WriteLine("|-");
+                    FLogFile.WriteLine("|{0}", shortYAMLPath);
 
-                FLogFile.WriteLine(strColContent);
-                FLogFile.WriteLine(bHasManualRowFilter ? "|style=\"background:Yellow\" |Yes" : "|No");
+                    // Col2: HasGrid, Col3: Haspnldetails, Col4: Has pnlButtons, Col5: HasAll, Col6: Has pnlFilterFind, Col7: Manual RowFilter, Col8: Comment
+                    bool bHasBlueColumn = false;
+                    string strColContent;
+                    FLogFile.WriteLine(bHasGrid ? "|Yes" : "|No");
+                    FLogFile.WriteLine(bHasDetails ? "|Yes" : "|No");
+                    FLogFile.WriteLine(bHasButtons ? "|Yes" : "|No");
 
-                // is there a Mantis Bug?
-                FLogFile.Write("|");
-                string fileName = Path.GetFileName(AYAMLPath);
-                XmlNode mantisFeatureNode = FMetaDataMantis.SelectSingleNode(String.Format("feature[@key='{0}']", fileName));
-                string strMantisFeature = mantisFeatureNode == null ? String.Empty : mantisFeatureNode.Attributes["value"].Value;
-                FLogFile.WriteLine(strMantisFeature);
-
-                int iFeature;
-                if (strMantisFeature == String.Empty)
-                {
                     if (bHasGrid && bHasButtons && bHasDetails)
                     {
-                        FCountWithNoMantisCase++;
+                        strColContent = "|Yes";
                     }
-                }
-                else
-                {
-                    string[] items = strMantisFeature.Split(new char[] { ' ' });
-                    foreach (string item in items)
+                    else
                     {
-                        if (Int32.TryParse(item, out iFeature))
+                        strColContent = "|style=\"background:LightSkyBlue\" |No";
+                        bHasBlueColumn = true;
+                    }
+
+                    FLogFile.WriteLine(strColContent);
+
+                    if (bHasFilterFind)
+                    {
+                        strColContent = "|style=\"background:LightSkyBlue\" |Yes";
+                        bHasBlueColumn = true;
+                    }
+                    else
+                    {
+                        strColContent = "|No";
+                    }
+
+                    FLogFile.WriteLine(strColContent);
+                    FLogFile.WriteLine(bHasManualRowFilter ? "|style=\"background:Yellow\" |Yes" : "|No");
+
+                    // is there a Mantis Bug?
+                    FLogFile.Write("|");
+                    string fileName = Path.GetFileName(AYAMLPath);
+                    XmlNode mantisFeatureNode = FMetaDataMantis.SelectSingleNode(String.Format("feature[@key='{0}']", fileName));
+                    string strMantisFeature = mantisFeatureNode == null ? String.Empty : mantisFeatureNode.Attributes["value"].Value;
+                    FLogFile.WriteLine(strMantisFeature);
+
+                    int iFeature;
+
+                    if (strMantisFeature == String.Empty)
+                    {
+                        if (bHasGrid && bHasButtons && bHasDetails)
                         {
-                            if (bHasBlueColumn && !FMantisCasesDone.ContainsKey(iFeature))
+                            FCountWithNoMantisCase++;
+                        }
+                    }
+                    else
+                    {
+                        string[] items = strMantisFeature.Split(new char[] { ' ' });
+
+                        foreach (string item in items)
+                        {
+                            if (Int32.TryParse(item, out iFeature))
                             {
-                                FMantisCasesDone.Add(iFeature, iFeature);
-                            }
-                            else if (!bHasBlueColumn && !FMantisCasesOpen.ContainsKey(iFeature))
-                            {
-                                FMantisCasesOpen.Add(iFeature, iFeature);
+                                if (bHasBlueColumn && !FMantisCasesDone.ContainsKey(iFeature))
+                                {
+                                    FMantisCasesDone.Add(iFeature, iFeature);
+                                }
+                                else if (!bHasBlueColumn && !FMantisCasesOpen.ContainsKey(iFeature))
+                                {
+                                    FMantisCasesOpen.Add(iFeature, iFeature);
+                                }
                             }
                         }
                     }
-                }
 
-                // is there a comment for this file?
-                FLogFile.Write("|");
-                XmlNode commentNode = FMetaDataComments.SelectSingleNode(String.Format("comment[@key='{0}']", fileName));
-                string strComment = commentNode == null ? String.Empty : commentNode.Attributes["value"].Value;
-                FLogFile.WriteLine(strComment);
+                    // is there a comment for this file?
+                    FLogFile.Write("|");
+                    XmlNode commentNode = FMetaDataComments.SelectSingleNode(String.Format("comment[@key='{0}']", fileName));
+                    string strComment = commentNode == null ? String.Empty : commentNode.Attributes["value"].Value;
+                    FLogFile.WriteLine(strComment);
 
-                if (strComment.Contains("background:LightSkyBlue"))
-                {
-                    FNoFilterFindRequiredCount++;
-                    if (bHasGrid && bHasButtons && bHasDetails)
+                    if (strComment.Contains("background:LightSkyBlue"))
                     {
-                        FCountWithNoMantisCase--;
+                        FNoFilterFindRequiredCount++;
+
+                        if (bHasGrid && bHasButtons && bHasDetails)
+                        {
+                            FCountWithNoMantisCase--;
+                        }
                     }
                 }
-            }
         }
 
         /// <summary>
@@ -349,7 +353,8 @@ namespace Ict.Tools.FilterButtonWiki
                 FLogFile.WriteLine("  {0} screens have all the above", FCountWithAll);
                 FLogFile.WriteLine("  {0} screens have Filter/Find", FPnlFilterFindCount);
                 FLogFile.WriteLine("  {0} screens do not require Filter/Find", FNoFilterFindRequiredCount);
-                FLogFile.WriteLine("  There are {0} screens that are still potential candidates for Filter/Find", FCountWithAll - FPnlFilterFindCount - FNoFilterFindRequiredCount);
+                FLogFile.WriteLine("  There are {0} screens that are still potential candidates for Filter/Find",
+                    FCountWithAll - FPnlFilterFindCount - FNoFilterFindRequiredCount);
                 FLogFile.WriteLine();
                 FLogFile.WriteLine();
                 FLogFile.Write("Mantis cases fixed: ");
@@ -357,6 +362,7 @@ namespace Ict.Tools.FilterButtonWiki
                 for (int i = 0; i < FMantisCasesDone.Count; i++)
                 {
                     FLogFile.Write(FMantisCasesDone.Values[i].ToString());
+
                     if (i < FMantisCasesDone.Count - 1)
                     {
                         FLogFile.Write(", ");
@@ -373,6 +379,7 @@ namespace Ict.Tools.FilterButtonWiki
                 for (int i = 0; i < FMantisCasesOpen.Count; i++)
                 {
                     FLogFile.Write(FMantisCasesOpen.Values[i].ToString());
+
                     if (i < FMantisCasesOpen.Count - 1)
                     {
                         FLogFile.Write(", ");
@@ -384,13 +391,16 @@ namespace Ict.Tools.FilterButtonWiki
                     }
                 }
 
-                FLogFile.WriteLine("There are {0} screens that have, or could have, Filter/Find that are not associated with a Mantis case", FCountWithNoMantisCase);
+                FLogFile.WriteLine("There are {0} screens that have, or could have, Filter/Find that are not associated with a Mantis case",
+                    FCountWithNoMantisCase);
                 FLogFile.WriteLine();
 
                 // The number in Mantis when searching (Severity: feature + Hide: resolved + Filter: filter) less 4 cases that do not apply (note incl. DIALOG)
                 int TotalMantisCases = 74;
-                FLogFile.WriteLine("There are a total of {0} cases in Mantis, so there are {1} cases that do not apply to any of the screens shown above",
-                    TotalMantisCases, TotalMantisCases - FMantisCasesDone.Count - FMantisCasesOpen.Count);
+                FLogFile.WriteLine(
+                    "There are a total of {0} cases in Mantis, so there are {1} cases that do not apply to any of the screens shown above",
+                    TotalMantisCases,
+                    TotalMantisCases - FMantisCasesDone.Count - FMantisCasesOpen.Count);
                 FLogFile.WriteLine();
 
                 FLogFile.WriteLine("This table shows the Mantis cases that cannot yet be assigned to an Open Petra screen");

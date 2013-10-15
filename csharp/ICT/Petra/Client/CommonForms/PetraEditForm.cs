@@ -415,6 +415,7 @@ namespace Ict.Petra.Client.CommonForms
                 if (c.Controls.Count > 0)
                 {
                     Control c1 = GetFocusedControl(c);
+
                     if (c1 != null)
                     {
                         return c1;
