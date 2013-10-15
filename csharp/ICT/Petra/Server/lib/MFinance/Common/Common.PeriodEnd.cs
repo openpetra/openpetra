@@ -395,7 +395,7 @@ namespace Ict.Petra.Server.MFinance.Common
         public override int JobSize {
             get
             {
-                return -1;
+                return 0;
             }
         }
 

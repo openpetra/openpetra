@@ -28,7 +28,7 @@ using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.Interfaces.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Common;
-using Ict.Common.DB;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;

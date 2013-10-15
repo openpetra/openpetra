@@ -29,7 +29,8 @@ using System.Runtime.Remoting.Lifetime;
 using System.Security.Principal;
 using System.IO;
 using Ict.Common;
-using Ict.Common.DB;
+using Ict.Common.DB.Exceptions;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Shared;
 using System.Reflection;
 

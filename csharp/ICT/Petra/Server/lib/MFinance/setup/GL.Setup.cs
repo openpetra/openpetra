@@ -2938,7 +2938,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             {
                 if (!AActiveOnly || Row.Active)
                 {
-                	Ret.Add(Row.AnalysisTypeCode);
+                    Ret.Add(Row.AnalysisTypeCode);
                 }
             }
 

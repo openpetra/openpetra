@@ -601,16 +601,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FIsUnposted)
             {
-	            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}' And {2}=true",
-	                AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
-	                currentAnalTypeCode,
-	                AFreeformAnalysisTable.GetActiveDBName());
+                FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}' And {2}=true",
+                    AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
+                    currentAnalTypeCode,
+                    AFreeformAnalysisTable.GetActiveDBName());
             }
             else
             {
-	            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}'",
-	                AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
-	                currentAnalTypeCode);
+                FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                    AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
+                    currentAnalTypeCode);
             }
 
             int analTypeCodeValuesCount = FCacheDS.AFreeformAnalysis.DefaultView.Count;
@@ -1469,13 +1469,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // Delete any existing Analysis Type records and re-create the list (Removing any prior selections by the user).
 
-            Dictionary<string, string> dictAccountCodeValues = new Dictionary<string, string>();
+            Dictionary <string, string>dictAccountCodeValues = new Dictionary <string, string>();
+
             foreach (DataRowView rv in FMainDS.ATransAnalAttrib.DefaultView)
             {
                 ATransAnalAttribRow attrRowCurrent = (ATransAnalAttribRow)rv.Row;
-                
+
                 dictAccountCodeValues.Add(attrRowCurrent.AnalysisTypeCode, attrRowCurrent.AnalysisAttributeValue);
-                
+
                 attrRowCurrent.Delete();
             }
 
@@ -1490,10 +1491,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 newRow.TransactionNumber = currentTransactionNumber;
                 newRow.AnalysisTypeCode = analysisTypeCode;
                 newRow.AccountCode = currentAccountCode;
-                
+
                 if (dictAccountCodeValues.ContainsKey(analysisTypeCode))
                 {
-                	newRow.AnalysisAttributeValue = dictAccountCodeValues[analysisTypeCode];
+                    newRow.AnalysisAttributeValue = dictAccountCodeValues[analysisTypeCode];
                 }
 
                 FMainDS.ATransAnalAttrib.Rows.Add(newRow);
