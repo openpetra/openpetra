@@ -34,6 +34,7 @@ RootNode:
             Columns: [DetailInterest, DetailCategory, DetailDescription]
             CustomColumns:
                 DetailInterest: {Label=Partner Interest, Type=String}
+            SortOrder: DetailInterest ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

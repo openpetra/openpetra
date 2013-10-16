@@ -35,6 +35,7 @@ RootNode:
             CustomColumns:
                 DetailCode: {Label=Skill Category Code}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+            SortOrder: DetailCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

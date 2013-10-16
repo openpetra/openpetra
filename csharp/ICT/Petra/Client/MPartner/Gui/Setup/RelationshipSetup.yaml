@@ -37,6 +37,7 @@ RootNode:
                 DetailRelationDescription: {Label=Description}
                 DetailValidRelation: {Label=Assignable, Type=Boolean}}
                 DetailDeletable: {Label=Deletable, Type=Boolean}
+            SortOrder: DetailRelationName ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

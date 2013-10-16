@@ -36,6 +36,7 @@ RootNode:
                 DetailLanguageLevel: {Label=Language Level, Type=Integer}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
                 DetailLanguageComment: {Label=Language Comment}
+            SortOrder: DetailLanguageLevel ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

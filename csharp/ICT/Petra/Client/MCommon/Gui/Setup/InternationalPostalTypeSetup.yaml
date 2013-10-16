@@ -31,6 +31,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [DetailInternatPostalTypeCode, DetailDescription, DetailDeletable]
+            SortOrder: DetailInternatPostalTypeCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

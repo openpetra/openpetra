@@ -35,6 +35,7 @@ RootNode:
             CustomColumns:
                 DetailLevel: {Label="Skill Level", Type=Integer}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+            SortOrder: DetailLevel ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

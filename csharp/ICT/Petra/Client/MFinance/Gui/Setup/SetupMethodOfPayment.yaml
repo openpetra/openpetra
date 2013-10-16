@@ -38,6 +38,7 @@ RootNode:
                 DetailMethodOfPaymentDesc:  {Label=Description}
                 DetailSpecialMethodOfPmt: {Label=Special, Type=Boolean}
                 DetailActive: {Label=Active, Type=Boolean}
+            SortOrder: DetailMethodOfPaymentCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

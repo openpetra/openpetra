@@ -34,6 +34,7 @@ RootNode:
             Columns: [DetailAcquisitionCode, DetailAcquisitionDescription, DetailValidAcquisition, DetailDeletable, DetailRecruitingEffort]
             CustomColumns: 
                DetailRecruitingEffort: {Label=Recruiting Mission, Type=Boolean}
+            SortOrder: DetailAcquisitionCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

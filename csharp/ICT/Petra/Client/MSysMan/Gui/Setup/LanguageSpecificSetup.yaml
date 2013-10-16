@@ -45,6 +45,7 @@ RootNode:
                 DetailMonthName10: {Label="Name of Month 10"}
                 DetailMonthName11: {Label="Name of Month 11"}
                 DetailMonthName12: {Label="Name of Month 12"}
+            SortOrder: DetailLanguageCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

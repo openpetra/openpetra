@@ -38,6 +38,7 @@ RootNode:
                 DetailUnassignableFlag: {Label=Unassignable?, Type=Boolean}
                 DetailUnassignableDate: {Label=Assignable Date, Type=DateTime}
                 DetailDeletableFlag: {Label=Deletable?, Type=Boolean}
+            SortOrder: DetailCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

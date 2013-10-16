@@ -36,6 +36,7 @@ RootNode:
                 DetailQualificationAreaName: {Label=Professional Area}
                 DetailCode: {Label=Relationship Category Code}
                 DetailQualificationDate: {Label=Unassignable Date, Type=DateTime}
+            SortOrder: DetailQualificationAreaName ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

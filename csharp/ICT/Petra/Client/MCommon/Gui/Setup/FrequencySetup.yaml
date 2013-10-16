@@ -38,6 +38,7 @@ RootNode:
                 DetailNumberOfDays: {Label=Days, Type=String}
                 DetailNumberOfHours: {Label=Hours, Type=String}
                 DetailNumberOfMinutes: {Label=Minutes, Type=String}
+            SortOrder: DetailFrequencyCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

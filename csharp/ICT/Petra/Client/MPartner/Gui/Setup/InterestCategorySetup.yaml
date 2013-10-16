@@ -35,6 +35,7 @@ RootNode:
             CustomColumns:
                 DetailLevelRangeLow: {Label=Level Range Lower, Type=String}
                 DetailLevelRangeHigh: {Label=Level Range Upper, Type=String}
+            SortOrder: DetailCategory ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
