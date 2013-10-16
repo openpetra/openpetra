@@ -87,6 +87,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             string AJournalStatus = MFinanceConstants.BATCH_UNPOSTED,
             bool AFromBatchTab = false)
         {
+            this.Cursor = Cursors.WaitCursor;
+
             FLoadCompleted = false;
             FBatchRow = GetBatchRow();
             FIsUnposted = (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
@@ -112,6 +114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
 
                 FLoadCompleted = true;
+                this.Cursor = Cursors.Default;
                 return;
             }
 
@@ -195,6 +198,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.Focus();
 
             FLoadCompleted = true;
+
+            this.Cursor = Cursors.Default;
         }
 
         /// <summary>
@@ -243,21 +248,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private string ConvertStringCollectionToCSV(StringCollection AStringCollection, string AWrapString = "")
         {
-        	string csvRetVal = string.Empty;
-        	
-        	int sizeCollection = AStringCollection.Count;
-        	
-        	if (sizeCollection > 0)
-        	{
-				string[] allStrings = new string[sizeCollection];
-				AStringCollection.CopyTo(allStrings, 0);
-				
-				csvRetVal = AWrapString + String.Join(AWrapString + ", " + AWrapString, allStrings) + AWrapString;
-        	}
+            string csvRetVal = string.Empty;
 
-        	return csvRetVal;
+            int sizeCollection = AStringCollection.Count;
+
+            if (sizeCollection > 0)
+            {
+                string[] allStrings = new string[sizeCollection];
+                AStringCollection.CopyTo(allStrings, 0);
+
+                csvRetVal = AWrapString + String.Join(AWrapString + ", " + AWrapString, allStrings) + AWrapString;
+            }
+
+            return csvRetVal;
         }
-        
+
         private void SetTransAnalAttributeDefaultView(Int32 ATransactionNumber = 0, String AAnalysisCodeFilterValues = "")
         {
             if (FBatchNumber != -1)
@@ -266,27 +271,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (ATransactionNumber > 0)
                 {
-                    if (FActiveOnly && AAnalysisCodeFilterValues.Length > 0)
+                    if (FActiveOnly && (AAnalysisCodeFilterValues.Length > 0))
                     {
-	                	FMainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6} IN ({7})",
-	                        ATransAnalAttribTable.GetBatchNumberDBName(),
-	                        FBatchNumber,
-	                        ATransAnalAttribTable.GetJournalNumberDBName(),
-	                        FJournalNumber,
-	                        ATransAnalAttribTable.GetTransactionNumberDBName(),
-	                        ATransactionNumber,
-	                        ATransAnalAttribTable.GetAnalysisTypeCodeDBName(),
-	                        AAnalysisCodeFilterValues);
+                        FMainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6} IN ({7})",
+                            ATransAnalAttribTable.GetBatchNumberDBName(),
+                            FBatchNumber,
+                            ATransAnalAttribTable.GetJournalNumberDBName(),
+                            FJournalNumber,
+                            ATransAnalAttribTable.GetTransactionNumberDBName(),
+                            ATransactionNumber,
+                            ATransAnalAttribTable.GetAnalysisTypeCodeDBName(),
+                            AAnalysisCodeFilterValues);
                     }
                     else
                     {
-	                	FMainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5}",
-	                        ATransAnalAttribTable.GetBatchNumberDBName(),
-	                        FBatchNumber,
-	                        ATransAnalAttribTable.GetJournalNumberDBName(),
-	                        FJournalNumber,
-	                        ATransAnalAttribTable.GetTransactionNumberDBName(),
-	                        ATransactionNumber);
+                        FMainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5}",
+                            ATransAnalAttribTable.GetBatchNumberDBName(),
+                            FBatchNumber,
+                            ATransAnalAttribTable.GetJournalNumberDBName(),
+                            FJournalNumber,
+                            ATransAnalAttribTable.GetTransactionNumberDBName(),
+                            ATransactionNumber);
                     }
                 }
                 else
@@ -560,7 +565,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdAnalAttributes.DataSource = null;
 
-           	SetTransAnalAttributeDefaultView(FTransactionNumber);
+            SetTransAnalAttributeDefaultView(FTransactionNumber);
 
             grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
 
@@ -933,65 +938,64 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdAnalAttributes.Columns[indexOfAnalysisCodeColumn].Conditions.Add(conditionAnalysisCodeActive);
             grdAnalAttributes.Columns[indexOfAnalysisAttributeValueColumn].Conditions.Add(conditionAnalysisAttributeValueActive);
-
         }
-        
+
         private bool AnalysisCodeIsActive(String AAnalysisCode = "")
         {
-        	bool retVal = true;
-        	
-        	string accountCode = string.Empty;
-        	
-        	accountCode = cmbDetailAccountCode.GetSelectedString();
-        	
-        	if (AAnalysisCode == string.Empty || accountCode == string.Empty)
-        	{
-        		return retVal;
-        	}
-        	
-        	string originalRowFilter = FCacheDS.AAnalysisAttribute.DefaultView.RowFilter;
-        	FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = string.Empty;
-        	
-        	FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
-        	                                                                  AAnalysisAttributeTable.GetLedgerNumberDBName(),
-        	                                                                  FLedgerNumber,
-        	                                                                  AAnalysisAttributeTable.GetAccountCodeDBName(),
-        	                                                                  accountCode,
-        	                                                                  AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
-        	                                                                  AAnalysisCode,
-        	                                                                  AAnalysisAttributeTable.GetActiveDBName());
+            bool retVal = true;
 
-        	retVal = (FCacheDS.AAnalysisAttribute.DefaultView.Count > 0);
+            string accountCode = string.Empty;
 
-        	FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = originalRowFilter;
-        	
-        	return retVal;
+            accountCode = cmbDetailAccountCode.GetSelectedString();
+
+            if ((AAnalysisCode == string.Empty) || (accountCode == string.Empty))
+            {
+                return retVal;
+            }
+
+            string originalRowFilter = FCacheDS.AAnalysisAttribute.DefaultView.RowFilter;
+            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = string.Empty;
+
+            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
+                AAnalysisAttributeTable.GetLedgerNumberDBName(),
+                FLedgerNumber,
+                AAnalysisAttributeTable.GetAccountCodeDBName(),
+                accountCode,
+                AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
+                AAnalysisCode,
+                AAnalysisAttributeTable.GetActiveDBName());
+
+            retVal = (FCacheDS.AAnalysisAttribute.DefaultView.Count > 0);
+
+            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = originalRowFilter;
+
+            return retVal;
         }
 
         private bool AnalysisAttributeValueIsActive(String AAnalysisCode = "", String AAnalysisAttributeValue = "")
         {
-        	bool retVal = true;
-        	
-        	if (AAnalysisCode == string.Empty || AAnalysisAttributeValue == string.Empty)
-        	{
-        		return retVal;
-        	}
-        	
-        	string originalRowFilter = FCacheDS.AFreeformAnalysis.DefaultView.RowFilter;
-        	FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = string.Empty;
-        	
-			FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
-			                    AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
-			                    AAnalysisCode,
-			                    AFreeformAnalysisTable.GetAnalysisValueDBName(),
-			                    AAnalysisAttributeValue,
-			                    AFreeformAnalysisTable.GetActiveDBName());        	
+            bool retVal = true;
 
-        	retVal = (FCacheDS.AFreeformAnalysis.DefaultView.Count > 0);
+            if ((AAnalysisCode == string.Empty) || (AAnalysisAttributeValue == string.Empty))
+            {
+                return retVal;
+            }
 
-        	FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = originalRowFilter;
-        	
-        	return retVal;
+            string originalRowFilter = FCacheDS.AFreeformAnalysis.DefaultView.RowFilter;
+            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = string.Empty;
+
+            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
+                AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
+                AAnalysisCode,
+                AFreeformAnalysisTable.GetAnalysisValueDBName(),
+                AAnalysisAttributeValue,
+                AFreeformAnalysisTable.GetActiveDBName());
+
+            retVal = (FCacheDS.AFreeformAnalysis.DefaultView.Count > 0);
+
+            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = originalRowFilter;
+
+            return retVal;
         }
 
         private bool AccountIsActive(string AAccountCode = "")
@@ -1565,7 +1569,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             StringCollection RequiredAnalattrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
                 currentAccountCode, FActiveOnly);
             Int32 currentTransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
-            
+
             SetTransAnalAttributeDefaultView(currentTransactionNumber, ConvertStringCollectionToCSV(RequiredAnalattrCodes, "'"));
 
             // If the AnalysisType list I'm currently using is the same as the list of required types, I can keep it (with any existing values).
@@ -1611,7 +1615,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FMainDS.ATransAnalAttrib.Rows.Add(newRow);
             }
-            
         }
 
         private void ValidateDataDetailsManual(ATransactionRow ARow)
