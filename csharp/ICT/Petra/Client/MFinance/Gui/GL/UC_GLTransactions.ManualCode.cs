@@ -224,7 +224,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ClearTransactionDefaultView();
 
-                FMainDS.ATransaction.DefaultView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                FMainDS.ATransaction.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3}",
                     ATransactionTable.GetBatchNumberDBName(),
                     FBatchNumber,
                     ATransactionTable.GetJournalNumberDBName(),
@@ -241,7 +241,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FMainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Empty;
         }
 
-        private void SetTransAnalAttributeDefaultView(Int32 ATransactionNumber = 0)
+        private string ConvertStringCollectionToCSV(StringCollection AStringCollection, string AWrapString = "")
+        {
+        	string csvRetVal = string.Empty;
+        	
+        	int sizeCollection = AStringCollection.Count;
+        	
+        	if (sizeCollection > 0)
+        	{
+				string[] allStrings = new string[sizeCollection];
+				AStringCollection.CopyTo(allStrings, 0);
+				
+				csvRetVal = AWrapString + String.Join(AWrapString + ", " + AWrapString, allStrings) + AWrapString;
+        	}
+
+        	return csvRetVal;
+        }
+        
+        private void SetTransAnalAttributeDefaultView(Int32 ATransactionNumber = 0, String AAnalysisCodeFilterValues = "")
         {
             if (FBatchNumber != -1)
             {
@@ -249,17 +266,32 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (ATransactionNumber > 0)
                 {
-                    FMainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} And {2}={3} And {4}={5}",
-                        ATransAnalAttribTable.GetBatchNumberDBName(),
-                        FBatchNumber,
-                        ATransAnalAttribTable.GetJournalNumberDBName(),
-                        FJournalNumber,
-                        ATransAnalAttribTable.GetTransactionNumberDBName(),
-                        ATransactionNumber);
+                    if (FActiveOnly && AAnalysisCodeFilterValues.Length > 0)
+                    {
+	                	FMainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6} IN ({7})",
+	                        ATransAnalAttribTable.GetBatchNumberDBName(),
+	                        FBatchNumber,
+	                        ATransAnalAttribTable.GetJournalNumberDBName(),
+	                        FJournalNumber,
+	                        ATransAnalAttribTable.GetTransactionNumberDBName(),
+	                        ATransactionNumber,
+	                        ATransAnalAttribTable.GetAnalysisTypeCodeDBName(),
+	                        AAnalysisCodeFilterValues);
+                    }
+                    else
+                    {
+	                	FMainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5}",
+	                        ATransAnalAttribTable.GetBatchNumberDBName(),
+	                        FBatchNumber,
+	                        ATransAnalAttribTable.GetJournalNumberDBName(),
+	                        FJournalNumber,
+	                        ATransAnalAttribTable.GetTransactionNumberDBName(),
+	                        ATransactionNumber);
+                    }
                 }
                 else
                 {
-                    FMainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                    FMainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3}",
                         ATransAnalAttribTable.GetBatchNumberDBName(),
                         FBatchNumber,
                         ATransAnalAttribTable.GetJournalNumberDBName(),
@@ -528,7 +560,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdAnalAttributes.DataSource = null;
 
-            SetTransAnalAttributeDefaultView(FTransactionNumber);
+           	SetTransAnalAttributeDefaultView(FTransactionNumber);
 
             grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
 
@@ -601,7 +633,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FIsUnposted)
             {
-                FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}' And {2}=true",
+                FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}' AND {2}=true",
                     AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
                     currentAnalTypeCode,
                     AFreeformAnalysisTable.GetActiveDBName());
@@ -869,6 +901,97 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails.Columns[indexOfCostCentreCodeDataColumn].Conditions.Add(conditionCostCentreCodeActive);
             grdDetails.Columns[indexOfAccountCodeDataColumn].Conditions.Add(conditionAccountCodeActive);
+
+            //Prepare Analysis attributes grid to highlight inactive analysis codes
+            // Create a cell view for special conditions
+            SourceGrid.Cells.Views.Cell strikeoutCell2 = new SourceGrid.Cells.Views.Cell();
+            strikeoutCell2.Font = new System.Drawing.Font(grdAnalAttributes.Font, FontStyle.Strikeout);
+            //strikeoutCell.ForeColor = Color.Crimson;
+
+            // Create a condition, apply the view when true, and assign a delegate to handle it
+            SourceGrid.Conditions.ConditionView conditionAnalysisCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell2);
+            conditionAnalysisCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column2, int gridRow2, object itemRow2)
+            {
+                DataRowView row2 = (DataRowView)itemRow2;
+                string analysisCode = row2[ATransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
+                return !AnalysisCodeIsActive(analysisCode);
+            };
+
+            // Create a condition, apply the view when true, and assign a delegate to handle it
+            SourceGrid.Conditions.ConditionView conditionAnalysisAttributeValueActive = new SourceGrid.Conditions.ConditionView(strikeoutCell2);
+            conditionAnalysisAttributeValueActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column2, int gridRow2, object itemRow2)
+            {
+                DataRowView row2 = (DataRowView)itemRow2;
+                string analysisCode = row2[ATransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
+                string analysisAttributeValue = row2[ATransAnalAttribTable.ColumnAnalysisAttributeValueId].ToString();
+                return !AnalysisAttributeValueIsActive(analysisCode, analysisAttributeValue);
+            };
+
+            //Add conditions to columns
+            int indexOfAnalysisCodeColumn = 0;
+            int indexOfAnalysisAttributeValueColumn = 1;
+
+            grdAnalAttributes.Columns[indexOfAnalysisCodeColumn].Conditions.Add(conditionAnalysisCodeActive);
+            grdAnalAttributes.Columns[indexOfAnalysisAttributeValueColumn].Conditions.Add(conditionAnalysisAttributeValueActive);
+
+        }
+        
+        private bool AnalysisCodeIsActive(String AAnalysisCode = "")
+        {
+        	bool retVal = true;
+        	
+        	string accountCode = string.Empty;
+        	
+        	accountCode = cmbDetailAccountCode.GetSelectedString();
+        	
+        	if (AAnalysisCode == string.Empty || accountCode == string.Empty)
+        	{
+        		return retVal;
+        	}
+        	
+        	string originalRowFilter = FCacheDS.AAnalysisAttribute.DefaultView.RowFilter;
+        	FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = string.Empty;
+        	
+        	FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
+        	                                                                  AAnalysisAttributeTable.GetLedgerNumberDBName(),
+        	                                                                  FLedgerNumber,
+        	                                                                  AAnalysisAttributeTable.GetAccountCodeDBName(),
+        	                                                                  accountCode,
+        	                                                                  AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
+        	                                                                  AAnalysisCode,
+        	                                                                  AAnalysisAttributeTable.GetActiveDBName());
+
+        	retVal = (FCacheDS.AAnalysisAttribute.DefaultView.Count > 0);
+
+        	FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = originalRowFilter;
+        	
+        	return retVal;
+        }
+
+        private bool AnalysisAttributeValueIsActive(String AAnalysisCode = "", String AAnalysisAttributeValue = "")
+        {
+        	bool retVal = true;
+        	
+        	if (AAnalysisCode == string.Empty || AAnalysisAttributeValue == string.Empty)
+        	{
+        		return retVal;
+        	}
+        	
+        	string originalRowFilter = FCacheDS.AFreeformAnalysis.DefaultView.RowFilter;
+        	FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = string.Empty;
+        	
+			FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
+			                    AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
+			                    AAnalysisCode,
+			                    AFreeformAnalysisTable.GetAnalysisValueDBName(),
+			                    AAnalysisAttributeValue,
+			                    AFreeformAnalysisTable.GetActiveDBName());        	
+
+        	retVal = (FCacheDS.AFreeformAnalysis.DefaultView.Count > 0);
+
+        	FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = originalRowFilter;
+        	
+        	return retVal;
         }
 
         private bool AccountIsActive(string AAccountCode = "")
@@ -1233,7 +1356,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 SetTransactionDefaultView();
 
                 DataView transView = new DataView(FMainDS.ATransaction);
-                transView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                transView.RowFilter = String.Format("{0}={1} AND {2}={3}",
                     ATransactionTable.GetBatchNumberDBName(),
                     FBatchNumber,
                     ATransactionTable.GetJournalNumberDBName(),
@@ -1442,9 +1565,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             StringCollection RequiredAnalattrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
                 currentAccountCode, FActiveOnly);
             Int32 currentTransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
-            SetTransAnalAttributeDefaultView(currentTransactionNumber);
+            
+            SetTransAnalAttributeDefaultView(currentTransactionNumber, ConvertStringCollectionToCSV(RequiredAnalattrCodes, "'"));
 
-            //
             // If the AnalysisType list I'm currently using is the same as the list of required types, I can keep it (with any existing values).
             Boolean existingListIsOk = (RequiredAnalattrCodes.Count == FMainDS.ATransAnalAttrib.DefaultView.Count);
 
@@ -1468,15 +1591,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             // Delete any existing Analysis Type records and re-create the list (Removing any prior selections by the user).
-
-            Dictionary <string, string>dictAccountCodeValues = new Dictionary <string, string>();
-
             foreach (DataRowView rv in FMainDS.ATransAnalAttrib.DefaultView)
             {
                 ATransAnalAttribRow attrRowCurrent = (ATransAnalAttribRow)rv.Row;
-
-                dictAccountCodeValues.Add(attrRowCurrent.AnalysisTypeCode, attrRowCurrent.AnalysisAttributeValue);
-
                 attrRowCurrent.Delete();
             }
 
@@ -1492,13 +1609,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 newRow.AnalysisTypeCode = analysisTypeCode;
                 newRow.AccountCode = currentAccountCode;
 
-                if (dictAccountCodeValues.ContainsKey(analysisTypeCode))
-                {
-                    newRow.AnalysisAttributeValue = dictAccountCodeValues[analysisTypeCode];
-                }
-
                 FMainDS.ATransAnalAttrib.Rows.Add(newRow);
             }
+            
         }
 
         private void ValidateDataDetailsManual(ATransactionRow ARow)
