@@ -297,6 +297,7 @@ namespace Ict.Petra.Shared.MReporting
     {
         /// <summary>the list of TResult objects</summary>
         private ArrayList results;
+        public String ErrorStatus;
 
         /// <summary>the most right column that should be displayed (start counting at 1)</summary>
         private Int32 MaxDisplayColumns;
@@ -354,6 +355,7 @@ namespace Ict.Petra.Shared.MReporting
         public TResultList()
         {
             MaxDisplayColumns = 0;
+            ErrorStatus = "";
             results = new ArrayList();
         }
 
@@ -828,8 +830,9 @@ namespace Ict.Petra.Shared.MReporting
                 // don't append; use the local encoding, e.g. to support Umlauts
                 csvStream = new StreamWriter(csvfilename, false, System.Text.Encoding.Default);
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
+                ErrorStatus = ex.Message;
                 return false;
             }
 

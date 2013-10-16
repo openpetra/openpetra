@@ -420,6 +420,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 {
                     TLogging.Log(E.StackTrace);
                     TLogging.Log(E.Message);
+                    MessageBox.Show(E.Message, Catalog.GetString("Failed to save file"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     System.Console.WriteLine(E.StackTrace);
                 }
             }
@@ -621,6 +622,10 @@ namespace Ict.Petra.Client.MReporting.Gui
                     {
                     }
                 }
+                else
+                {
+                    MessageBox.Show(Results.ErrorStatus,Catalog.GetString("Failed to save file"),MessageBoxButtons.OK,MessageBoxIcon.Stop);
+                }
             }
         }
 
@@ -666,8 +671,9 @@ namespace Ict.Petra.Client.MReporting.Gui
                         excelProcess.StartInfo.FileName = dlgSaveXLSXFile.FileName;
                         excelProcess.Start();
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        MessageBox.Show(ex.Message, Catalog.GetString("Failed to save file"),MessageBoxButtons.OK,MessageBoxIcon.Stop);
                     }
                 }
             }
