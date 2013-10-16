@@ -33,12 +33,12 @@ using Ict.Common;
 namespace Ict.Common.DB
 {
     /// <summary>
-    /// this class allows access to Progress databases via ODBC
+    /// Allows access to Progress databases via ODBC using the standard ADO.NET Data Provider ODBC.
     /// </summary>
     public class TProgressODBC : IDataBaseRDBMS
     {
         /// <summary>
-        /// Create an ODBC connection
+        /// Creates an ODBC connection using the standard ADO.NET Data Provider ODBC.
         /// </summary>
         /// <param name="ADSN">The DSN defining the connection to the database server</param>
         /// <param name="APort">not in use</param>
@@ -47,8 +47,9 @@ namespace Ict.Common.DB
         /// <param name="APassword">The password for opening the database</param>
         /// <param name="AConnectionString">not in use</param>
         /// <param name="AStateChangeEventHandler">for connection state changes</param>
-        /// <returns>the connection</returns>
-        public IDbConnection GetConnection(String ADSN, String APort,
+        /// <returns>Instantiated OdbcConnection, but not opened yet (null if connection could not be established).
+        /// </returns>
+        public DbConnection GetConnection(String ADSN, String APort,
             String ADatabaseName,
             String AUsername, ref String APassword,
             ref String AConnectionString,
@@ -95,7 +96,7 @@ namespace Ict.Common.DB
         }
 
         /// init the connection after it was opened
-        public void InitConnection(IDbConnection AConnection)
+        public void InitConnection(DbConnection AConnection)
         {
         }
 
@@ -190,17 +191,17 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// create a IDbCommand object
-        /// this formats the sql query for Progress ODBC, and transforms the parameters
+        /// Creates a DbCommand object.
+        /// This formats the sql query for Progress ODBC, and transforms the parameters.
         /// </summary>
         /// <param name="ACommandText"></param>
         /// <param name="AConnection"></param>
         /// <param name="AParametersArray"></param>
         /// <param name="ATransaction"></param>
-        /// <returns></returns>
-        public IDbCommand NewCommand(ref string ACommandText, IDbConnection AConnection, DbParameter[] AParametersArray, TDBTransaction ATransaction)
+        /// <returns>Instantiated OdbcCommand.</returns>
+        public DbCommand NewCommand(ref string ACommandText, DbConnection AConnection, DbParameter[] AParametersArray, TDBTransaction ATransaction)
         {
-            IDbCommand ObjReturn = null;
+            DbCommand ObjReturn = null;
 
             ACommandText = FormatQueryRDBMSSpecific(ACommandText);
 
@@ -226,25 +227,30 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// create an IDbDataAdapter for ODBC
+        /// Create a DbDataAdapter for ODBC.
         /// </summary>
-        /// <returns></returns>
-        public IDbDataAdapter NewAdapter()
+        /// <remarks>
+        /// <b>Important:</b> Since an object that derives from DbDataAdapter is returned you ought to
+        /// <em>call .Dispose()</em> on the returned object to release its resouces! (DbDataAdapter inherits
+        /// from DataAdapter which itself inherits from Component, which implements IDisposable!)
+        /// </remarks>
+        /// <returns>Instantiated OdbcDataAdapter.</returns>
+        public DbDataAdapter NewAdapter()
         {
-            IDbDataAdapter TheAdapter = new OdbcDataAdapter();
+            DbDataAdapter TheAdapter = new OdbcDataAdapter();
 
             return TheAdapter;
         }
 
         /// <summary>
-        /// fill an IDbDataAdapter that was created with NewAdapter
+        /// Fills a DbDataAdapter that was created with the <see cref="NewAdapter" /> Method.
         /// </summary>
         /// <param name="TheAdapter"></param>
         /// <param name="AFillDataSet"></param>
         /// <param name="AStartRecord"></param>
         /// <param name="AMaxRecords"></param>
         /// <param name="ADataTableName"></param>
-        public void FillAdapter(IDbDataAdapter TheAdapter,
+        public void FillAdapter(DbDataAdapter TheAdapter,
             ref DataSet AFillDataSet,
             Int32 AStartRecord,
             Int32 AMaxRecords,
@@ -255,14 +261,14 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// overload of FillAdapter, just for one table
-        /// IDbDataAdapter was created with NewAdapter
+        /// Fills a DbDataAdapter that was created with the <see cref="NewAdapter" /> Method.
         /// </summary>
+        /// <remarks>Overload of FillAdapter, just for one table.</remarks>
         /// <param name="TheAdapter"></param>
         /// <param name="AStartRecord"></param>
         /// <param name="AMaxRecords"></param>
         /// <param name="AFillDataTable"></param>
-        public void FillAdapter(IDbDataAdapter TheAdapter,
+        public void FillAdapter(DbDataAdapter TheAdapter,
             ref DataTable AFillDataTable,
             Int32 AStartRecord,
             Int32 AMaxRecords)
@@ -347,9 +353,8 @@ namespace Ict.Common.DB
         /// <param name="ATransaction">An instantiated Transaction in which the Query
         /// to the DB will be enlisted.</param>
         /// <param name="ADatabase">the database object that can be used for querying</param>
-        /// <param name="AConnection"></param>
         /// <returns>Sequence Value.</returns>
-        public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
+        public System.Int64 GetNextSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase)
         {
             DataTable table = ADatabase.SelectDT(
                 "SELECT PUB." + ASequenceName + ".NEXTVAL FROM PUB.\"_Sequence\" WHERE \"_Seq-Name\" = '" + ASequenceName + "'",
@@ -371,9 +376,8 @@ namespace Ict.Common.DB
         /// <param name="ATransaction">An instantiated Transaction in which the Query
         /// to the DB will be enlisted.</param>
         /// <param name="ADatabase">the database object that can be used for querying</param>
-        /// <param name="AConnection"></param>
         /// <returns>Sequence Value.</returns>
-        public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, IDbConnection AConnection)
+        public System.Int64 GetCurrentSequenceValue(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase)
         {
             DataTable table = ADatabase.SelectDT(
                 "SELECT PUB." + ASequenceName + ".CURRVAL FROM PUB.\"_Sequence\" WHERE \"_Seq-Name\" = \"" + ASequenceName + "\"",
@@ -394,7 +398,6 @@ namespace Ict.Common.DB
         public void RestartSequence(String ASequenceName,
             TDBTransaction ATransaction,
             TDataBase ADatabase,
-            IDbConnection AConnection,
             Int64 ARestartValue)
         {
             // not implemented

@@ -1333,7 +1333,7 @@ namespace Ict.Petra.Server.MReporting
                 }
                 else if (strSql.Length > 0)
                 {
-                    DataTable tab = DatabaseConnection.SelectDT(strSql, "", DatabaseConnection.Transaction);
+                    DataTable tab = DatabaseConnection.SelectDT(strSql, "EvaluateCalculation_TempTable", DatabaseConnection.Transaction);
                     string strReturns = rptCalculation.strReturns;
 
                     if (strReturns.ToLower() == "automatic")

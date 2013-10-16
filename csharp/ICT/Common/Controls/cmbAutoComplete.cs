@@ -964,6 +964,20 @@ namespace Ict.Common.Controls
             System.Data.DataRowView TmpRowView;
             int ReturnValue = -1;
 
+            if (DataSource == null)
+            {
+                // use the normal Items list with integer object
+                foreach (int value in Items)
+                {
+                    if (value == SearchInt32)
+                    {
+                        return Items.IndexOf(value);
+                    }
+                }
+
+                return -1;
+            }
+
             foreach (object Item in Items)
             {
                 TmpRowView = (System.Data.DataRowView)Item;
@@ -1001,6 +1015,20 @@ namespace Ict.Common.Controls
         /// </returns>
         public int FindInt64InComboBox(Int64 SearchInt64)
         {
+            if (DataSource == null)
+            {
+                // use the normal Items list with integer object
+                foreach (Int64 value in Items)
+                {
+                    if (value == SearchInt64)
+                    {
+                        return Items.IndexOf(value);
+                    }
+                }
+
+                return -1;
+            }
+
             foreach (object Item in Items)
             {
                 System.Data.DataRowView TmpRowView = (System.Data.DataRowView)Item;
@@ -1050,6 +1078,15 @@ namespace Ict.Common.Controls
         /// </returns>
         public Int32 GetSelectedInt32(int ColumnNumber)
         {
+            if (DataSource == null)
+            {
+                if ((Items.Count > 0) && (this.SelectedIndex != -1))
+                {
+                    // use the normal Items values, not the datasource etc
+                    return Convert.ToInt32(Items[this.SelectedIndex]);
+                }
+            }
+
             if (ColumnNumber == -1)
             {
                 ColumnNumber = GetColumnNr(ValueMember);
@@ -1091,6 +1128,15 @@ namespace Ict.Common.Controls
         /// </returns>
         public Int64 GetSelectedInt64(int ColumnNumber)
         {
+            if (DataSource == null)
+            {
+                if ((Items.Count > 0) && (this.SelectedIndex != -1))
+                {
+                    // use the normal Items values, not the datasource etc
+                    return Convert.ToInt64(Items[this.SelectedIndex]);
+                }
+            }
+
             if (ColumnNumber == -1)
             {
                 ColumnNumber = GetColumnNr(ValueMember);

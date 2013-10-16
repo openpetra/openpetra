@@ -1386,7 +1386,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             StringCollection RequiredAnalattrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
-                currentAccountCode);
+                currentAccountCode, false);
             Int32 currentTransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
             SetTransAnalAttributeDefaultView(currentTransactionNumber);
 

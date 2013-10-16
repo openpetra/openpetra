@@ -462,7 +462,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
                      pv_ledger_number_i.ToString() + ' ' + "AND a_cost_centre_code_c = \"" + pv_cost_centre_code_c + "\" " +
                      "AND a_account_code_c = \"" +
                      pv_account_code_c + "\" " + "AND a_year_i = " + pv_year_i.ToString();
-            tab = databaseConnection.SelectDT(strSql, "", databaseConnection.Transaction);
+            tab = databaseConnection.SelectDT(strSql, "GetGlmSequenceFromDB_TempTable", databaseConnection.Transaction);
 
             if (tab.Rows.Count == 1)
             {
