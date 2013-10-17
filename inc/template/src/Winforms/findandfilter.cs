@@ -77,16 +77,17 @@ private void SetupFilterAndFindControls()
 
     // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
     chkToggleFilter.AutoSize = true;
-    chkToggleFilter.Text = Catalog.GetString("Filte&r");
-    chkToggleFilter.Tag = "SuppressChangeDetection";
+    chkToggleFilter.Text = MCommonResourcestrings.StrBtnTextFilter;
+    chkToggleFilter.Tag = MCommonResourcestrings.StrCtrlSuppressChangeDetection;
     chkToggleFilter.Image = FFilterImages.Images[0];  // 'Filter is inactive' icon
     chkToggleFilter.ImageAlign = ContentAlignment.MiddleLeft;
     chkToggleFilter.Appearance = Appearance.Button;
     chkToggleFilter.TextAlign = ContentAlignment.MiddleCenter;  // Same as 'real' Button
     chkToggleFilter.MinimumSize = new Size(75, 22);             // To prevent shrinkage!
-    chkToggleFilter.Click += delegate { ToggleFilter(); };
+    chkToggleFilter.Click += new EventHandler(this.ToggleFilterPanel);
     
     GetPetraUtilsObject().SetToolTip(chkToggleFilter, FPreviousFilterTooltip);
+    GetPetraUtilsObject().SetStatusBarText(chkToggleFilter, MCommonResourcestrings.StrClickToShowHideFilterPanel);
                                      
     // Prepare parameters for the UserControl that will display the Filter and Find Panels
     FFilterAndFindParameters = new TUcoFilterAndFind.FilterAndFindParameters(
@@ -158,9 +159,83 @@ private void CreateFilterFindPanels()
     {#INDIVIDUALFILTERFINDPANELPROPERTIES}
 }
 
+private void SetStatusBarText()
+{
+    Control[] button = FucoFilterAndFind.Controls.Find("btnCloseFilter", true);
+    if (button.Length > 0)
+    {
+        GetPetraUtilsObject().SetStatusBarText(button[0], MCommonResourcestrings.StrClickToHideFilterPanel);
+    }
+
+    button = FucoFilterAndFind.Controls.Find("btnFindNext", true);
+    if (button.Length > 0)
+    {
+        GetPetraUtilsObject().SetStatusBarText(button[0], MCommonResourcestrings.StrClickToFindNextRecord);
+    }
+
+    button = FucoFilterAndFind.Controls.Find("rbtFindDirUp", true);
+    if (button.Length > 0)
+    {
+        GetPetraUtilsObject().SetStatusBarText(button[0], MCommonResourcestrings.StrUpDownFindDirection);
+    }
+
+    button = FucoFilterAndFind.Controls.Find("rbtFindDirDown", true);
+    if (button.Length > 0)
+    {
+        GetPetraUtilsObject().SetStatusBarText(button[0], MCommonResourcestrings.StrUpDownFindDirection);
+    }
+
+    if (FucoFilterAndFind.FilterPanelControls != null)
+    {
+        foreach (Panel panel in FucoFilterAndFind.FilterPanelControls)
+        {
+            foreach (Control c in panel.Controls)
+            {
+                if (c.Name.StartsWith("btnClearArgument_"))
+                {
+                    GetPetraUtilsObject().SetStatusBarText(c, MCommonResourcestrings.StrClickToClearFilterAttribute);
+                }
+            }
+        }
+    }
+
+    if (FucoFilterAndFind.ExtraFilterPanelControls != null)
+    {
+        foreach (Panel panel in FucoFilterAndFind.ExtraFilterPanelControls)
+        {
+            foreach (Control c in panel.Controls)
+            {
+                if (c.Name.StartsWith("btnClearArgument_"))
+                {
+                    GetPetraUtilsObject().SetStatusBarText(c, MCommonResourcestrings.StrClickToClearFilterAttribute);
+                }
+            }
+        }
+    }
+
+    if (FucoFilterAndFind.FindPanelControls != null)
+    {
+        foreach (Panel panel in FucoFilterAndFind.FindPanelControls)
+        {
+            foreach (Control c in panel.Controls)
+            {
+                if (c.Name.StartsWith("btnClearArgument_"))
+                {
+                    GetPetraUtilsObject().SetStatusBarText(c, MCommonResourcestrings.StrClickToClearFindAttribute);
+                }
+            }
+        }
+    }
+}
+
 private void ToggleFilterPanel(System.Object sender, EventArgs e)
 {
     ToggleFilter();
+        
+    if (sender != null)
+    {
+        (sender as Control).Focus();
+    }
 }
 
 private void ToggleFilter()
@@ -193,6 +268,8 @@ private void ToggleFilter()
             FucoFilterAndFind.ApplyFilterClicked += new EventHandler<TUcoFilterAndFind.TContextEventExtControlArgs>(FucoFilterAndFind_ApplyFilterClicked);
             FucoFilterAndFind.ArgumentCtrlValueChanged += new EventHandler<TUcoFilterAndFind.TContextEventExtControlValueArgs>(FucoFilterAndFind_ArgumentCtrlValueChanged);
             FucoFilterAndFind.FindNextClicked += new EventHandler<TUcoFilterAndFind.TContextEventExtSearchDirectionArgs>(FucoFilterAndFind_FindNextClicked);
+
+            SetStatusBarText();
         }
 
         pnlFilterAndFind.Width = FFilterAndFindParameters.FindAndFilterInitialWidth;

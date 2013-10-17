@@ -1404,6 +1404,7 @@ namespace Ict.Common.Controls
             btnFindNext.Top = 2;
             btnFindNext.Left = 1;
             btnFindNext.Text = "Find Ne&xt";
+            btnFindNext.Name = "btnFindNext";
             btnFindNext.BackColor = System.Drawing.SystemColors.ButtonFace;
             btnFindNext.ImageList = imlButtonIcons;
             btnFindNext.ImageIndex = 4;
@@ -1931,6 +1932,39 @@ namespace Ict.Common.Controls
                 }
 
                 // optional implementation for further kinds of Controls can be done here....
+            }
+        }
+
+        /// <summary>
+        /// Gets the complete list of individual panels that make up the standard filter
+        /// </summary>
+        public List <Panel> FilterPanelControls
+        {
+            get
+            {
+                return FFilterControls;
+            }
+        }
+
+        /// <summary>
+        /// Gets the complete list of individual panels that make up the extra filter
+        /// </summary>
+        public List <Panel> ExtraFilterPanelControls
+        {
+            get
+            {
+                return FExtraFilterControls;
+            }
+        }
+
+        /// <summary>
+        /// Gets the complete list of individual panels that make up the find
+        /// </summary>
+        public List <Panel> FindPanelControls
+        {
+            get
+            {
+                return FFindControls;
             }
         }
 

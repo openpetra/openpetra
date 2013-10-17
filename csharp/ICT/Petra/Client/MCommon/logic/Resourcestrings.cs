@@ -92,6 +92,15 @@ namespace Ict.Petra.Client.MCommon
         public static readonly string StrBtnTextDone = Catalog.GetString("D&one");
 
         /// <summary>todoComment</summary>
+        public static readonly string StrBtnTextFilter = Catalog.GetString("Filte&r");
+
+        /// <summary>
+        /// This string is for the Find Next button on the Filter/Find panel in Ict.Common
+        /// So the definition is not accessible from there.  See TucoFilterAndFind
+        /// </summary>
+        public static readonly string StrBtnTextFindNext = Catalog.GetString("Find Ne&xt");
+
+        /// <summary>todoComment</summary>
         public static readonly string StrValueUnassignable = Catalog.GetString("Unassignable Value");
 
         #endregion
@@ -284,6 +293,34 @@ namespace Ict.Petra.Client.MCommon
 
         /// <summary>todoComment</summary>
         public static readonly string StrEditRecordTitle = Catalog.GetString("Edit Record");
+
+        #endregion
+
+        #region Auto-generated Filter/Find
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrClickToShowHideFilterPanel = Catalog.GetString(
+            "Click to show or hide the filter panel");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrClickToHideFilterPanel = Catalog.GetString(
+            "Click to hide the filter panel");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrClickToFindNextRecord = Catalog.GetString(
+            "Click to find the next record that matches the search criteria");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrClickToClearFilterAttribute = Catalog.GetString(
+            "Click to clear this filter attribute");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrClickToClearFindAttribute = Catalog.GetString(
+            "Click to clear this find attribute");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrUpDownFindDirection = Catalog.GetString(
+            "Choose up or down to set the search direction");
 
         #endregion
     }
