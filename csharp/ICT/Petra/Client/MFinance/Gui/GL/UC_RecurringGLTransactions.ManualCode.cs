@@ -59,7 +59,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private string FTransactionCurrency = string.Empty;
         private string FBatchStatus = string.Empty;
         private string FJournalStatus = string.Empty;
-        private GLSetupTDS FCacheDS = null;
+        private GLSetupTDS FCacheDS;
         private GLBatchTDSARecurringJournalRow FJournalRow = null;
         private ARecurringTransAnalAttribRow FPSAttributesRow = null;
         private SourceGrid.Cells.Editors.ComboBox FAnalAttribTypeVal;
@@ -88,6 +88,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED,
             string AJournalStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
+            this.Cursor = Cursors.WaitCursor;
+
             FLoadCompleted = false;
             FBatchRow = GetBatchRow();
 
@@ -105,6 +107,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
 
                 FLoadCompleted = true;
+                this.Cursor = Cursors.Default;
                 return;
             }
 
@@ -144,6 +147,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS.ARecurringTransAnalAttrib.Columns[ARecurringTransAnalAttribTable.GetAnalysisAttributeValueDBName()], 100,
                     FAnalAttribTypeVal);
                 FAnalAttribTypeVal.Control.SelectedValueChanged += new EventHandler(this.AnalysisAttributeValueChanged);
+
                 grdAnalAttributes.Columns[0].Width = 100;
             }
 
@@ -192,6 +196,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails.Focus();
             FLoadCompleted = true;
+
+            this.Cursor = Cursors.Default;
         }
 
         /// <summary>
@@ -821,6 +827,100 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails.Columns[indexOfCostCentreCodeDataColumn].Conditions.Add(conditionCostCentreCodeActive);
             grdDetails.Columns[indexOfAccountCodeDataColumn].Conditions.Add(conditionAccountCodeActive);
+
+            //Prepare Analysis attributes grid to highlight inactive analysis codes
+            // Create a cell view for special conditions
+            SourceGrid.Cells.Views.Cell strikeoutCell2 = new SourceGrid.Cells.Views.Cell();
+            strikeoutCell2.Font = new System.Drawing.Font(grdAnalAttributes.Font, FontStyle.Strikeout);
+            //strikeoutCell.ForeColor = Color.Crimson;
+
+            // Create a condition, apply the view when true, and assign a delegate to handle it
+            SourceGrid.Conditions.ConditionView conditionAnalysisCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell2);
+            conditionAnalysisCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column2, int gridRow2, object itemRow2)
+            {
+                DataRowView row2 = (DataRowView)itemRow2;
+                string analysisCode = row2[ARecurringTransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
+                return !AnalysisCodeIsActive(analysisCode);
+            };
+
+            // Create a condition, apply the view when true, and assign a delegate to handle it
+            SourceGrid.Conditions.ConditionView conditionAnalysisAttributeValueActive = new SourceGrid.Conditions.ConditionView(strikeoutCell2);
+            conditionAnalysisAttributeValueActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column2, int gridRow2, object itemRow2)
+            {
+                DataRowView row2 = (DataRowView)itemRow2;
+                string analysisCode = row2[ARecurringTransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
+                string analysisAttributeValue = row2[ARecurringTransAnalAttribTable.ColumnAnalysisAttributeValueId].ToString();
+                return !AnalysisAttributeValueIsActive(analysisCode, analysisAttributeValue);
+            };
+
+            //Add conditions to columns
+            int indexOfAnalysisCodeColumn = 0;
+            int indexOfAnalysisAttributeValueColumn = 1;
+
+            grdAnalAttributes.Columns[indexOfAnalysisCodeColumn].Conditions.Add(conditionAnalysisCodeActive);
+            grdAnalAttributes.Columns[indexOfAnalysisAttributeValueColumn].Conditions.Add(conditionAnalysisAttributeValueActive);
+        }
+
+        private bool AnalysisCodeIsActive(String AAnalysisCode = "")
+        {
+            bool retVal = true;
+
+            string accountCode = string.Empty;
+
+            accountCode = cmbDetailAccountCode.GetSelectedString();
+
+            if ((AAnalysisCode == string.Empty) || (accountCode == string.Empty))
+            {
+                return retVal;
+            }
+
+            string originalRowFilter = FCacheDS.AAnalysisAttribute.DefaultView.RowFilter;
+            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = string.Empty;
+
+            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
+                AAnalysisAttributeTable.GetLedgerNumberDBName(),
+                FLedgerNumber,
+                AAnalysisAttributeTable.GetAccountCodeDBName(),
+                accountCode,
+                AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
+                AAnalysisCode,
+                AAnalysisAttributeTable.GetActiveDBName());
+
+            retVal = (FCacheDS.AAnalysisAttribute.DefaultView.Count > 0);
+
+            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = originalRowFilter;
+
+            return retVal;
+        }
+
+        private bool AnalysisAttributeValueIsActive(String AAnalysisCode = "", String AAnalysisAttributeValue = "")
+        {
+            bool retVal = true;
+
+            if ((AAnalysisCode == string.Empty) || (AAnalysisAttributeValue == string.Empty))
+            {
+                return retVal;
+            }
+
+            string originalRowFilter = FCacheDS.AFreeformAnalysis.DefaultView.RowFilter;
+            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = string.Empty;
+
+            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
+                AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
+                AAnalysisCode,
+                AFreeformAnalysisTable.GetAnalysisValueDBName(),
+                AAnalysisAttributeValue,
+                AFreeformAnalysisTable.GetActiveDBName());
+
+            retVal = (FCacheDS.AFreeformAnalysis.DefaultView.Count > 0);
+
+            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = originalRowFilter;
+
+            //Make sure the grid combobox has right font else it will adopt strikeout
+            // for all items in the list.
+            FAnalAttribTypeVal.Control.Font = new Font(FontFamily.GenericSansSerif, 8);
+
+            return retVal;
         }
 
         private bool AccountIsActive(string AAccountCode = "")
@@ -1388,9 +1488,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             StringCollection RequiredAnalattrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
                 currentAccountCode, false);
             Int32 currentTransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
+
             SetTransAnalAttributeDefaultView(currentTransactionNumber);
 
-            //
             // If the AnalysisType list I'm currently using is the same as the list of required types, I can keep it (with any existing values).
             Boolean existingListIsOk = (RequiredAnalattrCodes.Count == FMainDS.ATransAnalAttrib.DefaultView.Count);
 
@@ -1422,7 +1522,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 attrRowCurrent.Delete();
             }
 
-            FMainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Empty;
+            FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = String.Empty;
 
             foreach (String analysisTypeCode in RequiredAnalattrCodes)
             {
@@ -1434,7 +1534,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 newRow.AnalysisTypeCode = analysisTypeCode;
                 newRow.AccountCode = currentAccountCode;
 
-                FMainDS.ATransAnalAttrib.Rows.Add(newRow);
+                FMainDS.ARecurringTransAnalAttrib.Rows.Add(newRow);
             }
         }
 
