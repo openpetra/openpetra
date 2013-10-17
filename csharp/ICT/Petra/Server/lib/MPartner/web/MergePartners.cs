@@ -63,6 +63,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
     /// </summary>
     public class TMergePartnersWebConnector
     {
+        /* TODO The following tables are not yet used in OpenPetra and are not currently included in the merge yet:
+         *      PmFormalEducation,
+         *      PmPersonAbsence.
+         * TODO The following functionalities have not yet been fully implimented:
+         *      Save original merged Partner data in an XML file,
+         *      Let the user select which sections they would like to merge. */
+        
+        
         // TODO private static StreamWriter MyWriter;
 
         /// <summary>
@@ -237,7 +245,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                 if (AFromPartnerClass == TPartnerClass.UNIT)
                 {
-                    MergeUnit(AFromPartnerKey, AToPartnerKey, Transaction);
+                    if (AToPartnerClass == TPartnerClass.UNIT)
+                    {
+                        MergeUnit(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+                    else
+                    {
+                        throw new Exception("Selected Partner Classes cannot be merged!");
+                    }
                 }
                 else if (AFromPartnerClass == TPartnerClass.CHURCH)
                 {
@@ -249,14 +264,25 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     {
                         MergeChurchToFamily(AFromPartnerKey, AToPartnerKey, Transaction);
                     }
-                    else
+                    else if (AToPartnerClass == TPartnerClass.CHURCH)
                     {
                         MergeChurch(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+                    else
+                    {
+                        throw new Exception("Selected Partner Classes cannot be merged!");
                     }
                 }
                 else if (AFromPartnerClass == TPartnerClass.VENUE)
                 {
-                    MergeVenue(AFromPartnerKey, AToPartnerKey, Transaction);
+                    if (AToPartnerClass == TPartnerClass.VENUE)
+                    {
+                        MergeVenue(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+                    else
+                    {
+                        throw new Exception("Selected Partner Classes cannot be merged!");
+                    }
                 }
                 else if (AFromPartnerClass == TPartnerClass.FAMILY)
                 {
@@ -268,14 +294,25 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     {
                         MergeFamilyToChurch(AFromPartnerKey, AToPartnerKey, Transaction);
                     }
-                    else
+                    else if (AToPartnerClass == TPartnerClass.FAMILY)
                     {
                         MergeFamily(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+                    else
+                    {
+                        throw new Exception("Selected Partner Classes cannot be merged!");
                     }
                 }
                 else if (AFromPartnerClass == TPartnerClass.PERSON)
                 {
-                    MergePerson(AFromPartnerKey, AToPartnerKey, Transaction);
+                    if (AToPartnerClass == TPartnerClass.PERSON)
+                    {
+                        MergePerson(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+                    else
+                    {
+                        throw new Exception("Selected Partner Classes cannot be merged!");
+                    }
                 }
                 else if (AFromPartnerClass == TPartnerClass.ORGANISATION)
                 {
@@ -291,9 +328,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     {
                         MergeOrganisationToBank(AFromPartnerKey, AToPartnerKey, Transaction);
                     }
-                    else
+                    else if (AToPartnerClass == TPartnerClass.ORGANISATION)
                     {
                         MergeOrganisation(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+                    else
+                    {
+                        throw new Exception("Selected Partner Classes cannot be merged!");
                     }
                 }
                 else if (AFromPartnerClass == TPartnerClass.BANK)
@@ -302,9 +343,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     {
                         MergeBankToOrganisation(AFromPartnerKey, AToPartnerKey, Transaction);
                     }
-                    else
+                    else if (AToPartnerClass == TPartnerClass.BANK)
                     {
                         MergeBank(AFromPartnerKey, AToPartnerKey, Transaction);
+                    }
+                    else
+                    {
+                        throw new Exception("Selected Partner Classes cannot be merged!");
                     }
                 }
 
@@ -2658,7 +2703,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             {
                 ToRow.Comment = ToRow.Comment + "\n\n";
             }
-            else
+            else if (FromRow.Comment != "")
             {
                 ToRow.Comment = FromRow.Comment + "\n\n";
             }

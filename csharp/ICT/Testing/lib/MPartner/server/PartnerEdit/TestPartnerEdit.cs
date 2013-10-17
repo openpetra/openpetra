@@ -61,6 +61,8 @@ namespace Tests.MPartner.Server.PartnerEdit
     [TestFixture]
     public class TPartnerEditTest
     {
+        private bool[] Categories;
+        
         /// <summary>
         /// use automatic property to avoid compiler warning about unused variable FServerManager
         /// </summary>
@@ -76,6 +78,13 @@ namespace Tests.MPartner.Server.PartnerEdit
         {
             new TLogging("../../log/TestServer.log");
             FServerManager = TPetraServerConnector.Connect("../../etc/TestServer.config");
+            
+            Categories = new bool[20];
+
+            for (int i = 0; i < 20; i++)
+            {
+                Categories[i] = true;
+            }
         }
 
         /// <summary>
@@ -1079,6 +1088,629 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             // check that Venue record is really deleted
             Assert.IsTrue(!TPartnerServerLookups.VerifyPartner(PartnerKey));
+        }
+
+        /// <summary>
+        /// create two new unit partners and merge them
+        /// </summary>
+        [Test]
+        public void TestMergeTwoUnits()
+        {
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+            
+            long FromPartnerKey;
+            long ToPartnerKey;
+            long TestPartnerKey;
+
+            // create two new Unit Partners
+            PPartnerRow FromPartnerRow = CreateNewUnitPartner(MainDS, connector);
+            PPartnerRow ToPartnerRow = CreateNewUnitPartner(MainDS, connector);
+            FromPartnerKey = FromPartnerRow.PartnerKey;
+            ToPartnerKey = ToPartnerRow.PartnerKey;
+            PUnitRow FromUnitRow = (PUnitRow) MainDS.PUnit.Rows.Find( new object[] { FromPartnerKey });
+            PUnitRow ToUnitRow = (PUnitRow) MainDS.PUnit.Rows.Find( new object[] { ToPartnerKey });
+            
+            // modify records so that they contain different data
+            ToPartnerRow.PartnerShortName = "";
+            FromUnitRow.Maximum = 3;
+            ToUnitRow.Maximum = 6;
+
+            DataSet ResponseDS = new PartnerEditTDS();
+            TVerificationResultCollection VerificationResult;
+
+            // submit new records to database
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+            
+            // create a record to test PUnit references are changed
+            PPartnerRow TestPartnerRow = CreateNewFamilyPartner(MainDS, connector);
+            TestPartnerKey = TestPartnerRow.PartnerKey;
+            PFamilyRow TestFamilyPartnerRow = (PFamilyRow) MainDS.PFamily.Rows.Find( new object[] { TestPartnerKey });
+            TestFamilyPartnerRow.FieldKey = FromPartnerKey;
+
+            // submit new records to database
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            /****** Test that the merge does not throw any errors ******/
+            
+            // merge the two partners
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerRow.PartnerKey, ToPartnerRow.PartnerKey,
+                    TPartnerClass.UNIT, TPartnerClass.UNIT, null, null, -1, Categories);
+
+            Assert.AreEqual(true, result, "Merge two Unit partners");
+
+            /****** Test that the data is merged correctly ******/
+            
+            // read Partners from the databse after they have been merged
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            MainDS.PUnit.Merge(PUnitAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(FromPartnerRow.PartnerKey, DBAccess.GDBAccessObj.Transaction);
+            
+            FromPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { FromPartnerKey });
+            ToPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { ToPartnerKey });
+            TestPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { TestPartnerKey });
+            FromUnitRow = (PUnitRow) MainDS.PUnit.Rows.Find(new object[] { FromPartnerKey });
+            ToUnitRow = (PUnitRow) MainDS.PUnit.Rows.Find(new object[] { ToPartnerKey });
+            TestFamilyPartnerRow = (PFamilyRow) MainDS.PFamily.Rows.Find(new object[] { TestPartnerKey });
+            
+            // check partners have been merged correctly
+            Assert.AreEqual(FromPartnerRow.PartnerKey.ToString() + ", TestUnit", ToPartnerRow.PartnerShortName, "merge two Units");
+            Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge two Units");
+            Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge two Units");
+            Assert.AreEqual(9, ToUnitRow.Maximum, "merge two Units");
+            Assert.IsNotNull(MergeTable.Rows[0], "merge two Units");
+            Assert.AreEqual(ToPartnerKey, TestFamilyPartnerRow.FieldKey, "merge two Units");
+            
+            // delete test records
+            TPartnerWebConnector.DeletePartner(TestPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+        }
+
+        /// <summary>
+        /// create two new unit partners and merge them
+        /// </summary>
+        [Test]
+        public void TestMergeTwoChurches()
+        {
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+            
+            long FromPartnerKey;
+            long ToPartnerKey;
+
+            // create two new Church Partners
+            PPartnerRow FromPartnerRow = CreateNewChurchPartner(MainDS, connector);
+            PPartnerRow ToPartnerRow = CreateNewChurchPartner(MainDS, connector);
+            FromPartnerKey = FromPartnerRow.PartnerKey;
+            ToPartnerKey = ToPartnerRow.PartnerKey;
+            PChurchRow FromChurchRow = (PChurchRow) MainDS.PChurch.Rows.Find( new object[] { FromPartnerKey });
+            PChurchRow ToChurchRow = (PChurchRow) MainDS.PChurch.Rows.Find( new object[] { ToPartnerKey });
+            
+            // modify records so that they contain different data
+            ToPartnerRow.PartnerShortName = "";
+            FromChurchRow.PrayerGroup = true;
+            ToChurchRow.PrayerGroup = false;
+
+            DataSet ResponseDS = new PartnerEditTDS();
+            TVerificationResultCollection VerificationResult;
+
+            // submit new records to database
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // submit new records to database
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            /****** Test that the merge does not throw any errors ******/
+            
+            // merge the two partners
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerRow.PartnerKey, ToPartnerRow.PartnerKey,
+                    TPartnerClass.CHURCH, TPartnerClass.CHURCH, null, null, -1, Categories);
+
+            Assert.AreEqual(true, result, "Merge two Church partners");
+
+            /****** Test that the data is merged correctly ******/
+            
+            // read Partners from the databse after they have been merged
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            MainDS.PChurch.Merge(PChurchAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(FromPartnerRow.PartnerKey, DBAccess.GDBAccessObj.Transaction);
+            
+            FromPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { FromPartnerKey });
+            ToPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { ToPartnerKey });
+            FromChurchRow = (PChurchRow) MainDS.PChurch.Rows.Find(new object[] { FromPartnerKey });
+            ToChurchRow = (PChurchRow) MainDS.PChurch.Rows.Find(new object[] { ToPartnerKey });
+            
+            // check partners have been merged correctly
+            Assert.AreEqual(FromPartnerRow.PartnerKey.ToString() + ", TestChurch", ToPartnerRow.PartnerShortName, "merge two Church partners");
+            Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge two Church partners");
+            Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge two Church partners");
+            Assert.AreEqual(true, ToChurchRow.PrayerGroup, "merge two Church partners");
+            Assert.IsNotNull(MergeTable.Rows[0], "merge two Church partners");
+            
+            // delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+        }
+
+        /// <summary>
+        /// create two new partners and merge them
+        /// </summary>
+        [Test]
+        public void TestMergeChurchToOrganisation()
+        {
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+            
+            long FromPartnerKey;
+            long ToPartnerKey;
+
+            // create one new Church Partner and one new Organisation Partner
+            PPartnerRow FromPartnerRow = CreateNewChurchPartner(MainDS, connector);
+            PPartnerRow ToPartnerRow = CreateNewOrganisationPartner(MainDS, connector);
+            FromPartnerKey = FromPartnerRow.PartnerKey;
+            ToPartnerKey = ToPartnerRow.PartnerKey;
+            PChurchRow FromChurchRow = (PChurchRow) MainDS.PChurch.Rows.Find( new object[] { FromPartnerKey });
+            POrganisationRow ToOrganisationRow = (POrganisationRow) MainDS.POrganisation.Rows.Find( new object[] { ToPartnerKey });
+            
+            // modify records so that they contain different data
+            ToPartnerRow.PartnerShortName = "";
+            FromChurchRow.ContactPartnerKey = ToPartnerKey;
+            ToOrganisationRow.ContactPartnerKey = 0;//.ToInt64(System.DBNull);
+
+            DataSet ResponseDS = new PartnerEditTDS();
+            TVerificationResultCollection VerificationResult;
+
+            // submit new records to database
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            /****** Test that the merge does not throw any errors ******/
+            
+            // merge the two partners
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerRow.PartnerKey, ToPartnerRow.PartnerKey,
+                    TPartnerClass.CHURCH, TPartnerClass.ORGANISATION, null, null, -1, Categories);
+
+            Assert.AreEqual(true, result, "merge Church to organisation");
+
+            /****** Test that the data is merged correctly ******/
+            
+            // read Partners from the databse after they have been merged
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(FromPartnerRow.PartnerKey, DBAccess.GDBAccessObj.Transaction);
+            
+            FromPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { FromPartnerKey });
+            ToPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { ToPartnerKey });
+            FromChurchRow = (PChurchRow) MainDS.PChurch.Rows.Find(new object[] { FromPartnerKey });
+            ToOrganisationRow = (POrganisationRow) MainDS.POrganisation.Rows.Find(new object[] { ToPartnerKey });
+            
+            // check partners have been merged correctly
+            Assert.AreEqual(FromPartnerRow.PartnerKey.ToString() + ", TestChurch", ToPartnerRow.PartnerShortName, "merge Church to organisation");
+            Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge Church to organisation");
+            Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge Church to organisation");
+            Assert.AreEqual(FromChurchRow.ContactPartnerKey, ToOrganisationRow.ContactPartnerKey, "merge Church to organisation");
+            Assert.IsNotNull(MergeTable.Rows[0], "merge Church to organisation");
+            
+            // delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+        }
+
+        /// <summary>
+        /// create two new partners and merge them
+        /// </summary>
+        [Test]
+        public void TestMergeChurchToFamily()
+        {
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+            
+            long FromPartnerKey;
+            long ToPartnerKey;
+
+            // create one new Church Partner and one new Family Partner
+            PPartnerRow FromPartnerRow = CreateNewChurchPartner(MainDS, connector);
+            PPartnerRow ToPartnerRow = CreateNewFamilyPartner(MainDS, connector);
+            FromPartnerKey = FromPartnerRow.PartnerKey;
+            ToPartnerKey = ToPartnerRow.PartnerKey;
+            PChurchRow FromChurchRow = (PChurchRow) MainDS.PChurch.Rows.Find( new object[] { FromPartnerKey });
+            PFamilyRow ToFamilyRow = (PFamilyRow) MainDS.PFamily.Rows.Find( new object[] { ToPartnerKey });
+            
+            // modify records so that they contain different data
+            ToPartnerRow.PartnerShortName = "";
+            ToFamilyRow.FamilyName = "";
+
+            DataSet ResponseDS = new PartnerEditTDS();
+            TVerificationResultCollection VerificationResult;
+
+            // submit new records to database
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            /****** Test that the merge does not throw any errors ******/
+            
+            // merge the two partners
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerRow.PartnerKey, ToPartnerRow.PartnerKey,
+                    TPartnerClass.CHURCH, TPartnerClass.FAMILY, null, null, -1, Categories);
+
+            Assert.AreEqual(true, result, "merge Church to Family");
+
+            /****** Test that the data is merged correctly ******/
+            
+            // read Partners from the databse after they have been merged
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(FromPartnerRow.PartnerKey, DBAccess.GDBAccessObj.Transaction);
+            
+            FromPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { FromPartnerKey });
+            ToPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { ToPartnerKey });
+            FromChurchRow = (PChurchRow) MainDS.PChurch.Rows.Find(new object[] { FromPartnerKey });
+            ToFamilyRow = (PFamilyRow) MainDS.PFamily.Rows.Find(new object[] { ToPartnerKey });
+            
+            // check partners have been merged correctly
+            Assert.AreEqual(FromPartnerRow.PartnerKey.ToString() + ", TestChurch", ToPartnerRow.PartnerShortName, "merge Church to Family");
+            Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge Church to Family");
+            Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge Church to Family");
+            Assert.AreEqual(FromChurchRow.ChurchName, ToFamilyRow.FamilyName, "merge Church to Family");
+            Assert.IsNotNull(MergeTable.Rows[0], "merge Church to Family");
+            
+            // delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+        }
+
+        /// <summary>
+        /// create two new venue partners and merge them
+        /// </summary>
+        [Test]
+        public void TestMergeTwoVenues()
+        {
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+            
+            long FromPartnerKey;
+            long ToPartnerKey;
+
+            // create two new Venue Partners
+            PPartnerRow FromPartnerRow = CreateNewVenuePartner(MainDS, connector);
+            PPartnerRow ToPartnerRow = CreateNewVenuePartner(MainDS, connector);
+            FromPartnerKey = FromPartnerRow.PartnerKey;
+            ToPartnerKey = ToPartnerRow.PartnerKey;
+            PVenueRow FromVenueRow = (PVenueRow) MainDS.PVenue.Rows.Find( new object[] { FromPartnerKey });
+            PVenueRow ToVenueRow = (PVenueRow) MainDS.PVenue.Rows.Find( new object[] { ToPartnerKey });
+            
+            // modify records so that they contain different data
+            ToPartnerRow.PartnerShortName = "";
+            ToVenueRow.VenueCode = "";
+
+            DataSet ResponseDS = new PartnerEditTDS();
+            TVerificationResultCollection VerificationResult;
+
+            // submit new records to database
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            /****** Test that the merge does not throw any errors ******/
+            
+            // merge the two partners
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerRow.PartnerKey, ToPartnerRow.PartnerKey,
+                    TPartnerClass.VENUE, TPartnerClass.VENUE, null, null, -1, Categories);
+
+            Assert.AreEqual(true, result, "merge two Venues");
+
+            /****** Test that the data is merged correctly ******/
+            
+            // read Partners from the databse after they have been merged
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            MainDS.PVenue.Merge(PVenueAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(FromPartnerRow.PartnerKey, DBAccess.GDBAccessObj.Transaction);
+            
+            FromPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { FromPartnerKey });
+            ToPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { ToPartnerKey });
+            FromVenueRow = (PVenueRow) MainDS.PVenue.Rows.Find(new object[] { FromPartnerKey });
+            ToVenueRow = (PVenueRow) MainDS.PVenue.Rows.Find(new object[] { ToPartnerKey });
+            
+            // check partners have been merged correctly
+            Assert.AreEqual(FromPartnerRow.PartnerKey.ToString() + ", TestVenue", ToPartnerRow.PartnerShortName, "merge two Venues");
+            Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge two Venues");
+            Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge two Venues");
+            Assert.AreEqual('V' + ToPartnerKey.ToString().Substring(1), ToVenueRow.VenueCode, "merge two Venues");
+            Assert.IsNotNull(MergeTable.Rows[0], "merge two Venues");
+            
+            // delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+        }
+
+        /// <summary>
+        /// create two new family partners and merge them
+        /// </summary>
+        [Test]
+        public void TestMergeTwoFamilies()
+        {
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+            
+            long FromPartnerKey;
+            long ToPartnerKey;
+
+            // create two new Family Partners
+            PPartnerRow FromPartnerRow = CreateNewFamilyPartner(MainDS, connector);
+            PPartnerRow ToPartnerRow = CreateNewFamilyPartner(MainDS, connector);
+            FromPartnerKey = FromPartnerRow.PartnerKey;
+            ToPartnerKey = ToPartnerRow.PartnerKey;
+            PFamilyRow FromFamilyRow = (PFamilyRow) MainDS.PFamily.Rows.Find( new object[] { FromPartnerKey });
+            PFamilyRow ToFamilyRow = (PFamilyRow) MainDS.PFamily.Rows.Find( new object[] { ToPartnerKey });
+            
+            // modify records so that they contain different data
+            ToPartnerRow.PartnerShortName = "";
+            FromFamilyRow.FirstName = "Chang";
+            ToFamilyRow.FirstName = "Eng";
+            ToFamilyRow.FamilyName = "";
+
+            DataSet ResponseDS = new PartnerEditTDS();
+            TVerificationResultCollection VerificationResult;
+
+            // submit new records to database
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            /****** Test that the merge does not throw any errors ******/
+            
+            // merge the two partners
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerRow.PartnerKey, ToPartnerRow.PartnerKey,
+                    TPartnerClass.FAMILY, TPartnerClass.FAMILY, null, null, -1, Categories);
+
+            Assert.AreEqual(true, result, "Merge two family partners");
+
+            /****** Test that the data is merged correctly ******/
+            
+            // read Partners from the databse after they have been merged
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            MainDS.PFamily.Merge(PFamilyAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(FromPartnerRow.PartnerKey, DBAccess.GDBAccessObj.Transaction);
+            
+            FromPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { FromPartnerKey });
+            ToPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { ToPartnerKey });
+            FromFamilyRow = (PFamilyRow) MainDS.PFamily.Rows.Find(new object[] { FromPartnerKey });
+            ToFamilyRow = (PFamilyRow) MainDS.PFamily.Rows.Find(new object[] { ToPartnerKey });
+            
+            // check partners have been merged correctly
+            Assert.AreEqual(FromPartnerRow.PartnerKey.ToString() + ", TestPartner, Mr", ToPartnerRow.PartnerShortName, "merge two families");
+            Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge two families");
+            Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge two families");
+            Assert.AreEqual(FromFamilyRow.FamilyName, ToFamilyRow.FamilyName, "merge two families");
+            Assert.IsNotNull(MergeTable.Rows[0], "merge two families");
+            
+            // delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+        }
+
+        /// <summary>
+        /// create two new partners and merge them
+        /// </summary>
+        [Test]
+        public void TestMergeFamilyToOrganisation()
+        {
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+            
+            long FromPartnerKey;
+            long ToPartnerKey;
+
+            // create one new Family Partner and one new Organisation Partner
+            PPartnerRow FromPartnerRow = CreateNewFamilyPartner(MainDS, connector);
+            PPartnerRow ToPartnerRow = CreateNewOrganisationPartner(MainDS, connector);
+            FromPartnerKey = FromPartnerRow.PartnerKey;
+            ToPartnerKey = ToPartnerRow.PartnerKey;
+            PFamilyRow FromFamilyRow = (PFamilyRow) MainDS.PFamily.Rows.Find( new object[] { FromPartnerKey });
+            POrganisationRow ToOrganisationRow = (POrganisationRow) MainDS.POrganisation.Rows.Find( new object[] { ToPartnerKey });
+            
+            // modify records so that they contain different data
+            ToPartnerRow.PartnerShortName = "";
+            ToOrganisationRow.OrganisationName = "";
+
+            DataSet ResponseDS = new PartnerEditTDS();
+            TVerificationResultCollection VerificationResult;
+
+            // submit new records to database
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            /****** Test that the merge does not throw any errors ******/
+            
+            // merge the two partners
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerRow.PartnerKey, ToPartnerRow.PartnerKey,
+                    TPartnerClass.FAMILY, TPartnerClass.ORGANISATION, null, null, -1, Categories);
+
+            Assert.AreEqual(true, result, "merge family to organisation");
+
+            /****** Test that the data is merged correctly ******/
+            
+            // read Partners from the databse after they have been merged
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            MainDS.POrganisation.Merge(POrganisationAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(FromPartnerRow.PartnerKey, DBAccess.GDBAccessObj.Transaction);
+            
+            FromPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { FromPartnerKey });
+            ToPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { ToPartnerKey });
+            FromFamilyRow = (PFamilyRow) MainDS.PFamily.Rows.Find(new object[] { FromPartnerKey });
+            ToOrganisationRow = (POrganisationRow) MainDS.POrganisation.Rows.Find(new object[] { ToPartnerKey });
+            
+            // check partners have been merged correctly
+            Assert.AreEqual(FromPartnerRow.PartnerKey.ToString() + ", TestPartner, Mr", ToPartnerRow.PartnerShortName, "merge family to organisation");
+            Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge family to organisation");
+            Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge family to organisation");
+            Assert.AreEqual(FromPartnerRow.PartnerShortName, ToOrganisationRow.OrganisationName, "merge family to organisation");
+            Assert.IsNotNull(MergeTable.Rows[0], "merge family to organisation");
+            
+            // delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+        }
+
+        /// <summary>
+        /// create two new person partners and merge them
+        /// </summary>
+        [Test]
+        public void TestMergeFamilyToChurch()
+        {
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+            
+            long FromPartnerKey;
+            long ToPartnerKey;
+
+            // create one new Family Partner and one new Church Partner
+            PPartnerRow FromPartnerRow = CreateNewFamilyPartner(MainDS, connector);
+            PPartnerRow ToPartnerRow = CreateNewChurchPartner(MainDS, connector);
+            FromPartnerKey = FromPartnerRow.PartnerKey;
+            ToPartnerKey = ToPartnerRow.PartnerKey;
+            PFamilyRow FromFamilyRow = (PFamilyRow) MainDS.PFamily.Rows.Find( new object[] { FromPartnerKey });
+            PChurchRow ToChurchRow = (PChurchRow) MainDS.PChurch.Rows.Find( new object[] { ToPartnerKey });
+            
+            // modify records so that they contain different data
+            ToPartnerRow.PartnerShortName = "";
+            ToChurchRow.ChurchName = "";
+
+            DataSet ResponseDS = new PartnerEditTDS();
+            TVerificationResultCollection VerificationResult;
+
+            // submit new records to database
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            /****** Test that the merge does not throw any errors ******/
+            
+            // merge the two partners
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerRow.PartnerKey, ToPartnerRow.PartnerKey,
+                    TPartnerClass.FAMILY, TPartnerClass.CHURCH, null, null, -1, Categories);
+
+            Assert.AreEqual(true, result, "merge family to church");
+
+            /****** Test that the data is merged correctly ******/
+            
+            // read Partners from the databse after they have been merged
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            MainDS.PChurch.Merge(PChurchAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(FromPartnerRow.PartnerKey, DBAccess.GDBAccessObj.Transaction);
+            
+            FromPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { FromPartnerKey });
+            ToPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { ToPartnerKey });
+            FromFamilyRow = (PFamilyRow) MainDS.PFamily.Rows.Find(new object[] { FromPartnerKey });
+            ToChurchRow = (PChurchRow) MainDS.PChurch.Rows.Find(new object[] { ToPartnerKey });
+            
+            // check partners have been merged correctly
+            Assert.AreEqual(FromPartnerRow.PartnerKey.ToString() + ", TestPartner, Mr", ToPartnerRow.PartnerShortName, "merge family to church");
+            Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge family to church");
+            Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge family to church");
+            Assert.AreEqual(FromPartnerRow.PartnerShortName, ToChurchRow.ChurchName, "merge family to church");
+            Assert.IsNotNull(MergeTable.Rows[0], "merge family to church");
+            
+            // delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+        }
+
+        /// <summary>
+        /// create two new Person partners from the same family and merge them
+        /// </summary>
+        [Test]
+        public void TestMergeTwoPersonsFromSameFamily()
+        {
+            TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
+
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+            
+            long FamilyPartnerKey;
+            long FromPartnerKey;
+            long ToPartnerKey;
+
+            // create two new Person Partners, one family and one location
+            CreateFamilyWithPersonRecords(MainDS, connector);
+            PPartnerRow FamilyPartnerRow = (PPartnerRow) MainDS.PPartner.Rows[0];
+            PPartnerRow FromPartnerRow = (PPartnerRow) MainDS.PPartner.Rows[1];
+            PPartnerRow ToPartnerRow = (PPartnerRow) MainDS.PPartner.Rows[2];
+            PLocationRow LocationRow = (PLocationRow) MainDS.PLocation.Rows[0];
+            FamilyPartnerKey = FamilyPartnerRow.PartnerKey;
+            FromPartnerKey = FromPartnerRow.PartnerKey;
+            ToPartnerKey = ToPartnerRow.PartnerKey;
+            PFamilyRow FamilyRow = (PFamilyRow) MainDS.PFamily.Rows.Find( new object[] { FamilyPartnerKey });
+            PPersonRow FromPersonRow = (PPersonRow) MainDS.PPerson.Rows.Find( new object[] { FromPartnerKey });
+            PPersonRow ToPersonRow = (PPersonRow) MainDS.PPerson.Rows.Find( new object[] { ToPartnerKey });
+            
+            // modify records so that they contain different data
+            ToPartnerRow.PartnerShortName = "";
+            ToPersonRow.FirstName = "";
+            FromPersonRow.Gender = "MALE";
+            ToPersonRow.Gender = "UNKNOWN";
+
+            DataSet ResponseDS = new PartnerEditTDS();
+            TVerificationResultCollection VerificationResult;
+
+            // submit new records to database
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            /****** Test that the merge does not throw any errors ******/
+            
+            long[] SiteKey = new long[1];
+            int[] LocationKey = new int[1];
+            SiteKey[0] = LocationRow.SiteKey;
+            LocationKey[0] = LocationRow.LocationKey;
+            
+            // merge the two partners
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerRow.PartnerKey, ToPartnerRow.PartnerKey,
+                    TPartnerClass.PERSON, TPartnerClass.PERSON, SiteKey, LocationKey, -1, Categories);
+
+            Assert.AreEqual(true, result, "Merge two Person partners");
+
+            /****** Test that the data is merged correctly ******/
+            
+            // read Partners from the databse after they have been merged
+            MainDS.PPartner.Merge(PPartnerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            MainDS.PPerson.Merge(PPersonAccess.LoadAll(DBAccess.GDBAccessObj.Transaction));
+            PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadByPrimaryKey(FromPartnerRow.PartnerKey, DBAccess.GDBAccessObj.Transaction);
+            
+            FromPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { FromPartnerKey });
+            ToPartnerRow = (PPartnerRow) MainDS.PPartner.Rows.Find(new object[] { ToPartnerKey });
+            FromPersonRow = (PPersonRow) MainDS.PPerson.Rows.Find(new object[] { FromPartnerKey });
+            ToPersonRow = (PPersonRow) MainDS.PPerson.Rows.Find(new object[] { ToPartnerKey });
+            
+            // check partners have been merged correctly
+            Assert.AreEqual(FromPartnerRow.PartnerShortName, ToPartnerRow.PartnerShortName, "merge two Persons");
+            Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge two Persons");
+            Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge two Persons");
+            Assert.AreEqual(FromPersonRow.Gender, ToPersonRow.Gender, "merge two Persons");
+            Assert.AreEqual(FromPersonRow.FamilyName, ToPersonRow.FamilyName, "merge two Persons");
+            Assert.IsNotNull(MergeTable.Rows[0], "merge two Persons");
+            
+            // delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult); // TODO this fails because FamilyKey is null (I think)
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FamilyPartnerKey, out VerificationResult);
+            
+            connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
         }
     }
 }
