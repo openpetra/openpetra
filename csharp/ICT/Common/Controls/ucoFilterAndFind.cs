@@ -1938,7 +1938,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Gets the complete list of individual panels that make up the standard filter
         /// </summary>
-        public List <Panel> FilterPanelControls
+        public List <Panel>FilterPanelControls
         {
             get
             {
@@ -1949,7 +1949,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Gets the complete list of individual panels that make up the extra filter
         /// </summary>
-        public List <Panel> ExtraFilterPanelControls
+        public List <Panel>ExtraFilterPanelControls
         {
             get
             {
@@ -1960,7 +1960,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Gets the complete list of individual panels that make up the find
         /// </summary>
-        public List <Panel> FindPanelControls
+        public List <Panel>FindPanelControls
         {
             get
             {
