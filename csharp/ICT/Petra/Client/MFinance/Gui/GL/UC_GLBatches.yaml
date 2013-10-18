@@ -20,24 +20,34 @@ RootNode:
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
-        pnlInfo: 
-            ControlsOrientation: horizontal
-            Controls: [rgrShowBatches, pnlPeriodFilter]
-            Dock: Top
-        rgrShowBatches: 
-            Label: Show batches available for
-            ControlsOrientation: horizontal
-            SuppressChangeDetection: true
-            OptionalValues: [Posting, =Editing, All]
-            OnChange: RefreshFilter
-        cmbYearFilter: {List: UserDefinedList, OnChange:RefreshPeriods, SuppressChangeDetection: true, Width=100}
-        cmbPeriodFilter: {List: UserDefinedList, OnChange:RefreshFilter, SuppressChangeDetection: true, Width=250}
-        pnlPeriodFilter:
-            Controls: [cmbYearFilter, cmbPeriodFilter]
+            #Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
+            Controls: [pnlDetailGrid, pnlDetails]
         pnlDetailGrid:
             Dock: Fill
-            Controls: [pnlDetailButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 180
+            InitiallyExpanded: true     
+            ShowApplyFilterButton: FilterContext.ExtraFilterOnly
+            ShowFilterIsAlwaysOnLabel: FilterContext.StandardFilterOnly
+            ShowKeepFilterTurnedOnButton: FilterContext.ExtraFilterOnly
+            FilterControls: [pnlBatchFilter]
+            ExtraFilterControls: [Column:BatchNumber, txtDetailBatchDescription, txtDetailBatchControlTotal]
+            FindControls: [Column:BatchNumber, txtDetailBatchDescription]
+            Panels:
+                pnlBatchFilter:
+                    Controls: [rgrShowBatches, cmbYearFilter, cmbPeriodFilter]
+                    
+                    rgrShowBatches: 
+                        Label: Show batches for
+                        ClearButton: false
+                        OptionalValues: [Posting, =Editing, All]
+                        
+                    cmbYearFilter: {OnChange=RefreshPeriods, ClearButton=false, Width=100}
+                    cmbPeriodFilter: {OnChange=RefreshFilter, ClearButton=false, Width=250}
+                    rbtPosting: {OnChange=RefreshFilter}
+                    rbtEditing: {OnChange=RefreshFilter}
+                    rbtAll: {OnChange=RefreshFilter}
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNew, btnCancel, btnTestPostBatch, btnPostBatch]
@@ -84,8 +94,6 @@ RootNode:
             mniImportFromClipboard:
             mniExportBatches:
     Toolbar:
-        tbbTestPostBatch:
-        tbbPostBatch:
         tbbReverseBatch:
         tbbImportBatches:
         tbbImportFromClipboard:

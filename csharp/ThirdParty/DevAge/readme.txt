@@ -1,11 +1,20 @@
 based on the source code of SourceGrid as of July 16, 2012
 (found here: http://bitbucket.org/dariusdamalakas/sourcegrid/)
 
+==== Our version history ====
 
-We have made three important modifications:
-Please manually adjust the files in the downloaded source code of SourceGrid, based on the diff files included in this directory.
+File SourceGrid.dll:
+--------------------
+Built from the downloaded source code of SourceGrid, plus our changes described above. This is used with OpenPetra!
+The latest version is 4.40.5029.25553, dated 8 October 2013, size 536KB - this fixes all bugs below
 
-==== Include 'Fixed Rows' in the calculation of the Column's AutoSize ====
+(Version number 4.40.4937.16700, dated 8 July 2013, size 536KB - this fixed bugs 1 to 3 below)
+(Version number 4.40.4681.15711, dated 25 Oct 2012, size 536KB - this fixed bugs 1 and 2 below)
+
+Over time we have made several important modifications:
+Please manually adjust the files in the downloaded source code of SourceGrid, based on the complete (or partial diff) files included in this directory.
+
+==== 1.  Include 'Fixed Rows' in the calculation of the Column's AutoSize ====
 The file ColumnInfoCollection.cs contains a modification (by ChristianK) for Class 'ColumnInfoCollection'. 
 This modification changes the calculation of the Column's AutoSize so that it is done in the way as SourceGrid 4.11 did it.
 We want that behaviour so that the Column Header Texts are also taken into consideration,
@@ -14,28 +23,30 @@ Columns from 'collapsing' to a few pixels width if there is no data in a particu
 (eg. Partner Find screen). 
 From SourceGrid 4.20 onwards, Fixed Rows are excluded from the AutoSize calculation algorithm, which causes the mentioned problem of Columns collapsing if there is no data in them.
 
-==== Fix a bug in the display or otherwise of the scrollbars ====
+==== 2.  Fix a bug in the display or otherwise of the scrollbars ====
 The file CustomScrollControl.cs contains a modification (by AlanP) that fixes a bug where the grid does not display the scrollbars correctly as the content of the grid changes.  
 For example, if the grid already has a horizontal scrollbar but no need for a vertical one, and then you add rows, you reach a stage where at least one row is 'hidden' behind the horizontal scrollbar.
 
-==== Fix a bug with SHIFT selection of multiple rows (8 July 2013) ====
+==== 3.  Fix a bug with SHIFT selection of multiple rows (8 July 2013) ====
 The file GridVirtual.cs contains a modification (by AlanP) that fixes a bug whereby the simple action of pressing SHIFT caused a cascade of row/selection change events.  The consequence of this was that pressing SHIFT on its own changed the selection and using SHIFT with a left mouse click failed to select multiple rows.
 
+==== 4.  More fixes relating to multi-selection using mouse and keyboard, as well as some issues with our validation when controls lose focus (September 2013) ====
+It became apparent that a number of bugs were occurring that could not be fixed efficiently using the methods inherent in the grid code.
+Alan made the decision to 'fork' the SourceGrid for OpenPetra purposes and make the event handling suit our purposes better.
+This meant that we wanted only one event to be fired for a given occurrence (instead of multiple events in the standard grid).
+It meant that we could use the grid with a FocusStyle of None, that Selection.ActivePosition would always be valid, that we could use FocusRowLeaving for validation purposes (and only need to handle one event) and Selection_Changed as the means of showing new details.
+
+All the changes made for this are commented with // AlanP:
+
+Files affected:
+/Cells/Controllers/MouseSelection.cs
+/Grids/GridVirtual.cs
+/Selection/IGridSelection.cs
+/Selection/RowSelection.cs
+/Selection/SelectionBase.cs
 
 Other changes
 -------------
-
-==== A previous fix relating to Selection.Focus on leaving the Grid is no longer required ====
-The file GridVirtual.cs (that we previously modified) no longer needs any change.
-
-
-File SourceGrid.dll:
---------------------
-Built from the downloaded source code of SourceGrid, plus our changes described above. This is used with OpenPetra!
-The latest version is 4.40.4937.16700, dated 8 July 2013, size 536KB
-
-(Version number 4.40.4681.15711, dated 25 Oct 2012, size 536KB - this fixed bugs 1 and 2 above)
-
 
 
 File frmSample17DataGrid.cs: 

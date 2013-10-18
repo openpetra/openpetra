@@ -59,7 +59,6 @@ namespace Ict.Petra.Client.CommonForms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.tipUC = new System.Windows.Forms.ToolTip(this.components);
 
             //
             // TPetraUserControl

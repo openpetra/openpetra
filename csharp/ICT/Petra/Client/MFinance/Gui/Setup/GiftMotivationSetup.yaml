@@ -7,8 +7,8 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data,Ict.Petra.Shared.MFinance.Gift.Validation]
     FormType: edit
     Template: windowEdit
-    WindowWidth: 660
-    WindowHeight: 550
+    WindowWidth: 760
+    WindowHeight: 720
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
@@ -18,7 +18,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [cmbDetailMotivationGroupCode, txtDetailMotivationDetailCode, txtDetailMotivationDetailDesc, cmbDetailAccountCode, cmbDetailCostCentreCode, chkDetailMotivationStatus]
+            FindControls: [cmbDetailMotivationGroupCode, txtDetailMotivationDetailCode, txtDetailMotivationDetailDesc]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
