@@ -24,9 +24,15 @@ RootNode:
         txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
         pnlDetailGrid:
             Dock: Fill
-            Controls: [pnlDetailButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
             Height: 200
             Width: 600
+        pnlFilterAndFind:
+            ExpandedWidth: 170
+            ShowApplyFilterButton: FilterContext.StandardFilterOnly
+            ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
+            FilterControls: [cmbDetailCostCentreCode, cmbDetailAccountCode]
+            FindControls: [txtDetailNarrative, txtDetailReference]
         pnlDetailsSection:
             Dock: Bottom
             Controls: [pnlDetails, pnlTransAnalysisAttributes]

@@ -29,7 +29,6 @@ using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 using GNU.Gettext;
-using Ict.Petra.Client.App.Formatting;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -38,6 +37,7 @@ using Ict.Petra.Client.MPartner;
 using System.Globalization;
 using Ict.Petra.Client.App.Gui;
 using Ict.Common.Controls;
+using Ict.Common.Controls.Formatting;
 using Ict.Common;
 
 namespace Ict.Petra.Client.MPartner.Gui
@@ -77,7 +77,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         #endregion
 
         private const String StrSpacer = "Spacer";
-        private const String StrBeginGroup = "BeginGroup";
 
         #region Fields
 
@@ -1612,12 +1611,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void InitUserControl()
         {
-            SingleLineFlow LayoutManagerLeftColumn;
-            SingleLineFlow LayoutManagerRightColumn;
+            TSingleLineFlow LayoutManagerLeftColumn;
+            TSingleLineFlow LayoutManagerRightColumn;
 
-            LayoutManagerLeftColumn = new SingleLineFlow(pnlLeftColumn, 1, 1);             // 22
+            LayoutManagerLeftColumn = new TSingleLineFlow(pnlLeftColumn, 1, 1);             // 22
             LayoutManagerLeftColumn.SpacerDistance = 7;
-            LayoutManagerRightColumn = new SingleLineFlow(pnlRightColumn, 1, 1);             // 22
+            LayoutManagerRightColumn = new TSingleLineFlow(pnlRightColumn, 1, 1);             // 22
             LayoutManagerRightColumn.SpacerDistance = 7;
             FWorkerFamOnly = false;
             FDefaultPartnerClass = "*";
@@ -1773,7 +1772,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                     {
                                         if (FCriteriaFieldsLeft[PositionInArray - 1].ToString() == StrSpacer)
                                         {
-                                            TheControl.Tag = StrBeginGroup;
+                                            TheControl.Tag = TSingleLineFlow.BeginGroupIndicator;
                                         }
                                     }
 
@@ -1789,7 +1788,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                     {
                                         if (FCriteriaFieldsRight[PositionInArray - 1].ToString() == StrSpacer)
                                         {
-                                            TheControl.Tag = StrBeginGroup;
+                                            TheControl.Tag = TSingleLineFlow.BeginGroupIndicator;
                                         }
                                     }
 
@@ -1862,7 +1861,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         if (((Control)CriteriaFieldsLeftControls[Counter3]).Tag != null)
                         {
                             // MessageBox.Show('CriteriaFieldsLeftControls[' + Counter3.ToString + ']:' + CriteriaFieldsLeftControls[Counter3].ToString + ' has Tag.');
-                            if (((Control)CriteriaFieldsLeftControls[Counter3]).Tag.ToString() == StrBeginGroup)
+                            if (((Control)CriteriaFieldsLeftControls[Counter3]).Tag.ToString() == TSingleLineFlow.BeginGroupIndicator)
                             {
                                 FCriteriaFieldsLeft.Add(StrSpacer);
 
@@ -1890,7 +1889,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         if (((Control)CriteriaFieldsRightControls[Counter3]).Tag != null)
                         {
                             // MessageBox.Show('CriteriaFieldsRightControls[' + Counter3.ToString + ']:' + CriteriaFieldsRightControls[Counter3].ToString + ' has Tag.');
-                            if (((Control)CriteriaFieldsRightControls[Counter3]).Tag.ToString() == StrBeginGroup)
+                            if (((Control)CriteriaFieldsRightControls[Counter3]).Tag.ToString() == TSingleLineFlow.BeginGroupIndicator)
                             {
                                 FCriteriaFieldsRight.Add(StrSpacer);
 

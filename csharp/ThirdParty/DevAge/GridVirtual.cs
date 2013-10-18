@@ -212,7 +212,9 @@ namespace SourceGrid
 				(Selection.ActivePosition.IsEmpty() == false && complete.Contains(Selection.ActivePosition) == false) ||
 				(Selection.IsEmpty() == false && completeRegion.Contains(Selection.GetSelectionRegion()) == false)
 			)
-				Selection.ResetSelection(false);
+                // AlanP: Sep 2013.  This gets called when we delete rows (eg FPreviouslySelectedDetailRow.Delete())
+                //  so we want to suppress selection_changed at this point because we will call SelectRowInGrid next
+				Selection.ResetSelection(false, true);
 		}
 		#endregion
 
@@ -1315,6 +1317,14 @@ namespace SourceGrid
 			#region Navigate keys: arrows, tab and PgDown/Up
 			var shiftPressed = e.Modifiers == Keys.Shift;
 			var resetSelection = shiftPressed == false;
+
+            // AlanP: Sep 2013. We need this because the first time we press SHIFT we may be on any row in the grid
+            // This ensures that, if m_firstCellShiftSelected has never been set, it gets the current position before any move
+            if (shiftPressed && (m_firstCellShiftSelected.Row < this.FixedRows))
+            {
+                m_firstCellShiftSelected = Selection.ActivePosition;
+            }
+
 			if (e.KeyCode == Keys.Down && enableArrows)
 			{
 				Selection.MoveActiveCell(1, 0, resetSelection);
@@ -1379,7 +1389,9 @@ namespace SourceGrid
             //  2. SHIFT+mouse click did not work.
             if (shiftPressed && e.Handled)
             {
-                Selection.ResetSelection(true);
+                // AlanP: Sep 2013  Inhibit the change event on this one
+                Selection.ResetSelection(true, true);
+                // This fires the selection_changed event, then we are done
                 Selection.SelectRange(new Range(m_firstCellShiftSelected, Selection.ActivePosition), true);
             }
 
@@ -1868,6 +1880,11 @@ namespace SourceGrid
 			{
 				Selection.FocusFirstCell(false);
 			}
+
+            // AlanP: Sep 2013.  We need to reset the first cell shift selected because the highlighted cell could have moved anywhere
+            //   while the focus was away from the grid.
+            // We may have SHIFT+Tab'bed back to the grid so the shift key may or may not already be pressed when OnEnter is called
+            m_firstCellShiftSelected = Selection.ActivePosition;
 		}
 		protected override void OnValidated(EventArgs e)
 		{
@@ -2477,7 +2494,8 @@ namespace SourceGrid
 			int firstVisibleRow = rows[ActualFixedRows];
 			int lastVisibleRow = rows[rows.Count - 1];
 
-
+            // AlanP: Sep 2013  We need to know if SHIFT is pressed
+            bool shiftPressed = Control.ModifierKeys == Keys.Shift;
 
 			if (IsThisRowVisibleOnScreen(rngFocusedCell.Start.Row))
 			{   //focus is on the screen
@@ -2514,7 +2532,8 @@ namespace SourceGrid
 				{   //this time only move focus, wihout actual scrolling
 
 					Position newPosition = new Position(BottommostFocusableRow, Selection.ActivePosition.Column);
-					Selection.Focus(newPosition, true);
+                    // AlanP: Sep 2013  We inhibit change events if SHIFT is pressed because we still have more calls to do
+					Selection.Focus(newPosition, true, shiftPressed);
 				}
 
 			}
@@ -2539,7 +2558,8 @@ namespace SourceGrid
 				if (rngFocusedCell.ContainsRow(NewFocusedRow) == false)
 				{
 					Position newPosition = new Position(NewFocusedRow, Selection.ActivePosition.Column);
-					Selection.Focus(newPosition, true);
+                    // AlanP: Sep 2013  We inhibit change events if SHIFT is pressed because we still have more calls to do
+                    Selection.Focus(newPosition, true, shiftPressed);
 				}
 
 			}
@@ -2707,9 +2727,10 @@ namespace SourceGrid
 				}
 			}
 
+            // AlanP: Sep 2013  We need to know if SHIFT is pressed
+            bool shiftPressed = Control.ModifierKeys == Keys.Shift;
 
-
-			if (IsThisRowVisibleOnScreen(FocusedRow))
+            if (IsThisRowVisibleOnScreen(FocusedRow))
 			{   //focus is on the screen
 
 				int TopmostFocusableRow = GetTopmostFocusableRowFromRange(firstVisibleRow, lastVisibleRow);
@@ -2744,7 +2765,8 @@ namespace SourceGrid
 				{   //this time only move focus, wihout actual scrolling
 
 					Position newPosition = new Position(TopmostFocusableRow, Selection.ActivePosition.Column);
-					Selection.Focus(newPosition, true);
+                    // AlanP: Sep 2013  We inhibit change events if SHIFT is pressed because we still have more calls to do
+                    Selection.Focus(newPosition, true, shiftPressed);
 				}
 
 			}
@@ -2773,7 +2795,8 @@ namespace SourceGrid
 				if (NewFocusedRow != FocusedRow)
 				{
 					Position newPosition = new Position(NewFocusedRow, Selection.ActivePosition.Column);
-					Selection.Focus(newPosition, true);
+                    // AlanP: Sep 2013  We inhibit change events if SHIFT is pressed because we still have more calls to do
+                    Selection.Focus(newPosition, true, shiftPressed);
 				}
 
 			}

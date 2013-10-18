@@ -18,7 +18,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailCountryCode, txtDetailCountryName, cmbDetailInternatPostalTypeCode, chkDetailDeletable]
+            FindControls: [txtDetailCountryCode, txtDetailCountryName, cmbDetailInternatPostalTypeCode]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]

@@ -13,7 +13,7 @@ RootNode:
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
-            Controls: [pnlConferenceDetails, pnlGrid, pnlDetails]
+            Controls: [pnlConferenceDetails, pnlDetails, pnlGrid]
             Dock: Fill
         pnlConferenceDetails:
             Dock: Top
@@ -21,7 +21,11 @@ RootNode:
         txtConferenceName: {ReadOnly=true, BorderStyle=None, Stretch=horizontally}
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlFilterAndFind, grdDetails, pnlButtons]
+        pnlFilterAndFind:
+            ExpandedWidth: 185
+            FilterControls: [txtDetailUpToAge, txtDetailDiscount, cmbDetailCostTypeCode]
+            FindControls: [txtDetailUpToAge, txtDetailDiscount, cmbDetailCostTypeCode]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]

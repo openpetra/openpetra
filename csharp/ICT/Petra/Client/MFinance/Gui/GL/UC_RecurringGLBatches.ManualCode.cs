@@ -98,6 +98,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ARecurringBatchTable.GetBatchNumberDBName()
                 );
 
+            UpdateRecordNumberDisplay();
+
             grdDetails.Focus();
 
             SetAccountCostCentreTableVariables();

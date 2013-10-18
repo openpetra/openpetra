@@ -7,6 +7,7 @@
     UsingNamespaces: [Ict.Petra.Shared.MSysMan.Data,Ict.Petra.Shared.MSysMan.Validation]
     FormType: edit
     Template: windowEdit
+    WindowHeight: 600
     Actions:
         actNewUser: {ActionClick=NewUser, Image=New_Record.ico}
         actRetire: {ActionClick=RetireUser, Image=Delete_Record.ico}
@@ -18,7 +19,11 @@
             Dock: Fill
         pnlDetailGrid:
             Dock: Fill
-            Controls: [pnlDetailButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailUserId, txtDetailFirstName, txtDetailLastName, Column:Retired]
+            FindControls: [txtDetailUserId, txtDetailFirstName, txtDetailLastName]
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNewUser, btnRetire, btnSetPassword]
@@ -44,5 +49,5 @@
             Label: This User can access
             ColSpan: 2
             Width: 500
-            Height: 250
+            Height: 155
             #Enabled: cndChangePermissions

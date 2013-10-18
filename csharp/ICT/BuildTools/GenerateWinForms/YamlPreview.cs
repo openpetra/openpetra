@@ -190,6 +190,7 @@ namespace Ict.Tools.GenerateWinForms
         void btnPreviewClick(object sender, EventArgs e)
         {
             TParseYAMLFormsDefinition.ClearCachedYamlFiles();
+            bool bRequiresUCFilterFindDeclaration = false;
 
             // generate the code
             TFrmYamlPreview.ProcessFile(FFilename, FSelectedLocalisation);
@@ -237,6 +238,18 @@ namespace Ict.Tools.GenerateWinForms
                     // read opening curly bracket
                     line = sr.ReadLine();
                 }
+                else if (line.Contains("FucoFilterAndFind.Dispose()"))
+                {
+                    // FucoFilterAndFind is not decalred through the standard YAML file and so is not part of the Designer file
+                    // This means we have to add it to our copy that will be compiled
+                    bRequiresUCFilterFindDeclaration = true;
+                }
+                else if ((line.Contains("CheckBox chkToggleFilter;")) && bRequiresUCFilterFindDeclaration)
+                {
+                    // This is a good point to add our FucoFilterAndFind declaration
+                    DesignerCode.Append(line).Append(Environment.NewLine);
+                    DesignerCode.Append("        private Ict.Common.Controls.TUcoFilterAndFind FucoFilterAndFind;").Append(Environment.NewLine);
+                }
                 else
                 {
                     DesignerCode.Append(line).Append(Environment.NewLine);
@@ -247,7 +260,7 @@ namespace Ict.Tools.GenerateWinForms
 
             if (TLogging.DebugLevel > 0)
             {
-                StreamWriter sw = new StreamWriter("../../../../log/tempPreviewWinforms.cs");
+                StreamWriter sw = new StreamWriter("../../log/tempPreviewWinforms.cs");
                 sw.WriteLine(DesignerCode.ToString());
                 sw.Close();
             }

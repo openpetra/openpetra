@@ -31,7 +31,13 @@ RootNode:
         txtControl: {ReadOnly=true, Label=Hash, Unbound=true, Format=Decimal, Width=147}
         pnlDetailGrid:
             Dock: Fill
-            Controls: [pnlDetailButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 170
+            ShowApplyFilterButton: FilterContext.StandardFilterOnly
+            ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
+            FilterControls: [Column:JournalNumber, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency]
+            FindControls: [Column:JournalNumber, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency]
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnAdd, btnCancel]

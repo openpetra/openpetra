@@ -174,6 +174,10 @@ namespace Ict.Tools.DevelopersAssistant
             /// Run common/tools/server tests
             /// </summary>
             testWithoutDisplay,
+            /// <summary>
+            /// Run all Main Navigation Screens tests
+            /// </summary>
+            mainNavigationTests,
             // Database ---------------------------------------------------------
             /// <summary>
             /// Recreate the database
@@ -270,7 +274,7 @@ namespace Ict.Tools.DevelopersAssistant
         public static TaskItem LastMiscItem {
             get
             {
-                return TaskItem.testWithoutDisplay;
+                return TaskItem.mainNavigationTests;
             }
         }
         /// <summary>
@@ -432,6 +436,10 @@ namespace Ict.Tools.DevelopersAssistant
                 {
                     _taskItem = TaskItem.patchDatabase;
                 }
+                else if (TaskName.IndexOf("navigation", 0, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    _taskItem = TaskItem.mainNavigationTests;
+                }
             }
         }
 
@@ -523,6 +531,8 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.testWithoutDisplay: return "Running the common and server tests ... Please wait ...";
 
+                    case TaskItem.mainNavigationTests: return "Running the tests for the main navigation screens ... Please wait ...";
+
                     case TaskItem.uncrustify: return "Uncrustifying the source code ... Please wait ...";
 
                     default: return "Unknown task title";
@@ -548,6 +558,8 @@ namespace Ict.Tools.DevelopersAssistant
                     case TaskItem.quickCompileTools: return "quickCompile -D:solution=Tools";
 
                     case TaskItem.testWithoutDisplay: return "test-without-display";
+
+                    case TaskItem.mainNavigationTests: return "test-main-navigation-screens-core";
 
                     default: return _taskItem.ToString();
                 }
@@ -624,6 +636,8 @@ namespace Ict.Tools.DevelopersAssistant
                     case TaskItem.test: return "Running all tests";
 
                     case TaskItem.testWithoutDisplay: return "Running all the common and server tests";
+
+                    case TaskItem.mainNavigationTests: return "Running the tests for the main navigation screens";
 
                     case TaskItem.uncrustify: return "Uncrustifying source code";
 
@@ -703,6 +717,8 @@ namespace Ict.Tools.DevelopersAssistant
 
                     case TaskItem.testWithoutDisplay: return "Run all common and server tests";
 
+                    case TaskItem.mainNavigationTests: return "Run all the main navigation screens tests";
+
                     case TaskItem.uncrustify: return "Uncrustify the source code";
 
                     default: return "Not known";
@@ -780,6 +796,8 @@ namespace Ict.Tools.DevelopersAssistant
                     case TaskItem.test: return "Run all tests";
 
                     case TaskItem.testWithoutDisplay: return "Run all basic tests";
+
+                    case TaskItem.mainNavigationTests: return "Run all the main navigation screens tests";
 
                     case TaskItem.uncrustify: return "Uncrustify the source code";
 
