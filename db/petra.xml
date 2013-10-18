@@ -19215,7 +19215,7 @@
                 length="10"
                 descr="This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number."
                 format="9999999999"
-                label="Partner Key"
+                label="Conference Key"
                 help="Conference Key"
                 notnull="yes"
                 initial="0"/>

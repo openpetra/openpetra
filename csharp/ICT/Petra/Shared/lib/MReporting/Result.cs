@@ -297,6 +297,7 @@ namespace Ict.Petra.Shared.MReporting
     {
         /// <summary>the list of TResult objects</summary>
         private ArrayList results;
+        /// <summary>The message from an exception after CSV export failed</summary>
         public String ErrorStatus;
 
         /// <summary>the most right column that should be displayed (start counting at 1)</summary>
