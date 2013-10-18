@@ -131,6 +131,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
+            // check if a unit already exists that uses this ledger key; make sure name is identical
+            String UnitName;
+            TPartnerClass PartnerClass;
+            
+            TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName((Convert.ToInt64(nudLedgerNumber.Value) * 1000000L), out UnitName, out PartnerClass, true);
+            if (UnitName != txtLedgerName.Text)
+            {
+                if (MessageBox.Show(String.Format(Catalog.GetString("A Unit Partner record already exists for this Ledger Name!\r\nYour suggested Ledger Name '{0}' will automatically be changed to the Unit Name '{1}'.\r\n\r\nDo you still want to continue?"), 
+                                                  txtLedgerName.Text, UnitName),
+                    Catalog.GetString("Problem: Ledger Name Mismatch"),
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Error) == DialogResult.Yes)
+                {
+                    txtLedgerName.Text = UnitName;
+                }
+                else
+                {
+                    return;
+                }
+            }
+            
             Int32 StartingReceiptNumber = 1;
 
             if (txtStartingReceiptNumber.NumberValueInt != null)
