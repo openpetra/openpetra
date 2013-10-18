@@ -53,7 +53,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FLedgerNumber = -1;
         private Int32 FSelectedBatchNumber = -1;
         private DateTime FDefaultDate = DateTime.Today;
-
+        private GLSetupTDS FCacheDS;
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
 
@@ -82,6 +82,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ClearControls();
                 ((TFrmRecurringGLBatch) this.ParentForm).DisableJournals();
                 ((TFrmRecurringGLBatch) this.ParentForm).DisableTransactions();
+            }
+
+            //Load all analysis attribute values
+            if (FCacheDS == null)
+            {
+                FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber);
             }
 
             ShowData();
@@ -601,6 +607,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FMainDS.ARecurringTransaction.DefaultView.RowFilter = String.Format("{0}={1}",
                 ARecurringTransactionTable.GetBatchNumberDBName(),
                 FSelectedBatchNumber);
+            FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1}",
+                ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                FSelectedBatchNumber);
 
             if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
             {
@@ -621,11 +630,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Reset row filter
             FMainDS.ARecurringJournal.DefaultView.RowFilter = string.Empty;
             FMainDS.ARecurringTransaction.DefaultView.RowFilter = string.Empty;
+            FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = string.Empty;
 
             bool inactiveCodefound = false;
 
             // check how many journals have currency different from base currency
             // check for inactive accounts or cost centres
+
             foreach (ARecurringJournalRow JournalRow in FMainDS.ARecurringJournal.Rows)
             {
                 if ((JournalRow.BatchNumber == FSelectedBatchNumber)
@@ -633,26 +644,40 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     NumberOfNonBaseCurrencyJournals++;
                 }
+            }
 
-                foreach (ARecurringTransactionRow transRow in FMainDS.ARecurringTransaction.Rows)
+            foreach (ARecurringTransactionRow transRow in FMainDS.ARecurringTransaction.Rows)
+            {
+                if (!AccountIsActive(transRow.AccountCode) || !CostCentreIsActive(transRow.CostCentreCode))
                 {
-                    if (!AccountIsActive(transRow.AccountCode) || !CostCentreIsActive(transRow.CostCentreCode))
-                    {
-                        inactiveCodefound = true;
+                    inactiveCodefound = true;
 
-                        MessageBox.Show(String.Format(Catalog.GetString(
-                                    "Recurring batch no. {0} cannot be submitted because transaction {1} in Journal {2} contains an inactive account or cost centre code"),
-                                FSelectedBatchNumber,
-                                JournalRow.JournalNumber,
-                                transRow.TransactionNumber),
-                            Catalog.GetString("Inactive Account/Cost Centre Code"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(String.Format(Catalog.GetString(
+                                "Recurring batch no. {0} cannot be submitted because transaction {1} in Journal {2} contains an inactive account or cost centre code"),
+                            FSelectedBatchNumber,
+                            transRow.JournalNumber,
+                            transRow.TransactionNumber),
+                        Catalog.GetString("Inactive Account/Cost Centre Code"), MessageBoxButtons.OK, MessageBoxIcon.Error);
 
-                        break;
-                    }
+                    break;
                 }
+            }
 
-                if (inactiveCodefound)
+            foreach (ARecurringTransAnalAttribRow analAttribRow in FMainDS.ARecurringTransAnalAttrib.Rows)
+            {
+                if (!AnalysisCodeIsActive(analAttribRow.AccountCode,
+                        analAttribRow.AnalysisTypeCode)
+                    || !AnalysisAttributeValueIsActive(analAttribRow.AnalysisTypeCode, analAttribRow.AnalysisAttributeValue))
                 {
+                    inactiveCodefound = true;
+
+                    MessageBox.Show(String.Format(Catalog.GetString(
+                                "Recurring batch no. {0} cannot be submitted because transaction {1} in Journal {2} contains an inactive analysis code|value"),
+                            FSelectedBatchNumber,
+                            analAttribRow.JournalNumber,
+                            analAttribRow.TransactionNumber),
+                        Catalog.GetString("Inactive Account/Cost Centre Code"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+
                     break;
                 }
             }
@@ -786,6 +811,60 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FMainDS.RemoveTable(tmpAccountTable.TableName);
 
             FAccountTable = (AAccountTable)accountList;
+        }
+
+        private bool AnalysisCodeIsActive(String AAccountCode, String AAnalysisCode = "")
+        {
+            bool retVal = true;
+
+            if ((AAnalysisCode == string.Empty) || (AAccountCode == string.Empty))
+            {
+                return retVal;
+            }
+
+            string originalRowFilter = FCacheDS.AAnalysisAttribute.DefaultView.RowFilter;
+            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = string.Empty;
+
+            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
+                AAnalysisAttributeTable.GetLedgerNumberDBName(),
+                FLedgerNumber,
+                AAnalysisAttributeTable.GetAccountCodeDBName(),
+                AAccountCode,
+                AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
+                AAnalysisCode,
+                AAnalysisAttributeTable.GetActiveDBName());
+
+            retVal = (FCacheDS.AAnalysisAttribute.DefaultView.Count > 0);
+
+            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = originalRowFilter;
+
+            return retVal;
+        }
+
+        private bool AnalysisAttributeValueIsActive(String AAnalysisCode = "", String AAnalysisAttributeValue = "")
+        {
+            bool retVal = true;
+
+            if ((AAnalysisCode == string.Empty) || (AAnalysisAttributeValue == string.Empty))
+            {
+                return retVal;
+            }
+
+            string originalRowFilter = FCacheDS.AFreeformAnalysis.DefaultView.RowFilter;
+            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = string.Empty;
+
+            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
+                AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
+                AAnalysisCode,
+                AFreeformAnalysisTable.GetAnalysisValueDBName(),
+                AAnalysisAttributeValue,
+                AFreeformAnalysisTable.GetActiveDBName());
+
+            retVal = (FCacheDS.AFreeformAnalysis.DefaultView.Count > 0);
+
+            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = originalRowFilter;
+
+            return retVal;
         }
 
         private bool AccountIsActive(string AAccountCode)
