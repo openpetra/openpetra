@@ -176,6 +176,7 @@ namespace Tests.MFinance.GLBatches
             txtDetailReference.Properties.Text = "test";
 
             TTxtCurrencyTextBoxTester txtDebitAmount = new TTxtCurrencyTextBoxTester("txtDebitAmount");
+            txtDebitAmount.Properties.Focus();
             decimal Amount = 1111.44M;
             txtDebitAmount.Properties.NumberValueDecimal = Amount;
 
@@ -189,13 +190,18 @@ namespace Tests.MFinance.GLBatches
             txtDetailNarrative.Properties.Text = "test";
             txtDetailReference.Properties.Text = "test";
             TTxtCurrencyTextBoxTester txtCreditAmount = new TTxtCurrencyTextBoxTester("txtCreditAmount");
+            txtCreditAmount.Properties.Focus();
             txtCreditAmount.Properties.NumberValueDecimal = Amount;
 
+            cmbDetailAccountCode.Properties.Focus();        // This will update the totals
             cmbDetailAccountCode.Properties.SetSelectedString("0200");
             cmbDetailCostCentreCode.Properties.SetSelectedString(FLedgerNumber.ToString("00") + "00");
 
             ToolStripButtonTester btnSave = new ToolStripButtonTester("tbbSave");
             btnSave.Click();
+
+            // go to Batch tab
+            tabGLBatch.SelectTab(0);
 
             // post this batch
             ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
@@ -212,18 +218,24 @@ namespace Tests.MFinance.GLBatches
                 {
                     MessageBoxTester tester2 = new MessageBoxTester(hWnd2);
                     Assert.AreEqual("Success", tester2.Title);
+
+                    // there is a third message box after posting, telling the user that the row has disappeared.
+                    ModalFormHandler = delegate(string name3, IntPtr hWnd3, Form form3)
+                    {
+                        MessageBoxTester tester3 = new MessageBoxTester(hWnd3);
+                        tester3.SendCommand(MessageBoxTester.Command.OK);
+                    };
+
                     tester2.SendCommand(MessageBoxTester.Command.Yes);
                 };
 
                 tester.SendCommand(MessageBoxTester.Command.Yes);
             };
-
-            ToolStripButtonTester btnPost = new ToolStripButtonTester("tbbPostBatch");
+            
+            ButtonTester btnPost = new ButtonTester("ucoBatches.btnPostBatch");
             btnPost.Click();
 
             // and now try to create a new batch, bug https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=1058
-            // go to Batch tab
-            tabGLBatch.SelectTab(0);
             btnNewBatch.Click();
             btnSave.Click();
         }
