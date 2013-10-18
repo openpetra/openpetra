@@ -158,12 +158,16 @@ namespace Ict.Common
         /// <param name="msgidPlural">the English plural of <paramref name="msgid"/>,
         ///                           an ASCII string</param>
         /// <param name="n">the number, should be &gt;= 0</param>
+        /// <param name="treatZeroAsPlural">if set to true then the number 0 is considered being plural
+        /// (for situations like where strings like "0 records" are to be displayed).</param>
         /// <returns>the translation, or <c>null</c> if none is found</returns>
-        public static string GetPluralString(String msgid, String msgidPlural, long n)
+        public static string GetPluralString(String msgid, String msgidPlural, long n, bool treatZeroAsPlural = false)
         {
+            bool Plural = treatZeroAsPlural ? (n != 1) : (n > 0);
+
             if (catalog == null)
             {
-                if (n > 1)
+                if (Plural)
                 {
                     return msgidPlural;
                 }

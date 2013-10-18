@@ -134,8 +134,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.DataSource = null;
             grdAnalAttributes.DataSource = null;
 
-            SetTransactionDefaultView();
-
             //Load from server if necessary
             if (FMainDS.ATransaction.DefaultView.Count == 0)
             {
@@ -143,6 +141,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransaction.DefaultView);
+
+            SetTransactionDefaultView();
 
             FJournalRow = GetJournalRow();
 
@@ -218,7 +218,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ClearTransactionDefaultView()
         {
-            FMainDS.ATransaction.DefaultView.RowFilter = String.Empty;
+            //FMainDS.ATransaction.DefaultView.RowFilter = String.Empty;
+            FFilterPanelControls.SetBaseFilter(String.Empty, true);
+            ApplyFilter();
         }
 
         private void SetTransactionDefaultView(bool AAscendingOrder = true)
@@ -227,9 +229,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FBatchNumber != -1)
             {
-                ClearTransactionDefaultView();
+                // Note from Alan: Do we need this?
+                //ClearTransactionDefaultView();
 
-                FMainDS.ATransaction.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                string rowFilter = String.Format("{0}={1} AND {2}={3}",
                     ATransactionTable.GetBatchNumberDBName(),
                     FBatchNumber,
                     ATransactionTable.GetJournalNumberDBName(),
@@ -238,6 +241,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMainDS.ATransaction.DefaultView.Sort = String.Format("{0} " + sort,
                     ATransactionTable.GetTransactionNumberDBName()
                     );
+
+                FFilterPanelControls.SetBaseFilter(rowFilter, true);
+                //FMainDS.ATransaction.DefaultView.RowFilter = rowFilter;
+                ApplyFilter();
+                UpdateRecordNumberDisplay();
+                SetRecordNumberDisplayProperties();
             }
         }
 
@@ -1447,19 +1456,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void SetJournalLastTransNumber()
         {
-            SetTransactionDefaultView(false);
+            string rowFilter = String.Format("{0}={1} And {2}={3}",
+                ATransactionTable.GetBatchNumberDBName(),
+                FBatchNumber,
+                ATransactionTable.GetJournalNumberDBName(),
+                FJournalNumber);
+            string sort = String.Format("{0} {1}", ATransactionTable.GetTransactionNumberDBName(), "DESC");
+            DataView dv = new DataView(FMainDS.ATransaction, rowFilter, sort, DataViewRowState.CurrentRows);
 
-            if (FMainDS.ATransaction.DefaultView.Count > 0)
+            if (dv.Count > 0)
             {
-                ATransactionRow transRow = (ATransactionRow)FMainDS.ATransaction.DefaultView[0].Row;
+                ATransactionRow transRow = (ATransactionRow)dv[0].Row;
                 FJournalRow.LastTransactionNumber = transRow.TransactionNumber;
             }
             else
             {
                 FJournalRow.LastTransactionNumber = 0;
             }
-
-            SetTransactionDefaultView(true);
         }
 
         /// <summary>

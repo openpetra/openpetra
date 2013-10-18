@@ -116,6 +116,8 @@ namespace Ict.Tools.DevelopersAssistant
             this.txtOutput = new System.Windows.Forms.TextBox();
             this.ExternalPage = new System.Windows.Forms.TabPage();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.linkRefreshLinks = new System.Windows.Forms.LinkLabel();
+            this.linkEditLinks = new System.Windows.Forms.LinkLabel();
             this.lblExternalWebLink = new System.Windows.Forms.Label();
             this.btnBrowseWeb = new System.Windows.Forms.Button();
             this.lblWebLinkInfo = new System.Windows.Forms.Label();
@@ -146,8 +148,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.chkAutoStartServer = new System.Windows.Forms.CheckBox();
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.ShutdownTimer = new System.Windows.Forms.Timer(this.components);
-            this.linkEditLinks = new System.Windows.Forms.LinkLabel();
-            this.linkRefreshLinks = new System.Windows.Forms.LinkLabel();
+            this.TickTimer = new System.Windows.Forms.Timer(this.components);
             this.tabControl.SuspendLayout();
             this.TaskPage.SuspendLayout();
             this.grpMultiple.SuspendLayout();
@@ -902,6 +903,28 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Useful Web Links";
             //
+            // linkRefreshLinks
+            //
+            this.linkRefreshLinks.AutoSize = true;
+            this.linkRefreshLinks.Location = new System.Drawing.Point(140, 286);
+            this.linkRefreshLinks.Name = "linkRefreshLinks";
+            this.linkRefreshLinks.Size = new System.Drawing.Size(63, 13);
+            this.linkRefreshLinks.TabIndex = 5;
+            this.linkRefreshLinks.TabStop = true;
+            this.linkRefreshLinks.Text = "Refresh List";
+            this.linkRefreshLinks.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkRefreshLinks_LinkClicked);
+            //
+            // linkEditLinks
+            //
+            this.linkEditLinks.AutoSize = true;
+            this.linkEditLinks.Location = new System.Drawing.Point(7, 286);
+            this.linkEditLinks.Name = "linkEditLinks";
+            this.linkEditLinks.Size = new System.Drawing.Size(44, 13);
+            this.linkEditLinks.TabIndex = 4;
+            this.linkEditLinks.TabStop = true;
+            this.linkEditLinks.Text = "Edit List";
+            this.linkEditLinks.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkEditLinks_LinkClicked);
+            //
             // lblExternalWebLink
             //
             this.lblExternalWebLink.AutoSize = true;
@@ -1200,27 +1223,11 @@ namespace Ict.Tools.DevelopersAssistant
             this.ShutdownTimer.Interval = 200;
             this.ShutdownTimer.Tick += new System.EventHandler(this.ShutdownTimer_Tick);
             //
-            // linkEditLinks
+            // TickTimer
             //
-            this.linkEditLinks.AutoSize = true;
-            this.linkEditLinks.Location = new System.Drawing.Point(7, 286);
-            this.linkEditLinks.Name = "linkEditLinks";
-            this.linkEditLinks.Size = new System.Drawing.Size(44, 13);
-            this.linkEditLinks.TabIndex = 4;
-            this.linkEditLinks.TabStop = true;
-            this.linkEditLinks.Text = "Edit List";
-            this.linkEditLinks.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkEditLinks_LinkClicked);
-            //
-            // linkRefreshLinks
-            //
-            this.linkRefreshLinks.AutoSize = true;
-            this.linkRefreshLinks.Location = new System.Drawing.Point(140, 286);
-            this.linkRefreshLinks.Name = "linkRefreshLinks";
-            this.linkRefreshLinks.Size = new System.Drawing.Size(63, 13);
-            this.linkRefreshLinks.TabIndex = 5;
-            this.linkRefreshLinks.TabStop = true;
-            this.linkRefreshLinks.Text = "Refresh List";
-            this.linkRefreshLinks.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkRefreshLinks_LinkClicked);
+            this.TickTimer.Enabled = true;
+            this.TickTimer.Interval = 10000;
+            this.TickTimer.Tick += new System.EventHandler(this.TickTimer_Tick);
             //
             // MainForm
             //
@@ -1357,5 +1364,6 @@ namespace Ict.Tools.DevelopersAssistant
         private System.Windows.Forms.ListBox lstExternalWebLinks;
         private System.Windows.Forms.LinkLabel linkRefreshLinks;
         private System.Windows.Forms.LinkLabel linkEditLinks;
+        private System.Windows.Forms.Timer TickTimer;
     }
 }
