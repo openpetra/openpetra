@@ -13520,7 +13520,7 @@
                 type="integer"
                 descr="A unique number for this detail for its invoice."
                 format="&gt;,&gt;&gt;&gt;,&gt;&gt;9"
-                label="Invoice Key"
+                label="Detail Number"
                 notnull="yes" />
     <tablefield name="a_ar_article_code_c"
                 type="varchar"
@@ -13666,7 +13666,7 @@
                 type="integer"
                 descr="A unique number for this detail for its invoice."
                 format="&gt;,&gt;&gt;&gt;,&gt;&gt;9"
-                label="Invoice Key"
+                label="Detail Number"
                 notnull="yes" />
     <tablefield name="a_ar_discount_code_c"
                 type="varchar"
@@ -19215,7 +19215,7 @@
                 length="10"
                 descr="This is the partner key assigned to each partner. It consists of the fund id followed by a computer generated six digit number."
                 format="9999999999"
-                label="Partner Key"
+                label="Conference Key"
                 help="Conference Key"
                 notnull="yes"
                 initial="0"/>
@@ -22701,7 +22701,7 @@
                 type="varchar"
                 descr="Identifier for related function"
                 format="X(15)"
-                label="Function ID"
+                label="Function ID of related function"
                 notnull="yes"/>
     <tablefield name="s_code_to_run_c"
                 type="varchar"

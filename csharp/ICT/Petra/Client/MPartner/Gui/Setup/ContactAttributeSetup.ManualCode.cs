@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             ucoContactDetail.PetraUtilsObject = FPetraUtilsObject;
 
             // The auto-generator does not dock our user control correctly
-            grpExtraDetails.Dock = System.Windows.Forms.DockStyle.Bottom;
+            //grpExtraDetails.Dock = System.Windows.Forms.DockStyle.Bottom;
 
             // We need to capture the 'DataSaved' event, so we can save our Extra DataSet
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);

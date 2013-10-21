@@ -6,8 +6,8 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: edit
     Template: windowMaintainTable
-    WindowWidth: 700
-    WindowHeight: 500
+    WindowWidth: 710
+    WindowHeight: 700
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actImport: {ActionClick=Import}
@@ -15,11 +15,19 @@ RootNode:
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlDetails]
+            Controls: [pnlGridAndModal, pnlDetails]
+            Dock: Fill
+        pnlGridAndModal:
+            Controls: [pnlGrid, pnlModalButtons]
+            ControlsOrientation: horizontal
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails, pnlModalButtons]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [cmbDetailFromCurrencyCode, cmbDetailToCurrencyCode]
+            FindControls: [cmbDetailFromCurrencyCode, cmbDetailToCurrencyCode]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -27,6 +35,7 @@ RootNode:
         pnlModalButtons:
             Dock: Right
             Controls: [btnClose, btnCancel]
+            Width: 100
         btnNew:
             Action: actNew
             Width: 80

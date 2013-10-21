@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 713
-    WindowHeight: 700
+    WindowHeight: 550
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
@@ -18,7 +18,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailCategory, txtDetailDescription, txtDetailLevelDescriptions, txtDetailLevelRangeLow, txtDetailLevelRangeHigh]
+            FindControls: [txtDetailCategory, txtDetailDescription, txtDetailLevelDescriptions, txtDetailLevelRangeLow, txtDetailLevelRangeHigh]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -52,5 +56,8 @@ RootNode:
         txtDetailCategory: {Label=Category, CharacterCasing=Upper}
         txtDetailDescription: {Label=Description, Width=310}
         txtDetailLevelDescriptions:
+            Height: 100
+            Multiline: true
+            ScrollBars: Vertical
         txtDetailLevelRangeLow: {Format=Integer, Label=Level Range Lower, Width=30}
         txtDetailLevelRangeHigh: {Format=Integer, Label=Level Range Upper, Width=30}
