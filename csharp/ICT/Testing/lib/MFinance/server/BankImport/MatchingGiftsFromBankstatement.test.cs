@@ -178,10 +178,6 @@ namespace Tests.MFinance.Server.BankImport
                     out VerificationResult), "save statement October");
 
             // create gift batch from imported statement
-            BankImportTDS FMainDS =
-                TBankImportWebConnector.GetBankStatementTransactionsAndMatches(
-                    StatementKey, FLedgerNumber);
-
             Int32 GiftBatchNumber = TBankImportWebConnector.CreateGiftBatch(
                 FLedgerNumber,
                 StatementKey,
