@@ -842,6 +842,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 AutoFillDescriptions(null, null);
                 GetDetailsFromControls(GetSelectedDetailRowManual());
+                //
+                // The auto-generated code doesn't get the details from the UC_AnalasisAttributes control,
+                // so I need to do that here:
+                ucoAccountAnalysisAttributes.GetDataFromControls();
                 FCurrentNode.Text = NodeLabel(GetSelectedDetailRowManual());
             }
         }

@@ -874,19 +874,22 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Int32 ALedgerNumber,
             String AAccountCode)
         {
-            AInspectDS.AAccountProperty.DefaultView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
-                AAccountPropertyTable.GetLedgerNumberDBName(),
-                ALedgerNumber,
-                AAccountPropertyTable.GetAccountCodeDBName(),
-                AAccountCode);
-
-            foreach (DataRowView rv in AInspectDS.AAccountProperty.DefaultView)
+            if (AInspectDS.AAccountProperty != null)
             {
-                AAccountPropertyRow accountPropertyRow = (AAccountPropertyRow)rv.Row;
-                accountPropertyRow.Delete();
-            }
+                AInspectDS.AAccountProperty.DefaultView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                    AAccountPropertyTable.GetLedgerNumberDBName(),
+                    ALedgerNumber,
+                    AAccountPropertyTable.GetAccountCodeDBName(),
+                    AAccountCode);
 
-            AInspectDS.AAccountProperty.DefaultView.RowFilter = "";
+                foreach (DataRowView rv in AInspectDS.AAccountProperty.DefaultView)
+                {
+                    AAccountPropertyRow accountPropertyRow = (AAccountPropertyRow)rv.Row;
+                    accountPropertyRow.Delete();
+                }
+
+                AInspectDS.AAccountProperty.DefaultView.RowFilter = "";
+            }
         }
 
         private static void AddOrRemoveLedgerInitFlag(Int32 ALedgerNumber, String AInitFlagName,
