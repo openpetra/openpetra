@@ -224,6 +224,30 @@ namespace Ict.Common.Data
             }
         }
 
+        private bool FDontThrowAwayAfterSubmitChanges = false;
+
+        /// <summary>
+        /// if you want no warning about that the datatable should be cleared after submitchanges.
+        /// in some cases you must keep the data, eg when you need the new keys after INSERT
+        /// </summary>
+        public bool DontThrowAwayAfterSubmitChanges
+        {
+            set
+            {
+                FDontThrowAwayAfterSubmitChanges = value;
+
+                foreach (DataTable table in this.Tables)
+                {
+                    ((TTypedDataTable)table).DontThrowAwayAfterSubmitChanges = value;
+                }
+            }
+
+            get
+            {
+                return FDontThrowAwayAfterSubmitChanges;
+            }
+        }
+
         /// <summary>
         /// default constructor
         /// </summary>
@@ -254,6 +278,8 @@ namespace Ict.Common.Data
 
             strSchema = strSchema.Replace("msdata:ThrowAwayAfterSubmitChanges=\"False\"", string.Empty);
             strSchema = strSchema.Replace("msdata:ThrowAwayAfterSubmitChanges=\"True\"", string.Empty);
+            strSchema = strSchema.Replace("msdata:DontThrowAwayAfterSubmitChanges=\"False\"", string.Empty);
+            strSchema = strSchema.Replace("msdata:DontThrowAwayAfterSubmitChanges=\"True\"", string.Empty);
 
             reader = new XmlTextReader(new StringReader(strSchema));
             ReadXmlSchema(reader);
@@ -777,6 +803,7 @@ namespace Ict.Common.Data
             ds.MapTables();
 
             ds.ThrowAwayAfterSubmitChanges = ThrowAwayAfterSubmitChanges;
+            ds.DontThrowAwayAfterSubmitChanges = DontThrowAwayAfterSubmitChanges;
 
             // need to copy over the enabled/disabled status of relations
             foreach (TTypedRelation relNew in ds.FRelations)
