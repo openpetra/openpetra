@@ -793,7 +793,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (!NodeDetails.CanDelete.HasValue)
             {
-                MessageBox.Show("Fault: CanDelete status is unknown.");
+                MessageBox.Show(Catalog.GetString("Fault: CanDelete status is unknown."), Catalog.GetString("Delete Account"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -801,9 +801,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 MessageBox.Show(
                     String.Format(Catalog.GetString(
-                            "Account {0} cannot be deleted because it has already been used in GL transactions, or it is a system or summary account; you can deactivate the account, but not delete it."),
+                            "Account {0} cannot be deleted because it has already been used in GL transactions, or it is a system or summary account. You can deactivate the account, but not delete it."),
                         AccountCode),
-                    Catalog.GetString("Account cannot be deleted"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Catalog.GetString("Delete Account"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
@@ -821,33 +821,53 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 if (FMainDS.AAnalysisAttribute != null)
                 {
-                    FMainDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("a_ledger_number_i={0} AND a_account_code_c='{1}'",
+                    DataView DeleteThese = new DataView(FMainDS.AAnalysisAttribute);
+                    DeleteThese.RowFilter = String.Format("a_ledger_number_i={0} AND a_account_code_c='{1}'",
                         FLedgerNumber, AccountCode);
-                    foreach (DataRowView rv in FMainDS.AAnalysisAttribute.DefaultView)
+                    foreach (DataRowView rv in DeleteThese)
                     {
                         DataRow TempRow = rv.Row;
                         TempRow.Delete();
                     }
                 }
 
-                // TODO: what about other account hierarchies, that are still referencing this account?
                 AAccountHierarchyDetailRow AccountHDetailToBeDeleted = (AAccountHierarchyDetailRow)FMainDS.AAccountHierarchyDetail.Rows.Find(
                     new object[] { FLedgerNumber, FSelectedHierarchy, AccountCode });
                 AccountHDetailToBeDeleted.Delete();
-                AAccountRow AccountToBeDeleted = (AAccountRow)FMainDS.AAccount.Rows.Find(
-                    new object[] { FLedgerNumber, AccountCode });
-                AccountToBeDeleted.Delete();
-                FPetraUtilsObject.SetChangedFlag();
 
-                // If the parent of the deleted node has no further children, mark it as posting account.
-                // TODO: this also works only if there is just one account hierarchy
-                if (trvAccounts.SelectedNode.Nodes.Count == 0)
+                //
+                // I can delete this account if it no longer appears in any Hieararchy.
+
+                DataView AHD_stillInUse = new DataView(FMainDS.AAccountHierarchyDetail);
+                AHD_stillInUse.RowFilter = String.Format("a_ledger_number_i={0} AND a_reporting_account_code_c='{1}'",
+                        FLedgerNumber, AccountCode);
+                if (AHD_stillInUse.Count == 0)
                 {
-                    NodeDetails = GetAccountCodeAttributes(trvAccounts.SelectedNode); // If the parent account is new (not saved), this will set CanDelete.
-                    tbbDeleteUnusedAccount.Enabled = (NodeDetails.CanDelete.HasValue ? NodeDetails.CanDelete.Value : false);
-                    AAccountRow AccountParent = NodeDetails.AccountRow;
+                    AAccountRow AccountToBeDeleted = (AAccountRow)FMainDS.AAccount.Rows.Find(
+                        new object[] { FLedgerNumber, AccountCode });
+                    AccountToBeDeleted.Delete();
+                }
+                else
+                {
+                    MessageBox.Show(String.Format(
+                        Catalog.GetString("The account {0} is removed from the {1} hierarchy, but not deleted, since it remains part of another heirarchy."), AccountCode, FSelectedHierarchy), 
+                        Catalog.GetString("Delete Account"), 
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+                // If the account [parent of the deleted node] now has no accounts reporting to it (in any hierarchies), mark it as posting account.
+                NodeDetails = GetAccountCodeAttributes(trvAccounts.SelectedNode);
+                tbbDeleteUnusedAccount.Enabled = (NodeDetails.CanDelete.HasValue ? NodeDetails.CanDelete.Value : false);
+                AAccountRow AccountParent = NodeDetails.AccountRow;
+                AHD_stillInUse.RowFilter = String.Format("a_ledger_number_i={0} AND a_account_code_to_report_to_c='{1}'",
+                        FLedgerNumber, AccountParent.AccountCode);
+
+                if (AHD_stillInUse.Count == 0)  // No-one now reports to this account, so I can mark it as "Posting"
+                {
                     AccountParent.PostingStatus = true;
                 }
+
+                FPetraUtilsObject.SetChangedFlag();
             }
         }
 
