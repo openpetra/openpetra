@@ -94,7 +94,7 @@ namespace Tests.MFinance.Server.Reporting
             SpecificParameters.Add("param_end_date", new TVariant(new DateTime(DateTime.Today.Year, 1, 31)));
             TReportTestingTools.CalculateReport(testFile, SpecificParameters, FLedgerNumber);
 
-            TReportTestingTools.TestResult(testFil, FLedgerNumbere);
+            TReportTestingTools.TestResult(testFile, FLedgerNumber);
         }
     }
 }
