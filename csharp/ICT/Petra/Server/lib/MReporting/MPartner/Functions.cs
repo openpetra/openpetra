@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -226,7 +226,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 return false;
             }
 
-            mTable = situation.GetDatabaseConnection().SelectDT(mRptCalcResult.ToString(), "", situation.GetDatabaseConnection().Transaction);
+            mTable = situation.GetDatabaseConnection().SelectDT(mRptCalcResult.ToString(), "table", situation.GetDatabaseConnection().Transaction);
 
             foreach (DataRow mRow in mTable.Rows)
             {
@@ -978,7 +978,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 SqlStatement = SqlStatement.Replace(ReplaceString, Replacement);
             }
 
-            ADataTable = situation.GetDatabaseConnection().SelectDT(SqlStatement, "", situation.GetDatabaseConnection().Transaction);
+            ADataTable = situation.GetDatabaseConnection().SelectDT(SqlStatement, "table", situation.GetDatabaseConnection().Transaction);
 
             return true;
         }

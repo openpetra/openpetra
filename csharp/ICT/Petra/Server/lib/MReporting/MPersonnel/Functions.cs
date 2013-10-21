@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -195,7 +195,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             strSql = "SELECT PUB_s_system_defaults.s_default_value_c " + "FROM PUB_s_system_defaults " +
                      "WHERE PUB_s_system_defaults.s_default_code_c = 'SiteKey'";
 
-            tab = situation.GetDatabaseConnection().SelectDT(strSql, "", situation.GetDatabaseConnection().Transaction);
+            tab = situation.GetDatabaseConnection().SelectDT(strSql, "table", situation.GetDatabaseConnection().Transaction);
 
             if (tab.Rows.Count > 0)
             {
@@ -251,7 +251,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             formatQuery = new TRptFormatQuery(null, -1, -1);
             strSql = formatQuery.ReplaceVariables(strSql).ToString();
             formatQuery = null;
-            tab = situation.GetDatabaseConnection().SelectDT(strSql, "", situation.GetDatabaseConnection().Transaction);
+            tab = situation.GetDatabaseConnection().SelectDT(strSql, "table", situation.GetDatabaseConnection().Transaction);
 
             if (tab.Rows.Count > 0)
             {
@@ -265,7 +265,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                 // no commitment period for the given date was found, so find the most recent commitment
                 strSql = "SELECT pm_start_of_commitment_d, pm_end_of_commitment_d " + "FROM PUB_pm_staff_data " +
                          "WHERE PUB_pm_staff_data.p_partner_key_n = " + APartnerKey.ToString() + ' ' + "ORDER BY pm_start_of_commitment_d ASC";
-                tab = situation.GetDatabaseConnection().SelectDT(strSql, "", situation.GetDatabaseConnection().Transaction);
+                tab = situation.GetDatabaseConnection().SelectDT(strSql, "table", situation.GetDatabaseConnection().Transaction);
 
                 if (tab.Rows.Count > 0)
                 {
