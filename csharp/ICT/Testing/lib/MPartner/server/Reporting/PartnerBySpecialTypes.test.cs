@@ -49,21 +49,18 @@ using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.Interfaces.MReporting;
 using Tests.MReporting.Tools;
 
-namespace Tests.MFinance.Server.Reporting
+namespace Tests.MPartner.Server.Reporting
 {
     /// This will test the business logic directly on the server
     [TestFixture]
-    public class TIncExpStatementTest
+    public class TPartnerSpecialTypesTest
     {
-        Int32 FLedgerNumber = -1;
-
         /// <summary>
         /// open database connection or prepare other things for this test
         /// </summary>
         [TestFixtureSetUp]
         public void Init()
         {
-            //new TLogging("TestServer.log");
             TPetraServerConnector.Connect("../../etc/TestServer.config");
         }
 
@@ -77,25 +74,22 @@ namespace Tests.MFinance.Server.Reporting
         }
 
         /// <summary>
-        /// Test the standard Income and Expenses report
+        /// Test the partner by special types report
         /// </summary>
         [Test]
-        public void TestIncExpStatement()
+        public void TestPartnerBySpecialTypes()
         {
-            // create a new ledger
-            FLedgerNumber = TReportTestingTools.SetupTestLedgerWithPostedBatches();
+            CommonNUnitFunctions.ResetDatabase();
 
-            string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/IncExpStmt.xml";
+            string testFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerBySpecialTypes.xml";
 
             TParameterList SpecificParameters = new TParameterList();
-            SpecificParameters.Add("param_start_period_i", 1);
-            SpecificParameters.Add("param_end_period_i", 1);
-            SpecificParameters.Add("param_costcentreoptions", "SelectedCostCentres");
-            string StandardCostCentre = TGLTransactionWebConnector.GetStandardCostCentre(FLedgerNumber);
-            SpecificParameters.Add("param_cost_centre_codes", StandardCostCentre);
-            TReportTestingTools.CalculateReport(testFile, SpecificParameters, FLedgerNumber);
+            SpecificParameters.Add("param_address_date_valid_on", new TVariant(new DateTime(DateTime.Today.Year, 1, 1)));
+            SpecificParameters.Add("param_explicit_specialtypes", new TVariant("LEDGER"));
 
-            TReportTestingTools.TestResult(testFile, FLedgerNumber);
+            TReportTestingTools.CalculateReport(testFile, SpecificParameters);
+
+            TReportTestingTools.TestResult(testFile);
         }
     }
 }
