@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 713
-    WindowHeight: 700
+    WindowHeight: 550
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
@@ -18,7 +18,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailInterest, txtDetailDescription, cmbDetailCategory]
+            FindControls: [txtDetailInterest, txtDetailDescription, cmbDetailCategory]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]

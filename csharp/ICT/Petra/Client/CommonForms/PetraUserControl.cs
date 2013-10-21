@@ -45,19 +45,10 @@ namespace Ict.Petra.Client.CommonForms
     /// </summary>
     public partial class TPetraUserControl : System.Windows.Forms.UserControl
     {
-        private System.Windows.Forms.ToolTip tipUC;
-
         /// <summary>
-        /// property for setting the tooltip.
-        /// needed to avoid warning about unused variable tipUC
+        /// ToolTip instance for the UserControl.
         /// </summary>
-        public string ToolTip
-        {
-            set
-            {
-                tipUC.SetToolTip(this, value);
-            }
-        }
+        private System.Windows.Forms.ToolTip FtipUC;
 
         /// <summary>Holds the DataSet that contains most data that is used in the UserControl</summary>
         protected DataSet FMainDS;
@@ -160,6 +151,19 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         #region Helper functions
+
+        /// <summary>
+        /// Sets the tooltip for a Control.
+        /// </summary>
+        public void SetToolTip(Control AControl, string AToolTipText)
+        {
+            if (FtipUC == null)
+            {
+                FtipUC = new ToolTip();
+            }
+
+            FtipUC.SetToolTip(AControl, AToolTipText);
+        }
 
         /// <summary>
         /// todoComment

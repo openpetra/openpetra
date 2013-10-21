@@ -8,7 +8,7 @@ RootNode:
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 785
-    WindowHeight: 500
+    WindowHeight: 550
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
@@ -18,7 +18,15 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailMethodOfGivingCode, txtDetailMethodOfGivingDesc, chkDetailRecurringMethodFlag, chkDetailTaxRebateFlag, chkDetailTrustFlag, chkDetailActive]
+            FindControls: [txtDetailMethodOfGivingCode, txtDetailMethodOfGivingDesc, chkDetailRecurringMethodFlag, chkDetailTaxRebateFlag, chkDetailTrustFlag]
+            ControlAttributes:
+                chkDetailRecurringMethodFlag: {Text=Recurring}
+                chkDetailTaxRebateFlag: {Text=Tax Rebate}
+                chkDetailTrustFlag: {Text=Trust}
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]

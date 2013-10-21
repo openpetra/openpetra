@@ -232,11 +232,11 @@ namespace Ict.Common.Controls
         private Boolean FSortableHeaders;
 
         /// <summary>
-        /// Keeps track of the the selected rows before sorting in order to be able
-        /// to select them again after sorting the Grid.
+        /// Keeps track of the the selected row before sorting in order to be able
+        /// to select it again after sorting the Grid.
         ///
         /// </summary>
-        private DataRowView[] FRowsSelectedBeforeSort;
+        private DataRowView FRowSelectedBeforeSort;
 
         /// <summary>
         /// Maintains the state of whether the currently selected row should stay
@@ -827,7 +827,7 @@ namespace Ict.Common.Controls
             this.SortableHeaders = true;
             this.KeepRowSelectedAfterSort = true;
             this.AutoFindColumn = -1;
-            this.Selection.FocusStyle = SourceGrid.FocusStyle.FocusFirstCellOnEnter | SourceGrid.FocusStyle.RemoveFocusCellOnLeave;
+            this.Selection.FocusStyle = FocusStyle.None;        // We handle all focus issues ourselves.  In a multi-selection world this is important
             this.Invalidate();
         }
 
@@ -1359,19 +1359,11 @@ namespace Ict.Common.Controls
         {
             base.OnSortedRangeRows(e);
 
-            FSorting = true;
-
-            if (FRowsSelectedBeforeSort.Length > 0)
+            if ((FRowSelectedBeforeSort != null) && FKeepRowSelectedAfterSort)
             {
-                if (FKeepRowSelectedAfterSort)
-                {
-                    this.SelectRowInGrid(this.Rows.DataSourceRowToIndex(FRowsSelectedBeforeSort[0]) + 1, false);
-                }
-
-                this.Selection.Focus(new Position(this.Rows.DataSourceRowToIndex(this.SelectedDataRows[0]) + 1, 0), true);
+                int nNewRowIndex = this.Rows.DataSourceRowToIndex(FRowSelectedBeforeSort) + 1;
+                ReselectGridRowAfterSort(nNewRowIndex);
             }
-
-            FSorting = false;
         }
 
         /// <summary>
@@ -1380,8 +1372,20 @@ namespace Ict.Common.Controls
         /// <param name="e"></param>
         protected override void OnSortingRangeRows(SourceGrid.SortRangeRowsEventArgs e)
         {
-            FRowsSelectedBeforeSort = this.SelectedDataRowsAsDataRowView;
+            FRowSelectedBeforeSort = (DataRowView) this.Rows.IndexToDataSourceRow(this.Selection.ActivePosition.Row);
             base.OnSortingRangeRows(e);
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public void ReselectGridRowAfterSort(Int32 ARowNumberInGrid)
+        {
+            FSorting = true;
+            this.Selection.ResetSelection(false, true);
+            this.Selection.SelectRow(ARowNumberInGrid, true);
+            this.ShowCell(ARowNumberInGrid);
+            FSorting = false;
         }
 
         #endregion
@@ -1590,25 +1594,38 @@ namespace Ict.Common.Controls
         /// DataSourceRowToIndex2 manually iterates through the Grid's DataView and compares Rows objects. This works!
         /// </summary>
         /// <returns>The 0-based index of the specified DataRowView in the grid's DataView</returns>
-        public int DataSourceRowToIndex2(DataRowView ADataRowView)
+        public int DataSourceRowToIndex2(DataRowView ADataRowView, int AHintRowToTryFirst = -1)
         {
-            return DataSourceRowToIndex2(ADataRowView.Row);
+            return DataSourceRowToIndex2(ADataRowView.Row, AHintRowToTryFirst);
         }
 
         /// <summary>
         /// This overload takes a DataRow as the parameter in place of a DataRowView.  See also the comment for the DataRowView overload.
         /// </summary>
         /// <param name="ADataRow">The Row object whose rowindex is required</param>
+        /// <param name="AHintRowToTryFirst">You can supply a 0-based row number where you expect the row to be.
+        /// If you are correct, this saves the code from iterating through all the grid rows!</param>
         /// <returns>The 0-based index of the specified DataRow in the grid's DataView</returns>
-        public int DataSourceRowToIndex2(DataRow ADataRow)
+        public int DataSourceRowToIndex2(DataRow ADataRow, int AHintRowToTryFirst = -1)
         {
             int RowIndex = -1;
+            DataView dv = (this.DataSource as BoundDataView).DataView;
 
-            for (int Counter2 = 0; Counter2 < (this.DataSource as BoundDataView).DataView.Count; Counter2++)
+            if ((AHintRowToTryFirst >= 0) && (AHintRowToTryFirst < dv.Count))
             {
-                if ((this.DataSource as BoundDataView).DataView[Counter2].Row == ADataRow)
+                if (dv[AHintRowToTryFirst].Row == ADataRow)
+                {
+                    // Good hint!
+                    return AHintRowToTryFirst;
+                }
+            }
+
+            for (int Counter2 = 0; Counter2 < dv.Count; Counter2++)
+            {
+                if (dv[Counter2].Row == ADataRow)
                 {
                     RowIndex = Counter2;
+                    break;
                 }
             }
 
@@ -1642,11 +1659,6 @@ namespace Ict.Common.Controls
         /// select a row in the grid.  By default generate the event(s) for focus changes.
         public void SelectRowInGrid(Int32 ARowNumberInGrid, Boolean ASelectBorderIfOutsideLimit)
         {
-            if (Rows.Count <= 1)
-            {
-                return;
-            }
-
             if (ASelectBorderIfOutsideLimit)
             {
                 if (ARowNumberInGrid >= Rows.Count)
@@ -1660,17 +1672,28 @@ namespace Ict.Common.Controls
                 }
             }
 
-            // These two calls will generate rowLeaving events ONLY WHEN the grid is the current focussed control.
-            // Normally when this is called from manual code the grid will not have the focus.  Instead the control
-            // whose click event you are responding to will be focussed, so these calls will simply select the desired row without
-            // any consequent events.
-            // When events are fired they will probably result in updating a details panel
-            // When events are not fired you may need to update the details manually
-            this.Selection.ResetSelection(false);
-            this.Selection.SelectRow(ARowNumberInGrid, true);
+            Position newPosition;
 
-            // scroll to the row
-            ShowCell(ARowNumberInGrid);
+            if (ARowNumberInGrid >= this.FixedRows)
+            {
+                newPosition = new Position(ARowNumberInGrid, 0);
+            }
+            else
+            {
+                newPosition = Position.Empty;
+            }
+
+            // This call will set the active cell.
+            // If the cell row to activate is not the current row a FocusRowLeaving event (which can be cancelled) will be fired.
+            // In all cases a SelectionChanged event will be fired after that, even if the row to select is the current row.
+            //  (This is a good thing because the data in the row may have changed)
+            this.Selection.Focus(newPosition, true);
+
+            if (newPosition != Position.Empty)
+            {
+                // scroll to the row
+                ShowCell(newPosition.Row);
+            }
         }
 
         /// <summary>
@@ -1895,18 +1918,12 @@ namespace Ict.Common.Controls
                 // Key for scrolling to and selecting the first row in the Grid
                 // MessageBox.Show('Home pressed!');
                 SelectRowInGrid(1);
-
-                // keep the focus on the grid
-                this.Selection.Focus(new Position(1, 0), true);
             }
             // Key for scrolling to and selecting the last row in the Grid
             else if (AKeyEventArgs.KeyCode == Keys.End)
             {
                 // MessageBox.Show('End pressed!  Rows: ' + this.Rows.Count.ToString);
                 SelectRowInGrid(this.Rows.Count - 1);
-
-                // keep the focus on the grid
-                this.Selection.Focus(new Position(this.Rows.Count - 1, 0), true);
             }
             // Key for firing OnInsertKeyPressed event
             else if (AKeyEventArgs.KeyCode == Keys.Insert)

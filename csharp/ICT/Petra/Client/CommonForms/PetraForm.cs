@@ -62,6 +62,11 @@ namespace Ict.Petra.Client.CommonForms
         protected IFrmPetra FTheForm;
 
         /// <summary>
+        /// ToolTip instance for the Form.
+        /// </summary>
+        protected System.Windows.Forms.ToolTip FtipForm;
+
+        /// <summary>
         /// ToolTip instance which is used to show Data Validation messages.
         /// </summary>
         protected ToolTip FValidationToolTip;
@@ -679,6 +684,19 @@ namespace Ict.Petra.Client.CommonForms
         public Form GetForm()
         {
             return FWinForm;
+        }
+
+        /// <summary>
+        /// Sets the tooltip for a Control.
+        /// </summary>
+        public void SetToolTip(Control AControl, string AToolTipText)
+        {
+            if (FtipForm == null)
+            {
+                FtipForm = new ToolTip();
+            }
+
+            FtipForm.SetToolTip(AControl, AToolTipText);
         }
     }
 

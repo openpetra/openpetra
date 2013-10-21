@@ -38,11 +38,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
-                FMainDS.ACostCentreTypes.DefaultView.RowFilter = String.Format("{0}={1}",
+                string rowFilter = String.Format("{0}={1}",
                     ACostCentreTable.GetLedgerNumberDBName(),
                     FLedgerNumber
                     );
+                FMainDS.ACostCentreTypes.DefaultView.RowFilter = rowFilter;
                 FMainDS.ACostCentreTypes.DefaultView.Sort = ACostCentreTypesTable.GetCostCentreTypeDBName();
+
+                FFilterPanelControls.SetBaseFilter(rowFilter, true);
             }
         }
 

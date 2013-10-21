@@ -38,6 +38,7 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
@@ -69,11 +70,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FLedgerNumber = ALedgerNumber;
 
-            rbtEditing.Checked = true;
+            RadioButton rbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
+            TCmbAutoComplete cmbYearFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearFilter");
 
-            FPetraUtilsObject.DisableDataChangedEvent();
+            rbtEditing.Checked = true;
             TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbYearFilter, FLedgerNumber); //.InitialiseAvailableGiftYearsList(ref cmbYearFilter, FLedgerNumber);
-            FPetraUtilsObject.EnableDataChangedEvent();
 
             // this will load the batches from the server
             RefreshFilter(null, null);
@@ -105,6 +106,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ABatchTable.GetLedgerNumberDBName(),
                 ABatchTable.GetBatchNumberDBName()
                 );
+
+            UpdateRecordNumberDisplay();
 
             grdDetails.Focus();
         }
@@ -261,6 +264,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (ARow == null)
             {
+                EnableButtonControl(false);
+                ClearDetailControls();
                 return;
             }
 
@@ -327,6 +332,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Int32 yearNumber = 0;
             Int32 periodNumber = 0;
 
+            RadioButton rbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
+            TCmbAutoComplete cmbYearFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearFilter");
+            TCmbAutoComplete cmbPeriodFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriodFilter");
+
             if (!rbtEditing.Checked)
             {
                 rbtEditing.Checked = true;
@@ -363,7 +372,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 newBatchRow.BatchPeriod = periodNumber;
             }
 
-            SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
+            if (!SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1))
+            {
+                if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
+                {
+                    MessageBox.Show(
+                        MCommonResourcestrings.StrNewRecordIsFiltered,
+                        MCommonResourcestrings.StrAddNewRecordTitle,
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    FFilterPanelControls.ClearAllDiscretionaryFilters();
+                    SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
+                }
+            }
 
             FPreviouslySelectedDetailRow.DateEffective = FDefaultDate;
             dtpDetailDateEffective.Date = FDefaultDate;
@@ -504,6 +524,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             //Update the Transaction effective dates
                             UpdateJournalTransEffectiveDate(false);
 
+                            TCmbAutoComplete cmbYearFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearFilter");
+                            TCmbAutoComplete cmbPeriodFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriodFilter");
+
                             if (cmbYearFilter.SelectedIndex != 0)
                             {
                                 cmbYearFilter.SelectedIndex = 0;
@@ -544,11 +567,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 try
                 {
+                    // AlanP: commented out calls that just set FPreviouslySelectedDetailRow to null
                     //Load all journals for current Batch
                     //clear any transactions currently being editied in the Transaction Tab
-                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+                    //((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
                     //clear any journals currently being editied in the Journals Tab
-                    ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
+                    //((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
 
                     //Clear Journals etc for current Batch
                     FMainDS.ATransAnalAttrib.Clear();
@@ -757,28 +781,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // refresh the grid, to reflect that the batch has been posted
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(FLedgerNumber, ReversalGLBatch));
 
-                    this.FPreviouslySelectedDetailRow = null;
-                    ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
-                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+                    // AlanP: You must not set FPreviouslySelectedDetailRow = null because it is owned by grid events
+                    //this.FPreviouslySelectedDetailRow = null;
+                    //((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
+                    //((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
                     LoadBatches(FLedgerNumber);
 
+                    // AlanP - commenting out most of this because it should be unnecessary - or should move to ShowDetailsManual()
                     //Select unposted batch row in same index position as batch just posted
-                    grdDetails.DataSource = null;
-                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+                    //grdDetails.DataSource = null;
+                    //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
 
-                    if (grdDetails.Rows.Count > 1)
-                    {
-                        //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
-                        // such that a removal of a row is not detected
-                        SelectRowInGrid(newCurrentRowPos);
-                    }
-                    else
-                    {
-                        EnableButtonControl(false);
-                        ClearDetailControls();
-                        pnlDetails.Enabled = false;
-                    }
+                    //if (grdDetails.Rows.Count > 1)
+                    //{
+                    //    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+                    //    // such that a removal of a row is not detected
+                    SelectRowInGrid(newCurrentRowPos);
+                    //}
+                    //else
+                    //{
+                    //    EnableButtonControl(false);
+                    //    ClearDetailControls();
+                    //    pnlDetails.Enabled = false;
+                    //}
                 }
             }
         }
@@ -848,28 +874,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // make sure that the current dataset is clean,
                     // otherwise the next save would try to modify the posted batch, even though no values have been changed
                     FMainDS.AcceptChanges();
-                    this.FPreviouslySelectedDetailRow = null;
-                    ((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
-                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
+
+                    // AlanP: You must not set FPreviouslySelectedDetailRow = null because it is owned by grid events
+                    //this.FPreviouslySelectedDetailRow = null;
+                    //((TFrmGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
+                    //((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
                     LoadBatches(FLedgerNumber);
 
-                    //Select unposted batch row in same index position as batch just posted
-                    grdDetails.DataSource = null;
-                    grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+                    // AlanP - commenting out most of this because it should be unnecessary - or should move to ShowDetailsManual()
+                    ////Select unposted batch row in same index position as batch just posted
+                    //grdDetails.DataSource = null;
+                    //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
 
-                    if (grdDetails.Rows.Count > 1)
-                    {
-                        //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
-                        // such that a removal of a row is not detected
-                        SelectRowInGrid(newCurrentRowPos);
-                    }
-                    else
-                    {
-                        EnableButtonControl(false);
-                        ClearDetailControls();
-                        pnlDetails.Enabled = false;
-                    }
+                    //if (grdDetails.Rows.Count > 1)
+                    //{
+                    //    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+                    //    // such that a removal of a row is not detected
+                    SelectRowInGrid(newCurrentRowPos);
+                    //}
+                    //else
+                    //{
+                    //    EnableButtonControl(false);
+                    //    ClearDetailControls();
+                    //    pnlDetails.Enabled = false;
+                    //}
                 }
             }
         }
@@ -981,6 +1010,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             int batchNumber = 0;
             int newRowToSelectAfterFilter = 1;
             bool senderIsRadioButton = (sender is RadioButton);
+
+            RadioButton rbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
+            RadioButton rbtPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtPosting");
+            RadioButton rbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
+            TCmbAutoComplete cmbYearFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearFilter");
+            TCmbAutoComplete cmbPeriodFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriodFilter");
 
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection)
             {
@@ -1103,12 +1138,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 btnNew.Enabled = true;
             }
 
-            FPreviouslySelectedDetailRow = null;
-            grdDetails.DataSource = null;
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+            // AlanP Commented out because should be unnecessary
+            //FPreviouslySelectedDetailRow = null;
+            //grdDetails.DataSource = null;
+            //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
 
-            FMainDS.ABatch.DefaultView.RowFilter =
-                String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+            string rowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+            FFilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == 0) && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
+            ApplyFilter();
+            //FMainDS.ABatch.DefaultView.RowFilter = FFilterPanelControls.GetCurrentFilter();
+            //UpdateRecordNumberDisplay();
+
+            //FMainDS.ABatch.DefaultView.RowFilter =
+            //    String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
 
             if (grdDetails.Rows.Count < 2)
             {
@@ -1443,12 +1485,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RefreshPeriods(Object sender, EventArgs e)
         {
+            TCmbAutoComplete cmbYearFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearFilter");
+            TCmbAutoComplete cmbPeriodFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriodFilter");
+
             TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref cmbPeriodFilter, FLedgerNumber, cmbYearFilter.GetSelectedInt32());
-            cmbPeriodFilter.SelectedIndex = 0;
         }
 
         private void ToggleOptionButtonCheckedEvent(bool AToggleOn)
         {
+            RadioButton rbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
+            RadioButton rbtPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtPosting");
+            RadioButton rbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
+
             if (AToggleOn)
             {
                 rbtEditing.CheckedChanged += new System.EventHandler(this.RefreshFilter);
@@ -1461,6 +1509,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 rbtAll.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
                 rbtPosting.CheckedChanged -= new System.EventHandler(this.RefreshFilter);
             }
+        }
+
+        /// <summary>
+        /// Shows the Filter/Find UserControl and switches to the Find Tab.
+        /// </summary>
+        public void ShowFindPanel()
+        {
+            FucoFilterAndFind.DisplayFindTab();
         }
     }
 }
