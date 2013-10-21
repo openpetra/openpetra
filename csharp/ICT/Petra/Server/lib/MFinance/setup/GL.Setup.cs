@@ -3104,8 +3104,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 AAnalysisAttributeTable TempAnalAttrTbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AOldCode, Transaction);
 
-                foreach (AAnalysisAttributeRow OldAnalAttribRow in TempAnalAttrTbl.Rows)
+                for (Int32 Idx = TempAnalAttrTbl.Rows.Count-1; Idx >= 0; Idx--)
                 {
+                    AAnalysisAttributeRow OldAnalAttribRow = (AAnalysisAttributeRow)TempAnalAttrTbl.Rows[Idx];
                     // "a_analysis_attribute"  is the referrent in foreign keys, so I can't just go changing it - I need to make a copy?
                     AAnalysisAttributeRow NewAnalAttribRow = TempAnalAttrTbl.NewRowTyped();
                     DataUtilities.CopyAllColumnValues(OldAnalAttribRow, NewAnalAttribRow);
@@ -3123,12 +3124,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         "a_account_code_c",
                         AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                     UpdateAccountField("a_recurring_trans_anal_attrib",
-                        "a_account_code_c",
-                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
-                    UpdateAccountField("a_thisyearold_trans_anal_attrib",
-                        "a_account_code_c",
-                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
-                    UpdateAccountField("a_prev_year_trans_anal_attrib",
                         "a_account_code_c",
                         AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                     UpdateAccountField("a_ap_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);

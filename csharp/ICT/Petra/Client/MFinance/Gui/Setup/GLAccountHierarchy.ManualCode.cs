@@ -298,7 +298,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         void FPetraUtilsObject_ControlChanged(Control Sender)
         {
-            FCurrentNode.Text = NodeLabel(txtDetailAccountCode.Text, txtDetailEngAccountCodeShortDesc.Text);
+            if (FCurrentNode != null)
+            {
+                FCurrentNode.Text = NodeLabel(txtDetailAccountCode.Text, txtDetailEngAccountCodeShortDesc.Text);
+            }
         }
 
         void chkDetailForeignCurrencyFlag_CheckedChanged(object sender, EventArgs e)
@@ -811,6 +814,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 trvAccounts.BeginUpdate();
                 NodeToBeDeleted.Remove();
                 trvAccounts.EndUpdate();
+
+                //
+                // If this account has analysis Attributes,
+                // I need to remove them.
+
+                if (FMainDS.AAnalysisAttribute != null)
+                {
+                    FMainDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("a_ledger_number_i={0} AND a_account_code_c='{1}'",
+                        FLedgerNumber, AccountCode);
+                    foreach (DataRowView rv in FMainDS.AAnalysisAttribute.DefaultView)
+                    {
+                        DataRow TempRow = rv.Row;
+                        TempRow.Delete();
+                    }
+                }
 
                 // TODO: what about other account hierarchies, that are still referencing this account?
                 AAccountHierarchyDetailRow AccountHDetailToBeDeleted = (AAccountHierarchyDetailRow)FMainDS.AAccountHierarchyDetail.Rows.Find(
