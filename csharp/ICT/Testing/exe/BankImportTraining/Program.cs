@@ -67,7 +67,7 @@ namespace Ict.Testing.Finance.Bankimport
             TBankStatementImport import = new TBankStatementImport();
 
             BankImportTDS StatementAndTransactionsDS = import.ImportBankStatementNonInteractive(
-                TAppSettingsManager.GetValue("ledger"),
+                TAppSettingsManager.GetInt32("ledger"),
                 TAppSettingsManager.GetValue("bankaccount"),
                 TAppSettingsManager.GetValue("file"));
 
