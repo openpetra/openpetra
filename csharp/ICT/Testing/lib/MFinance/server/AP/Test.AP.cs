@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop, Tim Ingham
+//       timop, Tim Ingham, ChristianK (refactoring, '3-As')
 //
 // Copyright 2004-2013 by OM International
 //
@@ -53,8 +53,23 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
     [TestFixture]
     public class TestAP
     {
-        private const int intLedgerNumber = 43;
+        private const int FLedgerNumber = 43;
 
+        /// <summary>
+        /// Holds various bits of information about AP.
+        /// </summary>
+        private struct AAPInfos
+        {
+            public DateTime PeriodStartDate;
+            public DateTime PeriodEndDate;
+            public string ForexGainsLossesAccount;
+            public string BankAccount;
+            public string CurrencyCode;
+            public string ApAccountCode;
+            public string CostCentreCode;
+            public AccountsPayableTDS ApDS;            
+        }
+        
         /// <summary>
         /// TestFixtureSetUp
         /// </summary>
@@ -78,419 +93,115 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
         const long SUPPLIER_FOREIGN_PARTNER_KEY = 43005003;
 
         /// <summary>
-        /// Post a document and pay for it
+        /// Posts a document and pays it. (The supplier DOESN'T work with foreign currency.)
         /// </summary>
         [Test]
-        public void SimpleDocumentPostingAndPayment()
+        public void SimpleDocument_ExpectPostingAndPayingWorking()
         {
+            //
+            // Arrange
+            //        
             decimal Amount = 399.0m;
-
-            // Create an AP document for the demo supplier
-            AccountsPayableTDS MainDS = TAPTransactionWebConnector.CreateAApDocument(intLedgerNumber, SUPPLIER_PARTNER_KEY, false);
-
-            AApSupplierAccess.LoadByPrimaryKey(MainDS, SUPPLIER_PARTNER_KEY, null);
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(intLedgerNumber, null);
-
-            MainDS.AApDocument[0].DocumentCode = "Test" + DateTime.Now.Ticks.ToString();
-
-            MainDS.Merge(TAPTransactionWebConnector.CreateAApDocumentDetail(
-                    intLedgerNumber,
-                    MainDS.AApDocument[0].ApDocumentId,
-                    MainDS.AApSupplier[0].DefaultExpAccount,
-                    MainDS.AApSupplier[0].DefaultCostCentre,
-                    Amount,
-                    MainDS.AApDocument[0].LastDetailNumber + 1));
-
-            MainDS.AApDocument[0].LastDetailNumber++;
-            MainDS.AApDocument[0].TotalAmount = Amount;
-            MainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
-            MainDS.AApDocumentDetail[0].Narrative = "Test";
-
+            decimal APAccountBalanceBefore;
+            decimal ABankAccountBefore;
+            decimal AExpAccountBefore;
             TVerificationResultCollection VerificationResult;
+            List <int>DocumentIDs;
+            int PaymentNumber;
+            AAPInfos APInfos;
+            
+            CommonNUnitFunctions.ResetDatabase();
+            
+            APInfos = PostSimpleAPDocument(Amount, "Test", "Detail Item", out APAccountBalanceBefore, out ABankAccountBefore,
+                out AExpAccountBefore, out DocumentIDs);                                                                                      
+                                           
+            //
+            // Act: Pay the AP document
+            //
+            VerificationResult = PayAPDocument(APInfos.ApDS.AApDocument[0].ApDocumentId, Amount, 
+                APInfos.BankAccount, APInfos.CurrencyCode, APInfos.PeriodEndDate, out PaymentNumber);
+            Assert.That(VerificationResult, Is.Empty);  // Guard Assert  
+            
+            // Save the current amount on the AP account
+            decimal APAccountBalanceAfter = new TGet_GLM_Info(FLedgerNumber,
+                APInfos.ApAccountCode, APInfos.CostCentreCode).YtdActual;
+            decimal BankAccountAfter = new TGet_GLM_Info(FLedgerNumber,
+                APInfos.BankAccount, APInfos.CostCentreCode).YtdActual;
 
-            if (TAPTransactionWebConnector.SaveAApDocument(ref MainDS, out VerificationResult)
-                != TSubmitChangesResult.scrOK)
-            {
-                Assert.Fail("Problems saving AP document: " +
-                    VerificationResult.BuildVerificationResultString());
-            }
-
-            DateTime PeriodStartDate, PeriodEndDate;
-            TFinancialYear.GetStartAndEndDateOfPeriod(intLedgerNumber, LedgerTable[0].CurrentPeriod, out PeriodStartDate, out PeriodEndDate, null);
-
-            // save the current amount on the AP account
-            string BankAccount = MainDS.AApSupplier[0].DefaultBankAccount;
-            string CurrencyCode = MainDS.AApDocument[0].CurrencyCode;
-            string ApAccountCode = MainDS.AApDocument[0].ApAccount;
-            string CostCentreCode = MainDS.AApDocumentDetail[0].CostCentreCode;
-
-            decimal APAccountBalanceBefore = new TGet_GLM_Info(intLedgerNumber,
-                ApAccountCode, CostCentreCode).YtdActual;
-            decimal BankAccountBefore = new TGet_GLM_Info(intLedgerNumber,
-                BankAccount, CostCentreCode).YtdActual;
-            decimal ExpAccountBefore = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultExpAccount,
-                CostCentreCode).YtdActual;
-
-            // Post the AP document
-            List <int>documentIds = new List <int>();
-            documentIds.Add(MainDS.AApDocument[0].ApDocumentId);
-
-            if (!TAPTransactionWebConnector.PostAPDocuments(intLedgerNumber,
-                    documentIds,
-                    PeriodStartDate,
-                    false, out VerificationResult))
-            {
-                Assert.Fail("Problems posting AP document: " +
-                    VerificationResult.BuildVerificationResultString());
-            }
-
-            decimal ExpAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultExpAccount,
-                CostCentreCode).YtdActual;
-            Assert.AreEqual(Amount, ExpAccountAfter - ExpAccountBefore, "after posting the invoice, the expense account should be debited");
-
-            // Pay the AP document
-            int ApDocumentId = MainDS.AApDocument[0].ApDocumentId;
-
-            MainDS = new AccountsPayableTDS();
-            AApPaymentRow payment = MainDS.AApPayment.NewRowTyped();
-            payment.LedgerNumber = intLedgerNumber;
-            payment.PaymentNumber = -1;
-            payment.Amount = Amount;
-            payment.BankAccount = BankAccount;
-            payment.CurrencyCode = CurrencyCode;
-            MainDS.AApPayment.Rows.Add(payment);
-
-            AApDocumentPaymentRow docPayment = MainDS.AApDocumentPayment.NewRowTyped();
-            docPayment.LedgerNumber = intLedgerNumber;
-            docPayment.ApDocumentId = ApDocumentId;
-            docPayment.Amount = Amount;
-            docPayment.PaymentNumber = payment.PaymentNumber;
-            MainDS.AApDocumentPayment.Rows.Add(docPayment);
-
-            if (!TAPTransactionWebConnector.PostAPPayments(ref MainDS, PeriodEndDate, out VerificationResult))
-            {
-                Assert.Fail("Problems paying AP document: " +
-                    VerificationResult.BuildVerificationResultString());
-            }
-
-            // save the current amount on the AP account
-            decimal APAccountBalanceAfter = new TGet_GLM_Info(intLedgerNumber,
-                ApAccountCode, CostCentreCode).YtdActual;
-            decimal BankAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-                BankAccount, CostCentreCode).YtdActual;
-
-            // check the amount on the AP account
+            // 
+            // Primary Assert: Paying OK?
+            // 
+            // Check the amount on the AP account
             Assert.AreEqual(0.0m, APAccountBalanceAfter - APAccountBalanceBefore, "after paying the invoice, the AP account should be cleared");
-            Assert.AreEqual((-1.0m) * Amount, BankAccountAfter - BankAccountBefore, "after paying the invoice, the bank account should be credited");
+            Assert.AreEqual((-1.0m) * Amount, BankAccountAfter - ABankAccountBefore, "after paying the invoice, the bank account should be credited");
         }
 
         /// <summary>
-        /// Post a document and pay for it. the supplier works with foreign currency
+        /// Posts a document and pays it. The supplier works with foreign currency.
         /// </summary>
         [Test]
-        public void ForeignCurrencySupplierDocumentPostingAndPayment()
+        public void ForeignCurrencySupplier_ExpectDocumentPostingAndPayingWorking()
         {
-            decimal Amount = 100.0m;
-            decimal ExchangeRatePosting = 1.2m;
-            decimal ExchangeRatePayment = 1.1m;
+            //
+            // Arrange
+            //
+            int PaymentNumber;
+            List<int> DocumentIDs;
+            decimal APAccountBalanceBefore;
+            decimal BankAccountBefore;
+            decimal RevalAccountBefore;          
+            
+            CommonNUnitFunctions.ResetDatabase();
 
-            // Create an AP document for the demo supplier
-            AccountsPayableTDS MainDS = TAPTransactionWebConnector.CreateAApDocument(intLedgerNumber, SUPPLIER_FOREIGN_PARTNER_KEY, false);
-
-            AApSupplierAccess.LoadByPrimaryKey(MainDS, SUPPLIER_FOREIGN_PARTNER_KEY, null);
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(intLedgerNumber, null);
-
-            MainDS.AApDocument[0].DocumentCode = "Test" + DateTime.Now.Ticks.ToString();
-
-            MainDS.Merge(TAPTransactionWebConnector.CreateAApDocumentDetail(
-                    intLedgerNumber,
-                    MainDS.AApDocument[0].ApDocumentId,
-                    MainDS.AApSupplier[0].DefaultExpAccount,
-                    MainDS.AApSupplier[0].DefaultCostCentre,
-                    Amount,
-                    MainDS.AApDocument[0].LastDetailNumber + 1));
-
-            MainDS.AApDocument[0].LastDetailNumber++;
-            MainDS.AApDocument[0].TotalAmount = Amount;
-            MainDS.AApDocument[0].ExchangeRateToBase = ExchangeRatePosting;
-            MainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
-            MainDS.AApDocumentDetail[0].Narrative = "Test";
-
-            TVerificationResultCollection VerificationResult;
-
-            if (TAPTransactionWebConnector.SaveAApDocument(ref MainDS, out VerificationResult)
-                != TSubmitChangesResult.scrOK)
-            {
-                Assert.Fail("Problems saving AP document: " +
-                    VerificationResult.BuildVerificationResultString());
-            }
-
-            DateTime PeriodStartDate, PeriodEndDate;
-            TFinancialYear.GetStartAndEndDateOfPeriod(intLedgerNumber, LedgerTable[0].CurrentPeriod, out PeriodStartDate, out PeriodEndDate, null);
-
-            string BankAccount = MainDS.AApSupplier[0].DefaultBankAccount;
-            string CurrencyCode = MainDS.AApDocument[0].CurrencyCode;
-            string ApAccountCode = MainDS.AApDocument[0].ApAccount;
-            string CostCentreCode = MainDS.AApDocumentDetail[0].CostCentreCode;
-
-            // save the current amount on the AP account
-            decimal APAccountBalanceBefore = new TGet_GLM_Info(intLedgerNumber,
-                ApAccountCode, CostCentreCode).YtdActual;
-            decimal BankAccountBefore = new TGet_GLM_Info(intLedgerNumber,
-                BankAccount, CostCentreCode).YtdForeign;
-
-            decimal ExpAccountBefore = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultExpAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
-            decimal RevalAccountBefore = new TGet_GLM_Info(intLedgerNumber,
-                LedgerTable[0].ForexGainsLossesAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
-
-            // Post the AP document
-            List <int>documentIds = new List <int>();
-            documentIds.Add(MainDS.AApDocument[0].ApDocumentId);
-
-            if (!TAPTransactionWebConnector.PostAPDocuments(intLedgerNumber,
-                    documentIds,
-                    PeriodStartDate,
-                    false, out VerificationResult))
-            {
-                Assert.Fail("Problems posting AP document: " +
-                    VerificationResult.BuildVerificationResultString());
-            }
-
-            decimal ExpAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-                MainDS.AApSupplier[0].DefaultExpAccount,
-                MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
-
-            Assert.AreEqual(Math.Round(Amount / ExchangeRatePosting, 2), Math.Round(ExpAccountAfter - ExpAccountBefore,
-                    2), "after posting the invoice, the expense account should be debited the amount in base currency");
-
-            // Pay the AP document
-            int ApDocumentId = MainDS.AApDocument[0].ApDocumentId;
-
-            MainDS = new AccountsPayableTDS();
-            AApPaymentRow payment = MainDS.AApPayment.NewRowTyped();
-            payment.LedgerNumber = intLedgerNumber;
-            payment.PaymentNumber = -1;
-            payment.Amount = Amount;
-            payment.ExchangeRateToBase = ExchangeRatePayment;
-            payment.BankAccount = BankAccount;
-            payment.CurrencyCode = CurrencyCode;
-            MainDS.AApPayment.Rows.Add(payment);
-
-            AApDocumentPaymentRow docPayment = MainDS.AApDocumentPayment.NewRowTyped();
-            docPayment.LedgerNumber = intLedgerNumber;
-            docPayment.ApDocumentId = ApDocumentId;
-            docPayment.Amount = Amount;
-            docPayment.PaymentNumber = payment.PaymentNumber;
-            MainDS.AApDocumentPayment.Rows.Add(docPayment);
-
-            if (!TAPTransactionWebConnector.PostAPPayments(ref MainDS, PeriodEndDate, out VerificationResult))
-            {
-                Assert.Fail("Problems paying AP document: " +
-                    VerificationResult.BuildVerificationResultString());
-            }
-
-            // save the current amount on the AP account and Bank Account
-            decimal APAccountBalanceAfter = new TGet_GLM_Info(intLedgerNumber,
-                ApAccountCode, CostCentreCode).YtdActual;
-            decimal BankAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-                BankAccount, CostCentreCode).YtdForeign;
-
-            // check the amount on the AP account
-            Assert.AreEqual(0.0m, APAccountBalanceAfter - APAccountBalanceBefore, "after paying the invoice, the AP account should be cleared");
-            Assert.AreEqual((-1.0m) * Amount, BankAccountAfter - BankAccountBefore, "after paying the invoice, the bank account should be credited");
-
-            decimal RevalAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-                LedgerTable[0].ForexGainsLossesAccount, CostCentreCode).YtdActual;
-            Assert.AreEqual(
-                Math.Round((Amount / ExchangeRatePayment) - (Amount / ExchangeRatePosting), 2),
-                Math.Round((RevalAccountAfter - RevalAccountBefore), 2),
-                "after paying the invoice, the revaluation account should be credited with the forex gain");
+            // Act and Assert: both encapsulated in the method that gets called!
+            PostAndPayForeignSupplierAPDocument("Test", out PaymentNumber, out DocumentIDs,
+                out APAccountBalanceBefore, out BankAccountBefore, out RevalAccountBefore);
         }
 
         /// <summary>
-        ///
+        /// Posts a document and pays it, then reverses it. The supplier works with foreign currency.
         /// </summary>
         [Test]
-        public void ForeignCurrencyPostPayAndReverse()
+        public void ForeignCurrencySupplier_ExpectDocumentPostingPayingAndReversingWorking()
         {
-            decimal Amount = 100.0m;
-            decimal ExchangeRatePosting = 1.2m;
-            decimal ExchangeRatePayment = 1.1m;
-
-            // Create an AP document for the demo supplier
-            AccountsPayableTDS MainDS = TAPTransactionWebConnector.CreateAApDocument(intLedgerNumber, SUPPLIER_FOREIGN_PARTNER_KEY, false);
-
-            AApSupplierAccess.LoadByPrimaryKey(MainDS, SUPPLIER_FOREIGN_PARTNER_KEY, null);
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(intLedgerNumber, null);
-
-            MainDS.AApDocument[0].DocumentCode = "Test Reverse" + DateTime.Now.Ticks.ToString();
-
-            MainDS.Merge(TAPTransactionWebConnector.CreateAApDocumentDetail(
-                    intLedgerNumber,
-                    MainDS.AApDocument[0].ApDocumentId,
-                    MainDS.AApSupplier[0].DefaultExpAccount,
-                    MainDS.AApSupplier[0].DefaultCostCentre,
-                    Amount,
-                    MainDS.AApDocument[0].LastDetailNumber + 1));
-
-            MainDS.AApDocument[0].LastDetailNumber++;
-            MainDS.AApDocument[0].TotalAmount = Amount;
-            MainDS.AApDocument[0].ExchangeRateToBase = ExchangeRatePosting;
-            MainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
-            MainDS.AApDocumentDetail[0].Narrative = "Detail Item";
-
+            //
+            // Arrange
+            //
+            decimal APAccountBalanceBefore;
+            decimal BankAccountBefore;
+            decimal RevalAccountBefore;
             TVerificationResultCollection VerificationResult;
+            int PaymentNumber;
+            List<int> DocumentIDs;
+            AAPInfos APInfos;
+            
+            CommonNUnitFunctions.ResetDatabase();
 
-            if (TAPTransactionWebConnector.SaveAApDocument(ref MainDS, out VerificationResult)
-                != TSubmitChangesResult.scrOK)
-            {
-                Assert.Fail("Problems saving AP document: " +
-                    VerificationResult.BuildVerificationResultString());
-            }
-
-            DateTime PeriodStartDate, PeriodEndDate;
-            TFinancialYear.GetStartAndEndDateOfPeriod(intLedgerNumber, LedgerTable[0].CurrentPeriod, out PeriodStartDate, out PeriodEndDate, null);
-
-            // save the current amount on the AP account
-            string BankAccount = MainDS.AApSupplier[0].DefaultBankAccount;
-            string CurrencyCode = MainDS.AApDocument[0].CurrencyCode;
-            string ApAccountCode = MainDS.AApDocument[0].ApAccount;
-            string CostCentreCode = MainDS.AApDocumentDetail[0].CostCentreCode;
-
-            decimal APAccountBalanceBefore = new TGet_GLM_Info(intLedgerNumber,
-                ApAccountCode, CostCentreCode).YtdActual;
-            decimal BankAccountBefore = new TGet_GLM_Info(intLedgerNumber,
-                BankAccount, CostCentreCode).YtdForeign;
-            // decimal ExpAccountBefore = new TGet_GLM_Info(intLedgerNumber,
-            //    MainDS.AApSupplier[0].DefaultExpAccount,
-            //    CostCentreCode).YtdActual;
-            decimal RevalAccountBefore = new TGet_GLM_Info(intLedgerNumber,
-                LedgerTable[0].ForexGainsLossesAccount,
-                CostCentreCode).YtdActual;
-
-            // Post the AP document
-            List <int>documentIds = new List <int>();
-            documentIds.Add(MainDS.AApDocument[0].ApDocumentId);
-
-            if (!TAPTransactionWebConnector.PostAPDocuments(intLedgerNumber,
-                    documentIds,
-                    PeriodStartDate,
-                    false, out VerificationResult))
-            {
-                Assert.Fail("Problems posting AP document: " +
-                    VerificationResult.BuildVerificationResultString());
-            }
-
-            /*
-             * // Since the previous test succeeded, I'm not interested in examining the result here -
-             * // I'll go straight on and pay, then "un-pay", then "un-post",
-             * // and then see what the results is!
-             *
-             * decimal ExpAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-             *  MainDS.AApSupplier[0].DefaultExpAccount,
-             *  MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
-             *
-             * Assert.AreEqual(Math.Round(Amount / ExchangeRatePosting, 2), Math.Round(ExpAccountAfter - ExpAccountBefore,
-             *      2), "after posting the invoice, the expense account should be debited the amount in base currency");
-             */
-
-            // Pay the AP document
-            int ApDocumentId = MainDS.AApDocument[0].ApDocumentId;
-
-            MainDS = new AccountsPayableTDS();
-            AApPaymentRow payment = MainDS.AApPayment.NewRowTyped();
-            payment.LedgerNumber = intLedgerNumber;
-            payment.PaymentNumber = -1;
-            payment.Amount = Amount;
-            payment.ExchangeRateToBase = ExchangeRatePayment;
-            payment.BankAccount = BankAccount;
-            payment.CurrencyCode = CurrencyCode;
-            MainDS.AApPayment.Rows.Add(payment);
-
-            AApDocumentPaymentRow docPayment = MainDS.AApDocumentPayment.NewRowTyped();
-            docPayment.LedgerNumber = intLedgerNumber;
-            docPayment.ApDocumentId = ApDocumentId;
-            docPayment.Amount = Amount;
-            docPayment.PaymentNumber = payment.PaymentNumber;
-            MainDS.AApDocumentPayment.Rows.Add(docPayment);
-
-            if (!TAPTransactionWebConnector.PostAPPayments(ref MainDS, PeriodEndDate, out VerificationResult))
-            {
-                Assert.Fail("Problems paying AP document: " +
-                    VerificationResult.BuildVerificationResultString());
-            }
-
-            /*
-             * // Since the previous test succeeded, I'm not interested in examining the result here -
-             * // I'll go straight on and "un-pay", then "un-post",
-             * // and then see what the results is!
-             *
-             * // save the current amount on the AP account
-             * decimal APAccountBalanceAfter = new TGet_GLM_Info(intLedgerNumber,
-             *  MainDS.AApSupplier[0].DefaultApAccount,
-             *  MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
-             * decimal BankAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-             *  MainDS.AApSupplier[0].DefaultBankAccount,
-             *  MainDS.AApSupplier[0].DefaultCostCentre).YtdForeign;
-             *
-             * // check the amount on the AP account
-             * Assert.AreEqual(0.0m, APAccountBalanceAfter - APAccountBalanceBefore, "after paying the invoice, the AP account should be cleared");
-             * Assert.AreEqual((-1.0m) * Amount, BankAccountAfter - BankAccountBefore, "after paying the invoice, the bank account should be credited");
-             *
-             * decimal RevalAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-             *  LedgerTable[0].ForexGainsLossesAccount,
-             *  MainDS.AApSupplier[0].DefaultCostCentre).YtdActual;
-             * Assert.AreEqual(
-             *  Math.Round((Amount / ExchangeRatePayment) - (Amount / ExchangeRatePosting), 2),
-             *  Math.Round((RevalAccountAfter - RevalAccountBefore), 2),
-             *  "after paying the invoice, the revaluation account should be credited with the forex gain");
-             */
+            // Post and pay a document with a foreign currency supplier
+            APInfos = PostAndPayForeignSupplierAPDocument("Test Reverse", out PaymentNumber, out DocumentIDs,
+                 out APAccountBalanceBefore, out BankAccountBefore, out RevalAccountBefore);
+            
 
             //
-            // Now I'll try to immediately "un-pay" this invoice...
-            //
-            if (!TAPTransactionWebConnector.ReversePayment(intLedgerNumber,
-                    docPayment.PaymentNumber,
-                    PeriodEndDate,
-                    out VerificationResult))
-            {
-                Assert.Fail("Failed to reverse AP payment: " +
-                    VerificationResult.BuildVerificationResultString());
-            }
+            // Act: Immediately "un-pay" and "un-post" this invoice!
+            //            
+            VerificationResult = ReversePayment(PaymentNumber, APInfos.PeriodEndDate, DocumentIDs, APInfos.ApDS);
+            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+            
+            // Save the current amount on the AP account
+            decimal APAccountBalanceAfter = new TGet_GLM_Info(FLedgerNumber,
+                APInfos.ApAccountCode, APInfos.CostCentreCode).YtdActual;
+            decimal BankAccountAfter = new TGet_GLM_Info(FLedgerNumber,
+                APInfos.BankAccount, APInfos.CostCentreCode).YtdForeign;
+            decimal RevalAccountAfter = new TGet_GLM_Info(FLedgerNumber,
+                APInfos.ForexGainsLossesAccount, APInfos.CostCentreCode).YtdActual;
 
             //
-            // "un-post" the invoice, returning it to "Approved" status:
-            //
-
-            documentIds[0] += 2; // The invoice I posted was reversed, and a duplicate now exists with an Id 2 greater than the original.
-
-            if (!TAPTransactionWebConnector.PostAPDocuments(intLedgerNumber,
-                    documentIds,
-                    PeriodEndDate,
-                    true, out VerificationResult))
-            {
-                Assert.Fail("Failed to post AP document reversal: " +
-                    VerificationResult.BuildVerificationResultString());
-            }
-
+            // Primary Assert: Reversal OK?
             //
             // Now I can see whether anything is left over by all these
             // various transactions, that should have added up to 0.
-            //
-
-            decimal APAccountBalanceAfter = new TGet_GLM_Info(intLedgerNumber,
-                ApAccountCode, CostCentreCode).YtdActual;
-            decimal BankAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-                BankAccount, CostCentreCode).YtdForeign;
-            decimal RevalAccountAfter = new TGet_GLM_Info(intLedgerNumber,
-                LedgerTable[0].ForexGainsLossesAccount, CostCentreCode).YtdActual;
-
-            // check the amount on the AP account
+            // Check the amount on the AP account
             Assert.AreEqual(APAccountBalanceBefore, APAccountBalanceAfter, "After paying then reversing, the AP account should be as before.");
             Assert.AreEqual(BankAccountBefore, BankAccountAfter, "After paying then reversing, the Bank account should be as before.");
             Assert.AreEqual(
@@ -498,5 +209,299 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                 Math.Round(RevalAccountBefore, 2),
                 "After paying then reversing, the Forex Gains/Losses Account account should be as before.");
         }
+        
+ 
+        #region Helper Methods
+        
+        private AAPInfos APTestsArrangement(Int64 APartnerKey, decimal AAmount, decimal? AExchangeRatePosting,
+             string ADocumentCode, string ANarrative)
+        {
+            AAPInfos APInfos = new AAPInfos();
+            
+            TVerificationResultCollection VerificationResult = CreateAPDocument(APartnerKey, AAmount, AExchangeRatePosting, ADocumentCode, ANarrative, out APInfos.ApDS);           
+            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+
+            GetLedgerInfo(out APInfos.PeriodStartDate, out APInfos.PeriodEndDate, out APInfos.ForexGainsLossesAccount);
+
+            SetupSupplierAndDocumentInfo(APInfos.ApDS, out APInfos.BankAccount, out APInfos.CurrencyCode, out APInfos.ApAccountCode, out APInfos.CostCentreCode);
+
+            return APInfos;            
+        }
+                
+        private void GetLedgerInfo(out DateTime APeriodStartDate, out DateTime APeriodEndDate,
+            out string AForexGainsLossesAccount)
+        {
+            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(FLedgerNumber, null);
+                        
+            AForexGainsLossesAccount = LedgerTable[0].ForexGainsLossesAccount;
+            
+            TFinancialYear.GetStartAndEndDateOfPeriod(FLedgerNumber, LedgerTable[0].CurrentPeriod, out APeriodStartDate, out APeriodEndDate, null);            
+        }
+        
+        private void SetupSupplierAndDocumentInfo(AccountsPayableTDS AMainDS, out string ABankAccount, out string ACurrencyCode, 
+            out string AApAccountCode, out string ACostCentreCode)
+        {
+            ABankAccount = AMainDS.AApSupplier[0].DefaultBankAccount;
+            ACurrencyCode = AMainDS.AApDocument[0].CurrencyCode;
+            AApAccountCode = AMainDS.AApDocument[0].ApAccount;
+            ACostCentreCode = AMainDS.AApDocumentDetail[0].CostCentreCode;           
+        }
+        
+        /// <summary>
+        /// Creates a AP document for the supplier specified with APartnerKey.
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AAmount"></param>
+        /// <param name="AExchangeRatePosting"></param>
+        /// <param name="ADocumentCode"></param>
+        /// <param name="ANarrative"></param>
+        /// <param name="AMainDS"></param>
+        /// <returns></returns>
+        private TVerificationResultCollection CreateAPDocument(Int64 APartnerKey, decimal AAmount, decimal? AExchangeRatePosting, 
+           string ADocumentCode, string ANarrative, out AccountsPayableTDS AMainDS)
+        {
+            TVerificationResultCollection VerificationResult;
+                       
+            AMainDS = TAPTransactionWebConnector.CreateAApDocument(FLedgerNumber, APartnerKey, false);
+
+            AApSupplierAccess.LoadByPrimaryKey(AMainDS, APartnerKey, null);
+
+            AMainDS.AApDocument[0].DocumentCode = ADocumentCode + DateTime.Now.Ticks.ToString();
+
+            AMainDS.Merge(TAPTransactionWebConnector.CreateAApDocumentDetail(
+                    FLedgerNumber,
+                    AMainDS.AApDocument[0].ApDocumentId,
+                    AMainDS.AApSupplier[0].DefaultExpAccount,
+                    AMainDS.AApSupplier[0].DefaultCostCentre,
+                    AAmount,
+                    AMainDS.AApDocument[0].LastDetailNumber + 1));
+
+            AMainDS.AApDocument[0].LastDetailNumber++;
+            AMainDS.AApDocument[0].TotalAmount = AAmount;
+            AMainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
+            AMainDS.AApDocumentDetail[0].Narrative = ANarrative;
+            
+            if (AExchangeRatePosting.HasValue) 
+            {
+                AMainDS.AApDocument[0].ExchangeRateToBase = AExchangeRatePosting.Value;                
+            }
+
+            if (TAPTransactionWebConnector.SaveAApDocument(ref AMainDS, out VerificationResult)
+                != TSubmitChangesResult.scrOK)
+            {
+                Assert.Fail("Problems saving AP document: " +
+                    VerificationResult.BuildVerificationResultString());
+            }
+            
+            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+            
+            return VerificationResult;
+        }
+        
+        private TVerificationResultCollection PostAPDocument(AccountsPayableTDS AMainDS, DateTime APostingDate,
+            ref List <int>ADocumentIds, bool AReversal = false)
+        {    
+            string AssertFailMessage = AReversal ? "Failed to post AP document reversal: " : "Problems posting AP document: ";
+            TVerificationResultCollection VerificationResult;
+            
+            if (!AReversal) 
+            {
+                ADocumentIds.Add(AMainDS.AApDocument[0].ApDocumentId);    
+            }            
+
+            if (!TAPTransactionWebConnector.PostAPDocuments(FLedgerNumber,
+                    ADocumentIds,
+                    APostingDate,
+                    AReversal, out VerificationResult))
+            {
+                Assert.Fail(AssertFailMessage +
+                    VerificationResult.BuildVerificationResultString());
+            }
+            
+            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+            
+            return VerificationResult;           
+        }
+        
+        private AAPInfos PostSimpleAPDocument(decimal AAmount, string ADocumentCode, string ANarrative, 
+            out decimal AAPAccountBalanceBefore, out decimal ABankAccountBefore, out decimal AExpAccountBefore, 
+            out List <int> ADocumentIds)
+        {
+            TVerificationResultCollection VerificationResult;
+            ADocumentIds = new List<int>();
+            
+            AAPInfos APInfos = APTestsArrangement(SUPPLIER_PARTNER_KEY, AAmount, null, ADocumentCode, ANarrative);
+            
+            // Save the current amount on the AP account
+            AAPAccountBalanceBefore = new TGet_GLM_Info(FLedgerNumber,
+                APInfos.ApAccountCode, APInfos.CostCentreCode).YtdActual;
+            ABankAccountBefore = new TGet_GLM_Info(FLedgerNumber,
+                APInfos.BankAccount, APInfos.CostCentreCode).YtdActual;
+
+            AExpAccountBefore = new TGet_GLM_Info(FLedgerNumber,
+                APInfos.ApDS.AApSupplier[0].DefaultExpAccount,
+                APInfos.CostCentreCode).YtdActual;
+
+            VerificationResult = PostAPDocument(APInfos.ApDS, APInfos.PeriodStartDate, ref ADocumentIds);
+            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+            
+            // 
+            // Guard Assert: Posting OK?
+            //
+            decimal ExpAccountAfter = new TGet_GLM_Info(FLedgerNumber,
+                APInfos.ApDS.AApSupplier[0].DefaultExpAccount,
+                APInfos.ApDS.AApSupplier[0].DefaultCostCentre).YtdActual;
+
+            Assert.AreEqual(AAmount, ExpAccountAfter - AExpAccountBefore, "after posting the invoice, the expense account should be debited");
+
+            return APInfos;            
+        }
+
+        private AAPInfos PostForeignSupplierAPDocument(decimal AAmount, decimal AExchangeRatePosting, string ADocumentCode, string ANarrative,
+            out decimal AAPAccountBalanceBefore, out decimal ABankAccountBefore, out decimal AExpAccountBefore, 
+            out decimal ARevalAccountBefore, out List <int> ADocumentIds)
+        {
+            TVerificationResultCollection VerificationResult;
+            ADocumentIds = new List<int>();
+            
+            AAPInfos APInfos = APTestsArrangement(SUPPLIER_FOREIGN_PARTNER_KEY, AAmount, AExchangeRatePosting, ADocumentCode, ANarrative);
+            
+            // Save the current amount on the AP account
+            AAPAccountBalanceBefore = new TGet_GLM_Info(FLedgerNumber,
+                APInfos.ApAccountCode, APInfos.CostCentreCode).YtdActual;
+            ABankAccountBefore = new TGet_GLM_Info(FLedgerNumber,
+                APInfos.BankAccount, APInfos.CostCentreCode).YtdForeign;
+
+            AExpAccountBefore = new TGet_GLM_Info(FLedgerNumber,
+                APInfos.ApDS.AApSupplier[0].DefaultExpAccount,
+                APInfos.CostCentreCode).YtdActual;
+            ARevalAccountBefore = new TGet_GLM_Info(FLedgerNumber,
+                APInfos.ForexGainsLossesAccount,
+                APInfos.CostCentreCode).YtdActual;
+
+            VerificationResult = PostAPDocument(APInfos.ApDS, APInfos.PeriodStartDate, ref ADocumentIds);
+            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+            
+            // 
+            // Guard Assert: Posting OK?
+            //
+            decimal ExpAccountAfter = new TGet_GLM_Info(FLedgerNumber,
+                APInfos.ApDS.AApSupplier[0].DefaultExpAccount,
+                APInfos.ApDS.AApSupplier[0].DefaultCostCentre).YtdActual;
+
+            Assert.AreEqual(Math.Round(AAmount / AExchangeRatePosting, 2), Math.Round(ExpAccountAfter - AExpAccountBefore,
+                    2), "after posting the invoice, the expense account should be debited the amount in base currency");
+
+            return APInfos;            
+        }
+                
+        private AAPInfos PostAndPayForeignSupplierAPDocument(string ADocumentCode, out int APaymentNumber, out List<int> ADocumentIDs,
+            out decimal AAPAccountBalanceBefore, out decimal ABankAccountBefore, out decimal ARevalAccountBefore)
+        {
+            decimal Amount = 100.0m;
+            decimal ExchangeRatePosting = 1.2m;
+            decimal ExchangeRatePayment = 1.1m;
+            decimal ExpAccountBefore;
+            TVerificationResultCollection VerificationResult;
+            AAPInfos APInfos;
+            
+            APInfos = PostForeignSupplierAPDocument(Amount, ExchangeRatePosting, ADocumentCode, "Detail Item", 
+                 out AAPAccountBalanceBefore, out ABankAccountBefore, out ExpAccountBefore, out ARevalAccountBefore, out ADocumentIDs);
+                        
+            //
+            // Pay the AP document
+            //
+            VerificationResult = PayAPDocument(APInfos.ApDS.AApDocument[0].ApDocumentId, Amount, 
+                APInfos.BankAccount, APInfos.CurrencyCode, APInfos.PeriodEndDate, out APaymentNumber, ExchangeRatePayment);
+            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+
+            // Save the current amount on the AP account and Bank Account
+            decimal APAccountBalanceAfter = new TGet_GLM_Info(FLedgerNumber,
+                APInfos.ApAccountCode, APInfos.CostCentreCode).YtdActual;
+            decimal BankAccountAfter = new TGet_GLM_Info(FLedgerNumber,
+                APInfos.BankAccount, APInfos.CostCentreCode).YtdForeign;
+
+            //
+            // Guard Assert: Paying OK?
+            //
+            // Check the amount on the AP account
+            Assert.AreEqual(0.0m, APAccountBalanceAfter - AAPAccountBalanceBefore, "after paying the invoice, the AP account should be cleared");
+            Assert.AreEqual((-1.0m) * Amount, BankAccountAfter - ABankAccountBefore, "after paying the invoice, the bank account should be credited");
+
+            decimal RevalAccountAfter = new TGet_GLM_Info(FLedgerNumber,
+                APInfos.ForexGainsLossesAccount, APInfos.CostCentreCode).YtdActual;
+            
+            Assert.AreEqual(
+                Math.Round((Amount / ExchangeRatePayment) - (Amount / ExchangeRatePosting), 2),
+                Math.Round((RevalAccountAfter - ARevalAccountBefore), 2),
+                "after paying the invoice, the revaluation account should be credited with the forex gain");
+            
+            return APInfos;
+        }
+        
+        private TVerificationResultCollection PayAPDocument(int AApDocumentId, decimal AAmount, string ABankAccount,
+            string ACurrencyCode, DateTime APeriodEndDate, out int APaymentNumber, decimal? AExchangeRatePayment = null)
+        {
+            TVerificationResultCollection VerificationResult;
+            AccountsPayableTDS MainDS = new AccountsPayableTDS();
+            
+            AApPaymentRow Payment = MainDS.AApPayment.NewRowTyped();
+            Payment.LedgerNumber = FLedgerNumber;
+            Payment.PaymentNumber = -1;
+            Payment.Amount = AAmount;
+            Payment.BankAccount = ABankAccount;
+            Payment.CurrencyCode = ACurrencyCode;
+            
+            if (AExchangeRatePayment.HasValue) 
+            {
+                Payment.ExchangeRateToBase = AExchangeRatePayment.Value;    
+            }
+            
+            MainDS.AApPayment.Rows.Add(Payment);
+
+            AApDocumentPaymentRow DocPayment = MainDS.AApDocumentPayment.NewRowTyped();
+            DocPayment.LedgerNumber = FLedgerNumber;
+            DocPayment.ApDocumentId = AApDocumentId;
+            DocPayment.Amount = AAmount;
+            DocPayment.PaymentNumber = Payment.PaymentNumber;
+            MainDS.AApDocumentPayment.Rows.Add(DocPayment);
+
+            if (!TAPTransactionWebConnector.PostAPPayments(ref MainDS, APeriodEndDate, out VerificationResult))
+            {
+                Assert.Fail("Problems paying AP document: " +
+                    VerificationResult.BuildVerificationResultString());
+            }
+            
+            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+            
+            APaymentNumber = DocPayment.PaymentNumber;
+            
+            return VerificationResult;
+        }
+        
+        private TVerificationResultCollection ReversePayment(int APaymentNumber, DateTime APeriodEndDate, 
+            List<int> ADocumentIds, AccountsPayableTDS AApDS)
+        {
+            TVerificationResultCollection VerificationResult;
+            
+            // "Un-pay" the specified invoice
+            if (!TAPTransactionWebConnector.ReversePayment(FLedgerNumber,
+                    APaymentNumber,
+                    APeriodEndDate,
+                    out VerificationResult))
+            {
+                Assert.Fail("Failed to reverse AP payment: " +
+                    VerificationResult.BuildVerificationResultString());
+            }
+
+            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+            
+            // "Un-post" the specified invoice - returning it to "Approved" status!
+            ADocumentIds[0] += 2; // The invoice I posted was reversed, and a duplicate now exists with an Id 2 greater than the original.
+            
+            return PostAPDocument(AApDS, APeriodEndDate, ref ADocumentIds, true);
+        }
+        
+        #endregion
     }
 }
