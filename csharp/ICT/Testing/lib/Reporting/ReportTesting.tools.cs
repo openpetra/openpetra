@@ -48,7 +48,7 @@ using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.Interfaces.MReporting;
 
-namespace Tests.MFinance.Server.Reporting
+namespace Tests.MReporting.Tools
 {
     /// tools for testing the finance reports
     public class TReportTestingTools
@@ -93,7 +93,7 @@ namespace Tests.MFinance.Server.Reporting
         /// <summary>
         /// calculate the report and save the result and returned parameters to file
         /// </summary>
-        public static void CalculateReport(int ALedgerNumber, string AReportParameterXmlFile, TParameterList ASpecificParameters)
+        public static void CalculateReport(string AReportParameterXmlFile, TParameterList ASpecificParameters, int ALedgerNumber = -1)
         {
             // important: otherwise month names are in different language, etc
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB", false);
@@ -103,7 +103,12 @@ namespace Tests.MFinance.Server.Reporting
             string resultFile = AReportParameterXmlFile.Replace(".xml", ".Results.xml");
             string parameterFile = AReportParameterXmlFile.Replace(".xml", ".Parameters.xml");
             Parameters.Load(AReportParameterXmlFile);
-            Parameters.Add("param_ledger_number_i", ALedgerNumber);
+
+            if (ALedgerNumber != -1)
+            {
+                Parameters.Add("param_ledger_number_i", ALedgerNumber);
+            }
+
             Parameters.Add(ASpecificParameters);
 
             ReportGenerator.Start(Parameters.ToDataTable());
@@ -136,7 +141,7 @@ namespace Tests.MFinance.Server.Reporting
         /// <summary>
         /// compare the written result and parameter files with the files approved by a domain expert
         /// </summary>
-        public static void TestResult(int ALedgerNumber, string AReportParameterXmlFile)
+        public static void TestResult(string AReportParameterXmlFile, int ALedgerNumber = -1)
         {
             string resultFile = AReportParameterXmlFile.Replace(".xml", ".Results.xml");
             string parameterFile = AReportParameterXmlFile.Replace(".xml", ".Parameters.xml");

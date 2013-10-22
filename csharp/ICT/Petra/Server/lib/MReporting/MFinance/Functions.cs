@@ -652,7 +652,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             ReturnValue = "";
             strSql = "SELECT a_cost_centre_code_c " + "FROM PUB_a_cost_centre " + "WHERE a_ledger_number_i = " + StringHelper.IntToStr(
                 pv_ledger_number_i) + " AND a_cost_centre_to_report_to_c = \"\"";
-            tab = situation.GetDatabaseConnection().SelectDT(strSql, "", situation.GetDatabaseConnection().Transaction);
+            tab = situation.GetDatabaseConnection().SelectDT(strSql, "table", situation.GetDatabaseConnection().Transaction);
 
             if (tab.Rows.Count > 0)
             {
