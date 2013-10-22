@@ -934,7 +934,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     if (strOldDetailAccountCode.IndexOf(FNameForNewAccounts) < 0) // If they're just changing this from the initial value, don't show warning.
                     {
                         if (MessageBox.Show(String.Format(Catalog.GetString(
-                                        "You have changed the Account Code from '{0}' to '{1}'.\r\n\r\nPlease confirm that you want to rename this account by choosing 'OK'."),
+                                        "You have changed the Account Code from '{0}' to '{1}'.\r\n\r\n" +
+                                        "Please confirm that you want to rename this account by choosing 'OK'.\r\n\r\n" +
+                                        "(Renaming will take a few moments, then the form will be re-loaded.)"),
                                     strOldDetailAccountCode,
                                     strNewDetailAccountCode),
                                 Catalog.GetString("Rename Account: Confirmation"), MessageBoxButtons.OKCancel,
@@ -944,6 +946,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             return false;
                         }
                     }
+
+                    this.Cursor = Cursors.WaitCursor;
+                    this.Refresh();
 
                     FRecentlyUpdatedDetailAccountCode = strNewDetailAccountCode;
                     AccountNodeDetails NodeDetails = (AccountNodeDetails)trvAccounts.SelectedNode.Tag;
@@ -1004,6 +1009,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         {
                             FStatus += Catalog.GetString("Updating Account Code change - please wait.\r\n");
                             txtStatus.Text = FStatus;
+                            txtStatus.Refresh();
                             TVerificationResultCollection VerificationResults;
 
                             // If this code was previously in the DB, I need to assume that there may be transactions posted to it.
@@ -1013,13 +1019,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             bool Success = TRemote.MFinance.Setup.WebConnectors.RenameAccountCode(strOldDetailAccountCode,
                                 strNewDetailAccountCode,
                                 FLedgerNumber,
-                                out VerificationResults);
+                                out VerificationResults);                                                                       // This call takes ages..
 
                             if (Success)
                             {
                                 FIAmUpdating = true;
                                 FMainDS.Clear();
-                                FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));
+                                FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));      // and this also takes a while!
                                 strOldDetailAccountCode = "";
                                 FPetraUtilsObject.HasChanges = false;
                                 PopulateTreeView();
@@ -1042,9 +1048,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         btnRename.Visible = false;
                     } // if changeAccepted
 
+                    this.Cursor = Cursors.Default;
+
                 } // if changed
 
-            } // if not handling the same change than before (prevents this method to be run several times for a single change)
+            } // if not handling the same change as before (prevents this method running several times for a single change!)
 
             return changeAccepted;
         }
