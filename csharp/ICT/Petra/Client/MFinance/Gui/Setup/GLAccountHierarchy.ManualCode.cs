@@ -657,9 +657,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // ChangeAccountCodeValue() needs this value!
             strOldDetailAccountCode = newName;
 
-            AAccountRow parentAccount =
-                (AAccountRow)FMainDS.AAccount.Rows.Find(new object[] { FLedgerNumber,
-                                                                       ((AccountNodeDetails)FCurrentNode.Tag).DetailRow.ReportingAccountCode });
+            AAccountRow parentAccount = ((AccountNodeDetails)FCurrentNode.Tag).AccountRow;
 
             AAccountRow newAccount = FMainDS.AAccount.NewRowTyped();
             newAccount.AccountCode = newName;
@@ -865,6 +863,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if (AHD_stillInUse.Count == 0)  // No-one now reports to this account, so I can mark it as "Posting"
                 {
                     AccountParent.PostingStatus = true;
+                    // It's possible this account could now be deleted, but the user would need to save and re-load first,
+                    // because the server still has it down as a summary account.
                 }
 
                 FPetraUtilsObject.SetChangedFlag();
@@ -884,6 +884,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // The auto-generated code doesn't get the details from the UC_AnalasisAttributes control,
                 // so I need to do that here:
                 ucoAccountAnalysisAttributes.GetDataFromControls();
+
+                //
+                // I need to ensure that the AccountHierarchyDetail row has the same AccountCode as the Account Row
+                AccountNodeDetails nodeDetails = (AccountNodeDetails)FCurrentNode.Tag;
+                nodeDetails.DetailRow.ReportingAccountCode = nodeDetails.AccountRow.AccountCode;
                 FCurrentNode.Text = NodeLabel(GetSelectedDetailRowManual());
             }
         }
