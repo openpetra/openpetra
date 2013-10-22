@@ -115,7 +115,11 @@ namespace Ict.Petra.Client.MReporting.Logic
             {
                 // need to switch back to the application directory, because the path names might be relative to the application
                 Environment.CurrentDirectory = FApplicationDirectory;
-                StringArray = System.IO.Directory.GetFiles(FUserSettingsDirectory + FReportName, "*.xml");
+                String Path = FUserSettingsDirectory + FReportName;
+                if (System.IO.Directory.Exists(Path))
+                {
+                    StringArray = System.IO.Directory.GetFiles(Path, "*.xml");
+                }
             }
             catch (System.Exception)
             {
