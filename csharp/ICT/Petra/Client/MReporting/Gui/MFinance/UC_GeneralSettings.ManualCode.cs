@@ -321,6 +321,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         }
 
         /// <summary>
+        /// Show these currency choices (Instead of the usual list)
+        /// </summary>
+        /// <param name="items"></param>
+        public void CurrencyOptions(object[] items)
+        {
+            this.cmbCurrency.Items.Clear();
+            this.cmbCurrency.Items.AddRange(items);
+        }
+
+        /// <summary>
         /// Enable / Disable the radio button date
         /// </summary>
         /// <param name="AValue">true to enable the radio button</param>
