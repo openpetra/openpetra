@@ -729,7 +729,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     if (strOldDetailCostCentreCode.IndexOf(FnameForNewCostCentre) < 0) // If they're just changing this from the initial value, don't show warning.
                     {
                         if (MessageBox.Show(String.Format(Catalog.GetString(
-                                        "You have changed the Cost Centre Code from '{0}' to '{1}'.\r\n\r\nPlease confirm that you want to rename this Cost Centre Code by choosing 'OK'."),
+                                        "You have changed the Cost Centre Code from '{0}' to '{1}'.\r\n\r\n" + 
+                                        "Please confirm that you want to rename this Cost Centre Code by choosing 'OK'.\r\n\r\n" +
+                                        "(Renaming will take a few moments, then the form will be re-loaded.)"),
                                     strOldDetailCostCentreCode,
                                     strNewDetailCostCentreCode), Catalog.GetString("Rename Cost Centre Code: Confirmation"),
                                 MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK)
@@ -739,6 +741,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             return false;
                         }
                     }
+
+                    this.UseWaitCursor = true;
+                    this.Refresh();
 
                     FRecentlyUpdatedDetailCostCentreCode = strNewDetailCostCentreCode;
                     CostCentreNodeDetails NodeDetails = (CostCentreNodeDetails)trvCostCentres.SelectedNode.Tag;
@@ -796,6 +801,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         {
                             FStatus += Catalog.GetString("Updating Cost Centre Code change - please wait.\r\n");
                             txtStatus.Text = FStatus;
+                            txtStatus.Refresh();
                             TVerificationResultCollection VerificationResults;
 
                             // If this code was previously in the DB, I need to assume that there may be transactions posted against it.
@@ -853,9 +859,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             }
                         }
                     } // if changeAccepted
-
+                    this.UseWaitCursor = false;
                 } // if changed
-
             }
 
             return changeAccepted;
