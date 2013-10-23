@@ -135,20 +135,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             String UnitName;
             TPartnerClass PartnerClass;
             
-            TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName((Convert.ToInt64(nudLedgerNumber.Value) * 1000000L), out UnitName, out PartnerClass, true);
-            if (UnitName != txtLedgerName.Text)
+            if (TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName((Convert.ToInt64(nudLedgerNumber.Value) * 1000000L), out UnitName, out PartnerClass, true))
             {
-                if (MessageBox.Show(String.Format(Catalog.GetString("A Unit Partner record already exists for this Ledger Name!\r\nYour suggested Ledger Name '{0}' will automatically be changed to the Unit Name '{1}'.\r\n\r\nDo you still want to continue?"), 
-                                                  txtLedgerName.Text, UnitName),
-                    Catalog.GetString("Problem: Ledger Name Mismatch"),
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Error) == DialogResult.Yes)
+                if (UnitName != txtLedgerName.Text)
                 {
-                    txtLedgerName.Text = UnitName;
-                }
-                else
-                {
-                    return;
+                    if (MessageBox.Show(String.Format(Catalog.GetString("A Unit Partner record already exists for this Ledger Name!\r\nYour suggested Ledger Name '{0}' will automatically be changed to the Unit Name '{1}'.\r\n\r\nDo you still want to continue?"), 
+                                                      txtLedgerName.Text, UnitName),
+                        Catalog.GetString("Problem: Ledger Name Mismatch"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Error) == DialogResult.Yes)
+                    {
+                        txtLedgerName.Text = UnitName;
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
             }
             
