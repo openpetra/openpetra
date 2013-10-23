@@ -823,7 +823,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlAddress1.Name = "pnlAddress1";
             this.pnlAddress1.Size = new System.Drawing.Size(304, 21);
             this.pnlAddress1.TabIndex = 2;
-            this.pnlAddress1.Tag = "BeginGroup";
+            this.pnlAddress1.Tag = Ict.Common.Controls.Formatting.TSingleLineFlow.BeginGroupIndicator;
 
             //
             // critAddress1
@@ -1062,7 +1062,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlMailingAddressOnly.Name = "pnlMailingAddressOnly";
             this.pnlMailingAddressOnly.Size = new System.Drawing.Size(304, 21);
             this.pnlMailingAddressOnly.TabIndex = 2;
-            this.pnlMailingAddressOnly.Tag = "BeginGroup";
+            this.pnlMailingAddressOnly.Tag = Ict.Common.Controls.Formatting.TSingleLineFlow.BeginGroupIndicator;
 
             //
             // chkMailingAddressOnly

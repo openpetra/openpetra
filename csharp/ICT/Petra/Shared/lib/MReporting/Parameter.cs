@@ -498,6 +498,16 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
+        /// overload
+        /// </summary>
+        /// <param name="parameterId"></param>
+        /// <param name="value"></param>
+        public void AddCalculationParameter(String parameterId, TVariant value)
+        {
+            Add(parameterId, value, -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
+        }
+
+        /// <summary>
         /// overloaded add
         /// </summary>
         /// <param name="parameterId"></param>

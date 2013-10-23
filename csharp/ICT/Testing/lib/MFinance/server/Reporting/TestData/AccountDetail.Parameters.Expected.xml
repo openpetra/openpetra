@@ -53,8 +53,8 @@
   <Parameter id="param_calculation" column="6" value="eString:End Balance" />
   <Parameter id="param_with_analysis_attributes" value="eString:false" />
   <Parameter id="param_ledger_number_i" value="eInteger:{ledgernumber}" />
-  <Parameter id="param_start_date" value="eDateTime:&quot;2013-01-01T00:00:00&quot;" />
-  <Parameter id="param_end_date" value="eDateTime:&quot;2013-01-31T00:00:00&quot;" />
+  <Parameter id="param_start_date" value="eDateTime:&quot;{ThisYear}-01-01T00:00:00&quot;" />
+  <Parameter id="param_end_date" value="eDateTime:&quot;{ThisYear}-01-31T00:00:00&quot;" />
   <Parameter id="ColumnFormat" column="0" value="eString:text" />
   <Parameter id="ColumnFormat" column="1" value="eString:text" />
   <Parameter id="ColumnFormat" column="2" value="eString:#,##0.00; ; ; ;" />
@@ -75,7 +75,7 @@
   <Parameter id="ColumnWidth" column="107" value="eDecimal:4619567317775286272" />
   <Parameter id="ControlSource" column="107" value="eString:&quot;Currency: EUR Ordered by: Account&quot;" />
   <Parameter id="ControlSource" column="108" value="eComposite::&quot;eString:Current Period is |eInteger:1&quot;" />
-  <Parameter id="ControlSource" column="103" value="eComposite::&quot;&quot;&quot;eString:&quot;&quot;&quot;&quot;Period:  &quot;&quot;&quot;&quot;&quot;&quot;|&quot;&quot;eDateTime:&quot;&quot;&quot;&quot;2013-01-01T00:00:00&quot;&quot;&quot;&quot;&quot;&quot;|eString: To |&quot;&quot;eDateTime:&quot;&quot;&quot;&quot;2013-01-31T00:00:00&quot;&quot;&quot;&quot;&quot;&quot;|eString:   (|eInteger:1|eString: To |eInteger:1|eString:)    (CURRENT)&quot;" />
+  <Parameter id="ControlSource" column="103" value="eComposite::&quot;&quot;&quot;eString:&quot;&quot;&quot;&quot;Period:  &quot;&quot;&quot;&quot;&quot;&quot;|&quot;&quot;eDateTime:&quot;&quot;&quot;&quot;{ThisYear}-01-01T00:00:00&quot;&quot;&quot;&quot;&quot;&quot;|eString: To |&quot;&quot;eDateTime:&quot;&quot;&quot;&quot;{ThisYear}-01-31T00:00:00&quot;&quot;&quot;&quot;&quot;&quot;|eString:   (|eInteger:1|eString: To |eInteger:1|eString:)    (CURRENT)&quot;" />
   <Parameter id="ColumnAlign" column="0" value="eString:left" />
   <Parameter id="ColumnCaption" column="0" value="eString:text:CC" />
   <Parameter id="ColumnAlign" column="1" value="eString:left" />

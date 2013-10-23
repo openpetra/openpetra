@@ -73,6 +73,7 @@ namespace Ict.Common.Controls
         private bool UPressedKey;
         private String UInitialString;
         private bool FAcceptNewValues;
+        private bool FIgnoreNewValues;
         private bool FCaseSensitiveSearch;
         private bool FSuppressSelectionColor;
         private String FColumnsToSearchDesignTime;
@@ -98,6 +99,28 @@ namespace Ict.Common.Controls
             set
             {
                 this.FAcceptNewValues = value;
+            }
+        }
+
+        /// <summary>
+        /// This property is similar to AcceptNewValues - if you set it to true you also set AcceptNewValues to true.
+        /// The difference is that while new values are accepted the comboBox does not add them to its content.
+        /// This behaviour is used in particular in the Filter/Find combo boxes.  You can tab away from the control and leave
+        /// the 'Text' property as something that has no match in the drop down list.  The new text is not added to the data source.
+        /// If, instead, you set AcceptNewValues then when you tab away the control will ask if you want to add the text to the data source.
+        /// Note that this behaviour only is useful when the combo box contains a single column of strings, or
+        /// a data source where the value and display members are the same.
+        /// </summary>
+        public bool IgnoreNewValues
+        {
+            get
+            {
+                return this.FIgnoreNewValues;
+            }
+
+            set
+            {
+                this.FIgnoreNewValues = value;
             }
         }
 
@@ -264,6 +287,8 @@ namespace Ict.Common.Controls
             this.UPressedKey = false;
             ProhibitChangeToDataSource();
             this.FSuppressSelectionColor = true;
+            this.FAcceptNewValues = false;
+            this.FIgnoreNewValues = false;
         }
 
         /// <summary>
@@ -397,6 +422,11 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         private void OnAcceptNewEntryEvent(TAcceptNewEntryEventArgs Args)
         {
+            if (FIgnoreNewValues == true)
+            {
+                return;
+            }
+
             System.Int32 mNumDataSourceCols = this.GetNumberOfDataSourceCols();
 
             if ((mNumDataSourceCols != 1) || (Args.Cancel == true))
@@ -662,7 +692,7 @@ namespace Ict.Common.Controls
             else
             {
                 // Text could not be found.
-                if (this.AcceptNewValues == true)
+                if ((this.FAcceptNewValues == true) || (this.FIgnoreNewValues == true))
                 {
                     // User may enter new values.
                     if (AcceptNewEntries != null)

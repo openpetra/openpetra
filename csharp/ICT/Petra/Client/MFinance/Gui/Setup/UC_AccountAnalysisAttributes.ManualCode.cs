@@ -105,6 +105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 LoadCmbAnalType();
                 pnlDetails.Enabled = false;
                 btnDelete.Enabled = (grdDetails.Rows.Count > 1);
+                UpdateRecordNumberDisplay();
             }
         }
 

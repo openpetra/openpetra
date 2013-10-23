@@ -23,7 +23,13 @@ RootNode:
         txtConferenceDates: {ReadOnly=true, BorderStyle=None, Stretch=horizontally}
         pnlGrid:
             Dock: Fill
-            Controls: [grdDetails, pnlButtons]
+            Controls: [pnlFilterAndFind, grdDetails, pnlButtons]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [rgrType]
+            #FindControls: [txtDetailOptionDays]
+            ControlAttributes:
+                rgrType: {ClearButton=false, NoLabel=true}
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]

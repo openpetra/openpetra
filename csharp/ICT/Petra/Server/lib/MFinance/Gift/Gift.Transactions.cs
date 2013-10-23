@@ -1223,6 +1223,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// create GiftBatchTDS with the recurring gift batch, and all gift transactions and details, and motivation details
+        [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS LoadRecurringGiftBatchData(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             bool NewTransaction = false;

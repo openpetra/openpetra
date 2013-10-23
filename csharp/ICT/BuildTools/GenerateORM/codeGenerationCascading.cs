@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using Ict.Tools.CodeGeneration;
 using Ict.Tools.DBXML;
@@ -50,6 +51,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
             formalParametersPrimaryKey = "";
             actualParametersPrimaryKey = "";
             int counterPrimaryKeyField = 0;
+            string PrimaryKeyLabel;
+            List <string>PrimaryKeyLabels = new List <string>();
 
             if (!ACurrentTable.HasPrimaryKey())
             {
@@ -70,12 +73,29 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                 TTableField typedField = ACurrentTable.GetField(field);
 
+                PrimaryKeyLabel = typedField.strLabel;
+
+                // Ensure that a table definition doesn't contain Primary Key columns with identical Labels as this would lead
+                // to generated cascading count code that would fail at runtime as it would want to add items with the same
+                // name to the 'PKInfo' dictionary! (Those labels would be wrong anyhow!)
+                if (!PrimaryKeyLabels.Contains(PrimaryKeyLabel))
+                {
+                    PrimaryKeyLabels.Add(PrimaryKeyLabel);
+                }
+                else
+                {
+                    throw new Exception(
+                        String.Format(
+                            "The DB table definition of Table '{0}' in petra.xml contains two Columns with the same Label, '{1}'. That is not allowed!",
+                            ACurrentTable.strName, PrimaryKeyLabel));
+                }
+
                 csvListPrimaryKeyFields += field;
                 formalParametersPrimaryKey += typedField.GetDotNetType() + " A" + TTable.NiceFieldName(field);
                 actualParametersPrimaryKey += "A" + TTable.NiceFieldName(field);
 
                 formalParametersPrimaryKeySeparate[counterPrimaryKeyField] = new Tuple <string, string, string>(
-                    typedField.GetDotNetType(), " A" + TTable.NiceFieldName(field), typedField.strLabel);
+                    typedField.GetDotNetType(), " A" + TTable.NiceFieldName(field), PrimaryKeyLabel);
 
                 counterPrimaryKeyField++;
             }

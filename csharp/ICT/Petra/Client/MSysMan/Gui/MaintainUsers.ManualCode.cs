@@ -110,20 +110,23 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
         private void ShowDetailsManual(SUserRow ARow)
         {
-            FMainDS.SUserModuleAccessPermission.DefaultView.RowFilter =
-                String.Format("{0}='{1}'",
-                    SUserModuleAccessPermissionTable.GetUserIdDBName(),
-                    ARow.UserId);
-
             string currentPermissions = String.Empty;
 
-            foreach (DataRowView rv in FMainDS.SUserModuleAccessPermission.DefaultView)
+            if (ARow != null)
             {
-                SUserModuleAccessPermissionRow permission = (SUserModuleAccessPermissionRow)rv.Row;
+                FMainDS.SUserModuleAccessPermission.DefaultView.RowFilter =
+                    String.Format("{0}='{1}'",
+                        SUserModuleAccessPermissionTable.GetUserIdDBName(),
+                        ARow.UserId);
 
-                if (permission.CanAccess)
+                foreach (DataRowView rv in FMainDS.SUserModuleAccessPermission.DefaultView)
                 {
-                    currentPermissions = StringHelper.AddCSV(currentPermissions, permission.ModuleId);
+                    SUserModuleAccessPermissionRow permission = (SUserModuleAccessPermissionRow)rv.Row;
+
+                    if (permission.CanAccess)
+                    {
+                        currentPermissions = StringHelper.AddCSV(currentPermissions, permission.ModuleId);
+                    }
                 }
             }
 

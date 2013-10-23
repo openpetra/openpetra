@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       peters
 //
 // Copyright 2004-2013 by OM International
 //
