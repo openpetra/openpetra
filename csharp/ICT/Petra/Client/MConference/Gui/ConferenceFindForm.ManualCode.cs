@@ -266,8 +266,6 @@ namespace Ict.Petra.Client.MConference.Gui
                 }
             }
 
-            grdConferences.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PcConference.DefaultView);
-
             // sort order for grid
             DataView MyDataView = FMainDS.PcConference.DefaultView;
             MyDataView.Sort = "p_partner_short_name_c ASC";

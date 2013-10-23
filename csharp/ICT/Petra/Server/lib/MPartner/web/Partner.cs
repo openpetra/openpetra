@@ -1367,7 +1367,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PPersonRow PersonRow = (PPersonRow)PersonTable.Rows[0];
 
                 // reset family members flag to false if this person is the only member of the family
-                if (PPersonAccess.CountViaPFamily(PersonRow.FamilyKey, ATransaction) == 1)
+                if (!PersonRow.IsFamilyKeyNull() && (PPersonAccess.CountViaPFamily(PersonRow.FamilyKey, ATransaction) == 1))
                 {
                     PFamilyTable FamilyTable = PFamilyAccess.LoadByPrimaryKey(PersonRow.FamilyKey, ATransaction);
                     PFamilyRow FamilyRow = (PFamilyRow)FamilyTable.Rows[0];
