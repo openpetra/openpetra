@@ -69,8 +69,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
          * TODO The following functionalities have not yet been fully implimented:
          *      Save original merged Partner data in an XML file,
          *      Let the user select which sections they would like to merge. */
-        
-        
+
+
         // TODO private static StreamWriter MyWriter;
 
         /// <summary>
@@ -84,6 +84,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="ALocationKeys">LocationKeys for any address that the user would like to include in the merge</param>
         /// <param name="AMainBankingDetailsKey">BankingDetailsKey for what should be the 'Main' bank account</param>
         /// <param name="ACategories">Array determines which sections will be merged</param>
+        /// <param name="ADifferentFamilies">True if two persons have been merged from different families</param>
         /// <returns>true if partner is a supplier and a currency is found</returns>
         [RequireModulePermission("PTNRUSER")]
         public static bool MergeTwoPartners(long AFromPartnerKey,
@@ -93,7 +94,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             long[] ASiteKeys,
             int[] ALocationKeys,
             int AMainBankingDetailsKey,
-            bool[] ACategories)
+            bool[] ACategories,
+            ref bool ADifferentFamilies)
         {
             decimal TrackerPercent;
             int NumberOfCategories = 0;
@@ -115,9 +117,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             /* // TODO write original data to xml file
-            string path = "../../log/OriginalRecordsBeforeMerge.xml";
-            FileStream outStream = File.Create(Path.GetFullPath(path);
-            MyWriter = new StreamWriter(outStream, Encoding.UTF8);*/
+             * string path = "../../log/OriginalRecordsBeforeMerge.xml";
+             * FileStream outStream = File.Create(Path.GetFullPath(path);
+             * MyWriter = new StreamWriter(outStream, Encoding.UTF8);*/
 
             try
             {
@@ -307,7 +309,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 {
                     if (AToPartnerClass == TPartnerClass.PERSON)
                     {
-                        MergePerson(AFromPartnerKey, AToPartnerKey, Transaction);
+                        MergePerson(AFromPartnerKey, AToPartnerKey, ref ADifferentFamilies, Transaction);
                     }
                     else
                     {
@@ -505,6 +507,18 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 foreach (DataRow Row in RecurringGiftDetailTable.Rows)
                 {
                     ((ARecurringGiftDetailRow)Row).RecipientKey = AToPartnerKey;
+                }
+
+                ARecurringGiftDetailAccess.SubmitChanges(RecurringGiftDetailTable, ATransaction, out Result);
+            }
+
+            RecurringGiftDetailTable = ARecurringGiftDetailAccess.LoadViaPPartnerRecipientLedgerNumber(AFromPartnerKey, ATransaction);
+
+            if (RecurringGiftDetailTable.Rows.Count > 0)
+            {
+                foreach (DataRow Row in RecurringGiftDetailTable.Rows)
+                {
+                    ((ARecurringGiftDetailRow)Row).RecipientLedgerNumber = AToPartnerKey;
                 }
 
                 ARecurringGiftDetailAccess.SubmitChanges(RecurringGiftDetailTable, ATransaction, out Result);
@@ -1076,8 +1090,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             TVerificationResultCollection Result;
 
-            // TODO check pm_interview, pm_ownership and pm_pers_office_specific_data are not migrated at all and not replaced with anything (nothing done at migration)
-
             /*** OFFICE SPECIFIC DATA ***/
 
             PDataLabelValuePartnerTable DataLabelValuePartnerTable = PDataLabelValuePartnerAccess.LoadViaPPartnerPartnerKey(AFromPartnerKey,
@@ -1285,10 +1297,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PmPersonQualificationAccess.SubmitChanges(PersonQualificationTable, ATransaction, out Result);
             }
 
-            /*** VISION ***/
-
-            // TODO check pm_person_vision is not migrated at all and not replaced with anything (nothing done at migration)
-
             /*** PERSONAL DATA ***/
 
             PmPersonalDataTable FromPersonalDataTable = PmPersonalDataAccess.LoadViaPPerson(AFromPartnerKey, ATransaction);
@@ -1413,7 +1421,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         ToRow.LanguageCode = FromRow.LanguageCode;
                     }
 
-                    if (ToRow.BelieverSinceYear == 0)
+                    if ((ToRow.IsBelieverSinceYearNull() || (ToRow.BelieverSinceYear == 0)) && !FromRow.IsBelieverSinceYearNull())
                     {
                         ToRow.BelieverSinceYear = FromRow.BelieverSinceYear;
                     }
@@ -1693,8 +1701,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                 UmJobQualificationAccess.SubmitChanges(FromJobQualificationTable, ATransaction, out Result);
             }
-
-            // TODO check pm_person_vision and pm_long_term_support_figures are not migrated at all and not replaced with anything (nothing done at migration)
 
             return true;
         }
@@ -2018,10 +2024,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 UmUnitLanguageAccess.SubmitChanges(UnitLanguageTable, ATransaction, out Result);
             }
 
-            /*** UNIT VISION ***/
-
-            // TODO check um_unit_vision and um_unit_structure not migrated at all and not replaced with anything (nothing done at migration)
-
             /*** UNIT Structure (Parent) ***/
 
             return true;
@@ -2273,7 +2275,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             return true;
         }
 
-        private static bool MergePerson(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static bool MergePerson(long AFromPartnerKey, long AToPartnerKey, ref bool ADifferentFamilies, TDBTransaction ATransaction)
         {
             TVerificationResultCollection Result;
 
@@ -2365,10 +2367,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             // Handle family assignments and family relationships if From Partner and To Partner are not in the same family
             if (FromRow.FamilyKey != ToRow.FamilyKey)
             {
-                MessageBox.Show(String.Format(Catalog.GetString("Partners were in different families.")) + "\n\n" +
-                    Catalog.GetString("FAMILY relations of the From Partner are not taken over to the To Partner!") + "\n\n" +
-                    Catalog.GetString("Please check the family relations of the To Partner after completion."),
-                    Catalog.GetString("Merge Partners"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                ADifferentFamilies = true;
 
                 // Look if there are no members of the family left, except for the merged person
                 if (!PPersonAccess.ExistsUniqueKey(PPersonTable.TableId, new object[] { FromRow.FamilyKey, FromRow.FamilyId }, ATransaction))
@@ -2539,7 +2538,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TVerificationResultCollection Result;
 
             PBankTable FromBankTable = PBankAccess.LoadByPrimaryKey(AFromPartnerKey, ATransaction);
-            PBankTable ToBankTable = PBankAccess.LoadByPrimaryKey(AFromPartnerKey, ATransaction);
+            PBankTable ToBankTable = PBankAccess.LoadByPrimaryKey(AToPartnerKey, ATransaction);
 
             PBankRow FromRow = (PBankRow)FromBankTable.Rows[0];
             PBankRow ToRow = (PBankRow)ToBankTable.Rows[0];

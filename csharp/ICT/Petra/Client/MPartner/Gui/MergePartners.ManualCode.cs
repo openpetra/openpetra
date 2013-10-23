@@ -200,6 +200,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FSiteKeys = null;
                 FLocationKeys = null;
                 FMainBankingDetailsKey = -1;
+                bool DifferentFamilies = false;
 
                 // open a dialog to select which To Partner's addresses should be merged
                 if (GetSelectedAddresses() == false)
@@ -216,7 +217,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 Thread t =
-                    new Thread(() => MergeTwoPartners(FromPartnerKey, ToPartnerKey, FromPartnerClass, ToPartnerClass, Categories));
+                    new Thread(() => MergeTwoPartners(FromPartnerKey, ToPartnerKey, FromPartnerClass, ToPartnerClass, Categories,
+                            ref DifferentFamilies));
 
                 using (TProgressDialog dialog = new TProgressDialog(t))
                 {
@@ -231,6 +233,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                         dialog.Close();
                         return;
                     }
+                }
+
+                if (DifferentFamilies)
+                {
+                    MessageBox.Show(String.Format(Catalog.GetString("Partners were in different families.")) + "\n\n" +
+                        Catalog.GetString("FAMILY relations of the From Partner are not taken over to the To Partner!") + "\n\n" +
+                        Catalog.GetString("Please check the family relations of the To Partner after completion."),
+                        Catalog.GetString("Merge Partners"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
                 MessageBox.Show(String.Format(Catalog.GetString("Merge of Partner {0} into {1} complete."), FromPartnerKey, ToPartnerKey) +
@@ -300,10 +310,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         private static bool WebConnectorResult = true;
 
         private static void MergeTwoPartners(long AFromPartnerKey, long AToPartnerKey,
-            TPartnerClass AFromPartnerClass, TPartnerClass AToPartnerClass, bool[] ACategories)
+            TPartnerClass AFromPartnerClass, TPartnerClass AToPartnerClass, bool[] ACategories, ref bool ADifferentFamilies)
         {
             WebConnectorResult = TRemote.MPartner.Partner.WebConnectors.MergeTwoPartners(AFromPartnerKey, AToPartnerKey, AFromPartnerClass,
-                AToPartnerClass, FSiteKeys, FLocationKeys, FMainBankingDetailsKey, ACategories);
+                AToPartnerClass, FSiteKeys, FLocationKeys, FMainBankingDetailsKey, ACategories, ref ADifferentFamilies);
         }
 
         private bool CheckPartnersCanBeMerged()

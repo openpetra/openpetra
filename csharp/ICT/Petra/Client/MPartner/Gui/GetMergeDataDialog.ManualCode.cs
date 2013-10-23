@@ -227,7 +227,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 return true;
             }
-            
+
             return false;
         }
     }
