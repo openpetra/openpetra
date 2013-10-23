@@ -68,12 +68,14 @@ namespace Ict.Common.Remoting.Client
         /// </summary>
         public static void Disconnect()
         {
+            /* These are proxies - we don't disconnect them.
             RemotingServices.Disconnect((MarshalByRefObject)UClientManager);
 
             foreach (MarshalByRefObject obj in FRemoteObjects)
             {
                 RemotingServices.Disconnect(obj);
             }
+             */
         }
     }
 }

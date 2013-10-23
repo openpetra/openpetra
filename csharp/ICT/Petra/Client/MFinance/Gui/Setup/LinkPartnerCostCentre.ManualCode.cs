@@ -36,7 +36,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     {
         private Int32 FLedgerNumber;
         private DataTable FPartnerCostCentreTbl;
-        private DataTable FParentCostCentres;
+        private DataTable FLocalCostCentres;
         private DataView FLinkedView;
         private DataView FUnlinkedView;
 
@@ -49,7 +49,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 FLedgerNumber = value;
                 FPartnerCostCentreTbl = TRemote.MFinance.Setup.WebConnectors.LoadCostCentrePartnerLinks(FLedgerNumber);
-                FParentCostCentres = TRemote.MFinance.Setup.WebConnectors.LoadLocalSummaryCostCentres(FLedgerNumber);
+                FLocalCostCentres = TRemote.MFinance.Setup.WebConnectors.LoadLocalCostCentres(FLedgerNumber);
             }
         }
 
@@ -58,9 +58,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             cmbReportsTo.Items.Clear();
 
-            foreach (DataRow Row in FParentCostCentres.Rows)
+            foreach (DataRow Row in FLocalCostCentres.Rows)
             {
-                cmbReportsTo.Items.Add(Row["CostCentreCode"]);
+                if (Convert.ToBoolean(Row["Posting"]) == false)
+                {
+                    cmbReportsTo.Items.Add(Row["CostCentreCode"]);
+                }
             }
 
             FLinkedView = new DataView(FPartnerCostCentreTbl);
@@ -143,10 +146,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            String ReportsTo = cmbReportsTo.Text;
+            if (ReportsTo == "")
+            {
+                MessageBox.Show(String.Format(Catalog.GetString("Error - Select a Cost Centre that {0} will report to."), NewCCCode),
+                    Catalog.GetString("Link Cost Centre"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             DataRow Row = ((DataRowView)grdUnlinkedCCs.SelectedDataRows[0]).Row;
             Row["IsLinked"] = NewCCCode;
-            Row["ReportsTo"] = cmbReportsTo.Text;
+            Row["ReportsTo"] = ReportsTo;
             txtCostCentre.ReadOnly = true;
             txtCostCentre.Text = "";
             btnLink.Enabled = false;
@@ -169,6 +180,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void txtCostCentre_TextChanged(object sender, EventArgs e)
         {
             btnLink.Enabled = ((txtCostCentre.ReadOnly == false) && (txtCostCentre.Text != ""));
+            FLocalCostCentres.DefaultView.RowFilter = "CostCentreCode='" + txtCostCentre.Text + "'";
+            cmbReportsTo.Enabled = (FLocalCostCentres.DefaultView.Count == 0); // The name is not an existing Cost Centre.
+            if (!cmbReportsTo.Enabled)
+            {
+                cmbReportsTo.Text = FLocalCostCentres.DefaultView[0].Row["ReportsTo"].ToString();
+            }
         }
 
         private void grdLinkedCCs_Click(object sender, EventArgs e)

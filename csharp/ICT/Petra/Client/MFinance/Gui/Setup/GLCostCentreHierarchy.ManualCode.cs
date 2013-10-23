@@ -59,6 +59,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private String strOldDetailCostCentreCode; // this string is used to detect that the user has renamed an existing Cost Centre.
 
         private string FRecentlyUpdatedDetailCostCentreCode = INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE;
+        string FnameForNewCostCentre;
 
 
         private class CostCentreNodeDetails
@@ -152,7 +153,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             txtDetailCostCentreName.Leave += new EventHandler(UpdateOnControlChanged);
             chkDetailCostCentreActiveFlag.CheckedChanged += new System.EventHandler(UpdateOnControlChanged);
             cmbDetailCostCentreType.SelectedIndexChanged += new System.EventHandler(UpdateOnControlChanged);
+            FPetraUtilsObject.ControlChanged += new TValueChangedHandler(FPetraUtilsObject_ControlChanged);
             FIAmUpdating = false;
+            FnameForNewCostCentre = Catalog.GetString("NEWCOSTCENTRE");
+
             txtDetailCostCentreCode.TextChanged += new EventHandler(txtDetailCostCentreCode_TextChanged);
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnHierarchySaved);
 
@@ -197,8 +201,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            if (strOldDetailCostCentreCode.IndexOf(Catalog.GetString("NewCostCentre")) == 0)  // This is the first time the name is being set?
+            if (strOldDetailCostCentreCode.IndexOf(FnameForNewCostCentre) == 0)  // This is the first time the name is being set?
             {
+                FPetraUtilsObject_ControlChanged(txtDetailCostCentreCode);
                 return;
             }
 
@@ -359,6 +364,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         // End of (mostly copied) drag-drop functions
 
+        void FPetraUtilsObject_ControlChanged(Control Sender)
+        {
+            if (FCurrentNode != null)
+            {
+                FCurrentNode.Text = NodeLabel(txtDetailCostCentreCode.Text, txtDetailCostCentreName.Text);
+            }
+        }
+
 
         private void ShowDetailsManual(ACostCentreRow ARow)
         {
@@ -411,21 +424,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
+        private static String NodeLabel(String ACostCentreCode, String ACostCentreName)
+        {
+            string lbl = ACostCentreCode;
+
+            if (ACostCentreName != "")
+            {
+                lbl += " (" + ACostCentreName + ")";
+            }
+            return lbl;
+        }
+
         private static String NodeLabel(ACostCentreRow ADetailRow)
         {
             if (ADetailRow.RowState.Equals(DataRowState.Deleted))
             {
                 return "(Deleted)";
             }
-
-            string nodeLabel = ADetailRow.CostCentreCode;
-
-            if (!ADetailRow.IsCostCentreNameNull())
-            {
-                nodeLabel += " (" + ADetailRow.CostCentreName + ")";
-            }
-
-            return nodeLabel;
+            return NodeLabel(ADetailRow.CostCentreCode, ADetailRow.CostCentreName);
         }
 
         private void InsertNodeIntoTreeView(TreeNodeCollection AParentNodes, ACostCentreRow ADetailRow)
@@ -524,23 +540,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     return;
                 }
 
-                txtDetailCostCentreCode.Focus();
-
-                string newName = Catalog.GetString("NewCostCentre");
                 Int32 countNewCostCentre = 0;
-
-                if (FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber, newName }) != null)
+                string newCostCentreName = FnameForNewCostCentre;
+                if (FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber, newCostCentreName }) != null)
                 {
-                    while (FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber, newName + countNewCostCentre.ToString() }) != null)
+                    while (FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber, newCostCentreName + countNewCostCentre.ToString() }) != null)
                     {
                         countNewCostCentre++;
                     }
-
-                    newName += countNewCostCentre.ToString();
+                    FnameForNewCostCentre += countNewCostCentre.ToString();
                 }
 
                 ACostCentreRow newCostCentre = FMainDS.ACostCentre.NewRowTyped();
-                newCostCentre.CostCentreCode = newName;
+                newCostCentre.CostCentreCode = newCostCentreName;
                 newCostCentre.LedgerNumber = FLedgerNumber;
                 newCostCentre.CostCentreActiveFlag = true;
                 newCostCentre.CostCentreType = ParentRow.CostCentreType;
@@ -552,7 +564,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ParentNodeDetails.CanDelete = false;
 
                 trvCostCentres.BeginUpdate();
-                TreeNode newNode = FCurrentNode.Nodes.Add(newName);
+                TreeNode newNode = FCurrentNode.Nodes.Add(newCostCentreName);
 
                 CostCentreNodeDetails NewNodeDetails = new CostCentreNodeDetails();
                 NewNodeDetails.CostCentreRow = newCostCentre;
@@ -562,7 +574,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 trvCostCentres.EndUpdate();
 
                 trvCostCentres.SelectedNode = newNode;
-
+                txtDetailCostCentreCode.Focus();
                 FPetraUtilsObject.SetChangedFlag();
             }
         }
@@ -605,8 +617,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private bool CheckForInvalidCostCentre(TreeNodeCollection NodeCol)
         {
-            string newName = Catalog.GetString("NewCostCentre");
-
             foreach (TreeNode ChildNode in NodeCol)
             {
                 if (CheckForInvalidCostCentre(ChildNode.Nodes))
@@ -616,11 +626,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 ACostCentreRow CheckRow = ((CostCentreNodeDetails)ChildNode.Tag).CostCentreRow;
 
-                if (CheckRow.CostCentreCode.IndexOf(newName) == 0)
+                if (CheckRow.CostCentreCode == "")
                 {
                     MessageBox.Show(
-                        String.Format(Catalog.GetString("{0} is not a valid Cost Centre code."),
-                            CheckRow.CostCentreCode),
+                        Catalog.GetString(
+                            "Cost centre code is empty.\r\nSupply a valid cost centre code."),
                         Catalog.GetString("GL Cost Centre Hierarchy"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
@@ -628,11 +638,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     return true;
                 }
 
-                if (CheckRow.CostCentreCode == "")
+                if (CheckRow.CostCentreCode.IndexOf(FnameForNewCostCentre) == 0)
                 {
                     MessageBox.Show(
-                        Catalog.GetString(
-                            "Cost centre code is empty.\r\nSupply a valid cost centre code."),
+                        String.Format(Catalog.GetString("{0} is not a valid Cost Centre code."),
+                            CheckRow.CostCentreCode),
                         Catalog.GetString("GL Cost Centre Hierarchy"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
@@ -647,7 +657,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
         {
             //
-            // I'll look through and check whether any of the cost centres still have "NewCostCentre"..
+            // I'll look through and check whether any of the cost centres still have "NEWCOSTCENTRE"..
             //
             if (CheckForInvalidCostCentre(trvCostCentres.Nodes))
             {
@@ -716,7 +726,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 if (strNewDetailCostCentreCode != strOldDetailCostCentreCode)
                 {
-                    if (strOldDetailCostCentreCode.IndexOf(Catalog.GetString("NewCostCentre")) < 0) // If they're just changing this from the initial value, don't show warning.
+                    if (strOldDetailCostCentreCode.IndexOf(FnameForNewCostCentre) < 0) // If they're just changing this from the initial value, don't show warning.
                     {
                         if (MessageBox.Show(String.Format(Catalog.GetString(
                                         "You have changed the Cost Centre Code from '{0}' to '{1}'.\r\n\r\nPlease confirm that you want to rename this Cost Centre Code by choosing 'OK'."),

@@ -40,7 +40,7 @@ RootNode:
                 Row7: [chkDetailAccountActiveFlag]
         pnlForeignCurrency: {ControlsOrientation = horizontal}
             Controls: [chkDetailForeignCurrencyFlag, cmbDetailForeignCurrencyCode]
-        txtDetailAccountCode: {LabelWidth=150, OnLeave=ChangeAccountCodeValue}
+        txtDetailAccountCode: {LabelWidth=150, OnLeave=ChangeAccountCodeValue, CharacterCasing=Upper }
         btnRename:
         cmbDetailAccountType: {LabelWidth=150}
             OptionalValues: [Income, Expense, Asset, Equity, Liability]

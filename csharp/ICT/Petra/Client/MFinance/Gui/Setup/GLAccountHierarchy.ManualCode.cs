@@ -278,7 +278,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             txtDetailEngAccountCodeLongDesc.LostFocus += new EventHandler(AutoFillDescriptions);
 
             FIAmUpdating = false;
-            FNameForNewAccounts = Catalog.GetString("NewAccount");
+            FNameForNewAccounts = Catalog.GetString("NEWACCOUNT");
 
             // AlanP March 2013:  Use a try/catch block because nUnit testing on this screen does not support Drag/Drop in multi-threaded model
             // It is easier to do this than to configure all the different test execution methods to use STA
@@ -602,7 +602,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            if (strOldDetailAccountCode.IndexOf(Catalog.GetString(FNameForNewAccounts)) == 0)  // This is the first time the name is being set?
+            if (strOldDetailAccountCode.IndexOf(FNameForNewAccounts) == 0)  // This is the first time the name is being set?
             {
                 FPetraUtilsObject_ControlChanged(txtDetailAccountCode);
                 return;
