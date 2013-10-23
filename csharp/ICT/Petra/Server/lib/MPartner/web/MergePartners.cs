@@ -1090,7 +1090,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             TVerificationResultCollection Result;
 
-            /*** OFFICE SPECIFIC DATA ***/
+            // *** OFFICE SPECIFIC DATA ***
 
             PDataLabelValuePartnerTable DataLabelValuePartnerTable = PDataLabelValuePartnerAccess.LoadViaPPartnerPartnerKey(AFromPartnerKey,
                 ATransaction);
@@ -1133,7 +1133,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PDataLabelValueApplicationAccess.SubmitChanges(DataLabelValueApplicationTable, ATransaction, out Result);
             }
 
-            /*** PASSPORT ***/
+            // *** PASSPORT ***
 
             PmPassportDetailsTable PassportDetailsTable = PmPassportDetailsAccess.LoadViaPPerson(AFromPartnerKey, ATransaction);
 
@@ -1154,7 +1154,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PmPassportDetailsAccess.SubmitChanges(PassportDetailsTable, ATransaction, out Result);
             }
 
-            /*** DOCUMENTS ***/
+            // *** DOCUMENTS ***
 
             PmDocumentTable DocumentTable = PmDocumentAccess.LoadViaPPerson(AFromPartnerKey, ATransaction);
 
@@ -1168,7 +1168,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PmDocumentAccess.SubmitChanges(DocumentTable, ATransaction, out Result);
             }
 
-            /*** PAST EXPERIENCE ***/
+            // *** PAST EXPERIENCE ***
 
             PmPastExperienceTable PastExperienceTable = PmPastExperienceAccess.LoadViaPPerson(AFromPartnerKey, ATransaction);
 
@@ -1207,7 +1207,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PmPastExperienceAccess.SubmitChanges(PastExperienceTable, ATransaction, out Result);
             }
 
-            /*** ABILITY ***/
+            // *** ABILITY ***
 
             PmPersonAbilityTable PersonAbilityTable = PmPersonAbilityAccess.LoadViaPPerson(AFromPartnerKey, ATransaction);
 
@@ -1228,7 +1228,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PmPersonAbilityAccess.SubmitChanges(PersonAbilityTable, ATransaction, out Result);
             }
 
-            /*** PERSON EVALUATION ***/
+            // *** PERSON EVALUATION ***
 
             PmPersonEvaluationTable PersonEvaluationTable = PmPersonEvaluationAccess.LoadViaPPerson(AFromPartnerKey, ATransaction);
 
@@ -1251,7 +1251,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PmPersonEvaluationAccess.SubmitChanges(PersonEvaluationTable, ATransaction, out Result);
             }
 
-            /*** LANGUAGE ***/
+            // *** LANGUAGE ***
 
             PmPersonLanguageTable PersonLanguageTable = PmPersonLanguageAccess.LoadViaPPerson(AFromPartnerKey, ATransaction);
 
@@ -1274,7 +1274,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PmPersonLanguageAccess.SubmitChanges(PersonLanguageTable, ATransaction, out Result);
             }
 
-            /*** QUALIFICATION ***/
+            // *** QUALIFICATION ***
 
             PmPersonQualificationTable PersonQualificationTable = PmPersonQualificationAccess.LoadViaPPerson(AFromPartnerKey, ATransaction);
 
@@ -1297,7 +1297,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PmPersonQualificationAccess.SubmitChanges(PersonQualificationTable, ATransaction, out Result);
             }
 
-            /*** PERSONAL DATA ***/
+            // *** PERSONAL DATA ***
 
             PmPersonalDataTable FromPersonalDataTable = PmPersonalDataAccess.LoadViaPPerson(AFromPartnerKey, ATransaction);
 
@@ -1437,7 +1437,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PmPersonalDataAccess.SubmitChanges(ToPersonalDataTable, ATransaction, out Result);
             }
 
-            /*** SPECIAL NEED ***/
+            // *** SPECIAL NEED ***
 
             PmSpecialNeedTable FromSpecialNeedTable = PmSpecialNeedAccess.LoadViaPPerson(AFromPartnerKey, ATransaction);
 
@@ -1482,7 +1482,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PmSpecialNeedAccess.SubmitChanges(ToSpecialNeedTable, ATransaction, out Result);
             }
 
-            /*** STAFF DATA ***/
+            // *** STAFF DATA ***
 
             PmStaffDataTable StaffDataTable = PmStaffDataAccess.LoadViaPPerson(AFromPartnerKey, ATransaction);
 
@@ -1503,7 +1503,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             TVerificationResultCollection Result;
 
-            /*** JOB ASSIGNMENT (PERSON) ***/
+            // *** JOB ASSIGNMENT (PERSON) ***
 
             PmJobAssignmentTable FromJobAssignmentTable = PmJobAssignmentAccess.LoadViaPPartner(AFromPartnerKey, ATransaction);
             PmJobAssignmentTable ToJobAssignmentTable = PmJobAssignmentAccess.LoadViaPPartner(AToPartnerKey, ATransaction);
@@ -1548,7 +1548,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 return true;
             }
 
-            /*** JOB (UNIT) ***/
+            // *** JOB (UNIT) ***
 
             UmJobTable FromJobTable = UmJobAccess.LoadViaPUnit(AFromPartnerKey, ATransaction);
             UmJobTable ToJobTable = UmJobAccess.LoadViaPUnit(AToPartnerKey, ATransaction);
@@ -1586,7 +1586,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 UmJobAccess.SubmitChanges(FromJobTable, ATransaction, out Result);
             }
 
-            /*** JOB ABILITY (UNIT) ***/
+            // *** JOB ABILITY (UNIT) ***
 
             UmJobRequirementTable FromJobRequirementTable = UmJobRequirementAccess.LoadViaPUnit(AFromPartnerKey, ATransaction);
             UmJobRequirementTable ToJobRequirementTable = UmJobRequirementAccess.LoadViaPUnit(AToPartnerKey, ATransaction);
@@ -1625,7 +1625,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 UmJobRequirementAccess.SubmitChanges(FromJobRequirementTable, ATransaction, out Result);
             }
 
-            /*** JOB LANGUAGE (UNIT) ***/
+            // *** JOB LANGUAGE (UNIT) ***
 
             UmJobLanguageTable FromJobLanguageTable = UmJobLanguageAccess.LoadViaPUnit(AFromPartnerKey, ATransaction);
             UmJobLanguageTable ToJobLanguageTable = UmJobLanguageAccess.LoadViaPUnit(AToPartnerKey, ATransaction);
@@ -1664,7 +1664,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 UmJobLanguageAccess.SubmitChanges(FromJobLanguageTable, ATransaction, out Result);
             }
 
-            /*** JOB Qualification (UNIT) ***/
+            // *** JOB Qualification (UNIT) ***
 
             UmJobQualificationTable FromJobQualificationTable = UmJobQualificationAccess.LoadViaPUnit(AFromPartnerKey, ATransaction);
             UmJobQualificationTable ToJobQualificationTable = UmJobQualificationAccess.LoadViaPUnit(AToPartnerKey, ATransaction);
@@ -1936,7 +1936,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PcExtraCostAccess.SubmitChanges(ExtraCostTable, ATransaction, out Result);
             }
 
-            /*** UNIT ABILITY ***/
+            // *** UNIT ABILITY ***
 
             UmUnitAbilityTable UnitAbilityTable = UmUnitAbilityAccess.LoadViaPUnit(AFromPartnerKey, ATransaction);
 
@@ -1957,7 +1957,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 UmUnitAbilityAccess.SubmitChanges(UnitAbilityTable, ATransaction, out Result);
             }
 
-            /*** UNIT COSTS ***/
+            // *** UNIT COSTS ***
 
             UmUnitCostTable UnitCostTable = UmUnitCostAccess.LoadViaPUnit(AFromPartnerKey, ATransaction);
 
@@ -1978,7 +1978,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 UmUnitCostAccess.SubmitChanges(UnitCostTable, ATransaction, out Result);
             }
 
-            /*** UNIT EVALUATION ***/
+            // *** UNIT EVALUATION ***
 
             UmUnitEvaluationTable UnitEvaluationTable = UmUnitEvaluationAccess.LoadViaPUnit(AFromPartnerKey, ATransaction);
 
@@ -2001,7 +2001,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 UmUnitEvaluationAccess.SubmitChanges(UnitEvaluationTable, ATransaction, out Result);
             }
 
-            /*** UNIT LANGUAGE ***/
+            // *** UNIT LANGUAGE ***
 
             UmUnitLanguageTable UnitLanguageTable = UmUnitLanguageAccess.LoadViaPUnit(AFromPartnerKey, ATransaction);
 
@@ -2024,7 +2024,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 UmUnitLanguageAccess.SubmitChanges(UnitLanguageTable, ATransaction, out Result);
             }
 
-            /*** UNIT Structure (Parent) ***/
+            // *** UNIT Structure (Parent) ***
 
             return true;
         }
