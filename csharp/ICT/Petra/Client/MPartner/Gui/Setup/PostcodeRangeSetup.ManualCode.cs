@@ -107,7 +107,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
     }
 
     /// <summary>
-    /// Manages the opening of a new/showing of an existing Instance of the Partner Find Screen.
+    /// Manages the opening of a new/showing of an existing Instance of the Postcode Ranges Find Screen.
     /// </summary>
     public static class TPostcodeRangeSetupManager
     {

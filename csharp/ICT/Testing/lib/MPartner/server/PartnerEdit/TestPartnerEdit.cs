@@ -24,9 +24,10 @@
 using System;
 using System.Data;
 using System.Configuration;
+using System.IO;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
-using System.IO;
+using Tests.MPartner.shared.CreateTestPartnerData;
 using Ict.Testing.NUnitPetraServer;
 using Ict.Common;
 using Ict.Common.DB;
@@ -42,6 +43,7 @@ using Ict.Petra.Server.MHospitality.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
 using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
@@ -52,8 +54,6 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MHospitality.Data;
-using Ict.Petra.Shared.Interfaces.MPartner;
-using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 
 namespace Tests.MPartner.Server.PartnerEdit
 {
@@ -87,221 +87,6 @@ namespace Tests.MPartner.Server.PartnerEdit
             TPetraServerConnector.Disconnect();
         }
 
-        /// create a new partner
-        public static PPartnerRow CreateNewPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
-        {
-            PPartnerRow PartnerRow = AMainDS.PPartner.NewRowTyped();
-
-            // get a new partner key
-            Int64 newPartnerKey = -1;
-
-            do
-            {
-                newPartnerKey = TNewPartnerKey.GetNewPartnerKey(DomainManager.GSiteKey);
-                TNewPartnerKey.SubmitNewPartnerKey(DomainManager.GSiteKey, newPartnerKey, ref newPartnerKey);
-                PartnerRow.PartnerKey = newPartnerKey;
-            } while (newPartnerKey == -1);
-
-            PartnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
-
-            AMainDS.PPartner.Rows.Add(PartnerRow);
-
-            TLogging.Log("Creating new partner: " + PartnerRow.PartnerKey.ToString());
-
-            return PartnerRow;
-        }
-
-        /// create a new family
-        public static PPartnerRow CreateNewFamilyPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
-        {
-            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, AConnector);
-
-            PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
-            PartnerRow.PartnerShortName = PartnerRow.PartnerKey.ToString() + ", TestPartner, Mr";
-
-            PFamilyRow FamilyRow = AMainDS.PFamily.NewRowTyped();
-            FamilyRow.PartnerKey = PartnerRow.PartnerKey;
-            FamilyRow.FamilyName = PartnerRow.PartnerKey.ToString();
-            FamilyRow.FirstName = "TestPartner";
-            FamilyRow.Title = "Mr";
-            AMainDS.PFamily.Rows.Add(FamilyRow);
-
-            return PartnerRow;
-        }
-
-        /// create a new person
-        public static PPersonRow CreateNewPerson(PartnerEditTDS AMainDS,
-            TPartnerEditUIConnector AConnector,
-            Int64 AFamilyKey,
-            Int32 ALocationKey,
-            string AFirstName,
-            string ATitle,
-            int AFamilyID)
-        {
-            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, AConnector);
-
-            PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_PERSON;
-            PartnerRow.PartnerShortName = AFamilyKey.ToString() + ", " + AFirstName + ", " + ATitle;
-
-            PPersonRow PersonRow = AMainDS.PPerson.NewRowTyped();
-            PersonRow.PartnerKey = PartnerRow.PartnerKey;
-            PersonRow.FamilyKey = AFamilyKey;
-            PersonRow.FamilyName = AFamilyKey.ToString();
-            PersonRow.FirstName = AFirstName;
-            PersonRow.FamilyId = AFamilyID;
-            PersonRow.Title = ATitle;
-            AMainDS.PPerson.Rows.Add(PersonRow);
-
-            PPartnerLocationRow PartnerLocationRow = AMainDS.PPartnerLocation.NewRowTyped();
-            PartnerLocationRow.SiteKey = DomainManager.GSiteKey;
-            PartnerLocationRow.PartnerKey = PartnerRow.PartnerKey;
-            PartnerLocationRow.LocationKey = ALocationKey;
-            PartnerLocationRow.TelephoneNumber = PersonRow.PartnerKey.ToString();
-            AMainDS.PPartnerLocation.Rows.Add(PartnerLocationRow);
-
-            return PersonRow;
-        }
-
-        /// create a new unit
-        public static PPartnerRow CreateNewUnitPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
-        {
-            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, AConnector);
-
-            PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
-            PartnerRow.PartnerShortName = PartnerRow.PartnerKey.ToString() + ", TestUnit";
-
-            PUnitRow UnitRow = AMainDS.PUnit.NewRowTyped();
-            UnitRow.PartnerKey = PartnerRow.PartnerKey;
-            UnitRow.UnitName = "TestUnit";
-            AMainDS.PUnit.Rows.Add(UnitRow);
-
-            return PartnerRow;
-        }
-
-        /// create a new organisation
-        public static PPartnerRow CreateNewOrganisationPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
-        {
-            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, AConnector);
-
-            PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_ORGANISATION;
-            PartnerRow.PartnerShortName = PartnerRow.PartnerKey.ToString() + ", TestOrganisation";
-
-            POrganisationRow OrganisationRow = AMainDS.POrganisation.NewRowTyped();
-            OrganisationRow.PartnerKey = PartnerRow.PartnerKey;
-            OrganisationRow.OrganisationName = "TestOrganisation";
-            AMainDS.POrganisation.Rows.Add(OrganisationRow);
-
-            return PartnerRow;
-        }
-
-        /// create a new church
-        public static PPartnerRow CreateNewChurchPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
-        {
-            TVerificationResultCollection VerificationResult;
-
-            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, AConnector);
-
-            // make sure denomation "UNKNOWN" exists as this is the default value
-            if (!PDenominationAccess.Exists("UNKNOWN", DBAccess.GDBAccessObj.Transaction))
-            {
-                PDenominationTable DenominationTable = new PDenominationTable();
-                PDenominationRow DenominationRow = DenominationTable.NewRowTyped();
-                DenominationRow.DenominationCode = "UNKNOWN";
-                DenominationRow.DenominationName = "Unknown";
-                DenominationTable.Rows.Add(DenominationRow);
-                PDenominationAccess.SubmitChanges(DenominationTable, DBAccess.GDBAccessObj.Transaction, out VerificationResult);
-            }
-
-            PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_CHURCH;
-            PartnerRow.PartnerShortName = PartnerRow.PartnerKey.ToString() + ", TestChurch";
-
-            PChurchRow ChurchRow = AMainDS.PChurch.NewRowTyped();
-            ChurchRow.PartnerKey = PartnerRow.PartnerKey;
-            ChurchRow.ChurchName = "TestChurch";
-            ChurchRow.DenominationCode = "UNKNOWN";
-            AMainDS.PChurch.Rows.Add(ChurchRow);
-
-            return PartnerRow;
-        }
-
-        /// create a new bank
-        public static PPartnerRow CreateNewBankPartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
-        {
-            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, AConnector);
-
-            PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_BANK;
-            PartnerRow.PartnerShortName = PartnerRow.PartnerKey.ToString() + ", TestBank";
-
-            PBankRow BankRow = AMainDS.PBank.NewRowTyped();
-            BankRow.PartnerKey = PartnerRow.PartnerKey;
-            BankRow.BranchName = "TestBank";
-            AMainDS.PBank.Rows.Add(BankRow);
-
-            return PartnerRow;
-        }
-
-        /// create a new venue
-        public static PPartnerRow CreateNewVenuePartner(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
-        {
-            PPartnerRow PartnerRow = CreateNewPartner(AMainDS, AConnector);
-
-            PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_VENUE;
-            PartnerRow.PartnerShortName = PartnerRow.PartnerKey.ToString() + ", TestVenue";
-
-            PVenueRow VenueRow = AMainDS.PVenue.NewRowTyped();
-            VenueRow.PartnerKey = PartnerRow.PartnerKey;
-            VenueRow.VenueCode = "TEST" + PartnerRow.PartnerKey.ToString();
-            VenueRow.VenueName = "TestVenue" + PartnerRow.PartnerKey.ToString();
-            AMainDS.PVenue.Rows.Add(VenueRow);
-
-            return PartnerRow;
-        }
-
-        /// create a new family with persons
-        public static void CreateFamilyWithPersonRecords(PartnerEditTDS AMainDS, TPartnerEditUIConnector AConnector)
-        {
-            PPartnerRow PartnerRow = CreateNewFamilyPartner(AMainDS, AConnector);
-
-            CreateNewLocation(PartnerRow.PartnerKey, AMainDS);
-
-            CreateNewPerson(AMainDS,
-                AConnector,
-                PartnerRow.PartnerKey,
-                AMainDS.PLocation[0].LocationKey,
-                "Adam",
-                "Mr",
-                0);
-            CreateNewPerson(AMainDS,
-                AConnector,
-                PartnerRow.PartnerKey,
-                AMainDS.PLocation[0].LocationKey,
-                "Eve",
-                "Mrs",
-                1);
-        }
-
-        /// create a new location
-        public static void CreateNewLocation(Int64 APartnerKey, PartnerEditTDS AMainDS)
-        {
-            // avoid duplicate addresses: StreetName contains the partner key
-            PLocationRow LocationRow = AMainDS.PLocation.NewRowTyped();
-
-            LocationRow.SiteKey = DomainManager.GSiteKey;
-            LocationRow.LocationKey = -1;
-            LocationRow.StreetName = APartnerKey.ToString() + " Nowhere Lane";
-            LocationRow.PostalCode = "LO2 2CX";
-            LocationRow.City = "London";
-            LocationRow.CountryCode = "99";
-            AMainDS.PLocation.Rows.Add(LocationRow);
-
-            PPartnerLocationRow PartnerLocationRow = AMainDS.PPartnerLocation.NewRowTyped();
-            PartnerLocationRow.SiteKey = LocationRow.SiteKey;
-            PartnerLocationRow.PartnerKey = APartnerKey;
-            PartnerLocationRow.LocationKey = LocationRow.LocationKey;
-            PartnerLocationRow.TelephoneNumber = APartnerKey.ToString();
-            AMainDS.PPartnerLocation.Rows.Add(PartnerLocationRow);
-        }
-
         /// <summary>
         /// create a new partner and save it with a new location
         /// </summary>
@@ -312,9 +97,9 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            PPartnerRow PartnerRow = CreateNewFamilyPartner(MainDS, connector);
+            PPartnerRow PartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
 
-            CreateNewLocation(PartnerRow.PartnerKey, MainDS);
+            TCreateTestPartnerData.CreateNewLocation(PartnerRow.PartnerKey, MainDS);
 
             DataSet ResponseDS = new PartnerEditTDS();
             TVerificationResultCollection VerificationResult;
@@ -345,7 +130,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            PPartnerRow PartnerRow = CreateNewFamilyPartner(MainDS, connector);
+            PPartnerRow PartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
 
             PPartnerLocationRow PartnerLocationRow = MainDS.PPartnerLocation.NewRowTyped();
 
@@ -368,7 +153,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "Create a partner with location 0");
 
-            CreateNewLocation(PartnerRow.PartnerKey, MainDS);
+            TCreateTestPartnerData.CreateNewLocation(PartnerRow.PartnerKey, MainDS);
 
             // remove location 0, same is done in csharp\ICT\Petra\Client\MCommon\logic\UC_PartnerAddresses.cs TUCPartnerAddressesLogic::AddRecord
             // Check if record with PartnerLocation.LocationKey = 0 is around > delete it
@@ -416,9 +201,9 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            PPartnerRow PartnerRow = CreateNewFamilyPartner(MainDS, connector);
+            PPartnerRow PartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
 
-            CreateNewLocation(PartnerRow.PartnerKey, MainDS);
+            TCreateTestPartnerData.CreateNewLocation(PartnerRow.PartnerKey, MainDS);
 
             DataSet ResponseDS = new PartnerEditTDS();
             TVerificationResultCollection VerificationResult;
@@ -437,7 +222,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             MainDS = new PartnerEditTDS();
 
-            PartnerRow = CreateNewFamilyPartner(MainDS, connector);
+            PartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
 
             PPartnerLocationRow PartnerLocationRow = MainDS.PPartnerLocation.NewRowTyped();
             PartnerLocationRow.SiteKey = DomainManager.GSiteKey;
@@ -472,7 +257,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            CreateFamilyWithPersonRecords(MainDS, connector);
+            TCreateTestPartnerData.CreateFamilyWithTwoPersonRecords(MainDS);
 
             DataSet ResponseDS = new PartnerEditTDS();
             TVerificationResultCollection VerificationResult;
@@ -571,7 +356,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            FamilyPartnerRow = CreateNewFamilyPartner(MainDS, connector);
+            FamilyPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "Create family record");
 
@@ -588,12 +373,12 @@ namespace Tests.MPartner.Server.PartnerEdit
             // add a person to the family which means the family is not allowed to be deleted any longer
             FamilyRow = (PFamilyRow)MainDS.PFamily.Rows[0];
             FamilyRow.FamilyMembers = true;
-            CreateNewLocation(FamilyPartnerRow.PartnerKey, MainDS);
+            TCreateTestPartnerData.CreateNewLocation(FamilyPartnerRow.PartnerKey, MainDS);
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create new location");
 
             PartnerEditTDS PersonDS = new PartnerEditTDS();
-            PersonRow = CreateNewPerson(PersonDS, connector, FamilyPartnerRow.PartnerKey,
+            PersonRow = TCreateTestPartnerData.CreateNewPerson(PersonDS, FamilyPartnerRow.PartnerKey,
                 MainDS.PLocation[0].LocationKey, "Adam", "Mr", 0);
             PersonRow.FamilyKey = FamilyPartnerRow.PartnerKey;
             result = connector.SubmitChanges(ref PersonDS, ref ResponseDS, out VerificationResult);
@@ -610,7 +395,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
 
             // create new family and create subscription given as gift from this family: not allowed to be deleted
-            FamilyPartnerRow = CreateNewFamilyPartner(MainDS, connector);
+            FamilyPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
             PPublicationTable PublicationTable = PPublicationAccess.LoadByPrimaryKey("TESTPUBLICATION", DBAccess.GDBAccessObj.Transaction);
 
             if (PublicationTable.Count == 0)
@@ -672,7 +457,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.IsTrue(!CanDeletePartner);
 
             // now test actual deletion of Family partner
-            FamilyPartnerRow = CreateNewFamilyPartner(MainDS, connector);
+            FamilyPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
             PartnerKey = FamilyPartnerRow.PartnerKey;
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create family record");
@@ -705,10 +490,9 @@ namespace Tests.MPartner.Server.PartnerEdit
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             // create new family, location and person
-            FamilyPartnerRow = CreateNewFamilyPartner(MainDS, connector);
-            CreateNewLocation(FamilyPartnerRow.PartnerKey, MainDS);
-            PersonRow = CreateNewPerson(MainDS,
-                connector,
+            FamilyPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+            TCreateTestPartnerData.CreateNewLocation(FamilyPartnerRow.PartnerKey, MainDS);
+            PersonRow = TCreateTestPartnerData.CreateNewPerson(MainDS,
                 FamilyPartnerRow.PartnerKey,
                 MainDS.PLocation[0].LocationKey,
                 "Mike",
@@ -729,7 +513,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.IsTrue(CanDeletePartner);
 
             // add a commitment for the person which means the person is not allowed to be deleted any longer
-            UnitPartnerRow = CreateNewUnitPartner(MainDS, connector);
+            UnitPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
             PmStaffDataTable CommitmentTable = new PmStaffDataTable();
             PmStaffDataRow CommitmentRow = CommitmentTable.NewRowTyped();
             CommitmentRow.Key = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_staff_data));
@@ -756,10 +540,9 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.IsTrue(!CanDeletePartner);
 
             // now test actual deletion of Person partner
-            FamilyPartnerRow = CreateNewFamilyPartner(MainDS, connector);
-            CreateNewLocation(FamilyPartnerRow.PartnerKey, MainDS);
-            PersonRow = CreateNewPerson(MainDS,
-                connector,
+            FamilyPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+            TCreateTestPartnerData.CreateNewLocation(FamilyPartnerRow.PartnerKey, MainDS);
+            PersonRow = TCreateTestPartnerData.CreateNewPerson(MainDS,
                 FamilyPartnerRow.PartnerKey,
                 MainDS.PLocation[0].LocationKey,
                 "Mary",
@@ -796,7 +579,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            UnitPartnerRow = CreateNewUnitPartner(MainDS, connector);
+            UnitPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
             // check if Unit partner can be deleted (still needs to be possible at this point)
@@ -825,7 +608,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.IsTrue(!CanDeletePartner);
 
             // now test actual deletion of Unit partner
-            UnitPartnerRow = CreateNewUnitPartner(MainDS, connector);
+            UnitPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
             PartnerKey = UnitPartnerRow.PartnerKey;
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create unit record for deletion");
@@ -856,7 +639,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            ChurchPartnerRow = CreateNewChurchPartner(MainDS, connector);
+            ChurchPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create church record");
 
@@ -871,7 +654,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.IsTrue(CanDeletePartner);
 
             // create family partner and relationship to church partner
-            PartnerRow = CreateNewFamilyPartner(MainDS, connector);
+            PartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
             PPartnerRelationshipRow RelationshipRow = MainDS.PPartnerRelationship.NewRowTyped();
 
             RelationshipRow.PartnerKey = ChurchPartnerRow.PartnerKey;
@@ -900,7 +683,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.IsTrue(!CanDeletePartner);
 
             // now test actual deletion of church partner
-            ChurchPartnerRow = CreateNewChurchPartner(MainDS, connector);
+            ChurchPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
             PartnerKey = ChurchPartnerRow.PartnerKey;
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create church record for deletion");
@@ -930,7 +713,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            OrganisationPartnerRow = CreateNewOrganisationPartner(MainDS, connector);
+            OrganisationPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create organisation record");
 
@@ -970,7 +753,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            BankPartnerRow = CreateNewBankPartner(MainDS, connector);
+            BankPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create bank record");
 
@@ -1005,7 +788,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.IsTrue(!CanDeletePartner);
 
             // now test actual deletion of venue partner
-            BankPartnerRow = CreateNewBankPartner(MainDS, connector);
+            BankPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
             PartnerKey = BankPartnerRow.PartnerKey;
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create bank partner for deletion");
@@ -1035,7 +818,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            VenuePartnerRow = CreateNewVenuePartner(MainDS, connector);
+            VenuePartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create venue record");
 
@@ -1069,7 +852,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             Assert.IsTrue(!CanDeletePartner);
 
             // now test actual deletion of venue partner
-            VenuePartnerRow = CreateNewVenuePartner(MainDS, connector);
+            VenuePartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
             PartnerKey = VenuePartnerRow.PartnerKey;
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create venue record for deletion");

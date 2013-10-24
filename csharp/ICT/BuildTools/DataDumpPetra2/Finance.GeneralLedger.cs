@@ -136,26 +136,16 @@ namespace Ict.Tools.DataDumpPetra2
         {
             string BudgetTypeCode = GetValue(AColumnNames, ANewRow, "a_budget_type_code_c");
 
-            if (BudgetTypeCode == "Same")
-            {
-                BudgetTypeCode = "SAME";
-            }
-            else if (BudgetTypeCode == "Split")
-            {
-                BudgetTypeCode = "SPLIT";
-            }
-            else if (BudgetTypeCode == "Adhoc")
-            {
-                BudgetTypeCode = "ADHOC";
-            }
-            else if (BudgetTypeCode == "Inf.Base")
+            if (BudgetTypeCode == "INF.BASE")
             {
                 BudgetTypeCode = "INFLATE_BASE";
             }
-            else if (BudgetTypeCode == "Inf. n")
+            else if (BudgetTypeCode == "INF. N")
             {
                 BudgetTypeCode = "INFLATE_N";
             }
+
+            SetValue(AColumnNames, ref ANewRow, "a_budget_type_code_c", BudgetTypeCode);
 
             return true;
         }
