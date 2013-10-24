@@ -330,19 +330,21 @@ namespace Ict.Petra.Shared.MReporting
         {
 //
 // I wonder why we care about this "duplicate code"? Certainly this code generates lots of warnings, but reports are still generated OK:
+
 /*
-            foreach (TResult existingElement in results)
-            {
-                if (existingElement.code == code)
-                {
-                    TLogging.Log("Warning: TResult.AddRow: duplicate row codes! there is already a row with code " +
-                        code);
-                    // throw new Exception("TResult.AddRow: duplicate row codes! there is already a row with code " +
-                    //    code);
-                }
-            }
-*/
+ *          foreach (TResult existingElement in results)
+ *          {
+ *              if (existingElement.code == code)
+ *              {
+ *                  TLogging.Log("Warning: TResult.AddRow: duplicate row codes! there is already a row with code " +
+ *                      code);
+ *                  // throw new Exception("TResult.AddRow: duplicate row codes! there is already a row with code " +
+ *                  //    code);
+ *              }
+ *          }
+ */
             TResult element = new TResult(masterRow, childRow, display, depth, code, condition, debit_credit_indicator, header, descr, column);
+
             results.Add(element);
             return element;
         }

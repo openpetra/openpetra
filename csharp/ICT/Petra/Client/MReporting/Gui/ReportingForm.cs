@@ -601,9 +601,10 @@ namespace Ict.Petra.Client.MReporting.Gui
                 if (ACalculator.GenerateResultRemoteClient())
                 {
                     TMyUpdateDelegate myDelegate = @ReportCalculationSuccess;
+
                     if (ACallerForm.IsHandleCreated)
                     {
-                        ACallerForm.Invoke((System.Delegate)new TMyUpdateDelegate(
+                        ACallerForm.Invoke((System.Delegate) new TMyUpdateDelegate(
                                 myDelegate), new object[] { ACalculator, ACallerForm, AReportName, AWrapColumn });
                         TLogging.Log("", TLoggingType.ToStatusBar);
                     }
@@ -612,7 +613,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                         MessageBox.Show(
                             Catalog.GetString("Results cannot be shown because form was closed."),
                             Catalog.GetString("Generate Report"),
-                            MessageBoxButtons.OK,MessageBoxIcon.Information);
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
             }

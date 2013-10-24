@@ -372,7 +372,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
-
         private void ShowDetailsManual(ACostCentreRow ARow)
         {
             if (ARow == null)
@@ -432,6 +431,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 lbl += " (" + ACostCentreName + ")";
             }
+
             return lbl;
         }
 
@@ -441,6 +441,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 return "(Deleted)";
             }
+
             return NodeLabel(ADetailRow.CostCentreCode, ADetailRow.CostCentreName);
         }
 
@@ -542,12 +543,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 Int32 countNewCostCentre = 0;
                 string newCostCentreName = FnameForNewCostCentre;
+
                 if (FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber, newCostCentreName }) != null)
                 {
                     while (FMainDS.ACostCentre.Rows.Find(new object[] { FLedgerNumber, newCostCentreName + countNewCostCentre.ToString() }) != null)
                     {
                         countNewCostCentre++;
                     }
+
                     FnameForNewCostCentre += countNewCostCentre.ToString();
                 }
 
@@ -729,7 +732,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     if (strOldDetailCostCentreCode.IndexOf(FnameForNewCostCentre) < 0) // If they're just changing this from the initial value, don't show warning.
                     {
                         if (MessageBox.Show(String.Format(Catalog.GetString(
-                                        "You have changed the Cost Centre Code from '{0}' to '{1}'.\r\n\r\n" + 
+                                        "You have changed the Cost Centre Code from '{0}' to '{1}'.\r\n\r\n" +
                                         "Please confirm that you want to rename this Cost Centre Code by choosing 'OK'.\r\n\r\n" +
                                         "(Renaming will take a few moments, then the form will be re-loaded.)"),
                                     strOldDetailCostCentreCode,
@@ -859,8 +862,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             }
                         }
                     } // if changeAccepted
+
                     this.UseWaitCursor = false;
                 } // if changed
+
             }
 
             return changeAccepted;

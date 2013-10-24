@@ -354,6 +354,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteStringQuoted(giftSummary.BankAccountCode);
             WriteCurrency(0);
             WriteDate(FDateForSummary);
+
             if (FUseBaseCurrency)
             {
                 WriteStringQuoted(FMainDS.ALedger[0].BaseCurrency);
@@ -362,6 +363,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             {
                 WriteStringQuoted(giftSummary.CurrencyCode);
             }
+
             WriteGeneralNumber(giftSummary.ExchangeRateToBase);
             WriteStringQuoted(giftSummary.BankCostCentre);
             WriteStringQuoted(giftSummary.GiftType, true);
@@ -372,6 +374,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteStringQuoted("B");
             WriteStringQuoted(giftBatch.BatchDescription);
             WriteStringQuoted(giftBatch.BankAccountCode);
+
             if (FUseBaseCurrency)
             {
                 WriteCurrency(giftBatch.HashTotal * giftBatch.ExchangeRateToBase);
@@ -380,6 +383,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             {
                 WriteCurrency(giftBatch.HashTotal);
             }
+
             WriteDate(giftBatch.GlEffectiveDate);
 
             if (FUseBaseCurrency)
@@ -390,6 +394,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             {
                 WriteStringQuoted(giftBatch.CurrencyCode);
             }
+
             WriteGeneralNumber(giftBatch.ExchangeRateToBase);
             WriteStringQuoted(giftBatch.BankCostCentre);
             WriteStringQuoted(giftBatch.GiftType, true);

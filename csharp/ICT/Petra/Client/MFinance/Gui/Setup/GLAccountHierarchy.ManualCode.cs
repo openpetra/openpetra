@@ -791,7 +791,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (!NodeDetails.CanDelete.HasValue)
             {
-                MessageBox.Show(Catalog.GetString("Fault: CanDelete status is unknown."), Catalog.GetString("Delete Account"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Catalog.GetString("Fault: CanDelete status is unknown."), Catalog.GetString(
+                        "Delete Account"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -822,6 +823,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     DataView DeleteThese = new DataView(FMainDS.AAnalysisAttribute);
                     DeleteThese.RowFilter = String.Format("a_ledger_number_i={0} AND a_account_code_c='{1}'",
                         FLedgerNumber, AccountCode);
+
                     foreach (DataRowView rv in DeleteThese)
                     {
                         DataRow TempRow = rv.Row;
@@ -838,7 +840,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 DataView AHD_stillInUse = new DataView(FMainDS.AAccountHierarchyDetail);
                 AHD_stillInUse.RowFilter = String.Format("a_ledger_number_i={0} AND a_reporting_account_code_c='{1}'",
-                        FLedgerNumber, AccountCode);
+                    FLedgerNumber, AccountCode);
+
                 if (AHD_stillInUse.Count == 0)
                 {
                     AAccountRow AccountToBeDeleted = (AAccountRow)FMainDS.AAccount.Rows.Find(
@@ -848,8 +851,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 else
                 {
                     MessageBox.Show(String.Format(
-                        Catalog.GetString("The account {0} is removed from the {1} hierarchy, but not deleted, since it remains part of another heirarchy."), AccountCode, FSelectedHierarchy), 
-                        Catalog.GetString("Delete Account"), 
+                            Catalog.GetString(
+                                "The account {0} is removed from the {1} hierarchy, but not deleted, since it remains part of another heirarchy."),
+                            AccountCode,
+                            FSelectedHierarchy),
+                        Catalog.GetString("Delete Account"),
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
@@ -858,7 +864,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 tbbDeleteUnusedAccount.Enabled = (NodeDetails.CanDelete.HasValue ? NodeDetails.CanDelete.Value : false);
                 AAccountRow AccountParent = NodeDetails.AccountRow;
                 AHD_stillInUse.RowFilter = String.Format("a_ledger_number_i={0} AND a_account_code_to_report_to_c='{1}'",
-                        FLedgerNumber, AccountParent.AccountCode);
+                    FLedgerNumber, AccountParent.AccountCode);
 
                 if (AHD_stillInUse.Count == 0)  // No-one now reports to this account, so I can mark it as "Posting"
                 {
@@ -1049,7 +1055,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     } // if changeAccepted
 
                     this.Cursor = Cursors.Default;
-
                 } // if changed
 
             } // if not handling the same change as before (prevents this method running several times for a single change!)

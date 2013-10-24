@@ -100,12 +100,13 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
         {
             //
             // Arrange
-            //        
+            //
             decimal Amount = 399.0m;
             decimal APAccountBalanceBefore;
             decimal ABankAccountBefore;
             decimal AExpAccountBefore;
             TVerificationResultCollection VerificationResult;
+
             List <int>DocumentIDs;
             int PaymentNumber;
             AAPInfos APInfos;
@@ -118,9 +119,9 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             //
             // Act: Pay the AP document
             //
-            VerificationResult = PayAPDocument(APInfos.ApDS.AApDocument[0].ApDocumentId, Amount, 
+            VerificationResult = PayAPDocument(APInfos.ApDS.AApDocument[0].ApDocumentId, Amount,
                 APInfos.BankAccount, APInfos.CurrencyCode, APInfos.PeriodEndDate, out PaymentNumber);
-            Assert.That(VerificationResult, Is.Empty);  // Guard Assert  
+            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
 
             // Save the current amount on the AP account
             decimal APAccountBalanceAfter = new TGet_GLM_Info(FLedgerNumber,
@@ -128,9 +129,9 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             decimal BankAccountAfter = new TGet_GLM_Info(FLedgerNumber,
                 APInfos.BankAccount, APInfos.CostCentreCode).YtdActual;
 
-            // 
+            //
             // Primary Assert: Paying OK?
-            // 
+            //
             // Check the amount on the AP account
             Assert.AreEqual(0.0m, APAccountBalanceAfter - APAccountBalanceBefore, "after paying the invoice, the AP account should be cleared");
             Assert.AreEqual((-1.0m) * Amount, BankAccountAfter - ABankAccountBefore, "after paying the invoice, the bank account should be credited");
@@ -146,7 +147,8 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             // Arrange
             //
             int PaymentNumber;
-            List<int> DocumentIDs;
+
+            List <int>DocumentIDs;
             decimal APAccountBalanceBefore;
             decimal BankAccountBefore;
             decimal RevalAccountBefore;
@@ -172,14 +174,15 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             decimal RevalAccountBefore;
             TVerificationResultCollection VerificationResult;
             int PaymentNumber;
-            List<int> DocumentIDs;
+
+            List <int>DocumentIDs;
             AAPInfos APInfos;
 
             CommonNUnitFunctions.ResetDatabase();
 
             // Post and pay a document with a foreign currency supplier
             APInfos = PostAndPayForeignSupplierAPDocument("Test Reverse", out PaymentNumber, out DocumentIDs,
-                 out APAccountBalanceBefore, out BankAccountBefore, out RevalAccountBefore);
+                out APAccountBalanceBefore, out BankAccountBefore, out RevalAccountBefore);
 
 
             //
@@ -210,20 +213,29 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                 "After paying then reversing, the Forex Gains/Losses Account account should be as before.");
         }
 
- 
         #region Helper Methods
 
         private AAPInfos APTestsArrangement(Int64 APartnerKey, decimal AAmount, decimal? AExchangeRatePosting,
-             string ADocumentCode, string ANarrative)
+            string ADocumentCode, string ANarrative)
         {
             AAPInfos APInfos = new AAPInfos();
 
-            TVerificationResultCollection VerificationResult = CreateAPDocument(APartnerKey, AAmount, AExchangeRatePosting, ADocumentCode, ANarrative, out APInfos.ApDS);           
+            TVerificationResultCollection VerificationResult = CreateAPDocument(APartnerKey,
+                AAmount,
+                AExchangeRatePosting,
+                ADocumentCode,
+                ANarrative,
+                out APInfos.ApDS);
+
             Assert.That(VerificationResult, Is.Empty);  // Guard Assert
 
             GetLedgerInfo(out APInfos.PeriodStartDate, out APInfos.PeriodEndDate, out APInfos.ForexGainsLossesAccount);
 
-            SetupSupplierAndDocumentInfo(APInfos.ApDS, out APInfos.BankAccount, out APInfos.CurrencyCode, out APInfos.ApAccountCode, out APInfos.CostCentreCode);
+            SetupSupplierAndDocumentInfo(APInfos.ApDS,
+                out APInfos.BankAccount,
+                out APInfos.CurrencyCode,
+                out APInfos.ApAccountCode,
+                out APInfos.CostCentreCode);
 
             return APInfos;
         }
@@ -235,16 +247,16 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             AForexGainsLossesAccount = LedgerTable[0].ForexGainsLossesAccount;
 
-            TFinancialYear.GetStartAndEndDateOfPeriod(FLedgerNumber, LedgerTable[0].CurrentPeriod, out APeriodStartDate, out APeriodEndDate, null);            
+            TFinancialYear.GetStartAndEndDateOfPeriod(FLedgerNumber, LedgerTable[0].CurrentPeriod, out APeriodStartDate, out APeriodEndDate, null);
         }
 
-        private void SetupSupplierAndDocumentInfo(AccountsPayableTDS AMainDS, out string ABankAccount, out string ACurrencyCode, 
+        private void SetupSupplierAndDocumentInfo(AccountsPayableTDS AMainDS, out string ABankAccount, out string ACurrencyCode,
             out string AApAccountCode, out string ACostCentreCode)
         {
             ABankAccount = AMainDS.AApSupplier[0].DefaultBankAccount;
             ACurrencyCode = AMainDS.AApDocument[0].CurrencyCode;
             AApAccountCode = AMainDS.AApDocument[0].ApAccount;
-            ACostCentreCode = AMainDS.AApDocumentDetail[0].CostCentreCode;           
+            ACostCentreCode = AMainDS.AApDocumentDetail[0].CostCentreCode;
         }
 
         /// <summary>
@@ -257,8 +269,8 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
         /// <param name="ANarrative"></param>
         /// <param name="AMainDS"></param>
         /// <returns></returns>
-        private TVerificationResultCollection CreateAPDocument(Int64 APartnerKey, decimal AAmount, decimal? AExchangeRatePosting, 
-           string ADocumentCode, string ANarrative, out AccountsPayableTDS AMainDS)
+        private TVerificationResultCollection CreateAPDocument(Int64 APartnerKey, decimal AAmount, decimal? AExchangeRatePosting,
+            string ADocumentCode, string ANarrative, out AccountsPayableTDS AMainDS)
         {
             TVerificationResultCollection VerificationResult;
 
@@ -280,8 +292,8 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             AMainDS.AApDocument[0].TotalAmount = AAmount;
             AMainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
             AMainDS.AApDocumentDetail[0].Narrative = ANarrative;
-            
-            if (AExchangeRatePosting.HasValue) 
+
+            if (AExchangeRatePosting.HasValue)
             {
                 AMainDS.AApDocument[0].ExchangeRateToBase = AExchangeRatePosting.Value;
             }
@@ -304,9 +316,9 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             string AssertFailMessage = AReversal ? "Failed to post AP document reversal: " : "Problems posting AP document: ";
             TVerificationResultCollection VerificationResult;
 
-            if (!AReversal) 
+            if (!AReversal)
             {
-                ADocumentIds.Add(AMainDS.AApDocument[0].ApDocumentId);    
+                ADocumentIds.Add(AMainDS.AApDocument[0].ApDocumentId);
             }
 
             if (!TAPTransactionWebConnector.PostAPDocuments(FLedgerNumber,
@@ -323,12 +335,13 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             return VerificationResult;
         }
 
-        private AAPInfos PostSimpleAPDocument(decimal AAmount, string ADocumentCode, string ANarrative, 
-            out decimal AAPAccountBalanceBefore, out decimal ABankAccountBefore, out decimal AExpAccountBefore, 
-            out List <int> ADocumentIds)
+        private AAPInfos PostSimpleAPDocument(decimal AAmount, string ADocumentCode, string ANarrative,
+            out decimal AAPAccountBalanceBefore, out decimal ABankAccountBefore, out decimal AExpAccountBefore,
+            out List <int>ADocumentIds)
         {
             TVerificationResultCollection VerificationResult;
-            ADocumentIds = new List<int>();
+
+            ADocumentIds = new List <int>();
 
             AAPInfos APInfos = APTestsArrangement(SUPPLIER_PARTNER_KEY, AAmount, null, ADocumentCode, ANarrative);
 
@@ -344,8 +357,8 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             VerificationResult = PostAPDocument(APInfos.ApDS, APInfos.PeriodStartDate, ref ADocumentIds);
             Assert.That(VerificationResult, Is.Empty);  // Guard Assert
-            
-            // 
+
+            //
             // Guard Assert: Posting OK?
             //
             decimal ExpAccountAfter = new TGet_GLM_Info(FLedgerNumber,
@@ -358,14 +371,15 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
         }
 
         private AAPInfos PostForeignSupplierAPDocument(decimal AAmount, decimal AExchangeRatePosting, string ADocumentCode, string ANarrative,
-            out decimal AAPAccountBalanceBefore, out decimal ABankAccountBefore, out decimal AExpAccountBefore, 
-            out decimal ARevalAccountBefore, out List <int> ADocumentIds)
+            out decimal AAPAccountBalanceBefore, out decimal ABankAccountBefore, out decimal AExpAccountBefore,
+            out decimal ARevalAccountBefore, out List <int>ADocumentIds)
         {
             TVerificationResultCollection VerificationResult;
-            ADocumentIds = new List<int>();
+
+            ADocumentIds = new List <int>();
 
             AAPInfos APInfos = APTestsArrangement(SUPPLIER_FOREIGN_PARTNER_KEY, AAmount, AExchangeRatePosting, ADocumentCode, ANarrative);
-            
+
             // Save the current amount on the AP account
             AAPAccountBalanceBefore = new TGet_GLM_Info(FLedgerNumber,
                 APInfos.ApAccountCode, APInfos.CostCentreCode).YtdActual;
@@ -395,7 +409,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             return APInfos;
         }
 
-        private AAPInfos PostAndPayForeignSupplierAPDocument(string ADocumentCode, out int APaymentNumber, out List<int> ADocumentIDs,
+        private AAPInfos PostAndPayForeignSupplierAPDocument(string ADocumentCode, out int APaymentNumber, out List <int>ADocumentIDs,
             out decimal AAPAccountBalanceBefore, out decimal ABankAccountBefore, out decimal ARevalAccountBefore)
         {
             decimal Amount = 100.0m;
@@ -406,12 +420,12 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             AAPInfos APInfos;
 
             APInfos = PostForeignSupplierAPDocument(Amount, ExchangeRatePosting, ADocumentCode, "Detail Item",
-                 out AAPAccountBalanceBefore, out ABankAccountBefore, out ExpAccountBefore, out ARevalAccountBefore, out ADocumentIDs);
+                out AAPAccountBalanceBefore, out ABankAccountBefore, out ExpAccountBefore, out ARevalAccountBefore, out ADocumentIDs);
 
             //
             // Pay the AP document
             //
-            VerificationResult = PayAPDocument(APInfos.ApDS.AApDocument[0].ApDocumentId, Amount, 
+            VerificationResult = PayAPDocument(APInfos.ApDS.AApDocument[0].ApDocumentId, Amount,
                 APInfos.BankAccount, APInfos.CurrencyCode, APInfos.PeriodEndDate, out APaymentNumber, ExchangeRatePayment);
             Assert.That(VerificationResult, Is.Empty);  // Guard Assert
 
@@ -446,15 +460,16 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
             AApPaymentRow Payment = MainDS.AApPayment.NewRowTyped();
+
             Payment.LedgerNumber = FLedgerNumber;
             Payment.PaymentNumber = -1;
             Payment.Amount = AAmount;
             Payment.BankAccount = ABankAccount;
             Payment.CurrencyCode = ACurrencyCode;
 
-            if (AExchangeRatePayment.HasValue) 
+            if (AExchangeRatePayment.HasValue)
             {
-                Payment.ExchangeRateToBase = AExchangeRatePayment.Value;    
+                Payment.ExchangeRateToBase = AExchangeRatePayment.Value;
             }
 
             MainDS.AApPayment.Rows.Add(Payment);
@@ -479,8 +494,8 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             return VerificationResult;
         }
 
-        private TVerificationResultCollection ReversePayment(int APaymentNumber, DateTime APeriodEndDate, 
-            List<int> ADocumentIds, AccountsPayableTDS AApDS)
+        private TVerificationResultCollection ReversePayment(int APaymentNumber, DateTime APeriodEndDate,
+            List <int>ADocumentIds, AccountsPayableTDS AApDS)
         {
             TVerificationResultCollection VerificationResult;
 

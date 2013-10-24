@@ -146,7 +146,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
             String ReportsTo = cmbReportsTo.Text;
+
             if (ReportsTo == "")
             {
                 MessageBox.Show(String.Format(Catalog.GetString("Error - Select a Cost Centre that {0} will report to."), NewCCCode),
@@ -182,6 +184,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             btnLink.Enabled = ((txtCostCentre.ReadOnly == false) && (txtCostCentre.Text != ""));
             FLocalCostCentres.DefaultView.RowFilter = "CostCentreCode='" + txtCostCentre.Text + "'";
             cmbReportsTo.Enabled = (FLocalCostCentres.DefaultView.Count == 0); // The name is not an existing Cost Centre.
+
             if (!cmbReportsTo.Enabled)
             {
                 cmbReportsTo.Text = FLocalCostCentres.DefaultView[0].Row["ReportsTo"].ToString();

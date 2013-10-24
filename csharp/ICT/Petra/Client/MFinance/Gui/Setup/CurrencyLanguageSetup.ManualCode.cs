@@ -75,7 +75,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             txtDetailUnitLabelPlural.GotFocus += new EventHandler(txtCtrl_Enter);
             txtDetailDecimalLabelSingular.GotFocus += new EventHandler(txtCtrl_Enter);
             txtDetailDecimalLabelPlural.GotFocus += new EventHandler(txtCtrl_Enter);
-
         }
 
         void txtCtrl_Enter(object sender, EventArgs e)

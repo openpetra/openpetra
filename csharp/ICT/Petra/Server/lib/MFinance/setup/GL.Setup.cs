@@ -3108,7 +3108,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 AAnalysisAttributeTable TempAnalAttrTbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AOldCode, Transaction);
 
-                for (Int32 Idx = TempAnalAttrTbl.Rows.Count-1; Idx >= 0; Idx--)
+                for (Int32 Idx = TempAnalAttrTbl.Rows.Count - 1; Idx >= 0; Idx--)
                 {
                     AAnalysisAttributeRow OldAnalAttribRow = (AAnalysisAttributeRow)TempAnalAttrTbl.Rows[Idx];
                     // "a_analysis_attribute"  is the referrent in foreign keys, so I can't just go changing it - I need to make a copy?
@@ -3288,15 +3288,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 if (ACanBeParent && ACanDelete)     // I need to check whether the Cost Centre has been linked to a partner (but never used).
                 {                                   // If it has, the link must be deleted first.
-
                     AValidLedgerNumberTable VlnTbl = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, Transaction);
+
                     if (VlnTbl.Rows.Count > 0)      // There's a link to a partner!
                     {
                         ACanBeParent = false;
                         ACanDelete = false;
                     }
                 }
-
             }
 
             DBAccess.GDBAccessObj.RollbackTransaction();

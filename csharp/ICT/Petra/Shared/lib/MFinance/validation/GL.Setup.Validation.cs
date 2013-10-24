@@ -286,7 +286,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
                 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
-                    decimal enteredValue = (ARow.IsChargeAmountNull()? -1 : ARow.ChargeAmount); // If the user has cleared the value in the control, I'll treat it as -1.
+                    decimal enteredValue = (ARow.IsChargeAmountNull() ? -1 : ARow.ChargeAmount); // If the user has cleared the value in the control, I'll treat it as -1.
 
                     TVerificationResult VerificationResult = TNumericalChecks.IsPositiveDecimal(enteredValue,
                         ValidationControlsData.ValidationControlLabel,

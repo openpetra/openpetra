@@ -624,7 +624,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 }
                 else
                 {
-                    MessageBox.Show(Results.ErrorStatus,Catalog.GetString("Failed to save file"),MessageBoxButtons.OK,MessageBoxIcon.Stop);
+                    MessageBox.Show(Results.ErrorStatus, Catalog.GetString("Failed to save file"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 }
             }
         }
@@ -673,7 +673,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message, Catalog.GetString("Failed to save file"),MessageBoxButtons.OK,MessageBoxIcon.Stop);
+                        MessageBox.Show(ex.Message, Catalog.GetString("Failed to save file"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     }
                 }
             }
