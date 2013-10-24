@@ -2549,6 +2549,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 periodStartDate = accountingPeriodRow.PeriodEndDate.AddDays(1);
             }
 
+            // mark cached table for accounting periods to be refreshed
+            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
+            
             AAccountingSystemParameterRow accountingSystemParameterRow = MainDS.AAccountingSystemParameter.NewRowTyped();
             accountingSystemParameterRow.LedgerNumber = ANewLedgerNumber;
             accountingSystemParameterRow.ActualsDataRetention = ledgerRow.ActualsDataRetention;
