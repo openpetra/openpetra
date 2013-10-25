@@ -7,7 +7,7 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
-    WindowWidth: 750
+    WindowWidth: 800
     WindowHeight: 600
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
@@ -18,7 +18,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 155
+            FilterControls: [txtDetailCode, txtDetailDescription, chkDetailUnassignableFlag, chkDetailDeletableFlag]
+            FindControls: [txtDetailCode, txtDetailDescription]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -35,6 +39,7 @@ RootNode:
             CustomColumns:
                 DetailCode: {Label=Applicant Status}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+            SortOrder: DetailCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

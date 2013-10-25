@@ -18,7 +18,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailRelationName, txtDetailRelationDescription, txtDetailReciprocalDescription, cmbDetailRelationCategory, chkDetailValidRelation, chkDetailDeletable]
+            FindControls: [txtDetailRelationName, txtDetailRelationDescription, txtDetailReciprocalDescription, cmbDetailRelationCategory]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -37,6 +41,7 @@ RootNode:
                 DetailRelationDescription: {Label=Description}
                 DetailValidRelation: {Label=Assignable, Type=Boolean}}
                 DetailDeletable: {Label=Deletable, Type=Boolean}
+            SortOrder: DetailRelationName ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

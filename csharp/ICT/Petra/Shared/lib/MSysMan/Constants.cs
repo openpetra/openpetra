@@ -134,6 +134,9 @@ namespace Ict.Petra.Shared.MSysMan
         /// <summary>column name for last and first name combined field in UserList</summary>
         public const String USER_LAST_AND_FIRST_NAME_COLUMNNAME = "LastAndFirstName";
 
+        /// <summary>todoComment</summary>
+        public const String CONFERENCE_LASTCONFERENCEWORKEDWITH = "LASTCONFERENCEWORKEDWITH";
+
         /// <summary>
         /// ------------------------------------------------------------------------------
         /// Reporting User Default Constants

@@ -18,7 +18,14 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 155
+            FilterControls: [txtDetailCode, txtDetailDescription, chkDetailDiscounted, chkDetailParticipant, chkDetailUnassignableFlag, chkDetailDeletableFlag]
+            FindControls: [txtDetailCode, txtDetailDescription]
+            ControlAttributes:
+                chkDetailParticipant: {Text=Participant}
+                chkDetailDiscounted: {Text=Discounted}
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -41,6 +48,7 @@ RootNode:
                 DetailParticipant: {Label=Participant, Type=Boolean}
                 DetailUnassignableFlag: {Label=Unassignable, Type=Boolean}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+            SortOrder: DetailCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             string ConferenceName;
             TPartnerClass PartnerClass;
 
-            FPartnerKey = TUserDefaults.GetInt64Default("LastConferenceWorkedWith");
+            FPartnerKey = TUserDefaults.GetInt64Default("LASTCONFERENCEWORKEDWITH");
 
             // display the conference name in the title bar and in a text box at the top of the screen
             TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(FPartnerKey, out ConferenceName, out PartnerClass);

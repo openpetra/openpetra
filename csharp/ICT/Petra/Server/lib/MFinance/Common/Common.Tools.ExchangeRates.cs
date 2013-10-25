@@ -345,7 +345,8 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (AccountingPeriodTable.Rows.Count < 1)
             {
-                return -1;
+                return -1; // This is poor (because the caller can blindly use it!)
+                           // I wonder whether an exception would be better. (Tim Ingham, Oct 2013)
             }
 
             DateTime startOfPeriod = AccountingPeriodTable[0].PeriodStartDate;
@@ -383,7 +384,11 @@ namespace Ict.Petra.Server.MFinance.Common
             int pv_period_i,
             int currentFinancialYear)
         {
-            decimal ReturnValue;
+            if (pv_period_i == 0) // I sometimes get asked for this. There's no period 0.
+            {
+                pv_period_i = 12; // Perhaps I should look up this value from number of periods?
+                pv_year_i--;
+            }
 
             foreach (TExchangeRate exchangeRateElement in exchangeRates)
             {
@@ -394,7 +399,9 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
-            ReturnValue = GetCorporateExchangeRateFromDB(databaseConnection, pv_ledger_number_i, pv_year_i, pv_period_i, currentFinancialYear);
+            decimal ReturnValue = GetCorporateExchangeRateFromDB(databaseConnection, pv_ledger_number_i, pv_year_i, pv_period_i, currentFinancialYear);
+            //
+            // Cache this for the next time I'm asked...
             TExchangeRate exchangeRateElement2 = new TExchangeRate();
             exchangeRateElement2.ledger_number_i = pv_ledger_number_i;
             exchangeRateElement2.year_i = pv_year_i;

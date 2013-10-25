@@ -57,6 +57,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        /// <summary>
+        /// Shows the Filter/Find UserControl and switches to the Find Tab.
+        /// </summary>
+        /// <param name="sender">Not evaluated.</param>
+        /// <param name="e">Not evaluated.</param>
+        public void ShowFindPanel(object sender, System.EventArgs e)
+        {
+            ucoBatches.ShowFindPanel();
+        }
+
         private int standardTabIndex = 0;
 
         private void TFrmGLBatch_Load(object sender, EventArgs e)

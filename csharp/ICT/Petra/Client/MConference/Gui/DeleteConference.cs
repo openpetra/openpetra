@@ -81,7 +81,7 @@ namespace Ict.Petra.Client.MConference.Gui
         public static void DeleteThisConference(Form AMainWindow)
         {
             // Get conference key
-            long ConferenceKey = TUserDefaults.GetInt64Default("LastConferenceWorkedWith");
+            long ConferenceKey = TUserDefaults.GetInt64Default("LASTCONFERENCEWORKEDWITH");
 
             if (ConferenceKey == 0)
             {
@@ -117,7 +117,7 @@ namespace Ict.Petra.Client.MConference.Gui
                     dialog.ShowDialog();
                 }
 
-                if (AConferenceKey == TUserDefaults.GetInt64Default("LastConferenceWorkedWith"))
+                if (AConferenceKey == TUserDefaults.GetInt64Default("LASTCONFERENCEWORKEDWITH"))
                 {
                     // update user defaults table
                     TUserDefaults.SetDefault(TUserDefaults.CONFERENCE_LASTCONFERENCEWORKEDWITH, 0);

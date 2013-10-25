@@ -17,6 +17,7 @@ RootNode:
         grpPartnersLinkedToCostCentres: {ColSpan=2}
             Controls: [grdLinkedCCs]
         grpUnlinkedPartners:
+            Label: Unlinked Partners having COSTCENTRE type
             Controls: [grdUnlinkedCCs]
 
         grdLinkedCCs: {Height=160, Width=530}
@@ -25,7 +26,7 @@ RootNode:
             Controls:
                 Row0: [txtPartner,txtCostCentre, cmbReportsTo]
         txtPartner:{Width=90, ReadOnly=true}
-        txtCostCentre:{Width=90, ReadOnly=true}
+        txtCostCentre:{Width=90, ReadOnly=true, CharacterCasing=Upper}
         cmbReportsTo:{Width=90, Enabled=false}
         pnlBtns: {Height=150, Width=90}
             Controls: 

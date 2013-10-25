@@ -54,13 +54,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         {
             AVerificationResult = null;
 
-            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Deleting conference"),
-                100);
-
-            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Deleting conference"),
-                20);
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Deleting conference"), 100);
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
@@ -84,13 +78,20 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
 
                 ConferenceParameter[0].Value = AConferenceKey;
 
+                int Progress = 0;
+
                 foreach (string Table in TableNames)
                 {
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Deleting: ") + Table, 10 * Progress);
+
                     DBAccess.GDBAccessObj.ExecuteNonQuery(
                         String.Format("DELETE FROM PUB_{0} WHERE pc_conference_key_n = ?", Table),
                         Transaction, ConferenceParameter);
+
+                    Progress++;
                 }
 
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Deleting: Conference"), 90);
                 PcConferenceAccess.DeleteByPrimaryKey(AConferenceKey, Transaction);
 
                 if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)

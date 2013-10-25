@@ -35,6 +35,7 @@
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Reporting.dll" />
 
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerExports.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.Reporting.dll" />
     
     <!-- <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Gift.dll" /> -->
 </target>
@@ -70,12 +71,16 @@
     <call target="test-client"/>
 </target>
 
+<target name="test-main-navigation-screens-core">
+	<NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MainNavigationScreens.dll" />
+</target>
+
 <target name="test-main-navigation-screens">
     <!-- stop old server that might still be running from earlier (failed) builds -->
     <nant inheritall="false" target="stopPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
     <nant inheritall="false" target="startPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
     
-    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MainNavigationScreens.dll" />
+    <call target="test-main-navigation-screens-core" />
     
     <nant inheritall="false" target="stopPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>    
 </target>

@@ -18,7 +18,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailCostCentreType, txtDetailCcDescription, chkDetailDeletable]
+            FindControls: [txtDetailCostCentreType, txtDetailCcDescription]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -36,6 +40,7 @@ RootNode:
                 CostCentreType:  {Label=Cost Centre Type}
                 CcDescription:  {Label=Description}
                 Deletable:  {Label=Deletable, Type=Boolean}
+            SortOrder: ACostCentreTypes.CostCentreType ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

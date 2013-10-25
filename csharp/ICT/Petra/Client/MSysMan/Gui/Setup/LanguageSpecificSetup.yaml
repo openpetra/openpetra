@@ -18,7 +18,13 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [cmbDetailLanguageCode, txtDetailMonthName1]
+            FindControls: [cmbDetailLanguageCode, txtDetailMonthName1]
+            ControlAttributes:
+                txtDetailMonthName1: {Label=First Month}
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -45,6 +51,7 @@ RootNode:
                 DetailMonthName10: {Label="Name of Month 10"}
                 DetailMonthName11: {Label="Name of Month 11"}
                 DetailMonthName12: {Label="Name of Month 12"}
+            SortOrder: DetailLanguageCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

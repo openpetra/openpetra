@@ -17,7 +17,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailMailingCode, txtDetailMailingDescription, txtDetailMailingCost]
+            FindControls: [txtDetailMailingCode, txtDetailMailingDescription]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -35,6 +39,7 @@ RootNode:
                 DetailMailingDescription: {Label=Description}
                 DetailMailingDate: {Label=Mailing Date, Type=DateTime}
                 DetailMailingCost: {Label=Mailing Cost, Type=Currency}
+            SortOrder: DetailMailingCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

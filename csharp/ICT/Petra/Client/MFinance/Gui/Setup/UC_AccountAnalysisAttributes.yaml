@@ -26,6 +26,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [AAnalysisAttribute.AnalysisTypeCode, AAnalysisAttribute.Active]
+            SortOrder: AAnalysisAttribute.AnalysisTypeCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

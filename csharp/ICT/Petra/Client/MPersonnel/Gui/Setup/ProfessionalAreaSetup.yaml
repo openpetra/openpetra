@@ -18,7 +18,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailQualificationAreaName, txtDetailQualificationAreaDescr, chkDetailQualificationFlag, chkDetailDeletableFlag]
+            FindControls: [txtDetailQualificationAreaName, txtDetailQualificationAreaDescr]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -36,6 +40,7 @@ RootNode:
                 DetailQualificationAreaName: {Label=Professional Area}
                 DetailCode: {Label=Relationship Category Code}
                 DetailQualificationDate: {Label=Unassignable Date, Type=DateTime}
+            SortOrder: DetailQualificationAreaName ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

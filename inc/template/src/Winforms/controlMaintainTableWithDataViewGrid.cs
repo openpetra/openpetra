@@ -33,6 +33,9 @@ namespace {#NAMESPACE}
 {#IFDEF SHOWDETAILS}
     private int FCurrentRow;
 {#ENDIF SHOWDETAILS}
+{#IFDEF FILTERANDFIND}
+    {#FILTERANDFINDDECLARATIONS}
+{#ENDIF FILTERANDFIND}
 
     /// constructor
     public {#CLASSNAME}() : base()
@@ -82,6 +85,12 @@ namespace {#NAMESPACE}
       grdDetails.DataSource = myDataView;
       grdDetails.Columns.AutoSizeMode = Fill;
 
+{#IFDEF BUTTONPANEL}
+      FinishButtonPanelSetup();
+{#ENDIF BUTTONPANEL}
+{#IFDEF FILTERANDFIND}
+      SetupFilterAndFindControls();
+{#ENDIF FILTERANDFIND}
       ShowData();
     }
     
@@ -249,6 +258,38 @@ namespace {#NAMESPACE}
 {#ENDIF GENERATECONTROLUPDATEDATAHANDLER}
 {#ENDIF SAVEDETAILS}
 
+{#IFDEF BUTTONPANEL}
+    ///<summary>
+    /// Finish the set up of the Button Panel.
+    /// </summary>
+    private void FinishButtonPanelSetup()
+    {
+        // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
+        lblRecordCounter.AutoSize = true;
+        lblRecordCounter.Padding = new Padding(4, 3, 0, 0);
+        lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+
+        pnlButtonsRecordCounter.AutoSize = true;
+        
+        UpdateRecordNumberDisplay();
+    }
+    
+    private void UpdateRecordNumberDisplay()
+    {
+        int RecordCount;
+        
+        if (grdDetails.DataSource != null) 
+        {
+            RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
+            lblRecordCounter.Text = String.Format(Catalog.GetPluralString("{0} record", "{0} records", RecordCount, true), RecordCount);
+        }                
+    }
+{#ENDIF BUTTONPANEL}
+
+{#IFDEF FILTERANDFIND}
+    {#FILTERANDFINDMETHODS}
+{#ENDIF FILTERANDFIND}    
+
 #region Implement interface functions
     /// auto generated
     public void RunOnceOnActivation()
@@ -301,3 +342,4 @@ namespace {#NAMESPACE}
 }
 
 {#INCLUDE copyvalues.cs}
+{#INCLUDE findandfilter.cs}
