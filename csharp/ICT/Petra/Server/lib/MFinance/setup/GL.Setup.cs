@@ -2408,23 +2408,24 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 partnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
                 MainDS.PPartner.Rows.Add(partnerRow);
 
-                // create or use addresses (only if partner record is created here as 
+                // create or use addresses (only if partner record is created here as
                 // otherwise we assume that Partner has address already)
                 PLocationRow locationRow;
                 PLocationTable LocTemplateTable;
                 PLocationTable LocResultTable;
                 PLocationRow LocTemplateRow;
                 StringCollection LocTemplateOperators;
-    
-                // find address with country set          
+
+                // find address with country set
                 LocTemplateTable = new PLocationTable();
                 LocTemplateRow = LocTemplateTable.NewRowTyped(false);
                 LocTemplateRow.SiteKey = 0;
                 LocTemplateRow.StreetName = Catalog.GetString("No valid address on file");
                 LocTemplateRow.CountryCode = ACountryCode;
                 LocTemplateOperators = new StringCollection();
-    
+
                 LocResultTable = PLocationAccess.LoadUsingTemplate(LocTemplateRow, LocTemplateOperators, null);
+
                 if (LocResultTable.Count > 0)
                 {
                     locationRow = (PLocationRow)LocResultTable.Rows[0];
@@ -2439,14 +2440,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     locationRow.CountryCode = ACountryCode;
                     MainDS.PLocation.Rows.Add(locationRow);
                 }
-    
+
                 // now create partner location record
                 PPartnerLocationRow partnerLocationRow = MainDS.PPartnerLocation.NewRowTyped();
                 partnerLocationRow.SiteKey = locationRow.SiteKey;
                 partnerLocationRow.PartnerKey = PartnerKey;
                 partnerLocationRow.LocationKey = locationRow.LocationKey;
                 MainDS.PPartnerLocation.Rows.Add(partnerLocationRow);
-
             }
             else
             {
@@ -2559,7 +2559,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             // mark cached table for accounting periods to be refreshed
             TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                 TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
-            
+
             AAccountingSystemParameterRow accountingSystemParameterRow = MainDS.AAccountingSystemParameter.NewRowTyped();
             accountingSystemParameterRow.LedgerNumber = ANewLedgerNumber;
             accountingSystemParameterRow.ActualsDataRetention = ledgerRow.ActualsDataRetention;
