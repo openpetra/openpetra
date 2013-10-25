@@ -2407,6 +2407,46 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 partnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
                 partnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
                 MainDS.PPartner.Rows.Add(partnerRow);
+
+                // create or use addresses (only if partner record is created here as 
+                // otherwise we assume that Partner has address already)
+                PLocationRow locationRow;
+                PLocationTable LocTemplateTable;
+                PLocationTable LocResultTable;
+                PLocationRow LocTemplateRow;
+                StringCollection LocTemplateOperators;
+    
+                // find address with country set          
+                LocTemplateTable = new PLocationTable();
+                LocTemplateRow = LocTemplateTable.NewRowTyped(false);
+                LocTemplateRow.SiteKey = 0;
+                LocTemplateRow.StreetName = Catalog.GetString("No valid address on file");
+                LocTemplateRow.CountryCode = ACountryCode;
+                LocTemplateOperators = new StringCollection();
+    
+                LocResultTable = PLocationAccess.LoadUsingTemplate(LocTemplateRow, LocTemplateOperators, null);
+                if (LocResultTable.Count > 0)
+                {
+                    locationRow = (PLocationRow)LocResultTable.Rows[0];
+                }
+                else
+                {
+                    // no location record exists yet: create new one
+                    locationRow = MainDS.PLocation.NewRowTyped();
+                    locationRow.SiteKey = 0;
+                    locationRow.LocationKey = (int)DBAccess.GDBAccessObj.GetNextSequenceValue(TSequenceNames.seq_location_number.ToString(), null);
+                    locationRow.StreetName = Catalog.GetString("No valid address on file");
+                    locationRow.CountryCode = ACountryCode;
+                    MainDS.PLocation.Rows.Add(locationRow);
+                }
+    
+                // now create partner location record
+                PPartnerLocationRow partnerLocationRow = MainDS.PPartnerLocation.NewRowTyped();
+                partnerLocationRow.SiteKey = locationRow.SiteKey;
+                partnerLocationRow.PartnerKey = PartnerKey;
+                partnerLocationRow.LocationKey = locationRow.LocationKey;
+                MainDS.PPartnerLocation.Rows.Add(partnerLocationRow);
+
             }
             else
             {
@@ -2432,23 +2472,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             {
                 PUnitRow unitRow = MainDS.PUnit.NewRowTyped();
                 unitRow.PartnerKey = PartnerKey;
+                unitRow.UnitName = ALedgerName;
                 MainDS.PUnit.Rows.Add(unitRow);
-            }
-
-            if (!PLocationAccess.Exists(PartnerKey, 0, null))
-            {
-                PLocationRow locationRow = MainDS.PLocation.NewRowTyped();
-                locationRow.SiteKey = PartnerKey;
-                locationRow.LocationKey = 0;
-                locationRow.StreetName = Catalog.GetString("No valid address on file");
-                locationRow.CountryCode = ACountryCode;
-                MainDS.PLocation.Rows.Add(locationRow);
-
-                PPartnerLocationRow partnerLocationRow = MainDS.PPartnerLocation.NewRowTyped();
-                partnerLocationRow.SiteKey = PartnerKey;
-                partnerLocationRow.PartnerKey = PartnerKey;
-                partnerLocationRow.LocationKey = 0;
-                MainDS.PPartnerLocation.Rows.Add(partnerLocationRow);
             }
 
             if (!PPartnerLedgerAccess.Exists(PartnerKey, null))
@@ -2531,6 +2556,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 periodStartDate = accountingPeriodRow.PeriodEndDate.AddDays(1);
             }
 
+            // mark cached table for accounting periods to be refreshed
+            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
+            
             AAccountingSystemParameterRow accountingSystemParameterRow = MainDS.AAccountingSystemParameter.NewRowTyped();
             accountingSystemParameterRow.LedgerNumber = ANewLedgerNumber;
             accountingSystemParameterRow.ActualsDataRetention = ledgerRow.ActualsDataRetention;
