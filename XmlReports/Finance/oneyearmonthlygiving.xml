@@ -1,1077 +1,1089 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE reports SYSTEM "../reports.dtd">
 <reports>
-	<report id="OneYearMonthlyGiving">
-		<description>
-			This report gives a summary for an OMer of all the gifts they have received in a particular year, listing
-			each donor and their monthly giving. However, if gifts are confidential, the donor name and key are
-			not displayed.
-			TODO: Show confidential gifts if the user has FINANCE-2 access or greater.
-		</description>
-		<reportparameters>
-			<reportparameter name="param_ledger_number_i"/>
-			<reportparameter name="param_currency"/>
-			<reportparameter name="param_start_date"/>
-			<reportparameter name="param_end_date"/> 
-			<reportparameter name="param_from_date_previous_year"/>
-			<reportparameter name="param_to_date_previous_year"/>
-			<reportparameter name="param_from_date_this_year"/>
-			<reportparameter name="param_to_date_this_year"/>
-			<reportparameter name="param_min_amount"/>
-			<reportparameter name="param_max_amount"/>
-		</reportparameters>
-		
-		<reportheader/>
-		<pageheader>
-			<field whichfield="title1">
-				<value text="One year monthly giving" />
-			</field>
-			
-			<field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
-			<field whichfield="descr1">
-				<value text="Ledger "/>
-				<value variable="param_ledger_number_i"/>
-				<value text="   "/>
-				<value function="getLedgerName({{param_ledger_number_i}})"/>
-			</field>
-			<field whichfield="descr2">
-				<fielddetail condition="eq({param_donor}, All Donors)">
-					<value text="All Donors"/>
-				</fielddetail>
-				<fielddetail condition="eq({param_donor}, One Donor)">
-					<value text="One Donor: "/>
-					<value variable="{param_donorkey}"/>
-				</fielddetail>
-				<fielddetail condition="eq({param_donor}, Extract)">
-					<value text="Donors from Extract: "/>
-					<value variable="param_extract_name"/>
-				</fielddetail>
-			</field>
-			<field whichfield="period1">
-				<fielddetail>
-					<value text="From: "/>
-					<value variable="param_from_date" format="formatteddate"/>
-					<value text=" To: "/>
-					<value variable="param_to_date" format="formatteddate"/>
-				</fielddetail>
-			</field>
-			<field whichfield="period3">
-				<value text="Currency: "/>
-				<value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
-			</field>
-			
-		</pageheader>
+  <report id="OneYearMonthlyGiving">
+    <description>
+      This report gives a summary for an OMer of all the gifts they have received in a particular year, listing
+      each donor and their monthly giving. However, if gifts are confidential, the donor name and key are
+      not displayed.
+      TODO: Show confidential gifts if the user has FINANCE-2 access or greater.
+    </description>
+    <reportparameters>
+      <reportparameter name="param_ledger_number_i"/>
+      <reportparameter name="param_currency"/>
+      <reportparameter name="param_start_date"/>
+      <reportparameter name="param_end_date"/> 
+      <reportparameter name="param_from_date_previous_year"/>
+      <reportparameter name="param_to_date_previous_year"/>
+      <reportparameter name="param_from_date_this_year"/>
+      <reportparameter name="param_to_date_this_year"/>
+      <reportparameter name="param_min_amount"/>
+      <reportparameter name="param_max_amount"/>
+    </reportparameters>
 
-		<calculations>
-		
-			<calculation id="SelectRecipients" returns="RecipientKey" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value>
-						SELECT DISTINCT
-							PUB_p_partner.p_partner_key_n AS RecipientKey,
-							PUB_p_partner.p_partner_short_name_c
-						FROM
-							PUB_p_partner,
-							PUB_a_gift_detail,
-							PUB_a_gift_batch,
-							PUB_a_gift
-						</value>
-					</queryDetail>
-					<queryDetail condition="eq({param_donor}, Extract)">
-						<value>
-							, PUB_m_extract,
-							PUB_m_extract_master
-						WHERE 
-								PUB_p_partner.p_partner_key_n =  PUB_m_extract.p_partner_key_n
-							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
-							AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
-							AND
-						</value>
-					</queryDetail>
-					<queryDetail condition="eq({param_donor}, one_partner))">
-						<value>
-						WHERE
-								PUB_p_partner.p_partner_key_n = {{param_recipient_key}}
-							AND 
-						</value>
-					</queryDetail>
-					<queryDetail condition="eq({param_donor}, all_recipients))">
-						<value>
-						WHERE
-						</value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						
-								PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							
-							AND PUB_a_gift_detail.p_recipient_key_n = PUB_p_partner.p_partner_key_n
-							AND PUB_a_gift_detail.a_modified_detail_l = false
-								
-							AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						
-							ORDER BY PUB_p_partner.p_partner_short_name_c
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectRecipient" returns="RecipientName, RecipientClass" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value>
-						SELECT
-							PUB_p_partner.p_partner_short_name_c AS RecipientName,
-							PUB_p_partner.p_partner_class_c AS RecipientClass
-						FROM
-							PUB_p_partner
-						WHERE
-							PUB_p_partner.p_partner_key_n = {{RecipientKey}}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectTotal" returns="DonorKey, DonorName, DonorClass, Total" returnsFormat="row">
-				<query>
-					<queryDetail>
-						<value>
-						SELECT DISTINCT
-							PUB_p_partner.p_partner_key_n AS DonorKey,
-							PUB_p_partner.p_partner_short_name_c AS DonorName,
-							PUB_p_partner.p_partner_class_c AS DonorClass,
-						</value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-							SUM (PUB_a_gift_detail.a_gift_amount_n) AS Total,
-							COUNT (PUB_a_gift_detail.a_gift_amount_n) AS TotalCount
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-							SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS Total,
-							COUNT (PUB_a_gift_detail.a_gift_amount_n) AS TotalCount
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift,
-							PUB_a_gift_detail,
-							PUB_a_gift_batch,
-							PUB_p_partner
-						WHERE
-								PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-							AND PUB_a_gift_detail.a_modified_detail_l = false
-							AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
-							
-							AND PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n
-							AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						GROUP BY
-							PUB_p_partner.p_partner_key_n,
-							PUB_p_partner.p_partner_short_name_c,
-							PUB_p_partner.p_partner_class_c
-						ORDER BY 
-							PUB_p_partner.p_partner_short_name_c
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectTotalChurches" returns="TotalChurches" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-						SELECT
-							SUM (PUB_a_gift_detail.a_gift_amount_n) AS TotalChurches
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-						SELECT
-							SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS TotalChurches
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift,
-							PUB_a_gift_detail,
-							PUB_a_gift_batch,
-							PUB_p_partner
-						WHERE
-								PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-							AND PUB_a_gift_detail.a_modified_detail_l = false
-							AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
-							
-							AND PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n
-							AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-							
-							AND PUB_p_partner.p_partner_class_c = "CHURCH"
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectTotalIndividuals" returns="TotalIndividuals" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-						SELECT
-							SUM (PUB_a_gift_detail.a_gift_amount_n) AS TotalIndividuals
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-						SELECT
-							SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS TotalIndividuals
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift,
-							PUB_a_gift_detail,
-							PUB_a_gift_batch,
-							PUB_p_partner
-						WHERE
-								PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-							AND PUB_a_gift_detail.a_modified_detail_l = false
-							AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
-							
-							AND PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n
-							AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-							
-							AND ( PUB_p_partner.p_partner_class_c = "FAMILY"
-								OR PUB_p_partner.p_partner_class_c = "PERSON" )
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectTotalCount" returns="TotalCount, YearTotal" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-						SELECT
-							COUNT (PUB_a_gift_detail.a_gift_amount_n) AS TotalCount,
-							SUM (PUB_a_gift_detail.a_gift_amount_n) AS YearTotal
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-						SELECT
-							COUNT (PUB_a_gift_detail.a_gift_amount_n) AS TotalCount,
-							SUM (PUB_a_gift_detail.a_gift_amount_n) AS YearTotal
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift,
-							PUB_a_gift_detail,
-							PUB_a_gift_batch
-						WHERE
-								PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-							AND PUB_a_gift_detail.a_modified_detail_l = false
-							AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
-							
-							AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			<calculation id="SelectJanuary" returns="GiftJanuary" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftJanuary
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftJanuary
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift,
-							PUB_a_gift_detail,
-							PUB_a_gift_batch
-						WHERE
-								PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-							AND PUB_a_gift_detail.a_modified_detail_l = false
-							AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
-							
-							AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
-							AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-01-01# AND #{{param_year}}-01-31#
-							AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectFebruary" returns="GiftFebruary" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftFebruary
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftFebruary
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift,
-							PUB_a_gift_detail,
-							PUB_a_gift_batch
-						WHERE
-								PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-							AND PUB_a_gift_detail.a_modified_detail_l = false
-							AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
-							
-							AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
-							AND PUB_a_gift.a_date_entered_d &gt;= #{{param_year}}-02-01# 
-							AND PUB_a_gift.a_date_entered_d &lt; #{{param_year}}-03-01#
-							AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectMarch" returns="GiftMarch" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftMarch
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftMarch
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift,
-							PUB_a_gift_detail,
-							PUB_a_gift_batch
-						WHERE
-								PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-							AND PUB_a_gift_detail.a_modified_detail_l = false
-							AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
-							
-							AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
-							AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-03-01# AND #{{param_year}}-03-31#
-							AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectApril" returns="GiftApril" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftApril
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftApril
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift,
-							PUB_a_gift_detail,
-							PUB_a_gift_batch
-						WHERE
-								PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-							AND PUB_a_gift_detail.a_modified_detail_l = false
-							AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
-							
-							AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
-							AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-04-01# AND #{{param_year}}-04-30#
-							AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectMay" returns="GiftMay" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftMay
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftMay
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift,
-							PUB_a_gift_detail,
-							PUB_a_gift_batch
-						WHERE
-								PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-							AND PUB_a_gift_detail.a_modified_detail_l = false
-							AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
-							
-							AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
-							AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-05-01# AND #{{param_year}}-05-31#
-							AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectJune" returns="GiftJune" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftJune
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftJune
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift,
-							PUB_a_gift_detail,
-							PUB_a_gift_batch
-						WHERE
-								PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-							AND PUB_a_gift_detail.a_modified_detail_l = false
-							AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
-							
-							AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
-							AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-06-01# AND #{{param_year}}-06-30#
-							AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectJuly" returns="GiftJuly" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftJuly
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftJuly
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift,
-							PUB_a_gift_detail,
-							PUB_a_gift_batch
-						WHERE
-								PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-							AND PUB_a_gift_detail.a_modified_detail_l = false
-							AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
-							
-							AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
-							AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-07-01# AND #{{param_year}}-07-31#
-							AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectAugust" returns="GiftAugust" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftAugust
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftAugust
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift,
-							PUB_a_gift_detail,
-							PUB_a_gift_batch
-						WHERE
-								PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-							AND PUB_a_gift_detail.a_modified_detail_l = false
-							AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
-							
-							AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
-							AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-08-01# AND #{{param_year}}-08-31#
-							AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectSeptember" returns="GiftSeptember" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftSeptember
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftSeptember
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift,
-							PUB_a_gift_detail,
-							PUB_a_gift_batch
-						WHERE
-								PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-							AND PUB_a_gift_detail.a_modified_detail_l = false
-							AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
-							
-							AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
-							AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-09-01# AND #{{param_year}}-09-30#
-							AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectOctober" returns="GiftOctober" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftOctober
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftOctober
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift,
-							PUB_a_gift_detail,
-							PUB_a_gift_batch
-						WHERE
-								PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-							AND PUB_a_gift_detail.a_modified_detail_l = false
-							AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
-							
-							AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
-							AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-10-01# AND #{{param_year}}-10-31#
-							AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectNovember" returns="GiftNovember" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftNovember
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftNovember
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift,
-							PUB_a_gift_detail,
-							PUB_a_gift_batch
-						WHERE
-								PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-							AND PUB_a_gift_detail.a_modified_detail_l = false
-							AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
-							
-							AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
-							AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-11-01# AND #{{param_year}}-11-30#
-							AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
-			
-			<calculation id="SelectDecember" returns="GiftDecember" returnsFormat="row">
-				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftDecember
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-						SELECT DISTINCT
-							SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftDecember
-						 </value>
-					</queryDetail>
-					<queryDetail>
-						<value>
-						FROM
-							PUB_a_gift,
-							PUB_a_gift_detail,
-							PUB_a_gift_batch
-						WHERE
-								PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-							
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
-							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							
-							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
-							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-							AND PUB_a_gift_detail.a_modified_detail_l = false
-							AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
-							
-							AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
-							AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-12-01# AND #{{param_year}}-12-31#
-							AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
-						</value>
-					</queryDetail>
-				</query>
-			</calculation>
+    <reportheader/>
+    <pageheader>
+      <field whichfield="title1">
+        <value text="One year monthly giving" />
+      </field>
 
-			
-			<calculation id="Donor Key" returnsFormat="partnerkey" returns="text">
-				<caption><value text="Donor Key"/></caption>
-				<query>
-					<queryDetail><value variable="DonorKey"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="Donor Name" returnsFormat="text" returns="text">
-				<caption><value text="Donor Name"/></caption>
-				<query>
-					<queryDetail><value variable="DonorName"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="Donor Class" returnsFormat="text" returns="text">
-				<caption><value text="Donor Class"/></caption>
-				<query>
-					<queryDetail><value variable="DonorClass"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			
-			<calculation id="January" returnsFormat="currency" returns="amount">
-				<caption><value text="January"/></caption>
-				<query>
-					<queryDetail>
-						<value calculation="SelectJanuary"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="February" returnsFormat="currency" returns="amount">
-				<caption><value text="February"/></caption>
-				<query>
-					<queryDetail>
-						<value calculation="SelectFebruary"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="March" returnsFormat="currency" returns="amount">
-				<caption><value text="March"/></caption>
-				<query>
-					<queryDetail>
-						<value calculation="SelectMarch"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="April" returnsFormat="currency" returns="amount">
-				<caption><value text="April"/></caption>
-				<query>
-					<queryDetail>
-						<value calculation="SelectApril"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="May" returnsFormat="currency" returns="amount">
-				<caption><value text="May"/></caption>
-				<query>
-					<queryDetail>
-						<value calculation="SelectMay"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="June" returnsFormat="currency" returns="amount">
-				<caption><value text="June"/></caption>
-				<query>
-					<queryDetail>
-						<value calculation="SelectJune"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="July" returnsFormat="currency" returns="amount">
-				<caption><value text="July"/></caption>
-				<query>
-					<queryDetail>
-						<value calculation="SelectJuly"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="August" returnsFormat="currency" returns="amount">
-				<caption><value text="August"/></caption>
-				<query>
-					<queryDetail>
-						<value calculation="SelectAugust"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="September" returnsFormat="currency" returns="amount">
-				<caption><value text="September"/></caption>
-				<query>
-					<queryDetail>
-						<value calculation="SelectSeptember"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="October" returnsFormat="currency" returns="amount">
-				<caption><value text="October"/></caption>
-				<query>
-					<queryDetail>
-						<value calculation="SelectOctober"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="November" returnsFormat="currency" returns="amount">
-				<caption><value text="November"/></caption>
-				<query>
-					<queryDetail>
-						<value calculation="SelectNovember"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="December" returnsFormat="currency" returns="amount">
-				<caption><value text="December"/></caption>
-				<query>
-					<queryDetail>
-						<value calculation="SelectDecember"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			<calculation id="Total" returnsFormat="currency" returns="amount">
-				<caption><value text="Total"/></caption>
-				<query>
-					<queryDetail><value variable="Total"/>
-					</queryDetail>                                          
-				</query>
-			</calculation>
-			
-		</calculations>
+      <field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
+      <field whichfield="descr1">
+        <value text="Ledger "/>
+        <value variable="param_ledger_number_i"/>
+        <value text="   "/>
+        <value function="getLedgerName({{param_ledger_number_i}})"/>
+      </field>
+      <field whichfield="descr2">
+        <fielddetail condition="eq({param_recipient_selection}, all_recipients)">
+          <value text="All Recipients"/>
+        </fielddetail>
+        <fielddetail condition="eq({param_recipient_selection}, one_partner)">
+          <value text="One Recipient: "/>
+          <value variable="{param_recipientkey}"/>
+        </fielddetail>
+        <fielddetail condition="eq({param_recipient_selection}, Extract)">
+          <value text="Recipients from Extract: "/>
+          <value variable="param_extract_name"/>
+        </fielddetail>
+      </field>
+      <field whichfield="period1">
+        <fielddetail>
+          <value text="From: "/>
+          <value variable="param_from_date" format="formatteddate"/>
+          <value text=" To: "/>
+          <value variable="param_to_date" format="formatteddate"/>
+        </fielddetail>
+      </field>
+      <field whichfield="period3">
+        <value text="Currency: "/>
+        <value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
+      </field>
 
-		<levels>		
-			<level name="main">
-				<detail>
-					<lowerLevelReport level="RecipientLevel1" calculation="SelectRecipients"></lowerLevelReport>
-				</detail>
-			</level>
-			
-			<level name="RecipientLevel1">
-				<detail>
-					<lowerLevelReport level="RecipientLevel2" calculation="SelectRecipient"/>
-				</detail>
-				<footer space="below" line="below">
-					<field whichfield="column 0" pos="0cm" width="6cm" format="text">
-						<value text="Average gift amount per month from churches: "/>
-					</field>
-					<field whichfield="column 1" pos="6cm" width="1.5cm" format="currency" calculation="SelectTotalChurches">
-						<value function="div({{TotalChurches}}, {{param_months}})"/>
-					</field>
-					<field whichfield="column 2" pos="8.5cm" width="7cm" format="text">
-						<value text="Average gift amount per month from individuals: "/>
-					</field>
-					<field whichfield="column 3" pos="15.5cm" width="1.5cm" format="currency" calculation="SelectTotalIndividuals">
-						<value function="div({{TotalIndividuals}}, {{param_months}})"/>
-					</field>
-					<field whichfield="column 4" pos="17cm" width="5cm">
-						<value text="Total gift amount for the year: "/>
-					</field>
-					<field whichfield="column 5" pos="22cm" width="3cm" format="currency" calculation="SelectTotalCount">
-						<value variable="YearTotal"/>
-					</field>
-				</footer>
-			</level>
-			
-			<level name="RecipientLevel2">
-				<header>
-					<field whichfield="header 1" pos="0cm" width="9cm">
-						<value text="Recipient: "/>
-						<value variable="RecipientKey" format="partnerKey"/>
-						<value text="   "/>
-						<value variable="RecipientName"/>
-					</field>
-				</header>
-				<detail>
-					<lowerLevelReport level="RecipientLevel3" calculation="SelectRecipient"/>
-				</detail>
-				<footer>
-					<field whichfield="column 0" pos="0cm" width="6cm" format="text" calculation="SelectTotalCount">
-						<value text="Average number of gifts per month: "/>
-					</field>
-					<field whichfield="column 1" pos="6cm" width="1.5cm"  format="numberformatg3">
-						<value function="div({{TotalCount}}, {{param_months}})"/>
-					</field>
-					<field whichfield="column 2" pos="8.5cm" width="7cm" format="text">
-						<value text="Average gift amount per month: "/>
-					</field>
-					<field whichfield="column 3" pos="15.5cm" width="1.5cm" format="currency">
-						<value function="div({{YearTotal}}, {{param_months}})"/>
-					</field>
-					<field whichfield="column 4" pos="17cm" width="5cm">
-						<value text="Total number of gifts for the year: "/>
-					</field>
-					<field whichfield="column 5" pos="22cm" width="3cm" format="text">
-						<value variable="TotalCount"/>
-					</field>
-				</footer>
-			</level>
-			
-			<level name="RecipientLevel3">
-				<header>
-					<field whichfield="header 1" pos="0cm" width="9cm">
-						<value text="Field: "/>
-						<value function="GetFieldOfPartner({{RecipientKey}})"/>
-					</field>
-				</header>
-				<detail>
-					<lowerLevelReport level="DonorLevel" calculation="SelectTotal"></lowerLevelReport>
-				</detail>
-				<footer space="below">
-					<field whichfield="column {January}" line="above">
-						<value function="GetSumLowerReport({{lineId}}, {{January}})"/>
-					</field>
-					<field whichfield="column {February}" line="above">
-						<value function="GetSumLowerReport({{lineId}}, {{February}})"/>
-					</field>
-					<field whichfield="column {March}" line="above">
-						<value function="GetSumLowerReport({{lineId}}, {{March}})"/>
-					</field>
-					<field whichfield="column {April}" line="above">
-						<value function="GetSumLowerReport({{lineId}}, {{April}})"/>
-					</field>
-					<field whichfield="column {May}" line="above">
-						<value function="GetSumLowerReport({{lineId}}, {{May}})"/>
-					</field>
-					<field whichfield="column {June}" line="above">
-						<value function="GetSumLowerReport({{lineId}}, {{June}})"/>
-					</field>
-					<field whichfield="column {July}" line="above">
-						<value function="GetSumLowerReport({{lineId}}, {{July}})"/>
-					</field>
-					<field whichfield="column {August}" line="above">
-						<value function="GetSumLowerReport({{lineId}}, {{August}})"/>
-					</field>
-					<field whichfield="column {September}" line="above">
-						<value function="GetSumLowerReport({{lineId}}, {{September}})"/>
-					</field>
-					<field whichfield="column {October}" line="above">
-						<value function="GetSumLowerReport({{lineId}}, {{October}})"/>
-					</field>
-					<field whichfield="column {November}" line="above">
-						<value function="GetSumLowerReport({{lineId}}, {{November}})"/>
-					</field>
-					<field whichfield="column {December}" line="above">
-						<value function="GetSumLowerReport({{lineId}}, {{December}})"/>
-					</field>
-					<field whichfield="column {Total}" line="above">
-						<value function="GetSumLowerReport({{lineId}}, {{Total}})"/>
-					</field>
-				</footer>
-			</level>
-			
-			<level name="DonorLevel">
-				<detail>
-					<field whichfield="columns" />
-				</detail>
-			</level>
-			
-		</levels>
-		
-	</report>
-	
+    </pageheader>
+
+    <calculations>
+    
+      <calculation id="SelectRecipients" returns="RecipientKey" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+            SELECT DISTINCT
+              PUB_p_partner.p_partner_key_n AS RecipientKey,
+              PUB_p_partner.p_partner_short_name_c
+            FROM
+              PUB_p_partner,
+              PUB_a_gift_detail,
+              PUB_a_gift_batch,
+              PUB_a_gift
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_recipient_selection}, Extract)">
+            <value>
+              , PUB_m_extract,
+              PUB_m_extract_master
+            WHERE 
+                PUB_p_partner.p_partner_key_n =  PUB_m_extract.p_partner_key_n
+              AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+              AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
+              AND
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_recipient_selection}, one_partner))">
+            <value>
+            WHERE
+                PUB_p_partner.p_partner_key_n = {{param_recipient_key}}
+              AND 
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_recipient_selection}, all_recipients))">
+            <value>
+            WHERE
+            </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+
+                PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              
+              AND PUB_a_gift_detail.p_recipient_key_n = PUB_p_partner.p_partner_key_n
+              AND PUB_a_gift_detail.a_modified_detail_l = false
+                
+              AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+            
+              ORDER BY PUB_p_partner.p_partner_short_name_c
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectRecipient" returns="RecipientName, RecipientClass" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+            SELECT
+              PUB_p_partner.p_partner_short_name_c AS RecipientName,
+              PUB_p_partner.p_partner_class_c AS RecipientClass
+            FROM
+              PUB_p_partner
+            WHERE
+              PUB_p_partner.p_partner_key_n = {{RecipientKey}}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectTotal" returns="DonorKey, DonorName, DonorClass, Total" returnsFormat="row">
+        <query>
+          <queryDetail>
+            <value>
+            SELECT DISTINCT
+              PUB_p_partner.p_partner_key_n AS DonorKey,
+              PUB_p_partner.p_partner_short_name_c AS DonorName,
+              PUB_p_partner.p_partner_class_c AS DonorClass,
+            </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+              SUM (PUB_a_gift_detail.a_gift_amount_n) AS Total,
+              COUNT (PUB_a_gift_detail.a_gift_amount_n) AS TotalCount
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+              SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS Total,
+              COUNT (PUB_a_gift_detail.a_gift_amount_n) AS TotalCount
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift,
+              PUB_a_gift_detail,
+              PUB_a_gift_batch,
+              PUB_p_partner
+            WHERE
+                PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              
+              AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+              AND PUB_a_gift_detail.a_modified_detail_l = false
+              AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
+              
+              AND PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n
+              AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+            GROUP BY
+              PUB_p_partner.p_partner_key_n,
+              PUB_p_partner.p_partner_short_name_c,
+              PUB_p_partner.p_partner_class_c
+            ORDER BY 
+              PUB_p_partner.p_partner_short_name_c
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectTotalChurches" returns="TotalChurches" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+            SELECT
+              SUM (PUB_a_gift_detail.a_gift_amount_n) AS TotalChurches
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+            SELECT
+              SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS TotalChurches
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift,
+              PUB_a_gift_detail,
+              PUB_a_gift_batch,
+              PUB_p_partner
+            WHERE
+                PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              
+              AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+              AND PUB_a_gift_detail.a_modified_detail_l = false
+              AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
+              
+              AND PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n
+              AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+              
+              AND PUB_p_partner.p_partner_class_c = "CHURCH"
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectTotalIndividuals" returns="TotalIndividuals" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+            SELECT
+              SUM (PUB_a_gift_detail.a_gift_amount_n) AS TotalIndividuals
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+            SELECT
+              SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS TotalIndividuals
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift,
+              PUB_a_gift_detail,
+              PUB_a_gift_batch,
+              PUB_p_partner
+            WHERE
+                PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              
+              AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+              AND PUB_a_gift_detail.a_modified_detail_l = false
+              AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
+              
+              AND PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n
+              AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+              
+              AND ( PUB_p_partner.p_partner_class_c = "FAMILY"
+                OR PUB_p_partner.p_partner_class_c = "PERSON" )
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectTotalCount" returns="TotalCount, YearTotal" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+            SELECT
+              COUNT (PUB_a_gift_detail.a_gift_amount_n) AS TotalCount,
+              SUM (PUB_a_gift_detail.a_gift_amount_n) AS YearTotal
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+            SELECT
+              COUNT (PUB_a_gift_detail.a_gift_amount_n) AS TotalCount,
+              SUM (PUB_a_gift_detail.a_gift_amount_n) AS YearTotal
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift,
+              PUB_a_gift_detail,
+              PUB_a_gift_batch
+            WHERE
+                PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              
+              AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+              AND PUB_a_gift_detail.a_modified_detail_l = false
+              AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
+              
+              AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectJanuary" returns="GiftJanuary" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftJanuary
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftJanuary
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift,
+              PUB_a_gift_detail,
+              PUB_a_gift_batch
+            WHERE
+                PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              
+              AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+              AND PUB_a_gift_detail.a_modified_detail_l = false
+              AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
+              
+              AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
+              AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-01-01# AND #{{param_year}}-01-31#
+              AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectFebruary" returns="GiftFebruary" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftFebruary
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftFebruary
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift,
+              PUB_a_gift_detail,
+              PUB_a_gift_batch
+            WHERE
+                PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              
+              AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+              AND PUB_a_gift_detail.a_modified_detail_l = false
+              AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
+              
+              AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
+              AND PUB_a_gift.a_date_entered_d &gt;= #{{param_year}}-02-01# 
+              AND PUB_a_gift.a_date_entered_d &lt; #{{param_year}}-03-01#
+              AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectMarch" returns="GiftMarch" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftMarch
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftMarch
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift,
+              PUB_a_gift_detail,
+              PUB_a_gift_batch
+            WHERE
+                PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              
+              AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+              AND PUB_a_gift_detail.a_modified_detail_l = false
+              AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
+              
+              AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
+              AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-03-01# AND #{{param_year}}-03-31#
+              AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectApril" returns="GiftApril" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftApril
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftApril
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift,
+              PUB_a_gift_detail,
+              PUB_a_gift_batch
+            WHERE
+                PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              
+              AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+              AND PUB_a_gift_detail.a_modified_detail_l = false
+              AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
+              
+              AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
+              AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-04-01# AND #{{param_year}}-04-30#
+              AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectMay" returns="GiftMay" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftMay
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftMay
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift,
+              PUB_a_gift_detail,
+              PUB_a_gift_batch
+            WHERE
+                PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              
+              AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+              AND PUB_a_gift_detail.a_modified_detail_l = false
+              AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
+              
+              AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
+              AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-05-01# AND #{{param_year}}-05-31#
+              AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectJune" returns="GiftJune" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftJune
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftJune
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift,
+              PUB_a_gift_detail,
+              PUB_a_gift_batch
+            WHERE
+                PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              
+              AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+              AND PUB_a_gift_detail.a_modified_detail_l = false
+              AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
+              
+              AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
+              AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-06-01# AND #{{param_year}}-06-30#
+              AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectJuly" returns="GiftJuly" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftJuly
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftJuly
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift,
+              PUB_a_gift_detail,
+              PUB_a_gift_batch
+            WHERE
+                PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              
+              AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+              AND PUB_a_gift_detail.a_modified_detail_l = false
+              AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
+              
+              AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
+              AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-07-01# AND #{{param_year}}-07-31#
+              AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectAugust" returns="GiftAugust" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftAugust
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftAugust
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift,
+              PUB_a_gift_detail,
+              PUB_a_gift_batch
+            WHERE
+                PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              
+              AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+              AND PUB_a_gift_detail.a_modified_detail_l = false
+              AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
+              
+              AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
+              AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-08-01# AND #{{param_year}}-08-31#
+              AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectSeptember" returns="GiftSeptember" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftSeptember
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftSeptember
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift,
+              PUB_a_gift_detail,
+              PUB_a_gift_batch
+            WHERE
+                PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              
+              AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+              AND PUB_a_gift_detail.a_modified_detail_l = false
+              AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
+              
+              AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
+              AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-09-01# AND #{{param_year}}-09-30#
+              AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectOctober" returns="GiftOctober" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftOctober
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftOctober
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift,
+              PUB_a_gift_detail,
+              PUB_a_gift_batch
+            WHERE
+                PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              
+              AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+              AND PUB_a_gift_detail.a_modified_detail_l = false
+              AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
+              
+              AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
+              AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-10-01# AND #{{param_year}}-10-31#
+              AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectNovember" returns="GiftNovember" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftNovember
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftNovember
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift,
+              PUB_a_gift_detail,
+              PUB_a_gift_batch
+            WHERE
+                PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              
+              AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+              AND PUB_a_gift_detail.a_modified_detail_l = false
+              AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
+              
+              AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
+              AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-11-01# AND #{{param_year}}-11-30#
+              AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="SelectDecember" returns="GiftDecember" returnsFormat="row">
+        <query>
+          <queryDetail condition="eq({param_currency}, Base)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_n) AS GiftDecember
+             </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_currency}, International)">
+            <value>
+            SELECT DISTINCT
+              SUM (PUB_a_gift_detail.a_gift_amount_intl_n) AS GiftDecember
+             </value>
+          </queryDetail>
+          <queryDetail>
+            <value>
+            FROM
+              PUB_a_gift,
+              PUB_a_gift_detail,
+              PUB_a_gift_batch
+            WHERE
+                PUB_a_gift.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
+              AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+              
+              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              
+              AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
+              AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
+              AND PUB_a_gift_detail.a_modified_detail_l = false
+              AND PUB_a_gift_detail.p_recipient_key_n = {{RecipientKey}}
+              
+              AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
+              AND PUB_a_gift.a_date_entered_d BETWEEN #{{param_year}}-12-01# AND #{{param_year}}-12-31#
+              AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
+            </value>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="Donor Key" returnsFormat="partnerkey" returns="text">
+        <caption><value text="Donor Key"/></caption>
+        <query>
+          <queryDetail><value variable="DonorKey"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+
+      <calculation id="Donor Name" returnsFormat="text" returns="text">
+        <caption><value text="Donor Name"/></caption>
+        <query>
+          <queryDetail><value variable="DonorName"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+
+      <calculation id="Donor Class" returnsFormat="text" returns="text">
+        <caption><value text="Donor Class"/></caption>
+        <query>
+          <queryDetail><value variable="DonorClass"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+
+      <calculation id="January" returnsFormat="currency" returns="amount">
+        <caption><value text="January"/></caption>
+        <query>
+          <queryDetail>
+            <value calculation="SelectJanuary"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+
+      <calculation id="February" returnsFormat="currency" returns="amount">
+        <caption><value text="February"/></caption>
+        <query>
+          <queryDetail>
+            <value calculation="SelectFebruary"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+
+      <calculation id="March" returnsFormat="currency" returns="amount">
+        <caption><value text="March"/></caption>
+        <query>
+          <queryDetail>
+            <value calculation="SelectMarch"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+
+      <calculation id="April" returnsFormat="currency" returns="amount">
+        <caption><value text="April"/></caption>
+        <query>
+          <queryDetail>
+            <value calculation="SelectApril"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+
+      <calculation id="May" returnsFormat="currency" returns="amount">
+        <caption><value text="May"/></caption>
+        <query>
+          <queryDetail>
+            <value calculation="SelectMay"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+
+      <calculation id="June" returnsFormat="currency" returns="amount">
+        <caption><value text="June"/></caption>
+        <query>
+          <queryDetail>
+            <value calculation="SelectJune"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+
+      <calculation id="July" returnsFormat="currency" returns="amount">
+        <caption><value text="July"/></caption>
+        <query>
+          <queryDetail>
+            <value calculation="SelectJuly"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+
+      <calculation id="August" returnsFormat="currency" returns="amount">
+        <caption><value text="August"/></caption>
+        <query>
+          <queryDetail>
+            <value calculation="SelectAugust"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+
+      <calculation id="September" returnsFormat="currency" returns="amount">
+        <caption><value text="September"/></caption>
+        <query>
+          <queryDetail>
+            <value calculation="SelectSeptember"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+
+      <calculation id="October" returnsFormat="currency" returns="amount">
+        <caption><value text="October"/></caption>
+        <query>
+          <queryDetail>
+            <value calculation="SelectOctober"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+
+      <calculation id="November" returnsFormat="currency" returns="amount">
+        <caption><value text="November"/></caption>
+        <query>
+          <queryDetail>
+            <value calculation="SelectNovember"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+
+      <calculation id="December" returnsFormat="currency" returns="amount">
+        <caption><value text="December"/></caption>
+        <query>
+          <queryDetail>
+            <value calculation="SelectDecember"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+
+      <calculation id="Total" returnsFormat="currency" returns="amount">
+        <caption><value text="Total"/></caption>
+        <query>
+          <queryDetail><value variable="Total"/>
+          </queryDetail>                                          
+        </query>
+      </calculation>
+
+    </calculations>
+
+    <levels>    
+      <level name="main">
+        <detail>
+          <lowerLevelReport level="RecipientLevel1" calculation="SelectRecipients"></lowerLevelReport>
+        </detail>
+      </level>
+
+      <level name="RecipientLevel1">
+        <detail>
+          <lowerLevelReport level="RecipientLevel2" calculation="SelectRecipient"/>
+        </detail>
+        <footer space="below" line="below">
+          <field whichfield="column 0" pos="0cm" width="6cm" format="text">
+            <value text="Average gift amount per month from churches: "/>
+          </field>
+          <field whichfield="column 1" pos="6cm" width="1.5cm" format="currency" calculation="SelectTotalChurches">
+            <value function="div({{TotalChurches}}, {{param_months}})"/>
+          </field>
+          <field whichfield="column 2" pos="8.5cm" width="7cm" format="text">
+            <value text="Average gift amount per month from individuals: "/>
+          </field>
+          <field whichfield="column 3" pos="15.5cm" width="1.5cm" format="currency" calculation="SelectTotalIndividuals">
+            <value function="div({{TotalIndividuals}}, {{param_months}})"/>
+          </field>
+          <field whichfield="column 4" pos="17cm" width="5cm">
+            <value text="Total gift amount for the year: "/>
+          </field>
+          <field whichfield="column 5" pos="22cm" width="3cm" format="currency" calculation="SelectTotalCount">
+            <value variable="YearTotal"/>
+          </field>
+        </footer>
+      </level>
+
+      <level name="RecipientLevel2">
+        <header>
+          <field whichfield="header 1" pos="0cm" width="9cm">
+            <value text="Recipient: "/>
+            <value variable="RecipientKey" format="partnerKey"/>
+            <value text="   "/>
+            <value variable="RecipientName"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="RecipientLevel3" calculation="SelectRecipient"/>
+        </detail>
+        <footer>
+          <field whichfield="column 0" pos="0cm" width="6cm" format="text" calculation="SelectTotalCount">
+            <value text="Average number of gifts per month: "/>
+          </field>
+          <field whichfield="column 1" pos="6cm" width="1.5cm"  format="numberformatg3">
+            <value function="div({{TotalCount}}, {{param_months}})"/>
+          </field>
+          <field whichfield="column 2" pos="8.5cm" width="7cm" format="text">
+            <value text="Average gift amount per month: "/>
+          </field>
+          <field whichfield="column 3" pos="15.5cm" width="1.5cm" format="currency">
+            <value function="div({{YearTotal}}, {{param_months}})"/>
+          </field>
+          <field whichfield="column 4" pos="17cm" width="5cm">
+            <value text="Total number of gifts for the year: "/>
+          </field>
+          <field whichfield="column 5" pos="22cm" width="3cm" format="text">
+            <value variable="TotalCount"/>
+          </field>
+        </footer>
+      </level>
+
+      <level name="RecipientLevel3">
+        <header>
+          <field whichfield="header 1" pos="0cm" width="9cm">
+            <value text="Field: "/>
+            <value function="GetFieldOfPartner({{RecipientKey}})"/>
+          </field>
+        </header>
+        <detail>
+          <lowerLevelReport level="DonorLevel" calculation="SelectTotal"></lowerLevelReport>
+        </detail>
+        <footer space="below">
+          <field whichfield="column {January}" line="above">
+            <value function="GetSumLowerReport({{lineId}}, {{January}})"/>
+          </field>
+          <field whichfield="column {February}" line="above">
+            <value function="GetSumLowerReport({{lineId}}, {{February}})"/>
+          </field>
+          <field whichfield="column {March}" line="above">
+            <value function="GetSumLowerReport({{lineId}}, {{March}})"/>
+          </field>
+          <field whichfield="column {April}" line="above">
+            <value function="GetSumLowerReport({{lineId}}, {{April}})"/>
+          </field>
+          <field whichfield="column {May}" line="above">
+            <value function="GetSumLowerReport({{lineId}}, {{May}})"/>
+          </field>
+          <field whichfield="column {June}" line="above">
+            <value function="GetSumLowerReport({{lineId}}, {{June}})"/>
+          </field>
+          <field whichfield="column {July}" line="above">
+            <value function="GetSumLowerReport({{lineId}}, {{July}})"/>
+          </field>
+          <field whichfield="column {August}" line="above">
+            <value function="GetSumLowerReport({{lineId}}, {{August}})"/>
+          </field>
+          <field whichfield="column {September}" line="above">
+            <value function="GetSumLowerReport({{lineId}}, {{September}})"/>
+          </field>
+          <field whichfield="column {October}" line="above">
+            <value function="GetSumLowerReport({{lineId}}, {{October}})"/>
+          </field>
+          <field whichfield="column {November}" line="above">
+            <value function="GetSumLowerReport({{lineId}}, {{November}})"/>
+          </field>
+          <field whichfield="column {December}" line="above">
+            <value function="GetSumLowerReport({{lineId}}, {{December}})"/>
+          </field>
+          <field whichfield="column {Total}" line="above">
+            <value function="GetSumLowerReport({{lineId}}, {{Total}})"/>
+          </field>
+        </footer>
+      </level>
+
+      <level name="DonorLevel">
+        <detail>
+          <field whichfield="columns" />
+        </detail>
+      </level>
+
+    </levels>
+  </report>
 </reports>

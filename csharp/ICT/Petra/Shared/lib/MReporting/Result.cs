@@ -297,6 +297,8 @@ namespace Ict.Petra.Shared.MReporting
     {
         /// <summary>the list of TResult objects</summary>
         private ArrayList results;
+        /// <summary>The message from an exception after CSV export failed</summary>
+        public String ErrorStatus;
 
         /// <summary>the most right column that should be displayed (start counting at 1)</summary>
         private Int32 MaxDisplayColumns;
@@ -326,18 +328,23 @@ namespace Ict.Petra.Shared.MReporting
             TVariant[] descr,
             TVariant[] column)
         {
-            foreach (TResult existingElement in results)
-            {
-                if (existingElement.code == code)
-                {
-                    TLogging.Log("Warning: TResult.AddRow: duplicate row codes! there is already a row with code " +
-                        code);
-                    // throw new Exception("TResult.AddRow: duplicate row codes! there is already a row with code " +
-                    //    code);
-                }
-            }
+//
+// I wonder why we care about this "duplicate code"? Certainly this code generates lots of warnings, but reports are still generated OK:
 
+/*
+ *          foreach (TResult existingElement in results)
+ *          {
+ *              if (existingElement.code == code)
+ *              {
+ *                  TLogging.Log("Warning: TResult.AddRow: duplicate row codes! there is already a row with code " +
+ *                      code);
+ *                  // throw new Exception("TResult.AddRow: duplicate row codes! there is already a row with code " +
+ *                  //    code);
+ *              }
+ *          }
+ */
             TResult element = new TResult(masterRow, childRow, display, depth, code, condition, debit_credit_indicator, header, descr, column);
+
             results.Add(element);
             return element;
         }
@@ -351,6 +358,7 @@ namespace Ict.Petra.Shared.MReporting
         public TResultList()
         {
             MaxDisplayColumns = 0;
+            ErrorStatus = "";
             results = new ArrayList();
         }
 
@@ -825,8 +833,9 @@ namespace Ict.Petra.Shared.MReporting
                 // don't append; use the local encoding, e.g. to support Umlauts
                 csvStream = new StreamWriter(csvfilename, false, System.Text.Encoding.Default);
             }
-            catch (System.Exception)
+            catch (System.Exception ex)
             {
+                ErrorStatus = ex.Message;
                 return false;
             }
 

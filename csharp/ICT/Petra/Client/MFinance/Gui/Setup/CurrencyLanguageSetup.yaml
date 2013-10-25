@@ -46,6 +46,7 @@ RootNode:
                 DetailDecimalLabelPlural: {Label=Plural Decimal}
                 DetailDecimalOptions: {Label=Decimal Format}
                 DetailSpecialCode: {Label=Gender}
+            SortOrder: DetailCurrencyCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

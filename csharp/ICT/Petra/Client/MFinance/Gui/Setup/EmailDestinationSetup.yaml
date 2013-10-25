@@ -41,6 +41,7 @@ RootNode:
             CustomColumns:
                 DetailConditionalValue: {Label=Condition value}
                 DetailEmailAddress: {Label=Email address(es)}
+            SortOrder: DetailFileCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

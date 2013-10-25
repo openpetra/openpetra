@@ -38,6 +38,7 @@ RootNode:
             CustomColumns:
                 DetailGroupId: {Label="Group Code"}
                 DetailGroupName: {Label="Description"}
+            SortOrder: DetailGroupId ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

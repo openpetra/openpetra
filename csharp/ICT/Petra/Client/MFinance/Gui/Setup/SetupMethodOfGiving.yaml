@@ -47,6 +47,7 @@ RootNode:
                 TaxRebateFlag: {Label=Tax Rebate, Type=Boolean}
                 TrustFlag: {Label=Trust, Type=Boolean}
                 Active: {Label=Active, Type=Boolean}
+            SortOrder: AMethodOfGiving.MethodOfGivingCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

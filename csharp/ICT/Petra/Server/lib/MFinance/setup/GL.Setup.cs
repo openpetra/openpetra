@@ -719,15 +719,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static DataTable LoadLocalSummaryCostCentres(Int32 ALedgerNumber)
+        public static DataTable LoadLocalCostCentres(Int32 ALedgerNumber)
         {
             String SqlQuery = "SELECT a_cost_centre_code_c AS CostCentreCode, " +
-                              "a_cost_centre_name_c AS CostCentreName" +
+                              "a_cost_centre_name_c AS CostCentreName, " +
+                              "a_posting_cost_centre_flag_l AS Posting, " +
+                              "a_cost_centre_to_report_to_c AS ReportsTo" +
                               " FROM PUB_a_cost_centre" +
                               " WHERE a_ledger_number_i = " + ALedgerNumber +
-                              " AND a_posting_cost_centre_flag_l=FALSE" +
-                              " AND a_cost_centre_type_c = 'Local'" +
-                              " AND a_cost_centre_to_report_to_c <> '';";
+                              " AND a_cost_centre_type_c = 'Local';";
             DataTable ParentCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "ParentCostCentre", null);
 
             return ParentCostCentreTbl;
@@ -814,6 +814,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             NewCostCentreRow.CostCentreActiveFlag = true;
                             CostCentreTbl.Rows.Add(NewCostCentreRow);
                         }
+                        else    // The cost Centre was found, but the match above was case-insensitive.
+                        {       // So I'm going to use the actual name from the table, otherwise it might break the DB Constraint.
+                            RowCCCode = CostCentreTbl.DefaultView[CostCentreRowIdx].Row["a_cost_centre_code_c"].ToString();
+                        }
 
                         Int32 RowIdx = LinksTbl.DefaultView.Find(Row["PartnerKey"]);
 
@@ -874,19 +878,22 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Int32 ALedgerNumber,
             String AAccountCode)
         {
-            AInspectDS.AAccountProperty.DefaultView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
-                AAccountPropertyTable.GetLedgerNumberDBName(),
-                ALedgerNumber,
-                AAccountPropertyTable.GetAccountCodeDBName(),
-                AAccountCode);
-
-            foreach (DataRowView rv in AInspectDS.AAccountProperty.DefaultView)
+            if (AInspectDS.AAccountProperty != null)
             {
-                AAccountPropertyRow accountPropertyRow = (AAccountPropertyRow)rv.Row;
-                accountPropertyRow.Delete();
-            }
+                AInspectDS.AAccountProperty.DefaultView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                    AAccountPropertyTable.GetLedgerNumberDBName(),
+                    ALedgerNumber,
+                    AAccountPropertyTable.GetAccountCodeDBName(),
+                    AAccountCode);
 
-            AInspectDS.AAccountProperty.DefaultView.RowFilter = "";
+                foreach (DataRowView rv in AInspectDS.AAccountProperty.DefaultView)
+                {
+                    AAccountPropertyRow accountPropertyRow = (AAccountPropertyRow)rv.Row;
+                    accountPropertyRow.Delete();
+                }
+
+                AInspectDS.AAccountProperty.DefaultView.RowFilter = "";
+            }
         }
 
         private static void AddOrRemoveLedgerInitFlag(Int32 ALedgerNumber, String AInitFlagName,
@@ -3101,8 +3108,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 AAnalysisAttributeTable TempAnalAttrTbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AOldCode, Transaction);
 
-                foreach (AAnalysisAttributeRow OldAnalAttribRow in TempAnalAttrTbl.Rows)
+                for (Int32 Idx = TempAnalAttrTbl.Rows.Count - 1; Idx >= 0; Idx--)
                 {
+                    AAnalysisAttributeRow OldAnalAttribRow = (AAnalysisAttributeRow)TempAnalAttrTbl.Rows[Idx];
                     // "a_analysis_attribute"  is the referrent in foreign keys, so I can't just go changing it - I need to make a copy?
                     AAnalysisAttributeRow NewAnalAttribRow = TempAnalAttrTbl.NewRowTyped();
                     DataUtilities.CopyAllColumnValues(OldAnalAttribRow, NewAnalAttribRow);
@@ -3120,12 +3128,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         "a_account_code_c",
                         AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                     UpdateAccountField("a_recurring_trans_anal_attrib",
-                        "a_account_code_c",
-                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
-                    UpdateAccountField("a_thisyearold_trans_anal_attrib",
-                        "a_account_code_c",
-                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
-                    UpdateAccountField("a_prev_year_trans_anal_attrib",
                         "a_account_code_c",
                         AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                     UpdateAccountField("a_ap_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
@@ -3244,7 +3246,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>I can add child accounts to this account if it's a summary account,
-        ///          or if there have never been transactions posted to it.
+        ///          or if there have never been transactions posted to it,
+        ///          or if it's linked to a partner.
         ///
         ///          (If children are added to this account, it will be promoted to a summary account.)
         ///
@@ -3279,8 +3282,19 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 if (!ACanBeParent || ACanDelete)
                 {
                     bool IsInUse = CostCentreCodeHasBeenUsed(ALedgerNumber, ACostCentreCode, Transaction);
-                    ACanBeParent = !IsInUse;    // For posting accounts, I can still add children (and upgrade the account) if there's nothing posted to it yet.
+                    ACanBeParent = !IsInUse;    // For posting accounts, I can still add children (and change the account to summary) if there's nothing posted to it yet.
                     ACanDelete = !IsInUse;      // Once it has transactions posted, I can't delete it, ever.
+                }
+
+                if (ACanBeParent && ACanDelete)     // I need to check whether the Cost Centre has been linked to a partner (but never used).
+                {                                   // If it has, the link must be deleted first.
+                    AValidLedgerNumberTable VlnTbl = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, Transaction);
+
+                    if (VlnTbl.Rows.Count > 0)      // There's a link to a partner!
+                    {
+                        ACanBeParent = false;
+                        ACanDelete = false;
+                    }
                 }
             }
 

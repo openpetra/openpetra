@@ -39,6 +39,7 @@ RootNode:
             CustomColumns:
                 DetailTimeZoneMinimum: {Label=Time Zone Min., Type=Decimal}
                 DetailTimeZoneMaximum: {Label=Time Zone Max., Type=Decimal}            
+            SortOrder: DetailCountryCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

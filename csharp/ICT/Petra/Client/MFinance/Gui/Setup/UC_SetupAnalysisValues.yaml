@@ -34,6 +34,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [AFreeformAnalysis.AnalysisValue, AFreeformAnalysis.Active]
+            SortOrder: AFreeformAnalysis.AnalysisValue ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Height: 70

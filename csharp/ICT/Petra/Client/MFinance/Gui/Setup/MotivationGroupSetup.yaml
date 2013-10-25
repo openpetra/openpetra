@@ -40,6 +40,7 @@ RootNode:
                 DetailMotivationGroupDescription: {Label=Description}
                 DetailGroupStatus: {Label=Assignable, Type=Boolean}
                 DetailMotivationGroupDescLocal: {Label=Description (local)}
+            SortOrder: DetailMotivationGroupCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

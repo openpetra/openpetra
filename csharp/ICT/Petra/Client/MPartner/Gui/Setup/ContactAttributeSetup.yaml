@@ -54,6 +54,7 @@ RootNode:
                 DetailContactAttributeCode: {Label=Attribute Code}
                 DetailContactAttributeDescr: {Label=Description}
                 DetailActive: {Label=Active, Type=Boolean}
+            SortOrder: DetailContactAttributeCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

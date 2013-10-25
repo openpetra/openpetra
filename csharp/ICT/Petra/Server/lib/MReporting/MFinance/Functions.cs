@@ -843,7 +843,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
                     }
                     else
                     {
-                        if (pv_currency_select_c == "Intl")
+                        if ((pv_currency_select_c == "Intl") || (pv_currency_select_c == "International"))
                         {
                             lv_currency_amount_n = Convert.ToDecimal(tab.Rows[0]["a_start_balance_base_n"]) * period.exchangeRateToIntl;
                         }
@@ -861,8 +861,12 @@ namespace Ict.Petra.Server.MReporting.MFinance
                         }
                     }
                 }
+                else // No row returned!
+                {
+                    return 0.0M; // This is mostly so I can put a breakpoint here and catch this eroneous event.
+                }
             }
-            else
+            else  // period != 0
             {
                 lv_currency_amount_n = GetActualValue(period, pv_currency_select_c);
 

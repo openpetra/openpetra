@@ -33,7 +33,7 @@ RootNode:
                 Row2: [txtDetailCostCentreName]
                 Row3: [chkDetailCostCentreActiveFlag]
                 Row4: [pnlStatus]
-        txtDetailCostCentreCode:
+        txtDetailCostCentreCode: {CharacterCasing=Upper }
         btnRename:
         cmbDetailCostCentreType:
             OptionalValues: [Local, Foreign]

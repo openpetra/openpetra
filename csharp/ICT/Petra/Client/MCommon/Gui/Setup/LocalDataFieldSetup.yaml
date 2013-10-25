@@ -38,6 +38,7 @@ RootNode:
                 DetailGroup: {Label=Group Heading}            
                 DetailText: {Label=Label}            
                 DetailDisplayed: {Label=Displayed, Type=Boolean}            
+            SortOrder: DetailGroup ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

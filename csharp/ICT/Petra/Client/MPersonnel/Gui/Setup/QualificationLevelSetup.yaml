@@ -39,6 +39,7 @@ RootNode:
             CustomColumns:
                 DetailQualificationLevel: {Label=Level, Type=Integer}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+            SortOrder: DetailQualificationLevel ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
