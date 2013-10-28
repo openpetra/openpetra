@@ -41,6 +41,7 @@ RootNode:
                 DetailValueCode: {Label=Option}
                 DetailValueDesc: {Label=Description}
                 DetailActive: {Label=Active, Type=Boolean}
+            SortOrder: DetailCategoryCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

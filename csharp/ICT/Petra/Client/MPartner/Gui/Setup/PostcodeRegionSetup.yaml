@@ -64,6 +64,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [DetailRegion]
+            SortOrder: DetailRegion ASC
             ActionFocusRow: FocusedRowChanged
             EnableMultiSelection: false
         grdRanges:

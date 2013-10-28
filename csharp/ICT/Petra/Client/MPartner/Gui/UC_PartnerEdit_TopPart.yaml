@@ -20,7 +20,7 @@ RootNode:
             Controls:
                 Row0: [pnlPartnerInfo, pnlWorkerField]
                 Row1: [pnlClassSpecificName, cmbPartnerStatus]
-                Row2: [pnlClassSpecificDetails, txtStatusUpdated]
+                Row2: [pnlClassSpecificDetails, dtpStatusUpdated]
                 Row3: [pnlAdditionalInfo, txtLastContact]
             ColWidths: [0=Fixed:550, 1=Fixed:200]
             Label: Key Partner Data
@@ -54,7 +54,8 @@ RootNode:
             Width: 100
             
         cmbPartnerStatus: {Label=Partner &Status, DataField=StatusCode, List=PartnerStatusList, Width=100, Validation=true, OnChange=PartnerStatusCodeChangePromotion}
-        txtStatusUpdated:
+        dtpStatusUpdated:
+            DataField: PPartner.StatusChange
             ReadOnly: true
             Width: 100
             Tooltip: Date of the last change of the Partner Status

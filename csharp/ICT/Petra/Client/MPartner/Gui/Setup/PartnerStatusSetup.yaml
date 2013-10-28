@@ -41,6 +41,7 @@ RootNode:
             CustomColumns:
                 DetailPartnerIsActive: {Label=Active Partner, Type=Boolean}            
                 DetailIncludePartnerOnReport: {Label=Include Partners on Reports, Type=Boolean}
+            SortOrder: DetailStatusCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

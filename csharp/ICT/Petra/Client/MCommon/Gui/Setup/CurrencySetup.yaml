@@ -35,6 +35,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [ACurrency.CurrencyCode, ACurrency.CurrencyName, ACurrency.CurrencySymbol, ACurrency.CountryCode, ACurrency.DisplayFormat]
+            SortOrder: ACurrency.CurrencyCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

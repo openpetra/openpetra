@@ -600,6 +600,11 @@ namespace Ict.Petra.Client.CommonForms
         {
             if (FStatusBar != null)
             {
+                if (!FStatusBar.IsHandleCreated)
+                {
+                    return;
+                }
+
                 if (FStatusBar.InvokeRequired)
                 {
                     FStatusBar.Invoke(new WriteCallback(WriteToStatusBar), new object[] { s });

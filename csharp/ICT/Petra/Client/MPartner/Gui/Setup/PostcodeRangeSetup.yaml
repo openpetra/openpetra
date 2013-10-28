@@ -57,6 +57,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [DetailRange, DetailFrom, DetailTo]
+            SortOrder: DetailRange ASC
             ActionFocusRow: FocusedRowChanged
             SortOrder: DetailRange ASC
         pnlDetails:

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -226,7 +226,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 return false;
             }
 
-            mTable = situation.GetDatabaseConnection().SelectDT(mRptCalcResult.ToString(), "", situation.GetDatabaseConnection().Transaction);
+            mTable = situation.GetDatabaseConnection().SelectDT(mRptCalcResult.ToString(), "table", situation.GetDatabaseConnection().Transaction);
 
             foreach (DataRow mRow in mTable.Rows)
             {
@@ -500,8 +500,8 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 situation.GetDatabaseConnection().Transaction);
             string PartnerShortName = PartnerTable.Rows[0][PPartnerTable.GetPartnerShortNameDBName()].ToString();
 
-            situation.GetParameters().Add("NameWithTitle",
-                Ict.Petra.Shared.MPartner.Calculations.FormatShortName(PartnerShortName, eShortNameFormat.eReverseShortname));
+            situation.GetParameters().AddCalculationParameter("NameWithTitle",
+                new TVariant(Ict.Petra.Shared.MPartner.Calculations.FormatShortName(PartnerShortName, eShortNameFormat.eReverseShortname)));
 
             DataSet PartnerLocationsDS = new DataSet();
             PartnerLocationsDS.Tables.Add(new PPartnerLocationTable());
@@ -532,14 +532,14 @@ namespace Ict.Petra.Server.MReporting.MPartner
                         // get the location details into the parameters
                         foreach (DataColumn col in LocationTable.Columns)
                         {
-                            situation.GetParameters().Add(StringHelper.UpperCamelCase(col.ColumnName, true,
+                            situation.GetParameters().AddCalculationParameter(StringHelper.UpperCamelCase(col.ColumnName, true,
                                     true), new TVariant(LocationTable.Rows[0][col.ColumnName]));
                         }
 
                         // also put the phone number and email etc into the parameters
                         foreach (DataColumn col in PartnerLocationTable.Columns)
                         {
-                            situation.GetParameters().Add(StringHelper.UpperCamelCase(col.ColumnName, true,
+                            situation.GetParameters().AddCalculationParameter(StringHelper.UpperCamelCase(col.ColumnName, true,
                                     true), new TVariant(PartnerLocationTable.Rows[0][col.ColumnName]));
                         }
 
@@ -553,8 +553,10 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
                         if (PersonTable.Rows.Count > 0)
                         {
-                            situation.GetParameters().Add("FirstName", new TVariant(PersonTable.Rows[0][PPersonTable.GetFirstNameDBName()]));
-                            situation.GetParameters().Add("FamilyName", new TVariant(PersonTable.Rows[0][PPersonTable.GetFamilyNameDBName()]));
+                            situation.GetParameters().AddCalculationParameter("FirstName",
+                                new TVariant(PersonTable.Rows[0][PPersonTable.GetFirstNameDBName()]));
+                            situation.GetParameters().AddCalculationParameter("FamilyName",
+                                new TVariant(PersonTable.Rows[0][PPersonTable.GetFamilyNameDBName()]));
                         }
                         else
                         {
@@ -567,8 +569,10 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
                             if (FamilyTable.Rows.Count > 0)
                             {
-                                situation.GetParameters().Add("FirstName", new TVariant(FamilyTable.Rows[0][PFamilyTable.GetFirstNameDBName()]));
-                                situation.GetParameters().Add("FamilyName", new TVariant(FamilyTable.Rows[0][PFamilyTable.GetFamilyNameDBName()]));
+                                situation.GetParameters().AddCalculationParameter("FirstName",
+                                    new TVariant(FamilyTable.Rows[0][PFamilyTable.GetFirstNameDBName()]));
+                                situation.GetParameters().AddCalculationParameter("FamilyName",
+                                    new TVariant(FamilyTable.Rows[0][PFamilyTable.GetFamilyNameDBName()]));
                             }
                             else
                             {
@@ -578,7 +582,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
                                 if (PartnerTable.Rows.Count > 0)
                                 {
-                                    situation.GetParameters().Add("FamilyName",
+                                    situation.GetParameters().AddCalculationParameter("FamilyName",
                                         new TVariant(PartnerShortName));
                                 }
                             }
@@ -978,7 +982,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 SqlStatement = SqlStatement.Replace(ReplaceString, Replacement);
             }
 
-            ADataTable = situation.GetDatabaseConnection().SelectDT(SqlStatement, "", situation.GetDatabaseConnection().Transaction);
+            ADataTable = situation.GetDatabaseConnection().SelectDT(SqlStatement, "table", situation.GetDatabaseConnection().Transaction);
 
             return true;
         }

@@ -116,7 +116,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             DBAccess.GDBAccessObj.RollbackTransaction();
 
-            return null;
+            return MainDS;
         }
 
         /// <summary>

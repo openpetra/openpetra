@@ -50,6 +50,7 @@ RootNode:
                 DrAccountCode: {Label=DR Account Code}
                 CostCentreCode: {Label=Cost Centre Code}
                 AccountCode: {Label=Account Code}            
+            SortOrder: AFeesPayable.FeeCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

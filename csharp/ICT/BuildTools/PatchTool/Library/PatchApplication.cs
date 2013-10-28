@@ -106,10 +106,10 @@ namespace Ict.Tools.PatchTool.Library
                 new TPetraPatchTools(TAppSettingsManager.GetValue("OpenPetra.Path"),
                     TAppSettingsManager.GetValue("OpenPetra.Path") + Path.DirectorySeparatorChar + "bin" + TPatchTools.OPENPETRA_VERSIONPREFIX,
                     TAppSettingsManager.GetValue("OpenPetra.PathTemp"),
-                    "",                  // appOpts.GetValue("OpenPetra.Path.Dat"),
+                    "",
                     "",
                     TAppSettingsManager.GetValue("OpenPetra.Path.Patches"),
-                    TAppSettingsManager.GetValue("OpenPetra.Path.RemotePatches"));
+                    TAppSettingsManager.GetValue("OpenPetra.Path.RemotePatches", false));
 
             if (patchTools.CheckForRecentPatch())
             {

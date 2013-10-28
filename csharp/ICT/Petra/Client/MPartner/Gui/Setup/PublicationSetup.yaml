@@ -36,6 +36,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [DetailPublicationCode, DetailPublicationDescription, DetailFrequencyCode, DetailValidPublication, DetailPublicationLabelCode]
+            SortOrder: DetailPublicationCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

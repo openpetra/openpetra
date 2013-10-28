@@ -652,7 +652,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             ReturnValue = "";
             strSql = "SELECT a_cost_centre_code_c " + "FROM PUB_a_cost_centre " + "WHERE a_ledger_number_i = " + StringHelper.IntToStr(
                 pv_ledger_number_i) + " AND a_cost_centre_to_report_to_c = \"\"";
-            tab = situation.GetDatabaseConnection().SelectDT(strSql, "", situation.GetDatabaseConnection().Transaction);
+            tab = situation.GetDatabaseConnection().SelectDT(strSql, "table", situation.GetDatabaseConnection().Transaction);
 
             if (tab.Rows.Count > 0)
             {
@@ -843,7 +843,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
                     }
                     else
                     {
-                        if (pv_currency_select_c == "Intl")
+                        if ((pv_currency_select_c == "Intl") || (pv_currency_select_c == "International"))
                         {
                             lv_currency_amount_n = Convert.ToDecimal(tab.Rows[0]["a_start_balance_base_n"]) * period.exchangeRateToIntl;
                         }
@@ -861,8 +861,12 @@ namespace Ict.Petra.Server.MReporting.MFinance
                         }
                     }
                 }
+                else // No row returned!
+                {
+                    return 0.0M; // This is mostly so I can put a breakpoint here and catch this eroneous event.
+                }
             }
-            else
+            else  // period != 0
             {
                 lv_currency_amount_n = GetActualValue(period, pv_currency_select_c);
 

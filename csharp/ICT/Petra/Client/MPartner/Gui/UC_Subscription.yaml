@@ -32,7 +32,7 @@ RootNode:
         grpIssues: {Label=Issues, Stretch=horizontally}
             Controls: [txtPSubscriptionNumberIssuesReceived, dtpPSubscriptionFirstIssue, dtpPSubscriptionLastIssue, btnEditIssues]
 
-        cmbPSubscriptionPublicationCode: {List=PublicationInfoList, OnChange=PublicationCodeChanged}
+        cmbPSubscriptionPublicationCode: {List=PublicationInfoList, OnChange=PublicationCodeChanged, Width=380}
             Label: Publication Code
         cmbPSubscriptionSubscriptionStatus: {OnChange=PublicationStatusChanged}
             Label: Subscription Status
@@ -47,9 +47,9 @@ RootNode:
             Label: Complimentary
         txtPSubscriptionPublicationCopies: {Format=Integer}
             Label: Copies
-        cmbPSubscriptionReasonSubsGivenCode: {List=ReasonSubscriptionGivenList}
+        cmbPSubscriptionReasonSubsGivenCode: {List=ReasonSubscriptionGivenList, Width=400}
             Label: Reason Given
-        cmbPSubscriptionReasonSubsCancelledCode: {List=ReasonSubscriptionCancelledList}
+        cmbPSubscriptionReasonSubsCancelledCode: {List=ReasonSubscriptionCancelledList, Width=400}
             Label: Reason Ended
         txtPSubscriptionGiftFromKey:
             Label: Gift Given By

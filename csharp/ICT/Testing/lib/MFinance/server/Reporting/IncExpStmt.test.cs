@@ -47,6 +47,7 @@ using Ict.Petra.Server.MReporting.UIConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.Interfaces.MReporting;
+using Tests.MReporting.Tools;
 
 namespace Tests.MFinance.Server.Reporting
 {
@@ -92,9 +93,9 @@ namespace Tests.MFinance.Server.Reporting
             SpecificParameters.Add("param_costcentreoptions", "SelectedCostCentres");
             string StandardCostCentre = TGLTransactionWebConnector.GetStandardCostCentre(FLedgerNumber);
             SpecificParameters.Add("param_cost_centre_codes", StandardCostCentre);
-            TReportTestingTools.CalculateReport(FLedgerNumber, testFile, SpecificParameters);
+            TReportTestingTools.CalculateReport(testFile, SpecificParameters, FLedgerNumber);
 
-            TReportTestingTools.TestResult(FLedgerNumber, testFile);
+            TReportTestingTools.TestResult(testFile, FLedgerNumber);
         }
     }
 }

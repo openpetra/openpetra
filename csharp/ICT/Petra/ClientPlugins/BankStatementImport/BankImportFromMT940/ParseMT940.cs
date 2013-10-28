@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -237,12 +237,15 @@ namespace Ict.Plugins.Finance.SwiftParser
                     }
                     else if (key == 30)
                     {
+                        /* this can be the BIC as well */
                         transaction.bankCode = value;
                     }
                     else if (key == 31)
                     {
                         // could use WithoutLeadingZeros, but then this must be stored in p_banking_details also without leading zeros
                         // which is not the case at the moment, and would increase complexity of sql queries
+
+                        /* this can be the IBAN as well */
                         transaction.accountCode = value;
                     }
                     else if ((key == 32) || (key == 33))

@@ -41,6 +41,7 @@ RootNode:
                 DetailMotivationDetailCode: {Label=Motivation Detail}
                 DetailMotivationDetailDesc: {Label=Description}
                 DetailMotivationStatus: {Label=Active, Type=Boolean}            
+            SortOrder: DetailMotivationGroupCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

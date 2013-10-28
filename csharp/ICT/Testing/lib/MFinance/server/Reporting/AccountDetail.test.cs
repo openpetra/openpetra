@@ -47,6 +47,7 @@ using Ict.Petra.Server.MReporting.UIConnectors;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.Interfaces.MReporting;
+using Tests.MReporting.Tools;
 
 namespace Tests.MFinance.Server.Reporting
 {
@@ -91,9 +92,9 @@ namespace Tests.MFinance.Server.Reporting
             SpecificParameters.Add("param_end_period_i", 1);
             SpecificParameters.Add("param_start_date", new TVariant(new DateTime(DateTime.Today.Year, 1, 1)));
             SpecificParameters.Add("param_end_date", new TVariant(new DateTime(DateTime.Today.Year, 1, 31)));
-            TReportTestingTools.CalculateReport(FLedgerNumber, testFile, SpecificParameters);
+            TReportTestingTools.CalculateReport(testFile, SpecificParameters, FLedgerNumber);
 
-            TReportTestingTools.TestResult(FLedgerNumber, testFile);
+            TReportTestingTools.TestResult(testFile, FLedgerNumber);
         }
     }
 }

@@ -278,7 +278,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             txtDetailEngAccountCodeLongDesc.LostFocus += new EventHandler(AutoFillDescriptions);
 
             FIAmUpdating = false;
-            FNameForNewAccounts = Catalog.GetString("NewAccount");
+            FNameForNewAccounts = Catalog.GetString("NEWACCOUNT");
 
             // AlanP March 2013:  Use a try/catch block because nUnit testing on this screen does not support Drag/Drop in multi-threaded model
             // It is easier to do this than to configure all the different test execution methods to use STA
@@ -298,7 +298,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         void FPetraUtilsObject_ControlChanged(Control Sender)
         {
-            FCurrentNode.Text = NodeLabel(txtDetailAccountCode.Text, txtDetailEngAccountCodeShortDesc.Text);
+            if (FCurrentNode != null)
+            {
+                FCurrentNode.Text = NodeLabel(txtDetailAccountCode.Text, txtDetailEngAccountCodeShortDesc.Text);
+            }
         }
 
         void chkDetailForeignCurrencyFlag_CheckedChanged(object sender, EventArgs e)
@@ -599,7 +602,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            if (strOldDetailAccountCode.IndexOf(Catalog.GetString(FNameForNewAccounts)) == 0)  // This is the first time the name is being set?
+            if (strOldDetailAccountCode.IndexOf(FNameForNewAccounts) == 0)  // This is the first time the name is being set?
             {
                 FPetraUtilsObject_ControlChanged(txtDetailAccountCode);
                 return;
@@ -654,9 +657,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // ChangeAccountCodeValue() needs this value!
             strOldDetailAccountCode = newName;
 
-            AAccountRow parentAccount =
-                (AAccountRow)FMainDS.AAccount.Rows.Find(new object[] { FLedgerNumber,
-                                                                       ((AccountNodeDetails)FCurrentNode.Tag).DetailRow.ReportingAccountCode });
+            AAccountRow parentAccount = ((AccountNodeDetails)FCurrentNode.Tag).AccountRow;
 
             AAccountRow newAccount = FMainDS.AAccount.NewRowTyped();
             newAccount.AccountCode = newName;
@@ -790,7 +791,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (!NodeDetails.CanDelete.HasValue)
             {
-                MessageBox.Show("Fault: CanDelete status is unknown.");
+                MessageBox.Show(Catalog.GetString("Fault: CanDelete status is unknown."), Catalog.GetString(
+                        "Delete Account"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -798,9 +800,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 MessageBox.Show(
                     String.Format(Catalog.GetString(
-                            "Account {0} cannot be deleted because it has already been used in GL transactions, or it is a system or summary account; you can deactivate the account, but not delete it."),
+                            "Account {0} cannot be deleted because it has already been used in GL transactions, or it is a system or summary account. You can deactivate the account, but not delete it."),
                         AccountCode),
-                    Catalog.GetString("Account cannot be deleted"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Catalog.GetString("Delete Account"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
@@ -812,24 +814,66 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 NodeToBeDeleted.Remove();
                 trvAccounts.EndUpdate();
 
-                // TODO: what about other account hierarchies, that are still referencing this account?
+                //
+                // If this account has analysis Attributes,
+                // I need to remove them.
+
+                if (FMainDS.AAnalysisAttribute != null)
+                {
+                    DataView DeleteThese = new DataView(FMainDS.AAnalysisAttribute);
+                    DeleteThese.RowFilter = String.Format("a_ledger_number_i={0} AND a_account_code_c='{1}'",
+                        FLedgerNumber, AccountCode);
+
+                    foreach (DataRowView rv in DeleteThese)
+                    {
+                        DataRow TempRow = rv.Row;
+                        TempRow.Delete();
+                    }
+                }
+
                 AAccountHierarchyDetailRow AccountHDetailToBeDeleted = (AAccountHierarchyDetailRow)FMainDS.AAccountHierarchyDetail.Rows.Find(
                     new object[] { FLedgerNumber, FSelectedHierarchy, AccountCode });
                 AccountHDetailToBeDeleted.Delete();
-                AAccountRow AccountToBeDeleted = (AAccountRow)FMainDS.AAccount.Rows.Find(
-                    new object[] { FLedgerNumber, AccountCode });
-                AccountToBeDeleted.Delete();
-                FPetraUtilsObject.SetChangedFlag();
 
-                // If the parent of the deleted node has no further children, mark it as posting account.
-                // TODO: this also works only if there is just one account hierarchy
-                if (trvAccounts.SelectedNode.Nodes.Count == 0)
+                //
+                // I can delete this account if it no longer appears in any Hieararchy.
+
+                DataView AHD_stillInUse = new DataView(FMainDS.AAccountHierarchyDetail);
+                AHD_stillInUse.RowFilter = String.Format("a_ledger_number_i={0} AND a_reporting_account_code_c='{1}'",
+                    FLedgerNumber, AccountCode);
+
+                if (AHD_stillInUse.Count == 0)
                 {
-                    NodeDetails = GetAccountCodeAttributes(trvAccounts.SelectedNode); // If the parent account is new (not saved), this will set CanDelete.
-                    tbbDeleteUnusedAccount.Enabled = (NodeDetails.CanDelete.HasValue ? NodeDetails.CanDelete.Value : false);
-                    AAccountRow AccountParent = NodeDetails.AccountRow;
-                    AccountParent.PostingStatus = true;
+                    AAccountRow AccountToBeDeleted = (AAccountRow)FMainDS.AAccount.Rows.Find(
+                        new object[] { FLedgerNumber, AccountCode });
+                    AccountToBeDeleted.Delete();
                 }
+                else
+                {
+                    MessageBox.Show(String.Format(
+                            Catalog.GetString(
+                                "The account {0} is removed from the {1} hierarchy, but not deleted, since it remains part of another heirarchy."),
+                            AccountCode,
+                            FSelectedHierarchy),
+                        Catalog.GetString("Delete Account"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+
+                // If the account [parent of the deleted node] now has no accounts reporting to it (in any hierarchies), mark it as posting account.
+                NodeDetails = GetAccountCodeAttributes(trvAccounts.SelectedNode);
+                tbbDeleteUnusedAccount.Enabled = (NodeDetails.CanDelete.HasValue ? NodeDetails.CanDelete.Value : false);
+                AAccountRow AccountParent = NodeDetails.AccountRow;
+                AHD_stillInUse.RowFilter = String.Format("a_ledger_number_i={0} AND a_account_code_to_report_to_c='{1}'",
+                    FLedgerNumber, AccountParent.AccountCode);
+
+                if (AHD_stillInUse.Count == 0)  // No-one now reports to this account, so I can mark it as "Posting"
+                {
+                    AccountParent.PostingStatus = true;
+                    // It's possible this account could now be deleted, but the user would need to save and re-load first,
+                    // because the server still has it down as a summary account.
+                }
+
+                FPetraUtilsObject.SetChangedFlag();
             }
         }
 
@@ -842,6 +886,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 AutoFillDescriptions(null, null);
                 GetDetailsFromControls(GetSelectedDetailRowManual());
+                //
+                // The auto-generated code doesn't get the details from the UC_AnalasisAttributes control,
+                // so I need to do that here:
+                ucoAccountAnalysisAttributes.GetDataFromControls();
+
+                //
+                // I need to ensure that the AccountHierarchyDetail row has the same AccountCode as the Account Row
+                AccountNodeDetails nodeDetails = (AccountNodeDetails)FCurrentNode.Tag;
+                nodeDetails.DetailRow.ReportingAccountCode = nodeDetails.AccountRow.AccountCode;
                 FCurrentNode.Text = NodeLabel(GetSelectedDetailRowManual());
             }
         }
@@ -887,7 +940,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     if (strOldDetailAccountCode.IndexOf(FNameForNewAccounts) < 0) // If they're just changing this from the initial value, don't show warning.
                     {
                         if (MessageBox.Show(String.Format(Catalog.GetString(
-                                        "You have changed the Account Code from '{0}' to '{1}'.\r\n\r\nPlease confirm that you want to rename this account by choosing 'OK'."),
+                                        "You have changed the Account Code from '{0}' to '{1}'.\r\n\r\n" +
+                                        "Please confirm that you want to rename this account by choosing 'OK'.\r\n\r\n" +
+                                        "(Renaming will take a few moments, then the form will be re-loaded.)"),
                                     strOldDetailAccountCode,
                                     strNewDetailAccountCode),
                                 Catalog.GetString("Rename Account: Confirmation"), MessageBoxButtons.OKCancel,
@@ -897,6 +952,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             return false;
                         }
                     }
+
+                    this.Cursor = Cursors.WaitCursor;
+                    this.Refresh();
 
                     FRecentlyUpdatedDetailAccountCode = strNewDetailAccountCode;
                     AccountNodeDetails NodeDetails = (AccountNodeDetails)trvAccounts.SelectedNode.Tag;
@@ -957,6 +1015,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         {
                             FStatus += Catalog.GetString("Updating Account Code change - please wait.\r\n");
                             txtStatus.Text = FStatus;
+                            txtStatus.Refresh();
                             TVerificationResultCollection VerificationResults;
 
                             // If this code was previously in the DB, I need to assume that there may be transactions posted to it.
@@ -966,13 +1025,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             bool Success = TRemote.MFinance.Setup.WebConnectors.RenameAccountCode(strOldDetailAccountCode,
                                 strNewDetailAccountCode,
                                 FLedgerNumber,
-                                out VerificationResults);
+                                out VerificationResults);                                                                       // This call takes ages..
 
                             if (Success)
                             {
                                 FIAmUpdating = true;
                                 FMainDS.Clear();
-                                FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));
+                                FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));      // and this also takes a while!
                                 strOldDetailAccountCode = "";
                                 FPetraUtilsObject.HasChanges = false;
                                 PopulateTreeView();
@@ -995,9 +1054,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         btnRename.Visible = false;
                     } // if changeAccepted
 
+                    this.Cursor = Cursors.Default;
                 } // if changed
 
-            } // if not handling the same change than before (prevents this method to be run several times for a single change)
+            } // if not handling the same change as before (prevents this method running several times for a single change!)
 
             return changeAccepted;
         }
