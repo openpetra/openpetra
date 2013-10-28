@@ -16,15 +16,23 @@ RootNode:
         actCancel: {Label=&Cancel, ActionClick=BtnCancel_Click}
     Controls:
         pnlContent:
-            Controls: [pnlRegionName, pnlGrid, pnlDetails]
+            Controls: [pnlRegionName, pnlGridAndModal, pnlDetails]
             Dock: Fill
         pnlRegionName:
             Dock: Top
             Controls: [txtRegionName]
             Visible: false
+        pnlGridAndModal:
+            Controls: [pnlGrid, pnlAcceptCancelButtons]
+            ControlsOrientation: horizontal
+            Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails, pnlAcceptCancelButtons]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailRange, txtDetailFrom, txtDetailTo]
+            FindControls: [txtDetailRange, txtDetailFrom, txtDetailTo]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
