@@ -121,21 +121,21 @@ namespace {#NAMESPACE}
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
-{#IFDEF MASTERTABLE OR DETAILTABLE}
-            BuildValidationControlsDict();
-{#ENDIF MASTERTABLE OR DETAILTABLE}
-{#IFDEF SHOWDETAILS}       
-            SetPrimaryKeyControl();
-{#ENDIF SHOWDETAILS}
-{#IFDEF BUTTONPANEL}
-      FinishButtonPanelSetup();
-{#ENDIF BUTTONPANEL}
-{#IFDEF FILTERANDFIND}
-      SetupFilterAndFindControls();
-{#ENDIF FILTERANDFIND}
             ShowData();
         }
 
+{#IFDEF MASTERTABLE OR DETAILTABLE}
+        BuildValidationControlsDict();
+{#ENDIF MASTERTABLE OR DETAILTABLE}
+{#IFDEF SHOWDETAILS}       
+        SetPrimaryKeyControl();
+{#ENDIF SHOWDETAILS}
+{#IFDEF BUTTONPANEL}
+        FinishButtonPanelSetup();
+{#ENDIF BUTTONPANEL}
+{#IFDEF FILTERANDFIND}
+        SetupFilterAndFindControls();
+{#ENDIF FILTERANDFIND}
         SelectRowInGrid(1);
     }
 #endregion
@@ -1272,7 +1272,6 @@ namespace {#NAMESPACE}
     /// auto generated
     public void RunOnceOnActivation()
     {
-        SelectRowInGrid(1);
         {#RUNONCEINTERFACEIMPLEMENTATION}
     }
 
