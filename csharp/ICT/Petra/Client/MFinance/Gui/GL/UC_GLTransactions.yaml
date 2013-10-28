@@ -56,6 +56,7 @@ RootNode:
                 AnalysisTypeCode: {Label=Type, Type=String}
             ActionFocusRow: AnalysisAttributesGridFocusRow
             ActionClick: AnalysisAttributesGridClick
+            Tooltip: Use cursor keys to select and edit an Analysis Attribute
 
         lblAnalAttributes:
             Label: Analysis Attributes
