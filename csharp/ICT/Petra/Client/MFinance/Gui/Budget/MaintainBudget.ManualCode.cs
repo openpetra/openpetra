@@ -222,7 +222,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             bool bMoreThan12 = (FNumberOfPeriods > 12);
             bool bMoreThan13 = (FNumberOfPeriods > 13);
-            
+
             txtPeriod13Amount.Visible = bMoreThan12;
             lblPeriod13Amount.Visible = bMoreThan12;
             txtPeriod13Index.Visible = bMoreThan12;

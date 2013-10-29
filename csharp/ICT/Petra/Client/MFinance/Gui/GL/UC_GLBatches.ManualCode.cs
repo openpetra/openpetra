@@ -284,8 +284,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (ARow == null)
             {
                 pnlDetails.Enabled = false;
-                ((TFrmGLBatch)this.ParentForm).DisableJournals();
-                ((TFrmGLBatch)this.ParentForm).DisableTransactions();
+                ((TFrmGLBatch) this.ParentForm).DisableJournals();
+                ((TFrmGLBatch) this.ParentForm).DisableTransactions();
                 EnableButtonControl(false);
                 ClearDetailControls();
                 return;
@@ -303,7 +303,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             UpdateBatchPeriod(null, null);
 
             UpdateChangeableStatus();
-            ((TFrmGLBatch)this.ParentForm).EnableJournals();
+            ((TFrmGLBatch) this.ParentForm).EnableJournals();
         }
 
         /// <summary>
@@ -1032,7 +1032,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         void RefreshFilter(Object sender, EventArgs e)
         {
-            if (FSuppressRefreshFilter) return;
+            if (FSuppressRefreshFilter)
+            {
+                return;
+            }
 
             //Console.WriteLine("{0}: RefreshFilter", DateTime.Now.ToLongTimeString());
             int batchNumber = 0;
@@ -1498,7 +1501,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RefreshPeriods(Object sender, EventArgs e)
         {
-            if (FSuppressRefreshPeriods) return;
+            if (FSuppressRefreshPeriods)
+            {
+                return;
+            }
 
             //Console.WriteLine("{0}: RefreshPeriods", DateTime.Now.ToLongTimeString());
             TCmbAutoComplete cmbYearFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearFilter");
