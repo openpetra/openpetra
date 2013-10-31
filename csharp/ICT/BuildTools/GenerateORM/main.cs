@@ -207,7 +207,7 @@ namespace Ict.Tools.GenerateORM
                             "Ict.Petra.Shared.MCommon.Validation",
                             "Common.Validation");
 
-                        TGenerateTableList.WriteTableList(store, cmdLine.GetOptValue("outputshared") + Path.DirectorySeparatorChar + "TableList.cs");
+                        TGenerateTableList.WriteTableList(store, cmdLine.GetOptValue("outputshared") + Path.DirectorySeparatorChar + "TableList-generated.cs");
                         TGenerateTableList.WriteDBClean(store, Path.GetDirectoryName(cmdLine.GetOptValue(
                                     "petraxml")) + Path.DirectorySeparatorChar + "basedata" + Path.DirectorySeparatorChar + "clean.sql");
                     }
