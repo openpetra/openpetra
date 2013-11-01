@@ -815,6 +815,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     ExtractMaster[0].KeyCount = ExtractTable.Rows.Count;
 
                     ExtractTable.ThrowAwayAfterSubmitChanges = true; // no need to keep data as this increases speed significantly
+
                     if (MExtractAccess.SubmitChanges(ExtractTable, WriteTransaction, out AVerificationResults))
                     {
                         ResultValue = MExtractMasterAccess.SubmitChanges(ExtractMaster, WriteTransaction, out AVerificationResults);
@@ -911,7 +912,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
 
                 // Rows are sorted by partner key. Create a list of location keys per partner and determine
                 // the best of those addresses.
-                for (int ii=NumberOfPartnerRows-1; ii>=0; ii--)
+                for (int ii = NumberOfPartnerRows - 1; ii >= 0; ii--)
                 {
                     partnerRow = APartnerKeysTable.Rows[ii];
                     PartnerKey = Convert.ToInt64(partnerRow[APartnerKeyColumn]);
@@ -920,10 +921,10 @@ namespace Ict.Petra.Server.MPartner.Extracts
                         && (PreviousPartnerKey != -1))
                     {
                         if (!DetermineAndAddBestLocationKey(PreviousPartnerKey, LocationKeyList,
-                                                            ref APartnerLocationKeysTable, ATransaction))
+                                ref APartnerLocationKeysTable, ATransaction))
                         {
                             // if no address could be found then remove this partner
-                            APartnerKeysTable.Rows[ii+1].Delete();
+                            APartnerKeysTable.Rows[ii + 1].Delete();
                         }
                         else
                         {
@@ -932,7 +933,6 @@ namespace Ict.Petra.Server.MPartner.Extracts
                             LocationKeyList.Add(new TLocationPK(Convert.ToInt64(partnerRow[ASiteKeyColumn]),
                                     Convert.ToInt32(partnerRow[ALocationKeyColumn])));
                         }
-
                     }
                     else
                     {
@@ -947,7 +947,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
 
                 // process last partner key after loop through all records
                 if (!DetermineAndAddBestLocationKey(PreviousPartnerKey, LocationKeyList,
-                                                    ref APartnerLocationKeysTable, ATransaction))
+                        ref APartnerLocationKeysTable, ATransaction))
                 {
                     // if no address could be found then remove this partner
                     APartnerKeysTable.Rows[0].Delete();
@@ -957,13 +957,13 @@ namespace Ict.Petra.Server.MPartner.Extracts
             {
                 // If no location information was retrieved with earlier query then find best address
                 // for partner.
-                for (int ii=NumberOfPartnerRows-1; ii>=0; ii--)
+                for (int ii = NumberOfPartnerRows - 1; ii >= 0; ii--)
                 {
                     partnerRow = APartnerKeysTable.Rows[ii];
                     PartnerKey = Convert.ToInt64(partnerRow[APartnerKeyColumn]);
 
                     if (!DetermineAndAddBestLocationKey(PartnerKey, LocationKeyList,
-                                                        ref APartnerLocationKeysTable, ATransaction))
+                            ref APartnerLocationKeysTable, ATransaction))
                     {
                         // if no address could be found then remove this partner
                         partnerRow.Delete();
@@ -1037,11 +1037,11 @@ namespace Ict.Petra.Server.MPartner.Extracts
                 PartnerLocationKeyRow[PPartnerLocationTable.GetSiteKeyDBName()] = BestLocationPK.SiteKey;
                 PartnerLocationKeyRow[PPartnerLocationTable.GetLocationKeyDBName()] = BestLocationPK.LocationKey;
                 APartnerLocationKeysTable.Rows.Add(PartnerLocationKeyRow);
-                return true; 
+                return true;
             }
             else
             {
-                return false;                
+                return false;
             }
         }
     }
