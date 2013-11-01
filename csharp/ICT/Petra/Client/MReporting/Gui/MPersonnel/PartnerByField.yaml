@@ -78,7 +78,7 @@ RootNode:
         ucoAddress:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
             Width: 500
-            Height: 180
+            Height: 220
         ucoChkFilter:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
             Width: 200

@@ -93,16 +93,12 @@ namespace Ict.Petra.Server.MPartner.Common
                     try
                     {
                         SelectSQL =
-
-//                            "SELECT *" +
-//                            "  FROM PUB_" + PPartnerLocationTable.GetTableDBName() +
-//                            " WHERE " + PPartnerLocationTable.GetPartnerKeyDBName() + " = ?" +
-//                            "   AND (NOT ? = true OR (? = true AND " + PPartnerLocationTable.GetSendMailDBName() + " = true))";
                             "SELECT *" +
                             "  FROM PUB_" + PPartnerLocationTable.GetTableDBName() +
                             " WHERE " + PPartnerLocationTable.GetPartnerKeyDBName() + " = ?" +
                             "   AND (NOT ? = true OR (? = true AND " + PPartnerLocationTable.GetSendMailDBName() + " = true))" +
-                            "   AND ((? = true AND (" + PPartnerLocationTable.GetDateEffectiveDBName() + " <= ?" +
+                            "   AND ((? = true AND ((" + PPartnerLocationTable.GetDateEffectiveDBName() + " <= ?" +
+                            "          OR " + PPartnerLocationTable.GetDateEffectiveDBName() + " IS NULL)" +
                             "     AND (" + PPartnerLocationTable.GetDateGoodUntilDBName() + " >= ?" +
                             "          OR " + PPartnerLocationTable.GetDateGoodUntilDBName() + " IS NULL)))" +
                             "     OR (? = true AND " + PPartnerLocationTable.GetDateEffectiveDBName() + " > ?)" +
