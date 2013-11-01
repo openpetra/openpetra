@@ -171,6 +171,7 @@ useful parameters
       <include name="**/*.generated.refs" />
       <include name="**/*.dll.xml" />
       <include name="tmp/**/AssemblyInfo.cs" />
+      <exclude name="**/test*-generated.*cs" />
     </fileset>
   </delete>
 </target>

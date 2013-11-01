@@ -60,7 +60,13 @@ namespace SourceGrid.Selection
                 // AlanP: Sep 2013.  The active position is now set to the specified row
                 // Prior to this change it was set to the value it had on entry, which was often Empty
                 //   because ResetSelection was called just before this call.
-                this.ActivePosition = new Position(row, 0);
+                // AlanP: Oct 2013.  Added the code that sets (preserves) the column as well as the row.  Previous Sep 2013 fix always set column to 0
+                int column = -1;
+                if (row >= 0)
+                {
+                    column = ActivePosition.IsEmpty() ? 0 : ActivePosition.Column;
+                }
+                this.ActivePosition = new Position(row, column);
 
                 if (!m_SuppressSelectionChangedEvent)
                 {

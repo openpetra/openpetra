@@ -84,6 +84,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 FLedgerNumber = value;
 
                 LoadBudgets();
+
+                UpdateRecordNumberDisplay();
             }
         }
 
@@ -218,80 +220,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true, true);
 
-            if (FNumberOfPeriods == 12)
-            {
-                txtPeriod07Amount.Top = txtPeriod08Amount.Top;
-                txtPeriod07Amount.Left = txtPeriod08Amount.Left;
-                txtPeriod08Amount.Top = txtPeriod09Amount.Top;
-                txtPeriod08Amount.Left = txtPeriod09Amount.Left;
-                txtPeriod09Amount.Top = txtPeriod10Amount.Top;
-                txtPeriod09Amount.Left = txtPeriod10Amount.Left;
-                txtPeriod10Amount.Top = txtPeriod11Amount.Top;
-                txtPeriod10Amount.Left = txtPeriod11Amount.Left;
-                txtPeriod11Amount.Top = txtPeriod12Amount.Top;
-                txtPeriod11Amount.Left = txtPeriod12Amount.Left;
-                txtPeriod12Amount.Top = txtPeriod13Amount.Top;
-                txtPeriod12Amount.Left = txtPeriod13Amount.Left;
-                txtTotalAdhocAmount.Top = txtPeriod14Amount.Top;
-                txtTotalAdhocAmount.Left = txtPeriod14Amount.Left;
-                lblPeriod14Amount.Text = lblTotalAdhocAmount.Text;
-                lblPeriod13Amount.Text = lblPeriod12Amount.Text;
-                lblPeriod12Amount.Text = lblPeriod11Amount.Text;
-                lblPeriod11Amount.Text = lblPeriod10Amount.Text;
-                lblPeriod10Amount.Text = lblPeriod09Amount.Text;
-                lblPeriod09Amount.Text = lblPeriod08Amount.Text;
-                lblPeriod08Amount.Text = lblPeriod07Amount.Text;
-                lblPeriod07Amount.Visible = false;
-                txtPeriod14Amount.Visible = false;
-                lblPeriod14Amount.Visible = true;
-                lblTotalAdhocAmount.Visible = false;
+            bool bMoreThan12 = (FNumberOfPeriods > 12);
+            bool bMoreThan13 = (FNumberOfPeriods > 13);
 
-                txtPeriod07Index.Top = txtPeriod08Index.Top;
-                txtPeriod07Index.Left = txtPeriod08Index.Left;
-                txtPeriod08Index.Top = txtPeriod09Index.Top;
-                txtPeriod08Index.Left = txtPeriod09Index.Left;
-                txtPeriod09Index.Top = txtPeriod10Index.Top;
-                txtPeriod09Index.Left = txtPeriod10Index.Left;
-                txtPeriod10Index.Top = txtPeriod11Index.Top;
-                txtPeriod10Index.Left = txtPeriod11Index.Left;
-                txtPeriod11Index.Top = txtPeriod12Index.Top;
-                txtPeriod11Index.Left = txtPeriod12Index.Left;
-                txtPeriod12Index.Top = txtPeriod13Index.Top;
-                txtPeriod12Index.Left = txtPeriod13Index.Left;
-                txtInflateBaseTotalAmount.Top = txtPeriod14Index.Top;
-                txtInflateBaseTotalAmount.Left = txtPeriod14Index.Left;
-                lblPeriod14Index.Text = lblInflateBaseTotalAmount.Text;
-                lblPeriod13Index.Text = lblPeriod12Index.Text;
-                lblPeriod12Index.Text = lblPeriod11Index.Text;
-                lblPeriod11Index.Text = lblPeriod10Index.Text;
-                lblPeriod10Index.Text = lblPeriod09Index.Text;
-                lblPeriod09Index.Text = lblPeriod08Index.Text;
-                lblPeriod08Index.Text = lblPeriod07Index.Text;
-                lblPeriod07Index.Visible = false;
-                txtPeriod14Index.Visible = false;
-                lblPeriod14Index.Visible = true;
-                lblInflateBaseTotalAmount.Visible = false;
-            }
-            else if (FNumberOfPeriods == 13)
-            {
-                txtPeriod14Amount.Visible = false;
-                lblPeriod14Amount.Visible = false;
+            txtPeriod13Amount.Visible = bMoreThan12;
+            lblPeriod13Amount.Visible = bMoreThan12;
+            txtPeriod13Index.Visible = bMoreThan12;
+            lblPeriod13Index.Visible = bMoreThan12;
 
-                txtPeriod14Index.Visible = false;
-                lblPeriod14Index.Visible = false;
-            }
-            else if (FNumberOfPeriods == 14)
-            {
-                txtPeriod13Amount.Visible = true;
-                lblPeriod13Amount.Visible = true;
-                txtPeriod14Amount.Visible = true;
-                lblPeriod14Amount.Visible = true;
-
-                txtPeriod13Index.Visible = true;
-                lblPeriod13Index.Visible = true;
-                txtPeriod14Index.Visible = true;
-                lblPeriod14Index.Visible = true;
-            }
+            txtPeriod14Amount.Visible = bMoreThan13;
+            lblPeriod14Amount.Visible = bMoreThan13;
+            txtPeriod14Index.Visible = bMoreThan13;
+            lblPeriod14Index.Visible = bMoreThan13;
 
             lblPerPeriodAmount.Text = "Amount for periods 1 to " + (FNumberOfPeriods - 1).ToString() + ":";
             lblLastPeriodAmount.Text = "Amount for period " + FNumberOfPeriods.ToString() + ":";

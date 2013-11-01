@@ -333,6 +333,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailBatchDescription.Text = enterMsg;
             txtDetailBatchDescription.Focus();
 
+            UpdateRecordNumberDisplay();
+
             //Not needed as recurring batches can be deleted
             //((TFrmRecurringGLBatch)ParentForm).SaveChanges();
 

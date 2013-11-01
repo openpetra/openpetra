@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -245,7 +245,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 }
             }
 
-            Template.FinishWriting(AOutputPath + Path.DirectorySeparatorChar + AFilename + ".cs", ".cs", true);
+            Template.FinishWriting(AOutputPath + Path.DirectorySeparatorChar + AFilename + "-generated.cs", ".cs", true);
         }
     }
 }
