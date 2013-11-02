@@ -166,7 +166,7 @@ namespace Ict.Common
         /// <summary>Missing configuration for sending Emails</summary>
         [ErrCodeAttribute("Missing configuration for sending Emails",
              FullDescription = "No email can be sent because the configuration is missing on the server side.")]
-        public const String ERR_MISSINGEMAILCONFIGURATION = "GENC.00019V";
+        public const String ERR_MISSINGEMAILCONFIGURATION = "GENC.00020V";
 
 //        [ErrCodeAttribute("Test duplicate.")]
 //        public const String ERR_NOFUTUREDATE2 = "GENC.00002V";
