@@ -179,15 +179,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             CheckGLMEntry(intLedgerNumber, intYear, strAccountGift,
                 0, -100, 0, -200, 0, -300);
 
-            TGlmNewYearInit glmNewYearInit = new TGlmNewYearInit(intLedgerNumber, intYear);
-            glmNewYearInit.VerificationResultCollection = verificationResult;
-            glmNewYearInit.IsInInfoMode = false;
-            Assert.Greater(glmNewYearInit.JobSize, 0, "Check the number of reallocation jobs ...");
-            glmNewYearInit.RunEndOfPeriodOperation();
-            glmNewYearInit = new TGlmNewYearInit(intLedgerNumber, intYear);
-            glmNewYearInit.VerificationResultCollection = verificationResult;
-            glmNewYearInit.IsInInfoMode = true;
-            Assert.AreEqual(0, glmNewYearInit.JobSize, "Check the number of reallocation jobs ...");
+            // first run in info mode
+            TPeriodIntervallConnector.TPeriodYearEnd(intLedgerNumber, true, out verificationResult);
+            Assert.AreEqual(false, verificationResult.HasCriticalErrors, "yearend test should not have critical errors");
+
+            // now run for real
+            TPeriodIntervallConnector.TPeriodYearEnd(intLedgerNumber, false, out verificationResult);
+            Assert.AreEqual(false, verificationResult.HasCriticalErrors, "yearend should not have critical errors");
 
             ++intYear;
             // check after year end that income and expense accounts are 0, bank account remains

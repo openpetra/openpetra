@@ -25,15 +25,12 @@ using System.Data;
 using System.Data.Odbc;
 using System.Collections;
 using Ict.Petra.Server.App.Core.Security;
-
-
+using Ict.Petra.Server.MFinance.Cacheable.WebConnectors;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Server.MCommon.Data.Access;
-
-
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
@@ -220,6 +217,9 @@ namespace Ict.Petra.Server.MFinance.GL
                 if (!FHasCriticalErrors)
                 {
                     carryForward.SetNextPeriod();
+                    // refresh cached ledger table, so that the client will know the current period
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheableFinanceTablesEnum.LedgerDetails.ToString());
                 }
             }
 
