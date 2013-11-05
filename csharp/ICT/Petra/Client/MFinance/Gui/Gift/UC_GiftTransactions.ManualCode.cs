@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             //Fix to length of field
             txtDetailReference.MaxLength = 20;
-            
+
             //Fix a layering issue
             txtField.SendToBack();
 
@@ -778,9 +778,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ShowDetails(null);
                 UpdateControlsProtection();
             }
-            
-			UpdateRecordNumberDisplay();
 
+            UpdateRecordNumberDisplay();
         }
 
         private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)
@@ -957,7 +956,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 SetGiftDetailDefaultView();
             }
 
-			UpdateRecordNumberDisplay();
+            UpdateRecordNumberDisplay();
 
             return deletionSuccessful;
         }
@@ -1108,7 +1107,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
             }
-            
+
             UpdateRecordNumberDisplay();
         }
 
@@ -1183,7 +1182,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 RetrieveMotivationDetailAccountCode();
                 txtDetailRecipientKey.Focus();
             }
-            
+
             UpdateRecordNumberDisplay();
         }
 

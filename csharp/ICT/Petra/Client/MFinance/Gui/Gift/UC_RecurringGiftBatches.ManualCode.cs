@@ -113,7 +113,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FBatchLoaded = true;
 
             UpdateChangeableStatus();
-            
+
             UpdateRecordNumberDisplay();
         }
 
@@ -337,8 +337,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             this.CreateNewARecurringGiftBatch();
             txtDetailBatchDescription.Focus();
-            
-			UpdateRecordNumberDisplay();
+
+            UpdateRecordNumberDisplay();
         }
 
         /// <summary>
@@ -400,7 +400,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             UpdateRecordNumberDisplay();
-            
+
             return deletionSuccessful;
         }
 

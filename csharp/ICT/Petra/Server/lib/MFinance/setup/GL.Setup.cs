@@ -321,7 +321,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 // create or update account for Creditor's Control
 
                 // make sure transaction type exists for gift receipting subsystem
-                if (ATransactionTypeAccess.CountViaASubSystem(CommonAccountingSubSystemsEnum.GR.ToString(), Transaction) == 0)
+                ATransactionTypeTable TemplateTransactionTypeTable;
+                ATransactionTypeRow TemplateTransactionTypeRow;
+                StringCollection TemplateTransactionTypeOperators;
+
+                TemplateTransactionTypeTable = new ATransactionTypeTable();
+                TemplateTransactionTypeRow = TemplateTransactionTypeTable.NewRowTyped(false);
+                TemplateTransactionTypeRow.LedgerNumber = ALedgerNumber;
+                TemplateTransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
+                TemplateTransactionTypeOperators = new StringCollection();
+                TemplateTransactionTypeOperators.Add("=");
+
+                if (ATransactionTypeAccess.CountUsingTemplate(TemplateTransactionTypeRow, TemplateTransactionTypeOperators, Transaction) == 0)
                 {
                     ATransactionTypeTable TransactionTypeTable;
                     ATransactionTypeRow TransactionTypeRow;
@@ -423,7 +434,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             if (!IsAccountsPayableSubsystemActivated(ALedgerNumber))
             {
                 // make sure transaction type exists for accounts payable subsystem
-                if (ATransactionTypeAccess.CountViaASubSystem(CommonAccountingSubSystemsEnum.AP.ToString(), Transaction) == 0)
+                ATransactionTypeTable TemplateTransactionTypeTable;
+                ATransactionTypeRow TemplateTransactionTypeRow;
+                StringCollection TemplateTransactionTypeOperators;
+
+                TemplateTransactionTypeTable = new ATransactionTypeTable();
+                TemplateTransactionTypeRow = TemplateTransactionTypeTable.NewRowTyped(false);
+                TemplateTransactionTypeRow.LedgerNumber = ALedgerNumber;
+                TemplateTransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
+                TemplateTransactionTypeOperators = new StringCollection();
+                TemplateTransactionTypeOperators.Add("=");
+
+                if (ATransactionTypeAccess.CountUsingTemplate(TemplateTransactionTypeRow, TemplateTransactionTypeOperators, Transaction) == 0)
                 {
                     ATransactionTypeTable TransactionTypeTable;
                     ATransactionTypeRow TransactionTypeRow;
@@ -2379,7 +2401,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ledgerRow.BaseCurrency = ABaseCurrency;
             ledgerRow.IntlCurrency = AIntlCurrency;
             ledgerRow.ActualsDataRetention = 11;
-            ledgerRow.GiftDataRetention = 5;
+            ledgerRow.GiftDataRetention = 11;
             ledgerRow.BudgetDataRetention = 2;
             ledgerRow.CountryCode = ACountryCode;
             ledgerRow.ForexGainsLossesAccount = "5003";
@@ -2446,6 +2468,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 partnerLocationRow.SiteKey = locationRow.SiteKey;
                 partnerLocationRow.PartnerKey = PartnerKey;
                 partnerLocationRow.LocationKey = locationRow.LocationKey;
+                partnerLocationRow.DateEffective = DateTime.Today;
                 MainDS.PPartnerLocation.Rows.Add(partnerLocationRow);
             }
             else

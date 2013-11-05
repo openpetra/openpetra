@@ -219,9 +219,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ShowData();
             SelectRowInGrid(1);
-            
+
             FBatchLoaded = true;
-            
+
             UpdateRecordNumberDisplay();
         }
 
@@ -499,7 +499,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             RefreshGridData(batchNumber);
 
             UpdateChangeableStatus();
-            
+
             UpdateRecordNumberDisplay();
         }
 
@@ -889,7 +889,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ((TFrmGiftBatch)ParentForm).DisableTransactions();
                 ShowDetails(null);
             }
-            
+
             UpdateRecordNumberDisplay();
         }
 

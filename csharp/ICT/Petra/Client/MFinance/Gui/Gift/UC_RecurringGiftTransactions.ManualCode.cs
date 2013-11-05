@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void InitialiseControls()
         {
             txtDetailReference.MaxLength = 20;
-            
+
             txtField.SendToBack();
 
             txtDetailRecipientKey.PartnerClass = "WORKER,UNIT,FAMILY";
@@ -144,10 +144,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             UpdateTotals();
             UpdateControlsProtection();
-			
+
             SelectRowInGrid(1);
             UpdateRecordNumberDisplay();
-
         }
 
         bool FinRecipientKeyChanging = false;
@@ -967,9 +966,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);
             }
-            
-			UpdateRecordNumberDisplay();
 
+            UpdateRecordNumberDisplay();
         }
 
         /// <summary>
@@ -1043,7 +1041,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 RetrieveMotivationDetailAccountCode();
                 dtpStartDonations.Focus();
             }
-            
+
             UpdateRecordNumberDisplay();
         }
 

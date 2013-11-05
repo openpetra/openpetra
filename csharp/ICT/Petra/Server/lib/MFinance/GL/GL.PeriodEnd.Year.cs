@@ -149,17 +149,6 @@ namespace Ict.Petra.Server.MFinance.GL
             RunPeriodEndSequence(new TGlmNewYearInit(ledgerInfo.LedgerNumber, ledgerInfo.CurrentFinancialYear),
                 Catalog.GetString("Initialize the glm-entries of the next year"));
 
-            RunPeriodEndSequence(new TAccountPeriodToNewYear(ledgerInfo.LedgerNumber),
-                Catalog.GetString("Set the account period values to the New Year"));
-
-            if (!FInfoMode)
-            {
-                if (!FHasCriticalErrors)
-                {
-                    carryForward.SetNextPeriod();
-                }
-            }
-
             AVRCollection = verificationResults;
             return FHasCriticalErrors;
         }

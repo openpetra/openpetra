@@ -418,7 +418,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Needs to be called at end of addition process to process Analysis Attributes
             ReconcileTransAnalysisAttributes();
             RefreshAnalysisAttributesGrid();
-            
+
             UpdateRecordNumberDisplay();
         }
 

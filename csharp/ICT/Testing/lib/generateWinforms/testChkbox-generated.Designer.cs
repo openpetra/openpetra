@@ -1,4 +1,4 @@
-// auto generated with nant generateWinforms from testChkbox.yaml
+﻿// auto generated with nant generateWinforms from testChkbox.yaml
 //
 // DO NOT edit manually, DO NOT edit with the designer
 //
@@ -8,7 +8,7 @@
 // @Authors:
 //       auto generated
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,11 +25,12 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+
 using System;
 using System.Windows.Forms;
-using GNU.Gettext;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
+using Owf.Controls;
 
 namespace Ict.Testing
 {
@@ -64,13 +65,13 @@ namespace Ict.Testing
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmtestChkbox));
+                        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TFrmtestChkbox));
 
-            this.pnlContent = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+                        this.pnlContent = new System.Windows.Forms.Panel();
             this.chkParent = new System.Windows.Forms.CheckBox();
-            this.chkChild = new System.Windows.Forms.CheckBox();
             this.chkSonst = new System.Windows.Forms.CheckBox();
+            this.chkChild = new System.Windows.Forms.CheckBox();
+            this.lblSonst = new System.Windows.Forms.Label();
             this.mnuMain = new System.Windows.Forms.MenuStrip();
             this.mniFile = new System.Windows.Forms.ToolStripMenuItem();
             this.mniClose = new System.Windows.Forms.ToolStripMenuItem();
@@ -79,144 +80,164 @@ namespace Ict.Testing
             this.mniSeparator0 = new System.Windows.Forms.ToolStripSeparator();
             this.mniHelpBugReport = new System.Windows.Forms.ToolStripMenuItem();
             this.mniSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.mniHelpAboutPetra = new System.Windows.Forms.ToolStripMenuItem();
-            this.mniHelpDevelopmentTeam = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniAbout = new System.Windows.Forms.ToolStripMenuItem();
+            this.mniDevelopmentTeam = new System.Windows.Forms.ToolStripMenuItem();
             this.stbMain = new Ict.Common.Controls.TExtStatusBarHelp();
 
             this.pnlContent.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
             this.mnuMain.SuspendLayout();
             this.stbMain.SuspendLayout();
+
+            this.chkParent.CheckedChanged += new System.EventHandler(this.chkParentCheckedChanged);
+            this.chkSonst.CheckedChanged += new System.EventHandler(this.chkSonstCheckedChanged);
+            this.chkChild.CheckedChanged += new System.EventHandler(this.chkChildCheckedChanged);
+
+            //
+            // chkParent
+            //
+            this.chkParent.Name = "chkParent";
+            this.chkParent.Location = new System.Drawing.Point(8,7);
+            this.chkParent.Size = new System.Drawing.Size(30, 22);
+            this.chkParent.Text = "";
+            this.chkParent.TabIndex = 0;
+
+            //
+            // chkSonst
+            //
+            this.chkSonst.Name = "chkSonst";
+            this.chkSonst.Location = new System.Drawing.Point(62,32);
+            this.chkSonst.Size = new System.Drawing.Size(30, 22);
+            this.chkSonst.Text = "";
+            this.chkSonst.TabIndex = 30;
+
+            //
+            // chkChild
+            //
+            this.chkChild.Name = "chkChild";
+            this.chkChild.Location = new System.Drawing.Point(62,7);
+            this.chkChild.Size = new System.Drawing.Size(30, 22);
+            this.chkChild.Text = "";
+            this.chkChild.TabIndex = 10;
+
+            //
+            // lblSonst
+            //
+            this.lblSonst.Name = "lblSonst";
+            this.lblSonst.Location = new System.Drawing.Point(5,37);
+            this.lblSonst.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+            this.lblSonst.Size = new System.Drawing.Size(49, 17);
+            this.lblSonst.Text = "Sonst:";
+            this.lblSonst.TabIndex = 20;
+            this.lblSonst.TextAlign = System.Drawing.ContentAlignment.TopRight;
 
             //
             // pnlContent
             //
-            this.pnlContent.Name = "pnlContent";
+            this.pnlContent.Size = new System.Drawing.Size(94, 59);
             this.pnlContent.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlContent.AutoSize = true;
-            //
-            // tableLayoutPanel1
-            //
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.AutoSize = true;
-            this.pnlContent.Controls.Add(this.tableLayoutPanel1);
-            //
-            // chkParent
-            //
-            this.chkParent.Location = new System.Drawing.Point(2,2);
-            this.chkParent.Name = "chkParent";
-            this.chkParent.AutoSize = true;
-            this.chkParent.Text = "Parent";
-            this.chkParent.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
-            //
-            // chkChild
-            //
-            this.chkChild.Location = new System.Drawing.Point(2,2);
-            this.chkChild.Name = "chkChild";
-            this.chkChild.AutoSize = true;
-            this.chkChild.Text = "Child";
-            this.chkChild.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
-            this.chkParent.CheckedChanged += new System.EventHandler(this.chkParentCheckedChanged);
-            //
-            // chkSonst
-            //
-            this.chkSonst.Location = new System.Drawing.Point(2,2);
-            this.chkSonst.Name = "chkSonst";
-            this.chkSonst.AutoSize = true;
-            this.chkSonst.Text = "Sonst";
-            this.chkSonst.Margin = new System.Windows.Forms.Padding(3, 5, 3, 0);
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Controls.Add(this.chkParent, 0, 0);
-            this.tableLayoutPanel1.SetColumnSpan(this.chkSonst, 2);
-            this.tableLayoutPanel1.Controls.Add(this.chkSonst, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.chkChild, 1, 0);
+            this.pnlContent.AutoScroll = true;
+            this.pnlContent.Name = "pnlContent";
+            this.pnlContent.Controls.Add(this.chkParent);
+            this.pnlContent.Controls.Add(this.lblSonst);
+            this.pnlContent.Controls.Add(this.chkChild);
+            this.pnlContent.Controls.Add(this.chkSonst);
+
             //
             // mniClose
             //
             this.mniClose.Name = "mniClose";
-            this.mniClose.AutoSize = true;
-            this.mniClose.Click += new System.EventHandler(this.actClose);
+            this.mniClose.Size = new System.Drawing.Size(150, 28);
             this.mniClose.Image = ((System.Drawing.Bitmap)resources.GetObject("mniClose.Glyph"));
             this.mniClose.ToolTipText = "Closes this window";
             this.mniClose.Text = "&Close";
+            this.mniClose.Click += new System.EventHandler(this.actClose);
+
             //
             // mniFile
             //
             this.mniFile.Name = "mniFile";
-            this.mniFile.AutoSize = true;
+            this.mniFile.Size = new System.Drawing.Size(150, 28);
+            this.mniFile.Text = "&File";
             this.mniFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniClose});
-            this.mniFile.Text = "&File";
+
             //
             // mniHelpPetraHelp
             //
             this.mniHelpPetraHelp.Name = "mniHelpPetraHelp";
-            this.mniHelpPetraHelp.AutoSize = true;
-            this.mniHelpPetraHelp.Text = "&Petra Help";
+            this.mniHelpPetraHelp.Size = new System.Drawing.Size(150, 28);
+            this.mniHelpPetraHelp.Text = "&OpenPetra Help";
+
             //
             // mniSeparator0
             //
             this.mniSeparator0.Name = "mniSeparator0";
-            this.mniSeparator0.AutoSize = true;
+            this.mniSeparator0.Size = new System.Drawing.Size(150, 28);
             this.mniSeparator0.Text = "-";
+
             //
             // mniHelpBugReport
             //
             this.mniHelpBugReport.Name = "mniHelpBugReport";
-            this.mniHelpBugReport.AutoSize = true;
+            this.mniHelpBugReport.Size = new System.Drawing.Size(150, 28);
             this.mniHelpBugReport.Text = "Bug &Report";
+
             //
             // mniSeparator1
             //
             this.mniSeparator1.Name = "mniSeparator1";
-            this.mniSeparator1.AutoSize = true;
+            this.mniSeparator1.Size = new System.Drawing.Size(150, 28);
             this.mniSeparator1.Text = "-";
+
             //
-            // mniHelpAboutPetra
+            // mniAbout
             //
-            this.mniHelpAboutPetra.Name = "mniHelpAboutPetra";
-            this.mniHelpAboutPetra.AutoSize = true;
-            this.mniHelpAboutPetra.Text = "&About Petra";
+            this.mniAbout.Name = "mniAbout";
+            this.mniAbout.Size = new System.Drawing.Size(150, 28);
+            this.mniAbout.Image = ((System.Drawing.Bitmap)resources.GetObject("mniAbout.Glyph"));
+            this.mniAbout.Text = "&About OpenPetra";
+            this.mniAbout.Click += new System.EventHandler(this.actAbout);
+
             //
-            // mniHelpDevelopmentTeam
+            // mniDevelopmentTeam
             //
-            this.mniHelpDevelopmentTeam.Name = "mniHelpDevelopmentTeam";
-            this.mniHelpDevelopmentTeam.AutoSize = true;
-            this.mniHelpDevelopmentTeam.Text = "&The Development Team...";
+            this.mniDevelopmentTeam.Name = "mniDevelopmentTeam";
+            this.mniDevelopmentTeam.Size = new System.Drawing.Size(150, 28);
+            this.mniDevelopmentTeam.Text = "&The Development Team...";
+
             //
             // mniHelp
             //
             this.mniHelp.Name = "mniHelp";
-            this.mniHelp.AutoSize = true;
+            this.mniHelp.Size = new System.Drawing.Size(150, 28);
+            this.mniHelp.Text = "&Help";
             this.mniHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniHelpPetraHelp,
                         mniSeparator0,
                         mniHelpBugReport,
                         mniSeparator1,
-                        mniHelpAboutPetra,
-                        mniHelpDevelopmentTeam});
-            this.mniHelp.Text = "&Help";
+                        mniAbout,
+                        mniDevelopmentTeam});
+
             //
             // mnuMain
             //
             this.mnuMain.Name = "mnuMain";
             this.mnuMain.Dock = System.Windows.Forms.DockStyle.Top;
-            this.mnuMain.AutoSize = true;
+            this.mnuMain.Size = new System.Drawing.Size(10, 24);
+            this.mnuMain.Renderer = new ToolStripProfessionalRenderer(new TOpenPetraMenuColours());
+            this.mnuMain.GripStyle = ToolStripGripStyle.Visible;
+            this.mnuMain.GripMargin = new System.Windows.Forms.Padding(0);
             this.mnuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
                            mniFile,
                         mniHelp});
+
             //
             // stbMain
             //
             this.stbMain.Name = "stbMain";
             this.stbMain.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.stbMain.AutoSize = true;
+            this.stbMain.Size = new System.Drawing.Size(10, 24);
 
             //
             // TFrmtestChkbox
@@ -243,7 +264,6 @@ namespace Ict.Testing
 
             this.stbMain.ResumeLayout(false);
             this.mnuMain.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
             this.pnlContent.ResumeLayout(false);
 
             this.ResumeLayout(false);
@@ -251,10 +271,10 @@ namespace Ict.Testing
         }
 
         private System.Windows.Forms.Panel pnlContent;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.CheckBox chkParent;
-        private System.Windows.Forms.CheckBox chkChild;
         private System.Windows.Forms.CheckBox chkSonst;
+        private System.Windows.Forms.CheckBox chkChild;
+        private System.Windows.Forms.Label lblSonst;
         private System.Windows.Forms.MenuStrip mnuMain;
         private System.Windows.Forms.ToolStripMenuItem mniFile;
         private System.Windows.Forms.ToolStripMenuItem mniClose;
@@ -263,8 +283,8 @@ namespace Ict.Testing
         private System.Windows.Forms.ToolStripSeparator mniSeparator0;
         private System.Windows.Forms.ToolStripMenuItem mniHelpBugReport;
         private System.Windows.Forms.ToolStripSeparator mniSeparator1;
-        private System.Windows.Forms.ToolStripMenuItem mniHelpAboutPetra;
-        private System.Windows.Forms.ToolStripMenuItem mniHelpDevelopmentTeam;
+        private System.Windows.Forms.ToolStripMenuItem mniAbout;
+        private System.Windows.Forms.ToolStripMenuItem mniDevelopmentTeam;
         private Ict.Common.Controls.TExtStatusBarHelp stbMain;
     }
 }
