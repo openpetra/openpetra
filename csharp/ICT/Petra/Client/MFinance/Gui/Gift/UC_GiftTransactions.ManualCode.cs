@@ -74,6 +74,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             //Fix to length of field
             txtDetailReference.MaxLength = 20;
+            
+            //Fix a layering issue
+            txtField.SendToBack();
 
             //Changing this will stop taborder issues
             sptTransactions.TabStop = false;
@@ -173,7 +176,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             ShowData();
-            ShowDetails();
+            //ShowDetails();
 
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
 
@@ -181,6 +184,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 grdDetails.Focus();
             }
+
+            UpdateRecordNumberDisplay();
+            SelectRowInGrid(1);
 
             UpdateTotals();
             UpdateControlsProtection();
@@ -772,6 +778,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ShowDetails(null);
                 UpdateControlsProtection();
             }
+            
+			UpdateRecordNumberDisplay();
+
         }
 
         private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)
@@ -948,6 +957,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 SetGiftDetailDefaultView();
             }
 
+			UpdateRecordNumberDisplay();
+
             return deletionSuccessful;
         }
 
@@ -1097,6 +1108,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
             }
+            
+            UpdateRecordNumberDisplay();
         }
 
         /// <summary>
@@ -1156,7 +1169,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // this is coded manually, to use the correct gift record
             // we create the table locally, no dataset
-            AGiftDetailRow giftDetailRow = NewGiftDetail((GiftBatchTDSAGiftDetailRow)FPreviouslySelectedDetailRow); // returns AGiftDetailRow
+            AGiftDetailRow giftDetailRow = NewGiftDetail((GiftBatchTDSAGiftDetailRow)FPreviouslySelectedDetailRow);
 
             if (giftDetailRow != null)
             {
@@ -1168,8 +1181,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
 
                 RetrieveMotivationDetailAccountCode();
-                txtDetailGiftTransactionAmount.Focus();
+                txtDetailRecipientKey.Focus();
             }
+            
+            UpdateRecordNumberDisplay();
         }
 
         /// <summary>

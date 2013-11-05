@@ -109,9 +109,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             ShowData();
+            SelectRowInGrid(1);
             FBatchLoaded = true;
 
             UpdateChangeableStatus();
+            
+            UpdateRecordNumberDisplay();
         }
 
         private void SetupAccountAndCostCentreCombos(bool AActiveOnly = true, ARecurringGiftBatchRow ARow = null)
@@ -334,6 +337,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             this.CreateNewARecurringGiftBatch();
             txtDetailBatchDescription.Focus();
+            
+			UpdateRecordNumberDisplay();
         }
 
         /// <summary>
@@ -394,6 +399,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MessageBoxIcon.Error);
             }
 
+            UpdateRecordNumberDisplay();
+            
             return deletionSuccessful;
         }
 
