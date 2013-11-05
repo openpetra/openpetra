@@ -102,7 +102,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.BankingDetailsKey = (FMainDS.PBankingDetails.Rows.Count + 1) * -1;
             ARow.BankingType = MPartnerConstants.BANKINGTYPE_BANKACCOUNT;
             ARow.BankKey = 0;
-            ARow.MainAccount = (FMainDS.PBankingDetails.Rows.Count == 0);
+
+            // automatically set to main account if it is the only account
+            ARow.MainAccount = (grdDetails.Rows.Count == 1);
 
             PPartnerBankingDetailsRow partnerBankingDetails = FMainDS.PPartnerBankingDetails.NewRowTyped();
             partnerBankingDetails.BankingDetailsKey = ARow.BankingDetailsKey;
@@ -125,6 +127,19 @@ namespace Ict.Petra.Client.MPartner.Gui
         private bool DeleteRowManual(PartnerEditTDSPBankingDetailsRow ARowToDelete, ref String ACompletionMessage)
         {
             ACompletionMessage = String.Empty;
+
+            if (ARowToDelete.MainAccount && (grdDetails.Rows.Count > 2))
+            {
+                foreach (DataRow Row in FMainDS.PBankingDetails.Rows)
+                {
+                    if ((Row.RowState != DataRowState.Deleted)
+                        && (((PartnerEditTDSPBankingDetailsRow)Row).BankingDetailsKey != ARowToDelete.BankingDetailsKey))
+                    {
+                        ((PartnerEditTDSPBankingDetailsRow)Row).MainAccount = true;
+                        break;
+                    }
+                }
+            }
 
             // TODO what if several people are using the same bank account?
             FMainDS.PPartnerBankingDetails.DefaultView.Sort = PPartnerBankingDetailsTable.GetBankingDetailsKeyDBName();

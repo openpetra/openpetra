@@ -31,10 +31,12 @@ using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
@@ -47,6 +49,249 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
     /// </summary>
     public class TMergePartnersCheckWebConnector
     {
+        /// <summary>
+        /// performs checks to determine if two partners can be merged
+        /// </summary>
+        /// <param name="AFromPartnerKey">From Partner's Partner Key</param>
+        /// <param name="AToPartnerKey">To Partner's Partner Key</param>
+        /// <param name="AFromPartnerClass">From Partner's Partner Class</param>
+        /// <param name="AToPartnerClass">To Partner's Partner Class</param>
+        /// <param name="AReasonForMerging">Combo box selection for reason for merging</param>
+        /// <param name="AVerificationResult"></param>
+        /// <returns>True if partners can be merged</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool CheckPartnersCanBeMerged(long AFromPartnerKey,
+            long AToPartnerKey,
+            TPartnerClass AFromPartnerClass,
+            TPartnerClass AToPartnerClass,
+            string AReasonForMerging,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+
+            if (AFromPartnerClass != AToPartnerClass)
+            {
+                // confirm that user wants to merge partners from different partner classes
+                AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Merge Partners"),
+                        String.Format(Catalog.GetString("Do you really want to merge a Partner of class {0} into a Partner of class {1}?"),
+                            AFromPartnerClass, AToPartnerClass),
+                        TResultSeverity.Resv_Noncritical));
+
+                // Family Partner cannot be merged into a different partner class if family members, donations or bank accounts exist for that partner
+                if (AFromPartnerClass == TPartnerClass.FAMILY)
+                {
+                    int FamilyMergeResult = CanFamilyMergeIntoDifferentClass(AFromPartnerKey);
+
+                    if (FamilyMergeResult != 0)
+                    {
+                        string ErrorMessage = "";
+
+                        if (FamilyMergeResult == 1)
+                        {
+                            ErrorMessage = Catalog.GetString(
+                                "This Family record cannot be merged into a Partner with different class as Family members exist!");
+                        }
+                        else if (FamilyMergeResult == 2)
+                        {
+                            ErrorMessage = Catalog.GetString(
+                                "This Family record cannot be merged into a Partner with different class as donations were received for it!");
+                        }
+                        else if (FamilyMergeResult == 3)
+                        {
+                            ErrorMessage = Catalog.GetString(
+                                "This record cannot be merged into a Partner with different class as bank accounts exist for it!");
+                        }
+
+                        // critical error - only need to return this VerificationResult
+                        AVerificationResult.Clear();
+                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Merge Partners"),
+                                ErrorMessage,
+                                TResultSeverity.Resv_Critical));
+
+                        return false;
+                    }
+                }
+            }
+            else // partner classes are the same
+            {
+                string FromPartnerSupplierCurrency;
+                string ToPartnerSupplierCurrency;
+
+                // if two partners are suppliers they must have the same currency
+                if ((GetSupplierCurrency(AFromPartnerKey, out FromPartnerSupplierCurrency) == true)
+                    && (GetSupplierCurrency(AToPartnerKey, out ToPartnerSupplierCurrency) == true))
+                {
+                    if (FromPartnerSupplierCurrency != ToPartnerSupplierCurrency)
+                    {
+                        // critical error - only need to return this VerificationResult
+                        AVerificationResult.Clear();
+                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Merge Partners"),
+                                Catalog.GetString(
+                                    "These Partners cannot be merged. Partners that are suppliers must have the same currency in order to merge."),
+                                TResultSeverity.Resv_Critical));
+
+                        return false;
+                    }
+                }
+
+                if (AFromPartnerClass == TPartnerClass.VENUE)
+                {
+                    AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Merge Partners"),
+                            Catalog.GetString("You are about to merge VENUEs. This will imply merging of buildings, rooms and room " +
+                                "allocations defined for these Venues in the Conference Module!") + "\n\n" + Catalog.GetString("Continue?"),
+                            TResultSeverity.Resv_Noncritical));
+                }
+
+                if (AFromPartnerClass == TPartnerClass.BANK)
+                {
+                    AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Merge Partners"),
+                            Catalog.GetString("You are about to merge BANKSs. This will imply that all bank accounts that were with the " +
+                                "From-Bank Partner will become bank accounts of the To-Bank Partner. For this reason you should merge Banks only when "
+                                +
+                                "both Bank Partners actually represented the same Bank, or if two different Banks have merged their operations!") +
+                            "\n\n" + Catalog.GetString("Continue?"), Catalog.GetString("Merge Partners"),
+                            TResultSeverity.Resv_Noncritical));
+                }
+            }
+
+            if (AReasonForMerging == "Duplicate Record Exists")
+            {
+                if (AFromPartnerClass == TPartnerClass.FAMILY)
+                {
+                    // AFromPartnerClass and AToPartnerClass are the same
+                    int CheckCommitmentsResult = CheckPartnerCommitments(AFromPartnerKey, AToPartnerKey, AFromPartnerClass);
+
+                    // if the from family Partner contains a person with an ongoing commitment
+                    if (CheckCommitmentsResult != 0)
+                    {
+                        string FromPartnerShortName;
+                        string ToPartnerShortName;
+                        TPartnerClass PartnerClass;
+
+                        TPartnerServerLookups.GetPartnerShortName(AFromPartnerKey, out FromPartnerShortName, out PartnerClass);
+                        TPartnerServerLookups.GetPartnerShortName(AFromPartnerKey, out ToPartnerShortName, out PartnerClass);
+
+                        string ErrorMessage = string.Format(Catalog.GetString("WARNING: You are about to change the family of {0} ({1}).") + "\n\n" +
+                            Catalog.GetString("Changing a person's family can affect the person's ability to see their support information in" +
+                                " Caleb including any support that they may receive from other Fields."), FromPartnerShortName, AFromPartnerKey);
+
+                        if (CheckCommitmentsResult == 1)
+                        {
+                            ErrorMessage += "\n\n" + string.Format(Catalog.GetString("It is STRONGLY recommended that you do not continue and " +
+                                    "consider merging family {0} ({1}) into family {2} ({3})."),
+                                ToPartnerShortName, AToPartnerKey, FromPartnerShortName, AFromPartnerKey);
+                        }
+
+                        ErrorMessage += "\n\n" + Catalog.GetString("Do you want to continue?");
+
+                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Merge Partners"),
+                                ErrorMessage, Catalog.GetString("Merge Partners"),
+                                TResultSeverity.Resv_Noncritical));
+                    }
+                }
+                else if (AFromPartnerClass == TPartnerClass.PERSON)
+                {
+                    // AFromPartnerClass and AToPartnerClass are the same
+                    int CheckCommitmentsResult = CheckPartnerCommitments(AFromPartnerKey, AToPartnerKey, AFromPartnerClass);
+
+                    // if the from Partner has an ongoing commitment
+                    if (CheckCommitmentsResult != 0)
+                    {
+                        string ErrorMessage = "";
+                        string FromPartnerShortName;
+                        TPartnerClass PartnerClass;
+
+                        TPartnerServerLookups.GetPartnerShortName(AFromPartnerKey, out FromPartnerShortName, out PartnerClass);
+
+                        if (CheckCommitmentsResult == 3)
+                        {
+                            ErrorMessage = string.Format(Catalog.GetString("WARNING: You are about to change the family of {0} ({1}).") + "\n\n" +
+                                Catalog.GetString("Changing a person's family can affect the person's ability to see their support information in" +
+                                    " Caleb including any support that they may receive from other Fields."), FromPartnerShortName, AFromPartnerKey);
+                        }
+                        else if (CheckCommitmentsResult == 2)
+                        {
+                            ErrorMessage = Catalog.GetString("WARNING: Both Persons have a current commitment. " +
+                                "Be aware that merging these Persons may affect their usage of Caleb.") +
+                                           "\n\n" + Catalog.GetString("Do you want to continue?");
+                        }
+                        else if (CheckCommitmentsResult == 1)
+                        {
+                            ErrorMessage = string.Format(Catalog.GetString("WARNING: Person {0} ({1}) has a current commitment. " +
+                                    "We strongly recommend merging the other way around."), FromPartnerShortName, AFromPartnerKey) +
+                                           "\n\n" + Catalog.GetString("Do you want to continue?");
+                        }
+
+                        AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Merge Partners"),
+                                ErrorMessage, Catalog.GetString("Merge Partners"),
+                                TResultSeverity.Resv_Noncritical));
+                    }
+                }
+            }
+
+            // checks if one of the partners is a Foundation organisation.
+            if ((AFromPartnerClass == TPartnerClass.ORGANISATION) || (AToPartnerClass == TPartnerClass.ORGANISATION))
+            {
+                PFoundationTable FromFoundationTable = null;
+                PFoundationTable ToFoundationTable = null;
+
+                string ErrorMessage = "";
+
+                if (AFromPartnerClass == TPartnerClass.ORGANISATION)
+                {
+                    FromFoundationTable = GetOrganisationFoundation(AFromPartnerKey);
+                }
+
+                if (AToPartnerClass == TPartnerClass.ORGANISATION)
+                {
+                    ToFoundationTable = GetOrganisationFoundation(AToPartnerKey);
+                }
+
+                // if both partners are Foundation organisations check permissions
+                if ((FromFoundationTable != null) && (ToFoundationTable != null))
+                {
+                    if (!TSecurity.CheckFoundationSecurity((PFoundationRow)FromFoundationTable.Rows[0]))
+                    {
+                        ErrorMessage = Catalog.GetString("The Partner that you are merging from is a Foundation, but you do not " +
+                            "have access rights to view its data. Therefore you are not allowed to merge these Foundations!") + "\n\n" +
+                                       Catalog.GetString("Access Denied");
+                    }
+                    else if (!TSecurity.CheckFoundationSecurity((PFoundationRow)ToFoundationTable.Rows[0]))
+                    {
+                        ErrorMessage = Catalog.GetString("The Partner that you are merging into is a Foundation, but you do not " +
+                            "have access rights to view its data. Therefore you are not allowed to merge these Foundations!") + "\n\n" +
+                                       Catalog.GetString("Access Denied");
+                    }
+                }
+                // none or both partners must be Foundation organisations
+                else if (FromFoundationTable != null)
+                {
+                    ErrorMessage = Catalog.GetString("The Partner that you are merging from is a Foundation, but the Partner that you " +
+                        "are merging into is not a Foundation. This is not allowed!") + "\n\n" +
+                                   Catalog.GetString("Both Merge Partners Need to be Foundations!");
+                }
+                else if (ToFoundationTable != null)
+                {
+                    ErrorMessage = Catalog.GetString("The Partner that you are merging from isn't a Foundation, but the Partner that you " +
+                        "are merging into is a Foundation. This is not allowed!") + "\n\n" +
+                                   Catalog.GetString("Both Merge Partners Need to be Foundations!");
+                }
+
+                if (ErrorMessage != "")
+                {
+                    // critical error - only need to return this VerificationResult
+                    AVerificationResult.Clear();
+                    AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Merge Partners"),
+                            ErrorMessage,
+                            TResultSeverity.Resv_Critical));
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// returns the supplier currency for a partner if it is a supplier
         /// </summary>

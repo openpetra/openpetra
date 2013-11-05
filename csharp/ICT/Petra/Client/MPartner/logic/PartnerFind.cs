@@ -182,6 +182,7 @@ namespace Ict.Petra.Client.MPartner
             if (ADetailedResults)
             {
                 FDataGrid.AddTextColumn("Class", ASourceTable.Columns["p_partner_class_c"], PARTNERCLASS_COLUMNWIDTH);
+                FDataGrid.AddTextColumn("Partner Key", ASourceTable.Columns["p_partner_key_n"]);
                 FDataGrid.AddTextColumn("Partner Name", ASourceTable.Columns["p_partner_short_name_c"]);
 
                 if (AVisibleFields.Contains("PreviousName"))
@@ -210,7 +211,6 @@ namespace Ict.Petra.Client.MPartner
                 }
 
                 FDataGrid.AddTextColumn("Country", ASourceTable.Columns["p_country_code_c"]);
-                FDataGrid.AddTextColumn("Partner Key", ASourceTable.Columns["p_partner_key_n"]);
 
                 if (ASourceTable.Columns.Contains("p_family_key_n"))
                 {

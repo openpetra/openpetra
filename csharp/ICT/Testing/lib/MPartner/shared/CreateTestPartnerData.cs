@@ -208,22 +208,23 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         public static PartnerEditTDSPBankingDetailsRow CreateNewBankingRecords(long APartnerKey, PartnerEditTDS AMainDS)
         {
             PartnerEditTDSPBankingDetailsRow BankingDetailsRow = AMainDS.PBankingDetails.NewRowTyped();
+
             BankingDetailsRow.BankingDetailsKey = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_bank_details));
             BankingDetailsRow.BankingType = MPartnerConstants.BANKINGTYPE_BANKACCOUNT;
             BankingDetailsRow.MainAccount = true;
             AMainDS.PBankingDetails.Rows.Add(BankingDetailsRow);
-            
+
             PPartnerBankingDetailsRow PartnerBankingDetailsRow = AMainDS.PPartnerBankingDetails.NewRowTyped();
             PartnerBankingDetailsRow.PartnerKey = APartnerKey;
             PartnerBankingDetailsRow.BankingDetailsKey = BankingDetailsRow.BankingDetailsKey;
             AMainDS.PPartnerBankingDetails.Rows.Add(PartnerBankingDetailsRow);
-            
+
             PBankingDetailsUsageRow BankingDetailsUsageRow = AMainDS.PBankingDetailsUsage.NewRowTyped();
             BankingDetailsUsageRow.PartnerKey = APartnerKey;
             BankingDetailsUsageRow.BankingDetailsKey = BankingDetailsRow.BankingDetailsKey;
             BankingDetailsUsageRow.Type = MPartnerConstants.BANKINGUSAGETYPE_MAIN;
             AMainDS.PBankingDetailsUsage.Rows.Add(BankingDetailsUsageRow);
-            
+
             return BankingDetailsRow;
         }
 
@@ -301,12 +302,12 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             PartnerLocationRow.TelephoneNumber = APartnerKey.ToString();
             AMainDS.PPartnerLocation.Rows.Add(PartnerLocationRow);
         }
-        
+
         /// create new gift info
         public static AGiftBatchRow CreateNewGiftInfo(Int64 APartnerKey, ref GiftBatchTDS AGiftDS)
         {
             ALedgerAccess.LoadAll(AGiftDS, DBAccess.GDBAccessObj.Transaction);
-            
+
             AGiftDS = TGiftTransactionWebConnector.CreateAGiftBatch(AGiftDS.ALedger[0].LedgerNumber, DateTime.Today, "Test batch");
 
             // Create a new GiftBatch
@@ -338,22 +339,22 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             GiftDetail.RecipientKey = APartnerKey;
             GiftDetail.RecipientLedgerNumber = APartnerKey;
             AGiftDS.AGiftDetail.Rows.Add(GiftDetail);
-            
+
             return Batch;
         }
-        
+
         /// create new recurring gift info
         public static ARecurringGiftBatchRow CreateNewRecurringGiftInfo(Int64 APartnerKey, ref GiftBatchTDS AGiftDS)
         {
             ALedgerAccess.LoadAll(AGiftDS, DBAccess.GDBAccessObj.Transaction);
-            
+
             AGiftDS = TGiftTransactionWebConnector.CreateARecurringGiftBatch(AGiftDS.ALedger[0].LedgerNumber);
 
             // Create a new RecurringGiftBatch
             ARecurringGiftBatchRow Batch = AGiftDS.ARecurringGiftBatch[0];
             Batch.BankAccountCode = "6000";
             Batch.CurrencyCode = "EUR";
-            
+
             // Create a new RecurringGift record
             ARecurringGiftRow RecurringGift = AGiftDS.ARecurringGift.NewRowTyped();
             RecurringGift.LedgerNumber = Batch.LedgerNumber;
@@ -361,7 +362,7 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             RecurringGift.GiftTransactionNumber = 1;
             RecurringGift.DonorKey = APartnerKey;
             AGiftDS.ARecurringGift.Rows.Add(RecurringGift);
-            
+
             // Create a new RecurringGiftDetail record
             ARecurringGiftDetailRow RecurringGiftDetail = AGiftDS.ARecurringGiftDetail.NewRowTyped();
             RecurringGiftDetail.LedgerNumber = Batch.LedgerNumber;
@@ -372,16 +373,16 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             RecurringGiftDetail.RecipientKey = APartnerKey;
             RecurringGiftDetail.RecipientLedgerNumber = APartnerKey;
             AGiftDS.ARecurringGiftDetail.Rows.Add(RecurringGiftDetail);
-            
+
             return Batch;
         }
-        
+
         /// create new AP info
         public static AApDocumentRow CreateNewAPInfo(Int64 APartnerKey, ref AccountsPayableTDS AMainDS)
         {
             ALedgerTable LedgerTable = ALedgerAccess.LoadAll(DBAccess.GDBAccessObj.Transaction);
-            
-            AMainDS = TAPTransactionWebConnector.CreateAApDocument(((ALedgerRow) LedgerTable.Rows[0]).LedgerNumber, APartnerKey, true);
+
+            AMainDS = TAPTransactionWebConnector.CreateAApDocument(((ALedgerRow)LedgerTable.Rows[0]).LedgerNumber, APartnerKey, true);
 
             // Create a new RecurringGiftBatch
             AApDocumentRow Document = AMainDS.AApDocument[0];
@@ -392,16 +393,16 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             Document.TotalAmount = 0;
             Document.CurrencyCode = "EUR";
             Document.LastDetailNumber = 0;
-            
+
             // Create a new RecurringGift record
             AApSupplierRow ApSupplierRow = AMainDS.AApSupplier.NewRowTyped();
             ApSupplierRow.PartnerKey = APartnerKey;
             ApSupplierRow.CurrencyCode = "EUR";
             AMainDS.AApSupplier.Rows.Add(ApSupplierRow);
-            
+
             return Document;
         }
-        
+
         /// create new PM data
         public static PDataLabelTable CreateNewPMData(long AFromPartnerKey, long AToPartnerKey, IndividualDataTDS AMainDS)
         {
@@ -409,7 +410,7 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             PDataLabelTable AllDataLabelTable = PDataLabelAccess.LoadAll(DBAccess.GDBAccessObj.Transaction);
             PDataLabelTable DataLabelTable = new PDataLabelTable();
             PDataLabelRow DataLabelRow = DataLabelTable.NewRowTyped();
-            
+
             // Get the first available key, which is our unique primary key field
             Int32 Key = 1;
 
@@ -417,24 +418,24 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             {
                 Key++;
             }
-            
+
             DataLabelRow.Key = Key;
             DataLabelRow.DataType = "char";
             DataLabelTable.Rows.Add(DataLabelRow);
-            
+
             // Create a new DataLabelValuePartner record
             PDataLabelValuePartnerRow DataLabelValuePartner = AMainDS.PDataLabelValuePartner.NewRowTyped();
             DataLabelValuePartner.PartnerKey = AFromPartnerKey;
             DataLabelValuePartner.DataLabelKey = DataLabelRow.Key;
             AMainDS.PDataLabelValuePartner.Rows.Add(DataLabelValuePartner);
-            
+
             // Create a new PassportDetails record
             IndividualDataTDSPmPassportDetailsRow PassportDetails = AMainDS.PmPassportDetails.NewRowTyped();
             PassportDetails.PartnerKey = AFromPartnerKey;
             PassportDetails.PassportNumber = "0";
             PassportDetails.PassportNationalityName = "IRELAND";
             AMainDS.PmPassportDetails.Rows.Add(PassportDetails);
-            
+
             // Create two new PersonalData records
             PmPersonalDataRow FromPersonalData = AMainDS.PmPersonalData.NewRowTyped();
             FromPersonalData.PartnerKey = AFromPartnerKey;
@@ -443,14 +444,14 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             FromPersonalData.InternalDriverLicense = true;
             FromPersonalData.GenDriverLicense = false;
             AMainDS.PmPersonalData.Rows.Add(FromPersonalData);
-            
+
             PmPersonalDataRow ToPersonalData = AMainDS.PmPersonalData.NewRowTyped();
             ToPersonalData.PartnerKey = AToPartnerKey;
             ToPersonalData.WeightKg = 95;
             ToPersonalData.InternalDriverLicense = false;
             ToPersonalData.GenDriverLicense = true;
             AMainDS.PmPersonalData.Rows.Add(ToPersonalData);
-            
+
             return DataLabelTable;
         }
     }

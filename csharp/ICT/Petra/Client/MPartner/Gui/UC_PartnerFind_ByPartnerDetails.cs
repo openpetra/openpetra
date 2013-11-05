@@ -30,6 +30,7 @@ using System.Windows.Forms;
 using System.Data;
 using System.Threading;
 using SourceGrid;
+using SourceGrid.Selection;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
@@ -1079,13 +1080,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>
         /// Sets up the visual appearance of the Grid.
-        ///
         /// </summary>
         /// <returns>void</returns>
         private void SetupDataGridVisualAppearance()
         {
-            // Make PartnerClass and PartnerName fixed columns
-            grdResult.FixedColumns = 2;
+            // Make PartnerClass, PartnerKey and PartnerName fixed columns
+            //grdResult.FixedColumns = 3;
+
+            // make the border to the right of the fixed columns bold
+            ((TSgrdTextColumn)grdResult.Columns[2]).BoldRightBorder = true;
+
             grdResult.AutoSizeCells();
         }
 

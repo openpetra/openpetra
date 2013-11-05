@@ -1513,6 +1513,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             FindCriteriaUserDefaultRestore();
 
             ShowOrHidePartnerKeyMatchInfoText();
+
+            // put focus on txtPartnerName on screen load
+            this.ActiveControl = txtPartnerName;
         }
 
         /// <summary>
