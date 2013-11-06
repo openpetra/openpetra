@@ -92,6 +92,7 @@ RootNode:
             Height: 50
             Multiline: true
             ScrollBars: Vertical
+            Validation: true
         txtDetailReference: {Label=Reference}
         pnlDetailAmounts:
             Controls:

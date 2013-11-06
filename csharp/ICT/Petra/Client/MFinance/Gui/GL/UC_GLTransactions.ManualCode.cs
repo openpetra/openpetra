@@ -1642,46 +1642,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
+            Control controlToPass = null;
+            
             //Local validation
             if (((txtDebitAmount.NumberValueDecimal.Value == 0)
                  && (txtCreditAmount.NumberValueDecimal.Value == 0)) || (txtDebitAmount.NumberValueDecimal.Value < 0))
             {
-                TSharedFinanceValidation_GL.ValidateGLDetailManual(this, FBatchRow, ARow, txtDebitAmount, ref VerificationResultCollection,
-                    FValidationControlsDict);
+                controlToPass = txtDebitAmount;
             }
             else if (txtCreditAmount.NumberValueDecimal.Value < 0)
             {
-                TSharedFinanceValidation_GL.ValidateGLDetailManual(this, FBatchRow, ARow, txtCreditAmount, ref VerificationResultCollection,
-                    FValidationControlsDict);
+                controlToPass = txtCreditAmount;
             }
-            else
+            else if (TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GLREFMANDATORY, "no") == "yes")
             {
+                controlToPass = txtDetailReference;
+            }
+
+			if (controlToPass == null || controlToPass == txtDetailReference)
+			{
                 //This is needed because the above runs many times during setting up the form
                 VerificationResultCollection.Clear();
-                TSharedFinanceValidation_GL.ValidateGLDetailManual(this, FBatchRow, ARow, null, ref VerificationResultCollection,
-                    FValidationControlsDict);
-            }
+			}
 
-            // if "Reference" is mandatory then make sure it is set
-            if (TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GLREFMANDATORY, "no") == "yes")
-            {
-                DataColumn ValidationColumn;
-                TVerificationResult VerificationResult = null;
-                object ValidationContext;
-
-                ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnReferenceId];
-                ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
-                    ARow.TransactionNumber,
-                    ARow.BatchNumber,
-                    ARow.JournalNumber);
-
-                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Reference,
-                    "Reference of " + ValidationContext,
-                    this, ValidationColumn, null);
-
-                // Handle addition/removal to/from TVerificationResultCollection
-                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
-            }
+			TSharedFinanceValidation_GL.ValidateGLDetailManual(this, FBatchRow, ARow, controlToPass, ref VerificationResultCollection,
+                FValidationControlsDict);
         }
 
         /// <summary>

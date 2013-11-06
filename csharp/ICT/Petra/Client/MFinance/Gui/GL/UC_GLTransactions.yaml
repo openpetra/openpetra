@@ -89,6 +89,7 @@ RootNode:
             Height: 50
             Multiline: true
             ScrollBars: Vertical
+            Validation: true
         txtDetailReference: {Label=Reference}
         dtpDetailTransactionDate: {Label=Transaction Date, OnChange=TransDateChanged, Validation=true}
         cmbDetailKeyMinistryKey: {Label=Key Ministry,  Width=330, List=UserDefinedList}
