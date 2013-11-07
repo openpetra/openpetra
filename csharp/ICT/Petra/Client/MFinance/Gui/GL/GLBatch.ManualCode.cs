@@ -64,7 +64,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e">Not evaluated.</param>
         public void ShowFindPanel(object sender, System.EventArgs e)
         {
-            ucoBatches.ShowFindPanel();
+            switch (tabGLBatch.SelectedIndex)
+            {
+                case (int)eGLTabs.Batches:
+                    ucoBatches.ShowFindPanel();
+                    break;
+                case (int)eGLTabs.Journals:
+                    ucoJournals.ShowFindPanel();
+                    break;
+                case (int)eGLTabs.Transactions:
+                    ucoTransactions.ShowFindPanel();
+                    break;
+            }
         }
 
         private int standardTabIndex = 0;
