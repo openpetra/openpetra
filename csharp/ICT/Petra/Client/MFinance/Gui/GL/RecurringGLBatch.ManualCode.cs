@@ -309,5 +309,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             return ucoRecurringTransactions;
         }
+
+        /// <summary>
+        /// Shows the Filter/Find UserControl and switches to the Find Tab.
+        /// </summary>
+        /// <param name="sender">Not evaluated.</param>
+        /// <param name="e">Not evaluated.</param>
+        public void ShowFindPanel(object sender, System.EventArgs e)
+        {
+            switch (tabRecurringGLBatch.SelectedIndex)
+            {
+                case (int)eGLTabs.RecurringBatches:
+                    ucoRecurringBatches.ShowFindPanel();
+                    break;
+                case (int)eGLTabs.RecurringJournals:
+                    ucoRecurringJournals.ShowFindPanel();
+                    break;
+                case (int)eGLTabs.RecurringTransactions:
+                    ucoRecurringTransactions.ShowFindPanel();
+                    break;
+            }
+        }
     }
 }

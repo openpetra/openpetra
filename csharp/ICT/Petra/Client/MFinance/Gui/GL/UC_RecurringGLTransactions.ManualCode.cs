@@ -1607,5 +1607,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 grdDetails.Focus();
             }
         }
+
+        /// <summary>
+        /// Shows the Filter/Find UserControl and switches to the Find Tab.
+        /// </summary>
+        public void ShowFindPanel()
+        {
+            if (FucoFilterAndFind == null)
+            {
+                ToggleFilter();
+            }
+
+            FucoFilterAndFind.DisplayFindTab();
+        }
     }
 }
