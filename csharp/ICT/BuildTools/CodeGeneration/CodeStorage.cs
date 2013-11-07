@@ -74,6 +74,8 @@ namespace Ict.Tools.CodeGeneration
         public string FClassName = "";
         /// <summary>the title for the form</summary>
         public string FFormTitle = "";
+        /// <summary>the Template for the form</summary>
+        public string FTemplate = "";
         /// <summary>the namespace for the generated file</summary>
         public string FNamespace = "";
         /// <summary>the name of the yaml file</summary>
@@ -151,7 +153,7 @@ namespace Ict.Tools.CodeGeneration
         public bool ImplementationContains(string ANamespaceAndClassname, string ASearchText)
         {
             string pathAndName = System.IO.Path.GetDirectoryName(Path.GetFullPath(this.FFilename)).Replace("\\", "/");
-
+            
             // cut off after /Client/lib
             pathAndName = pathAndName.Substring(0, pathAndName.IndexOf("ICT/Petra/Client/") + "ICT/Petra/Client".Length);
 
@@ -159,7 +161,7 @@ namespace Ict.Tools.CodeGeneration
             ANamespaceAndClassname = ANamespaceAndClassname.Substring("Ict.Petra.Client".Length);
             pathAndName += ANamespaceAndClassname.Substring(0, ANamespaceAndClassname.LastIndexOf(".")).Replace(".", "/");
 
-            // get the file name without TFrm prefix
+                // get the file name without TFrm prefix
             string filename = "/" + ANamespaceAndClassname.Substring(ANamespaceAndClassname.LastIndexOf(".") + 1 + 4);
             string alternativeFileName = filename;
 
