@@ -378,6 +378,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 cmbPeriodFilter.SelectedIndex = 0;
             }
 
+            string rowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+            FFilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == 0) && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
+            ApplyFilter();
+
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
             pnlDetails.Enabled = true;
@@ -404,6 +408,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         MCommonResourcestrings.StrAddNewRecordTitle,
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     FFilterPanelControls.ClearAllDiscretionaryFilters();
+                    ApplyFilter();      // because this filter is not automatically updated
                     SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
                 }
             }
@@ -419,6 +424,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailBatchDescription.Focus();
 
             UpdateRecordNumberDisplay();
+            SetRecordNumberDisplayProperties();
 
             //Needed as GL batches can not be deleted
             ((TFrmGLBatch)ParentForm).SaveChanges();
@@ -1037,6 +1043,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
+            if ((sender is RadioButton ) && (((RadioButton)sender).Checked == false))
+            {
+                // wait for the event to be fired for the button that is now checked
+                return;
+            }
+
             //Console.WriteLine("{0}: RefreshFilter", DateTime.Now.ToLongTimeString());
             int batchNumber = 0;
             int newRowToSelectAfterFilter = 1;
@@ -1513,6 +1525,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FSuppressRefreshFilter = true;
             TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref cmbPeriodFilter, FLedgerNumber, cmbYearFilter.GetSelectedInt32());
             FSuppressRefreshFilter = false;
+
+            if (sender != null)
+            {
+                RefreshFilter(sender, e);
+            }
         }
 
         private void ToggleOptionButtonCheckedEvent(bool AToggleOn)
