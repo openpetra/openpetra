@@ -440,17 +440,17 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static GLBatchTDS LoadATransactionATransAnalAttrib(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
             string strAnalAttr = string.Empty;
+            bool newTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out newTransaction);
 
             GLBatchTDS MainDS = new GLBatchTDS();
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ATransactionAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
 
-            ATransAnalAttribAccess.LoadViaAJournal(MainDS,
-                ALedgerNumber,
-                ABatchNumber,
-                AJournalNumber,
-                Transaction);
+            ATransAnalAttribAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
 
             foreach (GLBatchTDSATransactionRow transRow in MainDS.ATransaction.Rows)
             {
@@ -477,8 +477,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             MainDS.ATransAnalAttrib.DefaultView.RowFilter = string.Empty;
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            
+            if (newTransaction)
+            {
+            	DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            
             return MainDS;
         }
 
@@ -693,14 +697,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AJournalNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadARecurringTransactionWithAttributes(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        public static GLBatchTDS LoadARecurringTransactionARecurringTransAnalAttrib(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
             string strAnalAttr = string.Empty;
-            Boolean NewTransaction = false;
+            bool newTransaction = false;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+                out newTransaction);
 
             GLBatchTDS MainDS = new GLBatchTDS();
 
@@ -734,7 +738,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             MainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = string.Empty;
 
-            if (NewTransaction)
+            if (newTransaction)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }

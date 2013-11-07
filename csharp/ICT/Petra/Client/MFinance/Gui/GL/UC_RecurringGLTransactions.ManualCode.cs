@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FBatchNumber = -1;
         private Int32 FJournalNumber = -1;
         private Int32 FTransactionNumber = -1;
-        private bool FActiveOnly = true;
+        private bool FActiveOnly = false;
         private string FTransactionCurrency = string.Empty;
         private string FBatchStatus = string.Empty;
         private string FJournalStatus = string.Empty;
@@ -64,6 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private ARecurringTransAnalAttribRow FPSAttributesRow = null;
         private SourceGrid.Cells.Editors.ComboBox FAnalAttribTypeVal;
         private bool FAttributesGridEntered = false;
+        private bool FIsUnposted = true;
 
         private ARecurringBatchRow FBatchRow = null;
         private decimal FDebitAmount = 0;
@@ -92,6 +93,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FLoadCompleted = false;
             FBatchRow = GetBatchRow();
+            FIsUnposted = true;
 
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FJournalNumber == AJournalNumber)
@@ -101,7 +103,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FJournalRow = GetJournalRow();
 
                 //Same as previously selected
-                if ((FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED) && (GetSelectedRowIndex() > 0))
+                if (FIsUnposted && (GetSelectedRowIndex() > 0))
                 {
                     GetDetailsFromControls(GetSelectedDetailRow());
                 }
@@ -130,9 +132,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             SetTransactionDefaultView();
 
             //Load from server if necessary
-            if (FMainDS.ATransaction.DefaultView.Count == 0)
+            if (FMainDS.ARecurringTransaction.DefaultView.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionWithAttributes(ALedgerNumber, ABatchNumber, AJournalNumber));
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionARecurringTransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber));
             }
 
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringTransaction.DefaultView);
@@ -155,8 +157,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FMainDS.ARecurringTransAnalAttrib.DefaultView.AllowNew = false;
             grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringTransAnalAttrib.DefaultView);
 
-            // if this form is readonly, then we need all account and cost centre codes, because old codes might have been used
-            bool ActiveOnly = false; //this.Enabled;
+            //Always show active and inactive values
+            bool ActiveOnly = false;
 
             if (requireControlSetup || (FActiveOnly != ActiveOnly))
             {
@@ -175,13 +177,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
             }
 
-            ShowDataManual();
-
-            btnNew.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
-            btnDelete.Enabled = !FPetraUtilsObject.DetailProtectedMode && FJournalStatus == MFinanceConstants.BATCH_UNPOSTED;
-
             //This will update transaction headers
-            UpdateTransactionTotals();
+            UpdateTransactionTotals(false);
 
             if (grdDetails.Rows.Count < 2)
             {
@@ -229,21 +226,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FBatchNumber != -1)
             {
-                // AlanP asks: Do we need this call??
-                //ClearTransactionDefaultView();
-
                 string rowFilter = String.Format("{0}={1} And {2}={3}",
                     ARecurringTransactionTable.GetBatchNumberDBName(),
                     FBatchNumber,
                     ARecurringTransactionTable.GetJournalNumberDBName(),
                     FJournalNumber);
-                FMainDS.ARecurringTransaction.DefaultView.RowFilter = rowFilter;
-                FFilterPanelControls.SetBaseFilter(rowFilter, true);
-                FCurrentActiveFilter = rowFilter;
-
+                
                 FMainDS.ARecurringTransaction.DefaultView.Sort = String.Format("{0} " + sort,
                     ARecurringTransactionTable.GetTransactionNumberDBName()
                     );
+
+            	FMainDS.ARecurringTransaction.DefaultView.RowFilter = rowFilter;
+                FFilterPanelControls.SetBaseFilter(rowFilter, true);
+                FCurrentActiveFilter = rowFilter;
             }
         }
 
@@ -282,6 +277,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ARecurringTransAnalAttribTable.GetAnalysisTypeCodeDBName()
                     );
             }
+
+			TLogging.Log(String.Format("FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter: {0}",
+                                       FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter));
+            TLogging.Log(String.Format("FMainDS.ARecurringTransAnalAttrib.DefaultView.Count: {0}",
+                                       FMainDS.ARecurringTransAnalAttrib.DefaultView.Count));
+
         }
 
         /// <summary>
@@ -600,6 +601,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             string[] analTypeValues = new string[analTypeCodeValuesCount];
 
+            FCacheDS.AFreeformAnalysis.DefaultView.Sort = AFreeformAnalysisTable.GetAnalysisValueDBName();
             int counter = 0;
 
             foreach (DataRowView dvr in FCacheDS.AFreeformAnalysis.DefaultView)
@@ -613,9 +615,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Refresh the combo values
             FAnalAttribTypeVal.StandardValuesExclusive = true;
             FAnalAttribTypeVal.StandardValues = analTypeValues;
-            Int32 RowNumber;
 
-            RowNumber = grdAnalAttributes.GetFirstHighlightedRowIndex();
+            Int32 RowNumber = grdAnalAttributes.GetFirstHighlightedRowIndex();
             FAnalAttribTypeVal.EnableEdit = true;
             FAnalAttribTypeVal.EditableMode = EditableMode.Focus;
             grdAnalAttributes.Selection.Focus(new Position(RowNumber, grdAnalAttributes.Columns.Count - 1), true);
@@ -855,10 +856,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             SourceGrid.Conditions.ConditionView conditionAnalysisAttributeValueActive = new SourceGrid.Conditions.ConditionView(strikeoutCell2);
             conditionAnalysisAttributeValueActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column2, int gridRow2, object itemRow2)
             {
-                DataRowView row2 = (DataRowView)itemRow2;
-                string analysisCode = row2[ARecurringTransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
-                string analysisAttributeValue = row2[ARecurringTransAnalAttribTable.ColumnAnalysisAttributeValueId].ToString();
-                return !AnalysisAttributeValueIsActive(analysisCode, analysisAttributeValue);
+                if (itemRow2 != null)
+                {
+	                DataRowView row2 = (DataRowView)itemRow2;
+	                string analysisCode = row2[ARecurringTransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
+	                string analysisAttributeValue = row2[ARecurringTransAnalAttribTable.ColumnAnalysisAttributeValueId].ToString();
+	                return !AnalysisAttributeValueIsActive(analysisCode, analysisAttributeValue);
+                }
+                else
+                {
+                	return false;
+                }
             };
 
             //Add conditions to columns
@@ -1521,9 +1529,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            //
             // Delete any existing Analysis Type records and re-create the list (Removing any prior selections by the user).
-
             foreach (DataRowView rv in FMainDS.ARecurringTransAnalAttrib.DefaultView)
             {
                 ARecurringTransAnalAttribRow attrRowCurrent = (ARecurringTransAnalAttribRow)rv.Row;

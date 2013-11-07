@@ -19,9 +19,6 @@ RootNode:
             Controls:
                 Row0: [txtLedgerNumber, txtBatchNumber, txtJournalNumber]
             Dock: Top
-        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
-        txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
-        txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
         pnlDetailGrid:
             Dock: Fill
             Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
@@ -102,6 +99,9 @@ RootNode:
                 Row3: [txtDebitTotalAmount]
                 Row4: [txtCreditTotalAmount]
         lblTransactionCurrency: {Label=TODOTransactionCurrency}
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
+        txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
+        txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
         txtDebitAmount: {Label=Dr Amount, Format=Currency, NullValueAllowed=false}
         txtCreditAmount: {Label=Cr Amount, Format=Currency, NullValueAllowed=false}
         txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true, Format=Currency}
