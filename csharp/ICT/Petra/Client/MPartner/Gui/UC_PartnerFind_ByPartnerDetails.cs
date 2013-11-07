@@ -729,7 +729,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 staffDataForm.PartnerKey = FLogic.PartnerKey;
                 staffDataForm.Show();
             }
-            else if (AToolStripItem.Name == MPartnerResourcestrings.StrPersonnelPersonMenuItemText)
+            else if (ClickedMenuItemName == "mniMaintainPersonnelData")
             {
                 if (FLogic.DetermineCurrentPartnerClass() == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
