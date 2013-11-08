@@ -368,20 +368,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (ValidateAllData(true, true))
-            {
-                // we create the table locally, no dataset
-                GLBatchTDSATransactionRow NewRow = FMainDS.ATransaction.NewRowTyped(true);
-                NewRowManual(ref NewRow);
-                FMainDS.ATransaction.Rows.Add(NewRow);
-
-                grdDetails.DataSource = null;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransaction.DefaultView);
-
-                SelectDetailRowByDataTableIndex(FMainDS.ATransaction.Rows.Count - 1);
-
-                FPetraUtilsObject.SetChangedFlag();
-            }
+            this.CreateNewATransaction();
 
             if (pnlDetails.Enabled == false)
             {
@@ -389,18 +376,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 pnlTransAnalysisAttributes.Enabled = true;
             }
 
-            if (!btnDeleteAll.Enabled)
-            {
-                btnDeleteAll.Enabled = true;
-            }
-
             cmbDetailCostCentreCode.Focus();
 
             //Needs to be called at end of addition process to process Analysis Attributes
-            ReconcileTransAnalysisAttributes();
-            RefreshAnalysisAttributesGrid();
-
-            UpdateRecordNumberDisplay();
+			AccountCodeDetailChanged(null, null);
         }
 
         /// <summary>
@@ -436,6 +415,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             FPreviouslySelectedDetailRow = (GLBatchTDSATransactionRow)ANewRow;
+
+            btnDeleteAll.Enabled = true;
         }
 
         /// <summary>
@@ -491,6 +472,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(ATransactionRow ARow)
         {
+            txtJournalNumber.Text = FJournalNumber.ToString();
+
             if (ARow == null)
             {
                 FTransactionNumber = -1;
@@ -653,7 +636,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             string[] analTypeValues = new string[analTypeCodeValuesCount];
 
             FCacheDS.AFreeformAnalysis.DefaultView.Sort = AFreeformAnalysisTable.GetAnalysisValueDBName();
-
             int counter = 0;
 
             foreach (DataRowView dvr in FCacheDS.AFreeformAnalysis.DefaultView)
@@ -999,6 +981,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             retVal = (FCacheDS.AFreeformAnalysis.DefaultView.Count > 0);
 
+            //Make sure the grid combobox has right font else it will adopt strikeout
+            // for all items in the list.
+            FAnalAttribTypeVal.Control.Font = new Font(FontFamily.GenericSansSerif, 8);
+
             FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = originalRowFilter;
 
             return retVal;
@@ -1141,11 +1127,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // pnlDetailsProtected must be changed first: when the enabled property of the control is changed, the focus changes, which triggers validation
             pnlDetailsProtected = !changeable;
             pnlDetails.Enabled = (changeable && grdDetails.Rows.Count > 1);
+            btnDelete.Enabled = (changeable && grdDetails.Rows.Count > 1);
+            btnDeleteAll.Enabled = (changeable && grdDetails.Rows.Count > 1);
             pnlTransAnalysisAttributes.Enabled = changeable;
             lblAnalAttributes.Enabled = (changeable && grdDetails.Rows.Count > 1);
             btnNew.Enabled = changeable;
-            btnDelete.Enabled = (changeable && grdDetails.Rows.Count > 1);
-            btnDeleteAll.Enabled = (changeable && grdDetails.Rows.Count > 1);
         }
 
         private void DeleteAllTrans(System.Object sender, EventArgs e)
@@ -1562,10 +1548,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        // I need to ensure that the Analysis Attributes grid has all the entries
+        // Need to ensure that the Analysis Attributes grid has all the entries
         // that are required for the selected account.
         // There may or may not already be attribute assignments for this transaction.
-        //
         private void ReconcileTransAnalysisAttributes()
         {
             string currentAccountCode = cmbDetailAccountCode.GetSelectedString();
