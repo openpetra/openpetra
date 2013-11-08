@@ -210,7 +210,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             }
 
             //TransactionAmount is not in the dictionary so had to pass the control directly
-            if (AControl != null)
+            if ((AControl != null) && AControl.Name.EndsWith("Amount"))
             {
                 // 'GL amount must be non-zero and positive
                 ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnTransactionAmountId];
@@ -230,6 +230,23 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
 
                 return VerifResultCollAddedCount == 0;
+            }
+
+            // 'Narrative must not be empty
+            ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnNarrativeId];
+            ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                ARow.TransactionNumber,
+                ARow.BatchNumber,
+                ARow.JournalNumber);
+
+            VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Narrative,
+                "Narrative of " + ValidationContext,
+                AContext, ValidationColumn, AControl);
+
+            // Handle addition/removal to/from TVerificationResultCollection
+            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+            {
+                VerifResultCollAddedCount++;
             }
 
             // 'Entered From Date' must be valid
@@ -259,6 +276,26 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
             {
                 VerifResultCollAddedCount++;
+            }
+
+            if ((AControl != null) && AControl.Name.EndsWith("Reference"))
+            {
+                // if "Reference" is mandatory then make sure it is set
+                ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnReferenceId];
+                ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                    ARow.TransactionNumber,
+                    ARow.BatchNumber,
+                    ARow.JournalNumber);
+
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Reference,
+                    "Reference of " + ValidationContext,
+                    AContext, ValidationColumn, null);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
             }
 
             return VerifResultCollAddedCount == 0;
@@ -295,7 +332,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
             }
 
             //TransactionAmount is not in the dictionary so had to pass the control directly
-            if (AControl != null)
+            //  also needed to handle reference
+            if ((AControl != null) && AControl.Name.EndsWith("Amount"))
             {
                 // 'GL amount must be non-zero
                 ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnTransactionAmountId];
@@ -332,6 +370,25 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
             {
                 VerifResultCollAddedCount++;
+            }
+
+            if ((AControl != null) && AControl.Name.EndsWith("Reference"))
+            {
+                ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnReferenceId];
+                ValidationContext = String.Format("Transaction number {0} (batch:{1} journal:{2})",
+                    ARow.TransactionNumber,
+                    ARow.BatchNumber,
+                    ARow.JournalNumber);
+
+                VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.Reference,
+                    "Reference of " + ValidationContext,
+                    AContext, ValidationColumn, null);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                {
+                    VerifResultCollAddedCount++;
+                }
             }
 
             return VerifResultCollAddedCount == 0;
