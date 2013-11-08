@@ -44,10 +44,10 @@ namespace Ict.Petra.Client.App.Gui
     {
         /// <summary>Parameter Separator Character</summary>
         protected const char PARAM_SEPARATOR = ';';
-        
+
         /// <summary>Partner Key Parameter prefix</summary>
         protected const string PARTNERKEY_PARAM = "PartnerKey";
-        
+
         /// <summary>Ledger Number Parameter prefix</summary>
         protected const string LEDGERNUMBER_PARAM = "LedgerNumber";
 
@@ -117,7 +117,7 @@ namespace Ict.Petra.Client.App.Gui
         }
 
         /// <summary>
-        /// Instance of the 'Testing Telltale Form'. 
+        /// Instance of the 'Testing Telltale Form'.
         /// </summary>
         public TGuiTestingTelltaleWinForm TellTaleForm
         {
@@ -203,12 +203,11 @@ namespace Ict.Petra.Client.App.Gui
 
             TLogging.Log("Start of Test Series at " + DateTime.Now.ToString());
 
-
             if (TestSetup())
-            {                
+            {
                 // Possible future extension: make tests and their parameters controllable
                 // through an XML file, which would need to be evaluated here (number of tests).
-    
+
                 if (FTestParameters != String.Empty)
                 {
                     TestParameters = FTestParameters;
@@ -217,25 +216,26 @@ namespace Ict.Petra.Client.App.Gui
                 {
                     TestParameters = "29064546";  // just use a hardcoded PartnerKey...
                 }
-    
+
                 RepeatsParamPos = TestParameters.IndexOf(REPEAT_PARAM);
-    
+
                 if (RepeatsParamPos != -1)
                 {
-                    RepeatsParamLength = TestParameters.IndexOf(PARAM_SEPARATOR, RepeatsParamPos + REPEAT_PARAM.Length) - (RepeatsParamPos + REPEAT_PARAM.Length) - 1;
-                    
+                    RepeatsParamLength =
+                        TestParameters.IndexOf(PARAM_SEPARATOR, RepeatsParamPos + REPEAT_PARAM.Length) - (RepeatsParamPos + REPEAT_PARAM.Length) - 1;
+
                     if (RepeatsParamLength < 0)
                     {
                         // No PARAM_SEPARATOR found, so assume rest of TestParameters is the REPEAT_PARAM value
                         RepeatsParamLength = TestParameters.Length - (RepeatsParamPos + REPEAT_PARAM.Length + 1);
                     }
-                    
+
 //MessageBox.Show("Parsed 'repeats' parameter: " + "Startpos.: " + RepeatsParamPos.ToString() + "; Contents: " +
 //    TestParameters.Substring(RepeatsParamPos + REPEAT_PARAM.Length + 1, RepeatsParamLength));
-    
+
                     NumberOfTests = Convert.ToInt32(
                         TestParameters.Substring(RepeatsParamPos + REPEAT_PARAM.Length + 1, RepeatsParamLength));
-    
+
 //MessageBox.Show("NumberOfTests: " + NumberOfTests.ToString());
                 }
                 else
@@ -243,65 +243,65 @@ namespace Ict.Petra.Client.App.Gui
                     NumberOfTests = 1;
                     FTellTaleForm.Repeats = "N/A";
                 }
-//MessageBox.Show("BreakTime: " + FDisconnectTime.ToString());    
+
+//MessageBox.Show("BreakTime: " + FDisconnectTime.ToString());
                 // Find out when to stop the Test (or Test Series if NumberOfTests = 1)
                 Int32 breakTime =
                     Convert.ToInt32((FDisconnectTime -
                                      DateTime.Now).TotalMilliseconds /
                         NumberOfTests) - (TIME_REQUIRED_FOR_LOGOUT / NumberOfTests) - ((TIME_REQUIRED_FOR_LOGOUT / 4) / NumberOfTests);
-    
+
 //MessageBox.Show("BreakTime: " + breakTime.ToString());
-    
+
                 for (int Counter = 1; Counter <= NumberOfTests; Counter++)
                 {
-    
                     if (NumberOfTests > 1)
                     {
                         FTellTaleForm.Repeats = Counter.ToString() + " of " + NumberOfTests.ToString();
                     }
-    
-            /*
+
+                    /*
                      * Open specified Form
                      *
                      * Possible future extension: make tests and their parameters controllable
                      * through an XML file, which would need to be evaluated here
                      * (which Forms to open and their parameters, if any).
-             */
+                     */
                     Form subform = RunOnScreen(FTestingFile, TestParameters);
-    
+
                     // Use a loop to prevent blocking the Thread (and therefore potentially the GUI) that the Tests are running on
                     // while 'sleeping' before the Test ends.
-            if (breakTime > 0)
-            {
+                    if (breakTime > 0)
+                    {
                         for (int SleepCounter = 0; SleepCounter < ((breakTime / 1000) * 2); SleepCounter++)
                         {
                             Thread.Sleep(500);
                             Application.DoEvents();
                         }
-            }
+                    }
 
-            if (subform != null)
-            {
-                subform.Close();
-            }
+                    if (subform != null)
+                    {
+                        subform.Close();
+                    }
                     else
                     {
                         // Force closing of all windows besides self
                         CloseAllScreens();
                     }
-    
+
                     TLogging.Log("Finished Test " + Counter.ToString() + " at " + DateTime.Now.ToString());
                 }
-    
+
                 TLogging.Log("Finished Test Series at " + DateTime.Now.ToString());
-    
-    
+
+
                 TestTeardown();
             }
             else
             {
                 TLogging.Log("Setting-up of Test Series FAILED at " + DateTime.Now.ToString());
-                TLogging.Log("Finished FAILED Test Series at " + DateTime.Now.ToString());                
+                TLogging.Log("Finished FAILED Test Series at " + DateTime.Now.ToString());
             }
 
             // TODO: signal the multiPetraStart program about client finished?
@@ -387,14 +387,14 @@ namespace Ict.Petra.Client.App.Gui
         {
             // empty implementation
         }
-        
+
         /// <summary>
         /// This has to be implemented yet; it should open the GL Batch screen.
         /// </summary>
         /// <param name="AParameter">Currently ignored.</param>
         public virtual void OpenGLBatchScreen(String AParameter)
-        {           
+        {
             // empty implementation
-        }        
+        }
     }
 }

@@ -712,41 +712,41 @@ namespace Ict.Petra.Client.App.Core
             IsolatedStorageFileStream ReturnValue = null;
             bool Success = false;
             int AttemptCounter = 0;
-            
+
             UIsolatedStorageFile.CreateDirectory(CACHEFILESDIR);
-            
+
             // For the scenario where multiple Client instances are executed at (nearly) the same time on the
-            // same machine: don't fall over in case another client tries to access the file in which the 
+            // same machine: don't fall over in case another client tries to access the file in which the
             // Cacheable DataTable should be written, but wait a bit and retry. That scenario seems a bit
             // unlikely, but it happens when many Clients are launched and are told to open the same screen
-            // (e.g. Partner Edit screen) and that happens when they are launched from the PetraMultiStart 
+            // (e.g. Partner Edit screen) and that happens when they are launched from the PetraMultiStart
             // application.
-            while ((AttemptCounter < 5) 
-                && (!Success)) 
-            {                
+            while ((AttemptCounter < 5)
+                   && (!Success))
+            {
                 AttemptCounter++;
-                
-                try 
+
+                try
                 {
                     ReturnValue = new IsolatedStorageFileStream(CACHEFILESDIR + '/' + ATableName + CACHEABLEDT_FILE_EXTENSION,
-                FileMode.Create,
-                FileAccess.Write,
-                UIsolatedStorageFile);
-                    
+                        FileMode.Create,
+                        FileAccess.Write,
+                        UIsolatedStorageFile);
+
                     Success = true;
                 }
                 catch (System.IO.IOException)
                 {
                     Thread.Sleep(200);
-                    
-                    continue;                    
-                } 
-                catch (Exception) 
-                {                   
+
+                    continue;
+                }
+                catch (Exception)
+                {
                     throw;
                 }
             }
-            
+
             return ReturnValue;
         }
 

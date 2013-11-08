@@ -2589,7 +2589,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 pnlRightColumn.Controls.Add(pnlPartnerClass);
             }
 
-            
             Rnd = new Random();
 
             while (!ValidSearchCriteria)
@@ -2600,36 +2599,36 @@ namespace Ict.Petra.Client.MPartner.Gui
                     case 0:
                         cmbPartnerClass.SelectedValue = "*";
                         break;
-    
+
                     case 1:
                         cmbPartnerClass.SelectedValue = "PERSON";
                         break;
-    
+
                     case 2:
                         cmbPartnerClass.SelectedValue = "FAMILY";
                         break;
-                        
+
                     case 3:
                         cmbPartnerClass.SelectedValue = "CHURCH";
                         break;
-    
+
                     case 4:
                         cmbPartnerClass.SelectedValue = "ORGANISATION";
                         break;
-    
+
                     case 5:
                         cmbPartnerClass.SelectedValue = "BANK";
                         break;
-    
+
                     case 6:
                         cmbPartnerClass.SelectedValue = "UNIT";
                         break;
-                        
+
                     case 7:
                         cmbPartnerClass.SelectedValue = "VENUE";
-                        break;                    
+                        break;
                 }
-    
+
                 // Random start character for PartnerName
                 // Returns a character between @, A...W (X, Y, Z are not likely to return much data...)
                 // If @, then use empty Partner Name!
@@ -2639,8 +2638,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if ((cmbPartnerClass.SelectedValue.ToString() != "*")
                     || (RandomSearchLetter != '@'))
                 {
-                    ValidSearchCriteria = true;    
-                }                
+                    ValidSearchCriteria = true;
+                }
+
 //                else
 //                {
 //                    MessageBox.Show("No valid search criteria:\r\nPartner Class: " + cmbPartnerClass.SelectedValue.ToString() +
@@ -2648,19 +2648,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 //                                    "SetupRandomTestSearchCriteria");
 //                }
             }
-            
-            if (RandomSearchLetter != '@') 
+
+            if (RandomSearchLetter != '@')
             {
                 txtPartnerName.Text = RandomSearchLetter.ToString();
                 GetNextControl(txtPartnerName, true).Focus();
-            }            
-            
+            }
+
             // Make sure that the underlying data is updated
             // (this is needed when called from a Thread).
             FFindCriteriaDataTable.Rows[0]["PartnerName"] = txtPartnerName.Text;
             FFindCriteriaDataTable.Rows[0]["PartnerClass"] = cmbPartnerClass.SelectedValue;
         }
-        
+
         /// <summary>
         /// todoComment
         /// </summary>

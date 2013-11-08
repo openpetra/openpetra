@@ -1216,11 +1216,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             // We're done!
             FFormSetupFinished = true;
             this.Cursor = Cursors.Default;
-            
+
             if (TClientSettings.AutoTestParameters.Contains("run_randomfind"))
             {
                 ucoFindByPartnerDetails.SetupRandomTestSearchCriteriaAndRunSearch();
-            }                        
+            }
         }
 
         private void TPartnerFindScreen_Closed(System.Object sender, System.EventArgs e)

@@ -25,23 +25,23 @@ using System;
 
 namespace PetraMultiStart
 {
-    /// <summary>
-    /// Program for the simulation of many connected Clients.
-    /// <para>
-    /// Each client is run in a separate thread.
-    /// </para>
-    /// <para>
-    /// The program runs endlessly, and needs to be stopped with CTRL-C!!!
-    /// </para>
-    /// </summary>
-    /// <remarks>
-    /// See 'README.txt' file for basic documentation!
-    /// </remarks>
-    class Program
+/// <summary>
+/// Program for the simulation of many connected Clients.
+/// <para>
+/// Each client is run in a separate thread.
+/// </para>
+/// <para>
+/// The program runs endlessly, and needs to be stopped with CTRL-C!!!
+/// </para>
+/// </summary>
+/// <remarks>
+/// See 'README.txt' file for basic documentation!
+/// </remarks>
+class Program
+{
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
-        {
-            main.RunTest();                
-        }
+        main.RunTest();
     }
+}
 }

@@ -28,7 +28,7 @@ using System.Windows.Forms;
 namespace Ict.Petra.Client.App.Gui
 {
     /// <summary>
-    /// Provides a small 'telltale' window that shows details about the Test that a 
+    /// Provides a small 'telltale' window that shows details about the Test that a
     /// particular instance of PetraClient is performing. It gets launched from the TTestWinForm Class.
     /// </summary>
     /// <remarks>These tests are to be driven by the PetraMultiStart program.</remarks>
@@ -43,12 +43,12 @@ namespace Ict.Petra.Client.App.Gui
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
-            
+
             //
             // TODO: Add constructor code after the InitializeComponent() call.
-            //            
+            //
         }
-        
+
         /// <summary>
         /// Sets Client Label
         /// </summary>
@@ -59,7 +59,7 @@ namespace Ict.Petra.Client.App.Gui
                 lblClient.Text = value;
             }
         }
-        
+
         /// <summary>
         /// Sets Client Group Label
         /// </summary>
@@ -73,7 +73,7 @@ namespace Ict.Petra.Client.App.Gui
 
         /// <summary>
         /// Sets Testing File Label
-        /// </summary>        
+        /// </summary>
         public string TestingFile
         {
             set
@@ -81,10 +81,10 @@ namespace Ict.Petra.Client.App.Gui
                 lblTestingFile.Text = value;
             }
         }
-        
+
         /// <summary>
         /// Sets Repeats Label
-        /// </summary>        
+        /// </summary>
         public string Repeats
         {
             set
@@ -92,10 +92,10 @@ namespace Ict.Petra.Client.App.Gui
                 lblRepeats.Text = value;
             }
         }
-        
+
         /// <summary>
         /// Sets Disconnect Time Label
-        /// </summary>        
+        /// </summary>
         public DateTime DisconnectTime
         {
             set
