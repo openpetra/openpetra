@@ -1087,6 +1087,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 else
                 {
                     PartnerClassDataRow = FPartnerClassDataTable.NewRow();
+                    PartnerClassDataRow["PartnerClass"] = "*";
+                    FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
+                    PartnerClassDataRow = FPartnerClassDataTable.NewRow();
                     PartnerClassDataRow["PartnerClass"] = "PERSON";
                     FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
                     PartnerClassDataRow = FPartnerClassDataTable.NewRow();
@@ -1120,11 +1123,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         default:
                         {
-                            if (FPreviouslySelectedPartnerClass == "*")
-                            {
-                                FPreviouslySelectedPartnerClass = "FAMILY";
-                            }
-
                             // Set Partner Class to Family or Person, depending on what the previous value was
                             // Need to change it twice to get a selected value changed event
                             cmbPartnerClass.SelectedIndex = -1;
@@ -1136,6 +1134,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 FPartnerClassUpdateIsAutomatic = false;
+
+                // this stops the cursor being reset to the start of the text box
+                txtPersonalName.SelectionStart = txtPersonalName.TextLength;
             }
             else if ((cmbPartnerClass.SelectedValue != null)
                      && (txtPersonalName.Text.Length == 0)

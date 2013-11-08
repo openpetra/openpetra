@@ -19,7 +19,7 @@ RootNode:
                 Row2: [rbtCurrentStaff, pnlCurrentStaff]
                 Row3: [rbtAllStaff]
         rbtPartner: {Label=Partner, OnChange=rbtSelectionChange}
-        txtPartnerKey: {NoLabel=true, Type=PartnerKey, PartnerClass=PERSON}
+        txtPartnerKey: {NoLabel=true, Type=PartnerKey}
         rbtExtract: {Label=Extract, OnChange=rbtSelectionChange}
         txtExtract: {NoLabel=true, Type=Extract}
         rbtCurrentStaff:{Label=Staff at, OnChange=rbtSelectionChange}

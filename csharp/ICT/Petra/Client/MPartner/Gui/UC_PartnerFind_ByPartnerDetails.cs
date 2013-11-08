@@ -1085,7 +1085,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void SetupDataGridVisualAppearance()
         {
             // Make PartnerClass, PartnerKey and PartnerName fixed columns
-            //grdResult.FixedColumns = 3;
+            grdResult.FixedColumns = 3;
 
             // make the border to the right of the fixed columns bold
             ((TSgrdTextColumn)grdResult.Columns[2]).BoldRightBorder = true;

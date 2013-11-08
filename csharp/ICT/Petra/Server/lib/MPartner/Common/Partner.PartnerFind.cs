@@ -329,7 +329,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             if (CriteriaRow["PersonalName"].ToString().Length > 0)
             {
                 // Searched DB Field: 'p_first_name_c'
-                // Search for family or person?
+                // Search for family or person or both?
                 if (CriteriaRow["PartnerClass"].ToString() == "PERSON")
                 {
                     new TDynamicSearchHelper(PPersonTable.TableId,
@@ -341,6 +341,27 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                     new TDynamicSearchHelper(PFamilyTable.TableId,
                         PFamilyTable.ColumnFirstNameId, CriteriaRow, "PersonalName", "PersonalNameMatch",
                         ref CustomWhereCriteria, ref InternalParameters);
+                }
+                else if (CriteriaRow["PartnerClass"].ToString() == "*")
+                {
+                    // search for first name in both family and person
+                    String Criteria = " AND (";
+                    String SubCriteria = "";
+
+                    new TDynamicSearchHelper(PPersonTable.TableId,
+                        PPersonTable.ColumnFirstNameId, CriteriaRow, "PersonalName", "PersonalNameMatch",
+                        ref SubCriteria, ref InternalParameters);
+
+                    Criteria += SubCriteria.Remove(0, 4) + " OR ";
+                    SubCriteria = "";
+
+                    new TDynamicSearchHelper(PFamilyTable.TableId,
+                        PFamilyTable.ColumnFirstNameId, CriteriaRow, "PersonalName", "PersonalNameMatch",
+                        ref SubCriteria, ref InternalParameters);
+
+                    Criteria += SubCriteria.Remove(0, 4) + ")";
+
+                    CustomWhereCriteria += Criteria;
                 }
             }
 

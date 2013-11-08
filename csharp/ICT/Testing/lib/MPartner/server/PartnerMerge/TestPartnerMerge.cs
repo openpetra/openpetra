@@ -108,6 +108,85 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
+        /// Tests Partner Merge Check, performs check to determine if a Partner of Partner Class FAMILY and with one member can be merged to a
+        /// Partner of Partner Class CHURCH. This merge should not be allowed.
+        /// </summary>
+        [Test]
+        public void TestMergeFamilyToChurchCheck()
+        {
+            long FromPartnerKey;
+            long FamilyMemberPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two new Partners
+            //
+            TestMergeFamilyToChurchCheck_Arrange(out FromPartnerKey, out FamilyMemberPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Perform check to see if the two partners can be merged
+            //
+            bool result = TMergePartnersCheckWebConnector.CheckPartnersCanBeMerged(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.FAMILY, TPartnerClass.CHURCH, "", out VerificationResult);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge Check returns negative
+            Assert.AreEqual(false, result, "Merging Family to Church");
+
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FamilyMemberPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Family Partner with one member and a Church Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="FamilyMemberPartnerKey">Partner Key of the From Family member.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeFamilyToChurchCheck_Arrange(out long AFromPartnerKey,
+            out long FamilyMemberPartnerKey,
+            out long AToPartnerKey,
+            TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Family Partner with one family member and one new Church Partner
+            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS);
+            PFamilyRow FromPartnerRow = (PFamilyRow)MainDS.PFamily.Rows[0];
+            PPersonRow FamilyMember = (PPersonRow)MainDS.PPerson.Rows[0];
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(FamilyMember, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            FamilyMemberPartnerKey = FamilyMember.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for family and church failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
         /// Tests Partner Merge, merging two Partners of Partner Class UNIT.
         /// </summary>
         /// <remarks>Creates two new Unit Partners, an auxilary Family Partner, merges the two Units
@@ -307,7 +386,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates a Unit Partners and a Church Partner.
+        /// Creates a Unit Partner and a Church Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Unit Partner that is the 'From' Partner in the Partner Merge Test.</param>
         /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'To' Partner in the Partner Merge Test.</param>
@@ -376,7 +455,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates a Unit Partners and a Venue Partner.
+        /// Creates a Unit Partner and a Venue Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Unit Partner that is the 'From' Partner in the Partner Merge Test.</param>
         /// <param name="AToPartnerKey">Partner Key of the Venue Partner that is the 'To' Partner in the Partner Merge Test.</param>
@@ -445,7 +524,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates a Unit Partners and a Family Partner.
+        /// Creates a Unit Partner and a Family Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Unit Partner that is the 'From' Partner in the Partner Merge Test.</param>
         /// <param name="AToPartnerKey">Partner Key of the Family Partner that is the 'To' Partner in the Partner Merge Test.</param>
@@ -594,7 +673,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates a Unit Partners and a Organisation Partner.
+        /// Creates a Unit Partner and a Organisation Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Unit Partner that is the 'From' Partner in the Partner Merge Test.</param>
         /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'To' Partner in the Partner Merge Test.</param>
@@ -664,7 +743,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates a Unit Partners and a Bank Partner.
+        /// Creates a Unit Partner and a Bank Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Unit Partner that is the 'From' Partner in the Partner Merge Test.</param>
         /// <param name="AToPartnerKey">Partner Key of the Bank Partner that is the 'To' Partner in the Partner Merge Test.</param>
@@ -2082,7 +2161,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates a Family Partners and an Organisation Partner.
+        /// Creates a Family Partner and an Organisation Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
         /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'To' Partner in the Partner Merge Test.</param>
@@ -2209,7 +2288,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates a Family Partners and a Church Partner.
+        /// Creates a Family Partner and a Church Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
         /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'To' Partner in the Partner Merge Test.</param>
@@ -3211,7 +3290,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates an Organisation Partners and a Family Partner.
+        /// Creates an Organisation Partner and a Family Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
         /// <param name="AToPartnerKey">Partner Key of the Family Partner that is the 'To' Partner in the Partner Merge Test.</param>
