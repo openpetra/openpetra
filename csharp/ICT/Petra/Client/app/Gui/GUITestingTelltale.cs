@@ -28,7 +28,7 @@ using System.Windows.Forms;
 namespace Ict.Petra.Client.App.Gui
 {
     /// <summary>
-    /// pProvides a small 'telltale' window that shows details about the Test that a 
+    /// Provides a small 'telltale' window that shows details about the Test that a 
     /// particular instance of PetraClient is performing. It gets launched from the TTestWinForm Class.
     /// </summary>
     /// <remarks>These tests are to be driven by the PetraMultiStart program.</remarks>

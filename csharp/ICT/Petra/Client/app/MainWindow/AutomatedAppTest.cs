@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,6 +43,9 @@ namespace PetraClient_AutomatedAppTest
     
         #region Properties
     
+        /// <summary>
+        /// Client ID.
+        /// </summary>
         public long ClientID
         {
             get
@@ -76,6 +79,9 @@ namespace PetraClient_AutomatedAppTest
 //                ATestingFile, ADisconnectTime, FUserName));
         }
     
+        /// <summary>
+        /// From the base class: 'This has to be implemented yet; it will create a connection to the PetraServer'
+        /// </summary>
         public override bool TestSetup()
         {
             // PetraClient is already connected to PetraServer, so we can just return true...

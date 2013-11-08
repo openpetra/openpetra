@@ -1,25 +1,26 @@
-/*
- * Test program for many logins at the same time;
- * this program now also can run defined randomly.
- *
- * use progress/compiler/grantall.p for creating the test users
- *
- * for Parameters see app-sample.config
- *   testscript
- *
- * Each client is run in a separate thread.
- * The program runs endlessly, and needs to be stopped with CTRL-C.
- *
- * TODO:
- * The time to shutdown a client needs to be considered:
- * Sometimes the user is still connected, while the next instance starts already
- *
- * PetraMultiStart.exe -C:PetraMultiStart.exe.config -testscript:multistart.testing -testcase:HighProbability -startclientid:0
- *
- * Author:  Timotheus Pokorra, Christian Kendel (C# translation)
- *
- * @Version $Revision: 1.4 $ / $Date: 2009/07/16 15:44:29 $
- */
+//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//       timotheusp, ChristianK (C# translation, adaption to OpenPetra)
+//
+// Copyright 2004-2013 by OM International
+//
+// This file is part of OpenPetra.org.
+//
+// OpenPetra.org is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra.org is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+//
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -30,10 +31,12 @@ using Ict.Common.IO;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.ServerAdmin.App.Core;
-//using Ict.Common.Remoting.Client;
 
 namespace PetraMultiStart
-{    
+{   
+    /// <summary>
+    /// Main Class of the Commandline Program.
+    /// </summary>
     public class main
     {        
         private static TXMLParser parser;        
@@ -41,7 +44,11 @@ namespace PetraMultiStart
         private static IServerAdminInterface TRemote;
         private static Ict.Petra.ServerAdmin.App.Core.TConnector TheConnector;
         
-
+        /// <summary>
+        /// Returns milliseconds from a XML Value.
+        /// </summary>
+        /// <param name="AXMLValue"></param>
+        /// <returns></returns>
         public static Int64 GetMilliSeconds(double AXMLValue)
         {
             Int64 ReturnValue;
@@ -76,6 +83,12 @@ namespace PetraMultiStart
             }
         }
 
+        /// <summary>
+        /// Returns the duration of a break. The duration will be fixed if there is no 'random' Attribute
+        /// and will be randomised by the amount specified in the 'random' Attribute if it is specified.
+        /// </summary>
+        /// <param name="ACursor"></param>
+        /// <returns>Duration of a Break.</returns>
         public static Int64 RandomBreak(XmlNode ACursor)
         {
             Int64 ReturnValue;
@@ -98,6 +111,10 @@ namespace PetraMultiStart
             return ReturnValue;
         }
 
+        /// <summary>
+        /// Tells whether the Server is still running.
+        /// </summary>
+        /// <returns></returns>
         public static bool ServerStillRunning()
         {
             bool ReturnValue = true;
@@ -118,6 +135,9 @@ namespace PetraMultiStart
             return ReturnValue;
         }
 
+        /// <summary>
+        /// Executes the tests (main method of this executable!). 
+        /// </summary>
         public static void RunTest()
         {
 
