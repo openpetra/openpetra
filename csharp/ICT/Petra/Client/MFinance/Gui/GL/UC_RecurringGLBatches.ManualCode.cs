@@ -102,6 +102,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails.Focus();
 
+            SelectRowInGrid(1);
+
             SetAccountCostCentreTableVariables();
         }
 
@@ -495,6 +497,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // Delete the recurring batch row.
             ARowToDelete.Delete();
+
+            UpdateRecordNumberDisplay();
 
             return true;
         }

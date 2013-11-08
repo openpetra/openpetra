@@ -1408,7 +1408,7 @@ namespace Ict.Petra.Server.MReporting
                 }
             }
 
-            tab = DatabaseConnection.SelectDT(ReturnValue.ToString(), "", DatabaseConnection.Transaction);
+            tab = DatabaseConnection.SelectDT(ReturnValue.ToString(), "EvaluateHelperCalculation", DatabaseConnection.Transaction);
 
             if ((tab == null) || (tab.Rows.Count == 0))
             {
