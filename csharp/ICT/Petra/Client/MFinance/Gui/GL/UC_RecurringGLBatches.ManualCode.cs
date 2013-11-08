@@ -242,6 +242,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(ARecurringBatchRow ARow)
         {
+            EnableTransactionTabForBatch();
+
             if (ARow == null)
             {
                 return;
@@ -336,9 +338,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailBatchDescription.Focus();
 
             UpdateRecordNumberDisplay();
-
-            //Not needed as recurring batches can be deleted
-            //((TFrmRecurringGLBatch)ParentForm).SaveChanges();
 
             //Enable the Journals if not already enabled
             ((TFrmRecurringGLBatch)ParentForm).EnableJournals();

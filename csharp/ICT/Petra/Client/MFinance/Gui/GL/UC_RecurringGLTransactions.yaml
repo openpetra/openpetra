@@ -48,7 +48,7 @@ RootNode:
             Width: 300
 
         grdAnalAttributes:
-            TableName: ATransAnalAttrib
+            TableName: ARecurringTransAnalAttrib
             Width: 220
             Height: 100
             Columns: [AnalysisTypeCode]

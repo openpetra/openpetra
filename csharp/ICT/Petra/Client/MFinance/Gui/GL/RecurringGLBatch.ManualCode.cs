@@ -235,7 +235,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     if (FPreviousTab == eGLTabs.RecurringBatches)
                     {
                         fromBatchTab = true;
-                    	//This only happens when the user clicks from Batch to Transactions,
+                        //This only happens when the user clicks from Batch to Transactions,
                         //  which is only allowed when one journal exists
 
                         //Need to make sure that the Journal is loaded

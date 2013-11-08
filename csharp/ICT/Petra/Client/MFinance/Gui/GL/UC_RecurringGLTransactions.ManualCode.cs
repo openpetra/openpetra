@@ -143,7 +143,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Load from server if necessary
             if (FMainDS.ARecurringTransaction.DefaultView.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionARecurringTransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber));
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionARecurringTransAnalAttrib(ALedgerNumber, ABatchNumber,
+                        AJournalNumber));
             }
 
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringTransaction.DefaultView);
@@ -240,12 +241,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FBatchNumber,
                     ARecurringTransactionTable.GetJournalNumberDBName(),
                     FJournalNumber);
-                
+
                 FMainDS.ARecurringTransaction.DefaultView.Sort = String.Format("{0} " + sort,
                     ARecurringTransactionTable.GetTransactionNumberDBName()
                     );
 
-            	FMainDS.ARecurringTransaction.DefaultView.RowFilter = rowFilter;
+                FMainDS.ARecurringTransaction.DefaultView.RowFilter = rowFilter;
                 FFilterPanelControls.SetBaseFilter(rowFilter, true);
                 FCurrentActiveFilter = rowFilter;
             }
@@ -286,7 +287,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ARecurringTransAnalAttribTable.GetAnalysisTypeCodeDBName()
                     );
             }
-
         }
 
         /// <summary>
@@ -441,7 +441,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     FTransactionCurrency = TransactionCurrency;
                 }
-                
+
                 // Needs to be called to process Analysis Attributes
                 AccountCodeDetailChanged(null, null);
             }
@@ -851,14 +851,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (itemRow2 != null)
                 {
-	                DataRowView row2 = (DataRowView)itemRow2;
-	                string analysisCode = row2[ARecurringTransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
-	                string analysisAttributeValue = row2[ARecurringTransAnalAttribTable.ColumnAnalysisAttributeValueId].ToString();
-	                return !AnalysisAttributeValueIsActive(analysisCode, analysisAttributeValue);
+                    DataRowView row2 = (DataRowView)itemRow2;
+                    string analysisCode = row2[ARecurringTransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
+                    string analysisAttributeValue = row2[ARecurringTransAnalAttribTable.ColumnAnalysisAttributeValueId].ToString();
+                    return !AnalysisAttributeValueIsActive(analysisCode, analysisAttributeValue);
                 }
                 else
                 {
-                	return false;
+                    return false;
                 }
             };
 
@@ -1504,7 +1504,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             SetTransAnalAttributeDefaultView(currentTransactionNumber);
 
             // If the AnalysisType list I'm currently using is the same as the list of required types, I can keep it (with any existing values).
-            Boolean existingListIsOk = (RequiredAnalattrCodes.Count == FMainDS.ATransAnalAttrib.DefaultView.Count);
+            Boolean existingListIsOk = (RequiredAnalattrCodes.Count == FMainDS.ARecurringTransAnalAttrib.DefaultView.Count);
 
             if (existingListIsOk)
             {
@@ -1559,7 +1559,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             Control controlToPass = null;
 
-			//Local validation
+            //Local validation
             if (((txtDebitAmount.NumberValueDecimal.Value == 0)
                  && (txtCreditAmount.NumberValueDecimal.Value == 0)) || (txtDebitAmount.NumberValueDecimal.Value < 0))
             {
@@ -1574,11 +1574,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 controlToPass = txtDetailReference;
             }
 
-			if (controlToPass == null || controlToPass == txtDetailReference)
-			{
+            if ((controlToPass == null) || (controlToPass == txtDetailReference))
+            {
                 //This is needed because the above runs many times during setting up the form
                 VerificationResultCollection.Clear();
-			}
+            }
 
             TSharedFinanceValidation_GL.ValidateRecurringGLDetailManual(this, FBatchRow, ARow, controlToPass, ref VerificationResultCollection,
                 FValidationControlsDict);

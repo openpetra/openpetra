@@ -477,12 +477,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             MainDS.ATransAnalAttrib.DefaultView.RowFilter = string.Empty;
-            
+
             if (newTransaction)
             {
-            	DBAccess.GDBAccessObj.RollbackTransaction();
+                DBAccess.GDBAccessObj.RollbackTransaction();
             }
-            
+
             return MainDS;
         }
 

@@ -154,7 +154,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS.ATransAnalAttrib.Columns[ATransAnalAttribTable.GetAnalysisAttributeValueDBName()], 100,
                     FAnalAttribTypeVal);
                 FAnalAttribTypeVal.Control.SelectedValueChanged += new EventHandler(this.AnalysisAttributeValueChanged);
-                
+
                 grdAnalAttributes.Columns[0].Width = 100;
             }
 
@@ -241,7 +241,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ATransactionTable.GetTransactionNumberDBName()
                     );
 
-				FMainDS.ATransaction.DefaultView.RowFilter = rowFilter;
+                FMainDS.ATransaction.DefaultView.RowFilter = rowFilter;
                 FFilterPanelControls.SetBaseFilter(rowFilter, true);
                 FCurrentActiveFilter = rowFilter;
             }
@@ -297,7 +297,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ATransAnalAttribTable.GetAnalysisTypeCodeDBName()
                     );
             }
-
         }
 
         /// <summary>
@@ -379,7 +378,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             cmbDetailCostCentreCode.Focus();
 
             //Needs to be called at end of addition process to process Analysis Attributes
-			AccountCodeDetailChanged(null, null);
+            AccountCodeDetailChanged(null, null);
         }
 
         /// <summary>
@@ -642,7 +641,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 AFreeformAnalysisRow faRow = (AFreeformAnalysisRow)dvr.Row;
                 analTypeValues[counter] = faRow.AnalysisValue;
-                
+
                 counter++;
             }
 
@@ -660,10 +659,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if (!FIsUnposted)
             {
-            	return;
+                return;
             }
-            
-        	DevAge.Windows.Forms.DevAgeComboBox valueType = (DevAge.Windows.Forms.DevAgeComboBox)sender;
+
+            DevAge.Windows.Forms.DevAgeComboBox valueType = (DevAge.Windows.Forms.DevAgeComboBox)sender;
 
             int selectedValueIndex = valueType.SelectedIndex;
 
@@ -909,14 +908,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (itemRow2 != null)
                 {
-	            	DataRowView row2 = (DataRowView)itemRow2;
-	                string analysisCode = row2[ATransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
-	                string analysisAttributeValue = row2[ATransAnalAttribTable.ColumnAnalysisAttributeValueId].ToString();
-	                return !AnalysisAttributeValueIsActive(analysisCode, analysisAttributeValue);
+                    DataRowView row2 = (DataRowView)itemRow2;
+                    string analysisCode = row2[ATransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
+                    string analysisAttributeValue = row2[ATransAnalAttribTable.ColumnAnalysisAttributeValueId].ToString();
+                    return !AnalysisAttributeValueIsActive(analysisCode, analysisAttributeValue);
                 }
                 else
                 {
-                	return false;
+                    return false;
                 }
             };
 
@@ -1622,7 +1621,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             Control controlToPass = null;
-            
+
             //Local validation
             if (((txtDebitAmount.NumberValueDecimal.Value == 0)
                  && (txtCreditAmount.NumberValueDecimal.Value == 0)) || (txtDebitAmount.NumberValueDecimal.Value < 0))
@@ -1638,13 +1637,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 controlToPass = txtDetailReference;
             }
 
-			if (controlToPass == null || controlToPass == txtDetailReference)
-			{
+            if ((controlToPass == null) || (controlToPass == txtDetailReference))
+            {
                 //This is needed because the above runs many times during setting up the form
                 VerificationResultCollection.Clear();
-			}
+            }
 
-			TSharedFinanceValidation_GL.ValidateGLDetailManual(this, FBatchRow, ARow, controlToPass, ref VerificationResultCollection,
+            TSharedFinanceValidation_GL.ValidateGLDetailManual(this, FBatchRow, ARow, controlToPass, ref VerificationResultCollection,
                 FValidationControlsDict);
         }
 
@@ -1682,7 +1681,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Do nothing
             }
         }
-        
+
         private string ConvertStringCollectionToCSV(StringCollection AStringCollection, string AWrapString = "")
         {
             string csvRetVal = string.Empty;
@@ -1699,6 +1698,5 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             return csvRetVal;
         }
-        
     }
 }
