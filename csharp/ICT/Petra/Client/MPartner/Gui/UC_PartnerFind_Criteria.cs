@@ -2567,6 +2567,101 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Sets up random Search Criteria and runs a Search.
+        /// </summary>
+        public void SetupRandomTestSearchCriteria()
+        {
+            Random Rnd;
+            Char RandomSearchLetter = 'Z';
+            bool ValidSearchCriteria = false;
+
+            /* First make sure that the PartnerKey Panel is there... */
+            if ((!pnlLeftColumn.Controls.Contains(pnlPartnerName))
+                && (!pnlRightColumn.Controls.Contains(pnlPartnerName)))
+            {
+                pnlLeftColumn.Controls.Add(pnlPartnerName);
+            }
+
+            /* First make sure that the PartnerClass Panel is there... */
+            if ((!pnlLeftColumn.Controls.Contains(pnlPartnerClass))
+                && (!pnlRightColumn.Controls.Contains(pnlPartnerClass)))
+            {
+                pnlRightColumn.Controls.Add(pnlPartnerClass);
+            }
+
+            
+            Rnd = new Random();
+
+            while (!ValidSearchCriteria)
+            {
+                // Random PartnerClass (*, PERSON, FAMILY, etc.)
+                switch (Rnd.Next(0, 7))
+                {
+                    case 0:
+                        cmbPartnerClass.SelectedValue = "*";
+                        break;
+    
+                    case 1:
+                        cmbPartnerClass.SelectedValue = "PERSON";
+                        break;
+    
+                    case 2:
+                        cmbPartnerClass.SelectedValue = "FAMILY";
+                        break;
+                        
+                    case 3:
+                        cmbPartnerClass.SelectedValue = "CHURCH";
+                        break;
+    
+                    case 4:
+                        cmbPartnerClass.SelectedValue = "ORGANISATION";
+                        break;
+    
+                    case 5:
+                        cmbPartnerClass.SelectedValue = "BANK";
+                        break;
+    
+                    case 6:
+                        cmbPartnerClass.SelectedValue = "UNIT";
+                        break;
+                        
+                    case 7:
+                        cmbPartnerClass.SelectedValue = "VENUE";
+                        break;                    
+                }
+    
+                // Random start character for PartnerName
+                // Returns a character between @, A...W (X, Y, Z are not likely to return much data...)
+                // If @, then use empty Partner Name!
+                RandomSearchLetter = Convert.ToChar(Rnd.Next(64, 87));
+
+                // Ensure that there is something to search for
+                if ((cmbPartnerClass.SelectedValue.ToString() != "*")
+                    || (RandomSearchLetter != '@'))
+                {
+                    ValidSearchCriteria = true;    
+                }                
+//                else
+//                {
+//                    MessageBox.Show("No valid search criteria:\r\nPartner Class: " + cmbPartnerClass.SelectedValue.ToString() +
+//                                    "\r\nPartner Name start character: " + RandomSearchLetter.ToString() + "\r\n\r\nTrying new random values...!",
+//                                    "SetupRandomTestSearchCriteria");
+//                }
+            }
+            
+            if (RandomSearchLetter != '@') 
+            {
+                txtPartnerName.Text = RandomSearchLetter.ToString();
+                GetNextControl(txtPartnerName, true).Focus();
+            }            
+            
+            // Make sure that the underlying data is updated
+            // (this is needed when called from a Thread).
+            FFindCriteriaDataTable.Rows[0]["PartnerName"] = txtPartnerName.Text;
+            FFindCriteriaDataTable.Rows[0]["PartnerClass"] = cmbPartnerClass.SelectedValue;
+        }
+        
+        /// <summary>
         /// todoComment
         /// </summary>
         /// <param name="AEnabled"></param>
