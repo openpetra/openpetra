@@ -34,6 +34,9 @@ namespace Ict.Petra.Client.App.Gui
     /// <remarks>These tests are to be driven by the PetraMultiStart program.</remarks>
     public partial class TGuiTestingTelltaleWinForm : Form
     {
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public TGuiTestingTelltaleWinForm()
         {
             //
@@ -46,6 +49,9 @@ namespace Ict.Petra.Client.App.Gui
             //            
         }
         
+        /// <summary>
+        /// Sets Client Label
+        /// </summary>
         public string Client
         {
             set
@@ -54,6 +60,9 @@ namespace Ict.Petra.Client.App.Gui
             }
         }
         
+        /// <summary>
+        /// Sets Client Group Label
+        /// </summary>
         public string ClientGroup
         {
             set
@@ -61,7 +70,10 @@ namespace Ict.Petra.Client.App.Gui
                 lblClientGroup.Text = value;
             }
         }
-                
+
+        /// <summary>
+        /// Sets Testing File Label
+        /// </summary>        
         public string TestingFile
         {
             set
@@ -70,6 +82,9 @@ namespace Ict.Petra.Client.App.Gui
             }
         }
         
+        /// <summary>
+        /// Sets Repeats Label
+        /// </summary>        
         public string Repeats
         {
             set
@@ -78,6 +93,9 @@ namespace Ict.Petra.Client.App.Gui
             }
         }
         
+        /// <summary>
+        /// Sets Disconnect Time Label
+        /// </summary>        
         public DateTime DisconnectTime
         {
             set

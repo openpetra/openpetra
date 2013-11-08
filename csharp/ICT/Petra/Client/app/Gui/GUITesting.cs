@@ -42,9 +42,14 @@ namespace Ict.Petra.Client.App.Gui
     /// </remarks>
     public class TTestWinForm
     {
-        public const char PARAM_SEPARATOR = ';';
-        public const string PARTNERKEY_PARAM = "PartnerKey";
-        public const string LEDGERNUMBER_PARAM = "LedgerNumber";
+        /// <summary>Parameter Separator Character</summary>
+        protected const char PARAM_SEPARATOR = ';';
+        
+        /// <summary>Partner Key Parameter prefix</summary>
+        protected const string PARTNERKEY_PARAM = "PartnerKey";
+        
+        /// <summary>Ledger Number Parameter prefix</summary>
+        protected const string LEDGERNUMBER_PARAM = "LedgerNumber";
 
 
         /// <summary>
@@ -111,6 +116,9 @@ namespace Ict.Petra.Client.App.Gui
             }
         }
 
+        /// <summary>
+        /// Instance of the 'Testing Telltale Form'. 
+        /// </summary>
         public TGuiTestingTelltaleWinForm TellTaleForm
         {
             get
