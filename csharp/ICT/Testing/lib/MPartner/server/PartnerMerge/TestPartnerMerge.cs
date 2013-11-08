@@ -1019,7 +1019,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             // Check that Partners have been merged correctly
             //
 
-            // Checking the Church and the Organisation
+            // Checking the church and the Organisation
             Assert.AreEqual(FromPartnerRow.PartnerKey.ToString() + ", TestChurch", ToPartnerRow.PartnerShortName, "merge Church to Organisation");
             Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge Church to Organisation");
             Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge Church to Organisation");

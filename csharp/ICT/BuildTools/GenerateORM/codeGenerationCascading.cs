@@ -300,7 +300,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 }
             }
 
-            Template.FinishWriting(AFilePath + AFileName + ".cs", ".cs", true);
+            Template.FinishWriting(AFilePath + AFileName + "-generated.cs", ".cs", true);
 
             return true;
         }

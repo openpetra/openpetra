@@ -107,6 +107,46 @@ namespace {#NAMESPACE}
     }
     {#ENDIF DATASETTYPE}
 
+    /// <summary>
+    /// Can be used by the Form/Control which contains this UserControl to
+    /// suppress the Change Detection (using FPetraUtilsObject.SuppressChangeDetection = false).
+    /// Raise this Event to tell the Form/Control which contains this UserControl to do that.
+    /// </summary>
+    public event System.EventHandler DataLoadingStarted;
+
+    /// <summary>
+    /// Can be used by the Form/Control which contains this UserControl to
+    /// activate the Change Detection (using FPetraUtilsObject.SuppressChangeDetection = true).
+    /// Raise this Event to tell the Form/Control which contains this UserControl to do that.
+    /// </summary>
+    public event System.EventHandler DataLoadingFinished;
+
+    /// <summary>
+    /// Raises the DataLoadingStarted Event if it is subscribed to.
+    /// </summary>
+    /// <param name="sender">Ignored.</param>
+    /// <param name="e">Ignored.</param>
+    private void OnDataLoadingStarted(object sender, EventArgs e)
+    {
+        if (DataLoadingStarted != null)
+        {
+            DataLoadingStarted(sender, e);
+        }
+    }
+
+    /// <summary>
+    /// Raises the DataLoadingFinished Event if it is subscribed to.
+    /// </summary>
+    /// <param name="sender">Ignored.</param>
+    /// <param name="e">Ignored.</param>
+    private void OnDataLoadingFinished(object sender, EventArgs e)
+    {
+        if (DataLoadingFinished != null)
+        {
+            DataLoadingFinished(sender, e);
+        }
+    }
+
     /// <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
     /// <returns>void</returns>    /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
@@ -152,6 +192,7 @@ namespace {#NAMESPACE}
       SetupFilterAndFindControls();
 {#ENDIF FILTERANDFIND}
       ShowData();
+      SelectRowInGrid(1);
     }
 #endregion
 
@@ -1233,7 +1274,6 @@ namespace {#NAMESPACE}
     /// auto generated
     public void RunOnceOnActivation()
     {
-        SelectRowInGrid(1);
         {#RUNONCEINTERFACEIMPLEMENTATION}
     }
 

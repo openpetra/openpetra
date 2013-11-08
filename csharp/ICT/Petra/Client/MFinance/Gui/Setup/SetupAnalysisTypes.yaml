@@ -51,6 +51,7 @@ RootNode:
             Dock: Fill
             Height: 148
             Columns: [AAnalysisType.AnalysisTypeCode, AAnalysisType.AnalysisTypeDescription]
+            SortOrder: AAnalysisType.AnalysisTypeCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

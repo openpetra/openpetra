@@ -39,6 +39,7 @@ RootNode:
             CustomColumns:
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
                 DetailContactDescr: {Label=Description}
+            SortOrder: DetailContactName ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

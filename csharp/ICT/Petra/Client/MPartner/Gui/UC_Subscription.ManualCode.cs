@@ -160,6 +160,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             txtPublicationCost.ReadOnly = true;
 
             FInitializationRunning = false;
+
+            // make sure initialization happens
+            PublicationStatusChanged(null, null);
         }
 
         /// <summary>
@@ -270,11 +273,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void PublicationStatusChanged(object sender, EventArgs e)
         {
-            if ((cmbPSubscriptionPublicationCode.GetSelectedString() == "")
-                || (FSubscriptionDR == null)
+            if ((FSubscriptionDR == null)
                 || FInitializationRunning)
             {
-                /* don't do his check while a new record is being displayed */
+                /* don't do this check while a new record is being displayed */
                 return;
             }
 

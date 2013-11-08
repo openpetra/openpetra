@@ -36,6 +36,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [DetailOccupationCode, DetailOccupationDescription, DetailValidOccupation, DetailDeletable]
+            SortOrder: DetailOccupationCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,6 +43,14 @@ namespace Ict.Tools.CodeGeneration.DataStore
         /// <param name="AFilename"></param>
         public static void WriteTableList(TDataDefinitionStore AStore, string AFilename)
         {
+            string templateDir = TAppSettingsManager.GetValue("TemplateDir", true);
+            ProcessTemplate Template = new ProcessTemplate(templateDir + Path.DirectorySeparatorChar +
+                "ORM" + Path.DirectorySeparatorChar +
+                "TableList.cs");
+
+            // load default header with license and copyright
+            Template.SetCodelet("GPLFILEHEADER", ProcessTemplate.LoadEmptyFileComment(templateDir));
+
             List <TTable>tables = AStore.GetTables();
 
             tables = TTableSort.TopologicalSort(AStore, tables);
@@ -51,10 +59,10 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
             foreach (TTable t in tables)
             {
-                namesCodelet += "INDENT" + "list.Add(\"" + t.strName + "\");" + Environment.NewLine;
+                namesCodelet += "list.Add(\"" + t.strName + "\");" + Environment.NewLine;
             }
 
-            TInsertIntoRegion.InsertIntoRegion(AFilename, "DBTableNames", namesCodelet);
+            Template.AddToCodelet("DBTableNames", namesCodelet);
 
             List <TSequence>Sequences = AStore.GetSequences();
 
@@ -62,10 +70,12 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
             foreach (TSequence s in Sequences)
             {
-                namesCodelet += "INDENT" + "list.Add(\"" + s.strName + "\");" + Environment.NewLine;
+                namesCodelet += "list.Add(\"" + s.strName + "\");" + Environment.NewLine;
             }
 
-            TInsertIntoRegion.InsertIntoRegion(AFilename, "DBSequenceNames", namesCodelet);
+            Template.AddToCodelet("DBSequenceNames", namesCodelet);
+
+            Template.FinishWriting(AFilename, ".cs", true);
         }
 
         /// <summary>

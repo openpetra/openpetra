@@ -418,6 +418,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Needs to be called at end of addition process to process Analysis Attributes
             ReconcileTransAnalysisAttributes();
             RefreshAnalysisAttributesGrid();
+
+            UpdateRecordNumberDisplay();
         }
 
         /// <summary>
@@ -580,7 +582,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (grdAnalAttributes.Rows.Count > 1)
             {
-                grdAnalAttributes.SelectRowInGrid(1, true);
+                grdAnalAttributes.ReselectGridRowAfterSort(1);
                 FPSAttributesRow = GetSelectedAttributeRow();
             }
         }
@@ -603,7 +605,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else if (grdAnalAttributes.Rows.Count > 1)
             {
-                grdAnalAttributes.SelectRowInGrid(1);
+                grdAnalAttributes.ReselectGridRowAfterSort(1);
             }
         }
 
@@ -633,7 +635,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else if (grdAnalAttributes.Rows.Count > 1)
             {
-                grdAnalAttributes.SelectRowInGrid(1);
+                grdAnalAttributes.ReselectGridRowAfterSort(1);
             }
         }
 
@@ -687,7 +689,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Int32 RowNumber = grdAnalAttributes.GetFirstHighlightedRowIndex();
             FAnalAttribTypeVal.EnableEdit = true;
             FAnalAttribTypeVal.EditableMode = EditableMode.Focus;
-            grdAnalAttributes.Selection.Focus(new Position(RowNumber, grdAnalAttributes.Columns.Count - 1), true);
+            grdAnalAttributes.Selection.SelectCell(new Position(RowNumber, grdAnalAttributes.Columns.Count - 1), true);
+            //grdAnalAttributes.Selection.Focus(new Position(RowNumber, grdAnalAttributes.Columns.Count - 1), true);
         }
 
         private void AnalysisAttributeValueChanged(System.Object sender, EventArgs e)

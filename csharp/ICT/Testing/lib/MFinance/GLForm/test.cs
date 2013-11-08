@@ -219,13 +219,6 @@ namespace Tests.MFinance.GLBatches
                     MessageBoxTester tester2 = new MessageBoxTester(hWnd2);
                     Assert.AreEqual("Success", tester2.Title);
 
-                    // there is a third message box after posting, telling the user that the row has disappeared.
-                    ModalFormHandler = delegate(string name3, IntPtr hWnd3, Form form3)
-                    {
-                        MessageBoxTester tester3 = new MessageBoxTester(hWnd3);
-                        tester3.SendCommand(MessageBoxTester.Command.OK);
-                    };
-
                     tester2.SendCommand(MessageBoxTester.Command.Yes);
                 };
 

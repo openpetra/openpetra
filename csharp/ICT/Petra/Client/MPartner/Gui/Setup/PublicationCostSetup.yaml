@@ -38,6 +38,7 @@ RootNode:
             Columns: [DetailPublicationCode, DetailDateEffective, DetailPublicationCost, DetailPostageCost, DetailCurrencyCode]
             CustomColumns:
                 DetailDateEffective: {Label=Effective Date, Type=DateTime}
+            SortOrder: DetailPublicationCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

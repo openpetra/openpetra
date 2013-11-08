@@ -289,6 +289,16 @@
         <detail>
           <lowerLevelReport level="SupplierListLevel" calculation="SelectSupplier"/>
         </detail>
+        <footer space="above">
+          <field whichfield="column 5">
+            <value text="Total this report"/>
+          </field>
+          <field whichfield="column 6" format="currency" pos="indented">
+            <value function="getSumLowerReport2({{lineId}}, 6)"/>
+            <value text=" "/>
+            <value variable="PaymentCurrency"/>
+          </field>
+        </footer>
       </level>
 
       <level name="SupplierListLevel">

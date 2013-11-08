@@ -46,6 +46,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FMainDS.ACostCentreTypes.DefaultView.Sort = ACostCentreTypesTable.GetCostCentreTypeDBName();
 
                 FFilterPanelControls.SetBaseFilter(rowFilter, true);
+                UpdateRecordNumberDisplay();
             }
         }
 

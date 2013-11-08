@@ -39,6 +39,7 @@ RootNode:
                 DetailMailingDescription: {Label=Description}
                 DetailMailingDate: {Label=Mailing Date, Type=DateTime}
                 DetailMailingCost: {Label=Mailing Cost, Type=Currency}
+            SortOrder: DetailMailingCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

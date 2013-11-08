@@ -115,6 +115,7 @@ namespace {#NAMESPACE}
 {#IFDEF FILTERANDFIND}
       SetupFilterAndFindControls();
 {#ENDIF FILTERANDFIND}
+      SelectRowInGrid(1);
     }
 
     /// <summary>Loads the data for the screen and finishes the setting up of the screen.</summary>
@@ -1251,7 +1252,6 @@ namespace {#NAMESPACE}
     /// auto generated
     public void RunOnceOnActivation()
     {
-        SelectRowInGrid(1);
         {#RUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
     }

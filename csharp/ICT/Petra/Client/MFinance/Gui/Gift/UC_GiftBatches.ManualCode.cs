@@ -218,7 +218,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             ShowData();
+            SelectRowInGrid(1);
+
             FBatchLoaded = true;
+
+            UpdateRecordNumberDisplay();
         }
 
         private void SetupAccountAndCostCentreCombos(bool AActiveOnly = true, AGiftBatchRow ARow = null)
@@ -495,6 +499,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             RefreshGridData(batchNumber);
 
             UpdateChangeableStatus();
+
+            UpdateRecordNumberDisplay();
         }
 
         private void RefreshGridData(int ABatchNumber, bool ASelectOnly = false)
@@ -780,6 +786,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
             }
 
+            UpdateRecordNumberDisplay();
+
             ((TFrmGiftBatch)ParentForm).SaveChanges();
         }
 
@@ -881,6 +889,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ((TFrmGiftBatch)ParentForm).DisableTransactions();
                 ShowDetails(null);
             }
+
+            UpdateRecordNumberDisplay();
         }
 
         /// <summary>

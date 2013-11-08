@@ -36,6 +36,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [DetailTypeCode, DetailTypeDescription, DetailValidType, DetailTypeDeletable]
+            SortOrder: DetailTypeCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

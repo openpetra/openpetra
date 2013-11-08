@@ -37,6 +37,7 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.IO; // implicit reference
 using Ict.Common.Printing;
+using Ict.Common.Verification;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
@@ -349,15 +350,19 @@ namespace Ict.Petra.Client.MReporting.Gui
                     return;
                 }
 
-                if (FCalculator.SendEmail(options.EmailAddresses, options.AttachExcelFile, options.AttachCSVFile, options.AttachPDF, FWrapColumn))
+                TVerificationResultCollection verification;
+
+                if (FCalculator.SendEmail(options.EmailAddresses, options.AttachExcelFile, options.AttachCSVFile, options.AttachPDF, FWrapColumn,
+                        out verification))
                 {
                     MessageBox.Show(Catalog.GetString("Email has been sent successfully"),
                         Catalog.GetString("Success"));
                 }
                 else
                 {
-                    MessageBox.Show(Catalog.GetString("Email was not sent."),
-                        Catalog.GetString("Failure"));
+                    MessageBox.Show(
+                        verification.BuildVerificationResultString(),
+                        Catalog.GetString("Email was not sent."));
                 }
             }
         }
@@ -420,6 +425,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 {
                     TLogging.Log(E.StackTrace);
                     TLogging.Log(E.Message);
+                    MessageBox.Show(E.Message, Catalog.GetString("Failed to save file"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     System.Console.WriteLine(E.StackTrace);
                 }
             }
@@ -621,6 +627,10 @@ namespace Ict.Petra.Client.MReporting.Gui
                     {
                     }
                 }
+                else
+                {
+                    MessageBox.Show(Results.ErrorStatus, Catalog.GetString("Failed to save file"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                }
             }
         }
 
@@ -666,8 +676,9 @@ namespace Ict.Petra.Client.MReporting.Gui
                         excelProcess.StartInfo.FileName = dlgSaveXLSXFile.FileName;
                         excelProcess.Start();
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        MessageBox.Show(ex.Message, Catalog.GetString("Failed to save file"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
                     }
                 }
             }

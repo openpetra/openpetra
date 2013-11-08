@@ -39,6 +39,7 @@ RootNode:
             CustomColumns:
                 DetailCode: {Label=Relationship Category Code}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+            SortOrder: DetailPositionName ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

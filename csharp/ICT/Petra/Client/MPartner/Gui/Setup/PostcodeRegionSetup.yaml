@@ -26,8 +26,12 @@ RootNode:
         pnlRegionGrid:
             Height: 250
             Stretch: horizontally
-            Controls: [pnlRegionButtons, grdDetails]
-        pnlRegionButtons:
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailRegion]
+            FindControls: [txtDetailRegion]
+        pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
             ControlsOrientation: horizontal
@@ -60,6 +64,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [DetailRegion]
+            SortOrder: DetailRegion ASC
             ActionFocusRow: FocusedRowChanged
             EnableMultiSelection: false
         grdRanges:
