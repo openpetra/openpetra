@@ -67,6 +67,7 @@ namespace Ict.Tools.CodeGeneration
             FCodeStorage.FUtilObjectClass = TYml2Xml.GetAttribute(formNode, "UtilObjectClass");
             FCodeStorage.FFormTitle = TYml2Xml.GetAttribute(formNode, "FormTitle");
             FCodeStorage.FNamespace = TYml2Xml.GetAttribute(formNode, "Namespace");
+            FCodeStorage.FTemplate = TYml2Xml.GetAttribute(formNode, "Template");
 
             if ((FCodeStorage.FBaseClass == "System.Windows.Forms.UserControl")
                 || (FCodeStorage.FBaseClass == "TGrpCollapsible"))

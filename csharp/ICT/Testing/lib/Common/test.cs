@@ -512,6 +512,13 @@ namespace Ict.Common.Testing
             Assert.AreEqual("eDateTime:\"2004-07-31T00:00:00\"", new TVariant("#20040731#").EncodeToString(), "EncodeToString DE");
             Assert.AreEqual("29-MÄR-2004", StringHelper.DateToLocalizedString(new TVariant("2004-03-29 00:00:00").ToDate()), "sqlite date value");
             Thread.CurrentThread.CurrentCulture = oldCulture;
+
+            // Test Date Encoding/Decoding
+            TVariant DateVar = new TVariant(new DateTime(2013, 11, 05, 16, 12, 07));
+            
+            Assert.AreEqual("eDateTime:\"2013-11-05T16:12:07\"", DateVar.EncodeToString());
+            TVariant DateVar2 = TVariant.DecodeFromString("eDateTime:\"2013-11-05T16:12:07\"");
+            Assert.AreEqual(new DateTime(2013, 11, 05, 16, 12, 07), DateVar2.ToDate());
         }
 
         /// test TVariant composites
