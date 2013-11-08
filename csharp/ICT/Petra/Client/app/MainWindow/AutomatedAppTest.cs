@@ -181,8 +181,8 @@ public class TAutomatedAppTest : TTestWinForm
     /// <param name="AParameter">LedgerNumber (as String!).</param>
     public override void OpenGLBatchScreen(String AParameter)
     {
-//MessageBox.Show("Entering OpenPartnerFindScreen...");\
-//             int LedgerNumberParamPos;
+//MessageBox.Show("Entering OpenGLBatchScreen...");\
+        int LedgerNumberParamPos;
         int NextParameterStart;
         int LedgerNumberLength;
         Int32 LedgerNumber;
