@@ -63,6 +63,7 @@ namespace Ict.Common.Remoting.Client
         private static String UHTMLHelpBaseURLLocal = "";
         private static String UHTMLHelpBaseURLOnInternet = "";
         private static bool ULocalHTMLHelp = true;
+        private static String UAutoTestParameters = "";
 
         /// <summary>
         /// DebugLevel for writing an xml file of reporting parameters and results to the log directory
@@ -374,6 +375,22 @@ namespace Ict.Common.Remoting.Client
             TFileHelper.CreateDirectory(ExportPath);
 
             return ExportPath;
+        }
+
+        /// <summary>
+        /// Used only by the automatic application tests for passing parameters to the individual Test.
+        /// </summary>
+        public static String AutoTestParameters
+        {
+            get
+            {
+                return UAutoTestParameters;
+            }
+
+            set
+            {
+                UAutoTestParameters = value;
+            }
         }
 
         /// <summary>
