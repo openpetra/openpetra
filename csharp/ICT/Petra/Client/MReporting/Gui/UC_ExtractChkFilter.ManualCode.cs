@@ -88,5 +88,13 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             chkFamiliesOnly.Visible = AShow;
         }
+
+        /// <summary>
+        /// hide/show tick box for "Mailing Addresses Only"
+        /// </summary>
+        public void ShowMailingAddressesOnly(bool AShow)
+        {
+            chkMailingAddressesOnly.Visible = AShow;
+        }
     }
 }
