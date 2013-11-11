@@ -643,6 +643,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             writer.Template.AddToCodelet("INITUSERCONTROLS", controlName + ".InitUserControl();" + Environment.NewLine);
 
+            // Note: The follwing code *assumes* that the nested UserControl has got 'DataLoadingStarted' and
+            // 'DataLoadingFinished' Events. If it hasn't, the code is generated and won't compile.
+            // I (ChristianK) could find no way to determine whether the Class of the nested UserControl
+            // would actually contain those Events, so I went ahead and added those Events to all
+            // Templates for UserControls and to the few manually developed UserControls that get nested
+            // in Generated Code files....
+            if (writer.Template.FTemplateCode.Contains("OnDataLoadingStarted")) 
+            {
+                writer.Template.AddToCodelet("INITUSERCONTROLS", controlName + ".DataLoadingStarted += new System.EventHandler(OnDataLoadingStarted);" +
+                                Environment.NewLine);                    
+            }
+            
+            if (writer.Template.FTemplateCode.Contains("OnDataLoadingFinished"))
+            {                
+                writer.Template.AddToCodelet("INITUSERCONTROLS", controlName + ".DataLoadingFinished += new System.EventHandler(OnDataLoadingFinished);" +
+                                Environment.NewLine);
+            }
+            
             return writer.FTemplate;
         }
     }

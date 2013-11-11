@@ -248,7 +248,7 @@ namespace Ict.Petra.Server.App.Core
         /// <summary>
         /// AddUser
         /// </summary>
-        public override bool AddUser(string AUserID)
+        public override bool AddUser(string AUserID, string APassword = "")
         {
             // we need a GUserInfo object for submitting the changes to the database later on
             TPetraIdentity PetraIdentity = new TPetraIdentity(
@@ -258,7 +258,7 @@ namespace Ict.Petra.Server.App.Core
 
             UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
 
-            return FUserManager.AddUser(AUserID);
+            return FUserManager.AddUser(AUserID, APassword);
         }
 
         /// <summary>
