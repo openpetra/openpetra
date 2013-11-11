@@ -515,7 +515,7 @@ namespace Ict.Common.Testing
 
             // Test Date Encoding/Decoding
             TVariant DateVar = new TVariant(new DateTime(2013, 11, 05, 16, 12, 07));
-            
+
             Assert.AreEqual("eDateTime:\"2013-11-05T16:12:07\"", DateVar.EncodeToString());
             TVariant DateVar2 = TVariant.DecodeFromString("eDateTime:\"2013-11-05T16:12:07\"");
             Assert.AreEqual(new DateTime(2013, 11, 05, 16, 12, 07), DateVar2.ToDate());

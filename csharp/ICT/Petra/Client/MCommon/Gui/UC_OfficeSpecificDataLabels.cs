@@ -119,14 +119,14 @@ namespace Ict.Petra.Client.MCommon.Gui
         /// Raise this Event to tell the Form/Control which contains this UserControl to do that.
         /// </summary>
         public event System.EventHandler DataLoadingStarted;
-    
+
         /// <summary>
         /// Can be used by the Form/Control which contains this UserControl to
         /// activate the Change Detection (using FPetraUtilsObject.SuppressChangeDetection = true).
         /// Raise this Event to tell the Form/Control which contains this UserControl to do that.
         /// </summary>
         public event System.EventHandler DataLoadingFinished;
-    
+
         /// <summary>
         /// Raises the DataLoadingStarted Event if it is subscribed to.
         /// </summary>
@@ -139,7 +139,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 DataLoadingStarted(sender, e);
             }
         }
-    
+
         /// <summary>
         /// Raises the DataLoadingFinished Event if it is subscribed to.
         /// </summary>
@@ -152,7 +152,7 @@ namespace Ict.Petra.Client.MCommon.Gui
                 DataLoadingFinished(sender, e);
             }
         }
-            
+
         /// helper object for the whole screen
         public TFrmPetraEditUtils PetraUtilsObject
         {

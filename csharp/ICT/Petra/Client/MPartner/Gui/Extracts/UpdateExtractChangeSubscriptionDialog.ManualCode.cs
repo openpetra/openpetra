@@ -87,7 +87,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             dtpPSubscriptionSubscriptionRenewalDate.Validated -= new System.EventHandler(this.ControlValidatedHandler);
             dtpPSubscriptionFirstIssue.Validated -= new System.EventHandler(this.ControlValidatedHandler);
             dtpPSubscriptionLastIssue.Validated -= new System.EventHandler(this.ControlValidatedHandler);
-            
+
             txtPSubscriptionNumberIssuesReceived.Validated -= new System.EventHandler(this.ControlValidatedHandler);
 
 
@@ -575,9 +575,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             // validate data (outside the norm, therefore done manually here)
             GetDataFromControls(FMainDS.PSubscription[0]);
-            
+
             FPetraUtilsObject.VerificationResultCollection.Clear();
-            
+
             ValidateData(FMainDS.PSubscription[0]);
             ValidateDataManual(FMainDS.PSubscription[0]);
 
@@ -618,22 +618,22 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-            if (!chkChangeReasonSubsGivenCode.Checked) 
+            if (!chkChangeReasonSubsGivenCode.Checked)
             {
-                if (VerificationResultCollection.Contains(ARow.Table.Columns[PSubscriptionTable.ColumnReasonSubsGivenCodeId])) 
-                {   
+                if (VerificationResultCollection.Contains(ARow.Table.Columns[PSubscriptionTable.ColumnReasonSubsGivenCodeId]))
+                {
                     VerificationResultCollection.Remove(ARow.Table.Columns[PSubscriptionTable.ColumnReasonSubsGivenCodeId]);
-                }               
+                }
             }
 
-            if (!chkChangeStartDate.Checked) 
+            if (!chkChangeStartDate.Checked)
             {
-                if (VerificationResultCollection.Contains(ARow.Table.Columns[PSubscriptionTable.ColumnStartDateId])) 
-                {   
+                if (VerificationResultCollection.Contains(ARow.Table.Columns[PSubscriptionTable.ColumnStartDateId]))
+                {
                     VerificationResultCollection.Remove(ARow.Table.Columns[PSubscriptionTable.ColumnStartDateId]);
-                }               
+                }
             }
-            
+
             // if 'SubscriptionStatus' is CANCELLED or EXPIRED then 'Reason Ended' and 'End Date' must be set
             ValidationColumn = ARow.Table.Columns[PSubscriptionTable.ColumnSubscriptionStatusId];
 
@@ -660,30 +660,31 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 else
                 {
                     // if 'SubscriptionStatus' is not CANCELLED or EXPIRED then 'Reason Ended' and 'End Date' must NOT be set
-                    if (chkChangeReasonSubsCancelledCode.Checked) 
+                    if (chkChangeReasonSubsCancelledCode.Checked)
                     {
                         if ((ARow.IsReasonSubsCancelledCodeNull())
                             || (ARow.ReasonSubsCancelledCode == String.Empty))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_REASONENDEDSET_WHEN_ACTIVE)),
-                                ValidationColumn, ValidationControlsData.ValidationControl);                            
+                                ValidationColumn, ValidationControlsData.ValidationControl);
                         }
                     }
                     else if (!chkChangeReasonSubsCancelledCode.Checked)
                     {
-                        if (ARow.SubscriptionStatus != String.Empty) 
+                        if (ARow.SubscriptionStatus != String.Empty)
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_REASONENDEDSET_WHEN_ACTIVE)),
                                 ValidationColumn, ValidationControlsData.ValidationControl);
 
-                            VerificationResult.OverrideResultText(Catalog.GetString("Reason Ended must be cleared when a Subscription is made active."));
-                            
-                            NoClearingOfVerificationResult = true;                            
+                            VerificationResult.OverrideResultText(Catalog.GetString(
+                                    "Reason Ended must be cleared when a Subscription is made active."));
+
+                            NoClearingOfVerificationResult = true;
                         }
                     }
-                    
+
                     if ((!ARow.IsReasonSubsCancelledCodeNull())
                         && (ARow.ReasonSubsCancelledCode != String.Empty))
                     {
@@ -695,24 +696,24 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     {
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
                                 ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_DATEENDEDSET_WHEN_ACTIVE)),
-                            ValidationColumn, ValidationControlsData.ValidationControl);                                                    
-                    } 
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
                     else if (!chkChangeDateCancelled.Checked)
                     {
-                        if (ARow.SubscriptionStatus != String.Empty) 
+                        if (ARow.SubscriptionStatus != String.Empty)
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_DATEENDEDSET_WHEN_ACTIVE)),
                                 ValidationColumn, ValidationControlsData.ValidationControl);
 
-                            VerificationResult.OverrideResultText(Catalog.GetString("Date Ended must be cleared when a Subscription is made active."));                            
+                            VerificationResult.OverrideResultText(Catalog.GetString("Date Ended must be cleared when a Subscription is made active."));
                         }
                     }
                     else
                     {
-                        if (!NoClearingOfVerificationResult) 
+                        if (!NoClearingOfVerificationResult)
                         {
-                            VerificationResult = null;    
+                            VerificationResult = null;
                         }
                     }
                 }
@@ -721,11 +722,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
             }
         }
-        
+
         private void PublicationCodeChanged(object sender, EventArgs e)
         {
             TUCPartnerSubscriptionsLogic.CheckPublicationComboValidValue(cmbPSubscriptionPublicationCode);
-        }        
+        }
     }
 
     // in addition derive class from IFrmPetraEdit so TFrmPetraEditUtils can be created

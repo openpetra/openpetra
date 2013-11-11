@@ -147,7 +147,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // need to make sure that partner key fields that are not referring to p_partner table
             // but to other tables like p_unit or p_person are set to NULL when they are empty (and
             // not to 0 as then foreign key constraints will fail)
-            // HOWEVER: at the moment the thinking is (according to WolfgangB, and Petra 2.x's implementation) 
+            // HOWEVER: at the moment the thinking is (according to WolfgangB, and Petra 2.x's implementation)
             // that the Target Field needs to be specified for an Application to be valid!
 //            if ((txtField.Text.Length != 0)
 //                && (Convert.ToInt64(txtField.Text) == 0))

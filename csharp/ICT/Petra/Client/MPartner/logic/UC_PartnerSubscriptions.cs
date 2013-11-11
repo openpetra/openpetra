@@ -56,17 +56,17 @@ namespace Ict.Petra.Client.MPartner
             if (!TmpRow.ValidPublication)
             {
                 if (MessageBox.Show(
-                    Catalog.GetString(String.Format("Please note that Publication\r\n\r\n    {0}\r\n\r\n"  +
-                        "is no longer available." + "\r\n\r\n" +  
-                        "Would you still like to use it for a Subscription?", 
-                        APublicationComboBox.GetSelectedString())),
-                    Catalog.GetString("Publication Selection"),
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Question,
-                    MessageBoxDefaultButton.Button2) == DialogResult.No)
+                        Catalog.GetString(String.Format("Please note that Publication\r\n\r\n    {0}\r\n\r\n" +
+                                "is no longer available." + "\r\n\r\n" +
+                                "Would you still like to use it for a Subscription?",
+                                APublicationComboBox.GetSelectedString())),
+                        Catalog.GetString("Publication Selection"),
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                        MessageBoxDefaultButton.Button2) == DialogResult.No)
                 {
-                        APublicationComboBox.cmbCombobox.SelectedIndex = -1;
+                    APublicationComboBox.cmbCombobox.SelectedIndex = -1;
                 }
             }
         }
     }
- }
+}

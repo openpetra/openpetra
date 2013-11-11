@@ -61,7 +61,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 ProcessTemplate columnTemplate;
 
                 CheckForEmptyDateGenerated = false;
-                
+
                 // NOT NULL checks
                 if (TDataValidation.GenerateAutoValidationCodeForDBTableField(col, TDataValidation.TAutomDataValidationScope.advsNotNullChecks,
                         out ReasonForAutomValidation))
@@ -97,7 +97,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
                 }
 
-                if (!CheckForEmptyDateGenerated) 
+                if (!CheckForEmptyDateGenerated)
                 {
                     // Date checks
                     if (TDataValidation.GenerateAutoValidationCodeForDBTableField(col, TDataValidation.TAutomDataValidationScope.advsDateChecks,
@@ -105,16 +105,16 @@ namespace Ict.Tools.CodeGeneration.DataStore
                     {
                         columnTemplate = Template.GetSnippet("VALIDATECOLUMN2");
                         columnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
-    
+
                         ProcessTemplate validateColumnTemplate = Template.GetSnippet("CHECKVALIDDATE");
                         validateColumnTemplate.SetCodelet("COLUMNNAME", col.strNameDotNet);
                         validateColumnTemplate.SetCodelet("COLUMNLENGTH", (col.iCharLength * 2).ToString());
-    
+
                         columnTemplate.InsertSnippet("COLUMNSPECIFICCHECK", validateColumnTemplate);
                         columnTemplate.SetCodelet("COLUMNSPECIFICCOMMENT", "'" + col.strNameDotNet + "' " + ReasonForAutomValidation);
-    
+
                         snippet.InsertSnippet("VALIDATECOLUMNS", columnTemplate);
-                    }                    
+                    }
                 }
 
                 // String Length checks

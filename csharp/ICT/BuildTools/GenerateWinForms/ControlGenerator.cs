@@ -649,18 +649,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
             // would actually contain those Events, so I went ahead and added those Events to all
             // Templates for UserControls and to the few manually developed UserControls that get nested
             // in Generated Code files....
-            if (writer.Template.FTemplateCode.Contains("OnDataLoadingStarted")) 
+            if (writer.Template.FTemplateCode.Contains("OnDataLoadingStarted"))
             {
-                writer.Template.AddToCodelet("INITUSERCONTROLS", controlName + ".DataLoadingStarted += new System.EventHandler(OnDataLoadingStarted);" +
-                                Environment.NewLine);                    
+                writer.Template.AddToCodelet("INITUSERCONTROLS",
+                    controlName + ".DataLoadingStarted += new System.EventHandler(OnDataLoadingStarted);" +
+                    Environment.NewLine);
             }
-            
+
             if (writer.Template.FTemplateCode.Contains("OnDataLoadingFinished"))
-            {                
-                writer.Template.AddToCodelet("INITUSERCONTROLS", controlName + ".DataLoadingFinished += new System.EventHandler(OnDataLoadingFinished);" +
-                                Environment.NewLine);
+            {
+                writer.Template.AddToCodelet("INITUSERCONTROLS",
+                    controlName + ".DataLoadingFinished += new System.EventHandler(OnDataLoadingFinished);" +
+                    Environment.NewLine);
             }
-            
+
             return writer.FTemplate;
         }
     }
