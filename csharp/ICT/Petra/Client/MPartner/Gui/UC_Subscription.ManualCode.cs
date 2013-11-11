@@ -55,8 +55,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>DataRow for the p_subscription record we are working with</summary>
         private PSubscriptionRow FSubscriptionDR = null;
 
-        /// <summary>CachedDataset.TmpCacheDS: DataSet; Currently selected PublicationCode. Won't update automatically!</summary>
-        private System.Object FSelectedPublicationCode;
+        /// <summary>CachedDataset.TmpCacheDS: DataSet; Currently selected PublicationCode. Won't update automatically!</summary>        
 
         #region Public Methods
 
@@ -402,53 +401,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void CheckPublicationValidity()
         {
-            DataTable DataCachePublicationListTable;
-            PPublicationRow TmpRow;
-
             if (FInitializationRunning)
             {
                 /* don't do his check while a new record is being displayed */
                 return;
             }
 
-            try
-            {
-                /* check if the publication selected is valid, if not, gives warning. */
-                DataCachePublicationListTable = TDataCache.TMPartner.GetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum.PublicationList);
-                TmpRow = (PPublicationRow)DataCachePublicationListTable.Rows.Find(
-                    new Object[] { this.cmbPSubscriptionPublicationCode.GetSelectedString() });
-
-                if (TmpRow.ValidPublication)
-                {
-                    FSelectedPublicationCode = cmbPSubscriptionPublicationCode.cmbCombobox.SelectedValue;
-                }
-                else
-                {
-                    if (MessageBox.Show("Please note that Publication '" + this.cmbPSubscriptionPublicationCode.GetSelectedString() +
-                            "'\r\nis no longer available." + "\r\n" + "" + "Do you still want to add a subscription for it?",
-                            "Create Subscription",
-                            MessageBoxButtons.YesNo, MessageBoxIcon.Question,
-                            MessageBoxDefaultButton.Button2) == DialogResult.No)
-                    {
-                        /* If user selects not to use the publication, the recent publication code is selected. */
-                        if (FSelectedPublicationCode != null)
-                        {
-                            this.cmbPSubscriptionPublicationCode.cmbCombobox.SelectedValue = FSelectedPublicationCode;
-                        }
-                        else
-                        {
-                            this.cmbPSubscriptionPublicationCode.cmbCombobox.SelectedIndex = -1;
-                        }
-                    }
-                    else
-                    {
-                        FSelectedPublicationCode = cmbPSubscriptionPublicationCode.cmbCombobox.SelectedValue;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-            }
+            TUCPartnerSubscriptionsLogic.CheckPublicationComboValidValue(cmbPSubscriptionPublicationCode);
         }
 
         private void ValidateDataManual(PSubscriptionRow ARow)
