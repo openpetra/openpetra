@@ -67,7 +67,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             tabRecurringGLBatch.SelectedIndex = standardTabIndex;
             TabSelectionChanged(null, null); //tabRecurringGLBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
 
-            this.ucoRecurringBatches.FocusGrid();
+            this.Shown += delegate
+            {
+                // This will ensure the grid gets the focus when the screen is shown for the first time 
+                if (ucoRecurringBatches.GetSelectedDetailRow() != null)
+                {
+                    ucoRecurringBatches.FocusGrid();
+                }
+            };
         }
 
         private void InitializeManualCode()

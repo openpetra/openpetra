@@ -57,7 +57,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
 
-
         /// <summary>
         /// load the batches into the grid
         /// </summary>
@@ -99,11 +98,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 );
 
             UpdateRecordNumberDisplay();
-
-            grdDetails.Focus();
-
-            SelectRowInGrid(1);
-
             SetAccountCostCentreTableVariables();
         }
 
