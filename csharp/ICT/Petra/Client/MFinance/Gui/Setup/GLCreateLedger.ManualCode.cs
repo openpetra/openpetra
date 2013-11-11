@@ -139,7 +139,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         if (MessageBox.Show(String.Format(Catalog.GetString(
                                         "A Unit Partner record already exists for Ledger Number {0}!\r\n(Partner Key: {1} - Name: '{2}')\r\nYour suggested name '{3}' will automatically be changed to '{2}'.\r\n\r\nDo you still want to continue?"),
-                                        nudLedgerNumber.Value.ToString(), PartnerKey.ToString(), UnitName, txtLedgerName.Text),
+                                    nudLedgerNumber.Value.ToString(), PartnerKey.ToString(), UnitName, txtLedgerName.Text),
                                 Catalog.GetString("Problem: Ledger Name Mismatch"),
                                 MessageBoxButtons.YesNo,
                                 MessageBoxIcon.Error) == DialogResult.Yes)
@@ -290,19 +290,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
             }
         }
-        
+
         void LedgerNumberChanged(Object sender, EventArgs e)
         {
             String UnitName;
             TPartnerClass PartnerClass;
             Int64 PartnerKey = Convert.ToInt64(nudLedgerNumber.Value) * 1000000L;
-            
+
             if (TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(PartnerKey,
                     out UnitName, out PartnerClass, true))
             {
                 txtLedgerName.Text = UnitName;
             }
         }
-        
     }
 }

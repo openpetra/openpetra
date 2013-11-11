@@ -80,6 +80,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             TFrmShortTermerReport frm = new TFrmShortTermerReport(AParentForm);
 
             frm.ShowWithSettingsSelection();
-        }    
+        }
     }
 }
