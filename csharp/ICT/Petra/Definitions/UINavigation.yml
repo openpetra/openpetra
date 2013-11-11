@@ -319,7 +319,7 @@ OpenPetra:
                         LocalPersonnelData: {ActionOpenScreen=TFrmLocalPersonnelDataReport}
                         RelationshipReport: {ActionOpenScreen=TFrmRelationshipReport}
                     ShortTermerReports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm}
-                        GeneralShortTermerReport: {ActionOpenScreen=TFrmShortTermerReport}
+                        FurtherShortTermerReports: {Namespace=Ict.Petra.Client.MPersonnel.Gui, ActionClick=TPersonnelMain.ShortTermerReports}
                         AbilitiesReport: {ActionOpenScreen=TFrmAbilitiesReport}
                         EmergencyContactReport: {ActionOpenScreen=TFrmEmergContInfReport}
                         LanguagesReport: {ActionOpenScreen=TFrmLanguagesReport}

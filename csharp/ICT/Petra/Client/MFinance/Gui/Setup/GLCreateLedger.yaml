@@ -10,7 +10,7 @@ RootNode:
     Controls:
         pnlDialogContent:
             Controls: [nudLedgerNumber, txtLedgerName, cmbCountryCode, cmbBaseCurrency, cmbIntlCurrency, dtpCalendarStartDate, nudNumberOfPeriods, nudCurrentPeriod, nudNumberOfFwdPostingPeriods, chkActivateGiftReceipting, txtStartingReceiptNumber, chkActivateAccountsPayable]
-        nudLedgerNumber:
+        nudLedgerNumber: {OnChange=LedgerNumberChanged}
         txtLedgerName:
         cmbCountryCode: {List=CountryList}
         cmbBaseCurrency: {List=CurrencyCodeList}
