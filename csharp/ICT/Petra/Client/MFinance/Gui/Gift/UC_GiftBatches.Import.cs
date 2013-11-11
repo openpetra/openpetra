@@ -176,7 +176,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ErrorMessages.Length > 0)
             {
-                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Error"), MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
     }

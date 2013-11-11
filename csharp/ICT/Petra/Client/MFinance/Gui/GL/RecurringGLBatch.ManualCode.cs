@@ -183,7 +183,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         };
 
         //Might need this later
-        //private eGLTabs FPreviousTab = eGLTabs.RecurringBatches;
+        private eGLTabs FPreviousTab = eGLTabs.RecurringBatches;
 
         /// <summary>
         /// Switch to the given tab
@@ -200,11 +200,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     this.ucoRecurringTransactions.CancelChangesToFixedBatches();
                     this.ucoRecurringJournals.CancelChangesToFixedBatches();
-                    this.tpgTransactions.Enabled = false;
+                    ucoRecurringBatches.EnableTransactionTabForBatch();
                 }
 
                 this.ucoRecurringBatches.FocusGrid();
-                //FPreviousTab = eGLTabs.RecurringBatches;
+                FPreviousTab = eGLTabs.RecurringBatches;
             }
             else if (ATab == eGLTabs.RecurringJournals)
             {
@@ -217,18 +217,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoRecurringBatches.GetSelectedDetailRow().BatchStatus);
 
                     this.tpgTransactions.Enabled =
-                        (ucoRecurringJournals.GetSelectedDetailRow() != null);
+                        (ucoRecurringJournals.GetSelectedDetailRow() != null && ucoRecurringJournals.GetSelectedDetailRow().JournalStatus !=
+                         MFinanceConstants.BATCH_CANCELLED);
 
                     this.ucoRecurringJournals.UpdateHeaderTotals(ucoRecurringBatches.GetSelectedDetailRow());
 
                     this.ucoRecurringJournals.FocusGrid();
-                    //FPreviousTab = eGLTabs.RecurringJournals;
+                    FPreviousTab = eGLTabs.RecurringJournals;
                 }
             }
             else if (ATab == eGLTabs.RecurringTransactions)
             {
                 if (this.tpgTransactions.Enabled)
                 {
+                    bool fromBatchTab = false;
+
+                    if (FPreviousTab == eGLTabs.RecurringBatches)
+                    {
+                        fromBatchTab = true;
+                        //This only happens when the user clicks from Batch to Transactions,
+                        //  which is only allowed when one journal exists
+
+                        //Need to make sure that the Journal is loaded
+                        this.ucoRecurringJournals.LoadJournals(FLedgerNumber,
+                            ucoRecurringBatches.GetSelectedDetailRow().BatchNumber,
+                            ucoRecurringBatches.GetSelectedDetailRow().BatchStatus);
+                    }
+
                     this.tabRecurringGLBatch.SelectedTab = this.tpgTransactions;
 
                     this.ucoRecurringTransactions.LoadTransactions(
@@ -237,9 +252,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ucoRecurringJournals.GetSelectedDetailRow().JournalNumber,
                         ucoRecurringJournals.GetSelectedDetailRow().TransactionCurrency,
                         ucoRecurringBatches.GetSelectedDetailRow().BatchStatus,
-                        ucoRecurringJournals.GetSelectedDetailRow().JournalStatus);
+                        ucoRecurringJournals.GetSelectedDetailRow().JournalStatus,
+                        fromBatchTab);
 
-                    //FPreviousTab = eGLTabs.RecurringTransactions;
+                    FPreviousTab = eGLTabs.RecurringTransactions;
                 }
             }
 

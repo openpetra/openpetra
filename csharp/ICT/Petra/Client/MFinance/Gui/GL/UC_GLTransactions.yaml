@@ -21,13 +21,19 @@ RootNode:
             Dock: Top
         pnlDetailGrid:
             Dock: Fill
-            Controls: [pnlDetailButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
             Height: 200
             Width: 600
         pnlDetailsSection:
             Dock: Bottom
             Controls: [pnlDetails, pnlTransAnalysisAttributes]
             Height: 320
+        pnlFilterAndFind:
+            ExpandedWidth: 170
+            ShowApplyFilterButton: FilterContext.StandardFilterOnly
+            ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
+            FilterControls: [cmbDetailCostCentreCode, cmbDetailAccountCode]
+            FindControls: [txtDetailNarrative, txtDetailReference]
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete, btnDeleteAll]
@@ -50,6 +56,7 @@ RootNode:
                 AnalysisTypeCode: {Label=Type, Type=String}
             ActionFocusRow: AnalysisAttributesGridFocusRow
             ActionClick: AnalysisAttributesGridClick
+            Tooltip: Use cursor keys to select and edit an Analysis Attribute
 
         lblAnalAttributes:
             Label: Analysis Attributes
@@ -68,7 +75,7 @@ RootNode:
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
             ActionFocusRow: FocusedRowChanged
-            SortOrder: ATransaction.TransactionNumber
+            SortOrder: ATransaction.TransactionNumber ASC
             RowFilter: ATransaction.BatchNumber, ATransaction.JournalNumber
             EnableMultiSelection: false
         pnlDetails:
@@ -82,6 +89,7 @@ RootNode:
             Height: 50
             Multiline: true
             ScrollBars: Vertical
+            Validation: true
         txtDetailReference: {Label=Reference}
         dtpDetailTransactionDate: {Label=Transaction Date, OnChange=TransDateChanged, Validation=true}
         cmbDetailKeyMinistryKey: {Label=Key Ministry,  Width=330, List=UserDefinedList}

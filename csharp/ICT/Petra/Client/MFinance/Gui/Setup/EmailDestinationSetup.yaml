@@ -18,7 +18,13 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [cmbDetailFileCode, txtDetailConditionalValue, txtDetailEmailAddress]
+            FindControls: [cmbDetailFileCode, txtDetailConditionalValue, txtDetailEmailAddress]
+            ControlAttributes:
+                txtDetailEmailAddress: {Label=Email Address}
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -35,6 +41,7 @@ RootNode:
             CustomColumns:
                 DetailConditionalValue: {Label=Condition value}
                 DetailEmailAddress: {Label=Email address(es)}
+            SortOrder: DetailFileCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

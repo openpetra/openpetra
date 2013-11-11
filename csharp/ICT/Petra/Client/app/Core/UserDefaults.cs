@@ -336,7 +336,7 @@ namespace Ict.Petra.Client.App.Core
          * -------------------------------------------------------------------------------*/
 
         /// <summary>todoComment</summary>
-        public const String CONFERENCE_LASTCONFERENCEWORKEDWITH = "LastConferenceWorkedWith";
+        public const String CONFERENCE_LASTCONFERENCEWORKEDWITH = "LASTCONFERENCEWORKEDWITH";
 
 
         /// <summary>

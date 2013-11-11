@@ -83,8 +83,14 @@ namespace Ict.Petra.Client.MConference.Gui
             }
         }
 
+        /// <remarks>
+        /// For NUnit tests that just try to open the Conference Find screen but which don't instantiate a Main Form
+        /// we need to work around the fact that there is no Main Window!
+        /// </remarks>
         private void InitGridManually()
         {
+            MethodInfo Method = null;
+
             LoadDataGrid(true);
 
             grdConferences.DoubleClickCell += new TDoubleClickCellEventHandler(grdConferences_DoubleClickCell);
@@ -92,11 +98,20 @@ namespace Ict.Petra.Client.MConference.Gui
             // Attempt to obtain conference key from parent form or parent's parent form and use this to focus the currently selected
             // conference in the grid. If no conference key is found then the first conference in the grid will be focused.
             Form MainWindow = FPetraUtilsObject.GetCallerForm();
-            MethodInfo Method = MainWindow.GetType().GetMethod("GetSelectedConferenceKey");
+
+            // Main Window will not be available if run from within NUnit Test without Main Form instance...
+            if (MainWindow != null)
+            {
+                Method = MainWindow.GetType().GetMethod("GetSelectedConferenceKey");
+            }
 
             if (Method == null)
             {
-                Method = MainWindow.GetType().GetMethod("GetPetraUtilsObject");
+                // Main Window will not be available if run from within NUnit Test without Main Form instance...
+                if (MainWindow != null)
+                {
+                    Method = MainWindow.GetType().GetMethod("GetPetraUtilsObject");
+                }
 
                 if (Method != null)
                 {
@@ -250,8 +265,6 @@ namespace Ict.Petra.Client.MConference.Gui
                         FMainDS.PPartner.Rows[Counter][PPartnerTable.GetPartnerShortNameDBName()];
                 }
             }
-
-            grdConferences.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.PcConference.DefaultView);
 
             // sort order for grid
             DataView MyDataView = FMainDS.PcConference.DefaultView;

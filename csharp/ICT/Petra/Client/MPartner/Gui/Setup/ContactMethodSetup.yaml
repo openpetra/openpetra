@@ -7,8 +7,8 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
-    WindowWidth: 660
-    WindowHeight: 700
+    WindowWidth: 780
+    WindowHeight: 600
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
@@ -18,7 +18,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailMethodOfContactCode, txtDetailDescription, txtDetailContactType, chkDetailValidMethod, chkDetailDeletable]
+            FindControls: [txtDetailMethodOfContactCode, txtDetailDescription, txtDetailContactType]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -32,6 +36,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [DetailMethodOfContactCode, DetailDescription, DetailContactType, DetailValidMethod, DetailDeletable]
+            SortOrder: DetailMethodOfContactCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

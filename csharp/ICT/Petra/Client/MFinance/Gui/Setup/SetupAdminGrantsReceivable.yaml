@@ -8,8 +8,8 @@ RootNode:
     FormType: edit
     Template: windowMaintainCacheableTable
     CacheableTableSpecificFilter: Ledger
-    WindowWidth: 750
-    WindowHeight: 500
+    WindowWidth: 800
+    WindowHeight: 700
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
@@ -19,7 +19,15 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailFeeCode, txtDetailFeeDescription, cmbDetailCostCentreCode, cmbDetailAccountCode, cmbDetailDrAccountCode]
+            FindControls: [txtDetailFeeCode, txtDetailFeeDescription]
+            ControlAttributes:
+                cmbDetailCostCentreCode: {Label=CR Cost Centre}
+                cmbDetailAccountCode: {Label=CR Account}
+                cmbDetailDrAccountCode: {Label=DR Account}
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -42,6 +50,7 @@ RootNode:
                 DrAccountCode: {Label=DR Account Code}
                 CostCentreCode: {Label=Cost Centre Code}
                 AccountCode: {Label=Account Code}
+            SortOrder: AFeesReceivable.FeeCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

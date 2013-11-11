@@ -105,6 +105,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                     using (TProgressDialog dialog = new TProgressDialog(t))
                     {
+                        dialog.AllowCancellation = false;
                         dialog.ShowDialog();
                     }
 

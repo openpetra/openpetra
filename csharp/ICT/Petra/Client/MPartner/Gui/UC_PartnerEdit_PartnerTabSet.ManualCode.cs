@@ -309,7 +309,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             tabPartners.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
 
-            SelectTabPage(FInitiallySelectedTabPage);
+            // We must switch to the selected TabPage only once the the 'Shown' Event of the Form has been run
+            // to make sure that the TabControl does not show the selected TabPage leftmost, but at its' correct
+            // place in the order of the Tabs. (See Bug https://tracker.openpetra.org/view.php?id=2392)           
+            if (FPetraUtilsObject.FormHasBeenShown) 
+            {
+                SelectTabPage(FInitiallySelectedTabPage);    
+            }            
 
             CalculateTabHeaderCounters(this);
 
@@ -1344,7 +1350,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Tab was already selected; therefore raise the SelectedIndexChanged Event 'manually', which did not get raised by selecting the Tab again!
                 TabSelectionChanged(this, new System.EventArgs());
             }
-
+            
             OnDataLoadingFinished();
         }
 

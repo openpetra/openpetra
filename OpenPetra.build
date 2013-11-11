@@ -28,6 +28,8 @@ list of available commands:
   deleteBakFiles: delete all backup files
   initConfigFiles: write and overwrite the config files for client, server and testing, and the version.txt
   test: will run the NUnit tests
+      nant test-without-display             runs all basic tests (excl. GUI tests)
+      nant test-main-navigation-screens     tests the opening of all screens from the main menu
   devzip: build a zip file for developers for easy start
 
 compat:
@@ -49,9 +51,11 @@ compat:
     sub items: generateORMCachedTables, generateORMData, generateORMAccess, generateORMReferenceCounts
   generateGlue: generates the interfaces and instantiators, which is the glue between client and server
   generateWinforms: generates all yaml files in csharp\ICT\Petra\Client
-  generateWinform: generate a single yaml file, and optionally compile and start the client
+  generateWinform: generate a single yaml file, compile it and optionally and start the client
+       nant generateWinform -D:file=MFinance/Gui/GL/GLBatch.yaml
        nant generateWinform startPetraClient -D:file=MFinance/Gui/GL/GLBatch.yaml
-       nant generateWinform -D:file=MFinance/Gui/GL/GLBatch.yaml -D:donotcompile=true
+  generateWinformNoCompile: generate a single yaml file without any subsequent compilation
+       nant generateWinformNoCompile -D:file=MFinance/Gui/GL/GLBatch.yaml
   previewWinform: preview a single yaml file
        nant previewWinform -D:file=MFinance/Gui/GL/GLBatch.yaml
   cleanPetra: prepare for a clean build
@@ -167,6 +171,7 @@ useful parameters
       <include name="**/*.generated.refs" />
       <include name="**/*.dll.xml" />
       <include name="tmp/**/AssemblyInfo.cs" />
+      <exclude name="**/test*-generated.*cs" />
     </fileset>
   </delete>
 </target>
@@ -323,6 +328,10 @@ useful parameters
   <nant inheritall="true" target="generateWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
 </target>
 
+<target name="generateWinformNoCompile">
+  <nant inheritall="true" target="generateWinformNoCompile" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
+</target>
+
 <target name="previewWinform">
   <nant inheritall="true" target="previewWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
 </target>
@@ -335,6 +344,16 @@ useful parameters
 <target name="test-without-display" depends="initConfigFiles">
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
   <nant inheritall="false" target="test-without-display" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
+</target>
+
+<target name="test-main-navigation-screens-core" depends="initConfigFiles">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+  <nant inheritall="false" target="test-main-navigation-screens-core" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
+</target>
+
+<target name="test-main-navigation-screens" depends="initConfigFiles">
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+  <nant inheritall="false" target="test-main-navigation-screens" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
 </target>
 
 <target name="enable-sqlite-config-for-jenkins">

@@ -81,6 +81,8 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             try
             {
+                // Must not throw away the changes because we need the correct statement keys
+                AStatementAndTransactionsDS.DontThrowAwayAfterSubmitChanges = true;
                 SubmissionResult = BankImportTDSAccess.SubmitChanges(AStatementAndTransactionsDS, out AVerificationResult);
 
                 AFirstStatementKey = -1;
@@ -162,6 +164,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             }
 
             TVerificationResultCollection VerificationResult;
+            MainDS.ThrowAwayAfterSubmitChanges = true;
             BankImportTDSAccess.SubmitChanges(MainDS, out VerificationResult);
 
             return !VerificationResult.HasCriticalErrors;
@@ -464,6 +467,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         {
             TVerificationResultCollection VerificationResult;
 
+            AMainDS.ThrowAwayAfterSubmitChanges = true;
             return BankImportTDSAccess.SubmitChanges(AMainDS, out VerificationResult) == TSubmitChangesResult.scrOK;
         }
 
@@ -472,27 +476,29 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// </summary>
         /// <returns>the gift batch number</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Int32 CreateGiftBatch(BankImportTDS AMainDS,
+        public static Int32 CreateGiftBatch(
             Int32 ALedgerNumber,
             Int32 AStatementKey,
             Int32 AGiftBatchNumber,
             out TVerificationResultCollection AVerificationResult)
         {
+            BankImportTDS MainDS = GetBankStatementTransactionsAndMatches(AStatementKey, ALedgerNumber);
+
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
                 Catalog.GetString("Creating gift batch"),
-                AMainDS.AEpTransaction.DefaultView.Count + 10);
+                MainDS.AEpTransaction.DefaultView.Count + 10);
 
             AVerificationResult = new TVerificationResultCollection();
 
-            AMainDS.AEpTransaction.DefaultView.RowFilter =
+            MainDS.AEpTransaction.DefaultView.RowFilter =
                 String.Format("{0}={1}",
                     AEpTransactionTable.GetStatementKeyDBName(),
                     AStatementKey);
-            AMainDS.AEpStatement.DefaultView.RowFilter =
+            MainDS.AEpStatement.DefaultView.RowFilter =
                 String.Format("{0}={1}",
                     AEpStatementTable.GetStatementKeyDBName(),
                     AStatementKey);
-            AEpStatementRow stmt = (AEpStatementRow)AMainDS.AEpStatement.DefaultView[0].Row;
+            AEpStatementRow stmt = (AEpStatementRow)MainDS.AEpStatement.DefaultView[0].Row;
 
             // TODO: optional: use the preselected gift batch, AGiftBatchNumber
 
@@ -512,14 +518,14 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Creating Gift Batch"), msg, TResultSeverity.Resv_Info));
             }
 
-            ACostCentreAccess.LoadViaALedger(AMainDS, ALedgerNumber, Transaction);
-            AMotivationDetailAccess.LoadViaALedger(AMainDS, ALedgerNumber, Transaction);
+            ACostCentreAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+            AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
 
-            AMainDS.AEpMatch.DefaultView.Sort =
+            MainDS.AEpMatch.DefaultView.Sort =
                 AEpMatchTable.GetActionDBName() + ", " +
                 AEpMatchTable.GetMatchTextDBName();
 
-            if (AMainDS.AEpTransaction.DefaultView.Count == 0)
+            if (MainDS.AEpTransaction.DefaultView.Count == 0)
             {
                 AVerificationResult.Add(new TVerificationResult(
                         Catalog.GetString("Creating Gift Batch"),
@@ -528,11 +534,11 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 return -1;
             }
 
-            foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
+            foreach (DataRowView dv in MainDS.AEpTransaction.DefaultView)
             {
                 AEpTransactionRow transactionRow = (AEpTransactionRow)dv.Row;
 
-                DataRowView[] matches = AMainDS.AEpMatch.DefaultView.FindRows(new object[] {
+                DataRowView[] matches = MainDS.AEpMatch.DefaultView.FindRows(new object[] {
                         MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT,
                         transactionRow.MatchText
                     });
@@ -579,20 +585,21 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 String.Format(Catalog.GetString("bank import for date {0}"), stmt.Date.ToShortDateString()));
 
             AGiftBatchRow giftbatchRow = GiftDS.AGiftBatch[0];
+            giftbatchRow.BankAccountCode = stmt.BankAccountCode;
 
             decimal HashTotal = 0.0M;
 
-            AMainDS.AEpTransaction.DefaultView.Sort =
+            MainDS.AEpTransaction.DefaultView.Sort =
                 AEpTransactionTable.GetNumberOnPaperStatementDBName();
 
-            AMainDS.AEpMatch.DefaultView.RowFilter = String.Empty;
-            AMainDS.AEpMatch.DefaultView.Sort =
+            MainDS.AEpMatch.DefaultView.RowFilter = String.Empty;
+            MainDS.AEpMatch.DefaultView.Sort =
                 AEpMatchTable.GetActionDBName() + ", " +
                 AEpMatchTable.GetMatchTextDBName();
 
             int counter = 5;
 
-            foreach (DataRowView dv in AMainDS.AEpTransaction.DefaultView)
+            foreach (DataRowView dv in MainDS.AEpTransaction.DefaultView)
             {
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                     Catalog.GetString("Preparing the gifts"),
@@ -600,7 +607,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                 AEpTransactionRow transactionRow = (AEpTransactionRow)dv.Row;
 
-                DataRowView[] matches = AMainDS.AEpMatch.DefaultView.FindRows(new object[] {
+                DataRowView[] matches = MainDS.AEpMatch.DefaultView.FindRows(new object[] {
                         MFinanceConstants.BANK_STMT_STATUS_MATCHED_GIFT,
                         transactionRow.MatchText
                     });
@@ -643,7 +650,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         detail.RecipientKey = match.RecipientKey;
                         detail.RecipientLedgerNumber = match.RecipientLedgerNumber;
 
-                        AMotivationDetailRow motivation = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
+                        AMotivationDetailRow motivation = (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(
                             new object[] { ALedgerNumber, detail.MotivationGroupCode, detail.MotivationDetailCode });
 
                         if (motivation == null)
@@ -675,7 +682,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                         }
 
                         // check for active cost centre
-                        ACostCentreRow costcentre = (ACostCentreRow)AMainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, detail.CostCentreCode });
+                        ACostCentreRow costcentre = (ACostCentreRow)MainDS.ACostCentre.Rows.Find(new object[] { ALedgerNumber, detail.CostCentreCode });
 
                         if ((costcentre == null) || !costcentre.CostCentreActiveFlag)
                         {

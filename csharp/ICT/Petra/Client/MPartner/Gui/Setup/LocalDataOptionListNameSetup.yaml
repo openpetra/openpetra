@@ -18,7 +18,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailCategoryCode, txtDetailCategoryDesc]
+            FindControls: [txtDetailCategoryCode, txtDetailCategoryDesc]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -35,6 +39,7 @@ RootNode:
             CustomColumns:
                 DetailCategoryCode: {Label=List Name}
                 DetailCategoryDesc: {Label=Description}
+            SortOrder: DetailCategoryCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

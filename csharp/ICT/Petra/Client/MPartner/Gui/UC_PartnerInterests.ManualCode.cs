@@ -239,24 +239,31 @@ namespace Ict.Petra.Client.MPartner.Gui
             CategoryTable = (PInterestCategoryTable)TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.InterestCategoryList);
             CategoryRow = (PInterestCategoryRow)CategoryTable.Rows.Find(new object[] { SelectedCategory });
 
+            // reset list of levels
+            cmbPPartnerInterestLevel.Text = "";
+            cmbPPartnerInterestLevel.Items.Clear();
+
             if ((CategoryRow != null)
                 && !CategoryRow.IsLevelRangeLowNull()
                 && !CategoryRow.IsLevelRangeHighNull())
             {
-                if (CategoryRow.LevelRangeLow == CategoryRow.LevelRangeHigh)
+                // fill the combobox with valid values
+                for (int ii = CategoryRow.LevelRangeLow; ii <= CategoryRow.LevelRangeHigh; ii++)
                 {
-                    lblInterestLevelExplanation.Text = String.Format(Catalog.GetString("(only level {0} is available for category {1})"),
-                        CategoryRow.LevelRangeLow, CategoryRow.Category);
+                    cmbPPartnerInterestLevel.Items.Add(ii);
                 }
-                else
-                {
-                    lblInterestLevelExplanation.Text = String.Format(Catalog.GetString("(from {0} to {1})"),
-                        CategoryRow.LevelRangeLow, CategoryRow.LevelRangeHigh);
-                }
+
+                txtInterestLevelExplanation.Text = CategoryRow.LevelDescriptions;
             }
             else
             {
-                lblInterestLevelExplanation.Text = "";
+                txtInterestLevelExplanation.Text = "";
+            }
+
+            if ((GetSelectedDetailRow() != null)
+                && !GetSelectedDetailRow().IsLevelNull())
+            {
+                cmbPPartnerInterestLevel.SetSelectedInt32(GetSelectedDetailRow().Level);
             }
         }
 

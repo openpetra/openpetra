@@ -40,7 +40,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
     {
         private void NewRowManual(ref PInterestCategoryRow ARow)
         {
-            string newName = Catalog.GetString("NEWREASON");
+            string newName = Catalog.GetString("NEWCATEGORY");
             Int32 countNewDetail = 0;
 
             if (FMainDS.PInterestCategory.Rows.Find(new object[] { newName }) != null)

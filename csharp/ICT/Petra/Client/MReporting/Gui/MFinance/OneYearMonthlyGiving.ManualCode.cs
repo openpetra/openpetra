@@ -54,8 +54,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 && (rbtPartner.Checked && (txtRecipient.Text == "0000000000")))
             {
                 TVerificationResult VerificationResult = new TVerificationResult(
-                    Catalog.GetString("No donor selected."),
-                    Catalog.GetString("Please select a donor."),
+                    Catalog.GetString("No recipient selected."),
+                    Catalog.GetString("Please select a recipient."),
                     TResultSeverity.Resv_Critical);
 
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);

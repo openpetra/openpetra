@@ -293,12 +293,14 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AExcludePosting"></param>
         /// <param name="AActiveOnly"></param>
         /// <param name="ABankAccountOnly"></param>
+        /// <param name="AIndicateInactive">Determines whether or not to show inactive accounts as inactive</param>
         public static void InitialiseAccountList(ref TClbVersatile AControl,
             Int32 ALedgerNumber,
             bool APostingOnly,
             bool AExcludePosting,
             bool AActiveOnly,
-            bool ABankAccountOnly)
+            bool ABankAccountOnly,
+            bool AIndicateInactive = false)
         {
             string CheckedMember = "CHECKED";
             string DisplayMember = AAccountTable.GetAccountCodeShortDescDBName();
@@ -311,6 +313,19 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             DataTable NewTable = view.ToTable(true, new string[] { ValueMember, DisplayMember });
             NewTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+
+            //Highlight inactive Accounts
+            if (!AActiveOnly && AIndicateInactive)
+            {
+                foreach (DataRow rw in NewTable.Rows)
+                {
+                    if ((rw[AAccountTable.ColumnAccountActiveFlagId] != null) && (rw[AAccountTable.ColumnAccountActiveFlagId].ToString() == "False"))
+                    {
+                        rw[AAccountTable.ColumnAccountCodeShortDescId] = "<" + Catalog.GetString("INACTIVE") + "> " +
+                                                                         rw[AAccountTable.ColumnAccountCodeShortDescId];
+                    }
+                }
+            }
 
             AControl.Columns.Clear();
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
@@ -347,7 +362,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             emptyRow[ACostCentreTable.ColumnCostCentreNameId] = Catalog.GetString("Select a valid cost centre");
             Table.Rows.Add(emptyRow);
 
-            //Highlight inactive Accounts
+            //Highlight inactive Cost Centres
             if (!AActiveOnly && AIndicateInactive)
             {
                 foreach (DataRow rw in Table.Rows)
@@ -748,7 +763,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         }
 
         /// <summary>
-        /// This function fills the available financial years of a given ledger into a combobox
+        /// This function fills the available financial years of a given ledger into a TCmbAutoPopulated combobox
         /// </summary>
         public static void InitialiseAvailableFinancialYearsList(ref TCmbAutoPopulated AControl,
             System.Int32 ALedgerNr,
@@ -776,10 +791,70 @@ namespace Ict.Petra.Client.MFinance.Logic
         }
 
         /// <summary>
-        /// This function fills the available financial periods of a given ledger and financial year into a combobox
+        /// This function fills the available financial years of a given ledger into a TCmbAutoComplete combobox
+        /// </summary>
+        public static void InitialiseAvailableFinancialYearsList(ref TCmbAutoComplete AControl,
+            System.Int32 ALedgerNr,
+            bool AIncludeNextYear = false)
+        {
+            string DisplayMember;
+            string ValueMember;
+            DataTable Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYears(ALedgerNr,
+                0,
+                AIncludeNextYear,
+                out DisplayMember,
+                out ValueMember);
+
+            Table.DefaultView.Sort = ValueMember + " DESC";
+
+            AControl.DisplayMember = DisplayMember;
+            AControl.ValueMember = ValueMember;
+            AControl.DataSource = Table.DefaultView;
+
+            if (Table.DefaultView.Count > 0)
+            {
+                AControl.SelectedIndex = 0;
+            }
+        }
+
+        /// <summary>
+        /// This function fills the available financial periods of a given ledger and financial year into a TCmbAutoComplete combobox
+        /// </summary>
+        public static void InitialiseAvailableFinancialPeriodsList(
+            ref TCmbAutoComplete AControl,
+            System.Int32 ALedgerNr,
+            System.Int32 AYear)
+        {
+            DataTable periods = InitialiseAvailableFinancialPeriodsList(ALedgerNr, AYear);
+
+            AControl.DisplayMember = "display";
+            AControl.ValueMember = "value";
+            AControl.DataSource = periods.DefaultView;
+
+            if (periods.DefaultView.Count > 0)
+            {
+                AControl.SelectedIndex = 0;
+            }
+        }
+
+        /// <summary>
+        /// This function fills the available financial periods of a given ledger and financial year into a TCmbAutoPopulated combobox
         /// </summary>
         public static void InitialiseAvailableFinancialPeriodsList(
             ref TCmbAutoPopulated AControl,
+            System.Int32 ALedgerNr,
+            System.Int32 AYear)
+        {
+            DataTable periods = InitialiseAvailableFinancialPeriodsList(ALedgerNr, AYear);
+
+            AControl.InitialiseUserControl(periods, "value", "display", null, null);
+            AControl.AppearanceSetup(new int[] { AControl.ComboBoxWidth }, -1);
+        }
+
+        /// <summary>
+        /// This function fills a DataTable with the available financial periods of a given ledger and financial year
+        /// </summary>
+        private static DataTable InitialiseAvailableFinancialPeriodsList(
             System.Int32 ALedgerNr,
             System.Int32 AYear)
         {
@@ -823,14 +898,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             }
 
             periods.DefaultView.Sort = ValueMember + " ASC";
-
-            AControl.InitialiseUserControl(periods,
-                ValueMember,
-                DisplayMember,
-                null,
-                null);
-
-            AControl.AppearanceSetup(new int[] { AControl.ComboBoxWidth }, -1);
+            return periods;
         }
 
         /// <summary>

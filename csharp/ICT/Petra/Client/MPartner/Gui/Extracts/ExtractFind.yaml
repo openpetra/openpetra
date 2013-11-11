@@ -13,7 +13,7 @@ RootNode:
     Controls:
         stbMain:
         pnlContent:
-            Controls: [pnlFilter, pnlExtractMasterList, pnlButtons]
+            Controls: [pnlFilter, pnlExtractMasterList, pnlDialogButtons]
             Dock: Fill
         pnlFilter:
             Controls: [pnlFilterCriteria, pnlFilterButtons]
@@ -33,7 +33,7 @@ RootNode:
         pnlExtractMasterList:
             Dock: Fill
             Controls: [clbDetails]
-        pnlButtons: {ControlsOrientation=horizontal}
+        pnlDialogButtons: {ControlsOrientation=horizontal}
             NoLabel: true
             Dock: Bottom
             Controls: [btnAccept, btnClose]

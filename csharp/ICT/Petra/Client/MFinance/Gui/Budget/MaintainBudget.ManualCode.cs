@@ -84,6 +84,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 FLedgerNumber = value;
 
                 LoadBudgets();
+
+                UpdateRecordNumberDisplay();
             }
         }
 
@@ -100,10 +102,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             FHas13Periods = (FNumberOfPeriods == 13);
             FHas14Periods = (FNumberOfPeriods == 14);
-
-            FCostCentreTable = (ACostCentreTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
-                FLedgerNumber);
-            FAccountTable = (AAccountTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
 
             // to get an empty ABudgetFee table, instead of null reference
             FMainDS.Merge(new BudgetTDS());
@@ -122,11 +120,52 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             SelectRowInGrid(1);
 
+            RefreshComboLabels();
+
             FLoadCompleted = true;
+        }
+
+        private void RefreshComboLabels()
+        {
+            //Force a refresh of the combo labels if the first highlighted row contains inactive codes
+            // as the colour does not show up for a first row
+            if (!AccountIsActive(cmbDetailAccountCode.GetSelectedString())
+                && (cmbDetailAccountCode.AttachedLabel.BackColor != System.Drawing.Color.PaleVioletRed))
+            {
+                cmbDetailAccountCode.AttachedLabel.BackColor = System.Drawing.Color.PaleVioletRed;
+            }
+
+            if (!CostCentreIsActive(cmbDetailCostCentreCode.GetSelectedString())
+                && (cmbDetailCostCentreCode.AttachedLabel.BackColor != System.Drawing.Color.PaleVioletRed))
+            {
+                cmbDetailCostCentreCode.AttachedLabel.BackColor = System.Drawing.Color.PaleVioletRed;
+            }
         }
 
         private void SetupExtraGridFunctionality()
         {
+            //Populate CostCentreList variable
+            DataTable costCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+                FLedgerNumber);
+
+            ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
+
+            FMainDS.Tables.Add(tmpCostCentreTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref costCentreList, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpCostCentreTable.TableName);
+
+            FCostCentreTable = (ACostCentreTable)costCentreList;
+
+            //Populate AccountList variable
+            DataTable accountList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+
+            AAccountTable tmpAccountTable = new AAccountTable();
+            FMainDS.Tables.Add(tmpAccountTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref accountList, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpAccountTable.TableName);
+
+            FAccountTable = (AAccountTable)accountList;
+
             //Prepare grid to highlight inactive accounts/cost centres
             // Create a cell view for special conditions
             SourceGrid.Cells.Views.Cell strikeoutCell = new SourceGrid.Cells.Views.Cell();
@@ -150,9 +189,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 return !CostCentreIsActive(costCentreCode);
             };
 
-            // Add the condition to the columns that it should apply to
-            grdDetails.Columns[0].Conditions.Add(conditionCostCentreCodeActive);
-            grdDetails.Columns[1].Conditions.Add(conditionAccountCodeActive);
+            //Add conditions to columns
+            int indexOfCostCentreCodeDataColumn = 0;
+            int indexOfAccountCodeDataColumn = 1;
+
+            grdDetails.Columns[indexOfCostCentreCodeDataColumn].Conditions.Add(conditionCostCentreCodeActive);
+            grdDetails.Columns[indexOfAccountCodeDataColumn].Conditions.Add(conditionAccountCodeActive);
         }
 
         private void SetBudgetDefaultView()
@@ -178,80 +220,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
             TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true, true);
 
-            if (FNumberOfPeriods == 12)
-            {
-                txtPeriod07Amount.Top = txtPeriod08Amount.Top;
-                txtPeriod07Amount.Left = txtPeriod08Amount.Left;
-                txtPeriod08Amount.Top = txtPeriod09Amount.Top;
-                txtPeriod08Amount.Left = txtPeriod09Amount.Left;
-                txtPeriod09Amount.Top = txtPeriod10Amount.Top;
-                txtPeriod09Amount.Left = txtPeriod10Amount.Left;
-                txtPeriod10Amount.Top = txtPeriod11Amount.Top;
-                txtPeriod10Amount.Left = txtPeriod11Amount.Left;
-                txtPeriod11Amount.Top = txtPeriod12Amount.Top;
-                txtPeriod11Amount.Left = txtPeriod12Amount.Left;
-                txtPeriod12Amount.Top = txtPeriod13Amount.Top;
-                txtPeriod12Amount.Left = txtPeriod13Amount.Left;
-                txtTotalAdhocAmount.Top = txtPeriod14Amount.Top;
-                txtTotalAdhocAmount.Left = txtPeriod14Amount.Left;
-                lblPeriod14Amount.Text = lblTotalAdhocAmount.Text;
-                lblPeriod13Amount.Text = lblPeriod12Amount.Text;
-                lblPeriod12Amount.Text = lblPeriod11Amount.Text;
-                lblPeriod11Amount.Text = lblPeriod10Amount.Text;
-                lblPeriod10Amount.Text = lblPeriod09Amount.Text;
-                lblPeriod09Amount.Text = lblPeriod08Amount.Text;
-                lblPeriod08Amount.Text = lblPeriod07Amount.Text;
-                lblPeriod07Amount.Visible = false;
-                txtPeriod14Amount.Visible = false;
-                lblPeriod14Amount.Visible = true;
-                lblTotalAdhocAmount.Visible = false;
+            bool bMoreThan12 = (FNumberOfPeriods > 12);
+            bool bMoreThan13 = (FNumberOfPeriods > 13);
 
-                txtPeriod07Index.Top = txtPeriod08Index.Top;
-                txtPeriod07Index.Left = txtPeriod08Index.Left;
-                txtPeriod08Index.Top = txtPeriod09Index.Top;
-                txtPeriod08Index.Left = txtPeriod09Index.Left;
-                txtPeriod09Index.Top = txtPeriod10Index.Top;
-                txtPeriod09Index.Left = txtPeriod10Index.Left;
-                txtPeriod10Index.Top = txtPeriod11Index.Top;
-                txtPeriod10Index.Left = txtPeriod11Index.Left;
-                txtPeriod11Index.Top = txtPeriod12Index.Top;
-                txtPeriod11Index.Left = txtPeriod12Index.Left;
-                txtPeriod12Index.Top = txtPeriod13Index.Top;
-                txtPeriod12Index.Left = txtPeriod13Index.Left;
-                txtInflateBaseTotalAmount.Top = txtPeriod14Index.Top;
-                txtInflateBaseTotalAmount.Left = txtPeriod14Index.Left;
-                lblPeriod14Index.Text = lblInflateBaseTotalAmount.Text;
-                lblPeriod13Index.Text = lblPeriod12Index.Text;
-                lblPeriod12Index.Text = lblPeriod11Index.Text;
-                lblPeriod11Index.Text = lblPeriod10Index.Text;
-                lblPeriod10Index.Text = lblPeriod09Index.Text;
-                lblPeriod09Index.Text = lblPeriod08Index.Text;
-                lblPeriod08Index.Text = lblPeriod07Index.Text;
-                lblPeriod07Index.Visible = false;
-                txtPeriod14Index.Visible = false;
-                lblPeriod14Index.Visible = true;
-                lblInflateBaseTotalAmount.Visible = false;
-            }
-            else if (FNumberOfPeriods == 13)
-            {
-                txtPeriod14Amount.Visible = false;
-                lblPeriod14Amount.Visible = false;
+            txtPeriod13Amount.Visible = bMoreThan12;
+            lblPeriod13Amount.Visible = bMoreThan12;
+            txtPeriod13Index.Visible = bMoreThan12;
+            lblPeriod13Index.Visible = bMoreThan12;
 
-                txtPeriod14Index.Visible = false;
-                lblPeriod14Index.Visible = false;
-            }
-            else if (FNumberOfPeriods == 14)
-            {
-                txtPeriod13Amount.Visible = true;
-                lblPeriod13Amount.Visible = true;
-                txtPeriod14Amount.Visible = true;
-                lblPeriod14Amount.Visible = true;
-
-                txtPeriod13Index.Visible = true;
-                lblPeriod13Index.Visible = true;
-                txtPeriod14Index.Visible = true;
-                lblPeriod14Index.Visible = true;
-            }
+            txtPeriod14Amount.Visible = bMoreThan13;
+            lblPeriod14Amount.Visible = bMoreThan13;
+            txtPeriod14Index.Visible = bMoreThan13;
+            lblPeriod14Index.Visible = bMoreThan13;
 
             lblPerPeriodAmount.Text = "Amount for periods 1 to " + (FNumberOfPeriods - 1).ToString() + ":";
             lblLastPeriodAmount.Text = "Amount for period " + FNumberOfPeriods.ToString() + ":";
@@ -1428,7 +1408,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private bool AccountIsActive(string AAccountCode = "")
         {
-            bool retVal = false;
+            bool retVal = true;
 
             AAccountRow currentAccountRow = null;
 

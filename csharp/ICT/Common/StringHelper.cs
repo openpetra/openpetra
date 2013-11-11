@@ -839,24 +839,13 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// adds a new value to a comma separated list, adding a comma if necessary
-        /// </summary>
-        /// <param name="line">the existing line, could be empty or hold already values</param>
-        /// <param name="value">the new value</param>
-        /// <returns>the new list, consisting of the old list plus the new value</returns>
-        public static string AddCSV(string line, string value)
-        {
-            return AddCSV(line, value, ",");
-        }
-
-        /// <summary>
         /// adds a new value to a comma separated list, adding a delimiter if necessary
         /// </summary>
-        /// <param name="line">existing list</param>
+        /// <param name="line">the existing line, could be empty or hold already values</param>
         /// <param name="value">value to be added</param>
         /// <param name="separator">delimiter to use</param>
         /// <returns>the new list containing the old list and the new value</returns>
-        public static string AddCSV(string line, string value, string separator)
+        public static string AddCSV(string line, string value, string separator = ",")
         {
             string ReturnValue = "";
             Boolean containsSeparator;
@@ -876,6 +865,8 @@ namespace Ict.Common
                 value = " ";
             }
 
+            // escape the backslash. this is just the reversal of the behaviour in GetNextCSV
+            value = value.Replace("\\", "\\\\");
             value = value.Replace("\"", "\"\"");
             containsSeparator = (value.IndexOf(separator) != -1);
 
@@ -1748,6 +1739,10 @@ namespace Ict.Common
             {
                 ReturnValue = "#,##0.00;(#,##0.00);0.00;0";
             }
+            else if (IsSame(format, "CurrencyCSV"))
+            {
+                ReturnValue = "#,##0.00;-#,##0.00;0.00;0";
+            }
             else if (IsSame(format, "CurrencyWithoutDecimals"))
             {
                 ReturnValue = "#,##0;(#,##0);0;";
@@ -2198,5 +2193,32 @@ namespace Ict.Common
 
             return result;
         }
+    }
+
+    /// <summary>
+    /// This small class has several string constants relating to strings that can be part of a control's Tag property
+    /// </summary>
+    public static class CommonTagString
+    {
+        /// <summary>
+        /// When this is included in a control's Tag the automatic detection of changed data is suppressed on this control
+        /// </summary>
+        public const string SUPPRESS_CHANGE_DETECTION = "SuppressChangeDetection";
+
+        /// <summary>
+        /// Tag for a Filter/Find 'Argument Panel': Instructs the TUcoFilterAndFind UserControl to not change the Argument Panels' BackColour to Transparent.
+        /// </summary>
+        public const string ARGUMENTPANELTAG_KEEPBACKCOLOUR = "KeepBackColour";
+
+        /// <summary>
+        /// Tag for a Filter/Find 'Argument Panel': Instructs the TUcoFilterAndFind UserControl to not create 'Argument Clear' Buttons for Argument Controls.
+        /// </summary>
+        public const string ARGUMENTPANELTAG_NO_AUTOM_ARGUMENTCLEARBUTTON = "NoAutomaticArgumentClearButton";
+
+        /// <summary>
+        /// Tag for a Filter/Find Argument Control: Specifies what value is the 'Clear Value' for that Control (depends on the kind of Control!).
+        /// </summary>
+        /// <remarks>The 'Clear Value' is what gets set on the Control when its 'Clear Value' Button gets clicked.</remarks>
+        public const string ARGUMENTCONTROLTAG_CLEARVALUE = "ClearValue";
     }
 }

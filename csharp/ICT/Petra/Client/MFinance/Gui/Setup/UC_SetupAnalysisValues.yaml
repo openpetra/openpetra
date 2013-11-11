@@ -12,13 +12,15 @@ RootNode:
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlDetails]
-            ##Controls: [pnlDetails, pnlControls]
+            Controls: [pnlDetailTop, pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
-        ##pnlDetails:
             Dock: Fill
-            Controls: [pnlDetailTop, pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailAnalysisValue, chkDetailActive]
+            FindControls: [txtDetailAnalysisValue]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -32,9 +34,9 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [AFreeformAnalysis.AnalysisValue, AFreeformAnalysis.Active]
+            SortOrder: AFreeformAnalysis.AnalysisValue ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
-        ##pnlControls:
             Height: 70
             Dock: Bottom
             Controls:

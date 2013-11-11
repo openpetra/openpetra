@@ -55,6 +55,9 @@ using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MFinance.AP.Data.Access;
+using Ict.Petra.Server.MCommon.Data.Cascading;
+using System.Collections.Generic;
 
 namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 {
@@ -198,6 +201,39 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
+        /// returns number of accounting periods for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static int NumberOfAccountingPeriods(Int32 ALedgerNumber)
+        {
+            Boolean NewTransaction;
+            int NumberOfAccountingPeriods = 0;
+            ALedgerTable LedgerTable;
+            ALedgerRow LedgerRow;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+
+            LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+
+            if (LedgerTable.Count > 0)
+            {
+                LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
+                NumberOfAccountingPeriods = LedgerRow.NumberOfAccountingPeriods;
+            }
+
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return NumberOfAccountingPeriods;
+        }
+
+        /// <summary>
         /// returns true if subsystem is activated for given ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -285,7 +321,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 // create or update account for Creditor's Control
 
                 // make sure transaction type exists for gift receipting subsystem
-                if (ATransactionTypeAccess.CountViaASubSystem(CommonAccountingSubSystemsEnum.GR.ToString(), Transaction) == 0)
+                ATransactionTypeTable TemplateTransactionTypeTable;
+                ATransactionTypeRow TemplateTransactionTypeRow;
+                StringCollection TemplateTransactionTypeOperators;
+
+                TemplateTransactionTypeTable = new ATransactionTypeTable();
+                TemplateTransactionTypeRow = TemplateTransactionTypeTable.NewRowTyped(false);
+                TemplateTransactionTypeRow.LedgerNumber = ALedgerNumber;
+                TemplateTransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
+                TemplateTransactionTypeOperators = new StringCollection();
+                TemplateTransactionTypeOperators.Add("=");
+
+                if (ATransactionTypeAccess.CountUsingTemplate(TemplateTransactionTypeRow, TemplateTransactionTypeOperators, Transaction) == 0)
                 {
                     ATransactionTypeTable TransactionTypeTable;
                     ATransactionTypeRow TransactionTypeRow;
@@ -387,7 +434,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             if (!IsAccountsPayableSubsystemActivated(ALedgerNumber))
             {
                 // make sure transaction type exists for accounts payable subsystem
-                if (ATransactionTypeAccess.CountViaASubSystem(CommonAccountingSubSystemsEnum.AP.ToString(), Transaction) == 0)
+                ATransactionTypeTable TemplateTransactionTypeTable;
+                ATransactionTypeRow TemplateTransactionTypeRow;
+                StringCollection TemplateTransactionTypeOperators;
+
+                TemplateTransactionTypeTable = new ATransactionTypeTable();
+                TemplateTransactionTypeRow = TemplateTransactionTypeTable.NewRowTyped(false);
+                TemplateTransactionTypeRow.LedgerNumber = ALedgerNumber;
+                TemplateTransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
+                TemplateTransactionTypeOperators = new StringCollection();
+                TemplateTransactionTypeOperators.Add("=");
+
+                if (ATransactionTypeAccess.CountUsingTemplate(TemplateTransactionTypeRow, TemplateTransactionTypeOperators, Transaction) == 0)
                 {
                     ATransactionTypeTable TransactionTypeTable;
                     ATransactionTypeRow TransactionTypeRow;
@@ -683,15 +741,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static DataTable LoadLocalSummaryCostCentres(Int32 ALedgerNumber)
+        public static DataTable LoadLocalCostCentres(Int32 ALedgerNumber)
         {
             String SqlQuery = "SELECT a_cost_centre_code_c AS CostCentreCode, " +
-                              "a_cost_centre_name_c AS CostCentreName" +
+                              "a_cost_centre_name_c AS CostCentreName, " +
+                              "a_posting_cost_centre_flag_l AS Posting, " +
+                              "a_cost_centre_to_report_to_c AS ReportsTo" +
                               " FROM PUB_a_cost_centre" +
                               " WHERE a_ledger_number_i = " + ALedgerNumber +
-                              " AND a_posting_cost_centre_flag_l=FALSE" +
-                              " AND a_cost_centre_type_c = 'Local'" +
-                              " AND a_cost_centre_to_report_to_c <> '';";
+                              " AND a_cost_centre_type_c = 'Local';";
             DataTable ParentCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "ParentCostCentre", null);
 
             return ParentCostCentreTbl;
@@ -778,6 +836,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             NewCostCentreRow.CostCentreActiveFlag = true;
                             CostCentreTbl.Rows.Add(NewCostCentreRow);
                         }
+                        else    // The cost Centre was found, but the match above was case-insensitive.
+                        {       // So I'm going to use the actual name from the table, otherwise it might break the DB Constraint.
+                            RowCCCode = CostCentreTbl.DefaultView[CostCentreRowIdx].Row["a_cost_centre_code_c"].ToString();
+                        }
 
                         Int32 RowIdx = LinksTbl.DefaultView.Find(Row["PartnerKey"]);
 
@@ -838,19 +900,22 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Int32 ALedgerNumber,
             String AAccountCode)
         {
-            AInspectDS.AAccountProperty.DefaultView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
-                AAccountPropertyTable.GetLedgerNumberDBName(),
-                ALedgerNumber,
-                AAccountPropertyTable.GetAccountCodeDBName(),
-                AAccountCode);
-
-            foreach (DataRowView rv in AInspectDS.AAccountProperty.DefaultView)
+            if (AInspectDS.AAccountProperty != null)
             {
-                AAccountPropertyRow accountPropertyRow = (AAccountPropertyRow)rv.Row;
-                accountPropertyRow.Delete();
-            }
+                AInspectDS.AAccountProperty.DefaultView.RowFilter = String.Format("{0}={1} and {2}='{3}'",
+                    AAccountPropertyTable.GetLedgerNumberDBName(),
+                    ALedgerNumber,
+                    AAccountPropertyTable.GetAccountCodeDBName(),
+                    AAccountCode);
 
-            AInspectDS.AAccountProperty.DefaultView.RowFilter = "";
+                foreach (DataRowView rv in AInspectDS.AAccountProperty.DefaultView)
+                {
+                    AAccountPropertyRow accountPropertyRow = (AAccountPropertyRow)rv.Row;
+                    accountPropertyRow.Delete();
+                }
+
+                AInspectDS.AAccountProperty.DefaultView.RowFilter = "";
+            }
         }
 
         private static void AddOrRemoveLedgerInitFlag(Int32 ALedgerNumber, String AInitFlagName,
@@ -912,14 +977,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AGeneralLedgerMasterPeriodRow TempGLMPeriodRow;
             AGeneralLedgerMasterPeriodRow NewGLMPeriodRow;
 
+            int CurrentNumberPeriods;
+            int NewNumberPeriods;
             int CurrentNumberFwdPostingPeriods;
             int NewNumberFwdPostingPeriods;
             int CurrentLastFwdPeriod;
             int NewLastFwdPeriod;
             int Period;
+            Boolean ExtendFwdPeriods = false;
             DateTime PeriodStartDate;
             DateTime CurrentCalendarStartDate;
-            Boolean CreateDefaultCalendar = false;
+            Boolean CreateCalendar = false;
 
             AVerificationResult = new TVerificationResultCollection();
 
@@ -937,6 +1005,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
                 LedgerRow = (ALedgerRow)LedgerTable.Rows[0];
 
+                // initialize variables for accounting periods and forward periods
+                CurrentNumberPeriods = LedgerRow.NumberOfAccountingPeriods;
+                NewNumberPeriods = ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberOfAccountingPeriods;
+
+                CurrentNumberFwdPostingPeriods = LedgerRow.NumberFwdPostingPeriods;
+                NewNumberFwdPostingPeriods = ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberFwdPostingPeriods;
+
                 // retrieve currently saved calendar start date (start date of financial year)
                 AAccountingPeriodTable CalendarTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, 1, Transaction);
                 CurrentCalendarStartDate = DateTime.MinValue;
@@ -946,32 +1021,40 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     CurrentCalendarStartDate = ((AAccountingPeriodRow)CalendarTable.Rows[0]).PeriodStartDate;
                 }
 
-                // update accounting periods (calendar): this only needs to be done if the calendar mode is changed
+                // update accounting periods (calendar):
+                // this only needs to be done if the calendar mode is changed
                 // or if calendar mode is monthly and the start date has changed
+                // or if not monthly and number of periods has changed
                 if (((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode != LedgerRow.CalendarMode)
                 {
-                    if (!((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode)
-                    {
-                        // non-monthly: no need to modify accounting periods as they can be used as basis for calendar
-                        // however, if no accounting periods exist yet then make sure they are created based on month initially
-                        if (AAccountingPeriodAccess.CountViaALedger(ALedgerNumber, Transaction) == 0)
-                        {
-                            CreateDefaultCalendar = true;
-                        }
-                    }
-                    else
-                    {
-                        CreateDefaultCalendar = true;
-                    }
+                    CreateCalendar = true;
                 }
                 else if (((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode
                          && (ACalendarStartDate != CurrentCalendarStartDate))
                 {
-                    CreateDefaultCalendar = true;
+                    CreateCalendar = true;
+                }
+                else if (!((ALedgerRow)(AInspectDS.ALedger.Rows[0])).CalendarMode
+                         && (NewNumberPeriods != CurrentNumberPeriods))
+                {
+                    CreateCalendar = true;
+                }
+
+                if (!CreateCalendar
+                    && (NewNumberFwdPostingPeriods < CurrentNumberFwdPostingPeriods))
+                {
+                    CreateCalendar = true;
+                }
+
+                if (!CreateCalendar
+                    && (NewNumberFwdPostingPeriods > CurrentNumberFwdPostingPeriods))
+                {
+                    // in this case only extend the periods (as there may already be existing transactions)
+                    ExtendFwdPeriods = true;
                 }
 
                 // now perform the actual update of accounting periods (calendar)
-                if (CreateDefaultCalendar)
+                if (CreateCalendar)
                 {
                     // first make sure all accounting period records are deleted
                     if (AAccountingPeriodAccess.CountViaALedger(ALedgerNumber, Transaction) > 0)
@@ -989,39 +1072,63 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     PeriodStartDate = ACalendarStartDate;
 
-                    for (Period = 1; Period <= 12 + LedgerRow.NumberFwdPostingPeriods; Period++)
+                    for (Period = 1; Period <= NewNumberPeriods; Period++)
                     {
                         NewAccountingPeriodRow = NewAccountingPeriodTable.NewRowTyped();
                         NewAccountingPeriodRow.LedgerNumber = ALedgerNumber;
                         NewAccountingPeriodRow.AccountingPeriodNumber = Period;
                         NewAccountingPeriodRow.PeriodStartDate = PeriodStartDate;
-                        NewAccountingPeriodRow.PeriodEndDate = PeriodStartDate.AddMonths(1).AddDays(-1);
+
+                        if ((((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberOfAccountingPeriods == 13)
+                            && (Period == 12))
+                        {
+                            // in case of 12 periods the second last period represents the last month except for the very last day
+                            NewAccountingPeriodRow.PeriodEndDate = PeriodStartDate.AddMonths(1).AddDays(-2);
+                        }
+                        else if ((((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberOfAccountingPeriods == 13)
+                                 && (Period == 13))
+                        {
+                            // in case of 13 periods the last period just represents the very last day of the financial year
+                            NewAccountingPeriodRow.PeriodEndDate = PeriodStartDate;
+                        }
+                        else
+                        {
+                            NewAccountingPeriodRow.PeriodEndDate = PeriodStartDate.AddMonths(1).AddDays(-1);
+                        }
+
                         NewAccountingPeriodRow.AccountingPeriodDesc = PeriodStartDate.ToString("MMMM");
                         NewAccountingPeriodTable.Rows.Add(NewAccountingPeriodRow);
-                        PeriodStartDate = PeriodStartDate.AddMonths(1);
+                        PeriodStartDate = NewAccountingPeriodRow.PeriodEndDate.AddDays(1);
                     }
 
                     AAccountingPeriodAccess.SubmitChanges(NewAccountingPeriodTable, Transaction, out AVerificationResult);
 
                     TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                         TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
+
+                    CurrentNumberPeriods = NewNumberPeriods;
                 }
 
                 // check if any new forwarding periods need to be created
-                CurrentNumberFwdPostingPeriods = LedgerRow.NumberFwdPostingPeriods;
-                NewNumberFwdPostingPeriods = ((ALedgerRow)(AInspectDS.ALedger.Rows[0])).NumberFwdPostingPeriods;
-
-                if (NewNumberFwdPostingPeriods > CurrentNumberFwdPostingPeriods)
+                if (CreateCalendar || ExtendFwdPeriods)
                 {
                     // now create new forwarding posting periods (if at all needed)
                     NewAccountingPeriodTable = new AAccountingPeriodTable();
 
-                    Period = LedgerRow.NumberOfAccountingPeriods + CurrentNumberFwdPostingPeriods + 1;
+                    // if calendar was created then there are no forward periods yet
+                    if (CreateCalendar)
+                    {
+                        Period = CurrentNumberPeriods + 1;
+                    }
+                    else
+                    {
+                        Period = CurrentNumberPeriods + CurrentNumberFwdPostingPeriods + 1;
+                    }
 
-                    while (Period <= LedgerRow.NumberOfAccountingPeriods + NewNumberFwdPostingPeriods)
+                    while (Period <= NewNumberPeriods + NewNumberFwdPostingPeriods)
                     {
                         AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                            Period - LedgerRow.NumberOfAccountingPeriods,
+                            Period - CurrentNumberPeriods,
                             Transaction);
                         AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
 
@@ -1115,6 +1222,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                                     NewGLMPeriodTable.Rows.Add(NewGLMPeriodRow);
                                 }
+                            }
+
+                            // remove periods if the number of periods + forwarding periods has been reduced
+                            int NumberOfExistingPeriods = LedgerRow.NumberOfAccountingPeriods + LedgerRow.NumberFwdPostingPeriods;
+
+                            while ((NewNumberPeriods + NewNumberFwdPostingPeriods) < NumberOfExistingPeriods)
+                            {
+                                AGeneralLedgerMasterPeriodAccess.DeleteByPrimaryKey(GLMPeriodRow.GlmSequence, NumberOfExistingPeriods, Transaction);
+
+                                NumberOfExistingPeriods--;
                             }
                         }
                     }
@@ -1401,6 +1518,31 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         #endregion Data Validation
 
         /// <summary>
+        /// Find out whether I can detach this Analysis Type Code from this account
+        /// If it's been used in any transactions, I'm stuck with it.
+        /// Cascading checks AApAnalAttrib, ARecurringTransAnalAttrib and ATransAnalAttrib.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AAccountCode"></param>
+        /// <param name="AAnalysisTypeCode"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Boolean CanDetachAnalysisType(Int32 ALedgerNumber, String AAccountCode, String AAnalysisTypeCode)
+        {
+            List <TRowReferenceInfo>References;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            Int32 RefCount = AAnalysisAttributeCascading.CountByPrimaryKey(ALedgerNumber,
+                AAnalysisTypeCode,
+                AAccountCode,
+                Transaction,
+                true,
+                out References);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return RefCount == 0;
+        }
+
+        /// <summary>
         /// helper function for ExportAccountHierarchy
         /// </summary>
         private static void InsertNodeIntoXmlDocument(GLSetupTDS AMainDS,
@@ -1644,6 +1786,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             newAccountHDetail.AccountHierarchyCode = AMainDS.AAccountHierarchy[0].AccountHierarchyCode;
             newAccountHDetail.AccountCodeToReportTo = AParentAccountCode;
             newAccountHDetail.ReportingAccountCode = AccountCode;
+            newAccountHDetail.ReportOrder = AMainDS.AAccountHierarchyDetail.Rows.Count;
 
             AMainDS.AAccountHierarchyDetail.Rows.Add(newAccountHDetail);
 
@@ -2224,8 +2367,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             AVerificationResult = null;
 
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            
             // check if such a ledger already exists
-            ALedgerTable tempLedger = ALedgerAccess.LoadByPrimaryKey(ANewLedgerNumber, null);
+            ALedgerTable tempLedger = ALedgerAccess.LoadByPrimaryKey(ANewLedgerNumber, Transaction);
 
             if (tempLedger.Count > 0)
             {
@@ -2258,16 +2403,26 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ledgerRow.BaseCurrency = ABaseCurrency;
             ledgerRow.IntlCurrency = AIntlCurrency;
             ledgerRow.ActualsDataRetention = 11;
-            ledgerRow.GiftDataRetention = 5;
+            ledgerRow.GiftDataRetention = 11;
             ledgerRow.BudgetDataRetention = 2;
             ledgerRow.CountryCode = ACountryCode;
             ledgerRow.ForexGainsLossesAccount = "5003";
             ledgerRow.PartnerKey = PartnerKey;
+
+            if (ANumberOfPeriods == 12)
+            {
+                ledgerRow.CalendarMode = true;
+            }
+            else
+            {
+                ledgerRow.CalendarMode = false;
+            }
+
             MainDS.ALedger.Rows.Add(ledgerRow);
 
             PPartnerRow partnerRow;
 
-            if (!PPartnerAccess.Exists(PartnerKey, null))
+            if (!PPartnerAccess.Exists(PartnerKey, Transaction))
             {
                 partnerRow = MainDS.PPartner.NewRowTyped();
                 ledgerRow.PartnerKey = PartnerKey;
@@ -2276,24 +2431,61 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 partnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
                 partnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
                 MainDS.PPartner.Rows.Add(partnerRow);
+
+                // create or use addresses (only if partner record is created here as
+                // otherwise we assume that Partner has address already)
+                PLocationRow locationRow;
+                PLocationTable LocTemplateTable;
+                PLocationTable LocResultTable;
+                PLocationRow LocTemplateRow;
+                StringCollection LocTemplateOperators;
+
+                // find address with country set
+                LocTemplateTable = new PLocationTable();
+                LocTemplateRow = LocTemplateTable.NewRowTyped(false);
+                LocTemplateRow.SiteKey = 0;
+                LocTemplateRow.StreetName = Catalog.GetString("No valid address on file");
+                LocTemplateRow.CountryCode = ACountryCode;
+                LocTemplateOperators = new StringCollection();
+
+                LocResultTable = PLocationAccess.LoadUsingTemplate(LocTemplateRow, LocTemplateOperators, Transaction);
+
+                if (LocResultTable.Count > 0)
+                {
+                    locationRow = (PLocationRow)LocResultTable.Rows[0];
+                }
+                else
+                {
+                    // no location record exists yet: create new one
+                    locationRow = MainDS.PLocation.NewRowTyped();
+                    locationRow.SiteKey = 0;
+                    locationRow.LocationKey = (int)DBAccess.GDBAccessObj.GetNextSequenceValue(TSequenceNames.seq_location_number.ToString(), Transaction);
+                    locationRow.StreetName = Catalog.GetString("No valid address on file");
+                    locationRow.CountryCode = ACountryCode;
+                    MainDS.PLocation.Rows.Add(locationRow);
+                }
+
+                // now create partner location record
+                PPartnerLocationRow partnerLocationRow = MainDS.PPartnerLocation.NewRowTyped();
+                partnerLocationRow.SiteKey = locationRow.SiteKey;
+                partnerLocationRow.PartnerKey = PartnerKey;
+                partnerLocationRow.LocationKey = locationRow.LocationKey;
+                partnerLocationRow.DateEffective = DateTime.Today;
+                MainDS.PPartnerLocation.Rows.Add(partnerLocationRow);
             }
             else
             {
                 // partner record already exists in database -> update ledger name
-                PPartnerAccess.LoadByPrimaryKey(MainDS, PartnerKey, null);
+                PPartnerAccess.LoadByPrimaryKey(MainDS, PartnerKey, Transaction);
                 partnerRow = (PPartnerRow)MainDS.PPartner.Rows[0];
                 partnerRow.PartnerShortName = ALedgerName;
             }
 
-            PPartnerTypeAccess.LoadViaPPartner(MainDS, PartnerKey, null);
+            PPartnerTypeAccess.LoadViaPPartner(MainDS, PartnerKey, Transaction);
             PPartnerTypeRow partnerTypeRow;
 
-            if (MainDS.PPartnerType.Rows.Count > 0)
-            {
-                partnerTypeRow = MainDS.PPartnerType[0];
-                partnerTypeRow.TypeCode = MPartnerConstants.PARTNERTYPE_LEDGER;
-            }
-            else
+            // only create special type "LEDGER" if it does not exist yet
+            if (MainDS.PPartnerType.Rows.Find(new object[] { PartnerKey, MPartnerConstants.PARTNERTYPE_LEDGER }) == null)
             {
                 partnerTypeRow = MainDS.PPartnerType.NewRowTyped();
                 partnerTypeRow.PartnerKey = PartnerKey;
@@ -2301,30 +2493,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 MainDS.PPartnerType.Rows.Add(partnerTypeRow);
             }
 
-            if (!PUnitAccess.Exists(PartnerKey, null))
+            if (!PUnitAccess.Exists(PartnerKey, Transaction))
             {
                 PUnitRow unitRow = MainDS.PUnit.NewRowTyped();
                 unitRow.PartnerKey = PartnerKey;
+                unitRow.UnitName = ALedgerName;
                 MainDS.PUnit.Rows.Add(unitRow);
             }
 
-            if (!PLocationAccess.Exists(PartnerKey, 0, null))
-            {
-                PLocationRow locationRow = MainDS.PLocation.NewRowTyped();
-                locationRow.SiteKey = PartnerKey;
-                locationRow.LocationKey = 0;
-                locationRow.StreetName = Catalog.GetString("No valid address on file");
-                locationRow.CountryCode = ACountryCode;
-                MainDS.PLocation.Rows.Add(locationRow);
-
-                PPartnerLocationRow partnerLocationRow = MainDS.PPartnerLocation.NewRowTyped();
-                partnerLocationRow.SiteKey = PartnerKey;
-                partnerLocationRow.PartnerKey = PartnerKey;
-                partnerLocationRow.LocationKey = 0;
-                MainDS.PPartnerLocation.Rows.Add(partnerLocationRow);
-            }
-
-            if (!PPartnerLedgerAccess.Exists(PartnerKey, null))
+            if (!PPartnerLedgerAccess.Exists(PartnerKey, Transaction))
             {
                 PPartnerLedgerRow partnerLedgerRow = MainDS.PPartnerLedger.NewRowTyped();
                 partnerLedgerRow.PartnerKey = PartnerKey;
@@ -2334,7 +2511,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     String.Format("SELECT MAX(p_partner_key_n) FROM PUB_p_partner " +
                         "WHERE p_partner_key_n > {0} AND p_partner_key_n < {1}",
                         PartnerKey,
-                        PartnerKey + 500000), IsolationLevel.ReadCommitted);
+                        PartnerKey + 500000), Transaction);
 
                 if (MaxExistingPartnerKeyObj.GetType() != typeof(DBNull))
                 {
@@ -2350,7 +2527,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             String ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
 
-            if (!SModuleAccess.Exists(ModuleId, null))
+            if (!SModuleAccess.Exists(ModuleId, Transaction))
             {
                 SModuleRow moduleRow = MainDS.SModule.NewRowTyped();
                 moduleRow.ModuleId = ModuleId;
@@ -2359,7 +2536,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
 
             // if this is the first ledger, make it the default site
-            SSystemDefaultsTable systemDefaults = SSystemDefaultsAccess.LoadByPrimaryKey("SiteKey", null);
+            SSystemDefaultsTable systemDefaults = SSystemDefaultsAccess.LoadByPrimaryKey("SiteKey", Transaction);
 
             if (systemDefaults.Rows.Count == 0)
             {
@@ -2372,6 +2549,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             // create calendar
             // at the moment we only support financial years that start on the first day of a month
+            // and currently only 12 or 13 periods are allowed and a maximum of 8 forward periods
             DateTime periodStartDate = ACalendarStartDate;
 
             for (Int32 periodNumber = 1; periodNumber <= ANumberOfPeriods + ANumberOfFwdPostingPeriods; periodNumber++)
@@ -2380,11 +2558,32 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 accountingPeriodRow.LedgerNumber = ANewLedgerNumber;
                 accountingPeriodRow.AccountingPeriodNumber = periodNumber;
                 accountingPeriodRow.PeriodStartDate = periodStartDate;
-                accountingPeriodRow.PeriodEndDate = periodStartDate.AddMonths(1).AddDays(-1);
+
+                if ((ANumberOfPeriods == 13)
+                    && (periodNumber == 12))
+                {
+                    // in case of 12 periods the second last period represents the last month except for the very last day
+                    accountingPeriodRow.PeriodEndDate = periodStartDate.AddMonths(1).AddDays(-2);
+                }
+                else if ((ANumberOfPeriods == 13)
+                         && (periodNumber == 13))
+                {
+                    // in case of 13 periods the last period just represents the very last day of the financial year
+                    accountingPeriodRow.PeriodEndDate = periodStartDate;
+                }
+                else
+                {
+                    accountingPeriodRow.PeriodEndDate = periodStartDate.AddMonths(1).AddDays(-1);
+                }
+
                 accountingPeriodRow.AccountingPeriodDesc = periodStartDate.ToString("MMMM");
                 MainDS.AAccountingPeriod.Rows.Add(accountingPeriodRow);
-                periodStartDate = periodStartDate.AddMonths(1);
+                periodStartDate = accountingPeriodRow.PeriodEndDate.AddDays(1);
             }
+
+            // mark cached table for accounting periods to be refreshed
+            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
 
             AAccountingSystemParameterRow accountingSystemParameterRow = MainDS.AAccountingSystemParameter.NewRowTyped();
             accountingSystemParameterRow.LedgerNumber = ANewLedgerNumber;
@@ -2448,7 +2647,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
 
 
-            AValidLedgerNumberTable validLedgerNumberTable = AValidLedgerNumberAccess.LoadByPrimaryKey(ANewLedgerNumber, PartnerKey, null);
+            AValidLedgerNumberTable validLedgerNumberTable = AValidLedgerNumberAccess.LoadByPrimaryKey(ANewLedgerNumber, PartnerKey, Transaction);
 
             if (validLedgerNumberTable.Rows.Count == 0)
             {
@@ -2509,8 +2708,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 moduleAccessPermissionRow.ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
                 moduleAccessPermissionRow.CanAccess = true;
                 moduleAccessPermissionTable.Rows.Add(moduleAccessPermissionRow);
-
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
                 try
                 {
@@ -2788,7 +2985,27 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// Check if a account code for Ledger ALedgerNumber has analysis attributes set up
+        /// Get a list of Analysis Attributes that must be used with this account.
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static StringCollection RequiredAnalysisAttributesForAccount(Int32 ALedgerNumber, String AAccountCode, Boolean AActiveOnly = false)
+        {
+            StringCollection Ret = new StringCollection();
+            AAnalysisAttributeTable tbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AAccountCode, null);
+
+            foreach (AAnalysisAttributeRow Row in tbl.Rows)
+            {
+                if (!AActiveOnly || Row.Active)
+                {
+                    Ret.Add(Row.AnalysisTypeCode);
+                }
+            }
+
+            return Ret;
+        }
+
+        /// <summary>
+        /// Check if this account code for Ledger ALedgerNumber requires one or more analysis attributes
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static bool HasAccountSetupAnalysisAttributes(Int32 ALedgerNumber, String AAccountCode)
@@ -2943,8 +3160,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                 AAnalysisAttributeTable TempAnalAttrTbl = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AOldCode, Transaction);
 
-                foreach (AAnalysisAttributeRow OldAnalAttribRow in TempAnalAttrTbl.Rows)
+                for (Int32 Idx = TempAnalAttrTbl.Rows.Count - 1; Idx >= 0; Idx--)
                 {
+                    AAnalysisAttributeRow OldAnalAttribRow = (AAnalysisAttributeRow)TempAnalAttrTbl.Rows[Idx];
                     // "a_analysis_attribute"  is the referrent in foreign keys, so I can't just go changing it - I need to make a copy?
                     AAnalysisAttributeRow NewAnalAttribRow = TempAnalAttrTbl.NewRowTyped();
                     DataUtilities.CopyAllColumnValues(OldAnalAttribRow, NewAnalAttribRow);
@@ -2962,12 +3180,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         "a_account_code_c",
                         AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                     UpdateAccountField("a_recurring_trans_anal_attrib",
-                        "a_account_code_c",
-                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
-                    UpdateAccountField("a_thisyearold_trans_anal_attrib",
-                        "a_account_code_c",
-                        AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
-                    UpdateAccountField("a_prev_year_trans_anal_attrib",
                         "a_account_code_c",
                         AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
                     UpdateAccountField("a_ap_anal_attrib", "a_account_code_c", AOldCode, ANewCode, ALedgerNumber, Transaction, ref AttemptedOperation);
@@ -3086,7 +3298,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>I can add child accounts to this account if it's a summary account,
-        ///          or if there have never been transactions posted to it.
+        ///          or if there have never been transactions posted to it,
+        ///          or if it's linked to a partner.
         ///
         ///          (If children are added to this account, it will be promoted to a summary account.)
         ///
@@ -3121,8 +3334,19 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 if (!ACanBeParent || ACanDelete)
                 {
                     bool IsInUse = CostCentreCodeHasBeenUsed(ALedgerNumber, ACostCentreCode, Transaction);
-                    ACanBeParent = !IsInUse;    // For posting accounts, I can still add children (and upgrade the account) if there's nothing posted to it yet.
+                    ACanBeParent = !IsInUse;    // For posting accounts, I can still add children (and change the account to summary) if there's nothing posted to it yet.
                     ACanDelete = !IsInUse;      // Once it has transactions posted, I can't delete it, ever.
+                }
+
+                if (ACanBeParent && ACanDelete)     // I need to check whether the Cost Centre has been linked to a partner (but never used).
+                {                                   // If it has, the link must be deleted first.
+                    AValidLedgerNumberTable VlnTbl = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, Transaction);
+
+                    if (VlnTbl.Rows.Count > 0)      // There's a link to a partner!
+                    {
+                        ACanBeParent = false;
+                        ACanDelete = false;
+                    }
                 }
             }
 

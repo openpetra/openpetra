@@ -29,9 +29,9 @@ using System.Security.Principal;
 using System.Security.Cryptography;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
-using Ict.Common.Remoting.Shared;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MSysMan.Data;
@@ -523,10 +523,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserManagement
         /// <summary>
         /// add a new user
         /// </summary>
-        public bool AddUser(string AUserID)
+        public bool AddUser(string AUserID, string APassword = "")
         {
             return TMaintenanceWebConnector.CreateUser(AUserID,
-                string.Empty,
+                APassword,
                 string.Empty,
                 string.Empty,
                 TMaintenanceWebConnector.DEMOMODULEPERMISSIONS);

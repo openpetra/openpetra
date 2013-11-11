@@ -19,6 +19,7 @@ using System.Collections.Specialized;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -676,6 +677,12 @@ namespace {#NAMESPACE}
                 FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
             }                
         }
+        else
+        {
+            // validation failed
+            ReturnValue = false;
+            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+        }
 
         return ReturnValue;
     }
@@ -887,8 +894,8 @@ namespace {#NAMESPACE}
             FPetraUtilsObject.ValidationToolTip.RemoveAll();
 
 {#IFDEF SELECTTABMANUAL}
-			{#SELECTTABMANUAL}
-			SelectTabManual({#TABPAGECTRL}.SelectedIndex);
+            {#SELECTTABMANUAL}
+            SelectTabManual({#TABPAGECTRL}.SelectedIndex);
 {#ENDIF SELECTTABMANUAL}
 
         }

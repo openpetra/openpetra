@@ -17,7 +17,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailInternatPostalTypeCode, txtDetailDescription, chkDetailDeletable]
+            FindControls: [txtDetailInternatPostalTypeCode, txtDetailDescription]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -31,6 +35,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [DetailInternatPostalTypeCode, DetailDescription, DetailDeletable]
+            SortOrder: DetailInternatPostalTypeCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

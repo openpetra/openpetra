@@ -30,7 +30,9 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Common.Controls;
 using Ict.Common.DB;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Data;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
@@ -1430,7 +1432,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(false));
             }
-
+            
             return ReturnValue;
         }
 
@@ -1471,7 +1473,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void TFrmPartnerEdit2_Load(System.Object sender, System.EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
-
+            
+            this.Shown += new EventHandler(FPetraUtilsObject.OnFormShown);
+            this.Shown += new EventHandler(TFrmPartnerEdit_Shown);
+            
             // Reduce Form height to fit the PartnerEdit screen fully only on 800x600 resolution
             if (System.Windows.Forms.Screen.GetBounds(ucoUpperPart).Height == 600)
             {
@@ -1619,6 +1624,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Checks whether there any Tips to show to the User; if there are, they will be
             // shown.
 // TODO            ucoUpperPart.CheckForUserTips();
+        }
+
+        /// <summary>
+        /// We must switch to the selected TabPage only once the the 'Shown' Event of the Form has been run
+        /// to make sure that the TabControl does not show the selected TabPage leftmost, but at its' correct
+        /// place in the order of the Tabs. (See Bug https://tracker.openpetra.org/view.php?id=2392)
+        /// </summary>
+        /// <param name="sender">Not evaluated.</param>
+        /// <param name="e">Not evaluated.</param>
+        void TFrmPartnerEdit_Shown(object sender, EventArgs e)
+        {
+            ucoLowerPart.SelectTabPage(FInitiallySelectedTabPage);
         }
 
         private void UcoUpperPart_PartnerClassMainDataChanged(System.Object Sender, TPartnerClassMainDataChangedEventArgs e)

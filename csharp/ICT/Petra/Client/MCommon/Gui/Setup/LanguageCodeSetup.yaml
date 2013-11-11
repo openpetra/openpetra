@@ -18,7 +18,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailLanguageCode, txtDetailLanguageDescription, chkDetailDeletable]
+            FindControls: [txtDetailLanguageCode, txtDetailLanguageDescription]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -32,6 +36,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [DetailLanguageCode, DetailLanguageDescription, DetailCongressLanguage, DetailDeletable]
+            SortOrder: DetailLanguageCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

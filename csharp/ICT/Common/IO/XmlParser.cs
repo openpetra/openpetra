@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -68,9 +68,11 @@ namespace Ict.Common.IO
             /// </summary>
             public override object GetEntity(Uri absoluteUri, string role, Type ofObjectToReturn)
             {
-                if (!File.Exists(absoluteUri.AbsolutePath))
+                string dtdFilename = absoluteUri.AbsolutePath;
+
+                if (!File.Exists(dtdFilename))
                 {
-                    string dtdFilename = FXmlFilePath + Path.DirectorySeparatorChar + Path.GetFileName(absoluteUri.AbsolutePath);
+                    dtdFilename = FXmlFilePath + Path.DirectorySeparatorChar + Path.GetFileName(absoluteUri.AbsolutePath);
 
                     if (!File.Exists(dtdFilename))
                     {
@@ -85,7 +87,10 @@ namespace Ict.Common.IO
                         dtdFilename = FXmlFilePath + Path.DirectorySeparatorChar + ".." + Path.DirectorySeparatorChar + ".." +
                                       Path.DirectorySeparatorChar + Path.GetFileName(absoluteUri.AbsolutePath);
                     }
+                }
 
+                if (File.Exists(dtdFilename))
+                {
                     return File.Open(dtdFilename, FileMode.Open, FileAccess.Read);
                 }
 
@@ -113,7 +118,7 @@ namespace Ict.Common.IO
 
             try
             {
-                // TODO there seems to be problems finding the dtd file on Mono; so no validation there for the moment
+                // TODO there seems to be problems with the dtd file on Mono; so no validation there for the moment
                 // also see http://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=52
                 if (Ict.Common.Utilities.DetermineExecutingCLR() == TExecutingCLREnum.eclrMono)
                 {
@@ -122,13 +127,13 @@ namespace Ict.Common.IO
 
                 XmlReaderSettings settings = new XmlReaderSettings();
                 settings.IgnoreWhitespace = false;
-                settings.DtdProcessing = DtdProcessing.Parse;
+                settings.DtdProcessing = withValidation ? DtdProcessing.Parse : DtdProcessing.Ignore;
                 settings.XmlResolver = new MyUrlResolver(Path.GetDirectoryName(Path.GetFullPath(filename)));
                 settings.ValidationType = withValidation ? ValidationType.DTD : ValidationType.None;
                 settings.ValidationEventHandler += new ValidationEventHandler(eventHandler);
 
                 sr = new StreamReader(filename);
-                reader = XmlReader.Create(sr, settings);
+                reader = XmlReader.Create(sr, settings, "file://" + Path.GetDirectoryName(Path.GetFullPath(filename)));
 
                 myDoc = new XmlDocument();
                 myDoc.Load(reader);
@@ -612,6 +617,34 @@ namespace Ict.Common.IO
         public static bool GetBoolAttribute(XmlNode cur, string attrib)
         {
             return GetBoolAttribute(cur, attrib, false);
+        }
+
+        /// <summary>
+        /// retrieve the double value of an attribute. Does prevent unnecessary exceptions, if the attribute is not existing
+        /// </summary>
+        /// <param name="cur">the current node</param>
+        /// <param name="attrib">the name of the attribute</param>
+        /// <returns>the value of the attribute, or -1 if it is not existing
+        /// </returns>
+        public static double GetDoubleAttribute(XmlNode cur, string attrib)
+        {
+            double ReturnValue;
+            XmlNode node;
+
+            ReturnValue = -1;
+            node = cur.Attributes.GetNamedItem(attrib);
+            try
+            {
+                if (node != null)
+                {
+                    ReturnValue = Convert.ToDouble(node.Value);
+                }
+            }
+            catch (Exception)
+            {
+                ReturnValue = -1;
+            }
+            return ReturnValue;
         }
 
         /// <summary>

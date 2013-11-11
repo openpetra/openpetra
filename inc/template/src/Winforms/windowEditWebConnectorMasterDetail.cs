@@ -3,6 +3,7 @@
 // DO NOT edit manually, DO NOT edit with the designer
 //
 {#GPLFILEHEADER}
+#region Usings
 using System;
 using System.Drawing;
 using System.Collections;
@@ -10,6 +11,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Data;
+using SourceGrid;
 using Ict.Petra.Shared;
 using System.Resources;
 using System.Collections.Generic;
@@ -18,6 +20,7 @@ using GNU.Gettext;
 using Ict.Common;     
 using Ict.Common.Controls;
 using Ict.Common.Data;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
@@ -30,6 +33,7 @@ using Ict.Petra.Client.CommonControls;
 using {#SHAREDVALIDATIONNAMESPACEMODULE};
 {#ENDIF SHAREDVALIDATIONNAMESPACEMODULE}
 {#USINGNAMESPACES}
+#endregion
 
 namespace {#NAMESPACE}
 {
@@ -37,6 +41,8 @@ namespace {#NAMESPACE}
   /// auto generated: {#FORMTITLE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
   {
+#region Declarations
+
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
     private {#DATASETTYPE} FMainDS;
 {#IFDEF SHOWDETAILS}       
@@ -45,6 +51,12 @@ namespace {#NAMESPACE}
     private Label FPrimaryKeyLabel = null;
     private string FDefaultDuplicateRecordHint = String.Empty;
 {#ENDIF SHOWDETAILS}
+{#IFDEF FILTERANDFIND}
+    {#FILTERANDFINDDECLARATIONS}
+{#ENDIF FILTERANDFIND}
+#endregion
+
+#region Constructor and Initialisation
 
     /// constructor
     public {#CLASSNAME}(Form AParentForm) : base()
@@ -68,7 +80,8 @@ namespace {#NAMESPACE}
       {#INITMANUALCODE}
 {#IFDEF SAVEDETAILS}
       grdDetails.Enter += new EventHandler(grdDetails_Enter);
-      grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(FocusRowLeaving);
+      grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(grdDetails_FocusRowLeaving);
+      grdDetails.Selection.SelectionChanged += new RangeRegionChangedEventHandler(grdDetails_RowSelected);
       {#GRIDMULTISELECTION}
 {#ENDIF SAVEDETAILS}
 
@@ -80,9 +93,21 @@ namespace {#NAMESPACE}
 {#IFDEF SHOWDETAILS}       
       SetPrimaryKeyControl();
 {#ENDIF SHOWDETAILS}
+{#IFDEF BUTTONPANEL}
+      FinishButtonPanelSetup();
+{#ENDIF BUTTONPANEL}
+{#IFDEF FILTERANDFIND}
+      SetupFilterAndFindControls();
+{#ENDIF FILTERANDFIND}
+{#IFDEF SHOWDETAILS}
+{#IFDEF DETAILTABLE}
+      SelectRowInGrid(1);
+{#ENDIF DETAILTABLE}
+{#ENDIF SHOWDETAILS}
     }
+#endregion
 
-    #region Show Method overrides
+#region Show Method overrides
 
     /// <summary>
     /// Override of Form.Show(IWin32Window owner) Method. Caters for singleton Forms.
@@ -131,6 +156,8 @@ namespace {#NAMESPACE}
 
     #endregion
 
+#region Event Handlers Implementation
+
     {#EVENTHANDLERSIMPLEMENTATION}
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
@@ -138,8 +165,11 @@ namespace {#NAMESPACE}
         // TODO? Save Window position
 
     }
-
+#endregion
 {#IFDEF CANFINDWEBCONNECTOR_CREATEMASTER}
+
+#region Create Master Table row
+
     /// automatically generated function from webconnector
     public bool Create{#MASTERTABLE}({#CREATEMASTER_FORMALPARAMETERS})
     {
@@ -171,9 +201,11 @@ namespace {#NAMESPACE}
         return true;
 {#ENDIF CREATEMASTER_WITHOUTVERIFICATION}
     }
+#endregion
 {#ENDIF CANFINDWEBCONNECTOR_CREATEMASTER}
-
 {#IFDEF CANFINDWEBCONNECTOR_CREATEDETAIL}
+
+#region Create Detail Table row
 
     /// <summary>
     /// This automatically generated method creates a new record of {#DETAILTABLE}, highlights it in the grid
@@ -195,31 +227,49 @@ namespace {#NAMESPACE}
             grdDetails.DataSource = null;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
+{#IFDEF FILTERANDFIND}
+            if (!SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1))
+            {
+                if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
+                {
+                    MessageBox.Show(
+                        MCommonResourcestrings.StrNewRecordIsFiltered,
+                        MCommonResourcestrings.StrAddNewRecordTitle,
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    FFilterPanelControls.ClearAllDiscretionaryFilters();
+                    SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
+                }
+            }
+{#ENDIF FILTERANDFIND}
+{#IFNDEF FILTERANDFIND}
             SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
+{#ENDIFN FILTERANDFIND}
             
             Control[] pnl = this.Controls.Find("pnlDetails", true);
             if (pnl.Length > 0)
             {
                 //Look for Key & Description fields
                 Control keyControl = null;
-                foreach (Control detailsCtrl in pnl[0].Controls)
-                {
-                    if (keyControl == null && (detailsCtrl is TextBox || detailsCtrl is ComboBox || detailsCtrl is TCmbAutoPopulated))
-                    {
-                        keyControl = detailsCtrl;
-                    }
+                Control descriptionControl = null;
+                GetKeyControlsOnPanel(pnl[0], ref keyControl, ref descriptionControl);
 
-                    if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Descr") && detailsCtrl.Text == string.Empty)
-                    {
-                        detailsCtrl.Text = Catalog.GetString("PLEASE ENTER DESCRIPTION");
-                        break;
-                    }
+                if ((descriptionControl != null) && (descriptionControl.Text == String.Empty))
+                {
+                    descriptionControl.Text = MCommonResourcestrings.StrPleaseEnterDescription;
                 }
 
                 ValidateAllData(true, false);
-                if (keyControl != null) keyControl.Focus();
+
+                if (keyControl != null)
+                {
+                    keyControl.Focus();
+                }
             }
         
+{#IFDEF BUTTONPANEL}
+            UpdateRecordNumberDisplay();
+
+{#ENDIF BUTTONPANEL}
             return true;
         }
         else
@@ -227,8 +277,54 @@ namespace {#NAMESPACE}
             return false;
         }
     }
+
+    /// <summary>
+    /// A generic method to discover the key controls on a Panel (usually pnlDetails).
+    /// </summary>
+    /// <param name="APanel">A reference to the Panel to search</param>
+    /// <param name="AKeyControl">Initialise this to null.  On return it will contain a reference to the 'prime' control (if found) editable by the user.</param>
+    /// <param name="ADescriptionControl">Initialise this to null.  On return it will contain a reference to the TextBox control (if found)
+    ///    that corresponds to a 'Description' column in the database.</param>
+    /// <param name="ASkipSearchForDescription">You can set this to True if you only need to know the KeyControl.</param>
+      private void GetKeyControlsOnPanel(Control APanel, ref Control AKeyControl, ref Control ADescriptionControl, bool ASkipSearchForDescription = false)
+    {
+        foreach (Control detailsCtrl in APanel.Controls)
+        {
+            if (detailsCtrl is Panel)
+            {
+                // If the control is a panel we call ourself recursively
+                GetKeyControlsOnPanel(detailsCtrl, ref AKeyControl, ref ADescriptionControl, ASkipSearchForDescription);
+
+                if ((ADescriptionControl != null) || ((AKeyControl != null) && ASkipSearchForDescription))
+                {
+                    break;
+                }
+
+                continue;
+            }
+
+            if (AKeyControl == null && (detailsCtrl is TextBox || detailsCtrl is ComboBox || detailsCtrl is TCmbAutoPopulated))
+            {
+                AKeyControl = detailsCtrl;
+
+                if (ASkipSearchForDescription)
+                {
+                    break;
+                }
+            }
+
+            if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Desc"))
+            {
+                ADescriptionControl = detailsCtrl;
+                break;
+            }
+        }
+    }
 {#ENDIF CANFINDWEBCONNECTOR_CREATEDETAIL}
+#endregion
 {#IFDEF DETAILTABLE}
+
+#region Detail Row Selection and Discovery
 
     /// <summary>
     /// Selects the specified grid row and shows the details for the row in the details panel.
@@ -242,14 +338,7 @@ namespace {#NAMESPACE}
     /// <param name="ARowIndex">The row index to select.  Data rows start at 1</param>
     private void SelectRowInGrid(int ARowIndex)
     {
-        int nPrevRowChangedRow = FPrevRowChangedRow;
         grdDetails.SelectRowInGrid(ARowIndex, true);
-        if (nPrevRowChangedRow == FPrevRowChangedRow)
-        {
-            // No row change occurred, so we still need to show details, because the data may be different
-            //Console.WriteLine("{0}:  SRIG: ShowDetails for {1}", DateTime.Now.Millisecond, ARowIndex);
-            ShowDetails(ARowIndex);
-        }
     }
 
     /// <summary>
@@ -258,7 +347,8 @@ namespace {#NAMESPACE}
     /// If the grid is not displaying the specified data row, the first row will be selected, if it exists.
     /// </summary>
     /// <param name="ARowNumberInTable">Table row number (0-based)</param>
-    private void SelectDetailRowByDataTableIndex(Int32 ARowNumberInTable)
+    /// <returns>True if the record is displayed in the grid, False otherwise</returns>
+    private bool SelectDetailRowByDataTableIndex(Int32 ARowNumberInTable)
     {
         Int32 RowNumberGrid = -1;
         for (int Counter = 0; Counter < grdDetails.DataSource.Count; Counter++)
@@ -281,6 +371,8 @@ namespace {#NAMESPACE}
         }
 
         SelectRowInGrid(RowNumberGrid);
+
+        return RowNumberGrid >= 0;
     }
 
     /// <summary>
@@ -348,11 +440,11 @@ namespace {#NAMESPACE}
         return FPrevRowChangedRow;
     }
 {#ENDIF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
-
+#endregion
 {#ENDIF DETAILTABLE}
-
 {#IFDEF CANFINDWEBCONNECTOR_LOADMASTER}
 
+#region Load Master Table
     /// automatically generated function from webconnector
     public bool Load{#MASTERTABLE}({#LOADMASTER_FORMALPARAMETERS})
     {
@@ -367,7 +459,10 @@ namespace {#NAMESPACE}
             return false;
         }
     }
+#endregion
 {#ENDIF CANFINDWEBCONNECTOR_LOADMASTER}
+
+#region Show and Undo Data
 
     private void SetPrimaryKeyReadOnly(bool AReadOnly)
     {
@@ -395,10 +490,7 @@ namespace {#NAMESPACE}
 {#ENDIF GRIDFILTER}
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-            if (FMainDS.{#DETAILTABLE}.Rows.Count > 0)
-            {
-                SelectRowInGrid(1);
-            }
+            SelectRowInGrid(1);
         }
 {#ENDIF DETAILTABLE}
         FPetraUtilsObject.EnableDataChangedEvent();
@@ -411,8 +503,12 @@ namespace {#NAMESPACE}
         {#UNDODATA}
     }
 {#ENDIF UNDODATA}
-
+#endregion
 {#IFDEF SHOWDETAILS}
+
+#region Show Details, Grid events and Record deletion
+
+    #region Show Details
 
     /// <summary>
     /// Use this override to Show the Details for a specified row in the grid.
@@ -489,6 +585,10 @@ namespace {#NAMESPACE}
 
         {#ENABLEDELETEBUTTON}FPetraUtilsObject.EnableDataChangedEvent();
     }
+{#CANDELETESELECTION}
+    #endregion
+
+    #region Grid events
 
     /// <summary>
     /// A reference to the Typed Data Row object from the grid whose Details are currently displayed.
@@ -502,73 +602,57 @@ namespace {#NAMESPACE}
     /// </summary>
     private {#DETAILTABLETYPE}Row FPreviouslySelectedDetailRow = null;
     
+    /// <summary>
+    /// This variable may become obsolete in future.  It used to hold the most recent row passed as the parameter to the FocusedRowChanged event.
+    /// However we no longer use this event.  If you want to know the current row index use GetSelectedRowIndex() instead.
+    /// </summary>
+    private int FPrevRowChangedRow = -1;
+    
 {#IFDEF SAVEDETAILS}
+    /// <summary>
+    /// Fired when the user tabs to, or clicks in, the grid
+    /// </summary>
     private void grdDetails_Enter(object sender, EventArgs e)
     {
         if (FPetraUtilsObject.VerificationResultCollection.Count > 0)
         {
-            grdDetails.Selection.Focus(new SourceGrid.Position(FPrevRowChangedRow, 0), false);
-            //Console.WriteLine("{0}: GridFocus - setting Selection.Focus to {1},0", DateTime.Now.Millisecond, FPrevRowChangedRow);
+            // No need to show the cell if there are no errors.  This allows the user to have scrolled the view-port away from the selected row and keep it there.
+            grdDetails.ShowCell(FPrevRowChangedRow);
         }
     }
 
     /// <summary>
-    /// Used for determining the time elapsed between FocusRowLeaving Events.
+    /// This is the main event handler for changes in the grid selection
     /// </summary>
-    private DateTime FDtPrevLeaving = DateTime.UtcNow;
-    private int FPrevLeavingFrom = -1;
-    private int FPrevLeavingTo = -1;
-
-    /// FocusedRowLeaving can be called multiple times (e.g. 3 or 4) for just one FocusedRowChanged event.
-    /// The key is not to cancel the extra events, but to ensure that we only ValidateAllData once.
-    /// We ignore any event that is leaving to go to row # -1
-    /// We validate on the first of a cascade of events that leave to a real row.
-    /// We detect a duplicate event by testing for the elapsed time since the event we validated on...
-    /// If the elapsed time is &lt; 2 ms it is a duplicate, because repeat keypresses are separated by 30 ms
-    /// and these duplicates come with a gap of fractions of a microsecond, so 2 ms is a very long time!
-    /// All we do is store the previous row from/to and the previous UTC time
-    /// These three form level variables are totally private to this event call.
-    private void FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
-    {        
-        if (!grdDetails.Sorting && e.ProposedRow >= 0)
-        {
-            double elapsed = (DateTime.UtcNow - FDtPrevLeaving).TotalMilliseconds;
-            bool bIsDuplicate = (e.Row == FPrevLeavingFrom && e.ProposedRow == FPrevLeavingTo && elapsed < 2.0);
-            if (!bIsDuplicate)
-            {
-                //Console.WriteLine("{0}: FocusRowLeaving: from {1} to {2}", DateTime.Now.Millisecond, e.Row, e.ProposedRow);
-                if (!ValidateAllData(true, true))
-                {
-                    //Console.WriteLine("{0}:    --- Cancelled", DateTime.Now.Millisecond);
-                    e.Cancel = true;
-                }
-            }
-            FPrevLeavingFrom = e.Row;
-            FPrevLeavingTo = e.ProposedRow;
-            FDtPrevLeaving = DateTime.UtcNow;
-        }
-    }
-
-{#ENDIF SAVEDETAILS}
-    /// <summary>
-    /// This variable is managed by the generated code.  It is used to manage row changed events, including changes that occur in data validation on sorted grids.
-    /// Do not set this variable in manual code.
-    /// You may read the variable.  Its value always tracks the index of the highlighted grid row.
-    /// </summary>
-    private int FPrevRowChangedRow = -1;
-    private void FocusedRowChanged(System.Object sender, SourceGrid.RowEventArgs e)
+    private void grdDetails_RowSelected(object sender, RangeRegionChangedEventArgs e)
     {
-        // The FocusedRowChanged event simply calls ShowDetails for the new 'current' row implied by e.Row
-        // We do get a duplicate event if the user tabs round all the controls multiple times
-        // It is not advisable to call it on duplicate events because that would re-populate the controls from the table, 
-        //   which may not now be up to date, so we compare e.Row and FPrevRowChangedRow first.
-        if (!grdDetails.Sorting && e.Row != FPrevRowChangedRow)
+        int gridRow = grdDetails.Selection.ActivePosition.Row;
+        if (grdDetails.Sorting)
         {
-            //Console.WriteLine("{0}:   FRC ShowDetails for {1}", DateTime.Now.Millisecond, e.Row);
-            ShowDetails(e.Row);
+            // No need to ShowDetails - just update our (obsolete) variable
+            FPrevRowChangedRow = gridRow;
         }
-        FPrevRowChangedRow = e.Row;
+        else
+        {
+            ShowDetails(gridRow);
+            // Console.WriteLine("{0}: RowSelected: ShowDetails() for row {1}", DateTime.Now.Millisecond, gridRow);
+        }
     }
+
+    /// <summary>
+    /// FocusedRowLeaving is called when the user (or code) requests a change to the selected row.
+    /// </summary>
+    private void grdDetails_FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
+    {        
+        if (!ValidateAllData(true, true))
+        {
+            e.Cancel = true;
+        }
+    }
+{#ENDIF SAVEDETAILS}
+    #endregion
+
+    #region Delete records
 {#DELETERECORD}
     /// <summary>
     /// Standard method to delete the Data Row whose Details are currently displayed.
@@ -598,15 +682,15 @@ namespace {#NAMESPACE}
                 && (VerificationResults.Count > 0))
             {
                 MessageBox.Show(Messages.BuildMessageFromVerificationResult(
-                        Catalog.GetString("Record cannot be deleted!") +
+                        MCommonResourcestrings.StrRecordCannotBeDeleted +
                         Environment.NewLine +
-                        Catalog.GetPluralString("Reason:", "Reasons:", VerificationResults.Count),
+                        Catalog.GetPluralString(MCommonResourcestrings.StrReasonColon, MCommonResourcestrings.StrReasonsColon, VerificationResults.Count),
                         VerificationResults),
-                        Catalog.GetString("Record Deletion"));
+                        MCommonResourcestrings.StrRecordDeletionTitle);
                 return;
             }
 
-            string DeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            string DeletionQuestion = MCommonResourcestrings.StrDefaultDeletionQuestion;
             if ((FPrimaryKeyControl != null) && (FPrimaryKeyLabel != null))
             {
                 DeletionQuestion += String.Format("{0}{0}({1} {2})",
@@ -622,7 +706,7 @@ namespace {#NAMESPACE}
             if(AllowDeletion)
             {
                 if ((MessageBox.Show(DeletionQuestion,
-                         Catalog.GetString("Confirm Delete"),
+                         MCommonResourcestrings.StrConfirmDeleteTitle,
                          MessageBoxButtons.YesNo,
                          MessageBoxIcon.Question,
                          MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
@@ -641,9 +725,9 @@ namespace {#NAMESPACE}
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(String.Format(Catalog.GetString("An error occurred while deleting this record.{0}{0}{1}"),
+                        MessageBox.Show(String.Format(MCommonResourcestrings.StrErrorWhileDeleting,
                             Environment.NewLine, ex.Message),
-                            Catalog.GetString("Error"),
+                            MCommonResourcestrings.StrGenericError,
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Warning);
                     }
@@ -657,6 +741,9 @@ namespace {#NAMESPACE}
                     SelectRowInGrid(FPrevRowChangedRow);
                     // Clear any errors left over from  the deleted row
                     FPetraUtilsObject.VerificationResultCollection.Clear();
+{#IFDEF BUTTONPANEL}
+                    UpdateRecordNumberDisplay();
+{#ENDIF BUTTONPANEL}
                 }
             }
 
@@ -666,17 +753,16 @@ namespace {#NAMESPACE}
 {#IFNDEF POSTDELETEMANUAL}
             if(DeletionPerformed && CompletionMessage.Length > 0)
             {
-                MessageBox.Show(CompletionMessage,
-                                 Catalog.GetString("Deletion Completed"));
+                MessageBox.Show(CompletionMessage, MCommonResourcestrings.StrDeletionCompletedTitle);
             }
 {#ENDIFN POSTDELETEMANUAL}
         }
         else
         {
-            string DeletionQuestion = String.Format(Catalog.GetString("Do you want to delete the {0} highlighted rows?{1}{1}"), HighlightedRows.Length, Environment.NewLine);
-            DeletionQuestion += Catalog.GetString("Each record will be checked to confirm that it can be deleted.");
+            string DeletionQuestion = String.Format(MCommonResourcestrings.StrMultiRowDeletionQuestion, HighlightedRows.Length, Environment.NewLine);
+            DeletionQuestion += MCommonResourcestrings.StrMultiRowDeletionCheck;
             if (MessageBox.Show(DeletionQuestion,
-                    Catalog.GetString("Confirm Delete"),
+                    MCommonResourcestrings.StrConfirmDeleteTitle,
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question,
                     MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
@@ -759,11 +845,13 @@ namespace {#NAMESPACE}
 
                 this.Cursor = Cursors.Default;
                 SelectRowInGrid(FPrevRowChangedRow);
+{#IFDEF BUTTONPANEL}
+                UpdateRecordNumberDisplay();
+{#ENDIF BUTTONPANEL}
 
                 if (recordsDeleted > 0 && CompletionMessage.Length > 0)
                 {
-                    MessageBox.Show(CompletionMessage,
-                                     Catalog.GetString("Deletion Completed"));
+                    MessageBox.Show(CompletionMessage, MCommonResourcestrings.StrDeletionCompletedTitle);
                 }
 
                 //  Show the results of the multi-deletion
@@ -771,32 +859,33 @@ namespace {#NAMESPACE}
                 
                 if (recordsDeleted > 0)
                 {
-                    string s1 = Catalog.GetPluralString("record", "records", recordsDeleted);
-                    string s2 = Catalog.GetPluralString("was", "were", recordsDeleted);
-                    results = String.Format(Catalog.GetString("{0} {1} {2} successfully deleted."), recordsDeleted, s1, s2);
+                    results = String.Format(
+                            Catalog.GetPluralString(MCommonResourcestrings.StrRecordSuccessfullyDeleted, MCommonResourcestrings.StrRecordsSuccessfullyDeleted, recordsDeleted),
+                            recordsDeleted);
                 }
                 else
                 {
-                    results = "No records were deleted.";
+                    results = MCommonResourcestrings.StrNoRecordsWereDeleted;
                 }
                 
                 if (recordsUndeletable > 0)
                 {
-                    string s1 = Catalog.GetPluralString("record", "records", recordsUndeletable);
-                    string s2 = Catalog.GetPluralString("it is marked", "they are marked", recordsUndeletable);
-                    results += String.Format(Catalog.GetString("{0}{1} {2} could not be deleted because {3} as non-deletable."),
+                    results += String.Format(
+                        Catalog.GetPluralString(MCommonResourcestrings.StrRowNotDeletedBecauseNonDeletable,
+                                                MCommonResourcestrings.StrRowsNotDeletedBecauseNonDeletable,
+                                                recordsUndeletable),
                         Environment.NewLine,
-                        recordsUndeletable,
-                        s1, s2);
+                        recordsUndeletable);
                 }
 
                 if (recordsDeleteDisallowed > 0)
                 {
-                    string s1 = Catalog.GetPluralString("record was not be deleted", "records were not be deleted", recordsUndeletable);
-                    results += String.Format(Catalog.GetString("{0}{1} {2} because deletion was not allowed."),
+                    results += String.Format(
+                        Catalog.GetPluralString(MCommonResourcestrings.StrRowNotDeletedBecauseDeleteNotAllowed,
+                                                MCommonResourcestrings.StrRowsNotDeletedBecauseDeleteNotAllowed,
+                                                recordsDeleteDisallowed),
                         Environment.NewLine,
-                        recordsDeleteDisallowed,
-                        s1);
+                        recordsDeleteDisallowed);
                 }
 
                 bool showCancel = false;
@@ -804,42 +893,42 @@ namespace {#NAMESPACE}
                 if (listConflicts.Count > 0)
                 {
                     showCancel = true;
-                    string s1 = Catalog.GetPluralString("record", "records", listConflicts.Count);
-                    string s2 = Catalog.GetPluralString("it is referenced", "they are referenced", listConflicts.Count);
-                    results += String.Format(Catalog.GetString("{0}{1} {2} could not be deleted because {3} by at least one other table."),
+                    results += String.Format(
+                        Catalog.GetPluralString(MCommonResourcestrings.StrRowNotDeletedBecauseReferencedElsewhere,
+                                                MCommonResourcestrings.StrRowsNotDeletedBecauseReferencedElsewhere,
+                                                listConflicts.Count),
                         Environment.NewLine,
-                        listConflicts.Count,
-                        s1, s2);
+                        listConflicts.Count);
                 }
                 
                 if (listExceptions.Count > 0)
                 {
                     showCancel = true;
-                    string s1 = Catalog.GetPluralString("record", "records", listExceptions.Count);
-                    results += String.Format(Catalog.GetString("{0}{1} {2} could not be deleted because the delete action failed unexpectedly."),
+                    results += String.Format(
+                        Catalog.GetPluralString(MCommonResourcestrings.StrRowNotDeletedDueToUnexpectedException,
+                                                MCommonResourcestrings.StrRowNotDeletedDueToUnexpectedException,
+                                                listExceptions.Count),
                         Environment.NewLine,
-                        listExceptions.Count,
-                        s1);
+                        listExceptions.Count);
                 }
                 
                 if (showCancel)
                 {
-                    results += String.Format(Catalog.GetString("{0}{0}Click OK to review the details, or Cancel to return direct to the data screen"),
-                        Environment.NewLine);
+                    results += String.Format(MCommonResourcestrings.StrClickToReviewDeletionOrCancel, Environment.NewLine);
 
                     if (MessageBox.Show(results,
-                            Catalog.GetString("Delete Action Summary"),
+                            MCommonResourcestrings.StrDeleteActionSummaryTitle,
                             MessageBoxButtons.OKCancel,
                             MessageBoxIcon.Warning) == System.Windows.Forms.DialogResult.OK)
                     {
-                        ReviewMultiDeleteResults(listConflicts, Catalog.GetString("Rows in this table that are referenced by other tables"));
-                        ReviewMultiDeleteResults(listExceptions, Catalog.GetString("Unexpected Exceptions"));
+                        ReviewMultiDeleteResults(listConflicts, MCommonResourcestrings.StrRowsReferencedByOtherTables);
+                        ReviewMultiDeleteResults(listExceptions, MCommonResourcestrings.StrExceptions);
                     }
                 }
                 else
                 {
                     MessageBox.Show(results,
-                        Catalog.GetString("Delete Action Summary"),
+                        MCommonResourcestrings.StrDeleteActionSummaryTitle,
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
                 }
@@ -905,25 +994,30 @@ namespace {#NAMESPACE}
             string s1 = result.RecordID;
             string s2 = result.Result;
 
-            string details = String.Format(Catalog.GetString("{0}: {1} of {2}{3}Record: {4}{3}{5}"),
+            string details = String.Format(MCommonResourcestrings.StrItemXofYRecordColon,
                 ATitle, item, allItemsCount, Environment.NewLine, s1, s2);
 
             if (item < allItemsCount)
             {
-                details += String.Format(Catalog.GetString("{0}{0}Click OK to review the next detail or Cancel to finish."), Environment.NewLine);
-                if (MessageBox.Show(details, Catalog.GetString("More Details About Rows Not Deleted"), MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.Cancel)
+                details += String.Format(MCommonResourcestrings.StrViewNextDetailOrCancel, Environment.NewLine);
+                if (MessageBox.Show(details, MCommonResourcestrings.StrMoreDetailsAboutRowsNotDeleted, MessageBoxButtons.OKCancel)
+                    == System.Windows.Forms.DialogResult.Cancel)
                 {
                     break;
                 }
             }
             else
             {
-                MessageBox.Show(details, Catalog.GetString("More Details About Rows Not Deleted"), MessageBoxButtons.OK);
+                MessageBox.Show(details, MCommonResourcestrings.StrMoreDetailsAboutRowsNotDeleted, MessageBoxButtons.OK);
             }
         }
     }
+#endregion
+
+#endregion
 {#ENDIF SHOWDETAILS}
-   
+
+#region Get Data   
 {#IFDEF MASTERTABLE}
 
     /// This method may throw an exception at ARow.EndEdit()
@@ -1006,6 +1100,47 @@ namespace {#NAMESPACE}
     }
 {#ENDIF GENERATECONTROLUPDATEDATAHANDLER}
 {#ENDIF SAVEDETAILS}
+#endregion
+{#IFDEF BUTTONPANEL}
+
+#region Button Panel
+    ///<summary>
+    /// Finish the set up of the Button Panel.
+    /// </summary>
+    private void FinishButtonPanelSetup()
+    {
+        // Further set up certain Controls Properties that can't be set directly in the WinForms Generator...
+        lblRecordCounter.AutoSize = true;
+        lblRecordCounter.Padding = new Padding(4, 3, 0, 0);
+        lblRecordCounter.ForeColor = System.Drawing.Color.SlateGray;
+
+        pnlButtonsRecordCounter.AutoSize = true;
+        
+        UpdateRecordNumberDisplay();
+    }
+    
+    private void UpdateRecordNumberDisplay()
+    {
+        int RecordCount;
+        
+        if (grdDetails.DataSource != null) 
+        {
+            RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
+            lblRecordCounter.Text = String.Format(
+                Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount, true),
+                RecordCount);
+        }                
+    }
+#endregion
+{#ENDIF BUTTONPANEL}
+{#IFDEF FILTERANDFIND}
+
+#region Filter and Find
+    {#FILTERANDFINDMETHODS}
+#endregion
+{#ENDIF FILTERANDFIND}    
+
+#region Data Validation
 
     /// <summary>
     /// Performs data validation.
@@ -1041,7 +1176,7 @@ namespace {#NAMESPACE}
         if (FPreviouslySelectedDetailRow != null)
         {
             // Validate DetailTable
-            int prevRowChangedRowBeforeValidation = FPrevRowChangedRow;
+            int prevRowBeforeValidation = FPrevRowChangedRow;
             bool bGotConstraintException = false;
 // :WEWCMD:GetDetailsFromControls
             try
@@ -1066,7 +1201,7 @@ namespace {#NAMESPACE}
                 // But this is our ultimate fallback position.  This creates an exception message that simply lists all the primary key fields in a friendly format
                 FPetraUtilsObject.VerificationResultCollection.AddOrRemove(
                     bGotConstraintException ? new TScreenVerificationResult(this, null,
-                    String.Format(Catalog.GetString("You have attempted to create a duplicate record.  Please ensure that you have unique input data for the field(s) {0}."), FDefaultDuplicateRecordHint),
+                    String.Format(MCommonResourcestrings.StrDuplicateRecordNotAllowed, FDefaultDuplicateRecordHint),
                     CommonErrorCodes.ERR_DUPLICATE_RECORD, null, TResultSeverity.Resv_Critical) : null, null);
             }
             else
@@ -1076,19 +1211,51 @@ namespace {#NAMESPACE}
             }
 
             // Validation might have moved the row, so we need to locate it again
-            // If it has moved we will call SelectRowInGrid (with events) to highlight the new row.
-            // This will result in us getting called a second time (from FocusedRowLeaving), but the move will not be repeated a second time.
-            // We thus avoid a cyclic loop and a stack overflow, yet never need to turn events off, or make a move without events
-            // Note that we can (and must) set FPrevRowChangedRow here only because validation never actually changes the row object or the displayed details.
-            FPrevRowChangedRow = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow) + 1;
-            if (FPrevRowChangedRow == prevRowChangedRowBeforeValidation)
+            // If it has moved we will call the special grid-sorting method ReselectGridRowAfterSort to highlight the new row.
+            // This will give rise to a Selection_SelectionChanged event with a new ActivePosition but the grdDetails.Sorting property will be True
+            // Furthermore with Filter/Find we need to be sure that we have not lost the row altogether by using a different row filter
+            //  and we also need to protect against recursively call ReselectGridRowAfterSort
+            int newRowAfterValidation = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow, prevRowBeforeValidation - 1) + 1;
+            if (newRowAfterValidation == 0)
             {
-                //Console.WriteLine("{0}:    Validation: validated row is at {1}. No move required.  ProcessErrors={2}", DateTime.Now.Millisecond, FPrevRowChangedRow, AProcessAnyDataValidationErrors.ToString());
+{#IFDEF FILTERANDFIND}
+                // The row is no longer in the view - probably because the new data values are being filtered out
+                if ((FCurrentActiveFilter != FFilterPanelControls.BaseFilter) || !FFilterPanelControls.BaseFilterShowsAllRecords)
+                {
+                    // Remember the control with the focus
+                    Control c = FPetraUtilsObject.GetFocusedControl(pnlDetails);
+                    MessageBox.Show(MCommonResourcestrings.StrEditedRecordIsFiltered, MCommonResourcestrings.StrEditRecordTitle, 
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // Clear the filters without selecting a new row
+                    FClearingDiscretionaryFilters = true;
+                    FFilterPanelControls.ClearAllDiscretionaryFilters();
+                    FClearingDiscretionaryFilters = false;
+
+                    // Now find the row again - this time we should succeed
+                    newRowAfterValidation = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow, prevRowBeforeValidation - 1) + 1;
+
+                    // Select the row
+                    grdDetails.ReselectGridRowAfterSort(newRowAfterValidation);
+                    
+                    // Put the focus back again on the editable control
+                    if (c != null)
+                    {
+                        c.Focus();
+                    }
+                }
+{#ENDIF FILTERANDFIND}
+{#IFNDEF FILTERANDFIND}
+                // There is no Filter/Find on this screen so we should never take this code path
+{#ENDIFN FILTERANDFIND}
             }
             else
             {
-                grdDetails.SelectRowInGrid(FPrevRowChangedRow);
-                //Console.WriteLine("{0}:    Validation: validated row is at {1}. Moved 'with events'.  ProcessErrors={2}", DateTime.Now.Millisecond, FPrevRowChangedRow, AProcessAnyDataValidationErrors.ToString());
+                if ((newRowAfterValidation != prevRowBeforeValidation) && !grdDetails.Sorting)
+                {
+                    grdDetails.ReselectGridRowAfterSort(newRowAfterValidation);
+                    //Console.WriteLine("{0}:    Validation: validated row moved to {1}.", DateTime.Now.Millisecond, newRowAfterValidation);
+                }
             }
 {#ENDIF SHOWDETAILS}
 {#IFDEF PERFORMUSERCONTROLVALIDATION}
@@ -1153,6 +1320,7 @@ namespace {#NAMESPACE}
 
         return ReturnValue;
     }
+#endregion
 
 #region Implement interface functions
 
@@ -1358,6 +1526,13 @@ namespace {#NAMESPACE}
                 FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
             }
         }
+        else
+        {
+            // validation failed
+            ReturnValue = false;
+            FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));
+        }
+
 
         return ReturnValue;
     }
@@ -1376,7 +1551,7 @@ namespace {#NAMESPACE}
 
 #endregion
 
-#region Data Validation
+#region Data Validation Control Handlers
     
     private void ControlValidatedHandler(object sender, EventArgs e)
     {
@@ -1489,6 +1664,7 @@ namespace {#NAMESPACE}
 
 {#INCLUDE copyvalues.cs}
 {#INCLUDE validationcontrolsdict.cs}
+{#INCLUDE findandfilter.cs}
 
 {##SNIPDELETEREFERENCECOUNT}
 if (!FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors)
@@ -1513,3 +1689,24 @@ if (!rowToDelete.{#DELETEABLEFLAG})
     recordsUndeletable++;
     continue;
 }
+
+{##SNIPCANDELETESELECTION}
+
+    /// <summary>
+    /// Returns true if all the selected rows can be deleted.
+    /// </summary>
+    private bool CanDeleteSelection()
+    {
+        // This table has a {#DELETEABLEFLAG} column
+        DataRowView[] selectedRows = grdDetails.SelectedDataRowsAsDataRowView;
+
+        foreach (DataRowView drv in selectedRows)
+        {
+            if ((({#DETAILTABLE}Row)drv.Row).{#DELETEABLEFLAG})
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }

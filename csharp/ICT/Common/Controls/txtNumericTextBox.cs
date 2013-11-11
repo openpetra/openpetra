@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -109,10 +109,13 @@ namespace Ict.Common.Controls
         #region Properties
 
         /// <summary>
-        /// This Property is ignored (!) unless ControlMode is 'NormalTextMode'! For all other cases, the value to be displayed needs to be set programmatically through the 'NumberValueDecimal' or 'NumberValueInt' Properties.
+        /// This Property throws an exception unless ControlMode is 'NormalTextMode'!
+        /// For all other cases, the value to be displayed needs to be set programmatically
+        /// through the 'NumberValueDecimal' or 'NumberValueInt' Properties or the 'SetCurrencyValue'
+        /// method.
         /// </summary>
         [Description(
-             "This Property is ignored (!) unless ControlMode is 'NormalTextMode'! For all other cases, the value to be displayed needs to be set programmatically through the 'NumberValueDecimal' or 'NumberValueInt' Properties.")
+             "This Property throws an exception unless ControlMode is 'NormalTextMode'! For all other cases, the value to be displayed needs to be set programmatically through the 'NumberValueDecimal' or 'NumberValueInt' Properties or the 'SetCurrencyValue' method.")
         ]
         public override string Text
         {
@@ -123,12 +126,24 @@ namespace Ict.Common.Controls
 
             set
             {
-                if ((FControlMode == TNumericTextBoxMode.NormalTextBox)
-                    || (FControlMode == TNumericTextBoxMode.Currency))
+                if (FControlMode == TNumericTextBoxMode.NormalTextBox)
                 {
                     base.Text = value;
                 }
+                else
+                {
+                    throw new Exception(
+                        "to the developer: please use NumberValueDecimal or NumberValueInt or SetCurrencyValue to assign a value to the txtNumericTextBox");
+                }
             }
+        }
+
+        /// <summary>
+        /// set currency values with format
+        /// </summary>
+        public void SetCurrencyValue(decimal AValue, string ACurrencyFormat)
+        {
+            base.Text = StringHelper.FormatCurrency(new TVariant(AValue), ACurrencyFormat);
         }
 
         /// <summary>

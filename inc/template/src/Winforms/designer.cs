@@ -7,6 +7,7 @@ using System;
 using System.Windows.Forms;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonControls;
+using Owf.Controls;
 
 namespace {#NAMESPACE}
 {
@@ -35,7 +36,7 @@ namespace {#NAMESPACE}
         
            /*
             * The following Dispose calls are necessary to get dynamically created Controls out
-            * of memory if they were created in the Constructor (because of running on
+            * of memory if they were created in the Constructor (e.g. because of running on
             * 'Large Fonts (120 DPI)'. 
             */        
             {#CUSTOMDISPOSING}

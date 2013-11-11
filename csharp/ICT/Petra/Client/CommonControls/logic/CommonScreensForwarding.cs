@@ -38,6 +38,7 @@ namespace Ict.Petra.Client.CommonControls.Logic
         static TDelegateOpenEventFindScreen FOpenEventFindScreen;
         static TDelegateOpenExtractFindScreen FOpenExtractFindScreen;
         static TDelegateOpenRangeFindScreen FOpenRangeFindScreen;
+        static TDelegateOpenGetMergeDataDialog FOpenGetMergeDataDialog;
 
         /// <summary>
         /// This property is used to provide a function which opens a modal Partner Find screen.
@@ -121,6 +122,23 @@ namespace Ict.Petra.Client.CommonControls.Logic
             set
             {
                 FOpenRangeFindScreen = value;
+            }
+        }
+
+        /// <summary>
+        /// This property is used to provide a function which opens the Merge Select dialog.
+        /// </summary>
+        /// <description>The Delegate is set up at the start of the application.</description>
+        public static TDelegateOpenGetMergeDataDialog OpenGetMergeDataDialog
+        {
+            get
+            {
+                return FOpenGetMergeDataDialog;
+            }
+
+            set
+            {
+                FOpenGetMergeDataDialog = value;
             }
         }
     }

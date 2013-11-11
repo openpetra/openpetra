@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="xmlfiles" value="eString:Finance/incomeexpensestatement.xml,Finance/finance.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:Income Expense Statement" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:7" />
+  <Parameter id="param_diff_period_i" value="eInteger:0" />
+  <Parameter id="param_account_hierarchy_c" value="eString:STANDARD" />
+  <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_period" value="eBoolean:true" />
+  <Parameter id="param_date_checked" value="eBoolean:false" />
+  <Parameter id="param_start_period_i" value="eInteger:1" />
+  <Parameter id="param_end_period_i" value="eInteger:1" />
+  <Parameter id="param_year_i" value="eInteger:0" />
+  <Parameter id="param_costcentreoptions" value="eString:SelectedCostCentres" />
+  <Parameter id="param_cost_centre_summary" value="eBoolean:false" />
+  <Parameter id="param_cost_centre_breakdown" value="eBoolean:false" />
+  <Parameter id="ExcludeInactiveCostCentres" value="eBoolean:false" />
+  <Parameter id="param_depth" value="eString:standard" />
+  <Parameter id="param_calculation" column="0" value="eString:Actual Selected Year" />
+  <Parameter id="param_ytd" column="0" value="eString:false" />
+  <Parameter id="param_calculation" column="1" value="eString:Budget Selected Year" />
+  <Parameter id="param_ytd" column="1" value="eString:false" />
+  <Parameter id="param_calculation" column="2" value="eString:Variance %" />
+  <Parameter id="param_ytd" column="2" value="eString:" />
+  <Parameter id="FirstColumn" column="2" value="eInteger:0" />
+  <Parameter id="SecondColumn" column="2" value="eInteger:1" />
+  <Parameter id="param_calculation" column="3" value="eString:Actual Selected Year" />
+  <Parameter id="param_ytd" column="3" value="eString:true" />
+  <Parameter id="param_calculation" column="4" value="eString:Budget Selected Year" />
+  <Parameter id="param_ytd" column="4" value="eString:true" />
+  <Parameter id="FirstColumn" column="4" value="eInteger:0" />
+  <Parameter id="SecondColumn" column="4" value="eInteger:1" />
+  <Parameter id="param_calculation" column="5" value="eString:Variance %" />
+  <Parameter id="param_ytd" column="5" value="eString:" />
+  <Parameter id="FirstColumn" column="5" value="eInteger:3" />
+  <Parameter id="SecondColumn" column="5" value="eInteger:4" />
+  <Parameter id="param_calculation" column="6" value="eString:Budget Whole Selected Year" />
+  <Parameter id="param_ytd" column="6" value="eString:true" />
+  <Parameter id="param_ytd" value="eString:mixed" />
+  <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
+  <Parameter id="param_ledger_number_i" value="eInteger:{ledgernumber}" />
+  <Parameter id="param_quarter" value="eString:false" />
+  <Parameter id="param_cost_centre_codes" value="eInteger:{ledgernumber}00" />
+  <Parameter id="ColumnFormat" column="0" value="eString:currency" />
+  <Parameter id="ColumnFormat" column="1" value="eString:currency" />
+  <Parameter id="ColumnFormat" column="2" value="eString:percentage" />
+  <Parameter id="ColumnFormat" column="3" value="eString:currency" />
+  <Parameter id="ColumnFormat" column="4" value="eString:currency" />
+  <Parameter id="ColumnFormat" column="5" value="eString:percentage" />
+  <Parameter id="ColumnFormat" column="6" value="eString:currency" />
+  <Parameter id="ControlSource" column="100" value="eString:Income Expense Statement" />
+  <Parameter id="ControlSource" column="101" value="eString:NUnit Test Ledger {ledgernumber}" />
+  <Parameter id="ControlSource" column="106" value="eComposite::&quot;eString:Ledger |eInteger:{ledgernumber}|eString:   NUnit Test Ledger {ledgernumber}&quot;" />
+  <Parameter id="param_start_date" value="eDateTime:&quot;{ThisYear}-01-01T00:00:00&quot;" />
+  <Parameter id="param_end_date" value="eDateTime:&quot;{ThisYear}-01-31T00:00:00&quot;" />
+  <Parameter id="ControlSource" column="103" value="eString:&quot;At Period 1: 01-JAN-{ThisYear} to 31-JAN-{ThisYear}  (CURRENT)&quot;" />
+  <Parameter id="param_start_date_ytd" value="eDateTime:&quot;{ThisYear}-01-01T00:00:00&quot;" />
+  <Parameter id="ControlSource" column="104" value="eString:01-JAN-{ThisYear} to 31-JAN-{ThisYear} (YTD)" />
+  <Parameter id="ControlSource" column="107" value="eString:&quot;Currency: EUR&quot;" />
+  <Parameter id="ControlSource" column="108" value="eEmpty:" />
+  <Parameter id="ControlSource" column="102" value="eString:Standard Report    (Base)" />
+  <Parameter id="ControlSource" column="112" value="eString:Account" />
+  <Parameter id="FOOTER2LINES" value="eBoolean:true" />
+  <Parameter id="ControlSource" column="113" value="eString:Description" />
+  <Parameter id="ColumnAlign" column="0" value="eString:right" />
+  <Parameter id="ColumnCaption" column="0" value="eString:text:Actual {ThisYear}" />
+  <Parameter id="ColumnCaption2" column="0" value="eString:text:January" />
+  <Parameter id="ColumnCaption3" column="0" value="eString:text:" />
+  <Parameter id="ColumnAlign" column="1" value="eString:right" />
+  <Parameter id="ColumnCaption" column="1" value="eString:text:Budget {ThisYear}" />
+  <Parameter id="ColumnCaption2" column="1" value="eString:text:January" />
+  <Parameter id="ColumnCaption3" column="1" value="eString:text:" />
+  <Parameter id="ColumnAlign" column="2" value="eString:right" />
+  <Parameter id="ColumnCaption" column="2" value="eString:text:Variance %" />
+  <Parameter id="ColumnCaption2" column="2" value="eString:text:Actual {ThisYear} January " />
+  <Parameter id="ColumnCaption3" column="2" value="eString:text:to Budget {ThisYear} January " />
+  <Parameter id="ColumnShortCaption" column="2" value="eString:text:Variance %" />
+  <Parameter id="ColumnShortCaption2" column="2" value="eString:text:Actual {ThisYear}" />
+  <Parameter id="ColumnShortCaption3" column="2" value="eString:text:to Budget {ThisYear}" />
+  <Parameter id="ColumnAlign" column="3" value="eString:right" />
+  <Parameter id="ColumnCaption" column="3" value="eString:text:Actual {ThisYear}" />
+  <Parameter id="ColumnCaption2" column="3" value="eString:text:YTD" />
+  <Parameter id="ColumnCaption3" column="3" value="eString:text:" />
+  <Parameter id="ColumnAlign" column="4" value="eString:right" />
+  <Parameter id="ColumnCaption" column="4" value="eString:text:Budget {ThisYear}" />
+  <Parameter id="ColumnCaption2" column="4" value="eString:text:YTD" />
+  <Parameter id="ColumnCaption3" column="4" value="eString:text:" />
+  <Parameter id="ColumnAlign" column="5" value="eString:right" />
+  <Parameter id="ColumnCaption" column="5" value="eString:text:Variance %" />
+  <Parameter id="ColumnCaption2" column="5" value="eString:text:Actual {ThisYear} YTD " />
+  <Parameter id="ColumnCaption3" column="5" value="eString:text:to Budget {ThisYear} YTD " />
+  <Parameter id="ColumnShortCaption" column="5" value="eString:text:Variance %" />
+  <Parameter id="ColumnShortCaption2" column="5" value="eString:text:Actual {ThisYear}" />
+  <Parameter id="ColumnShortCaption3" column="5" value="eString:text:to Budget {ThisYear}" />
+  <Parameter id="ColumnAlign" column="6" value="eString:right" />
+  <Parameter id="ColumnCaption" column="6" value="eString:text:Whole Year Budget" />
+  <Parameter id="ColumnCaption2" column="6" value="eString:text:{ThisYear}" />
+  <Parameter id="ColumnCaption3" column="6" value="eString:text:" />
+  <Parameter id="ColumnPosition" column="-10" level="4" subreport="0" value="eDecimal:4602678819172646912" />
+  <Parameter id="ColumnWidth" column="-10" level="4" subreport="0" value="eDecimal:4607182418800017408" />
+  <Parameter id="ColumnPosition" column="-9" level="4" subreport="0" value="eDecimal:4609434218613702656" />
+  <Parameter id="ColumnWidth" column="-9" level="4" subreport="0" value="eDecimal:4616189618054758400" />
+  <Parameter id="ColumnPosition" column="-15" level="3" subreport="0" value="eDecimal:4598175219545276416" />
+  <Parameter id="ColumnWidth" column="-15" level="3" subreport="0" value="eDecimal:4618441417868443648" />
+  <Parameter id="ColumnFormat" column="99" level="3" subreport="0" value="eString:currency" />
+  <Parameter id="indented" column="99" level="3" subreport="0" value="eBoolean:true" />
+  <Parameter id="headerVISIBLE" level="3" subreport="0" value="eBoolean:true" />
+  <Parameter id="ColumnPosition" column="-15" level="2" subreport="0" value="eDecimal:0" />
+  <Parameter id="ColumnWidth" column="-15" level="2" subreport="0" value="eDecimal:4617315517961601024" />
+  <Parameter id="SpaceLineBelow" level="2" subreport="0" value="eBoolean:true" />
+  <Parameter id="ColumnPosition" column="-10" level="2" subreport="0" value="eDecimal:0" />
+  <Parameter id="ColumnWidth" column="-10" level="2" subreport="0" value="eDecimal:4618441417868443648" />
+  <Parameter id="LineAbove" column="99" level="2" subreport="0" value="eBoolean:true" />
+  <Parameter id="LineBelow" column="99" level="2" subreport="0" value="eBoolean:true" />
+  <Parameter id="indented" column="99" level="2" subreport="0" value="eBoolean:true" />
+  <Parameter id="headerVISIBLE" level="2" subreport="0" value="eBoolean:true" />
+  <Parameter id="ColumnPosition" column="-15" level="1" subreport="0" value="eDecimal:0" />
+  <Parameter id="ColumnWidth" column="-15" level="1" subreport="0" value="eDecimal:4613937818241073152" />
+  <Parameter id="ColumnPosition" column="-14" level="1" subreport="0" value="eDecimal:4613937818241073152" />
+  <Parameter id="ColumnWidth" column="-14" level="1" subreport="0" value="eDecimal:4616189618054758400" />
+  <Parameter id="ColumnPosition" column="-10" level="1" subreport="0" value="eDecimal:0" />
+  <Parameter id="ColumnWidth" column="-10" level="1" subreport="0" value="eDecimal:4617315517961601024" />
+  <Parameter id="ColumnPosition" column="-9" level="1" subreport="0" value="eDecimal:0" />
+  <Parameter id="ColumnWidth" column="-9" level="1" subreport="0" value="eDecimal:4617315517961601024" />
+  <Parameter id="LineAbove" column="99" level="1" subreport="0" value="eBoolean:true" />
+  <Parameter id="LineBelow" column="99" level="1" subreport="0" value="eBoolean:true" />
+  <Parameter id="indented" column="99" level="1" subreport="0" value="eBoolean:true" />
+  <Parameter id="debit_credit_indicator" column="0" level="1" subreport="0" value="eBoolean:false" />
+  <Parameter id="debit_credit_indicator" column="1" level="1" subreport="0" value="eBoolean:false" />
+  <Parameter id="debit_credit_indicator" column="2" level="1" subreport="0" value="eBoolean:false" />
+  <Parameter id="debit_credit_indicator" column="3" level="1" subreport="0" value="eBoolean:false" />
+  <Parameter id="debit_credit_indicator" column="4" level="1" subreport="0" value="eBoolean:false" />
+  <Parameter id="debit_credit_indicator" column="5" level="1" subreport="0" value="eBoolean:false" />
+  <Parameter id="debit_credit_indicator" column="6" level="1" subreport="0" value="eBoolean:false" />
+  <Parameter id="headerVISIBLE" level="1" subreport="0" value="eBoolean:true" />
+  <Parameter id="lowestLevel" level="-2" value="eInteger:4" />
+  <Parameter id="ColumnPosition" column="0" value="eDecimal:4617878467915022336" />
+  <Parameter id="ColumnWidth" column="0" value="eDecimal:4612811918334230528" />
+  <Parameter id="ColumnPositionIndented" column="0" value="eDecimal:4602678819172646912" />
+  <Parameter id="ColumnPosition" column="1" value="eDecimal:4620974692658839552" />
+  <Parameter id="ColumnWidth" column="1" value="eDecimal:4612811918334230528" />
+  <Parameter id="ColumnPositionIndented" column="1" value="eDecimal:4602678819172646912" />
+  <Parameter id="ColumnPosition" column="2" value="eDecimal:4622663542519103488" />
+  <Parameter id="ColumnWidth" column="2" value="eDecimal:4612811918334230528" />
+  <Parameter id="ColumnPositionIndented" column="2" value="eDecimal:4602678819172646912" />
+  <Parameter id="ColumnPosition" column="3" value="eDecimal:4624352392379367424" />
+  <Parameter id="ColumnWidth" column="3" value="eDecimal:4612811918334230528" />
+  <Parameter id="ColumnPositionIndented" column="3" value="eDecimal:4602678819172646912" />
+  <Parameter id="ColumnPosition" column="4" value="eDecimal:4625619029774565376" />
+  <Parameter id="ColumnWidth" column="4" value="eDecimal:4612811918334230528" />
+  <Parameter id="ColumnPositionIndented" column="4" value="eDecimal:4602678819172646912" />
+  <Parameter id="ColumnPosition" column="5" value="eDecimal:4626463454704697344" />
+  <Parameter id="ColumnWidth" column="5" value="eDecimal:4612811918334230528" />
+  <Parameter id="ColumnPositionIndented" column="5" value="eDecimal:4602678819172646912" />
+  <Parameter id="ColumnPosition" column="6" value="eDecimal:4627307879634829312" />
+  <Parameter id="ColumnWidth" column="6" value="eDecimal:4612811918334230528" />
+  <Parameter id="ColumnPositionIndented" column="6" value="eDecimal:4602678819172646912" />
+  <Parameter id="ReportWidth" value="eDecimal:4628152304564961280" />
+</Parameters>

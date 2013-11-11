@@ -16,7 +16,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailContactAttrDetailCode, txtDetailContactAttrDetailDescr, chkDetailActive]
+            FindControls: [txtDetailContactAttrDetailCode, txtDetailContactAttrDetailDescr]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -34,6 +38,7 @@ RootNode:
                 DetailContactAttrDetailCode: {Label=Detail Code}
                 DetailContactAttrDetailDescr: {Label=Description}
                 DetailActive: {Label=Active, Type=Boolean}
+            SortOrder: DetailContactAttrDetailCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Height: 85

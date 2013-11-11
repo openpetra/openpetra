@@ -30,5 +30,6 @@ RootNode:
             Columns: [DetailIdx1]
             CustomColumns:
                 DetailIdx1: {Label=Rank}            
+            SortOrder: DetailIdx1 ASC
             ActionFocusRow: FocusedRowChanged
     Toolbar:

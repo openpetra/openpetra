@@ -122,14 +122,21 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 SelectRowInGrid(1);
             }
 
+            UpdateRecordNumberDisplay();
+            SetRecordNumberDisplayProperties();
+
             txtBatchNumber.Text = FBatchNumber.ToString();
         }
 
         private void SetJournalDefaultView()
         {
-            FMainDS.ARecurringJournal.DefaultView.RowFilter = string.Format("{0} = {1}",
+            string rowFilter = string.Format("{0} = {1}",
                 ARecurringJournalTable.GetBatchNumberDBName(),
                 FBatchNumber);
+
+            FMainDS.ARecurringJournal.DefaultView.RowFilter = rowFilter;
+            FFilterPanelControls.SetBaseFilter(rowFilter, true);
+            FCurrentActiveFilter = rowFilter;
 
             FMainDS.ARecurringJournal.DefaultView.Sort = String.Format("{0} DESC",
                 ARecurringJournalTable.GetJournalNumberDBName()
@@ -238,6 +245,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 //Can't cancel an already cancelled row
                 btnDelete.Enabled = (ARow.JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
+                ((TFrmRecurringGLBatch)ParentForm).EnableTransactions();
 
                 if (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
                 {

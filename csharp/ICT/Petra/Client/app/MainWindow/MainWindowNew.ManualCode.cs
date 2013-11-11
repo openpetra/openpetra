@@ -67,6 +67,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private static bool FConferenceSelected = false;
         private static Int64 FConferenceKey = 0;
+        private PetraClient_AutomatedAppTest.TAutomatedAppTest TestRunner;
 
         /// <summary>
         /// The currently selected Ledger
@@ -129,8 +130,10 @@ namespace Ict.Petra.Client.App.PetraClient
         }
 
         /// <summary>
-        /// For development and testing purposes this Method can open a screen with parameters that
-        /// come either from the .config file or Command Line.
+        /// For development and testing purposes this Method can either execute actions that
+        /// are set up by the program 'PetraMultiStart' (indicated by 'RunAutoTests=true' on
+        /// the command line) OR open a screen with parameters that
+        /// come either from the .config file or Command Line (indicated by 'TestAction="xxx"').
         /// The 'Test Action' will not be run if the Control Key is pressed.
         /// </summary>
         /// <remarks>
@@ -138,7 +141,30 @@ namespace Ict.Petra.Client.App.PetraClient
         ///</remarks>
         private void RunTestAction()
         {
-            if (System.Windows.Forms.Form.ModifierKeys != Keys.Control)
+            string DisconnectTimeFromCommandLine = TAppSettingsManager.GetValue("DisconnectTime");
+
+            if (TAppSettingsManager.GetBoolean("RunAutoTests", false) == true)
+            {
+                // We need to manually 'fix up' the value of DisconnectTime that we get from .NET when we request
+                // the commandline parameters as an array because .NET removes quotation marks in two places where
+                // they were present on the command line. Those two quotation marks need to be there as the call to
+                // TVariant.DecodeFromString() will not succeed if they aren't there in their proper places!
+                DisconnectTimeFromCommandLine = DisconnectTimeFromCommandLine.Substring(
+                    0, DisconnectTimeFromCommandLine.IndexOf(':') + 1) +
+                                                "\"" + DisconnectTimeFromCommandLine.Substring(
+                    DisconnectTimeFromCommandLine.IndexOf(':') + 1) + "\"";
+
+                TestRunner = new PetraClient_AutomatedAppTest.TAutomatedAppTest(
+                    TAppSettingsManager.GetValue("AutoTestConfigFile"),
+                    TAppSettingsManager.GetValue("AutoTestParameters"),
+                    TVariant.DecodeFromString(DisconnectTimeFromCommandLine).ToDate(),
+                    TConnectionManagementBase.GConnectionManagement.ClientName);
+
+                TestRunner.TestForm = this;
+                TestRunner.ClientID = TConnectionManagementBase.GConnectionManagement.ClientID;
+                TestRunner.Start(this);
+            }
+            else if (System.Windows.Forms.Form.ModifierKeys != Keys.Control)
             {
                 string testAction = TAppSettingsManager.GetValue("TestAction");
 
@@ -245,7 +271,7 @@ namespace Ict.Petra.Client.App.PetraClient
         // displays information about the currently selected conference in the navigation panel
         private static void AddConferenceInformation(XmlNode AMenuNode)
         {
-            FConferenceKey = TUserDefaults.GetInt64Default("LastConferenceWorkedWith");
+            FConferenceKey = TUserDefaults.GetInt64Default("LASTCONFERENCEWORKEDWITH");
 
             // Set PartnerKey in conference setup screens for selected conference
             Ict.Petra.Client.MConference.Gui.TConferenceMain.FPartnerKey = FConferenceKey;
@@ -587,11 +613,20 @@ namespace Ict.Petra.Client.App.PetraClient
         }
 
         /// <summary>
-        /// Keep Conference module in view after a new conference has been selected.
+        /// This was added for use after a new conference has been selected.
+        /// IT ONLY WORKS IF THE USER HAS CONFERENCE ACCESS!
         /// </summary>
         public void SelectConferenceFolder()
         {
             lstFolders.SelectFolder(4);
+        }
+
+        /// <summary>
+        /// This was added for use after user preferences have been set.
+        /// </summary>
+        public void SelectSettingsFolder()
+        {
+            lstFolders.SelectFolder(6);
         }
 
         /// <summary>

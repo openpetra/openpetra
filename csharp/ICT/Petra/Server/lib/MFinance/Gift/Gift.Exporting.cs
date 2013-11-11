@@ -68,6 +68,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         bool FUseBaseCurrency;
         Int32 FLedgerNumber;
         String FCurrencyCode = "";
+        GiftBatchTDS FMainDS;
 
         TVerificationResultCollection FMessages = new TVerificationResultCollection();
 
@@ -84,7 +85,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             out TVerificationResultCollection AMessages)
         {
             FStringWriter = new StringWriter();
-            GiftBatchTDS MainDS = new GiftBatchTDS();
+            FMainDS = new GiftBatchTDS();
             FDelimiter = (String)requestParams["Delimiter"];
             FLedgerNumber = (Int32)requestParams["ALedgerNumber"];
             FDateFormatString = (String)requestParams["DateFormatString"];
@@ -108,7 +109,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             try
             {
-                ALedgerAccess.LoadByPrimaryKey(MainDS, FLedgerNumber, FTransaction);
+                ALedgerAccess.LoadByPrimaryKey(FMainDS, FLedgerNumber, FTransaction);
 
                 List <OdbcParameter>parameters = new List <OdbcParameter>();
 
@@ -165,9 +166,9 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                 string sqlStatement = TDataBase.ReadSqlFile("Gift.GetGiftsToExport.sql", SQLCommandDefines);
 
-                DBAccess.GDBAccessObj.Select(MainDS,
+                DBAccess.GDBAccessObj.Select(FMainDS,
                     "SELECT DISTINCT PUB_a_gift_batch.* " + sqlStatement + " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName(),
-                    MainDS.AGiftBatch.TableName,
+                    FMainDS.AGiftBatch.TableName,
                     FTransaction,
                     parameters.ToArray());
 
@@ -175,10 +176,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                     Catalog.GetString("Retrieving gift records"),
                     10);
 
-                DBAccess.GDBAccessObj.Select(MainDS,
+                DBAccess.GDBAccessObj.Select(FMainDS,
                     "SELECT DISTINCT PUB_a_gift.* " + sqlStatement + " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName() + ", " +
                     AGiftTable.GetGiftTransactionNumberDBName(),
-                    MainDS.AGift.TableName,
+                    FMainDS.AGift.TableName,
                     FTransaction,
                     parameters.ToArray());
 
@@ -186,9 +187,9 @@ namespace Ict.Petra.Server.MFinance.Gift
                     Catalog.GetString("Retrieving gift detail records"),
                     15);
 
-                DBAccess.GDBAccessObj.Select(MainDS,
+                DBAccess.GDBAccessObj.Select(FMainDS,
                     "SELECT DISTINCT PUB_a_gift_detail.* " + sqlStatement,
-                    MainDS.AGiftDetail.TableName,
+                    FMainDS.AGiftDetail.TableName,
                     FTransaction,
                     parameters.ToArray());
             }
@@ -197,7 +198,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            string BaseCurrency = MainDS.ALedger[0].BaseCurrency;
+            string BaseCurrency = FMainDS.ALedger[0].BaseCurrency;
             FCurrencyCode = BaseCurrency; // Depending on FUseBaseCurrency, this will be overwritten for each gift.
 
             SortedDictionary <String, AGiftSummaryRow>sdSummary = new SortedDictionary <String, AGiftSummaryRow>();
@@ -209,12 +210,12 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             AGiftSummaryRow giftSummary = null;
 
-            MainDS.AGiftDetail.DefaultView.Sort =
+            FMainDS.AGiftDetail.DefaultView.Sort =
                 AGiftDetailTable.GetLedgerNumberDBName() + "," +
                 AGiftDetailTable.GetBatchNumberDBName() + "," +
                 AGiftDetailTable.GetGiftTransactionNumberDBName();
 
-            foreach (AGiftBatchRow giftBatch in MainDS.AGiftBatch.Rows)
+            foreach (AGiftBatchRow giftBatch in FMainDS.AGiftBatch.Rows)
             {
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                     string.Format(Catalog.GetString("Batch {0}"), giftBatch.BatchNumber),
@@ -226,7 +227,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                     WriteGiftBatchLine(giftBatch);
                 }
 
-                foreach (AGiftRow gift in MainDS.AGift.Rows)
+                foreach (AGiftRow gift in FMainDS.AGift.Rows)
                 {
                     if (gift.BatchNumber.Equals(giftBatch.BatchNumber) && gift.LedgerNumber.Equals(giftBatch.LedgerNumber))
                     {
@@ -238,7 +239,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 (GiftCounter / 25 + 4) * 5 > 90 ? 90 : (GiftCounter / 25 + 4) * 5);
                         }
 
-                        DataRowView[] selectedRowViews = MainDS.AGiftDetail.DefaultView.FindRows(
+                        DataRowView[] selectedRowViews = FMainDS.AGiftDetail.DefaultView.FindRows(
                             new object[] { gift.LedgerNumber, gift.BatchNumber, gift.GiftTransactionNumber });
 
                         foreach (DataRowView rv in selectedRowViews)
@@ -326,7 +327,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             exportString = FStringWriter.ToString();
             AMessages = FMessages;
-            return MainDS.AGiftBatch.Count;
+            return FMainDS.AGiftBatch.Count;
         }
 
         private String PartnerShortName(Int64 partnerKey)
@@ -353,7 +354,16 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteStringQuoted(giftSummary.BankAccountCode);
             WriteCurrency(0);
             WriteDate(FDateForSummary);
-            WriteStringQuoted(giftSummary.CurrencyCode);
+
+            if (FUseBaseCurrency)
+            {
+                WriteStringQuoted(FMainDS.ALedger[0].BaseCurrency);
+            }
+            else
+            {
+                WriteStringQuoted(giftSummary.CurrencyCode);
+            }
+
             WriteGeneralNumber(giftSummary.ExchangeRateToBase);
             WriteStringQuoted(giftSummary.BankCostCentre);
             WriteStringQuoted(giftSummary.GiftType, true);
@@ -364,9 +374,27 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteStringQuoted("B");
             WriteStringQuoted(giftBatch.BatchDescription);
             WriteStringQuoted(giftBatch.BankAccountCode);
-            WriteCurrency(giftBatch.HashTotal);
+
+            if (FUseBaseCurrency)
+            {
+                WriteCurrency(giftBatch.HashTotal * giftBatch.ExchangeRateToBase);
+            }
+            else
+            {
+                WriteCurrency(giftBatch.HashTotal);
+            }
+
             WriteDate(giftBatch.GlEffectiveDate);
-            WriteStringQuoted(giftBatch.CurrencyCode);
+
+            if (FUseBaseCurrency)
+            {
+                WriteStringQuoted(FMainDS.ALedger[0].BaseCurrency);
+            }
+            else
+            {
+                WriteStringQuoted(giftBatch.CurrencyCode);
+            }
+
             WriteGeneralNumber(giftBatch.ExchangeRateToBase);
             WriteStringQuoted(giftBatch.BankCostCentre);
             WriteStringQuoted(giftBatch.GiftType, true);

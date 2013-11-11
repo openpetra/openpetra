@@ -33,6 +33,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [MExtractMaster.ExtractName, MExtractMaster.CreatedBy, MExtractMaster.KeyCount, MExtractMaster.ExtractDesc, MExtractMaster.DateCreated, MExtractMaster.Deletable]
+            SortOrder: MExtractMaster.DateCreated DESC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

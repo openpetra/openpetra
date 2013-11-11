@@ -156,7 +156,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
                     FLoginSuccessful = true;
 
-                    Ict.Petra.Client.MSysMan.Gui.TFrmMaintainLanguageCulture.InitLanguageAndCulture();
+                    Ict.Petra.Client.MSysMan.Gui.TUC_GeneralPreferences.InitLanguageAndCulture();
                 }
             }
             catch (Exception exp)
@@ -664,6 +664,7 @@ namespace Ict.Petra.Client.App.PetraClient
             TCommonScreensForwarding.OpenEventFindScreen = @TEventFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenExtractFindScreen = @TExtractFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenRangeFindScreen = @TPostcodeRangeSetupManager.OpenModalForm;
+            TCommonScreensForwarding.OpenGetMergeDataDialog = @TGetMergeDataManager.OpenModalForm;
 
             // Set up Delegate for the opening of Forms from the Main Menu
             Ict.Common.Controls.TLstTasks.OpenNewOrExistingForm = @Ict.Petra.Client.CommonForms.TFormsList.OpenNewOrExistingForm;

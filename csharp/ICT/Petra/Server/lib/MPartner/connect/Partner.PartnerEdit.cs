@@ -29,6 +29,7 @@ using System.Data.Odbc;
 using System.Threading;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;

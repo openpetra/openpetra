@@ -33,6 +33,7 @@ using System.Runtime.Remoting.Lifetime;
 using System.Runtime.InteropServices;
 using GNU.Gettext;
 using SourceGrid;
+using Owf.Controls;
 
 using Ict.Common;
 using Ict.Common.Verification;
@@ -92,6 +93,9 @@ namespace Ict.Petra.Client.CommonForms
 
         /// <summary>todoComment</summary>
         public event TDataSavingStartHandler DataSavingStarted;
+
+        /// <summary>Fired when any control is changed</summary>
+        public event TValueChangedHandler ControlChanged;
 
         /// <summary>todoComment</summary>
         public event TDataSavedHandler DataSaved;
@@ -225,8 +229,8 @@ namespace Ict.Petra.Client.CommonForms
             {
                 // If the control is used for dataentry then hookup the event
                 // for data changing
-                // This will call LocalControlValueChanged
-                // and ControlValueChanged (virtual method)
+                // This will call Local ControlValueChanged
+                // and Control ValueChanged (virtual method)
                 //
                 // The first group are the important controls, (actually used for data entry )
                 if (ctrl.GetType() == typeof(TextBox))
@@ -303,7 +307,8 @@ namespace Ict.Petra.Client.CommonForms
                          || (ctrl.GetType() == typeof(TTrvTreeView))
                          || (ctrl.GetType() == typeof(TbtnCreated))
                          || ((ctrl.GetType() == typeof(System.Windows.Forms.TableLayoutPanel))
-                             || (ctrl.GetType() == typeof(DevAge.Windows.Forms.Line))))
+                             || (ctrl.GetType() == typeof(DevAge.Windows.Forms.Line))
+                             || (ctrl.GetType() == typeof(Owf.Controls.A1Panel))))
                 {
                     // nothing to do
                 }
@@ -399,6 +404,33 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
+        /// Returns a reference to the control that has the focus on the specified container.  The method is recursive so looks in its own container controls.
+        /// </summary>
+        /// <param name="AContainerControl">The container control to search (often pnlDetails)</param>
+        /// <returns>The focused control or null if no control has the focus</returns>
+        public Control GetFocusedControl(Control AContainerControl)
+        {
+            foreach (Control c in AContainerControl.Controls)
+            {
+                if (c.Controls.Count > 0)
+                {
+                    Control c1 = GetFocusedControl(c);
+
+                    if (c1 != null)
+                    {
+                        return c1;
+                    }
+                }
+                else if (c.Focused)
+                {
+                    return c;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Recursively clears the content of all the controls in the specified container without
         /// </summary>
         /// <param name="AParentControl">The container control whose controls are to be cleared (often this will be pnlDetails)</param>
@@ -472,14 +504,17 @@ namespace Ict.Petra.Client.CommonForms
 
         /** This is available for the child form to respond to by overriding
          */
-        protected void ControlValueChanged()
+        protected void ControlValueChanged(Control Actrl)
         {
-            // Virtual procedure, for overiding only
+            if (ControlChanged != null)
+            {
+                ControlChanged(Actrl);
+            }
         }
 
         /** This responds to the fact data has changed at this level
          */
-        public void LocalControlValueChanged()
+        public void LocalControlValueChanged(Control Actrl)
         {
             SetChangedFlag();
         }
@@ -502,11 +537,10 @@ namespace Ict.Petra.Client.CommonForms
             if ((this.SuppressChangeDetection == false)
                 && ((ctrl.Tag == null) || (ctrl.Tag.GetType() != typeof(string))
                     || !((string)ctrl.Tag).Contains(MCommonResourcestrings.StrCtrlSuppressChangeDetection))
-                && ((Control)sender).Visible
-                && ((Control)sender).Enabled)
+                && ctrl.Visible && ctrl.Enabled)
             {
-                LocalControlValueChanged();
-                ControlValueChanged();
+                LocalControlValueChanged(ctrl);
+                ControlValueChanged(ctrl);
 
                 // string ctrltype = sender.GetType().FullName;
                 //  TLogging.Log(DateTime.Now.ToString() + " MULTIEVENT Ctrl: " + ctrlname + " Type: " + ctrltype);

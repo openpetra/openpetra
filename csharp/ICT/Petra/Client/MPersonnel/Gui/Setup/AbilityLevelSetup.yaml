@@ -7,8 +7,8 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data,Ict.Petra.Shared.MPersonnel.Personnel.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
-    WindowWidth: 750
-    WindowHeight: 400
+    WindowWidth: 800
+    WindowHeight: 450
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
@@ -18,7 +18,11 @@ RootNode:
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailAbilityLevel, txtDetailAbilityLevelDescr, chkDetailUnassignableFlag, chkDetailDeletableFlag]
+            FindControls: [txtDetailAbilityLevel, txtDetailAbilityLevelDescr]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -35,6 +39,7 @@ RootNode:
             CustomColumns:
                 DetailAbilityLevel: {Label="Ability Level", Type=Integer}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
+            SortOrder: DetailAbilityLevel ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

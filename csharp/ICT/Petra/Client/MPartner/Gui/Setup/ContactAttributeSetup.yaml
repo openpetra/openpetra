@@ -7,18 +7,36 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation,Ict.Petra.Shared.MPartner.Partner.Validation]
     FormType: edit
     Template: windowMaintainCacheableTable
-    WindowWidth: 640
-    WindowHeight: 750
+    WindowWidth: 780
+    WindowHeight: 600
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
     Controls:
         pnlContent:
+            Controls: [sptContent]
+            Dock: Fill
+        #This screen now features a splitter bar
+        sptContent:
+            SplitterOrientation: Horizontal
+            SplitterDistance: 375
+            Height: 600
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlGridAndDetails
+            Panel2: pnlExtraDetails
+        pnlGridAndDetails:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
+            MinimumSize: 200
+            BackColor: System.Drawing.SystemColors.Control
         pnlGrid:
             Dock: Fill
-            Controls: [pnlButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailContactAttributeCode, txtDetailContactAttributeDescr, chkDetailActive]
+            FindControls: [txtDetailContactAttributeCode, txtDetailContactAttributeDescr]
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -36,6 +54,7 @@ RootNode:
                 DetailContactAttributeCode: {Label=Attribute Code}
                 DetailContactAttributeDescr: {Label=Description}
                 DetailActive: {Label=Active, Type=Boolean}
+            SortOrder: DetailContactAttributeCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
@@ -43,13 +62,15 @@ RootNode:
                 Row0: [txtDetailContactAttributeCode]
                 Row1: [txtDetailContactAttributeDescr]
                 Row2: [chkDetailActive]
-                Row3: [grpExtraDetails]
         txtDetailContactAttributeCode: {Label=Attribute Code, CharacterCasing=Upper}
         txtDetailContactAttributeDescr: {Label=Description, Width=465}
         chkDetailActive: {Validation=true}
-        grpExtraDetails: {Label=Attribute Detail Codes}
+        pnlExtraDetails:
             Controls: [ucoContactDetail]
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
         ucoContactDetail:
             Type: Ict.Petra.Client.MPartner.Gui.Setup.TUC_ContactAttributeDetail
+            Dock: Fill
             Width: 600
-            Height: 400
+            Height: 200

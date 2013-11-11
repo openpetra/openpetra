@@ -1,0 +1,18 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+# SharpDevelop 4.3
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PetraMultiStart", "PetraMultiStart.csproj", "{5FB0939E-8839-4D9A-9FCD-A4C636EAB52E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5FB0939E-8839-4D9A-9FCD-A4C636EAB52E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FB0939E-8839-4D9A-9FCD-A4C636EAB52E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FB0939E-8839-4D9A-9FCD-A4C636EAB52E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FB0939E-8839-4D9A-9FCD-A4C636EAB52E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal

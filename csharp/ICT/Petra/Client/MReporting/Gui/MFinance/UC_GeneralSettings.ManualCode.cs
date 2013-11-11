@@ -4,7 +4,7 @@
 // @Authors:
 //       berndr, timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -321,6 +321,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         }
 
         /// <summary>
+        /// Show these currency choices (Instead of the usual list)
+        /// </summary>
+        /// <param name="items"></param>
+        public void CurrencyOptions(object[] items)
+        {
+            this.cmbCurrency.Items.Clear();
+            this.cmbCurrency.Items.AddRange(items);
+        }
+
+        /// <summary>
         /// Enable / Disable the radio button date
         /// </summary>
         /// <param name="AValue">true to enable the radio button</param>
@@ -359,7 +369,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if ((APeriodNr <= 0)
                 || ((RealYear == FLedgerRow.CurrentFinancialYear) && (RealPeriod > FLedgerRow.CurrentPeriod + FLedgerRow.NumberFwdPostingPeriods))
-                || ((RealYear < FLedgerRow.CurrentFinancialYear) && (APeriodNr > FLedgerRow.NumberFwdPostingPeriods)))
+                || ((RealYear < FLedgerRow.CurrentFinancialYear) && (APeriodNr > FLedgerRow.NumberOfAccountingPeriods)))
             {
                 FPetraUtilsObject.AddVerificationResult(new TVerificationResult("",
                         Catalog.GetString("Invalid Period entered.") + Environment.NewLine + Catalog.GetString("Period must be between ") +

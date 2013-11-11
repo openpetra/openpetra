@@ -1,13 +1,10 @@
-// auto generated with nant generateORM
-// Do not modify this file manually!
-//
 //
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       auto generated
+//       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -95,6 +92,6 @@ namespace Ict.Petra.Shared.MCommon
             }
 
             return "";
-        }    	
+        }
     }
 }
