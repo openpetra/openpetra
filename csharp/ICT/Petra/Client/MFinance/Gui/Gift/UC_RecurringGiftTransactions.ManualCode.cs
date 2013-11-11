@@ -55,6 +55,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             txtDetailReference.MaxLength = 20;
 
+            txtField.SendToBack();
+
             txtDetailRecipientKey.PartnerClass = "WORKER,UNIT,FAMILY";
         }
 
@@ -131,7 +133,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             ShowData();
-            ShowDetails();
 
             SetGiftDetailDefaultView();
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringGiftDetail.DefaultView);
@@ -143,6 +144,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             UpdateTotals();
             UpdateControlsProtection();
+
+            SelectRowInGrid(1);
+            UpdateRecordNumberDisplay();
         }
 
         bool FinRecipientKeyChanging = false;
@@ -809,6 +813,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 SetGiftDetailDefaultView();
             }
 
+            UpdateRecordNumberDisplay();
             return deletionSuccessful;
         }
 
@@ -961,6 +966,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);
             }
+
+            UpdateRecordNumberDisplay();
         }
 
         /// <summary>
@@ -1032,8 +1039,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);
 
                 RetrieveMotivationDetailAccountCode();
-                txtDetailGiftAmount.Focus();
+                dtpStartDonations.Focus();
             }
+
+            UpdateRecordNumberDisplay();
         }
 
         /// <summary>

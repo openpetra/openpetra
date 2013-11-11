@@ -729,7 +729,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 staffDataForm.PartnerKey = FLogic.PartnerKey;
                 staffDataForm.Show();
             }
-            else if (AToolStripItem.Name == MPartnerResourcestrings.StrPersonnelPersonMenuItemText)
+            else if (ClickedMenuItemName == "mniMaintainPersonnelData")
             {
                 if (FLogic.DetermineCurrentPartnerClass() == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
@@ -1824,6 +1824,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FPartnerFindObject = value;
             }
+        }
+
+        /// <summary>
+        /// Sets up random Search Criteria and runs a Search.
+        /// </summary>
+        public void SetupRandomTestSearchCriteriaAndRunSearch()
+        {
+            ucoPartnerFindCriteria.SetupRandomTestSearchCriteria();
+
+            BtnSearch_Click(this, null);
         }
     }
 }

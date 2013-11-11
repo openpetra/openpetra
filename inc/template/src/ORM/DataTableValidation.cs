@@ -114,6 +114,19 @@ if (!ARow.Is{#COLUMNNAME}Null())
     }
 }
 
+{##VALIDATECOLUMN2}
+
+// {#COLUMNSPECIFICCOMMENT}
+ValidationColumn = ARow.Table.Columns[{#TABLENAME}Table.Column{#COLUMNNAME}Id];
+
+if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+{
+    {#COLUMNSPECIFICCHECK}
+
+    // Handle addition to/removal from TVerificationResultCollection
+    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+}
+
 {##CHECKEMPTYSTRING}
 VerificationResult = TStringChecks.StringMustNotBeEmpty(ARow.{#COLUMNNAME},
     ValidationControlsData.ValidationControlLabel,
@@ -133,6 +146,12 @@ VerificationResult = TNumericalChecks.IsNumberPrecisionNotExceeded(ARow.{#COLUMN
 VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.{#COLUMNNAME},
     ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+{##CHECKVALIDDATE}
+VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.{#COLUMNNAME},
+    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, false,
+    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+    
 
 {##CHECKGENERALNOTNULL}
 VerificationResult = TGeneralChecks.ValueMustNotBeNull(ARow.Is{#COLUMNNAME}Null() ? null : "",

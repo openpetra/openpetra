@@ -75,7 +75,7 @@ RootNode:
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
             ActionFocusRow: FocusedRowChanged
-            SortOrder: ATransaction.TransactionNumber
+            SortOrder: ATransaction.TransactionNumber ASC
             RowFilter: ATransaction.BatchNumber, ATransaction.JournalNumber
             EnableMultiSelection: false
         pnlDetails:
@@ -89,6 +89,7 @@ RootNode:
             Height: 50
             Multiline: true
             ScrollBars: Vertical
+            Validation: true
         txtDetailReference: {Label=Reference}
         dtpDetailTransactionDate: {Label=Transaction Date, OnChange=TransDateChanged, Validation=true}
         cmbDetailKeyMinistryKey: {Label=Key Ministry,  Width=330, List=UserDefinedList}

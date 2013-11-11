@@ -41,6 +41,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.IO;
 using Ict.Common.Printing;
+using Ict.Common.Verification;
 using Ict.Petra.Shared.MCommon;
 
 namespace Ict.Petra.Server.MReporting.UIConnectors
@@ -277,8 +278,28 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         /// <summary>
         /// send report as email
         /// </summary>
-        public Boolean SendEmail(string AEmailAddresses, bool AAttachExcelFile, bool AAttachCSVFile, bool AAttachPDF, bool AWrapColumn)
+        public Boolean SendEmail(string AEmailAddresses,
+            bool AAttachExcelFile,
+            bool AAttachCSVFile,
+            bool AAttachPDF,
+            bool AWrapColumn,
+            out TVerificationResultCollection AVerification)
         {
+            TSmtpSender EmailSender = new TSmtpSender();
+
+            AVerification = new TVerificationResultCollection();
+
+            if (!EmailSender.ValidateEmailConfiguration())
+            {
+                AVerification.Add(new TVerificationResult(
+                        Catalog.GetString("Sending Email"),
+                        Catalog.GetString("Missing configuration for sending emails. Please edit your server configuration file"),
+                        CommonErrorCodes.ERR_MISSINGEMAILCONFIGURATION,
+                        TResultSeverity.Resv_Critical,
+                        new System.Guid()));
+                return false;
+            }
+
             List <string>FilesToAttach = new List <string>();
 
             if (AAttachExcelFile)
@@ -317,7 +338,16 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                 }
             }
 
-            TSmtpSender EmailSender = new TSmtpSender();
+            if (FilesToAttach.Count == 0)
+            {
+                AVerification.Add(new TVerificationResult(
+                        Catalog.GetString("Sending Email"),
+                        Catalog.GetString("Missing any attachments, not sending the email"),
+                        "Missing Attachments",
+                        TResultSeverity.Resv_Critical,
+                        new System.Guid()));
+                return false;
+            }
 
             // TODO use the email address of the user, from s_user
             if (EmailSender.SendEmail("<" + TAppSettingsManager.GetValue("Reports.Email.Sender") + ">",
@@ -334,6 +364,13 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
 
                 return true;
             }
+
+            AVerification.Add(new TVerificationResult(
+                    Catalog.GetString("Sending Email"),
+                    Catalog.GetString("Problem sending email"),
+                    "server problems",
+                    TResultSeverity.Resv_Critical,
+                    new System.Guid()));
 
             return false;
         }

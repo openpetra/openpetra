@@ -38,7 +38,7 @@ namespace Ict.Common.Remoting.Server
         /// <summary>
         /// add a new user
         /// </summary>
-        bool AddUser(string AUserID);
+        bool AddUser(string AUserID, string APassword = "");
 
         /// <summary>
         /// authenticate a user

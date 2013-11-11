@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Mail;
 using System.Collections.Generic;
@@ -83,6 +84,24 @@ namespace Ict.Common.IO
                     TAppSettingsManager.GetValue("SmtpPassword", ""));
                 FSmtpClient.EnableSsl = TAppSettingsManager.GetBoolean("SmtpEnableSsl", false);
             }
+        }
+
+        /// <summary>
+        /// check if smtp host has been configured
+        /// </summary>
+        /// <returns></returns>
+        public bool ValidateEmailConfiguration()
+        {
+            if (FSmtpClient.DeliveryMethod == SmtpDeliveryMethod.Network)
+            {
+                return FSmtpClient.Host.Length > 0 && !FSmtpClient.Host.Contains("example.org");
+            }
+            else if (FSmtpClient.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory)
+            {
+                return Directory.Exists(FSmtpClient.PickupDirectoryLocation);
+            }
+
+            return false;
         }
 
         /// <summary>

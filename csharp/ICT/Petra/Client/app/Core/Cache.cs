@@ -25,6 +25,7 @@ using System;
 using System.Data;
 using System.IO;
 using System.IO.IsolatedStorage;
+using System.Threading;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.Interfaces.MConference;
@@ -708,11 +709,45 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>void</returns>
         public static IsolatedStorageFileStream GetCacheableDataTableFileForWriting(String ATableName)
         {
+            IsolatedStorageFileStream ReturnValue = null;
+            bool Success = false;
+            int AttemptCounter = 0;
+
             UIsolatedStorageFile.CreateDirectory(CACHEFILESDIR);
-            return new IsolatedStorageFileStream(CACHEFILESDIR + '/' + ATableName + CACHEABLEDT_FILE_EXTENSION,
-                FileMode.Create,
-                FileAccess.Write,
-                UIsolatedStorageFile);
+
+            // For the scenario where multiple Client instances are executed at (nearly) the same time on the
+            // same machine: don't fall over in case another client tries to access the file in which the
+            // Cacheable DataTable should be written, but wait a bit and retry. That scenario seems a bit
+            // unlikely, but it happens when many Clients are launched and are told to open the same screen
+            // (e.g. Partner Edit screen) and that happens when they are launched from the PetraMultiStart
+            // application.
+            while ((AttemptCounter < 5)
+                   && (!Success))
+            {
+                AttemptCounter++;
+
+                try
+                {
+                    ReturnValue = new IsolatedStorageFileStream(CACHEFILESDIR + '/' + ATableName + CACHEABLEDT_FILE_EXTENSION,
+                        FileMode.Create,
+                        FileAccess.Write,
+                        UIsolatedStorageFile);
+
+                    Success = true;
+                }
+                catch (System.IO.IOException)
+                {
+                    Thread.Sleep(200);
+
+                    continue;
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+
+            return ReturnValue;
         }
 
         /// <summary>

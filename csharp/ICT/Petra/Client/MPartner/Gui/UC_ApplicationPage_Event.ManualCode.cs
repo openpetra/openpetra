@@ -182,12 +182,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             TVerificationResult VerificationResult = null;
 
             TSharedPersonnelValidation_Personnel.ValidateGeneralApplicationManual(this, ARow, true, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+                FValidationControlsDict);
 
             TSharedPersonnelValidation_Personnel.ValidateEventApplicationManual(this,
                 FMainDS.PmShortTermApplication[0],
                 ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+                FValidationControlsDict);
 
             if (FDelegateCheckEventApplicationDuplicate != null)
             {

@@ -523,10 +523,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserManagement
         /// <summary>
         /// add a new user
         /// </summary>
-        public bool AddUser(string AUserID)
+        public bool AddUser(string AUserID, string APassword = "")
         {
             return TMaintenanceWebConnector.CreateUser(AUserID,
-                string.Empty,
+                APassword,
                 string.Empty,
                 string.Empty,
                 TMaintenanceWebConnector.DEMOMODULEPERMISSIONS);

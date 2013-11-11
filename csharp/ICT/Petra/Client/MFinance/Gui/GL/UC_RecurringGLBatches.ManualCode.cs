@@ -102,6 +102,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdDetails.Focus();
 
+            SelectRowInGrid(1);
+
             SetAccountCostCentreTableVariables();
         }
 
@@ -240,6 +242,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(ARecurringBatchRow ARow)
         {
+            EnableTransactionTabForBatch();
+
             if (ARow == null)
             {
                 return;
@@ -334,9 +338,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailBatchDescription.Focus();
 
             UpdateRecordNumberDisplay();
-
-            //Not needed as recurring batches can be deleted
-            //((TFrmRecurringGLBatch)ParentForm).SaveChanges();
 
             //Enable the Journals if not already enabled
             ((TFrmRecurringGLBatch)ParentForm).EnableJournals();
@@ -495,6 +496,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             // Delete the recurring batch row.
             ARowToDelete.Delete();
+
+            UpdateRecordNumberDisplay();
 
             return true;
         }

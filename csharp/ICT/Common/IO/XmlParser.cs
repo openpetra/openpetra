@@ -620,6 +620,34 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// retrieve the double value of an attribute. Does prevent unnecessary exceptions, if the attribute is not existing
+        /// </summary>
+        /// <param name="cur">the current node</param>
+        /// <param name="attrib">the name of the attribute</param>
+        /// <returns>the value of the attribute, or -1 if it is not existing
+        /// </returns>
+        public static double GetDoubleAttribute(XmlNode cur, string attrib)
+        {
+            double ReturnValue;
+            XmlNode node;
+
+            ReturnValue = -1;
+            node = cur.Attributes.GetNamedItem(attrib);
+            try
+            {
+                if (node != null)
+                {
+                    ReturnValue = Convert.ToDouble(node.Value);
+                }
+            }
+            catch (Exception)
+            {
+                ReturnValue = -1;
+            }
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// retrieve the decimal value of an attribute. Does prevent unnecessary exceptions, if the attribute is not existing
         /// </summary>
         /// <param name="cur">the current node</param>

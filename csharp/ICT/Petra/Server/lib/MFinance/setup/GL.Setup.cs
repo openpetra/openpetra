@@ -2367,8 +2367,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             AVerificationResult = null;
 
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
             // check if such a ledger already exists
-            ALedgerTable tempLedger = ALedgerAccess.LoadByPrimaryKey(ANewLedgerNumber, null);
+            ALedgerTable tempLedger = ALedgerAccess.LoadByPrimaryKey(ANewLedgerNumber, Transaction);
 
             if (tempLedger.Count > 0)
             {
@@ -2420,7 +2422,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             PPartnerRow partnerRow;
 
-            if (!PPartnerAccess.Exists(PartnerKey, null))
+            if (!PPartnerAccess.Exists(PartnerKey, Transaction))
             {
                 partnerRow = MainDS.PPartner.NewRowTyped();
                 ledgerRow.PartnerKey = PartnerKey;
@@ -2446,7 +2448,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 LocTemplateRow.CountryCode = ACountryCode;
                 LocTemplateOperators = new StringCollection();
 
-                LocResultTable = PLocationAccess.LoadUsingTemplate(LocTemplateRow, LocTemplateOperators, null);
+                LocResultTable = PLocationAccess.LoadUsingTemplate(LocTemplateRow, LocTemplateOperators, Transaction);
 
                 if (LocResultTable.Count > 0)
                 {
@@ -2457,7 +2459,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     // no location record exists yet: create new one
                     locationRow = MainDS.PLocation.NewRowTyped();
                     locationRow.SiteKey = 0;
-                    locationRow.LocationKey = (int)DBAccess.GDBAccessObj.GetNextSequenceValue(TSequenceNames.seq_location_number.ToString(), null);
+                    locationRow.LocationKey = (int)DBAccess.GDBAccessObj.GetNextSequenceValue(
+                        TSequenceNames.seq_location_number.ToString(), Transaction);
                     locationRow.StreetName = Catalog.GetString("No valid address on file");
                     locationRow.CountryCode = ACountryCode;
                     MainDS.PLocation.Rows.Add(locationRow);
@@ -2474,12 +2477,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             else
             {
                 // partner record already exists in database -> update ledger name
-                PPartnerAccess.LoadByPrimaryKey(MainDS, PartnerKey, null);
+                PPartnerAccess.LoadByPrimaryKey(MainDS, PartnerKey, Transaction);
                 partnerRow = (PPartnerRow)MainDS.PPartner.Rows[0];
                 partnerRow.PartnerShortName = ALedgerName;
             }
 
-            PPartnerTypeAccess.LoadViaPPartner(MainDS, PartnerKey, null);
+            PPartnerTypeAccess.LoadViaPPartner(MainDS, PartnerKey, Transaction);
             PPartnerTypeRow partnerTypeRow;
 
             // only create special type "LEDGER" if it does not exist yet
@@ -2491,7 +2494,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 MainDS.PPartnerType.Rows.Add(partnerTypeRow);
             }
 
-            if (!PUnitAccess.Exists(PartnerKey, null))
+            if (!PUnitAccess.Exists(PartnerKey, Transaction))
             {
                 PUnitRow unitRow = MainDS.PUnit.NewRowTyped();
                 unitRow.PartnerKey = PartnerKey;
@@ -2499,7 +2502,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 MainDS.PUnit.Rows.Add(unitRow);
             }
 
-            if (!PPartnerLedgerAccess.Exists(PartnerKey, null))
+            if (!PPartnerLedgerAccess.Exists(PartnerKey, Transaction))
             {
                 PPartnerLedgerRow partnerLedgerRow = MainDS.PPartnerLedger.NewRowTyped();
                 partnerLedgerRow.PartnerKey = PartnerKey;
@@ -2509,7 +2512,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     String.Format("SELECT MAX(p_partner_key_n) FROM PUB_p_partner " +
                         "WHERE p_partner_key_n > {0} AND p_partner_key_n < {1}",
                         PartnerKey,
-                        PartnerKey + 500000), IsolationLevel.ReadCommitted);
+                        PartnerKey + 500000), Transaction);
 
                 if (MaxExistingPartnerKeyObj.GetType() != typeof(DBNull))
                 {
@@ -2525,7 +2528,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             String ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
 
-            if (!SModuleAccess.Exists(ModuleId, null))
+            if (!SModuleAccess.Exists(ModuleId, Transaction))
             {
                 SModuleRow moduleRow = MainDS.SModule.NewRowTyped();
                 moduleRow.ModuleId = ModuleId;
@@ -2534,7 +2537,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
 
             // if this is the first ledger, make it the default site
-            SSystemDefaultsTable systemDefaults = SSystemDefaultsAccess.LoadByPrimaryKey("SiteKey", null);
+            SSystemDefaultsTable systemDefaults = SSystemDefaultsAccess.LoadByPrimaryKey("SiteKey", Transaction);
 
             if (systemDefaults.Rows.Count == 0)
             {
@@ -2645,7 +2648,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
 
 
-            AValidLedgerNumberTable validLedgerNumberTable = AValidLedgerNumberAccess.LoadByPrimaryKey(ANewLedgerNumber, PartnerKey, null);
+            AValidLedgerNumberTable validLedgerNumberTable = AValidLedgerNumberAccess.LoadByPrimaryKey(ANewLedgerNumber, PartnerKey, Transaction);
 
             if (validLedgerNumberTable.Rows.Count == 0)
             {
@@ -2706,8 +2709,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 moduleAccessPermissionRow.ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
                 moduleAccessPermissionRow.CanAccess = true;
                 moduleAccessPermissionTable.Rows.Add(moduleAccessPermissionRow);
-
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
                 try
                 {

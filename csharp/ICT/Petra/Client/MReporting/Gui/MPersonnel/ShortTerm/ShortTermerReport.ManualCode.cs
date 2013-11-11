@@ -34,6 +34,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
     /// </summary>
     public partial class TFrmShortTermerReport
     {
+        /// <summary>
+        /// show this window and open the settings dialog straight away
+        /// </summary>
         public void ShowWithSettingsSelection()
         {
             this.Show();
