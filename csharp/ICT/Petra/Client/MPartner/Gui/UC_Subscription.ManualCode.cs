@@ -55,8 +55,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>DataRow for the p_subscription record we are working with</summary>
         private PSubscriptionRow FSubscriptionDR = null;
 
-        /// <summary>CachedDataset.TmpCacheDS: DataSet; Currently selected PublicationCode. Won't update automatically!</summary>        
-
         #region Public Methods
 
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>
