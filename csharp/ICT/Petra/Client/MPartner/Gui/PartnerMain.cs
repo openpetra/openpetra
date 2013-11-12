@@ -110,9 +110,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 long PartnerKey;
                 string ShortName;
+                TPartnerClass? PartnerClass;
                 TLocationPK LocationPK;
 
-                if (TPartnerFindScreenManager.OpenModalForm(ARestrictToPartnerClasses, out PartnerKey, out ShortName, out LocationPK,
+                if (TPartnerFindScreenManager.OpenModalForm(ARestrictToPartnerClasses, out PartnerKey, out ShortName, out PartnerClass, out LocationPK,
                         AParentForm))
                 {
                     // Open the Partner Edit screen
@@ -170,12 +171,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             Boolean ResultValue = false;
             Int64 PartnerKey = -1;
             String ShortName;
+            TPartnerClass? PartnerClass;
             TLocationPK ResultLocationPK;
 
             // the user has to select an existing partner to make that partner a supplier
             if (TPartnerFindScreenManager.OpenModalForm("",
                     out PartnerKey,
                     out ShortName,
+                    out PartnerClass,
                     out ResultLocationPK,
                     AParentForm))
             {

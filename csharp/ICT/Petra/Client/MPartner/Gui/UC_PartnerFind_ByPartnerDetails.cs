@@ -1015,9 +1015,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <param name="APartnerKey">Partner key</param>
         /// <param name="AShortName">Partner short name</param>
+        /// <param name="APartnerClass">Partner Class.</param>
         /// <param name="ALocationPK">Location key</param>
         /// <returns></returns>
-        public Boolean GetReturnedParameters(out Int64 APartnerKey, out String AShortName, out TLocationPK ALocationPK)
+        public Boolean GetReturnedParameters(out Int64 APartnerKey, out String AShortName, out TPartnerClass? APartnerClass, 
+            out TLocationPK ALocationPK)
         {
             DataRowView[] SelectedGridRow = grdResult.SelectedDataRowsAsDataRowView;
 
@@ -1026,6 +1028,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // no Row is selected
                 APartnerKey = -1;
                 AShortName = "";
+                APartnerClass = null;
                 ALocationPK = new TLocationPK(-1, -1);
             }
             else
@@ -1033,6 +1036,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // MessageBox.Show(SelectedGridRow[0]['p_partner_key_n'].ToString);
                 APartnerKey = Convert.ToInt64(SelectedGridRow[0][PPartnerTable.GetPartnerKeyDBName()]);
                 AShortName = Convert.ToString(SelectedGridRow[0][PPartnerTable.GetPartnerShortNameDBName()]);
+                APartnerClass = SharedTypes.PartnerClassStringToEnum(Convert.ToString(SelectedGridRow[0][PPartnerTable.GetPartnerClassDBName()]));
                 ALocationPK =
                     new TLocationPK(Convert.ToInt64(SelectedGridRow[0][PPartnerLocationTable.GetSiteKeyDBName()]),
                         Convert.ToInt32(SelectedGridRow[0][PPartnerLocationTable.GetLocationKeyDBName()]));

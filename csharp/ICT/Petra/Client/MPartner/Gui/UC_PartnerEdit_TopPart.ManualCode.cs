@@ -139,13 +139,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             #region Show fields according to Partner Class
 
+            txtPartnerKey.PartnerClass = FPartnerClass;
+            
             switch (SharedTypes.PartnerClassStringToEnum(FPartnerClass))
-            {
+            {                    
                 case TPartnerClass.PERSON:
                     pnlPerson.Visible = true;
                     pnlWorkerField.Visible = true;
                     pnlPerson2ndLine.Visible = true;
-                    txtPartnerClass.BackColor = System.Drawing.Color.Yellow;
 
                     // Set ToolTips in addition to StatusBar texts for fields to make it clearer what to fill in there...
                     FTipMain.SetToolTip(this.txtPersonTitle, PPersonTable.GetTitleHelp());

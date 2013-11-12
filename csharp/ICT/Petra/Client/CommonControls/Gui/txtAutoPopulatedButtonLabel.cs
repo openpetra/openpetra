@@ -45,7 +45,7 @@ using GNU.Gettext;
 namespace Ict.Petra.Client.CommonControls
 {
     /// <summary>Button Click</summary>
-    public delegate void TDelegateClickButton(String LabelStringIn, String TextBoxStringIn, out String LabelStringOut, out String TextBoxStringOut);
+    public delegate void TDelegateClickButton(String LabelStringIn, String TextBoxStringIn, out String LabelStringOut, out String PartnerClassOut, out String TextBoxStringOut);
 
     /// <summary>Text box edited</summary>
     public delegate bool TDelegateVerifyUserEntry(String AValueToVerify, out String AResult);
@@ -114,6 +114,8 @@ namespace Ict.Petra.Client.CommonControls
 // TODO        /// <summary>Error message</summary>
 // TODO       private static readonly string UNIT_NO_VALID_PARTNERKEY = Catalog.GetString("NOT A VALID PARTNERKEY!");
 
+        private Color? FOriginalPartnerClassColor = null;
+        
         /// <summary>
         /// Available Types for TtxtAutoPopulatedButtonLabel
         /// </summary>
@@ -413,6 +415,8 @@ namespace Ict.Petra.Client.CommonControls
             set
             {
                 this.FPartnerClass = FormatPartnerClassString(value);
+                
+                TCommonControlsHelper.SetPartnerKeyBackColour(value, txtAutoPopulated.txtTextBox, FOriginalPartnerClassColor);
             }
         }
 
@@ -1372,10 +1376,9 @@ namespace Ict.Petra.Client.CommonControls
         private void TxtAutoPopulated_ButtonClick(string LabelStringIn,
             string TextBoxStringIn,
             out string LabelStringOut,
+            out string PartnerClassOut,
             out string TextBoxStringOut)
         {
-            LabelStringOut = "";
-            TextBoxStringOut = "";
             String mLabelStringOld;
             String mTextBoxStringOld;
             String mLabelStringNew;
@@ -1384,10 +1387,16 @@ namespace Ict.Petra.Client.CommonControls
             String mResultStringTxt;
             String mResultStringName;
             String mResultStringLbl;
+            String mPartnerClass;
+            TPartnerClass? mPartnerClass2;
             String mResultStringExtraInformation;
             System.Int64 mResultIntTxt;
             int mResultShortIntTxt;
 
+            LabelStringOut = "";
+            TextBoxStringOut = "";
+            PartnerClassOut = null;
+            
             // mResultIntLbl:     System.Int64;  mDummyString:      String;
             TLocationPK mResultLocationPK;
             mLabelStringOld = LabelStringIn;
@@ -1404,9 +1413,14 @@ namespace Ict.Petra.Client.CommonControls
                     {
                         mLabelStringOld = LabelStringIn;
                         mTextBoxStringOld = TextBoxStringIn;
-                        this.ClickButton(mLabelStringOld, mTextBoxStringOld, out mLabelStringNew, out mTextBoxStringNew);
+                        this.ClickButton(mLabelStringOld, mTextBoxStringOld, out mLabelStringNew, out mPartnerClass, out mTextBoxStringNew);
                         LabelStringOut = mLabelStringNew;
                         TextBoxStringOut = mTextBoxStringNew;
+                        
+                        if (mPartnerClass != null) 
+                        {
+                            PartnerClassOut = mPartnerClass;
+                        }
                     }
                     catch (Exception E)
                     {
@@ -1448,6 +1462,7 @@ namespace Ict.Petra.Client.CommonControls
                                     TCommonScreensForwarding.OpenPartnerFindScreen.Invoke(this.FPartnerClass,
                                         out mResultIntTxt,
                                         out mResultStringLbl,
+                                        out mPartnerClass2, 
                                         out mResultLocationPK,
                                         this.ParentForm);
 
@@ -1456,7 +1471,12 @@ namespace Ict.Petra.Client.CommonControls
                                     {
                                         TextBoxStringOut = StringHelper.PartnerKeyToStr(mResultIntTxt);
                                         LabelStringOut = mResultStringLbl;
-
+                                        
+                                        if (mPartnerClass2.HasValue) 
+                                        {
+                                            PartnerClassOut = SharedTypes.PartnerClassEnumToString(mPartnerClass2.Value);    
+                                        }
+                                        
                                         if (PartnerFound != null)
                                         {
                                             PartnerFound(mResultIntTxt, mResultLocationPK.LocationKey);
@@ -1678,7 +1698,8 @@ namespace Ict.Petra.Client.CommonControls
         public void UpdateDisplayedValue()
         {
             string currentText;
-
+            string partnerclass = String.Empty;
+            
             currentText = txtAutoPopulated.txtTextBox.Text;
 
             if (currentText.Length > 0)
@@ -1686,13 +1707,15 @@ namespace Ict.Petra.Client.CommonControls
                 if (ShowLabel)
                 {
                     string result = this.txtAutoPopulated.lblLabel.Text;
-                    this.TxtAutoPopulated_SetLabel(currentText, ref result);
+                    this.TxtAutoPopulated_SetLabel(currentText, ref result, ref partnerclass);
                     this.txtAutoPopulated.lblLabel.Text = result;
+                    
+                    TCommonControlsHelper.SetPartnerKeyBackColour(partnerclass, txtAutoPopulated.txtTextBox, FOriginalPartnerClassColor);
                 }
             }
         }
 
-        private void TxtAutoPopulated_SetLabel(string ALookUpText, ref string ALabelText)
+        private void TxtAutoPopulated_SetLabel(string ALookUpText, ref string ALabelText, ref string APartnerClass)
         {
             string OldLabelText = ALabelText;
             string StrShortnameNotRetrieved = Catalog.GetString("### ShortName not retrieved ###");
@@ -1705,6 +1728,8 @@ namespace Ict.Petra.Client.CommonControls
             String mPartnerShortName;
             String ExtractDescription;
             TPartnerClass mPartnerClass;
+            
+            APartnerClass = String.Empty;
 
             /* Occupation list mode  seems to work differently.
              * It sets the label to blank, and the label is populated when the input is verified.
@@ -1733,7 +1758,7 @@ namespace Ict.Petra.Client.CommonControls
 
                     // TLogging.Log('Hello from TListTableEnum.PartnerKey', [TLoggingType.ToLogfile]);
                     // TLogging.Log('  Verified String: >' + this.FVerifiedString + '<', [TLoggingType.ToLogfile]);
-                    if ((ALookUpText != "") && (ALookUpText != "0"))
+                    if ((ALookUpText != "") && (ALookUpText != "0000000000"))
                     {
                         mPartnerKey = StringHelper.StrToPartnerKey(ALookUpText);
 
@@ -1749,6 +1774,8 @@ namespace Ict.Petra.Client.CommonControls
                         {
                             ValidResult = true;
                         }
+                        
+                        APartnerClass = SharedTypes.PartnerClassEnumToString(mPartnerClass);
                     }
                     else
                     {
@@ -1819,6 +1846,8 @@ namespace Ict.Petra.Client.CommonControls
                         {
                             ValidResult = true;
                         }
+                        
+                        APartnerClass = SharedTypes.PartnerClassEnumToString(mPartnerClass);
                     }
                     else
                     {
@@ -1831,7 +1860,6 @@ namespace Ict.Petra.Client.CommonControls
                     }
 
                     ALabelText = mPartnerShortName;
-
 
                     /* End TListTableEnum.Conference: */
                     #endregion

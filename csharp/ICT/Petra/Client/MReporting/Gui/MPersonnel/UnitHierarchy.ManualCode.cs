@@ -98,12 +98,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         {
             Int64 PartnerKey = -1;
             String ResultStringLbl;
+            TPartnerClass? PartnerClass;
             TLocationPK ResultLocationPK;
 
             // the user has to select an existing partner to make that partner a supplier
             if (TPartnerFindScreenManager.OpenModalForm("UNIT",
                     out PartnerKey,
                     out ResultStringLbl,
+                    out PartnerClass,
                     out ResultLocationPK,
                     this))
             {
