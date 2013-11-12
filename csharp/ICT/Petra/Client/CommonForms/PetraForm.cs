@@ -98,10 +98,10 @@ namespace Ict.Petra.Client.CommonForms
         /// Used for keeping track of data verification errors
         protected TVerificationResultCollection FVerificationResultCollection;
 
-        /// <summary>Whether the Form's Shown Event already occured. ATTENTION: See comment on 
+        /// <summary>Whether the Form's Shown Event already occured. ATTENTION: See comment on
         /// <see cref="FormHasBeenShown" /> Property for important implementation details!</summary>
         protected Boolean FFormHasBeenShown = false;
-                
+
         /// Used for keeping track of data verification errors
         public TVerificationResultCollection VerificationResultCollection
         {
@@ -128,7 +128,7 @@ namespace Ict.Petra.Client.CommonForms
                 return FFormHasBeenShown;
             }
         }
-        
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -596,7 +596,7 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// Hook up this Event to a Forms' Shown Event to allow the <see cref="FormHasBeenShown" />  
+        /// Hook up this Event to a Forms' Shown Event to allow the <see cref="FormHasBeenShown" />
         /// Property to reflect that.
         /// </summary>
         /// <param name="sender">Ignored.</param>
@@ -604,8 +604,8 @@ namespace Ict.Petra.Client.CommonForms
         public void OnFormShown(System.Object sender, System.EventArgs e)
         {
             FFormHasBeenShown = true;
-        }              
-        
+        }
+
         #endregion
 
         #region Helper Functions
@@ -731,7 +731,7 @@ namespace Ict.Petra.Client.CommonForms
             }
 
             FtipForm.SetToolTip(AControl, AToolTipText);
-        }        
+        }
     }
 
     /// <summary>todoComment</summary>

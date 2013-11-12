@@ -26,6 +26,7 @@ using System.Data;
 using System.Data.Odbc;
 using System.Collections;
 using System.Collections.Specialized;
+
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
@@ -34,6 +35,8 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
+
+using Npgsql;
 
 namespace Ict.Petra.Server.MPartner.Partner
 {
@@ -684,8 +687,18 @@ namespace Ict.Petra.Server.MPartner.Partner
         /// <summary>
         /// Add Key of a recently used partner to the table that holds the keys of the
         /// recent partners.
-        ///
         /// </summary>
+        /// <remarks>
+        /// IMPORTANT: This Method has a built-in recovery mechanism that allows it to
+        /// recover from an Exception that can be thrown due to the 'Predicate Locking' implementation
+        /// in PostgreSQL. If the Method makes attempts to recover from that, it
+        /// ROLLS BACK THE CURRENT DB TRANSACTION so that the next SQL Command can succeed. The Method will make
+        /// MAX_SUBMIT_RETRIES attempts. If the Method was called while a DB Transaction was already running
+        /// then this Method will have ROLLED BACK that DB Transaction in such a case and the Method
+        /// will return false!!! If the caller cares about that (i.e. if it was writing to the DB in that
+        /// DB Transaction) then the caller needs to re-do the writing to the DB if this Method returns 'false'
+        /// as that DB Transaction was just rolled back!
+        /// </remarks>
         /// <param name="APartnerKey">Key of the partner that was recently used</param>
         /// <param name="APartnerClass"></param>
         /// <param name="ANewPartner">Indicate if the partner is a new partner</param>
@@ -695,6 +708,8 @@ namespace Ict.Petra.Server.MPartner.Partner
         public static bool AddRecentlyUsedPartner(Int64 APartnerKey, TPartnerClass APartnerClass,
             bool ANewPartner, TLastPartnerUse ALastPartnerUse)
         {
+            const int MAX_SUBMIT_RETRIES = 5;
+
             Boolean ReturnValue;
             TDBTransaction ReadAndWriteTransaction;
             Boolean NewTransaction = false;
@@ -710,6 +725,8 @@ namespace Ict.Petra.Server.MPartner.Partner
             int ClassCounter;
             int NumberOfRecentPartners;
             StringCollection FieldList;
+            int SubmitRetries = 0;
+            bool SubmitSuccessful = false;
 
             // initialize result
             ReturnValue = true;
@@ -740,29 +757,21 @@ namespace Ict.Petra.Server.MPartner.Partner
                 switch (ALastPartnerUse)
                 {
                     case TLastPartnerUse.lpuMailroomPartner:
-                        TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPARTNERMAILROOM, (object)APartnerKey, false);
+                        TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPARTNERMAILROOM, (object)APartnerKey, true);
                         break;
 
                     case TLastPartnerUse.lpuPersonnelPerson:
-                        TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPERSONPERSONNEL, (object)APartnerKey, false);
+                        TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPERSONPERSONNEL, (object)APartnerKey, true);
                         break;
 
                     case TLastPartnerUse.lpuPersonnelUnit:
-                        TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTUNITPERSONNEL, (object)APartnerKey, false);
+                        TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTUNITPERSONNEL, (object)APartnerKey, true);
                         break;
 
                     case TLastPartnerUse.lpuConferencePerson:
-                        TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPERSONCONFERENCE, (object)APartnerKey, false);
+                        TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPERSONCONFERENCE, (object)APartnerKey, true);
                         break;
                 }
-
-                // TODO 2 : Remove this call when 4GL does not need to read user defaults any more
-                // now save the user defaults back to the db so 4GL can get it
-                TUserDefaults.SaveUserDefaultsFromServerSide(out SingleVerificationResultCollection);
-
-                // TODO 2 : Activate this call when 4GL does not need to read user defaults any more
-                // update user default values on client
-                // TMaintenanceUserDefaults.UpdateUserDefaultsOnClient();
 
                 // Check if the recently used partner already exists for the current user.
                 // Add it if not, otherwise just change the timestamp.
@@ -836,10 +845,79 @@ namespace Ict.Petra.Server.MPartner.Partner
                     }
                 }
 
-                // now submit the changes to the database
-                if ((!PRecentPartnersAccess.SubmitChanges(RecentPartnersDT, ReadAndWriteTransaction, out SingleVerificationResultCollection)))
+                while ((SubmitRetries < MAX_SUBMIT_RETRIES)
+                       && (!SubmitSuccessful))
                 {
-                    ReturnValue = false;
+                    try
+                    {
+                        // now submit the changes to the database
+                        if ((!PRecentPartnersAccess.SubmitChanges(RecentPartnersDT, ReadAndWriteTransaction, out SingleVerificationResultCollection)))
+                        {
+                            ReturnValue = false;
+                        }
+                        else
+                        {
+                            SubmitSuccessful = true;
+                        }
+                    }
+                    catch (Npgsql.NpgsqlException Exc)
+                    {
+                        // Check if we ran into the error 'could not serialize access due to read/write dependencies among transactions'
+                        // which has error code 40001. This is due to the 'Predicate Locking' implementation in PostgreSQL.
+                        // If so, retry, as this should overcome the error condition!
+                        // (See http://stackoverflow.com/questions/12837708/predicate-locking-in-postgresql-9-2-1-with-serializable-isolation)
+                        // That error has been encountered with the 'PetraMultiStart' test program where many clients may open a Partner Edit
+                        // at nearly the same time, but it could be encountered in a 'real office scenario' as well when two users open a
+                        // Partner Edit screen at nearly the same time.
+                        if (String.Compare(Exc.Code, "40001") == 0)
+                        {
+//                            TLogging.LogAtLevel(0, "TRecentPartnersHandling.AddRecentlyUsedPartner: We need to retry issuing SubmitChanges as the RDBMS suggested to do that when 'Predicate Locking' failed (PostgreSQL Error Code 40001).");
+
+//                            TLogging.LogAtLevel(0, "TRecentPartnersHandling.AddRecentlyUsedPartner: rolling back DB Transaction to allow further SQL Commands to succeed");
+                            DBAccess.GDBAccessObj.RollbackTransaction();
+//                            TLogging.LogAtLevel(0, "TRecentPartnersHandling.AddRecentlyUsedPartner: rolled back DB Transaction, now starting a new DB Transaction");
+
+                            // Let the caller of this Method know that the Method has rolled back the DB Transaction that was started outside of this Method.
+                            // If the caller cares about that (i.e. if it was writing to the DB in that DB Transaction) then the caller needs to re-do the
+                            // writing to the DB if this Method returns 'false' as that DB Transaction was just rolled back!
+                            if (!NewTransaction)
+                            {
+                                ReturnValue = false;
+                            }
+
+                            SubmitRetries++;
+
+                            ReadAndWriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted, 2);
+//                            TLogging.LogAtLevel(0, "TRecentPartnersHandling.AddRecentlyUsedPartner: successfully started a new DB Transaction, now retrying SubmitChanges (Retry attempt number: " + SubmitRetries.ToString() + ")...");
+
+                            // Now let the while statement retry the submitting!
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                    finally
+                    {
+                        if ((SubmitSuccessful)
+                            && (SubmitRetries > 0))
+                        {
+                            TLogging.LogAtLevel(0,
+                                "TRecentPartnersHandling.AddRecentlyUsedPartner: SubmitChanges was successful after " + SubmitRetries.ToString() +
+                                " retry attempts (we recovered from the 'Predicate Locking' error that PostgreSQL issued [PostgreSQL Error Code 40001])!");
+                        }
+                        else if (SubmitRetries > MAX_SUBMIT_RETRIES)
+                        {
+                            TLogging.LogAtLevel(0,
+                                "TRecentPartnersHandling.AddRecentlyUsedPartner: SubmitChanges was NOT successful after " +
+                                SubmitRetries.ToString() +
+                                " retry attempts (we FAILED TO RECOVER from the 'Predicate Locking' error that PostgreSQL issued [PostgreSQL Error Code 40001])!");
+                        }
+                    }
                 }
             }
             finally
@@ -848,12 +926,10 @@ namespace Ict.Petra.Server.MPartner.Partner
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
 
-                    if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_TRACE)
-                    {
-                        Console.WriteLine("TRecentPartnersHandling.GetAvailableFamilyID: committed own transaction.");
-                    }
+                    TLogging.LogAtLevel(0, "TRecentPartnersHandling.AddRecentlyUsedPartner: committed own transaction.");
                 }
             }
+
             return ReturnValue;
         }
 

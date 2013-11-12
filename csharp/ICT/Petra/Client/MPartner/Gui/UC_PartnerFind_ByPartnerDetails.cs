@@ -1829,5 +1829,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FPartnerFindObject = value;
             }
         }
+
+        /// <summary>
+        /// Sets up random Search Criteria and runs a Search.
+        /// </summary>
+        public void SetupRandomTestSearchCriteriaAndRunSearch()
+        {
+            ucoPartnerFindCriteria.SetupRandomTestSearchCriteria();
+
+            BtnSearch_Click(this, null);
+        }
     }
 }

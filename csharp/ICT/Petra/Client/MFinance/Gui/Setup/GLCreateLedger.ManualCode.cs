@@ -92,16 +92,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             TVerificationResultCollection VerificationResult;
 
-            if (txtLedgerName.Text.Length == 0)
-            {
-                MessageBox.Show(
-                    Catalog.GetString("Please enter a name for your ledger!"),
-                    Catalog.GetString("Problem: No Ledger has been created"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-                return;
-            }
-
             if (!dtpCalendarStartDate.Date.HasValue)
             {
                 MessageBox.Show(Catalog.GetString("Please supply valid Start date."),
@@ -134,25 +124,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // check if a unit already exists that uses this ledger key; make sure name is identical
             String UnitName;
             TPartnerClass PartnerClass;
+            Int64 PartnerKey = Convert.ToInt64(nudLedgerNumber.Value) * 1000000L;
 
-            if (TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName((Convert.ToInt64(nudLedgerNumber.Value) * 1000000L),
+            if (TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(PartnerKey,
                     out UnitName, out PartnerClass, true))
             {
-                if (UnitName != txtLedgerName.Text)
+                if (txtLedgerName.Text.Length == 0)
                 {
-                    if (MessageBox.Show(String.Format(Catalog.GetString(
-                                    "A Unit Partner record already exists for this Ledger Name!\r\nYour suggested Ledger Name '{0}' will automatically be changed to the Unit Name '{1}'.\r\n\r\nDo you still want to continue?"),
-                                txtLedgerName.Text, UnitName),
-                            Catalog.GetString("Problem: Ledger Name Mismatch"),
-                            MessageBoxButtons.YesNo,
-                            MessageBoxIcon.Error) == DialogResult.Yes)
+                    txtLedgerName.Text = UnitName;
+                }
+                else
+                {
+                    if (UnitName != txtLedgerName.Text)
                     {
-                        txtLedgerName.Text = UnitName;
+                        if (MessageBox.Show(String.Format(Catalog.GetString(
+                                        "A Unit Partner record already exists for Ledger Number {0}!\r\n(Partner Key: {1} - Name: '{2}')\r\nYour suggested name '{3}' will automatically be changed to '{2}'.\r\n\r\nDo you still want to continue?"),
+                                    nudLedgerNumber.Value.ToString(), PartnerKey.ToString(), UnitName, txtLedgerName.Text),
+                                Catalog.GetString("Problem: Ledger Name Mismatch"),
+                                MessageBoxButtons.YesNo,
+                                MessageBoxIcon.Error) == DialogResult.Yes)
+                        {
+                            txtLedgerName.Text = UnitName;
+                        }
+                        else
+                        {
+                            return;
+                        }
                     }
-                    else
-                    {
-                        return;
-                    }
+                }
+            }
+            else
+            {
+                if (txtLedgerName.Text.Length == 0)
+                {
+                    MessageBox.Show(
+                        Catalog.GetString("Please enter a name for your ledger!"),
+                        Catalog.GetString("Problem: No Ledger has been created"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                    return;
                 }
             }
 
@@ -278,6 +288,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         e.Handled = true;
                     }
                 }
+            }
+        }
+
+        void LedgerNumberChanged(Object sender, EventArgs e)
+        {
+            String UnitName;
+            TPartnerClass PartnerClass;
+            Int64 PartnerKey = Convert.ToInt64(nudLedgerNumber.Value) * 1000000L;
+
+            if (TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(PartnerKey,
+                    out UnitName, out PartnerClass, true))
+            {
+                txtLedgerName.Text = UnitName;
             }
         }
     }

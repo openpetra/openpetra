@@ -57,28 +57,21 @@ RootNode:
 
         dtpPSubscriptionStartDate:
             Label: Start Date
-            Validation: true
         dtpPSubscriptionExpiryDate:
             Label: Expiry Date
-            Validation: true
         dtpPSubscriptionSubscriptionRenewalDate:
             Label: Date Renewed
-            Validation: true
         dtpPSubscriptionDateNoticeSent:
             Label: Notice Sent
-            Validation: true
         dtpPSubscriptionDateCancelled:
             Label: Date Ended
-            Validation: true
 
         txtPSubscriptionNumberIssuesReceived: {Format=Integer, Width=60}
             Label: Issues Received
         dtpPSubscriptionFirstIssue:
             Label: First Issue Sent
-            Validation: true
         dtpPSubscriptionLastIssue:
             Label: Last Issue Sent
-            Validation: true
         btnEditIssues: {Stretch=horizontally}
             Label: Edit Issues
             Action: actEditIssues
