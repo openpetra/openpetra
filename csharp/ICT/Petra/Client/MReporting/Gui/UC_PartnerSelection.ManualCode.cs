@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             dtpCurrentStaff.Enabled = false;
             lblCurrentStaff.Enabled = false;
         }
-        
+
         /// <summary>
         /// Sets the Restricted Partner Classes in the modal Find Partner Screen
         /// </summary>
@@ -63,12 +63,12 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             // add '*' if more than one restrictedpartner class
             string[] Classes = ARestrictedPartnerClasses.Split(new Char[] { (',') });
-            
+
             if (Classes.Length > 1)
             {
                 ARestrictedPartnerClasses = "*," + ARestrictedPartnerClasses;
             }
-                
+
             txtPartnerKey.PartnerClass = ARestrictedPartnerClasses;
         }
 

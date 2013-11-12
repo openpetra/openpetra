@@ -313,6 +313,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             String TmpString;
             String RestrictedClasses = "";;
+
             Boolean WorkerFamOnly = false;
             DataRow PartnerClassDataRow;
 
@@ -339,7 +340,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // Add FAMILY not WORKER-FAM
                     PartnerClassDataRow["PartnerClass"] = "FAMILY";
                     FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
-                    
+
                     RestrictedClasses += "FAMILY" + ",";
 
                     // Set the flag, so combo box handler knows this is the case
@@ -366,7 +367,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             FWorkerFamOnly = false;
                             FWorkerFamPreferred = true;
                         }
-                            
+
                         if (eachPart != "*")
                         {
                             RestrictedClasses += eachPart + ",";
@@ -374,7 +375,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
             }
-            
+
             // Multiple partner classes represented by FDefaultPartnerClass when using RestrictedPartnerClasses.
             // Arranged like - "PartnerClass1,PartnerClass2,...etc"
             if (AAllPartnerClasses)
@@ -401,7 +402,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // and checked if needed
                 HandlePartnerClassGui();
             }
-            
+
             FFindCriteriaDataTable.Rows[0]["PartnerClass"] = FDefaultPartnerClass;
         }
 
@@ -486,7 +487,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (cmbPartnerClass.Text != "System.Data.DataRowView")
                 {
                     // partner classes in datatable need to be reset everytime '*' is reselected in cmbPartnerClass
-                    if (cmbPartnerClass.Text == "*" && RestrictedPartnerClass != null && RestrictedPartnerClass.Length != 0)
+                    if ((cmbPartnerClass.Text == "*") && (RestrictedPartnerClass != null) && (RestrictedPartnerClass.Length != 0))
                     {
                         FDontRecordCurrentWorkerFamOnlySelection = true;
                         AddPartnerClassesToDataTable(RestrictedPartnerClass, txtPersonalName.TextLength == 0);
@@ -1153,7 +1154,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             // Need to change it twice to get a selected value changed event
                             cmbPartnerClass.SelectedIndex = -1;
                             cmbPartnerClass.SelectedValue = FPreviouslySelectedPartnerClass;
-                            
+
                             if (cmbPartnerClass.SelectedValue == null)
                             {
                                 cmbPartnerClass.SelectedIndex = 0;
