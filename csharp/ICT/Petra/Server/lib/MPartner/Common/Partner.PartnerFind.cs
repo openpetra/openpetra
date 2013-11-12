@@ -383,13 +383,36 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
             if (CriteriaRow["PartnerClass"].ToString() != "*")
             {
-                // Searched DB Field: 'p_partner_class_c': done manually!
-                CustomWhereCriteria = String.Format("{0} AND PUB.{1}.{2} = ?", CustomWhereCriteria,
-                    PPartnerTable.GetTableDBName(),
-                    PPartnerTable.GetPartnerClassDBName());
-                OdbcParameter miParam = TTypedDataTable.CreateOdbcParameter(PPartnerTable.TableId, PPartnerTable.ColumnPartnerClassId);
-                miParam.Value = (object)CriteriaRow["PartnerClass"];
-                InternalParameters.Add(miParam);
+                // Split String into String Array is Restricted Partner Classes are being used
+                string[] Classes = CriteriaRow["PartnerClass"].ToString().Split(new Char[] { (',') });
+                    
+                String Criteria = null;
+                
+                foreach (string Class in Classes)
+                {
+                    if (Class != "*")
+                    {
+                        if (Criteria == null)
+                        {
+                            Criteria = " AND (";
+                        }
+                        else
+                        {
+                            Criteria += " OR ";
+                        }
+                    
+                        // Searched DB Field: 'p_partner_class_c': done manually!
+                        Criteria = String.Format("{0} PUB.{1}.{2} = ?", Criteria,
+                            PPartnerTable.GetTableDBName(),
+                            PPartnerTable.GetPartnerClassDBName());
+                        OdbcParameter miParam = TTypedDataTable.CreateOdbcParameter(PPartnerTable.TableId, PPartnerTable.ColumnPartnerClassId);
+                        miParam.Value = (object)Class;
+                    
+                        InternalParameters.Add(miParam);
+                    }
+                }
+
+                CustomWhereCriteria += Criteria + ")";
             }
 
             if (CriteriaRow["Address1"].ToString().Length > 0)

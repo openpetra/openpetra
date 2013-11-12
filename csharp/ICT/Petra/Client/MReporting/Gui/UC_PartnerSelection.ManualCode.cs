@@ -54,6 +54,23 @@ namespace Ict.Petra.Client.MReporting.Gui
             dtpCurrentStaff.Enabled = false;
             lblCurrentStaff.Enabled = false;
         }
+        
+        /// <summary>
+        /// Sets the Restricted Partner Classes in the modal Find Partner Screen
+        /// </summary>
+        /// <param name="ARestrictedPartnerClasses">RestrictedPartnerClasses in form - "PartnerClass1,PartnerClass2, ... etc"</param>
+        public void SetRestrictedPartnerClasses(string ARestrictedPartnerClasses)
+        {
+            // add '*' if more than one restrictedpartner class
+            string[] Classes = ARestrictedPartnerClasses.Split(new Char[] { (',') });
+            
+            if (Classes.Length > 1)
+            {
+                ARestrictedPartnerClasses = "*," + ARestrictedPartnerClasses;
+            }
+                
+            txtPartnerKey.PartnerClass = ARestrictedPartnerClasses;
+        }
 
         /// <summary>
         /// set the functions and column names that are available

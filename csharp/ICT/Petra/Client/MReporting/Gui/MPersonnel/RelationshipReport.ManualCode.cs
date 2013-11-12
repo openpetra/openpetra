@@ -52,6 +52,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         private DataTable FDirectRelationshipTable;
         private DataTable FReciprocalRelationshipTable;
 
+        private void InitializeManualCode()
+        {
+            ucoPartnerSelection.SetRestrictedPartnerClasses("PERSON");
+        }
+
         private void InitUserControlsManually()
         {
             InitRelationshipList();
