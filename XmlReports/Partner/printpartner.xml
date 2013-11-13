@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reports SYSTEM "../reports.dtd" >
+<reports>
+
+  <report id="Print Partner">
+	<description>
+		Prints data associated with a partner.
+	</description>
+	<reportparameters>
+		<reportparameter name="param_source"></reportparameter>
+		<reportparameter name="param_hide_empty_lines"></reportparameter>
+		<reportparameter name="param_print_two_lines"></reportparameter>
+	</reportparameters>
+	
+	<reportheader></reportheader>
+	<pageheader>
+		<field whichfield="title1"><value text ="Print Partner" /></field>
+		<field whichfield="title2"><value function = "getSiteName()"/></field>
+		<field whichfield="descr1">
+			<fielddetail>
+				<value text = "Selection: "/>
+			</fielddetail>
+			<fielddetail condition="eq({param_selection},one partner)">
+				<value text = "Partner "/><value variable = "param_partnerkey"/>
+			</fielddetail>
+		</field>
+		<field whichfield="descr2">
+			<fielddetail condition="ne({param_selection}, one partner)">
+				<value text="Sorted by: "/>
+				<value variable="param_sortby_readable"/>
+			</fielddetail>
+		</field>
+	</pageheader>
+
+    <calculations>
+	
+	<calculation id="Get Partner Details" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT
+					PUB_p_partner.p_partner_key_n AS PartnerKey,
+					PUB_p_partner.p_partner_class_c AS PartnerClass,
+					PUB_p_partner.p_partner_short_name_c AS PartnerShortName,
+					PUB_p_partner.p_status_code_c AS Status,
+					PUB_p_partner.p_acquisition_code_c AS Acquisition,
+					PUB_p_partner.p_language_code_c AS Language,
+					PUB_p_partner.p_restricted_i AS Restricted,
+					PUB_p_partner.p_comment_c AS Comment,
+					PUB_p_partner.p_previous_name_c AS PreviousName
+				FROM
+					PUB_p_partner
+				WHERE
+					PUB_p_partner.p_partner_key_n = {param_partnerkey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Get Church Details" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT
+					PUB_p_church.p_church_name_c AS ChurchName,
+					PUB_p_church.p_denomination_code_c AS Denomination,
+					PUB_p_church.p_approximate_size_i AS Size,
+					PUB_p_church.p_accomodation_l AS Accommodation,
+					PUB_p_church.p_accomodation_type_c AS AccommodationType,
+					PUB_p_church.p_accomodation_size_i AS AccommodationSize,
+					PUB_p_church.p_prayer_group_l AS PrayerGroup,
+					PUB_p_church.p_map_on_file_l AS Map
+				FROM
+					PUB_p_church
+				WHERE
+					PUB_p_church.p_partner_key_n = {PartnerKey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Partner Key" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="PartnerKey"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+    </calculations>
+   
+    <levels> 
+	<level name="main">
+		<detail>
+			<lowerLevelReport calculation="Get Partner Details" level="Partner Level"></lowerLevelReport>
+		</detail>
+	</level> 
+	
+	<level name="Partner Level" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Partner Details"></lowerLevelReport>
+			<lowerLevelReport level="Partner Class Details"></lowerLevelReport>
+		</detail>
+		<footer line="below" space="below">
+			<field whichfield="left 0" pos="0cm" width="1cm" >
+				<value text=" "/>
+			</field>
+			<field whichfield="column 0">
+				<value text=" "/>
+			</field>
+		</footer>
+	</level>
+	
+	<level name="Partner Details" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Partner Details Lower Level"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Details Lower Level" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Partner Details Lowest Level1"></lowerLevelReport>
+			<lowerLevelReport level="Partner Details Lowest Level2"></lowerLevelReport>
+			<lowerLevelReport level="Partner Details Lowest Level3"></lowerLevelReport>
+			<lowerLevelReport level="Partner Details Lowest Level4"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Details Lowest Level1" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="19cm">
+				<value text="Name: "/>
+				<value variable="PartnerShortName"/>
+				<value text=", Key: "/>
+				<value variable="PartnerKey"/>
+				<value text=", Class: "/>
+				<value variable="PartnerClass"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Partner Details Lowest Level2" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="19cm">
+				<value text="Status: "/>
+				<value variable="Status"/>
+				<value text=", Acquisition: "/>
+				<value variable="Acquisition"/>
+				<value text=", Language: "/>
+				<value variable="Language"/>
+				<value text=", Restriction: " condition="gt({Restriction},0)"/>
+				<value variable="Restriction"/>
+			</field>
+		</detail>
+		<footer space="below"/>
+	</level>
+	<level name="Partner Details Lowest Level3" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="19cm">
+				<value text=""/>
+			</field>
+		</detail>
+	</level>
+	<level name="Partner Details Lowest Level4" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="19cm">
+				<value text="Comment: "/>
+				<value variable="Comment"/>
+			</field>
+		</detail>
+	</level>
+	
+	<level name="Partner Class Details" identification="PartnerKey">
+		<header>
+			<field whichfield="header 0" pos="0cm" width="19cm">
+				<value text="**************** PARTNER CLASS: "/>
+				<value variable="PartnerClass"/>
+				<value text=" ****************"/>
+			</field>
+		</header>
+		<detail>
+			<lowerLevelReport calculation="Get Church Details" level="Church Details" condition="eq({PartnerClass}, CHURCH)"></lowerLevelReport>
+		</detail>
+		<footer space="below"/>
+	</level>
+	<level name="Church Details" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Church Details Lowest Level1"></lowerLevelReport>
+			<lowerLevelReport level="Church Details Lowest Level2"></lowerLevelReport>
+			<lowerLevelReport level="Church Details Lowest Level3"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Church Details Lowest Level1" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="19cm">
+				<value text="Church Name: "/>
+				<value variable="ChurchName"/>
+				<value text=", Denomination: " condition="gt({Denomination},0)"/>
+				<value variable="Denomination"/>
+				<value text=", Size: " condition="gt({Size},0)"/>
+				<value variable="Size"/>
+				<value text=", Previous Name: " condition="gt({PreviousName},0)"/>
+				<value variable="PreviousName"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Church Details Lowest Level2" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="19cm">
+				<value text="Accommodation Available: "/>
+				<value variable="Accommodation"/>
+				<value text=", Accommodation Type: " condition="gt({Accommodation},0)"/>
+				<value variable="AccommodationType" condition="gt({Accommodation},0)"/>
+				<value text=", Accommodation Size: " condition="gt({Accommodation},0)"/>
+				<value variable="AccommodationSize" condition="gt({Accommodation},0)"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Church Details Lowest Level3" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="19cm">
+				<value text="Prayer Group: "/>
+				<value variable="PrayerGroup"/>
+				<value text=", Map on file: "/>
+				<value variable="Map"/>
+			</field>
+		</detail>
+	</level>
+	
+	
+    </levels>
+  </report>
+</reports>

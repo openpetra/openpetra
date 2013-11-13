@@ -1,0 +1,68 @@
+RootNode:
+    BaseYaml: ../ReportingForm.yaml
+    FormType: report
+    FormTitle: Print Partner
+    Template: reportwindow
+    UtilObjectClass: TFrmPetraReportingUtils
+    InterfaceName: IFrmReporting
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
+    TemplateParameters:
+        XMLFILES: [Partner\\\\printpartner.xml]
+        REPORTNAME: Print Partner
+        CURRENTREPORT: Print Partner
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+        REPORTSETTINGSDIRECTORY: Partner
+    Security:
+        ModulePermissionRequired: [PARTNER]
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [ucoPartnerSelection]
+            Order: AlwaysFirst
+        tpgReportDetails:
+            Lable: Report Details
+            Controls: [grpReportDetails]
+        ucoPartnerSelection:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
+            Dock: Fill
+        grpReportDetails:
+            Controls: [chkFamilyMembers, chkAddress, chkPassport, chkPersonalDocuments, chkDriverLicense, chkOtherEmergencyData, chkSpecialNeeds, chkAbilities, chkLanguages, chkEmergencyContacts, chkProofQuestion]
+            
+        chkFamilyMembers:
+            Label: Show Family Members
+            CheckBoxAttachedLabel: right
+        chkAddress:
+            Label: Show Address
+            CheckBoxAttachedLabel: right
+        chkPassport:
+            Label: Show Passport
+            CheckBoxAttachedLabel: right
+        chkPersonalDocuments:
+            Label: Show Personal Documents
+            CheckBoxAttachedLabel: right
+        chkDriverLicense:
+            Label: Show Driver License
+            CheckBoxAttachedLabel: right
+        chkOtherEmergencyData:
+            Label: Show Other Emergency Data
+            CheckBoxAttachedLabel: right
+        chkSpecialNeeds:
+            Label: Show Special Needs
+            CheckBoxAttachedLabel: right
+        chkAbilities:
+            Label: Show Abilities
+            CheckBoxAttachedLabel: right
+        chkLanguages:
+            Label: Show Languages
+            CheckBoxAttachedLabel: right
+        chkEmergencyContacts:
+            Label: Show Emergency Contacts
+            CheckBoxAttachedLabel: right
+        chkProofQuestion:
+            Label: Show Proof of Life Question
+            CheckBoxAttachedLabel: right
+            

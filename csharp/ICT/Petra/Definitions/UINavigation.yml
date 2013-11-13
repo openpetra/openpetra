@@ -74,6 +74,7 @@ OpenPetra:
                         DonorByMiscellaneous: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Miscellaneous, ActionClick=TFinanceMain.DonorByMiscellaneousExtractCrossLedger}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
                     PartnerReports:
+                        PrintPartner: {ActionOpenScreen=TFrmPrintPartner}
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
                         PartnerBySpecialType: {ActionOpenScreen=TFrmPartnerBySpecialType}
                         PartnerBySubscription: {ActionOpenScreen=TFrmPartnerBySubscription}
