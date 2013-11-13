@@ -173,7 +173,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                         string ErrorMessage = string.Format(Catalog.GetString("WARNING: You are about to change the family of {0} ({1}).") + "\n\n" +
                             Catalog.GetString("Changing a person's family can affect the person's ability to see their support information in" +
-                                " Caleb including any support that they may receive from other Fields."), FromPartnerShortName, AFromPartnerKey);
+                                " the Intranet including any support that they may receive from other Fields."), FromPartnerShortName, AFromPartnerKey);
 
                         if (CheckCommitmentsResult == 1)
                         {
@@ -207,12 +207,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         {
                             ErrorMessage = string.Format(Catalog.GetString("WARNING: You are about to change the family of {0} ({1}).") + "\n\n" +
                                 Catalog.GetString("Changing a person's family can affect the person's ability to see their support information in" +
-                                    " Caleb including any support that they may receive from other Fields."), FromPartnerShortName, AFromPartnerKey);
+                                    " the Intranet including any support that they may receive from other Fields."), FromPartnerShortName, AFromPartnerKey);
                         }
                         else if (CheckCommitmentsResult == 2)
                         {
                             ErrorMessage = Catalog.GetString("WARNING: Both Persons have a current commitment. " +
-                                "Be aware that merging these Persons may affect their usage of Caleb.") +
+                                "Be aware that merging these Persons may affect their usage of the Intranet.") +
                                            "\n\n" + Catalog.GetString("Do you want to continue?");
                         }
                         else if (CheckCommitmentsResult == 1)
