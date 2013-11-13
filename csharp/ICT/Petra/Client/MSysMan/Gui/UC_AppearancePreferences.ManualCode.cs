@@ -48,6 +48,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private ColorDialog AlternateColorDialog = new ColorDialog();
         private ColorDialog GridlinesColorDialog = new ColorDialog();
         private ColorDialog SelectionColorDialog = new ColorDialog();
+        private ColorDialog FilterColorDialog = new ColorDialog();
+        private ColorDialog FindColorDialog = new ColorDialog();
 
         // original preferences
         private System.Drawing.Color OriginalBackgroundColour;
@@ -56,6 +58,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private System.Drawing.Color GridlinesColour;
         private System.Drawing.Color SelectionColour;
         private int SelectionAlpha;
+        private System.Drawing.Color FilterColour;
+        private System.Drawing.Color FindColour;
 
         private void InitializeManualCode()
         {
@@ -95,11 +99,19 @@ namespace Ict.Petra.Client.MSysMan.Gui
             GridlinesColour = System.Drawing.ColorTranslator.FromHtml(
                 TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_GRID_GRIDLINES,
                     System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.FromArgb(211, 211, 211))));
+            FilterColour = System.Drawing.ColorTranslator.FromHtml(
+                TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_FILTER_PANEL,
+                    System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.LightBlue)));
+            FindColour = System.Drawing.ColorTranslator.FromHtml(
+                TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_FIND_PANEL,
+                    System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.BurlyWood)));
 
             BackgroundColorDialog.Color = OriginalBackgroundColour;
             CellBackgroundColorDialog.Color = OriginalCellBackgroundColour;
             AlternateColorDialog.Color = AlternateColour;
             GridlinesColorDialog.Color = GridlinesColour;
+            FilterColorDialog.Color = FilterColour;
+            FindColorDialog.Color = FindColour;
 
             string SelectionColourUserDefault;
 
@@ -172,6 +184,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
             btnAlternate.BackColor = AlternateColorDialog.Color;
             btnGridlines.BackColor = GridlinesColorDialog.Color;
             btnSelection.BackColor = SelectionColorDialog.Color;
+            btnFilter.BackColor = FilterColorDialog.Color;
+            btnFind.BackColor = FindColorDialog.Color;
         }
 
         /// <summary>
@@ -271,6 +285,22 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 TSgrdDataGrid.ColourInfoSetup = false;
             }
 
+            if (FilterColour != FilterColorDialog.Color)
+            {
+                String HtmlColor = System.Drawing.ColorTranslator.ToHtml(FilterColorDialog.Color);
+                TUserDefaults.SetDefault(TUserDefaults.NamedDefaults.COLOUR_FILTER_PANEL, HtmlColor);
+
+                TUcoFilterAndFind.ColourInfoSetup = false;
+            }
+
+            if (FindColour != FindColorDialog.Color)
+            {
+                String HtmlColor = System.Drawing.ColorTranslator.ToHtml(FindColorDialog.Color);
+                TUserDefaults.SetDefault(TUserDefaults.NamedDefaults.COLOUR_FIND_PANEL, HtmlColor);
+
+                TUcoFilterAndFind.ColourInfoSetup = false;
+            }
+
             return AppearanceChanged;
         }
 
@@ -365,6 +395,39 @@ namespace Ict.Petra.Client.MSysMan.Gui
             ((SelectionBase)grdExample.Selection).BackColor = System.Drawing.Color.FromArgb(Convert.ToInt32(
                     nudAlpha.Value), SelectionColorDialog.Color);
             ((SelectionBase)grdExample.Selection).FocusBackColor = ((SelectionBase)grdExample.Selection).BackColor;
+
+            SetButtonColours();
+        }
+
+        private void OnBtnFilter(Object sender, EventArgs e)
+        {
+            // Show the color dialog.
+            DialogResult Result = FilterColorDialog.ShowDialog();
+
+            // See if user pressed ok.
+            if (Result == DialogResult.OK)
+            {
+                SetButtonColours();
+            }
+        }
+
+        private void OnBtnFind(Object sender, EventArgs e)
+        {
+            // Show the color dialog.
+            DialogResult Result = FindColorDialog.ShowDialog();
+
+            // See if user pressed ok.
+            if (Result == DialogResult.OK)
+            {
+                SetButtonColours();
+            }
+        }
+
+        // restore Filter and Find colours to default values
+        private void OnBtnRestoreFilterFind(Object sender, EventArgs e)
+        {
+            FilterColorDialog.Color = System.Drawing.Color.LightBlue;
+            FindColorDialog.Color = System.Drawing.Color.BurlyWood;
 
             SetButtonColours();
         }

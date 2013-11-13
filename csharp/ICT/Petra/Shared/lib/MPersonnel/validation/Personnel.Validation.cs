@@ -798,7 +798,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                if (!ARow.IsBelieverSinceYearNull())
+                if (!ARow.IsBelieverSinceYearNull() && (ARow.BelieverSinceYear != 0))
                 {
                     VerificationResult = TDateChecks.IsDateBetweenDates(
                         new DateTime(ARow.BelieverSinceYear, 12, 31), new DateTime(1850, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),

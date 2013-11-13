@@ -40,6 +40,68 @@ namespace Ict.Common.Controls
     public partial class TUcoFilterAndFind : UserControl
     {
         /// <summary>
+        /// Used to specify colours for several aspects of a TUcoFilterAndFind.
+        /// </summary>
+        public struct ColourInformation
+        {
+            private Color FFilterColour;
+            private Color FFindColour;
+
+            /// <summary>
+            /// Colour of the Filter panel.
+            /// </summary>
+            public Color FilterColour
+            {
+                get
+                {
+                    return FFilterColour;
+                }
+
+                set
+                {
+                    FFilterColour = value;
+                }
+            }
+
+            /// <summary>
+            /// Colour of the Find panel.
+            /// </summary>
+            public Color FindColour
+            {
+                get
+                {
+                    return FFindColour;
+                }
+
+                set
+                {
+                    FFindColour = value;
+                }
+            }
+        }
+
+        private Color FFilterColour;
+        private Color FFindColour;
+        private static ColourInformation FColourInfo;
+        private static bool FColourInfoSetup = false;
+
+        /// <summary>
+        /// Used to refresh Filter Find panel colours after they have been changed in user preferences.
+        /// </summary>
+        public static bool ColourInfoSetup
+        {
+            set
+            {
+                FColourInfoSetup = value;
+            }
+        }
+
+        /// <summary>
+        /// Used for passing Colour information to the Filter Find. Re-used by all instances of the Filter Find!
+        /// </summary>
+        public static Func <ColourInformation>SetColourInformation;
+
+        /// <summary>
         /// Defines to which context a specific setting applies.
         /// </summary>
         public enum FilterContext
@@ -70,27 +132,27 @@ namespace Ict.Common.Controls
             /// <summary>
             /// Event happened on the 'Extra' Filter Panel.
             /// </summary>
-           ecExtraFilterPanel,
+                ecExtraFilterPanel,
 
             /// <summary>
             /// Event happened on the Find Panel.
             /// </summary>
-           ecFindPanel,
+                ecFindPanel,
 
             /// <summary>
             /// Event happened on the 'Extra' Filter Panel.
             /// </summary>
-           ecFilterTab,
+                ecFilterTab,
 
             /// <summary>
             /// Event happened on the Find Panel.
             /// </summary>
-           ecFindTab,
+                ecFindTab,
 
             /// <summary>
             /// Event happened on a Control that isn't known to the UserControl
             /// </summary>
-           ecUnknownControl
+                ecUnknownControl
         }
 
         /// <summary>
@@ -840,6 +902,9 @@ namespace Ict.Common.Controls
             this.Invalidate();
 
             AutoSizeFilterPanelsHeights();
+
+            // set the panel colours
+            SetPanelColours();
         }
 
         /// <summary>
@@ -1370,11 +1435,6 @@ namespace Ict.Common.Controls
             TSingleLineFlow LayoutManagerFilterTab;
             TSingleLineFlow LayoutManagerFindTab;
 
-            System.Drawing.Color GradientEndColor = Color.FromArgb(
-                System.Drawing.Color.BurlyWood.R - 30,
-                System.Drawing.Color.BurlyWood.G - 20,
-                System.Drawing.Color.BurlyWood.B - 15);
-
             this.SuspendLayout();
             grpFindDirection.SuspendLayout();
             pnlFindOptions.SuspendLayout();
@@ -1390,8 +1450,6 @@ namespace Ict.Common.Controls
             FPnlFindControls.BorderColor = System.Drawing.Color.CadetBlue;
             FPnlFindControls.ShadowOffSet = 4;
             FPnlFindControls.RoundCornerRadius = 4;
-            FPnlFindControls.GradientStartColor = System.Drawing.Color.BurlyWood;
-            FPnlFindControls.GradientEndColor = GradientEndColor;
             FPnlFindControls.GradientDirection = LinearGradientMode.Horizontal;
 
             // Layout Manager for the 'Find' Panel.
@@ -1550,6 +1608,75 @@ namespace Ict.Common.Controls
 
             // Ensure that pnlFindOptions is always the bottommost of the Controls in the Panel
             FPnlFindControls.Controls.SetChildIndex(pnlFindOptions, FPnlFindControls.Controls.Count);
+        }
+
+        // set the panel colours
+        private void SetPanelColours()
+        {
+            // set colours from user preferences
+            if (SetColourInformation != null)
+            {
+                if (!FColourInfoSetup)
+                {
+                    FColourInfo = SetColourInformation();
+                    FColourInfoSetup = true;
+                }
+            }
+            else
+            {
+                FColourInfo.FilterColour = System.Drawing.Color.LightBlue;
+                FColourInfo.FindColour = System.Drawing.Color.BurlyWood;
+            }
+
+            this.FFilterColour = FColourInfo.FilterColour;
+            this.FFindColour = FColourInfo.FindColour;
+
+            // panels have a gradient colour so an end colour must be defined
+            int FilterRed = 0;
+            int FilterGreen = 0;
+            int FilterBlue = 0;
+
+            if (FFilterColour.R >= 30)
+            {
+                FilterRed = FFilterColour.R - 30;
+            }
+
+            if (FFilterColour.G >= 30)
+            {
+                FilterGreen = FFilterColour.G - 30;
+            }
+
+            if (FFilterColour.B >= 30)
+            {
+                FilterBlue = FFilterColour.B - 30;
+            }
+
+            int FindRed = 0;
+            int FindGreen = 0;
+            int FindBlue = 0;
+
+            if (FFindColour.R >= 30)
+            {
+                FindRed = FFindColour.R - 30;
+            }
+
+            if (FFindColour.G >= 30)
+            {
+                FindGreen = FFindColour.G - 30;
+            }
+
+            if (FFindColour.B >= 30)
+            {
+                FindBlue = FFindColour.B - 30;
+            }
+
+            System.Drawing.Color FilterGradientEndColor = Color.FromArgb(FilterRed, FilterGreen, FilterBlue);
+            System.Drawing.Color FindGradientEndColor = Color.FromArgb(FindRed, FindGreen, FindBlue);
+
+            pnlFilterControls.GradientStartColor = FFilterColour;
+            pnlFilterControls.GradientEndColor = FilterGradientEndColor;
+            FPnlFindControls.GradientStartColor = FFindColour;
+            FPnlFindControls.GradientEndColor = FindGradientEndColor;
         }
 
         private void ProcessArgumentPanel(Panel AArgumentPanel, int AContainerPanelWidth, bool AContainerPanelIsFindPanel)

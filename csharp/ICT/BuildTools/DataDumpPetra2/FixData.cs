@@ -622,6 +622,17 @@ namespace Ict.Tools.DataDumpPetra2
                 PostcodeRegionsList.Add(CurrentRegion);
             }
 
+            // p_partner_status, 'DIED', 'INACTIVE' and 'MERGED' partners are not active
+            if (ATableName == "p_partner_status")
+            {
+                string val = GetValue(AColumnNames, ANewRow, "p_status_code_c");
+
+                if ((val == "DIED") || (val == "INACTIVE") || (val == "MERGED"))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "p_partner_is_active_l", "0");
+                }
+            }
+
             return true;
         }
 

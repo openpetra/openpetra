@@ -33,6 +33,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
     /// </summary>
     public partial class TFrmEmergencyContactReportStaff
     {
+        private void InitializeManualCode()
+        {
+            ucoPartnerSelection.SetRestrictedPartnerClasses("PERSON");
+        }
+
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("ControlSource", "", ReportingConsts.HEADERCOLUMN);
