@@ -116,8 +116,6 @@ RootNode:
         cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=FilterMotivationDetail}
         cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, OnChange=MotivationDetailChanged}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
-        lblEmpty1: {Label=Empty, Visible=false}
-        lblEmpty2: {Label=Empty, Visible=false}
         txtField: {Label=Field, Type=PartnerKey, ReadOnly=true}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
