@@ -1281,7 +1281,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="APartnerClass">Partner Class.</param>
         /// <param name="ALocationPK">Location key.</param>
         /// <returns></returns>
-        public Boolean GetReturnedParameters(out Int64 APartnerKey, out String AShortName, out TPartnerClass? APartnerClass, 
+        public Boolean GetReturnedParameters(out Int64 APartnerKey, out String AShortName, out TPartnerClass? APartnerClass,
             out TLocationPK ALocationPK)
         {
             APartnerKey = -1;
@@ -1291,7 +1291,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (FFormSetupFinished)
             {
-                return ucoFindByPartnerDetails.GetReturnedParameters(out APartnerKey, out AShortName, 
+                return ucoFindByPartnerDetails.GetReturnedParameters(out APartnerKey, out AShortName,
                     out APartnerClass, out ALocationPK);
             }
 
@@ -1382,7 +1382,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             out Int64 APartnerKey,
             out String AShortName,
             out TPartnerClass? APartnerClass,
-            out TLocationPK ALocationPK,            
+            out TLocationPK ALocationPK,
             Form AParentForm)
         {
             TPartnerFindScreen PartnerFindForm;

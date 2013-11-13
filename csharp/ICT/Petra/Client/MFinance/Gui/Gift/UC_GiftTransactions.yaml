@@ -85,20 +85,18 @@ RootNode:
             Controls:
                 Row0: [grpDetailsForDonor]
                 Row1: [grpDetailsForEachGift]
-        grpDetailsForDonor: {ColSpan=2, Width:945, Height:123}
-            Align: top-left
+        grpDetailsForDonor: {Width:945, Height:123}
             Controls: 
                 Row0: [txtDetailDonorKey, cmbDetailMethodOfGivingCode]
                 Row1: [txtGiftTotal, cmbDetailMethodOfPaymentCode]
                 Row2: [txtDetailReference,cmbDetailReceiptLetterCode]
                 Row3: [dtpDateEntered]
-        grpDetailsForEachGift: {ColSpan=2, Width:945, Height:242}
-            Align: top-left
+        grpDetailsForEachGift: {Width:945, Height:242}
             Controls: 
                 Row0: [txtDetailRecipientKey, chkDetailConfidentialGiftFlag]
                 Row1: [txtField, chkDetailChargeFlag]
-                Row2: [txtDetailGiftTransactionAmount, chkDetailTaxDeductable]
-                Row3: [cmbMinistry, cmbDetailMailingCode]
+                Row2: [cmbMinistry, chkDetailTaxDeductable]
+                Row3: [txtDetailGiftTransactionAmount, cmbDetailMailingCode]
                 Row4: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode]         
                 Row5: [txtDetailCostCentreCode, txtDetailAccountCode]
                 Row6: [txtDetailGiftCommentOne, cmbDetailCommentOneType]
@@ -106,7 +104,7 @@ RootNode:
                 Row8: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
         #txtDonorName: {ReadOnly=true, PartnerShortNameLookup=AGiftDetail.DonorKey}
         dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Help: This date is used for receipt printing, Unbound=true, Validation=true}
-        txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=true, Unbound=true}
+        txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=true, Width=158, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Unbound=true, OnChange=DonorKeyChanged}
         txtDetailReference: {Label=Reference, Width=170}
         cmbDetailReceiptLetterCode:

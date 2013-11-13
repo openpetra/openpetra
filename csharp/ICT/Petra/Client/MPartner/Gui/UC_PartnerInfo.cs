@@ -1172,11 +1172,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             PartnerInfoTDSPartnerHeadInfoRow PartnerHeadInfoDR;
             string PartnerClass;
-            
+
             if (!FHeadDataServerRetrieved)
             {
                 PartnerClass = FPartnerDR[PPartnerTable.GetPartnerClassDBName()].ToString();
-                
+
                 txtPartnerName.Text = FPartnerDR[PPartnerTable.GetPartnerShortNameDBName()].ToString() + "   (" +
                                       PartnerClass + ")";
                 txtPartnerKey.PartnerKey = Convert.ToInt64(FPartnerDR[PPartnerTable.GetPartnerKeyDBName()]);
@@ -1189,7 +1189,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PartnerHeadInfoDR = FPartnerInfoDS.PartnerHeadInfo[0];
 
                 PartnerClass = PartnerHeadInfoDR.PartnerClass;
-                
+
                 txtPartnerName.Text = PartnerHeadInfoDR.PartnerShortName + "   (" +
                                       PartnerClass + ")";
                 txtPartnerKey.PartnerKey = PartnerHeadInfoDR.PartnerKey;

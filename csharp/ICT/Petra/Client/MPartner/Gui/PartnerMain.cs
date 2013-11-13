@@ -113,7 +113,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 TPartnerClass? PartnerClass;
                 TLocationPK LocationPK;
 
-                if (TPartnerFindScreenManager.OpenModalForm(ARestrictToPartnerClasses, out PartnerKey, out ShortName, out PartnerClass, out LocationPK,
+                if (TPartnerFindScreenManager.OpenModalForm(ARestrictToPartnerClasses, out PartnerKey, out ShortName, out PartnerClass,
+                        out LocationPK,
                         AParentForm))
                 {
                     // Open the Partner Edit screen

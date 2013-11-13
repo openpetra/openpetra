@@ -1018,7 +1018,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="APartnerClass">Partner Class.</param>
         /// <param name="ALocationPK">Location key</param>
         /// <returns></returns>
-        public Boolean GetReturnedParameters(out Int64 APartnerKey, out String AShortName, out TPartnerClass? APartnerClass, 
+        public Boolean GetReturnedParameters(out Int64 APartnerKey, out String AShortName, out TPartnerClass? APartnerClass,
             out TLocationPK ALocationPK)
         {
             DataRowView[] SelectedGridRow = grdResult.SelectedDataRowsAsDataRowView;

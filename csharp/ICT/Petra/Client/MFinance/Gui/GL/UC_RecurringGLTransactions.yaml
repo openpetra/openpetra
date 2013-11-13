@@ -90,7 +90,7 @@ RootNode:
             Multiline: true
             ScrollBars: Vertical
             Validation: true
-        txtDetailReference: {Label=Reference}
+        txtDetailReference: {Label=Reference, Validation=true}
         pnlDetailAmounts:
             Controls:
                 Row0: [lblTransactionCurrency]
@@ -102,7 +102,7 @@ RootNode:
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
         txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
         txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
-        txtDebitAmount: {Label=Dr Amount, Format=Currency, NullValueAllowed=false}
-        txtCreditAmount: {Label=Cr Amount, Format=Currency, NullValueAllowed=false}
+        txtDebitAmount: {Label=Dr Amount, Validation=true, Format=Currency, NullValueAllowed=false}
+        txtCreditAmount: {Label=Cr Amount, Validation=true, Format=Currency, NullValueAllowed=false}
         txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true, Format=Currency}
         txtCreditTotalAmount: {Label=Credit Total, ReadOnly=true, Format=Currency}

@@ -162,7 +162,7 @@ namespace Ict.Common.Controls
         /// <summary> Required designer variable. </summary>
         protected System.ComponentModel.IContainer components = null;
         private TbtnVarioText btnFindScreen;
-        
+
         private Color? FOriginalPartnerClassColor = null;
 
         /// <summary>
@@ -1127,7 +1127,7 @@ namespace Ict.Common.Controls
                             this.txtTextBox.Text = mTextBoxStringNew;
 
                             TCommonControlsHelper.SetPartnerKeyBackColour(mPartnerClass, this.txtTextBox, FOriginalPartnerClassColor);
-                            
+
                             // update the text
                             // if new label text is NOT returned, do a DB lookup to find it
                             if ((mLabelStringNew == null) || (mLabelStringNew == ""))
@@ -1439,7 +1439,7 @@ namespace Ict.Common.Controls
         public void UpdateLabelText()
         {
             string mPartnerClass = String.Empty;
-            
+
             // Initialization
             // TLogging.Log('TtxtButtonLabel.UpdateLabelText: Start', [TLoggingType.ToLogfile]);
             // TLogging.LogStackTrace([TLoggingType.ToLogfile]);

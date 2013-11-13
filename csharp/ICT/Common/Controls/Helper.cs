@@ -50,11 +50,11 @@ namespace Ict.Common.Controls
     public partial class TCommonControlsHelper
     {
         /// <summary>
-        /// The particulary 'yellow colour' that highlights Partners of Partner Class PERSON 
+        /// The particulary 'yellow colour' that highlights Partners of Partner Class PERSON
         /// </summary>
         public static readonly Color PartnerClassPERSONColour = System.Drawing.Color.FromArgb(255, 255, 94);
-        
-        
+
+
         /// <summary>
         /// Used for determining whether the Control is instantiated in the WinForms Designer, or not.
         /// </summary>
@@ -82,28 +82,28 @@ namespace Ict.Common.Controls
 
             return returnFlag;
         }
-        
+
         /// <summary>
         /// Sets a Partner Key TextBox's BackColour according to the <paramref name="APartnerClass" />.
         /// </summary>
         /// <param name="APartnerClass">Partner Class of the Partner.</param>
         /// <param name="APartnerKeyTextBox">TextBox that displays the PartnerKey.</param>
         /// <param name="AOriginalPartnerClassColour">State-holding Field of a Class.</param>
-        public static void SetPartnerKeyBackColour(string APartnerClass, TextBox APartnerKeyTextBox, Color? AOriginalPartnerClassColour)
+        public static void SetPartnerKeyBackColour(string APartnerClass, TextBox APartnerKeyTextBox, Color ? AOriginalPartnerClassColour)
         {
             if (APartnerClass == "PERSON")
             {
-                if (APartnerKeyTextBox.BackColor != TCommonControlsHelper.PartnerClassPERSONColour) 
+                if (APartnerKeyTextBox.BackColor != TCommonControlsHelper.PartnerClassPERSONColour)
                 {
                     AOriginalPartnerClassColour = APartnerKeyTextBox.BackColor;
-                    APartnerKeyTextBox.BackColor = TCommonControlsHelper.PartnerClassPERSONColour;                    
-                }                                                    
+                    APartnerKeyTextBox.BackColor = TCommonControlsHelper.PartnerClassPERSONColour;
+                }
             }
             else
             {
                 APartnerKeyTextBox.BackColor = AOriginalPartnerClassColour ?? System.Drawing.SystemColors.Control;
-            }            
-        }       
+            }
+        }
     }
 
     #endregion
@@ -434,7 +434,7 @@ namespace Ict.Common.Controls
 
                     switch (ctrlAsCheckBox.CheckState)
                     {
-                        case CheckState.Checked:
+                        case CheckState.Checked :
                             value = "1";
                             break;
 

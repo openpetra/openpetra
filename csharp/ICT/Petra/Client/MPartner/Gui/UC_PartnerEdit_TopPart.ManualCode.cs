@@ -140,9 +140,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             #region Show fields according to Partner Class
 
             txtPartnerKey.PartnerClass = FPartnerClass;
-            
+
             switch (SharedTypes.PartnerClassStringToEnum(FPartnerClass))
-            {                    
+            {
                 case TPartnerClass.PERSON:
                     pnlPerson.Visible = true;
                     pnlWorkerField.Visible = true;

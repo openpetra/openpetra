@@ -214,7 +214,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FFormSetupFinished)
             {
                 txtPartnerKey.PartnerClass = cmbPartnerClass.GetSelectedString();
-                
+
                 if (cmbPartnerClass.GetSelectedString() == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
                     ShowFamilyPartnerSelection(true);
