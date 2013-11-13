@@ -24,6 +24,7 @@
 using System;
 using System.Windows.Forms;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.CommonControls.Logic
 {
@@ -31,6 +32,7 @@ namespace Ict.Petra.Client.CommonControls.Logic
     public delegate bool TDelegateOpenPartnerFindScreen(String ARestrictToPartnerClass,
         out Int64 APartnerKey,
         out String AShortName,
+        out TPartnerClass? APartnerClass,
         out TLocationPK ALocationPK,
         Form AParentForm);
 
