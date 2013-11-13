@@ -33,7 +33,7 @@ namespace Ict.Petra.Client.CommonControls.Logic
         out Int64 APartnerKey,
         out String AShortName,
         out TPartnerClass? APartnerClass,
-        out TLocationPK ALocationPK,        
+        out TLocationPK ALocationPK,
         Form AParentForm);
 
     /// <summary>Delegate for a call to open a Modal Conference Find screen</summary>

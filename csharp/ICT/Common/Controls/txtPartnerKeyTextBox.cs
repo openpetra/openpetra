@@ -83,12 +83,12 @@ namespace Ict.Common.Controls
 
         /// <summary> Required designer variable. </summary>
         protected System.Int64 FPartnerKey;
-        
+
         /// <summary>Partner Class.</summary>
         private String FPartnerClass;
-        
+
         private Color? FOriginalPartnerClassColor = null;
-        
+
         /**
          * This property gets or sets the maximum number of characters the user can
          * type or paste into the text box control.
@@ -149,10 +149,10 @@ namespace Ict.Common.Controls
                 }
             }
         }
-        
+
         /// <summary>
         /// Gets or sets the PartnerClass of the Control. The only purpose of this Property
-        /// is to change the BackColor of the TextBox to <see cref="TCommonControlsHelper.PartnerClassPERSONColour" /> 
+        /// is to change the BackColor of the TextBox to <see cref="TCommonControlsHelper.PartnerClassPERSONColour" />
         /// if this Property is set to "PERSON".
         /// </summary>
         public string PartnerClass
@@ -161,11 +161,11 @@ namespace Ict.Common.Controls
             {
                 return FPartnerClass;
             }
-            
+
             set
             {
                 FPartnerClass = value;
-             
+
                 TCommonControlsHelper.SetPartnerKeyBackColour(FPartnerClass, txtTextBox, FOriginalPartnerClassColor);
             }
         }

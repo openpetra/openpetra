@@ -246,7 +246,8 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             try
             {
                 // launches partner find screen and returns true if a venue is selected
-                if (TPartnerFindScreenManager.OpenModalForm("VENUE", out ResultVenueKey, out ResultVenueName, out PartnerClass, out ResultLocationPK, this))
+                if (TPartnerFindScreenManager.OpenModalForm("VENUE", out ResultVenueKey, out ResultVenueName, out PartnerClass, out ResultLocationPK,
+                        this))
                 {
                     // search for selected venue in dataset
                     ExistingVenueDataRows = FMainDS.PcConferenceVenue.Select(ConferenceSetupTDSPcConferenceVenueTable.GetVenueKeyDBName() +

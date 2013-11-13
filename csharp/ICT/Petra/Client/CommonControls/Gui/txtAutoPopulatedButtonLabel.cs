@@ -45,7 +45,11 @@ using GNU.Gettext;
 namespace Ict.Petra.Client.CommonControls
 {
     /// <summary>Button Click</summary>
-    public delegate void TDelegateClickButton(String LabelStringIn, String TextBoxStringIn, out String LabelStringOut, out String PartnerClassOut, out String TextBoxStringOut);
+    public delegate void TDelegateClickButton(String LabelStringIn,
+        String TextBoxStringIn,
+        out String LabelStringOut,
+        out String PartnerClassOut,
+        out String TextBoxStringOut);
 
     /// <summary>Text box edited</summary>
     public delegate bool TDelegateVerifyUserEntry(String AValueToVerify, out String AResult);
@@ -115,7 +119,7 @@ namespace Ict.Petra.Client.CommonControls
 // TODO       private static readonly string UNIT_NO_VALID_PARTNERKEY = Catalog.GetString("NOT A VALID PARTNERKEY!");
 
         private Color? FOriginalPartnerClassColor = null;
-        
+
         /// <summary>
         /// Available Types for TtxtAutoPopulatedButtonLabel
         /// </summary>
@@ -415,7 +419,7 @@ namespace Ict.Petra.Client.CommonControls
             set
             {
                 this.FPartnerClass = FormatPartnerClassString(value);
-                
+
                 TCommonControlsHelper.SetPartnerKeyBackColour(value, txtAutoPopulated.txtTextBox, FOriginalPartnerClassColor);
             }
         }
@@ -1390,13 +1394,14 @@ namespace Ict.Petra.Client.CommonControls
             String mPartnerClass;
             TPartnerClass? mPartnerClass2;
             String mResultStringExtraInformation;
+
             System.Int64 mResultIntTxt;
             int mResultShortIntTxt;
 
             LabelStringOut = "";
             TextBoxStringOut = "";
             PartnerClassOut = null;
-            
+
             // mResultIntLbl:     System.Int64;  mDummyString:      String;
             TLocationPK mResultLocationPK;
             mLabelStringOld = LabelStringIn;
@@ -1416,8 +1421,8 @@ namespace Ict.Petra.Client.CommonControls
                         this.ClickButton(mLabelStringOld, mTextBoxStringOld, out mLabelStringNew, out mPartnerClass, out mTextBoxStringNew);
                         LabelStringOut = mLabelStringNew;
                         TextBoxStringOut = mTextBoxStringNew;
-                        
-                        if (mPartnerClass != null) 
+
+                        if (mPartnerClass != null)
                         {
                             PartnerClassOut = mPartnerClass;
                         }
@@ -1462,7 +1467,7 @@ namespace Ict.Petra.Client.CommonControls
                                     TCommonScreensForwarding.OpenPartnerFindScreen.Invoke(this.FPartnerClass,
                                         out mResultIntTxt,
                                         out mResultStringLbl,
-                                        out mPartnerClass2, 
+                                        out mPartnerClass2,
                                         out mResultLocationPK,
                                         this.ParentForm);
 
@@ -1471,12 +1476,12 @@ namespace Ict.Petra.Client.CommonControls
                                     {
                                         TextBoxStringOut = StringHelper.PartnerKeyToStr(mResultIntTxt);
                                         LabelStringOut = mResultStringLbl;
-                                        
-                                        if (mPartnerClass2.HasValue) 
+
+                                        if (mPartnerClass2.HasValue)
                                         {
-                                            PartnerClassOut = SharedTypes.PartnerClassEnumToString(mPartnerClass2.Value);    
+                                            PartnerClassOut = SharedTypes.PartnerClassEnumToString(mPartnerClass2.Value);
                                         }
-                                        
+
                                         if (PartnerFound != null)
                                         {
                                             PartnerFound(mResultIntTxt, mResultLocationPK.LocationKey);
@@ -1699,7 +1704,7 @@ namespace Ict.Petra.Client.CommonControls
         {
             string currentText;
             string partnerclass = String.Empty;
-            
+
             currentText = txtAutoPopulated.txtTextBox.Text;
 
             if (currentText.Length > 0)
@@ -1709,7 +1714,7 @@ namespace Ict.Petra.Client.CommonControls
                     string result = this.txtAutoPopulated.lblLabel.Text;
                     this.TxtAutoPopulated_SetLabel(currentText, ref result, ref partnerclass);
                     this.txtAutoPopulated.lblLabel.Text = result;
-                    
+
                     TCommonControlsHelper.SetPartnerKeyBackColour(partnerclass, txtAutoPopulated.txtTextBox, FOriginalPartnerClassColor);
                 }
             }
@@ -1728,7 +1733,7 @@ namespace Ict.Petra.Client.CommonControls
             String mPartnerShortName;
             String ExtractDescription;
             TPartnerClass mPartnerClass;
-            
+
             APartnerClass = String.Empty;
 
             /* Occupation list mode  seems to work differently.
@@ -1774,7 +1779,7 @@ namespace Ict.Petra.Client.CommonControls
                         {
                             ValidResult = true;
                         }
-                        
+
                         APartnerClass = SharedTypes.PartnerClassEnumToString(mPartnerClass);
                     }
                     else
@@ -1846,7 +1851,7 @@ namespace Ict.Petra.Client.CommonControls
                         {
                             ValidResult = true;
                         }
-                        
+
                         APartnerClass = SharedTypes.PartnerClassEnumToString(mPartnerClass);
                     }
                     else
