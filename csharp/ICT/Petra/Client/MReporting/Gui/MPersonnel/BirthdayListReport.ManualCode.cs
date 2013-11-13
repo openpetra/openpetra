@@ -47,6 +47,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
     {
         private PTypeTable FTypesTable;
 
+        private void InitializeManualCode()
+        {
+            ucoPartnerSelection.SetRestrictedPartnerClasses("PERSON");
+        }
+
         private void grdTypes_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
         {
             // Get list of commitment statuses

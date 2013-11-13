@@ -163,6 +163,8 @@ namespace Ict.Common.Controls
         protected System.ComponentModel.IContainer components = null;
         private TbtnVarioText btnFindScreen;
 
+        private Color? FOriginalPartnerClassColor = null;
+
         /// <summary>
         /// space between find button and text box
         /// </summary>
@@ -1100,6 +1102,7 @@ namespace Ict.Common.Controls
             System.String mLabelStringOld;
             System.String mTextBoxStringOld;
             System.String mLabelStringNew;
+            System.String mPartnerClass;
             System.String mTextBoxStringNew;
             System.String mExceptionString;
 
@@ -1114,7 +1117,7 @@ namespace Ict.Common.Controls
                     {
                         mLabelStringOld = this.lblLabel.Text;
                         mTextBoxStringOld = this.txtTextBox.Text;
-                        ButtonClick(mLabelStringOld, mTextBoxStringOld, out mLabelStringNew, out mTextBoxStringNew);
+                        ButtonClick(mLabelStringOld, mTextBoxStringOld, out mLabelStringNew, out mPartnerClass, out mTextBoxStringNew);
 
                         // TLogging.Log('New LabelString: >' + mLabelStringNew + '<', [TLoggingType.ToLogfile]);
                         // TLogging.Log('New TextBoxString: >' + mTextBoxStringNew + '<', [TLoggingType.ToLogfile]);
@@ -1122,6 +1125,8 @@ namespace Ict.Common.Controls
                         {
                             // new value returned from lookup
                             this.txtTextBox.Text = mTextBoxStringNew;
+
+                            TCommonControlsHelper.SetPartnerKeyBackColour(mPartnerClass, this.txtTextBox, FOriginalPartnerClassColor);
 
                             // update the text
                             // if new label text is NOT returned, do a DB lookup to find it
@@ -1433,6 +1438,8 @@ namespace Ict.Common.Controls
         /// </summary>
         public void UpdateLabelText()
         {
+            string mPartnerClass = String.Empty;
+
             // Initialization
             // TLogging.Log('TtxtButtonLabel.UpdateLabelText: Start', [TLoggingType.ToLogfile]);
             // TLogging.LogStackTrace([TLoggingType.ToLogfile]);
@@ -1464,7 +1471,7 @@ namespace Ict.Common.Controls
 
                     // Get text from hosting control
                     // TLogging.Log('TtxtButtonLabel.UpdateLabelText: Text of control: ' + this.txtTextBox.Text);
-                    SetLabel(this.txtTextBox.Text, ref mFoundText);
+                    SetLabel(this.txtTextBox.Text, ref mFoundText, ref mPartnerClass);
 
                     // TLogging.Log('TtxtButtonLabel.UpdateLabelText: Text from function: >' + mFoundText + '<', [TLoggingType.ToLogfile]);
                     // Set text
@@ -2038,21 +2045,24 @@ namespace Ict.Common.Controls
     /// Here the hosting form has to provide a function which sets the Label's and
     /// TextBoxes Texts after the button is clicked.
     /// </summary>
-    /// <param name="LabelStringIn">Current Label text</param>
-    /// <param name="TextBoxStringIn">Current TextBox text</param>
-    /// <param name="LabelStringOut">Updated Label text</param>
-    /// <param name="TextBoxStringOut">Updated TextBox text</param>
-    public delegate void TDelegateButtonClick(System.String LabelStringIn,
-        System.String TextBoxStringIn,
-        out System.String LabelStringOut,
-        out System.String TextBoxStringOut);
+    /// <param name="ALabelStringIn">Current Label text.</param>
+    /// <param name="ATextBoxStringIn">Current TextBox text.</param>
+    /// <param name="ALabelStringOut">Updated Label text.</param>
+    /// <param name="APartnerClassOut">Updated Partner Class (if applicable).</param>
+    /// <param name="ATextBoxStringOut">Updated TextBox text.</param>
+    public delegate void TDelegateButtonClick(System.String ALabelStringIn,
+        System.String ATextBoxStringIn,
+        out System.String ALabelStringOut,
+        out System.String APartnerClassOut,
+        out System.String ATextBoxStringOut);
 
     /// <summary>
     /// Here the hosting form has to provide a text for the label
     /// </summary>
     /// <param name="ALookupText">A lookup text goes here</param>
+    /// <param name="APartnerClass">Updated Partner Class (if applicable).</param>
     /// <param name="ALabelText">Updated Label text</param>
-    public delegate void TDelegateSetLabel(String ALookupText, ref System.String ALabelText);
+    public delegate void TDelegateSetLabel(String ALookupText, ref System.String ALabelText, ref System.String APartnerClass);
 
     /// <summary>
     /// This delegate is used to notify the hosting control of an error.

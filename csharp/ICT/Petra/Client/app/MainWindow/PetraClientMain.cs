@@ -675,6 +675,9 @@ namespace Ict.Petra.Client.App.PetraClient
             // Set up Delegate for the set-up of various Colours of all SourceGrid DataGrid instances from UserDefaults
             Ict.Common.Controls.TSgrdDataGrid.SetColourInformation = @SetDataGridColoursFromUserDefaults;
 
+            // Set up Delegate for the set-up of various Colours of all Filter and Find instances from UserDefaults
+            Ict.Common.Controls.TUcoFilterAndFind.SetColourInformation = @SetFilterFindColoursFromUserDefaults;
+
             // Set up Data Validation Delegates
             TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;
             TSharedValidationControlHelper.SharedGetDateVerificationResultDelegate = @TtxtPetraDate.GetDateVerificationResult;
@@ -745,6 +748,25 @@ namespace Ict.Petra.Client.App.PetraClient
                 ReturnValue.SelectionColour =
                     System.Drawing.Color.FromArgb(120, System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Highlight));
             }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Sets up various Colours of all Filter and Find instances from UserDefaults.
+        /// </summary>
+        /// <returns>void</returns>
+        private static TUcoFilterAndFind.ColourInformation SetFilterFindColoursFromUserDefaults()
+        {
+            TUcoFilterAndFind.ColourInformation ReturnValue = new TUcoFilterAndFind.ColourInformation();
+
+            ReturnValue.FilterColour = System.Drawing.ColorTranslator.FromHtml(
+                TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_FILTER_PANEL,
+                    System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.LightBlue)));
+
+            ReturnValue.FindColour = System.Drawing.ColorTranslator.FromHtml(
+                TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_FIND_PANEL,
+                    System.Drawing.ColorTranslator.ToHtml(System.Drawing.Color.BurlyWood)));
 
             return ReturnValue;
         }

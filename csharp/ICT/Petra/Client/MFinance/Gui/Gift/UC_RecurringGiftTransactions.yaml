@@ -62,21 +62,19 @@ RootNode:
             Controls:
                 Row0: [grpDetailsForDonor]
                 Row1: [grpDetailsForEachGift]
-        grpDetailsForDonor: {ColSpan=2, Width:945, Height:125}
-            Align: top-left
+        grpDetailsForDonor: {Width:945, Height:125}
             Controls: 
                 Row0: [chkDetailActive]
                 Row1: [txtDetailDonorKey, cmbDetailMethodOfGivingCode]
                 Row2: [txtGiftTotal, cmbDetailMethodOfPaymentCode]
                 Row3: [txtDetailReference, cmbDetailReceiptLetterCode]
-        grpDetailsForEachGift: {ColSpan=2, Width:945, Height:265}
-            Align: top-left
+        grpDetailsForEachGift: {Width:945, Height:265}
             Controls: 
                 Row0: [txtDetailRecipientKey, chkDetailConfidentialGiftFlag]
                 Row1: [txtField,chkDetailChargeFlag]
-                Row2: [txtDetailGiftAmount, chkDetailTaxDeductable]
+                Row2: [cmbMinistry, chkDetailTaxDeductable]
                 Row3: [dtpStartDonations, dtpEndDonations]
-                Row4: [cmbMinistry, cmbDetailMailingCode]
+                Row4: [txtDetailGiftAmount, cmbDetailMailingCode]
                 Row5: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode]         
                 Row6: [txtDetailCostCentreCode, txtDetailAccountCode]
                 Row7: [txtDetailGiftCommentOne, cmbDetailCommentOneType]
@@ -86,7 +84,7 @@ RootNode:
         dtpStartDonations: {Label=Don. Period From}
         dtpEndDonations: {Label=To}
         chkDetailActive: {Label=Active Gift}
-        txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=true, Unbound=true, TabStop=false}
+        txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=true, Width=158, Unbound=true}
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Unbound=true, OnChange=DonorKeyChanged}
         txtDetailReference: {Label=Reference, Width=170}
         cmbDetailReceiptLetterCode:

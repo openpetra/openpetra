@@ -293,6 +293,11 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "You must set at least one bank account as main account.")]
         public const String ERR_BANKINGDETAILS_ATLEASTONEMAINACCOUNT = "PARTN.00014V";
 
+        /// <summary>Partner Key is invalid (must be non-zero).</summary>
+        [ErrCodeAttribute("No Bank selected.",
+             ErrorMessageText = "You must select a Bank for this bank account")]
+        public const String ERR_BANKINGDETAILS_NO_BANK_SELECTED = "PARTN.000017V";
+
         #endregion
 
         /// <summary>Partner Interest: Level needs to be within valid range.</summary>

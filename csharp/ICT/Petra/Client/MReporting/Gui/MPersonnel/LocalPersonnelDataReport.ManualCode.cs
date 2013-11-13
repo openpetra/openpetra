@@ -45,6 +45,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
     /// </summary>
     public partial class TFrmLocalPersonnelDataReport
     {
+        private void InitializeManualCode()
+        {
+            ucoPartnerSelection.SetRestrictedPartnerClasses("PERSON");
+        }
+
         /// <summary>
         /// Called during loading of the form
         /// Adds the available labels to the Selection box.

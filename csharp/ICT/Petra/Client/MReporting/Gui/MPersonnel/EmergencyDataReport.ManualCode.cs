@@ -45,6 +45,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
     /// </summary>
     public partial class TFrmEmergencyDataReport
     {
+        private void InitializeManualCode()
+        {
+            ucoPartnerSelection.SetRestrictedPartnerClasses("PERSON");
+        }
+
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddColumnLayout(0, 0, 0, 19);

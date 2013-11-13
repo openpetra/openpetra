@@ -190,6 +190,7 @@ namespace Tests.MFinance.GLBatches
             txtDetailNarrative.Properties.Text = "test";
             txtDetailReference.Properties.Text = "test";
             TTxtCurrencyTextBoxTester txtCreditAmount = new TTxtCurrencyTextBoxTester("txtCreditAmount");
+            txtDebitAmount.Properties.NumberValueDecimal = 0;
             txtCreditAmount.Properties.Focus();
             txtCreditAmount.Properties.NumberValueDecimal = Amount;
 
@@ -408,6 +409,8 @@ namespace Tests.MFinance.GLBatches
             txtDetailNarrative.Properties.Text = "test";
             txtDetailReference.Properties.Text = "test";
             TTxtCurrencyTextBoxTester txtCreditAmount = new TTxtCurrencyTextBoxTester("txtCreditAmount");
+            txtDebitAmount.Properties.NumberValueDecimal = 0;
+            txtCreditAmount.Properties.Focus();
             txtCreditAmount.Properties.NumberValueDecimal = Amount;
 
             cmbDetailAccountCode.Properties.SetSelectedString("0200");
