@@ -407,14 +407,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Raise this Event to tell the Form/Control which contains this UserControl to do that.
         /// </summary>
         public event System.EventHandler DataLoadingStarted;
-    
+
         /// <summary>
         /// Can be used by the Form/Control which contains this UserControl to
         /// activate the Change Detection (using FPetraUtilsObject.SuppressChangeDetection = true).
         /// Raise this Event to tell the Form/Control which contains this UserControl to do that.
         /// </summary>
         public event System.EventHandler DataLoadingFinished;
-    
+
         /// <summary>
         /// Raises the DataLoadingStarted Event if it is subscribed to.
         /// </summary>
@@ -427,7 +427,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 DataLoadingStarted(sender, e);
             }
         }
-    
+
         /// <summary>
         /// Raises the DataLoadingFinished Event if it is subscribed to.
         /// </summary>
@@ -1171,12 +1171,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void UpdateControlsHeadData()
         {
             PartnerInfoTDSPartnerHeadInfoRow PartnerHeadInfoDR;
+            string PartnerClass;
 
             if (!FHeadDataServerRetrieved)
             {
+                PartnerClass = FPartnerDR[PPartnerTable.GetPartnerClassDBName()].ToString();
+
                 txtPartnerName.Text = FPartnerDR[PPartnerTable.GetPartnerShortNameDBName()].ToString() + "   (" +
-                                      FPartnerDR[PPartnerTable.GetPartnerClassDBName()].ToString() + ")";
+                                      PartnerClass + ")";
                 txtPartnerKey.PartnerKey = Convert.ToInt64(FPartnerDR[PPartnerTable.GetPartnerKeyDBName()]);
+                txtPartnerKey.PartnerClass = PartnerClass;
                 txtStatusCode.Text = FPartnerDR[PPartnerTable.GetStatusCodeDBName()].ToString();
                 txtAcquisitionCode.Text = FPartnerDR[PPartnerTable.GetAcquisitionCodeDBName()].ToString();
             }
@@ -1184,9 +1188,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 PartnerHeadInfoDR = FPartnerInfoDS.PartnerHeadInfo[0];
 
+                PartnerClass = PartnerHeadInfoDR.PartnerClass;
+
                 txtPartnerName.Text = PartnerHeadInfoDR.PartnerShortName + "   (" +
-                                      PartnerHeadInfoDR.PartnerClass + ")";
+                                      PartnerClass + ")";
                 txtPartnerKey.PartnerKey = PartnerHeadInfoDR.PartnerKey;
+                txtPartnerKey.PartnerClass = PartnerClass;
                 txtStatusCode.Text = PartnerHeadInfoDR.StatusCode;
                 txtAcquisitionCode.Text = PartnerHeadInfoDR.AcquisitionCode;
             }

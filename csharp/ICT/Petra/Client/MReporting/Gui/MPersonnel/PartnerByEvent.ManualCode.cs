@@ -70,10 +70,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             LoadEventListData();
         }
 
-        private void InitializeManualCode()
-        {
-        }
-
         /// <summary>
         /// only run this code once during activation
         /// </summary>

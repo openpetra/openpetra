@@ -108,6 +108,85 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
+        /// Tests Partner Merge Check, performs check to determine if a Partner of Partner Class FAMILY and with one member can be merged to a
+        /// Partner of Partner Class CHURCH. This merge should not be allowed.
+        /// </summary>
+        [Test]
+        public void TestMergeFamilyToChurchCheck()
+        {
+            long FromPartnerKey;
+            long FamilyMemberPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two new Partners
+            //
+            TestMergeFamilyToChurchCheck_Arrange(out FromPartnerKey, out FamilyMemberPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Perform check to see if the two partners can be merged
+            //
+            bool result = TMergePartnersCheckWebConnector.CheckPartnersCanBeMerged(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.FAMILY, TPartnerClass.CHURCH, "", out VerificationResult);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge Check returns negative
+            Assert.AreEqual(false, result, "Merging Family to Church");
+
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FamilyMemberPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Family Partner with one member and a Church Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="FamilyMemberPartnerKey">Partner Key of the From Family member.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeFamilyToChurchCheck_Arrange(out long AFromPartnerKey,
+            out long FamilyMemberPartnerKey,
+            out long AToPartnerKey,
+            TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Family Partner with one family member and one new Church Partner
+            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS);
+            PFamilyRow FromPartnerRow = (PFamilyRow)MainDS.PFamily.Rows[0];
+            PPersonRow FamilyMember = (PPersonRow)MainDS.PPerson.Rows[0];
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(FamilyMember, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            FamilyMemberPartnerKey = FamilyMember.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for family and church failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
         /// Tests Partner Merge, merging two Partners of Partner Class UNIT.
         /// </summary>
         /// <remarks>Creates two new Unit Partners, an auxilary Family Partner, merges the two Units
@@ -151,10 +230,10 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates two Unit Partners and a Family Partner.
+        /// Creates two Unit Partners.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Unit Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Unit Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Unit Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="ATestPartnerKey">Partner Key of the auxilary Family Partner.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         private void TestMergeTwoUnits_Arrange(out long AFromPartnerKey,
@@ -208,7 +287,7 @@ namespace Tests.MPartner.Server.PartnerMerge
 
             TestFamilyPartnerRow.FieldKey = AFromPartnerKey;
 
-            // Submit the new Family record to database
+            // Submit the new records to database
             ResponseDS = new PartnerEditTDS();
             Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
@@ -221,7 +300,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Unit Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Unit Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Unit Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="ATestPartnerKey">Partner Key of the auxilary Family Partner.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         void TestMergeTwoUnits_SecondaryAsserts(long AFromPartnerKey,
@@ -271,6 +350,432 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class UNIT to a Partner of Partner Class CHURCH.
+        /// </summary>
+        /// <remarks>Creates one new Unit Partner and one new Church Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeUnitToChurch()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeUnitToChurch_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.UNIT, TPartnerClass.CHURCH, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Unit to Church");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Unit Partner and a Church Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Unit Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeUnitToChurch_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Unit Partner and one new Church Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for unit and church failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class UNIT to a Partner of Partner Class VENUE.
+        /// </summary>
+        /// <remarks>Creates one new Unit Partner and one new Venue Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeUnitToVenue()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeUnitToVenue_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.UNIT, TPartnerClass.VENUE, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Unit to Venue");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Unit Partner and a Venue Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Unit Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Venue Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeUnitToVenue_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Unit Partner and one new Venue Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for unit and venue failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class UNIT to a Partner of Partner Class FAMILY.
+        /// </summary>
+        /// <remarks>Creates one new Unit Partner and one new Family Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeUnitToFamily()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeUnitToFamily_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.UNIT, TPartnerClass.FAMILY, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Unit to Family");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Unit Partner and a Family Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Unit Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Family Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeUnitToFamily_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Unit Partner and one new Family Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for unit and family failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class UNIT to a Partner of Partner Class PERSON.
+        /// </summary>
+        /// <remarks>Creates one new Unit Partner and one new Person Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeUnitToPerson()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            long ToFamilyKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners and a Family Partner
+            //
+            TestMergeUnitToPerson_Arrange(out FromPartnerKey, out ToPartnerKey, out ToFamilyKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.UNIT, TPartnerClass.PERSON, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Unit to Person");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Unit Partner a Person Partner and a Family Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Unit Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AToFamilyKey">Partner Key of the Family Partner of the Person Partner.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeUnitToPerson_Arrange(out long AFromPartnerKey,
+            out long AToPartnerKey,
+            out long AToFamilyKey,
+            TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Unit Partner and one new Person Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+
+            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS);
+
+            PPersonRow ToPartnerRow = (PPersonRow)MainDS.PPerson.Rows[0];
+            PFamilyRow ToFamilyRow = (PFamilyRow)MainDS.PFamily.Rows[0];
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+            Assert.That(ToFamilyRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+            AToFamilyKey = ToFamilyRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for unit and person failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class UNIT to a Partner of Partner Class ORGANISATION.
+        /// </summary>
+        /// <remarks>Creates one new Unit Partner and one new Organisation Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeUnitToOrganisation()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeUnitToOrganisation_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.UNIT, TPartnerClass.ORGANISATION, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Unit to Organisation");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Unit Partner and a Organisation Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Unit Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeUnitToOrganisation_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Unit Partner and one new Organisation Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for unit and organisation failed: " +
+                VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class UNIT to a Partner of Partner Class BANK.
+        /// </summary>
+        /// <remarks>Creates one new Unit Partner and one new Bank Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeUnitToBank()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeUnitToBank_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.UNIT, TPartnerClass.BANK, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Unit to Bank");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Unit Partner and a Bank Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Unit Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Bank Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeUnitToBank_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Unit Partner and one new Bank Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for unit and bank failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
         /// Tests Partner Merge, merging two Partners of Partner Class CHURCH.
         /// </summary>
         /// <remarks>Creates two new Church Partners, merges the two Churches
@@ -311,10 +816,10 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates two Church Partners and a Family Partner.
+        /// Creates two Church Partners.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Church Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         private void TestMergeTwoChurches_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
         {
@@ -359,7 +864,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Church Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         void TestMergeTwoChurches_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
@@ -410,12 +915,12 @@ namespace Tests.MPartner.Server.PartnerMerge
             TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
 
             //
-            // Arrange: Create two Church Partners
+            // Arrange: Create new Partners
             //
             TestMergeChurchToOrganisation_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
 
             //
-            // Act: Merge the two Church Partners!
+            // Act: Merge the new Partners!
             //
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
                 TPartnerClass.CHURCH, TPartnerClass.ORGANISATION, null, null, -1, FCategories, ref DifferentFamilies);
@@ -437,10 +942,10 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates two Church Partners and a Family Partner.
+        /// Creates a Church Partner and an Organisation Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Church Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         private void TestMergeChurchToOrganisation_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
         {
@@ -449,7 +954,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             DataSet ResponseDS;
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            // Create two new Church Partners
+            // Create two new Partners
             PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
             PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
 
@@ -472,7 +977,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             FromChurchRow.ContactPartnerKey = AToPartnerKey;
             ToOrganisationRow.ContactPartnerKey = 0;
 
-            // Submit the two new Church Partner records to the database
+            // Submit the new Partner records to the database
             ResponseDS = new PartnerEditTDS();
             Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
@@ -486,7 +991,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Church Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         void TestMergeChurchToOrganisation_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
@@ -538,12 +1043,12 @@ namespace Tests.MPartner.Server.PartnerMerge
             TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
 
             //
-            // Arrange: Create two Church Partners
+            // Arrange: Create new Partners
             //
             TestMergeChurchToFamily_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
 
             //
-            // Act: Merge the two Church Partners!
+            // Act: Merge the new Partners!
             //
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
                 TPartnerClass.CHURCH, TPartnerClass.FAMILY, null, null, -1, FCategories, ref DifferentFamilies);
@@ -565,10 +1070,10 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates two Church Partners and a Family Partner.
+        /// Creates a Church Partner and a Family Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Church Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Family Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         private void TestMergeChurchToFamily_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
         {
@@ -577,7 +1082,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             DataSet ResponseDS;
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            // Create two new Church Partners
+            // Create new Partners
             PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
             PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
 
@@ -599,7 +1104,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             ToPartnerRow.PartnerShortName = "";
             ToFamilyRow.FamilyName = "";
 
-            // Submit the two new Church Partner records to the database
+            // Submit the new Partner records to the database
             ResponseDS = new PartnerEditTDS();
             Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
@@ -612,7 +1117,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Church Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Family Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         void TestMergeChurchToFamily_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
@@ -648,6 +1153,293 @@ namespace Tests.MPartner.Server.PartnerMerge
 
             // Checking the MergeTable
             Assert.IsNotNull(MergeTable.Rows[0], "merge Church to Family");
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class CHURCH to a Partner of Partner Class VENUE.
+        /// </summary>
+        /// <remarks>Creates one new Church Partner and one new Venue Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeChurchToVenue()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeChurchToVenue_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.CHURCH, TPartnerClass.VENUE, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Church to Venue");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Church Partner and a Venue Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Church Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Venue Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeChurchToVenue_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Church Partner and one new Venue Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for church and venue failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class CHURCH to a Partner of Partner Class PERSON.
+        /// </summary>
+        /// <remarks>Creates one new Church Partner and one new Person Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeChurchToPerson()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            long ToFamilyKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners and a Family Partner
+            //
+            TestMergeChurchToPerson_Arrange(out FromPartnerKey, out ToPartnerKey, out ToFamilyKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.CHURCH, TPartnerClass.PERSON, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Church to Person");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Church Partner a Person Partner and a Family Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Church Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AToFamilyKey">Partner Key of the Family Partner of the Person Partner.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeChurchToPerson_Arrange(out long AFromPartnerKey,
+            out long AToPartnerKey,
+            out long AToFamilyKey,
+            TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Church Partner and one new Person Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
+
+            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS);
+
+            PPersonRow ToPartnerRow = (PPersonRow)MainDS.PPerson.Rows[0];
+            PFamilyRow ToFamilyRow = (PFamilyRow)MainDS.PFamily.Rows[0];
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+            Assert.That(ToFamilyRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+            AToFamilyKey = ToFamilyRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for church and person failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class CHURCH to a Partner of Partner Class UNIT.
+        /// </summary>
+        /// <remarks>Creates one new Church Partner and one new Unit Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeChurchToUnit()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeChurchToUnit_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.CHURCH, TPartnerClass.UNIT, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Church to Unit");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Church Partner and a Unit Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Church Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Unit Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeChurchToUnit_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Church Partner and one new Unit Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for church and unit failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class CHURCH to a Partner of Partner Class BANK.
+        /// </summary>
+        /// <remarks>Creates one new Church Partner and one new Bank Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeChurchToBank()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeChurchToBank_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.CHURCH, TPartnerClass.BANK, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Church to Bank");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Church Partner and a Bank Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Church Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Bank Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeChurchToBank_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Church Partner and one new Bank Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for church and bank failed: " + VerificationResult.BuildVerificationResultString());
         }
 
         /// <summary>
@@ -694,7 +1486,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Creates two Venue Partners and a Family Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Venue Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Venue Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Venue Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         private void TestMergeTwoVenues_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
         {
@@ -738,7 +1530,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Venue Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Venue Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Venue Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         void TestMergeTwoVenues_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
@@ -773,6 +1565,432 @@ namespace Tests.MPartner.Server.PartnerMerge
 
             // Checking the MergeTable
             Assert.IsNotNull(MergeTable.Rows[0], "merge two Venues");
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class VENUE to a Partner of Partner Class CHURCH.
+        /// </summary>
+        /// <remarks>Creates one new Venue Partner and one new Church Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeVenueToChurch()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeVenueToChurch_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.VENUE, TPartnerClass.CHURCH, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Venue to Church");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Venue Partner and a Church Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Venue Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeVenueToChurch_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Venue Partner and one new Church Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for venue and church failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class VENUE to a Partner of Partner Class Unit.
+        /// </summary>
+        /// <remarks>Creates one new Venue Partner and one new Unit Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeVenueToUnit()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeVenueToUnit_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.VENUE, TPartnerClass.UNIT, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Venue to Unit");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Venue Partner and a Unit Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Venue Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Unit Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeVenueToUnit_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Venue Partner and one new Unit Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for venue and unit failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class VENUE to a Partner of Partner Class FAMILY.
+        /// </summary>
+        /// <remarks>Creates one new Venue Partner and one new Family Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeVenueToFamily()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeVenueToFamily_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.VENUE, TPartnerClass.FAMILY, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Venue to Family");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Venue Partner and a Family Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Venue Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Family Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeVenueToFamily_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Venue Partner and one new Family Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for venue and family failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class VENUE to a Partner of Partner Class PERSON.
+        /// </summary>
+        /// <remarks>Creates one new Venue Partner and one new Person Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeVenueToPerson()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            long ToFamilyKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners and a Family Partner
+            //
+            TestMergeVenueToPerson_Arrange(out FromPartnerKey, out ToPartnerKey, out ToFamilyKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.VENUE, TPartnerClass.PERSON, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Venue to Person");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Venue Partner a Person Partner and a Family Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Venue Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AToFamilyKey">Partner Key of the Family Partner of the Person Partner.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeVenueToPerson_Arrange(out long AFromPartnerKey,
+            out long AToPartnerKey,
+            out long AToFamilyKey,
+            TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Venue Partner and one new Person Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+
+            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS);
+
+            PPersonRow ToPartnerRow = (PPersonRow)MainDS.PPerson.Rows[0];
+            PFamilyRow ToFamilyRow = (PFamilyRow)MainDS.PFamily.Rows[0];
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+            Assert.That(ToFamilyRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+            AToFamilyKey = ToFamilyRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for venue and person failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class VENUE to a Partner of Partner Class ORGANISATION.
+        /// </summary>
+        /// <remarks>Creates one new Venue Partner and one new Organisation Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeVenueToOrganisation()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeVenueToOrganisation_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.VENUE, TPartnerClass.ORGANISATION, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Venue to Organisation");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Venue Partner and a Organisation Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Venue Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeVenueToOrganisation_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Venue Partner and one new Organisation Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for venue and organisation failed: " +
+                VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class VENUE to a Partner of Partner Class BANK.
+        /// </summary>
+        /// <remarks>Creates one new Venue Partner and one new Bank Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeVenueToBank()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeVenueToBank_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.VENUE, TPartnerClass.BANK, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Venue to Bank");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Venue Partner and a Bank Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Venue Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Bank Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeVenueToBank_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Venue Partner and one new Bank Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for venue and bank failed: " + VerificationResult.BuildVerificationResultString());
         }
 
         /// <summary>
@@ -819,7 +2037,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Creates two Family Partners and a Family Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Family Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         private void TestMergeTwoFamilies_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
         {
@@ -865,7 +2083,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Family Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         void TestMergeTwoFamilies_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
@@ -921,7 +2139,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             TestMergeFamilyToOrganisation_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
 
             //
-            // Act: Merge the two Family Partners!
+            // Act: Merge the two Partners!
             //
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
                 TPartnerClass.FAMILY, TPartnerClass.ORGANISATION, null, null, -1, FCategories, ref DifferentFamilies);
@@ -943,10 +2161,10 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates two Family Partners and a Family Partner.
+        /// Creates a Family Partner and an Organisation Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         private void TestMergeFamilyToOrganisation_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
         {
@@ -955,7 +2173,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             DataSet ResponseDS;
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            // Create two new Family Partners
+            // Create one new Family Partner and one new Organisation Partner
             PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
             PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
 
@@ -977,7 +2195,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             ToPartnerRow.PartnerShortName = "";
             ToOrganisationRow.OrganisationName = "";
 
-            // Submit the two new Family Partner records to the database
+            // Submit the new Partner records to the database
             ResponseDS = new PartnerEditTDS();
             Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
@@ -991,7 +2209,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         void TestMergeFamilyToOrganisation_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
@@ -1043,12 +2261,12 @@ namespace Tests.MPartner.Server.PartnerMerge
             TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
 
             //
-            // Arrange: Create two Family Partners
+            // Arrange: Create two new Partners
             //
             TestMergeFamilyToChurch_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
 
             //
-            // Act: Merge the two Family Partners!
+            // Act: Merge the Partners!
             //
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
                 TPartnerClass.FAMILY, TPartnerClass.CHURCH, null, null, -1, FCategories, ref DifferentFamilies);
@@ -1070,10 +2288,10 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates two Family Partners and a Family Partner.
+        /// Creates a Family Partner and a Church Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         private void TestMergeFamilyToChurch_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
         {
@@ -1082,7 +2300,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             DataSet ResponseDS;
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            // Create two new Family Partners
+            // Create one new Family Partner and one new Church Partner
             PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
             PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
 
@@ -1104,7 +2322,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             ToPartnerRow.PartnerShortName = "";
             ToChurchRow.ChurchName = "";
 
-            // Submit the two new Family Partner records to the database
+            // Submit the new Partner records to the database
             ResponseDS = new PartnerEditTDS();
             Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
@@ -1117,7 +2335,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         void TestMergeFamilyToChurch_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
@@ -1153,6 +2371,293 @@ namespace Tests.MPartner.Server.PartnerMerge
 
             // Checking the MergeTable
             Assert.IsNotNull(MergeTable.Rows[0], "merge Family to Church");
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class FAMILY to a Partner of Partner Class VENUE.
+        /// </summary>
+        /// <remarks>Creates one new Family Partner and one new Venue Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeFamilyToVenue()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeFamilyToVenue_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.FAMILY, TPartnerClass.VENUE, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Family to Venue");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Family Partner and a Venue Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Venue Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeFamilyToVenue_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Family Partner and one new Venue Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for family and venue failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class FAMILY to a Partner of Partner Class PERSON.
+        /// </summary>
+        /// <remarks>Creates one new Family Partner and one new Person Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeFamilyToPerson()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            long ToFamilyKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners and a Family Partner
+            //
+            TestMergeFamilyToPerson_Arrange(out FromPartnerKey, out ToPartnerKey, out ToFamilyKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.FAMILY, TPartnerClass.PERSON, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Family to Person");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Family Partner a Person Partner and a Family Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AToFamilyKey">Partner Key of the Family Partner of the Person Partner.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeFamilyToPerson_Arrange(out long AFromPartnerKey,
+            out long AToPartnerKey,
+            out long AToFamilyKey,
+            TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Family Partner and one new Person Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+
+            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS);
+
+            PPersonRow ToPartnerRow = (PPersonRow)MainDS.PPerson.Rows[0];
+            PFamilyRow ToFamilyRow = (PFamilyRow)MainDS.PFamily.Rows[0];
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+            Assert.That(ToFamilyRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+            AToFamilyKey = ToFamilyRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for family and person failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class FAMILY to a Partner of Partner Class UNIT.
+        /// </summary>
+        /// <remarks>Creates one new Family Partner and one new Unit Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeFamilyToUnit()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeFamilyToUnit_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.FAMILY, TPartnerClass.UNIT, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Family to Unit");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Family Partner and a Unit Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Unit Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeFamilyToUnit_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Family Partner and one new Unit Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for family and unit failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class FAMILY to a Partner of Partner Class BANK.
+        /// </summary>
+        /// <remarks>Creates one new Family Partner and one new Bank Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeFamilyToBank()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeFamilyToBank_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.FAMILY, TPartnerClass.BANK, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Family to Bank");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Family Partner and a Bank Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Bank Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeFamilyToBank_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Family Partner and one new Bank Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for family and bank failed: " + VerificationResult.BuildVerificationResultString());
         }
 
         /// <summary>
@@ -1537,7 +3042,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Creates two Organisation Partners and a Organisation Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         private void TestMergeTwoOrganisations_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
         {
@@ -1581,7 +3086,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         void TestMergeTwoOrganisations_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
@@ -1630,12 +3135,12 @@ namespace Tests.MPartner.Server.PartnerMerge
             TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
 
             //
-            // Arrange: Create two Organisation Partners
+            // Arrange: Create two Partners
             //
             TestMergeOrganisationToChurch_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
 
             //
-            // Act: Merge the two Organisation Partners!
+            // Act: Merge the two Partners!
             //
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
                 TPartnerClass.ORGANISATION, TPartnerClass.CHURCH, null, null, -1, FCategories, ref DifferentFamilies);
@@ -1657,10 +3162,10 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates two Organisation Partners and a Organisation Partner.
+        /// Creates an Organisation Partner and a Church Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         private void TestMergeOrganisationToChurch_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
         {
@@ -1669,7 +3174,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             DataSet ResponseDS;
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            // Create two new Organisation Partners
+            // Create two new Partners
             PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
             PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
 
@@ -1691,7 +3196,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             ToPartnerRow.PartnerShortName = "";
             ToChurchRow.ChurchName = "";
 
-            // Submit the two new Organisation Partner records to the database
+            // Submit the new Partner records to the database
             ResponseDS = new PartnerEditTDS();
             Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
@@ -1705,7 +3210,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         void TestMergeOrganisationToChurch_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
@@ -1758,12 +3263,12 @@ namespace Tests.MPartner.Server.PartnerMerge
             TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
 
             //
-            // Arrange: Create two Organisation Partners
+            // Arrange: Create two Partners
             //
             TestMergeOrganisationToFamily_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
 
             //
-            // Act: Merge the two Organisation Partners!
+            // Act: Merge the two Partners!
             //
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
                 TPartnerClass.ORGANISATION, TPartnerClass.FAMILY, null, null, -1, FCategories, ref DifferentFamilies);
@@ -1785,10 +3290,10 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates two Organisation Partners and a Organisation Partner.
+        /// Creates an Organisation Partner and a Family Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Family Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         private void TestMergeOrganisationToFamily_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
         {
@@ -1797,7 +3302,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             DataSet ResponseDS;
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            // Create two new Organisation Partners
+            // Create two new Partners
             PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
             PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
 
@@ -1819,7 +3324,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             ToPartnerRow.PartnerShortName = "";
             ToFamilyRow.FamilyName = "";
 
-            // Submit the two new Organisation Partner records to the database
+            // Submit the two new Partner records to the database
             ResponseDS = new PartnerEditTDS();
             Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
@@ -1833,7 +3338,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Family Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Family Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         void TestMergeOrganisationToFamily_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
@@ -1886,12 +3391,12 @@ namespace Tests.MPartner.Server.PartnerMerge
             TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
 
             //
-            // Arrange: Create two Organisation Partners
+            // Arrange: Create two Partners
             //
             TestMergeOrganisationToBank_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
 
             //
-            // Act: Merge the two Organisation Partners!
+            // Act: Merge the two Partners!
             //
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
                 TPartnerClass.ORGANISATION, TPartnerClass.BANK, null, null, -1, FCategories, ref DifferentFamilies);
@@ -1913,10 +3418,10 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates two Organisation Partners and a Organisation Partner.
+        /// Creates an Organisation Partner and a Bank Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Bank Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Bank Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         private void TestMergeOrganisationToBank_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
         {
@@ -1925,7 +3430,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             DataSet ResponseDS;
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            // Create two new Organisation Partners
+            // Create two new Partners
             PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
             PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
 
@@ -1947,7 +3452,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             ToPartnerRow.PartnerShortName = "";
             ToBankRow.BranchName = "";
 
-            // Submit the two new Organisation Partner records to the database
+            // Submit the new Partner records to the database
             ResponseDS = new PartnerEditTDS();
             Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
@@ -1961,7 +3466,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Bank Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Bank Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         void TestMergeOrganisationToBank_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
@@ -1997,6 +3502,227 @@ namespace Tests.MPartner.Server.PartnerMerge
 
             // Checking the MergeTable
             Assert.IsNotNull(MergeTable.Rows[0], "merge Organisation to Bank");
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class ORGANISATION to a Partner of Partner Class VENUE.
+        /// </summary>
+        /// <remarks>Creates one new Organisation Partner and one new Venue Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeOrganisationToVenue()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeOrganisationToVenue_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.ORGANISATION, TPartnerClass.VENUE, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Organisation to Venue");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Organisation Partner and a Venue Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Venue Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeOrganisationToVenue_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Organisation Partner and one new Venue Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for organisation and venue failed: " +
+                VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class ORGANISATION to a Partner of Partner Class PERSON.
+        /// </summary>
+        /// <remarks>Creates one new Organisation Partner and one new Person Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeOrganisationToPerson()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            long ToFamilyKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners and a Family Partner
+            //
+            TestMergeOrganisationToPerson_Arrange(out FromPartnerKey, out ToPartnerKey, out ToFamilyKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.ORGANISATION, TPartnerClass.PERSON, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Organisation to Person");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Organisation Partner a Person Partner and a Family Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AToFamilyKey">Partner Key of the Family Partner of the Person Partner.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeOrganisationToPerson_Arrange(out long AFromPartnerKey,
+            out long AToPartnerKey,
+            out long AToFamilyKey,
+            TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Organisation Partner and one new Person Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
+
+            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS);
+
+            PPersonRow ToPartnerRow = (PPersonRow)MainDS.PPerson.Rows[0];
+            PFamilyRow ToFamilyRow = (PFamilyRow)MainDS.PFamily.Rows[0];
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+            Assert.That(ToFamilyRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+            AToFamilyKey = ToFamilyRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for organisation and person failed: " +
+                VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class ORGANISATION to a Partner of Partner Class UNIT.
+        /// </summary>
+        /// <remarks>Creates one new Organisation Partner and one new Unit Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeOrganisationToUnit()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeOrganisationToUnit_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.ORGANISATION, TPartnerClass.UNIT, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Organisation to Unit");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Organisation Partner and a Unit Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Unit Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeOrganisationToUnit_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Organisation Partner and one new Unit Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for organisation and unit failed: " +
+                VerificationResult.BuildVerificationResultString());
         }
 
         /// <summary>
@@ -2044,7 +3770,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Creates two Bank Partners and a Bank Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Bank Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Bank Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Bank Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="ABankingDetailsKey">BankingDetailsKey for the BankingDetails record being tested</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         private void TestMergeTwoBanks_Arrange(out long AFromPartnerKey,
@@ -2096,7 +3822,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Bank Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Bank Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Bank Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="ABankingDetailsKey">BankingDetailsKey for the BankingDetails record being tested</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         void TestMergeTwoBanks_SecondaryAsserts(long AFromPartnerKey,
@@ -2153,12 +3879,12 @@ namespace Tests.MPartner.Server.PartnerMerge
             TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
 
             //
-            // Arrange: Create two Bank Partners
+            // Arrange: Create two Partners
             //
             TestMergeBankToOrganisation_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
 
             //
-            // Act: Merge the two Bank Partners!
+            // Act: Merge the two Partners!
             //
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
                 TPartnerClass.BANK, TPartnerClass.ORGANISATION, null, null, -1, FCategories, ref DifferentFamilies);
@@ -2180,10 +3906,10 @@ namespace Tests.MPartner.Server.PartnerMerge
         }
 
         /// <summary>
-        /// Creates two Bank Partners and a Family Partner.
+        /// Creates a Bank Partner and an Organisaion Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Bank Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         private void TestMergeBankToOrganisation_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
         {
@@ -2192,7 +3918,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             DataSet ResponseDS;
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            // Create two new Bank Partners
+            // Create two new Partners
             PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
             PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewOrganisationPartner(MainDS);
 
@@ -2215,7 +3941,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             FromBankRow.ContactPartnerKey = AToPartnerKey;
             ToOrganisationRow.ContactPartnerKey = 0;
 
-            // Submit the two new Bank Partner records to the database
+            // Submit the two new Partner records to the database
             ResponseDS = new PartnerEditTDS();
             Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
@@ -2229,7 +3955,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Bank Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Organisation Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         void TestMergeBankToOrganisation_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, ref TPartnerEditUIConnector AConnector)
         {
@@ -2265,6 +3991,362 @@ namespace Tests.MPartner.Server.PartnerMerge
 
             // Checking the MergeTable
             Assert.IsNotNull(MergeTable.Rows[0], "merge Bank to organisation");
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class BANK to a Partner of Partner Class CHURCH.
+        /// </summary>
+        /// <remarks>Creates one new Bank Partner and one new Church Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeBankToChurch()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeBankToChurch_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.BANK, TPartnerClass.CHURCH, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Bank to Church");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Bank Partner and a Church Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Bank Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Church Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeBankToChurch_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Bank Partner and one new Church Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewChurchPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for bank and church failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class BANK to a Partner of Partner Class VENUE.
+        /// </summary>
+        /// <remarks>Creates one new Bank Partner and one new Venue Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeBankToVenue()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeBankToVenue_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.BANK, TPartnerClass.VENUE, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Bank to Venue");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Bank Partner and a Venue Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Bank Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Venue Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeBankToVenue_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Bank Partner and one new Venue Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewVenuePartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for bank and venue failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class BANK to a Partner of Partner Class FAMILY.
+        /// </summary>
+        /// <remarks>Creates one new Bank Partner and one new Family Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeBankToFamily()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeBankToFamily_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.BANK, TPartnerClass.FAMILY, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Bank to Family");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Bank Partner and a Family Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Bank Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Family Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeBankToFamily_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Bank Partner and one new Family Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewFamilyPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for bank and family failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class BANK to a Partner of Partner Class PERSON.
+        /// </summary>
+        /// <remarks>Creates one new Bank Partner and one new Person Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeBankToPerson()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            long ToFamilyKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners and a Family Partner
+            //
+            TestMergeBankToPerson_Arrange(out FromPartnerKey, out ToPartnerKey, out ToFamilyKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.BANK, TPartnerClass.PERSON, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Bank to Person");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Bank Partner a Person Partner and a Family Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Bank Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AToFamilyKey">Partner Key of the Family Partner of the Person Partner.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeBankToPerson_Arrange(out long AFromPartnerKey,
+            out long AToPartnerKey,
+            out long AToFamilyKey,
+            TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Bank Partner and one new Person Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
+
+            TCreateTestPartnerData.CreateFamilyWithOnePersonRecord(MainDS);
+
+            PPersonRow ToPartnerRow = (PPersonRow)MainDS.PPerson.Rows[0];
+            PFamilyRow ToFamilyRow = (PFamilyRow)MainDS.PFamily.Rows[0];
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+            Assert.That(ToFamilyRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+            AToFamilyKey = ToFamilyRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for bank and person failed: " + VerificationResult.BuildVerificationResultString());
+        }
+
+        /// <summary>
+        /// Tests Partner Merge, merging a Partner of Partner Class BANK to a Partner of Partner Class UNIT.
+        /// </summary>
+        /// <remarks>Creates one new Bank Partner and one new Unit Partner, merges the two Partners
+        /// and checks that the merge did NOT work.</remarks>
+        [Test]
+        public void TestMergeBankToUnit()
+        {
+            long FromPartnerKey;
+            long ToPartnerKey;
+            TVerificationResultCollection VerificationResult;
+            TPartnerEditUIConnector UIConnector = new TPartnerEditUIConnector();
+
+            //
+            // Arrange: Create two Partners
+            //
+            TestMergeBankToUnit_Arrange(out FromPartnerKey, out ToPartnerKey, UIConnector);
+
+            //
+            // Act: Merge the two Partners!
+            //
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
+                TPartnerClass.BANK, TPartnerClass.UNIT, null, null, -1, FCategories, ref DifferentFamilies);
+
+            //
+            // Assert
+            //
+
+            // Primary Assert: Tests that Partner Merge reports that it was UNSUCCESSFUL!
+            Assert.AreEqual(false, result, "Merging Bank to Unit");
+
+            // Cleanup: Delete test records
+            TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
+            TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
+        }
+
+        /// <summary>
+        /// Creates a Bank Partner and a Unit Partner.
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner Key of the Bank Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Unit Partner that is the 'To' Partner in the Partner Merge Test.</param>
+        /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
+        private void TestMergeBankToUnit_Arrange(out long AFromPartnerKey, out long AToPartnerKey, TPartnerEditUIConnector AConnector)
+        {
+            TVerificationResultCollection VerificationResult;
+            TSubmitChangesResult Result;
+            DataSet ResponseDS;
+            PartnerEditTDS MainDS = new PartnerEditTDS();
+
+            // Create one new Bank Partner and one new Unit Partner
+            PPartnerRow FromPartnerRow = TCreateTestPartnerData.CreateNewBankPartner(MainDS);
+            PPartnerRow ToPartnerRow = TCreateTestPartnerData.CreateNewUnitPartner(MainDS);
+
+            // Guard Assertions
+            Assert.That(FromPartnerRow, Is.Not.Null);
+            Assert.That(ToPartnerRow, Is.Not.Null);
+
+            AFromPartnerKey = FromPartnerRow.PartnerKey;
+            AToPartnerKey = ToPartnerRow.PartnerKey;
+
+            // Submit the new Partner records to the database
+            ResponseDS = new PartnerEditTDS();
+            Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
+
+            // Guard Assertion
+            Assert.That(Result, Is.EqualTo(
+                    TSubmitChangesResult.scrOK), "SubmitChanges for bank and unit failed: " + VerificationResult.BuildVerificationResultString());
         }
 
         /// <summary>
@@ -2322,7 +4404,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Creates two Person Partners, a Family Partner and Gift Info for the From Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Person Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AFamilyPartnerKey">Partner Key of the Family Partner that is in the Partner Merge Test.</param>
         /// <param name="ALedgerNumber">Ledger Number for the GiftBatch that is created for testing.</param>
         /// <param name="ABatchNumber">Batch Number for the GiftBatch that is created for testing.</param>
@@ -2357,7 +4439,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             ALedgerNumber = GiftBatchRow.LedgerNumber;
             ABatchNumber = GiftBatchRow.BatchNumber;
 
-            // Submit the two new Person Partner records to the database
+            // Submit the new records to the database
             ResponseDS = new PartnerEditTDS();
             Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
@@ -2377,7 +4459,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Person Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="ALedgerNumber">Ledger Number for the GiftBatch that is created for testing.</param>
         /// <param name="ABatchNumber">Batch Number for the GiftBatch that is created for testing.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
@@ -2484,7 +4566,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Creates two Person Partners, a Family Partner and Gift Info for the From Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Person Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AFamilyPartnerKey">Partner Key of the Family Partner that is in the Partner Merge Test.</param>
         /// <param name="ALedgerNumber">Ledger Number for the GiftBatch that is created for testing.</param>
         /// <param name="ABatchNumber">Batch Number for the GiftBatch that is created for testing.</param>
@@ -2523,7 +4605,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             ALedgerNumber = GiftBatchRow.LedgerNumber;
             ABatchNumber = GiftBatchRow.BatchNumber;
 
-            // Submit the two new Person Partner records to the database
+            // Submit the new records to the database
             ResponseDS = new PartnerEditTDS();
             Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
@@ -2543,7 +4625,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Person Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="ALedgerNumber">Ledger Number for the GiftBatch that is created for testing.</param>
         /// <param name="ABatchNumber">Batch Number for the GiftBatch that is created for testing.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
@@ -2648,7 +4730,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Creates two Person Partners, a Family Partner and AP Info for the From Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Person Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AFamilyPartnerKey">Partner Key of the Family Partner that is in the Partner Merge Test.</param>
         /// <param name="AAPDocumentID">Document ID for APDocument that is created for testing.</param>
         /// <param name="ALedgerNumber">Ledger Number for the GiftBatch that is created for testing.</param>
@@ -2682,7 +4764,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             AAPDocumentID = APDocumentRow.ApDocumentId;
             ALedgerNumber = APDocumentRow.LedgerNumber;
 
-            // Submit the two new Person Partner records to the database
+            // Submit the new records to the database
             ResponseDS = new PartnerEditTDS();
             Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
@@ -2710,7 +4792,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Person Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AAPDocumentID">Document ID for APDocument that is created for testing.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         void TestMergeAPInfo_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, int AAPDocumentID, ref TPartnerEditUIConnector AConnector)
@@ -2734,7 +4816,6 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.That(MergeTable, Is.Not.Null);
             Assert.That(FromPartnerRow, Is.Not.Null);
             Assert.That(ToPartnerRow, Is.Not.Null);
-            Assert.That(SupplierRow, Is.Not.Null);
             Assert.That(DocumentRow, Is.Not.Null);
 
             //
@@ -2745,6 +4826,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge AP info");
             Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge AP info");
             Assert.AreEqual(AToPartnerKey, DocumentRow.PartnerKey, "AP gift info");
+            Assert.That(SupplierRow, Is.Not.Null, "Supplier was not correctly merged; it cannot be loaded from the DB as expected");
 
             // Checking the MergeTable
             Assert.IsNotNull(MergeTable.Rows[0], "merge AP info");
@@ -2802,7 +4884,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Creates two Person Partners, a Family Partner and AP Info for the From Partner.
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Person Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="AFamilyPartnerKey">Partner Key of the Family Partner that is in the Partner Merge Test.</param>
         /// <param name="ADataLabelKey">Key for PDataLabel that is created for testing.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
@@ -2838,7 +4920,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             AToPartnerKey = ToPartnerRow.PartnerKey;
             ADataLabelKey = ((PDataLabelRow)DataLabel.Rows[0]).Key;
 
-            // Submit the two new Person Partner records to the database
+            // Submit the new records to the database
             ResponseDS = new PartnerEditTDS();
             Result = AConnector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
@@ -2868,7 +4950,7 @@ namespace Tests.MPartner.Server.PartnerMerge
         /// Test that the data was merged correctly!
         /// </summary>
         /// <param name="AFromPartnerKey">Partner Key of the Person Partner that is the 'From' Partner in the Partner Merge Test.</param>
-        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'From' Partner in the Partner Merge Test.</param>
+        /// <param name="AToPartnerKey">Partner Key of the Person Partner that is the 'To' Partner in the Partner Merge Test.</param>
         /// <param name="ADataLabelKey">Key for PDataLabel that is created for testing.</param>
         /// <param name="AConnector">Instantiated Partner Edit UIConnector.</param>
         void TestMergePMData_SecondaryAsserts(long AFromPartnerKey, long AToPartnerKey, int ADataLabelKey, ref TPartnerEditUIConnector AConnector)

@@ -716,6 +716,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void MovePersonToThisFamily(System.Object sender, EventArgs e)
         {
             String mResultStringLbl = "";
+            TPartnerClass? mPartnerClass;
             TLocationPK mResultLocationPK;
 
             System.Int64 NewPersonKey = 0;
@@ -750,6 +751,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 (SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON),
                                 out NewPersonKey,
                                 out mResultStringLbl,
+                                out mPartnerClass,
                                 out mResultLocationPK,
                                 this.ParentForm);
 
@@ -1390,6 +1392,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void ChangeFamily(Int64 APersonKey, Int64 AOldFamilyKey, Boolean AChangeToThisFamily)
         {
             String mResultStringLbl = "";
+            TPartnerClass? mPartnerClass;
 
             System.Int64 NewFamilyKey = 0;
             String ProblemMessage;
@@ -1425,6 +1428,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 (SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY),
                                 out NewFamilyKey,
                                 out mResultStringLbl,
+                                out mPartnerClass,
                                 out mResultLocationPK,
                                 this.ParentForm);
 

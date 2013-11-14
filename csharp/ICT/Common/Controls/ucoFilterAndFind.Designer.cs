@@ -110,8 +110,6 @@ namespace Ict.Common.Controls
                 ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
                                                       System.Windows.Forms.AnchorStyles.Right)));
             this.pnlFilterControls.BorderColor = System.Drawing.Color.PapayaWhip;
-            this.pnlFilterControls.GradientEndColor = System.Drawing.Color.LightSkyBlue;
-            this.pnlFilterControls.GradientStartColor = System.Drawing.Color.LightBlue;
             this.pnlFilterControls.Image = null;
             this.pnlFilterControls.ImageLocation = new System.Drawing.Point(4, 4);
             this.pnlFilterControls.Location = new System.Drawing.Point(7, 30);

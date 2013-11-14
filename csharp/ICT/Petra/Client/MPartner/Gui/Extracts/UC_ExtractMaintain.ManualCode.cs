@@ -487,7 +487,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             System.Int64 PartnerKey = 0;
             string PartnerShortName;
-            TPartnerClass PartnerClass;
+            TPartnerClass? PartnerClass;
+            TPartnerClass PartnerClass2;
             TLocationPK ResultLocationPK;
 
             DataRow[] ExistingPartnerDataRows;
@@ -503,6 +504,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         ("",
                         out PartnerKey,
                         out PartnerShortName,
+                        out PartnerClass,
                         out ResultLocationPK,
                         this.ParentForm);
 
@@ -528,14 +530,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(
                             PartnerKey,
                             out PartnerShortName,
-                            out PartnerClass);
+                            out PartnerClass2);
 
                         // add new record to extract
                         NewRow = FMainDS.MExtract.NewRowTyped();
                         NewRow.ExtractId = FExtractId;
                         NewRow.PartnerKey = PartnerKey;
                         NewRow.PartnerShortName = PartnerShortName;
-                        NewRow.PartnerClass = SharedTypes.PartnerClassEnumToString(PartnerClass);
+                        NewRow.PartnerClass = SharedTypes.PartnerClassEnumToString(PartnerClass2);
                         NewRow.SiteKey = ResultLocationPK.SiteKey;
                         NewRow.LocationKey = ResultLocationPK.LocationKey;
                         FMainDS.MExtract.Rows.Add(NewRow);

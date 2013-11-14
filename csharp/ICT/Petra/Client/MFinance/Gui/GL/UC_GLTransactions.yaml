@@ -91,7 +91,7 @@ RootNode:
             Stretch: horizontally
             ScrollBars: Vertical
             Validation: true
-        txtDetailReference: {Label=Reference}
+        txtDetailReference: {Label=Reference, Validation=true}
         dtpDetailTransactionDate: {Label=Transaction Date, OnChange=TransDateChanged, Validation=true}
         cmbDetailKeyMinistryKey: {Label=Key Ministry,  Width=330, List=UserDefinedList}
         pnlDetailAmounts:
@@ -106,8 +106,8 @@ RootNode:
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
         txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
         txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
-        txtDebitAmount: {Label=Dr Amount, Format=Currency, NullValueAllowed=false}
-        txtCreditAmount: {Label=Cr Amount, Format=Currency, NullValueAllowed=false}
+        txtDebitAmount: {Label=Dr Amount, Validation=true, Format=Currency, NullValueAllowed=false}
+        txtCreditAmount: {Label=Cr Amount, Validation=true, Format=Currency, NullValueAllowed=false}
         txtDebitAmountBase: {Label=Dr Amount, ReadOnly=true, Format=Currency}
         txtCreditAmountBase: {Label=Cr Amount, ReadOnly=true, Format=Currency}
         txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true, Format=Currency}

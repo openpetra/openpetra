@@ -1432,7 +1432,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(false));
             }
-            
+
             return ReturnValue;
         }
 
@@ -1473,10 +1473,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void TFrmPartnerEdit2_Load(System.Object sender, System.EventArgs e)
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
-            
+
             this.Shown += new EventHandler(FPetraUtilsObject.OnFormShown);
             this.Shown += new EventHandler(TFrmPartnerEdit_Shown);
-            
+
             // Reduce Form height to fit the PartnerEdit screen fully only on 800x600 resolution
             if (System.Windows.Forms.Screen.GetBounds(ucoUpperPart).Height == 600)
             {

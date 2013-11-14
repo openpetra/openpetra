@@ -33,6 +33,7 @@ using Ict.Petra.Shared.MPersonnel.Validation;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Shared.MPersonnel.Personnel.Validation;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -124,10 +125,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             TSharedPersonnelValidation_Personnel.ValidateGeneralApplicationManual(this, ARow, true, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
 
+            // We need to call the generated validation code for PmShortTermApplication manually as the UserControl's generate code calls
+            // generated validation code only for the MasterTable, PmGeneralApplication!
+            PmShortTermApplicationValidation.Validate(this,
+                FMainDS.PmShortTermApplication[0], ref VerificationResultCollection,
+                FValidationControlsDict);
+
             TSharedPersonnelValidation_Personnel.ValidateEventApplicationManual(this,
                 FMainDS.PmShortTermApplication[0],
                 ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+                FValidationControlsDict);
         }
 
         #endregion

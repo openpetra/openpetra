@@ -5,7 +5,7 @@ RootNode:
     FormType: dialog
     Template: window
     WindowWidth: 450
-    WindowHeight: 500
+    WindowHeight: 560
 
     Controls:
         pnlContent:

@@ -312,6 +312,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool AAllPartnerClasses)
         {
             String TmpString;
+            String RestrictedClasses = "";;
+
             Boolean WorkerFamOnly = false;
             DataRow PartnerClassDataRow;
 
@@ -339,12 +341,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                     PartnerClassDataRow["PartnerClass"] = "FAMILY";
                     FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
 
+                    RestrictedClasses += "FAMILY" + ",";
+
                     // Set the flag, so combo box handler knows this is the case
                     FWorkerFamOnly = true;
                 }
                 else
                 {
                     if ((AAllPartnerClasses)
+                        || (eachPart == "*")
                         || ((eachPart == "PERSON")
                             || (eachPart == "FAMILY")))
                     {
@@ -362,12 +367,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                             FWorkerFamOnly = false;
                             FWorkerFamPreferred = true;
                         }
+
+                        if (eachPart != "*")
+                        {
+                            RestrictedClasses += eachPart + ",";
+                        }
                     }
                 }
             }
 
-            // ensure top choice is databound
-            FFindCriteriaDataTable.Rows[0]["PartnerClass"] = FDefaultPartnerClass;
+            // Multiple partner classes represented by FDefaultPartnerClass when using RestrictedPartnerClasses.
+            // Arranged like - "PartnerClass1,PartnerClass2,...etc"
+            if (AAllPartnerClasses)
+            {
+                // Remove the comma after the final restricted partner class.
+                FDefaultPartnerClass = RestrictedClasses.TrimEnd(',');
+            }
 
             if (!FDontRecordCurrentWorkerFamOnlySelection)
             {
@@ -387,6 +402,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // and checked if needed
                 HandlePartnerClassGui();
             }
+
+            FFindCriteriaDataTable.Rows[0]["PartnerClass"] = FDefaultPartnerClass;
         }
 
         /// <summary>
@@ -469,7 +486,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // therefore cmbPartnerClass.Text and cmbPartnerClass.SelectedValue both return System.Data.DataRowView
                 if (cmbPartnerClass.Text != "System.Data.DataRowView")
                 {
-                    SingleDataRow["PartnerClass"] = cmbPartnerClass.Text;
+                    // partner classes in datatable need to be reset everytime '*' is reselected in cmbPartnerClass
+                    if ((cmbPartnerClass.Text == "*") && (RestrictedPartnerClass != null) && (RestrictedPartnerClass.Length != 0))
+                    {
+                        FDontRecordCurrentWorkerFamOnlySelection = true;
+                        AddPartnerClassesToDataTable(RestrictedPartnerClass, txtPersonalName.TextLength == 0);
+                        FDontRecordCurrentWorkerFamOnlySelection = false;
+                    }
+                    else
+                    {
+                        SingleDataRow["PartnerClass"] = cmbPartnerClass.Text;
+                    }
                 }
                 else
                 {
@@ -1087,6 +1114,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 else
                 {
                     PartnerClassDataRow = FPartnerClassDataTable.NewRow();
+                    PartnerClassDataRow["PartnerClass"] = "*";
+                    FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
+                    PartnerClassDataRow = FPartnerClassDataTable.NewRow();
                     PartnerClassDataRow["PartnerClass"] = "PERSON";
                     FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
                     PartnerClassDataRow = FPartnerClassDataTable.NewRow();
@@ -1120,15 +1150,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         default:
                         {
-                            if (FPreviouslySelectedPartnerClass == "*")
-                            {
-                                FPreviouslySelectedPartnerClass = "FAMILY";
-                            }
-
                             // Set Partner Class to Family or Person, depending on what the previous value was
                             // Need to change it twice to get a selected value changed event
                             cmbPartnerClass.SelectedIndex = -1;
                             cmbPartnerClass.SelectedValue = FPreviouslySelectedPartnerClass;
+
+                            if (cmbPartnerClass.SelectedValue == null)
+                            {
+                                cmbPartnerClass.SelectedIndex = 0;
+                            }
 
                             break;
                         }
@@ -1136,6 +1166,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 FPartnerClassUpdateIsAutomatic = false;
+
+                // this stops the cursor being reset to the start of the text box
+                txtPersonalName.SelectionStart = txtPersonalName.TextLength;
             }
             else if ((cmbPartnerClass.SelectedValue != null)
                      && (txtPersonalName.Text.Length == 0)
@@ -1513,6 +1546,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             FindCriteriaUserDefaultRestore();
 
             ShowOrHidePartnerKeyMatchInfoText();
+
+            // put focus on txtPartnerName on screen load
+            this.ActiveControl = txtPartnerName;
         }
 
         /// <summary>

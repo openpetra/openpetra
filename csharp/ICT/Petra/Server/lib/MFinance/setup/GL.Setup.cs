@@ -2368,7 +2368,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             AVerificationResult = null;
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            
+
             // check if such a ledger already exists
             ALedgerTable tempLedger = ALedgerAccess.LoadByPrimaryKey(ANewLedgerNumber, Transaction);
 
@@ -2459,7 +2459,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     // no location record exists yet: create new one
                     locationRow = MainDS.PLocation.NewRowTyped();
                     locationRow.SiteKey = 0;
-                    locationRow.LocationKey = (int)DBAccess.GDBAccessObj.GetNextSequenceValue(TSequenceNames.seq_location_number.ToString(), Transaction);
+                    locationRow.LocationKey = (int)DBAccess.GDBAccessObj.GetNextSequenceValue(
+                        TSequenceNames.seq_location_number.ToString(), Transaction);
                     locationRow.StreetName = Catalog.GetString("No valid address on file");
                     locationRow.CountryCode = ACountryCode;
                     MainDS.PLocation.Rows.Add(locationRow);

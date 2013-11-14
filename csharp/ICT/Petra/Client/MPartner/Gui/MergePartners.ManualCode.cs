@@ -34,13 +34,13 @@ using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonDialogs;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Client.MCommon;
-using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -316,221 +316,36 @@ namespace Ict.Petra.Client.MPartner.Gui
                 AToPartnerClass, FSiteKeys, FLocationKeys, FMainBankingDetailsKey, ACategories, ref ADifferentFamilies);
         }
 
+        // check if the two partners can be merged and display any error/warning messages
         private bool CheckPartnersCanBeMerged()
         {
-            if (FromPartnerClass != ToPartnerClass)
+            TVerificationResultCollection VerificationResult;
+            bool CanMerge;
+
+            CanMerge = TRemote.MPartner.Partner.WebConnectors.CheckPartnersCanBeMerged(FromPartnerKey, ToPartnerKey, FromPartnerClass, ToPartnerClass,
+                cmbReasonForMerging.Text, out VerificationResult);
+
+            // No critical errors. Display any warning messages.
+            if (CanMerge)
             {
-                // confirm that user wants to merge partners from different partner classes
-                if (MessageBox.Show(String.Format(Catalog.GetString("Do you really want to merge a Partner of class {0} into a Partner of class {1}?"),
-                            FromPartnerClass, ToPartnerClass), Catalog.GetString("Merge Partners"),
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
+                foreach (TVerificationResult Result in VerificationResult)
                 {
-                    return false;
-                }
-
-                // Family Partner cannot be merged into a different partner class if family members, donations or bank accounts exist for that partner
-                if (FromPartnerClass == TPartnerClass.FAMILY)
-                {
-                    int FamilyMergeResult = TRemote.MPartner.Partner.WebConnectors.CanFamilyMergeIntoDifferentClass(FromPartnerKey);
-
-                    if (FamilyMergeResult != 0)
-                    {
-                        string ErrorMessage = "";
-
-                        if (FamilyMergeResult == 1)
-                        {
-                            ErrorMessage = Catalog.GetString(
-                                "This Family record cannot be merged into a Partner with different class as Family members exist!");
-                        }
-                        else if (FamilyMergeResult == 2)
-                        {
-                            ErrorMessage = Catalog.GetString(
-                                "This Family record cannot be merged into a Partner with different class as donations were received for it!");
-                        }
-                        else if (FamilyMergeResult == 3)
-                        {
-                            ErrorMessage = Catalog.GetString(
-                                "This record cannot be merged into a Partner with different class as bank accounts exist for it!");
-                        }
-
-                        MessageBox.Show(ErrorMessage, Catalog.GetString("Merge Partners"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        btnOK.Enabled = false;
-                        return false;
-                    }
-                }
-            }
-            else // partner classes are the same
-            {
-                string FromPartnerSupplierCurrency;
-                string ToPartnerSupplierCurrency;
-
-                // if two partners are suppliers they must have the same currency
-                if ((TRemote.MPartner.Partner.WebConnectors.GetSupplierCurrency(FromPartnerKey, out FromPartnerSupplierCurrency) == true)
-                    && (TRemote.MPartner.Partner.WebConnectors.GetSupplierCurrency(ToPartnerKey, out ToPartnerSupplierCurrency) == true))
-                {
-                    if (FromPartnerSupplierCurrency != ToPartnerSupplierCurrency)
-                    {
-                        MessageBox.Show(Catalog.GetString(
-                                "These Partners cannot be merged. Partners that are suppliers must have the same currency in order to merge."),
-                            Catalog.GetString("Merge Partners"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        btnOK.Enabled = false;
-                        return false;
-                    }
-                }
-
-                if (FromPartnerClass == TPartnerClass.VENUE)
-                {
-                    if (MessageBox.Show(Catalog.GetString("You are about to merge VENUEs. This will imply merging of buildings, rooms and room " +
-                                "allocations defined for these Venues in the Conference Module!") + "\n\n" + Catalog.GetString("Continue?"),
-                            Catalog.GetString("Merge Partners"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No)
-                    {
-                        return false;
-                    }
-                }
-
-                if (FromPartnerClass == TPartnerClass.BANK)
-                {
-                    if (MessageBox.Show(Catalog.GetString("You are about to merge BANKSs. This will imply that all bank accounts that were with the "
-                                +
-                                "From-Bank Partner will become bank accounts of the To-Bank Partner. For this reason you should merge Banks only when "
-                                +
-                                "both Bank Partners actually represented the same Bank, or if two different Banks have merged their operations!") +
-                            "\n\n" +
-                            Catalog.GetString("Continue?"), Catalog.GetString("Merge Partners"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                    if (MessageBox.Show(Result.ResultText, Catalog.GetString("Merge Partners"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
                         == DialogResult.No)
                     {
                         return false;
                     }
                 }
             }
-
-            if (cmbReasonForMerging.Text == "Duplicate Record Exists")
+            // Critical error
+            else
             {
-                if (FromPartnerClass == TPartnerClass.FAMILY)
-                {
-                    // FromPartnerClass and ToPartnerClass are the same
-                    int CheckCommitmentsResult = TRemote.MPartner.Partner.WebConnectors.CheckPartnerCommitments(
-                        FromPartnerKey, ToPartnerKey, FromPartnerClass);
-
-                    // if the from family Partner contains a person with an ongoing commitment
-                    if (CheckCommitmentsResult != 0)
-                    {
-                        string ErrorMessage = string.Format(Catalog.GetString("WARNING: You are about to change the family of {0} ({1}).") + "\n\n" +
-                            Catalog.GetString("Changing a person's family can affect the person's ability to see their support information in" +
-                                " Caleb including any support that they may receive from other Fields."), txtMergeFrom.LabelText, FromPartnerKey);
-
-                        if (CheckCommitmentsResult == 1)
-                        {
-                            ErrorMessage += "\n\n" + string.Format(Catalog.GetString("It is STRONGLY recommended that you do not continue and " +
-                                    "consider merging family {0} ({1}) into family {2} ({3})."),
-                                txtMergeTo.LabelText, ToPartnerKey, txtMergeFrom.LabelText, FromPartnerKey);
-                        }
-
-                        ErrorMessage += "\n\n" + Catalog.GetString("Do you want to continue?");
-
-                        if (MessageBox.Show(ErrorMessage, Catalog.GetString("Merge Partners"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-                            == DialogResult.No)
-                        {
-                            return false;
-                        }
-                    }
-                }
-                else if (FromPartnerClass == TPartnerClass.PERSON)
-                {
-                    // FromPartnerClass and ToPartnerClass are the same
-                    int CheckCommitmentsResult = TRemote.MPartner.Partner.WebConnectors.CheckPartnerCommitments(
-                        FromPartnerKey, ToPartnerKey, FromPartnerClass);
-
-                    // if the from Partner has an ongoing commitment
-                    if (CheckCommitmentsResult != 0)
-                    {
-                        string ErrorMessage = "";
-
-                        if (CheckCommitmentsResult == 3)
-                        {
-                            ErrorMessage = string.Format(Catalog.GetString("WARNING: You are about to change the family of {0} ({1}).") + "\n\n" +
-                                Catalog.GetString("Changing a person's family can affect the person's ability to see their support information in" +
-                                    " Caleb including any support that they may receive from other Fields."), txtMergeFrom.LabelText, FromPartnerKey);
-                        }
-                        else if (CheckCommitmentsResult == 2)
-                        {
-                            ErrorMessage = Catalog.GetString("WARNING: Both Persons have a current commitment. " +
-                                "Be aware that merging these Persons may affect their usage of Caleb.") +
-                                           "\n\n" + Catalog.GetString("Do you want to continue?");
-                        }
-                        else if (CheckCommitmentsResult == 1)
-                        {
-                            ErrorMessage = string.Format(Catalog.GetString("WARNING: Person {0} ({1}) has a current commitment. " +
-                                    "We strongly recommend merging the other way around."), txtMergeFrom.LabelText, FromPartnerKey) +
-                                           "\n\n" + Catalog.GetString("Do you want to continue?");
-                        }
-
-                        if (MessageBox.Show(ErrorMessage, Catalog.GetString("Merge Partners"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-                            == DialogResult.No)
-                        {
-                            return false;
-                        }
-                    }
-                }
+                MessageBox.Show(VerificationResult[0].ResultText, Catalog.GetString("Merge Partners"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                // disable 'Merge' button until a partner is changed
+                btnOK.Enabled = false;
             }
 
-            // checks if one of the partners is a Foundation organisation.
-            if ((FromPartnerClass == TPartnerClass.ORGANISATION) || (ToPartnerClass == TPartnerClass.ORGANISATION))
-            {
-                PFoundationTable FromFoundationTable = null;
-                PFoundationTable ToFoundationTable = null;
-
-                string ErrorMessage = "";
-
-                if (FromPartnerClass == TPartnerClass.ORGANISATION)
-                {
-                    FromFoundationTable = TRemote.MPartner.Partner.WebConnectors.GetOrganisationFoundation(FromPartnerKey);
-                }
-
-                if (ToPartnerClass == TPartnerClass.ORGANISATION)
-                {
-                    ToFoundationTable = TRemote.MPartner.Partner.WebConnectors.GetOrganisationFoundation(ToPartnerKey);
-                }
-
-                // if both partners are Foundation organisations check permissions
-                if ((FromFoundationTable != null) && (ToFoundationTable != null))
-                {
-                    if (!TSecurity.CheckFoundationSecurity((PFoundationRow)FromFoundationTable.Rows[0]))
-                    {
-                        ErrorMessage = Catalog.GetString("The Partner that you are merging from is a Foundation, but you do not " +
-                            "have access rights to view its data. Therefore you are not allowed to merge these Foundations!") + "\n\n" +
-                                       Catalog.GetString("Access Denied");
-                    }
-                    else if (!TSecurity.CheckFoundationSecurity((PFoundationRow)ToFoundationTable.Rows[0]))
-                    {
-                        ErrorMessage = Catalog.GetString("The Partner that you are merging into is a Foundation, but you do not " +
-                            "have access rights to view its data. Therefore you are not allowed to merge these Foundations!") + "\n\n" +
-                                       Catalog.GetString("Access Denied");
-                    }
-                }
-                // none or both partners must be Foundation organisations
-                else if (FromFoundationTable != null)
-                {
-                    ErrorMessage = Catalog.GetString("The Partner that you are merging from is a Foundation, but the Partner that you " +
-                        "are merging into is not a Foundation. This is not allowed!") + "\n\n" +
-                                   Catalog.GetString("Both Merge Partners Need to be Foundations!");
-                }
-                else if (ToFoundationTable != null)
-                {
-                    ErrorMessage = Catalog.GetString("The Partner that you are merging from isn't a Foundation, but the Partner that you " +
-                        "are merging into is a Foundation. This is not allowed!") + "\n\n" +
-                                   Catalog.GetString("Both Merge Partners Need to be Foundations!");
-                }
-
-                if (ErrorMessage != "")
-                {
-                    MessageBox.Show(ErrorMessage, Catalog.GetString("Merge Partners"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    btnOK.Enabled = false;
-                    return false;
-                }
-            }
-
-            return true;
+            return CanMerge;
         }
     }
 }
