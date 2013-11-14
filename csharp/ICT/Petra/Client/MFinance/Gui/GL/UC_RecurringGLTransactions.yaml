@@ -54,8 +54,6 @@ RootNode:
             Columns: [AnalysisTypeCode]
             CustomColumns:
                 AnalysisTypeCode: {Label=Type, Type=String}
-            #ActionFocusRow: AnalysisAttributesGridFocusRow
-            #ActionClick: AnalysisAttributesGridClick
             Tooltip: Use cursor keys to select and edit an Analysis Attribute
 
         lblAnalAttributes:
