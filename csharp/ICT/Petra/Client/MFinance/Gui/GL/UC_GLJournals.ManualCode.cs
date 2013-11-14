@@ -98,47 +98,48 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         GetDetailsFromControls(GetSelectedDetailRow());
                     }
                 }
-
-                return;
             }
-
-            FLedgerNumber = ALedgerNumber;
-            FBatchNumber = ABatchNumber;
-            FBatchStatus = ABatchStatus;
-
-            FPreviouslySelectedDetailRow = null;
-
-            if (batchChanged || ledgerChanged)
+            else
             {
-                //Clear all previous data.
-                FMainDS.ATransAnalAttrib.Clear();
-                FMainDS.ATransaction.Clear();
-                FMainDS.AJournal.Clear();
+                // Need to load a new journal
+                FLedgerNumber = ALedgerNumber;
+                FBatchNumber = ABatchNumber;
+                FBatchStatus = ABatchStatus;
+
+                FPreviouslySelectedDetailRow = null;
+
+                if (batchChanged || ledgerChanged)
+                {
+                    //Clear all previous data.
+                    FMainDS.ATransAnalAttrib.Clear();
+                    FMainDS.ATransaction.Clear();
+                    FMainDS.AJournal.Clear();
+                }
+
+                grdDetails.DataSource = null;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AJournal.DefaultView);
+
+                // This sets the base rowFilter and sort and calls manual code
+                ShowData();
+
+                // only load from server if there are no journals loaded yet for this batch
+                // otherwise we would overwrite journals that have already been modified
+                dv = FMainDS.AJournal.DefaultView;
+
+                if (dv.Count == 0)
+                {
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndContent(ALedgerNumber, ABatchNumber));
+                }
+
+                // Now set up the complete current filter
+                FFilterPanelControls.SetBaseFilter(dv.RowFilter, true);
+                ApplyFilter();
             }
 
-            grdDetails.DataSource = null;
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AJournal.DefaultView);
-
-            // This sets the base rowFilter and sort and calls manual code
-            ShowData();
-
-            // only load from server if there are no journals loaded yet for this batch
-            // otherwise we would overwrite journals that have already been modified
-            dv = FMainDS.AJournal.DefaultView;
-
-            if (dv.Count == 0)
-            {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndContent(ALedgerNumber, ABatchNumber));
-            }
-
-            // Now set up the complete current filter
-            FFilterPanelControls.SetBaseFilter(dv.RowFilter, true);
-            ApplyFilter();
+            SelectRowInGrid((batchChanged || ledgerChanged) ? 1 : FPrevRowChangedRow);
 
             UpdateRecordNumberDisplay();
             SetRecordNumberDisplayProperties();
-
-            SelectRowInGrid((batchChanged || ledgerChanged) ? 1 : FPrevRowChangedRow);
 
             txtDetailExchangeRateToBase.Enabled = false;
             txtBatchNumber.Text = FBatchNumber.ToString();
@@ -235,6 +236,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(AJournalRow ARow)
         {
+            grdDetails.TabStop = (ARow != null);
+
+            if (ARow == null)
+            {
+                btnAdd.Focus();
+            }
+
             if ((ARow == null) || (ARow.JournalStatus == MFinanceConstants.BATCH_CANCELLED))
             {
                 ((TFrmGLBatch)ParentForm).DisableTransactions();

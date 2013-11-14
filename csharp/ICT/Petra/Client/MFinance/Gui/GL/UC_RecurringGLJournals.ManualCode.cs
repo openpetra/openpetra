@@ -81,46 +81,40 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         GetDetailsFromControls(GetSelectedDetailRow());
                     }
                 }
-
-                return;
-            }
-
-            FLedgerNumber = ALedgerNumber;
-            FBatchNumber = ABatchNumber;
-            FBatchStatus = ABatchStatus;
-
-            FPreviouslySelectedDetailRow = null;
-
-            if (batchChanged)
-            {
-                //Clear all previous data.
-                FMainDS.ARecurringTransAnalAttrib.Clear();
-                FMainDS.ARecurringTransaction.Clear();
-                FMainDS.ARecurringJournal.Clear();
-            }
-
-            grdDetails.DataSource = null;
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringJournal.DefaultView);
-
-            SetJournalDefaultView();
-
-            // only load from server if there are no journals loaded yet for this batch
-            // otherwise we would overwrite journals that have already been modified
-            if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
-            {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndContent(ALedgerNumber, ABatchNumber));
-            }
-
-            ShowData();
-
-            if (grdDetails.Rows.Count < 2)
-            {
-                ShowDetails(null);
             }
             else
             {
-                SelectRowInGrid(1);
+                // a different journal
+                FLedgerNumber = ALedgerNumber;
+                FBatchNumber = ABatchNumber;
+                FBatchStatus = ABatchStatus;
+
+                FPreviouslySelectedDetailRow = null;
+
+                if (batchChanged)
+                {
+                    //Clear all previous data.
+                    FMainDS.ARecurringTransAnalAttrib.Clear();
+                    FMainDS.ARecurringTransaction.Clear();
+                    FMainDS.ARecurringJournal.Clear();
+                }
+
+                grdDetails.DataSource = null;
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringJournal.DefaultView);
+
+                SetJournalDefaultView();
+
+                // only load from server if there are no journals loaded yet for this batch
+                // otherwise we would overwrite journals that have already been modified
+                if (FMainDS.ARecurringJournal.DefaultView.Count == 0)
+                {
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndContent(ALedgerNumber, ABatchNumber));
+                }
+
+                ShowData();
             }
+
+            SelectRowInGrid(1);
 
             UpdateRecordNumberDisplay();
             SetRecordNumberDisplayProperties();
@@ -235,6 +229,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(ARecurringJournalRow ARow)
         {
+            grdDetails.TabStop = (ARow != null);
+
+            if (ARow == null)
+            {
+                btnAdd.Focus();
+            }
+
             if (ARow == null)
             {
                 ((TFrmRecurringGLBatch)ParentForm).DisableTransactions();

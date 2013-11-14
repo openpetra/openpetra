@@ -61,19 +61,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
-            //Need this to allow focus to go to the grid.
-            tabRecurringGLBatch.TabStop = false;
-
             tabRecurringGLBatch.SelectedIndex = standardTabIndex;
             TabSelectionChanged(null, null); //tabRecurringGLBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
 
             this.Shown += delegate
             {
                 // This will ensure the grid gets the focus when the screen is shown for the first time 
-                if (ucoRecurringBatches.GetSelectedDetailRow() != null)
-                {
-                    ucoRecurringBatches.FocusGrid();
-                }
+                ucoRecurringBatches.SetInitialFocus();
             };
         }
 
@@ -104,40 +98,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// activate the journal tab and load the journals of the batch
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        public void LoadJournals(Int32 ALedgerNumber, Int32 ABatchNumber)
-        {
-            this.tpgJournals.Enabled = true;
-            DisableTransactions();
-            this.ucoRecurringJournals.LoadJournals(ALedgerNumber, ABatchNumber);
-        }
-
-        /// <summary>
-        /// activate the transaction tab and load the transactions of the batch
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <param name="AJournalNumber"></param>
-        /// <param name="AForeignCurrencyName"></param>
-        public void LoadTransactions(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, String AForeignCurrencyName)
-        {
-            this.tpgTransactions.Enabled = true;
-            this.ucoRecurringTransactions.LoadTransactions(ALedgerNumber, ABatchNumber, AJournalNumber, AForeignCurrencyName);
-            this.Refresh();
-        }
-
-        /// <summary>
-        /// Unload transactions from the form
-        /// </summary>
-        public void UnloadTransactions()
-        {
-            this.ucoRecurringTransactions.UnloadTransactions();
-        }
-
-        /// <summary>
         /// disable the transactions tab if we have no active journal
         /// </summary>
         public void DisableTransactions()
@@ -160,6 +120,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void DisableJournals()
         {
+            this.tabRecurringGLBatch.TabStop = false;
+
             this.tpgJournals.Enabled = false;
             this.Refresh();
         }
@@ -167,11 +129,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Enable the journal tab if we have an active batch
         /// </summary>
-        public void EnableJournals(bool AEnable = true)
+        public void EnableJournals()
         {
-            if (this.tpgJournals.Enabled != AEnable)
+            this.tabRecurringGLBatch.TabStop = true;
+
+            if (!this.tpgJournals.Enabled)
             {
-                this.tpgJournals.Enabled = AEnable;
+                this.tpgJournals.Enabled = true;
                 this.Refresh();
             }
         }
@@ -210,7 +174,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ucoRecurringBatches.EnableTransactionTabForBatch();
                 }
 
-                this.ucoRecurringBatches.FocusGrid();
+                ucoRecurringBatches.SetInitialFocus();
                 FPreviousTab = eGLTabs.RecurringBatches;
             }
             else if (ATab == eGLTabs.RecurringJournals)
@@ -229,7 +193,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     this.ucoRecurringJournals.UpdateHeaderTotals(ucoRecurringBatches.GetSelectedDetailRow());
 
-                    this.ucoRecurringJournals.FocusGrid();
                     FPreviousTab = eGLTabs.RecurringJournals;
                 }
             }

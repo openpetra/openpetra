@@ -32,7 +32,7 @@ RootNode:
             FindControls: [txtDetailNarrative, txtDetailReference]
         pnlDetailsSection:
             Dock: Bottom
-            Controls: [pnlDetails, pnlTransAnalysisAttributes]
+            Controls: [pnlTransAnalysisAttributes, pnlDetails]
             Height: 320
         pnlDetailButtons:
             Dock: Bottom
@@ -45,7 +45,7 @@ RootNode:
         pnlTransAnalysisAttributes:
             Dock: Right
             Controls: [lblAnalAttributes, grdAnalAttributes]
-            Width: 300
+            Width: 250
 
         grdAnalAttributes:
             TableName: ARecurringTransAnalAttrib
@@ -54,8 +54,8 @@ RootNode:
             Columns: [AnalysisTypeCode]
             CustomColumns:
                 AnalysisTypeCode: {Label=Type, Type=String}
-            ActionFocusRow: AnalysisAttributesGridFocusRow
-            ActionClick: AnalysisAttributesGridClick
+            #ActionFocusRow: AnalysisAttributesGridFocusRow
+            #ActionClick: AnalysisAttributesGridClick
             Tooltip: Use cursor keys to select and edit an Analysis Attribute
 
         lblAnalAttributes:
@@ -78,7 +78,7 @@ RootNode:
             RowFilter: ARecurringTransaction.BatchNumber, ARecurringTransaction.JournalNumber
             EnableMultiSelection: false
         pnlDetails:
-            Dock: Left
+            Dock: Fill
             Controls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, cmbDetailKeyMinistryKey, pnlDetailAmounts]
         cmbDetailCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList, OnChange=CostCentreCodeDetailChanged}
         cmbDetailAccountCode: {Label=Account Code, List=UserDefinedList, OnChange=AccountCodeDetailChanged}
@@ -86,6 +86,7 @@ RootNode:
         txtDetailNarrative:
             Label: Narrative
             Width: 300
+            Stretch: horizontally
             Height: 50
             Multiline: true
             ScrollBars: Vertical

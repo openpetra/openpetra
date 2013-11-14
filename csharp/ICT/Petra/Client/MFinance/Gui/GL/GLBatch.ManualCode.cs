@@ -84,13 +84,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
-            //Need this to allow focus to go to the grid.
-            tabGLBatch.TabStop = false;
-
             tabGLBatch.SelectedIndex = standardTabIndex;
             TabSelectionChanged(null, null); //tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
 
-            this.ucoBatches.FocusGrid();
+            this.Shown += delegate
+            {
+                // This will ensure the grid gets the focus when the screen is shown for the first time
+                ucoBatches.SetInitialFocus();
+            };
         }
 
         private void InitializeManualCode()
@@ -178,6 +179,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void DisableJournals()
         {
+            this.tabGLBatch.TabStop = false;
+
             this.tpgJournals.Enabled = false;
             this.Refresh();
         }
@@ -187,6 +190,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void EnableJournals()
         {
+            this.tabGLBatch.TabStop = true;
+
             if (!this.tpgJournals.Enabled)
             {
                 this.tpgJournals.Enabled = true;
@@ -221,6 +226,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 this.tabGLBatch.SelectedTab = this.tpgBatches;
                 this.tpgJournals.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
+                this.tabGLBatch.TabStop = this.tpgJournals.Enabled;
 
                 if (this.tpgTransactions.Enabled)
                 {
@@ -229,7 +235,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ucoBatches.EnableTransactionTabForBatch();
                 }
 
-                this.ucoBatches.FocusGrid();
+                ucoBatches.SetInitialFocus();
                 FPreviousTab = eGLTabs.Batches;
             }
             else if (ATab == eGLTabs.Journals)
@@ -248,7 +254,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     this.ucoJournals.UpdateHeaderTotals(ucoBatches.GetSelectedDetailRow());
 
-                    this.ucoJournals.FocusGrid();
                     FPreviousTab = eGLTabs.Journals;
                 }
             }
