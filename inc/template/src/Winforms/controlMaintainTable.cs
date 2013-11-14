@@ -218,6 +218,12 @@ namespace {#NAMESPACE}
                         MCommonResourcestrings.StrAddNewRecordTitle,
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     FFilterPanelControls.ClearAllDiscretionaryFilters();
+
+                    if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                    {
+                        ApplyFilter();
+                    }
+
                     SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
                 }
             }
@@ -1229,6 +1235,12 @@ namespace {#NAMESPACE}
                     // Clear the filters without selecting a new row
                     FClearingDiscretionaryFilters = true;
                     FFilterPanelControls.ClearAllDiscretionaryFilters();
+
+                    if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                    {
+                        ApplyFilter();
+                    }
+
                     FClearingDiscretionaryFilters = false;
 
                     // Now find the row again - this time we should succeed.  If not some other piece of code will have to do the selection

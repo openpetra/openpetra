@@ -240,6 +240,12 @@ namespace {#NAMESPACE}
                         MCommonResourcestrings.StrAddNewRecordTitle,
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     FFilterPanelControls.ClearAllDiscretionaryFilters();
+
+                    if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                    {
+                        ApplyFilter();
+                    }
+
                     SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
                 }
             }
@@ -553,24 +559,35 @@ namespace {#NAMESPACE}
                 {
                     // Remember the control with the focus
                     Control c = FPetraUtilsObject.GetFocusedControl(pnlDetails);
-                    MessageBox.Show(MCommonResourcestrings.StrEditedRecordIsFiltered, MCommonResourcestrings.StrEditRecordTitle, 
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     // Clear the filters without selecting a new row
                     FClearingDiscretionaryFilters = true;
                     FFilterPanelControls.ClearAllDiscretionaryFilters();
+
+                    if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                    {
+                        ApplyFilter();
+                    }
+
                     FClearingDiscretionaryFilters = false;
 
-                    // Now find the row again - this time we should succeed
+                    // Now find the row again - this time we should succeed.  If not some other piece of code will have to do the selection
                     newRowAfterValidation = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow, prevRowBeforeValidation - 1) + 1;
 
-                    // Select the row
-                    grdDetails.ReselectGridRowAfterSort(newRowAfterValidation);
-                    
-                    // Put the focus back again on the editable control
-                    if (c != null)
+                    if (newRowAfterValidation > 0)
                     {
-                        c.Focus();
+                        // Select the row
+                        grdDetails.ReselectGridRowAfterSort(newRowAfterValidation);
+                    
+                        // Put the focus back again on the editable control
+                        if (c != null)
+                        {
+                            c.Focus();
+                        }
+                        
+                        // Tell the user what we have done
+                        MessageBox.Show(MCommonResourcestrings.StrEditedRecordIsFiltered, MCommonResourcestrings.StrEditRecordTitle, 
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
 {#ENDIF FILTERANDFIND}
