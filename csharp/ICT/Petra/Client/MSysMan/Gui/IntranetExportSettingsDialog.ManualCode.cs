@@ -36,7 +36,7 @@ using Ict.Petra.Shared;
 namespace Ict.Petra.Client.MSysMan.Gui
 {
     /// manual methods for the generated window
-    public partial class TFrmIntranetExportSettings
+    public partial class TFrmIntranetExportSettingsDialog
     {
         private string FPswd;
         private string FExtra;

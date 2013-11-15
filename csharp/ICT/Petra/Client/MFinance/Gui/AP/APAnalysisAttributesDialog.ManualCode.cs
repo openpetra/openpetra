@@ -39,7 +39,7 @@ using Ict.Petra.Shared.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
-    public partial class TFrmAPAnalysisAttributes
+    public partial class TFrmAPAnalysisAttributesDialog
     {
         private AccountsPayableTDS FMainDS;
         private AApAnalAttribRow PrevSelectedRow = null;
