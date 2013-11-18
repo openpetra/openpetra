@@ -19,3 +19,5 @@ RootNode:
             Dock: Fill
             Stretch: horizontally
             NoLabel: true 
+                        
+        btnOK: {Label=&OK (00)}            

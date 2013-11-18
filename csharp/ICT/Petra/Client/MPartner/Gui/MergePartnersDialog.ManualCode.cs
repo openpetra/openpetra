@@ -69,11 +69,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             txtMergeFrom.ReadOnly = true;
             txtMergeTo.ReadOnly = true;
 
-            // customise OK and Cancel buttons
-            btnOK.Width = 61;
-            btnOK.Text = "Merge";
             btnOK.Enabled = false;
-            btnCancel.Location = new System.Drawing.Point(btnOK.Location.X + btnOK.Width + 10, 0);
         }
 
         private void MergeFromChanged(Int64 APartnerKey, String APartnerShortName, bool AValidSelection)
