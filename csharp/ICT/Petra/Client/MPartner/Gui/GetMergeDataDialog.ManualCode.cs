@@ -49,12 +49,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private PartnerEditTDS FMainDS;
         private DataTable FDataTable;
 
-        private void InitializeManualCode()
-        {
-            btnOK.Width = 61;
-            btnCancel.Location = new System.Drawing.Point(btnOK.Location.X + btnOK.Width + 10, 0);
-        }
-
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
             this.DialogResult = DialogResult.OK;
