@@ -546,10 +546,10 @@ namespace {#NAMESPACE}
             }
 
             // Validation might have moved the row, so we need to locate it again
-            // If it has moved we will call the special grid-sorting method ReselectGridRowAfterSort to highlight the new row.
+            // If it has moved we will call the special grid-sorting method SelectRowWithoutFocus to highlight the new row.
             // This will give rise to a Selection_SelectionChanged event with a new ActivePosition but the grdDetails.Sorting property will be True
             // Furthermore with Filter/Find we need to be sure that we have not lost the row altogether by using a different row filter
-            //  and we also need to protect against recursively call ReselectGridRowAfterSort
+            //  and we also need to protect against recursively call SelectRowWithoutFocus
             int newRowAfterValidation = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow, prevRowBeforeValidation - 1) + 1;
             if (newRowAfterValidation == 0)
             {
@@ -577,7 +577,7 @@ namespace {#NAMESPACE}
                     if (newRowAfterValidation > 0)
                     {
                         // Select the row
-                        grdDetails.ReselectGridRowAfterSort(newRowAfterValidation);
+                        grdDetails.SelectRowWithoutFocus(newRowAfterValidation);
                     
                         // Put the focus back again on the editable control
                         if (c != null)
@@ -599,7 +599,7 @@ namespace {#NAMESPACE}
             {
                 if ((newRowAfterValidation != prevRowBeforeValidation) && !grdDetails.Sorting)
                 {
-                    grdDetails.ReselectGridRowAfterSort(newRowAfterValidation);
+                    grdDetails.SelectRowWithoutFocus(newRowAfterValidation);
                     //Console.WriteLine("{0}:    Validation: validated row moved to {1}.", DateTime.Now.Millisecond, newRowAfterValidation);
                 }
             }

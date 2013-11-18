@@ -1362,7 +1362,7 @@ namespace Ict.Common.Controls
             if ((FRowSelectedBeforeSort != null) && FKeepRowSelectedAfterSort)
             {
                 int nNewRowIndex = this.Rows.DataSourceRowToIndex(FRowSelectedBeforeSort) + 1;
-                ReselectGridRowAfterSort(nNewRowIndex);
+                SelectRowWithoutFocus(nNewRowIndex);
             }
         }
 
@@ -1379,7 +1379,7 @@ namespace Ict.Common.Controls
         /// <summary>
         ///
         /// </summary>
-        public void ReselectGridRowAfterSort(Int32 ARowNumberInGrid)
+        public void SelectRowWithoutFocus(Int32 ARowNumberInGrid)
         {
             FSorting = true;
             this.Selection.ResetSelection(false, true);

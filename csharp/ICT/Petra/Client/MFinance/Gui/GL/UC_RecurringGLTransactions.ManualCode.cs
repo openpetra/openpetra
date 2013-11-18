@@ -504,7 +504,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (grdAnalAttributes.Rows.Count > 1)
             {
-                grdAnalAttributes.ReselectGridRowAfterSort(1);
+                grdAnalAttributes.SelectRowWithoutFocus(1);
                 FPSAttributesRow = GetSelectedAttributeRow();
             }
         }

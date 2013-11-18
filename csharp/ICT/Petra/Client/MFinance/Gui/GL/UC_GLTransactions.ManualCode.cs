@@ -146,6 +146,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (grdAnalAttributes.Columns.Count == 1)
                 {
+                    grdAnalAttributes.SpecialKeys = GridSpecialKeys.Default | GridSpecialKeys.Tab;
+
                     FAnalAttribTypeVal = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
                     FAnalAttribTypeVal.EnableEdit = true;
                     FAnalAttribTypeVal.EditableMode = EditableMode.Focus;
@@ -534,7 +536,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (grdAnalAttributes.Rows.Count > 1)
             {
-                grdAnalAttributes.ReselectGridRowAfterSort(1);
+                grdAnalAttributes.SelectRowWithoutFocus(1);
                 FPSAttributesRow = GetSelectedAttributeRow();
             }
         }
