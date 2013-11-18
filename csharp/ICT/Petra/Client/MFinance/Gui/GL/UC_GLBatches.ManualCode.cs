@@ -1556,10 +1556,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// A simple flag used to indicate that the form has been shown for the first time
+        /// </summary>
+        private bool FInitialFocusActionComplete = false;
+
+        /// <summary>
         /// Sets the initial focus to the grid or the New button depending on the row count
         /// </summary>
         public void SetInitialFocus()
         {
+            if (FInitialFocusActionComplete)
+            {
+                return;
+            }
+
             if (grdDetails.Rows.Count < 2)
             {
                 btnNew.Focus();
@@ -1568,6 +1578,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 grdDetails.Focus();
             }
+
+            FInitialFocusActionComplete = true;
         }
     }
 }
