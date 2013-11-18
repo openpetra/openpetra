@@ -31,9 +31,9 @@
             ActionClick:BtnCancel_Click
         btnSettings:
             Stretch:horizontally
-            Label: Settings..
+            Label: Settings...
             ActionClick:BtnSettings_Click
         btnMotivations:
-            Label: Motivations..
+            Label: Motivations...
             Stretch:horizontally
             ActionClick:BtnMotivations_Click
