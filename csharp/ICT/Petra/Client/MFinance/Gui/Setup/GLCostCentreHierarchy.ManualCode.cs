@@ -939,7 +939,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void LinkPartnerCostCentre(object sender, EventArgs e)
         {
-            TFrmLinkPartnerCostCentre PartnerLinkScreen = new TFrmLinkPartnerCostCentre(this);
+            TFrmLinkPartnerCostCentreDialog PartnerLinkScreen = new TFrmLinkPartnerCostCentreDialog(this);
 
             PartnerLinkScreen.LedgerNumber = FLedgerNumber;
             PartnerLinkScreen.Show();

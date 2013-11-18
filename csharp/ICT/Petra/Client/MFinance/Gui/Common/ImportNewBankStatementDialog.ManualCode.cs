@@ -43,7 +43,7 @@ using Ict.Petra.Client.MFinance.Logic;
 
 namespace Ict.Petra.Client.MFinance.Gui.Common
 {
-    public partial class TFrmImportNewBankStatement
+    public partial class TFrmImportNewBankStatementDialog
     {
         /// <summary>
         /// constant for the namespace of the bankimport plugin

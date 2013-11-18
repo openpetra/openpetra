@@ -34,7 +34,7 @@ using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
-    public partial class TFrmGLCreateLedger
+    public partial class TFrmGLCreateLedgerDialog
     {
         private void InitializeManualCode()
         {
