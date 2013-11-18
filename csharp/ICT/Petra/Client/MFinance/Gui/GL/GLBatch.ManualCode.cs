@@ -69,9 +69,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 case (int)eGLTabs.Batches:
                     ucoBatches.ShowFindPanel();
                     break;
+
                 case (int)eGLTabs.Journals:
                     ucoJournals.ShowFindPanel();
                     break;
+
                 case (int)eGLTabs.Transactions:
                     ucoTransactions.ShowFindPanel();
                     break;

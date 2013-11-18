@@ -523,7 +523,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void AnalysisAttributesGrid_RowSelected(System.Object sender, RangeRegionChangedEventArgs e)
         {
-            if (grdAnalAttributes.Selection.ActivePosition.IsEmpty() || grdAnalAttributes.Selection.ActivePosition.Column == 0)
+            if (grdAnalAttributes.Selection.ActivePosition.IsEmpty() || (grdAnalAttributes.Selection.ActivePosition.Column == 0))
             {
                 return;
             }
@@ -563,7 +563,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FAnalAttribTypeVal.StandardValuesExclusive = true;
             FAnalAttribTypeVal.StandardValues = analTypeValues;
 
-            Console.WriteLine("RowSelected: ActivePos is {0}:{1}", grdAnalAttributes.Selection.ActivePosition.Row, grdAnalAttributes.Selection.ActivePosition.Column);
+            Console.WriteLine("RowSelected: ActivePos is {0}:{1}",
+                grdAnalAttributes.Selection.ActivePosition.Row,
+                grdAnalAttributes.Selection.ActivePosition.Column);
         }
 
         private void AnalysisAttributeValueChanged(System.Object sender, EventArgs e)

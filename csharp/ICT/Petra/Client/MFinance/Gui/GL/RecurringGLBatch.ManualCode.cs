@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             this.Shown += delegate
             {
-                // This will ensure the grid gets the focus when the screen is shown for the first time 
+                // This will ensure the grid gets the focus when the screen is shown for the first time
                 ucoRecurringBatches.SetInitialFocus();
             };
         }
@@ -296,9 +296,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 case (int)eGLTabs.RecurringBatches:
                     ucoRecurringBatches.ShowFindPanel();
                     break;
+
                 case (int)eGLTabs.RecurringJournals:
                     ucoRecurringJournals.ShowFindPanel();
                     break;
+
                 case (int)eGLTabs.RecurringTransactions:
                     ucoRecurringTransactions.ShowFindPanel();
                     break;

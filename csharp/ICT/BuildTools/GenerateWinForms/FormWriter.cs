@@ -534,7 +534,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return "";
             }
 
-            // AlanP added this retry loop after getting fed up with generating the solution and finding that 
+            // AlanP added this retry loop after getting fed up with generating the solution and finding that
             //  access to go.gif.resx is denied.  The assumption is that multi-threaded code generation
             //  wants to access a well-used image file in multiple places.  The resx file is only a temporary
             //  file.  A few lines down we delete it, which is probably why it fails to open.
@@ -582,8 +582,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             if ((nTries == nTriesLimit) || (parser == null))
             {
-                throw new IOException(String.Format("The system had {0} attempts to create, parse and delete the file {1}.resx as a resource but the following IO exception was raised: {2}",
-                            nTries, AImageFileName, exceptionMsg));
+                throw new IOException(String.Format(
+                        "The system had {0} attempts to create, parse and delete the file {1}.resx as a resource but the following IO exception was raised: {2}",
+                        nTries, AImageFileName, exceptionMsg));
             }
 
             XmlDocument doc = parser.GetDocument();

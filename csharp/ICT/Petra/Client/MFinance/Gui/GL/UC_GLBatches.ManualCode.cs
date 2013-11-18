@@ -1038,7 +1038,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            if ((sender is RadioButton ) && (((RadioButton)sender).Checked == false))
+            if ((sender is RadioButton) && (((RadioButton)sender).Checked == false))
             {
                 // wait for the event to be fired for the button that is now checked
                 return;
