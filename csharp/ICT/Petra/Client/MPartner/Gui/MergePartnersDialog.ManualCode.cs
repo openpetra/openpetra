@@ -45,7 +45,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 namespace Ict.Petra.Client.MPartner.Gui
 {
     /// manual methods for the generated window
-    public partial class TFrmMergePartners
+    public partial class TFrmMergePartnersDialog
     {
         private long FromPartnerKey = 0;
         private long ToPartnerKey = 0;

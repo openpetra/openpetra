@@ -53,7 +53,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private PartnerEditTDS FMainDS;
         private System.Drawing.Color ChangeControlBackgroundColor = System.Drawing.Color.Yellow;
         private String ExtractName;
-
+        
         /// <summary>
         /// set the initial value for passport name in the dialog
         /// </summary>
@@ -121,6 +121,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             OnTickChangeItem(chkChangeNumberIssuesReceived, null);
             OnTickChangeItem(chkChangeFirstIssue, null);
             OnTickChangeItem(chkChangeLastIssue, null);
+            
+            // Hook up this event manually here after all initalisation has happened as otherwise
+            // Bug #2481 would occur if the first Publication in the 'Publication Code' ComboBox is not Valid
+            cmbPSubscriptionPublicationCode.SelectedValueChanged += new System.EventHandler(this.PublicationCodeChanged);
         }
 
         private void OnTickChangeItem(System.Object sender, EventArgs e)
@@ -725,7 +729,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         private void PublicationCodeChanged(object sender, EventArgs e)
         {
-            TUCPartnerSubscriptionsLogic.CheckPublicationComboValidValue(cmbPSubscriptionPublicationCode);
+            TUCPartnerSubscriptionsLogic.CheckPublicationComboValidValue(cmbPSubscriptionPublicationCode);                   
         }
     }
 

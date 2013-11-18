@@ -59,7 +59,7 @@ RootNode:
         pnlIssues: {Stretch=horizontally}
             Controls: [txtPSubscriptionNumberIssuesReceived, dtpPSubscriptionFirstIssue, dtpPSubscriptionLastIssue]
 
-        cmbPSubscriptionPublicationCode: {List=PublicationInfoList, OnChange=PublicationCodeChanged}
+        cmbPSubscriptionPublicationCode: {List=PublicationInfoList}
             Label: Pub&lication Code
         cmbPSubscriptionSubscriptionStatus:
             Label: S&ubscription Status

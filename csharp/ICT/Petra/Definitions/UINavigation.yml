@@ -33,7 +33,7 @@ OpenPetra:
                         #MergePartners:
                         FindPartners: {ActionClick=TPartnerMain.FindPartner, Description=Search for and work with Partners, ActionOpenScreen=TPartnerFindScreen, Singleton=true}
                         WorkWithLastPartner: {Label=Work with Last Partner, Description=Open last Partner worked with, ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreen}
-                        MergePartners: {Label=Merge Partners, Description=Merge two partner records together, ActionOpenScreen=TFrmMergePartners}
+                        MergePartners: {Label=Merge Partners, Description=Merge two partner records together, ActionOpenScreen=TFrmMergePartnersDialog}
                         DeletePartner: {Label=Delete Partner, Description=Delete a selected Partner, ActionClick=TPartnerMain.DeletePartnerRecord}
                     CreatePartner:
                         AddNewFamily: {ActionClick=TPartnerMain.NewPartner_Family, Description=Create a new Partner of Class FAMILY}
@@ -188,7 +188,7 @@ OpenPetra:
                 Budgets: {Namespace=Ict.Petra.Client.MFinance.Gui.Budget, DontShowNestedTasksAsLinks=true}
                     General:
                         MaintainBudget: {ActionOpenScreen=TFrmMaintainBudget}
-                        AutoGenerateBudget: {ActionOpenScreen=TFrmAutoGenerateBudget}
+                        AutoGenerateBudget: {ActionOpenScreen=TFrmAutoGenerateBudgetDialog}
                         ConsolidateBudgets: {ActionClick=TConsolidateBudgets.ConsolidateBudgets}
                         ExportBudget: {ActionOpenScreen=TFrmExportBudget}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
@@ -419,11 +419,11 @@ OpenPetra:
             Main: {SkipThisLevel=true}
                 Preferences: {DontShowNestedTasksAsLinks=true}
                     UserPreferences:
-                        SetUserPreferences: {Description="Maintain User Preferences", ActionOpenScreen=TFrmUserPreferences}
+                        SetUserPreferences: {Description="Maintain User Preferences", ActionOpenScreen=TFrmUserPreferencesDialog}
                 Safety: {DontShowNestedTasksAsLinks=true}
                     SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
                 Export: {DontShowNestedTasksAsLinks=true, PermissionsRequired=FINANCE-1,PERSONNEL}
-                    ExportDataToIntranet: {Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExport}
+                    ExportDataToIntranet: {Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExportDialog}
 
         SystemManager: {Icon=sysman.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN, ShowAsCollapsiblePanels=true}
             Security:
