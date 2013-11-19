@@ -323,7 +323,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
             grdDetails.Refresh();
 
-            SelectRowInGrid(1);
+            grdDetails.SelectRowWithoutFocus(1);
         }
 
         private void NewRowManual(ref PDataLabelRow ARow)
