@@ -53,7 +53,7 @@ namespace Ict.Petra.Client.MReporting.Gui
     public class TFrmPetraReportingUtils : TFrmPetraUtils
     {
         /// <summary>
-        /// Delegate for call before LoadSettings is startin (for pre processing)
+        /// Delegate for call before LoadSettings is starting (for pre processing)
         /// </summary>
         public delegate void TDelegateLoadSettingsStarting();
 
@@ -63,6 +63,10 @@ namespace Ict.Petra.Client.MReporting.Gui
         public delegate void TDelegateLoadSettingsFinished(TParameterList AParameters);
 
         /// <summary>
+        /// Delegate to replace the reporting engine
+        /// </summary>
+        public delegate void TDelegateGenerateReportOverride(TRptCalculator ACalc);
+        /// <summary>
         /// Reference to the Delegate for call before LoadSettings is starting (for pre processing)
         /// </summary>
         private TDelegateLoadSettingsStarting FDelegateLoadSettingsStarting;
@@ -71,6 +75,8 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// Reference to the Delegate for call after LoadSettings is finished (for post processing)
         /// </summary>
         private TDelegateLoadSettingsFinished FDelegateLoadSettingsFinished;
+
+        private TDelegateGenerateReportOverride FDelegateGenerateReportOverride;
 
         /// <summary>number of columns that can be sorted</summary>
         public const Int32 NUMBER_SORTBY = 3;
@@ -155,6 +161,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             FDontResizeForm = false;
             FDelegateLoadSettingsStarting = null;
             FDelegateLoadSettingsFinished = null;
+            FDelegateGenerateReportOverride = null;
         }
 
         /// set caption of window, used to build window title
@@ -187,6 +194,18 @@ namespace Ict.Petra.Client.MReporting.Gui
             set
             {
                 FDelegateLoadSettingsFinished = value;
+            }
+        }
+
+        /// <summary>
+        /// This property allows an alternative reporting engine to be used.
+        /// </summary>
+        /// <description>Seting this prevents the standard call to GenerateReport.</description>
+        public TDelegateGenerateReportOverride DelegateGenerateReportOverride
+        {
+            set
+            {
+                FDelegateGenerateReportOverride = value;
             }
         }
 
@@ -483,12 +502,19 @@ namespace Ict.Petra.Client.MReporting.Gui
             MakeCancelButtonAvailable();
             TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
 
-            if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
+            if (FDelegateGenerateReportOverride != null)
             {
-                ((IFrmReporting) this.FTheForm).EnableBusy(true);
-                FGenerateReportThread = new Thread(GenerateReport);
-                FGenerateReportThread.IsBackground = true;
-                FGenerateReportThread.Start();
+                FDelegateGenerateReportOverride(FCalculator);
+            }
+            else
+            {
+                if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
+                {
+                    ((IFrmReporting) this.FTheForm).EnableBusy(true);
+                        FGenerateReportThread = new Thread(GenerateReport);
+                    FGenerateReportThread.IsBackground = true;
+                    FGenerateReportThread.Start();
+                }
             }
         }
 
@@ -627,7 +653,10 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         delegate void CrossThreadUpdate ();
 
-        void UpdateParentFormEndOfReport()
+        /// <summary>
+        /// Remove the Wait Cursor
+        /// </summary>
+        public void UpdateParentFormEndOfReport()
         {
             if (FWinForm.InvokeRequired)
             {

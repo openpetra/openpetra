@@ -6,7 +6,7 @@
     WindowHeight: 600
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
-        XMLFILES: [Finance\\\\accountdetail.xml,Finance\\\\accountdetailcommon.xml,Finance\\\\finance.xml,common.xml]
+        XMLFILES: [Finance\\\\AccountDetail.frx]
         REPORTNAME: Account Detail
         CURRENTREPORT: Account Detail
         SETAVAILABLEFUNCTIONS:

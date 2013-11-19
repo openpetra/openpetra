@@ -277,5 +277,32 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             return StringHelper.StrMerge(accountcodes.ToArray(), ',');
         }
+
+
+        /// <summary>
+        /// Returns a DataSet to the client for use in client-side reporting
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLReportingTDS GetReportingDataSet(String ADataSetFilterCsv)
+        {
+            GLReportingTDS MainDs = new GLReportingTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            while (ADataSetFilterCsv != "")
+            {
+                String Tbl = StringHelper.GetNextCSV(ref ADataSetFilterCsv, ",", "");
+                String[] part = Tbl.Split('/');
+                String OrderBy = "";
+                if (part.Length > 4)
+                {
+                    OrderBy = part[4];
+                }
+                String Query = "SELECT " + part[1] + " FROM " + part[2] + " WHERE " + part[3] + OrderBy;
+                MainDs.Tables[part[0]].Merge(DBAccess.GDBAccessObj.SelectDT(Query, part[0], Transaction));
+            }
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDs;
+        }
+
     }
 }

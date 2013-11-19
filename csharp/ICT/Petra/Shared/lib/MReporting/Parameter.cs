@@ -186,7 +186,7 @@ namespace Ict.Petra.Shared.MReporting
     public class TParameterList
     {
         /// <summary>the collection TParameter objects</summary>
-        private ArrayList parameters;
+        private ArrayList Fparameters;
 
         /// <summary>
         /// Constructor
@@ -196,7 +196,7 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public TParameterList()
         {
-            parameters = new ArrayList();
+            Fparameters = new ArrayList();
         }
 
         /// <summary>
@@ -208,11 +208,11 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public TParameterList(TParameterList copy)
         {
-            parameters = new ArrayList();
+            Fparameters = new ArrayList();
 
-            foreach (TParameter p in copy.parameters)
+            foreach (TParameter p in copy.Fparameters)
             {
-                parameters.Add(new TParameter(p));
+                Fparameters.Add(new TParameter(p));
             }
         }
 
@@ -223,7 +223,17 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public void Clear()
         {
-            parameters.Clear();
+            Fparameters.Clear();
+        }
+
+        /// <summary>
+        /// Get at the actual list.
+        /// </summary>
+        public ArrayList Elems
+        {
+        get{
+            return Fparameters;
+            }
         }
 
         /// <summary>
@@ -235,11 +245,11 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public void LoadFromDataTable(System.Data.DataTable param)
         {
-            parameters.Clear();
+            Fparameters.Clear();
 
             foreach (System.Data.DataRow row in param.Rows)
             {
-                parameters.Add(new TParameter(row["name"].ToString(), TVariant.DecodeFromString(row["value"].ToString()),
+                Fparameters.Add(new TParameter(row["name"].ToString(), TVariant.DecodeFromString(row["value"].ToString()),
                         Convert.ToInt32(row["column"]), Convert.ToInt32(row["level"]), Convert.ToInt16(row["subreport"])));
             }
 
@@ -266,7 +276,7 @@ namespace Ict.Petra.Shared.MReporting
             ReturnValue.Columns.Add(new System.Data.DataColumn("subreport", typeof(System.Int32)));
             ReturnValue.Columns.Add(new System.Data.DataColumn("value", typeof(String)));
 
-            foreach (TParameter element in parameters)
+            foreach (TParameter element in Fparameters)
             {
                 if (element.paramType == ReportingConsts.CALCULATIONPARAMETERS)
                 {
@@ -305,13 +315,13 @@ namespace Ict.Petra.Shared.MReporting
             // remove all parameters in column
             Counter = 0;
 
-            while (Counter < parameters.Count)
+            while (Counter < Fparameters.Count)
             {
-                element = (TParameter)parameters[Counter];
+                element = (TParameter)Fparameters[Counter];
 
                 if (element.column == ADestColumn)
                 {
-                    parameters.RemoveAt(Counter);
+                    Fparameters.RemoveAt(Counter);
                 }
                 else
                 {
@@ -320,7 +330,7 @@ namespace Ict.Petra.Shared.MReporting
             }
 
             // copy parameters from other list
-            foreach (TParameter element2 in AOtherList.parameters)
+            foreach (TParameter element2 in AOtherList.Fparameters)
             {
                 if (element2.column == column)
                 {
@@ -344,7 +354,7 @@ namespace Ict.Petra.Shared.MReporting
         /// <param name="AOtherList"></param>
         public void Add(TParameterList AOtherList)
         {
-            foreach (TParameter element in AOtherList.parameters)
+            foreach (TParameter element in AOtherList.Fparameters)
             {
                 Add(element.name, element.value, element.column, element.level, element.subreport);
             }
@@ -355,7 +365,7 @@ namespace Ict.Petra.Shared.MReporting
         /// </summary>
         public void CopyMissing(TParameterList AOtherList)
         {
-            foreach (TParameter param in AOtherList.parameters)
+            foreach (TParameter param in AOtherList.Fparameters)
             {
                 /*
                  * Do not use ParameterList.Exists() because that
@@ -384,7 +394,7 @@ namespace Ict.Petra.Shared.MReporting
             RemoveColumn(ANewColumn);
 
             // move all parameters from column AOldColumn to ANewColumn
-            foreach (TParameter element in parameters)
+            foreach (TParameter element in Fparameters)
             {
                 if (element.column == AOldColumn)
                 {
@@ -400,7 +410,7 @@ namespace Ict.Petra.Shared.MReporting
         /// <returns>void</returns>
         public void SwitchColumn(int AColumn1, int AColumn2)
         {
-            foreach (TParameter element in parameters)
+            foreach (TParameter element in Fparameters)
             {
                 if (element.column == AColumn1)
                 {
@@ -425,13 +435,13 @@ namespace Ict.Petra.Shared.MReporting
             System.Int32 Counter;
             Counter = 0;
 
-            while (Counter < parameters.Count)
+            while (Counter < Fparameters.Count)
             {
-                element = (TParameter)parameters[Counter];
+                element = (TParameter)Fparameters[Counter];
 
                 if (element.column == AColumn)
                 {
-                    parameters.RemoveAt(Counter);
+                    Fparameters.RemoveAt(Counter);
                 }
                 else
                 {
@@ -458,7 +468,7 @@ namespace Ict.Petra.Shared.MReporting
             }
 
             // find if there is already an element in the list with the exact same column/level combination
-            foreach (TParameter element in parameters)
+            foreach (TParameter element in Fparameters)
             {
                 if ((element.name == parameterId) && (element.level == depth) && (element.column == column) && (element.subreport == subreport))
                 {
@@ -471,7 +481,7 @@ namespace Ict.Petra.Shared.MReporting
 
             // else add a new element
             TParameter element2 = new TParameter(parameterId, value, column, depth, subreport, pRptElement, pRptGroup, paramType);
-            parameters.Add(element2);
+            Fparameters.Add(element2);
         }
 
         /// <summary>
@@ -654,7 +664,7 @@ namespace Ict.Petra.Shared.MReporting
 
             while (element != null)
             {
-                parameters.Remove(element);
+                Fparameters.Remove(element);
 
                 element = GetParameter(AParameterId, AColumn, ADepth, AExact);
             }
@@ -682,11 +692,11 @@ namespace Ict.Petra.Shared.MReporting
             {
                 if (toDelete != null)
                 {
-                    parameters.Remove(toDelete);
+                    Fparameters.Remove(toDelete);
                     toDelete = null;
                 }
 
-                foreach (TParameter element in parameters)
+                foreach (TParameter element in Fparameters)
                 {
                     if (StringHelper.IsSame(element.name, AParameterId))
                     {
@@ -766,7 +776,7 @@ namespace Ict.Petra.Shared.MReporting
 
             message = Environment.NewLine;
 
-            foreach (TParameter element in parameters)
+            foreach (TParameter element in Fparameters)
             {
                 if (StringHelper.IsSame(element.name, parameterId))
                 {
@@ -915,7 +925,7 @@ namespace Ict.Petra.Shared.MReporting
  *              }
  *          }
  */
-            foreach (TParameter element in parameters)
+            foreach (TParameter element in Fparameters)
             {
                 if (((element.subreport == subreport) || (element.subreport == -1)) && StringHelper.IsSame(element.name, parameterId))
                 {
@@ -1105,7 +1115,7 @@ namespace Ict.Petra.Shared.MReporting
             textWriter.WriteStartElement("Parameters");
             textWriter.WriteWhitespace(new String((char)10, 1));
 
-            foreach (TParameter element in parameters)
+            foreach (TParameter element in Fparameters)
             {
                 if (AWithDebugInfo
                     || ((element.paramType != ReportingConsts.CALCULATIONPARAMETERS) && (element.value.ToString() != "rptGrpValue")
@@ -1163,7 +1173,7 @@ namespace Ict.Petra.Shared.MReporting
 
             ReturnValue = new TParameterList(this);
 
-            foreach (TParameter p in ReturnValue.parameters)
+            foreach (TParameter p in ReturnValue.Fparameters)
             {
                 if (p.value.TypeVariant != eVariantTypes.eString)
                 {

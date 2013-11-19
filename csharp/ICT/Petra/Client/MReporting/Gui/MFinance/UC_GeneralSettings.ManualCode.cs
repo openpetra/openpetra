@@ -139,6 +139,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             //            DiffPeriod = DiffPeriod - 12;
             ACalculator.AddParameter("param_diff_period_i", DiffPeriod);
+            ACalculator.AddParameter("param_start_period_i", 0);
+            ACalculator.AddParameter("param_end_period_i", 0);
 
             ACalculator.AddParameter("param_account_hierarchy_c", this.cmbAccountHierarchy.GetSelectedString());
             ACalculator.AddParameter("param_currency", this.cmbCurrency.GetSelectedString());
