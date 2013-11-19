@@ -47,6 +47,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
     {
         private PmDocumentTypeTable FDocumentTypeTable;
 
+        private void InitializeManualCode()
+        {
+            ucoPartnerSelection.SetRestrictedPartnerClasses("PERSON");
+        }
+
         private void grdDocuments_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
         {
             // Get list of documents

@@ -53,7 +53,7 @@ RootNode:
         ucoAddress:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
             Width: 500
-            Height: 170
+            Height: 220
         grpRecordModification: {NoLabel=true}
             Controls:
                 Row0: [cmbUserCreated]

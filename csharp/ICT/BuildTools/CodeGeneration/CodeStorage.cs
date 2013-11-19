@@ -74,6 +74,8 @@ namespace Ict.Tools.CodeGeneration
         public string FClassName = "";
         /// <summary>the title for the form</summary>
         public string FFormTitle = "";
+        /// <summary>the Template for the form</summary>
+        public string FTemplate = "";
         /// <summary>the namespace for the generated file</summary>
         public string FNamespace = "";
         /// <summary>the name of the yaml file</summary>

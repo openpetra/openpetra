@@ -30,6 +30,7 @@ using System.Windows.Forms;
 using System.Data;
 using System.Threading;
 using SourceGrid;
+using SourceGrid.Selection;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
@@ -729,7 +730,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 staffDataForm.PartnerKey = FLogic.PartnerKey;
                 staffDataForm.Show();
             }
-            else if (AToolStripItem.Name == MPartnerResourcestrings.StrPersonnelPersonMenuItemText)
+            else if (ClickedMenuItemName == "mniMaintainPersonnelData")
             {
                 if (FLogic.DetermineCurrentPartnerClass() == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
@@ -1015,9 +1016,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         /// <param name="APartnerKey">Partner key</param>
         /// <param name="AShortName">Partner short name</param>
+        /// <param name="APartnerClass">Partner Class.</param>
         /// <param name="ALocationPK">Location key</param>
         /// <returns></returns>
-        public Boolean GetReturnedParameters(out Int64 APartnerKey, out String AShortName, out TLocationPK ALocationPK)
+        public Boolean GetReturnedParameters(out Int64 APartnerKey, out String AShortName, out TPartnerClass? APartnerClass,
+            out TLocationPK ALocationPK)
         {
             DataRowView[] SelectedGridRow = grdResult.SelectedDataRowsAsDataRowView;
 
@@ -1026,6 +1029,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // no Row is selected
                 APartnerKey = -1;
                 AShortName = "";
+                APartnerClass = null;
                 ALocationPK = new TLocationPK(-1, -1);
             }
             else
@@ -1033,6 +1037,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // MessageBox.Show(SelectedGridRow[0]['p_partner_key_n'].ToString);
                 APartnerKey = Convert.ToInt64(SelectedGridRow[0][PPartnerTable.GetPartnerKeyDBName()]);
                 AShortName = Convert.ToString(SelectedGridRow[0][PPartnerTable.GetPartnerShortNameDBName()]);
+                APartnerClass = SharedTypes.PartnerClassStringToEnum(Convert.ToString(SelectedGridRow[0][PPartnerTable.GetPartnerClassDBName()]));
                 ALocationPK =
                     new TLocationPK(Convert.ToInt64(SelectedGridRow[0][PPartnerLocationTable.GetSiteKeyDBName()]),
                         Convert.ToInt32(SelectedGridRow[0][PPartnerLocationTable.GetLocationKeyDBName()]));
@@ -1079,13 +1084,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>
         /// Sets up the visual appearance of the Grid.
-        ///
         /// </summary>
         /// <returns>void</returns>
         private void SetupDataGridVisualAppearance()
         {
-            // Make PartnerClass and PartnerName fixed columns
-            grdResult.FixedColumns = 2;
+            // Make PartnerClass, PartnerKey and PartnerName fixed columns
+            grdResult.FixedColumns = 3;
+
+            // make the border to the right of the fixed columns bold
+            ((TSgrdTextColumn)grdResult.Columns[2]).BoldRightBorder = true;
+
             grdResult.AutoSizeCells();
         }
 
@@ -1824,6 +1832,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FPartnerFindObject = value;
             }
+        }
+
+        /// <summary>
+        /// Sets up random Search Criteria and runs a Search.
+        /// </summary>
+        public void SetupRandomTestSearchCriteriaAndRunSearch()
+        {
+            ucoPartnerFindCriteria.SetupRandomTestSearchCriteria();
+
+            BtnSearch_Click(this, null);
         }
     }
 }

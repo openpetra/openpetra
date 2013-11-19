@@ -86,7 +86,7 @@ namespace Ict.Testing.NUnitForms
         /// </summary>
         public ToolStripButtonTester tbbCreate;
 
-        TFrmGLCreateLedger tFrmGLCreateLedger;
+        TFrmGLCreateLedgerDialog TFrmGLCreateLedgerDialog;
 
         private static TFrmGLCreateLedgerTester instance = new TFrmGLCreateLedgerTester();
 
@@ -103,23 +103,23 @@ namespace Ict.Testing.NUnitForms
 
         private TFrmGLCreateLedgerTester()
         {
-            tFrmGLCreateLedger = new TFrmGLCreateLedger(null);
+            TFrmGLCreateLedgerDialog = new TFrmGLCreateLedgerDialog(null);
 
-            nudLedgerNumber = new NumericUpDownTester("nudLedgerNumber", tFrmGLCreateLedger);
+            nudLedgerNumber = new NumericUpDownTester("nudLedgerNumber", TFrmGLCreateLedgerDialog);
 
-            txtLedgerName = new TextBoxTester("txtLedgerName", tFrmGLCreateLedger);
+            txtLedgerName = new TextBoxTester("txtLedgerName", TFrmGLCreateLedgerDialog);
 
-            cmbCountryCode = new TCmbAutoPopulatedTester("cmbCountryCode", tFrmGLCreateLedger);
-            cmbBaseCurrency = new TCmbAutoPopulatedTester("cmbBaseCurrency", tFrmGLCreateLedger);
-            cmbIntlCurrency = new TCmbAutoPopulatedTester("cmbIntlCurrency", tFrmGLCreateLedger);
+            cmbCountryCode = new TCmbAutoPopulatedTester("cmbCountryCode", TFrmGLCreateLedgerDialog);
+            cmbBaseCurrency = new TCmbAutoPopulatedTester("cmbBaseCurrency", TFrmGLCreateLedgerDialog);
+            cmbIntlCurrency = new TCmbAutoPopulatedTester("cmbIntlCurrency", TFrmGLCreateLedgerDialog);
 
-            // TextBoxTester dtpCalendarStartDate = new TextBoxTester("dtpCalendarStartDate", tFrmGLCreateLedger);
+            // TextBoxTester dtpCalendarStartDate = new TextBoxTester("dtpCalendarStartDate", TFrmGLCreateLedgerDialog);
 
-            nudNumberOfPeriods = new NumericUpDownTester("nudNumberOfPeriods", tFrmGLCreateLedger);
-            nudCurrentPeriod = new NumericUpDownTester("nudCurrentPeriod", tFrmGLCreateLedger);
-            nudNumberOfFwdPostingPeriods = new NumericUpDownTester("nudNumberOfFwdPostingPeriods", tFrmGLCreateLedger);
+            nudNumberOfPeriods = new NumericUpDownTester("nudNumberOfPeriods", TFrmGLCreateLedgerDialog);
+            nudCurrentPeriod = new NumericUpDownTester("nudCurrentPeriod", TFrmGLCreateLedgerDialog);
+            nudNumberOfFwdPostingPeriods = new NumericUpDownTester("nudNumberOfFwdPostingPeriods", TFrmGLCreateLedgerDialog);
 
-            tbbCreate = new ToolStripButtonTester("tbbCreate", tFrmGLCreateLedger);
+            tbbCreate = new ToolStripButtonTester("tbbCreate", TFrmGLCreateLedgerDialog);
         }
     }
 }

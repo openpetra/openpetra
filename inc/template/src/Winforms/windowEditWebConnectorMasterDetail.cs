@@ -99,6 +99,11 @@ namespace {#NAMESPACE}
 {#IFDEF FILTERANDFIND}
       SetupFilterAndFindControls();
 {#ENDIF FILTERANDFIND}
+{#IFDEF SHOWDETAILS}
+{#IFDEF DETAILTABLE}
+      SelectRowInGrid(1);
+{#ENDIF DETAILTABLE}
+{#ENDIF SHOWDETAILS}
     }
 #endregion
 
@@ -1322,11 +1327,6 @@ namespace {#NAMESPACE}
     /// auto generated
     public void RunOnceOnActivation()
     {
-{#IFDEF SHOWDETAILS}
-{#IFDEF DETAILTABLE}
-        SelectRowInGrid(1);
-{#ENDIF DETAILTABLE}
-{#ENDIF SHOWDETAILS}
         {#RUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
     }

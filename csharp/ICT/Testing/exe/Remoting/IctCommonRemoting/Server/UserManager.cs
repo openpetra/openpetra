@@ -42,7 +42,7 @@ namespace Tests.IctCommonRemoting.Server
         /// <summary>
         /// add a new user
         /// </summary>
-        public bool AddUser(string AUserID)
+        public bool AddUser(string AUserID, string APassword = "")
         {
             return false;
         }

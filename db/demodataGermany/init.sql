@@ -153,6 +153,7 @@ UPDATE p_partner_ledger SET p_last_partner_id_i = 5004 WHERE p_partner_key_n = 4
 -- add a bank account to the sample donor. same account number as in demodata\bankstatements\SampleMT940.sta
 INSERT INTO p_banking_details(p_banking_details_key_i, p_banking_type_i, p_account_name_c, p_bank_key_n, p_bank_account_number_c) VALUES (1, 0, 'test bank account', 43005004, '310012345678');
 INSERT INTO p_partner_banking_details(p_partner_key_n, p_banking_details_key_i) VALUES(43005001, 1);
+INSERT INTO p_banking_details_usage(p_partner_key_n, p_banking_details_key_i, p_type_c) VALUES(43005001, 1, 'MAIN');
 -- increase sequence
 SELECT nextval('seq_bank_details');
 SELECT nextval('seq_bank_details');

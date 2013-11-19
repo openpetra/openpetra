@@ -45,7 +45,7 @@ RootNode:
             Height: 270
         pnlGrid:
             Dock: Fill
-            Height: 120
+            Height: 140
             Controls: [pnlButtons, grdDetails]
         pnlButtons:
             Dock: Bottom
@@ -59,7 +59,7 @@ RootNode:
             Action: actSetMainAccount
         grdDetails:
             Dock: Fill
-            Height: 120
+            Height: 140
             TableName: PBankingDetails
             Columns: [MainAccount, AccountName, BankAccountNumber, Iban]
             CustomColumns:
@@ -68,7 +68,7 @@ RootNode:
         pnlDetails: 
             Dock: Bottom
             Type: Ict.Petra.Client.MPartner.Gui.TUC_FinanceDetails
-            Height: 150
+            Height: 130
             Controls: 
                 Row0: [grpAccountDetail]
             

@@ -14,12 +14,11 @@ RootNode:
         Closed: {class=System.EventHandler,method=TFrmPetra_Closed}
     Actions:
         actClose: {Label=&Close, ActionId=eClose}
-        actHelp: {Label=&Cancel, ActionId=eHelp}
+        actHelp: {Label=&Cancel, ActionId=eHelp, Image=Help.ico}
     Controls:    
         stbMain:
         pnlContent:
             Dock: Fill
-            Padding: 8,12,8,5
             Controls: [pnlDialogButtons, pnlDialogContent]
 
         pnlDialogContent:
@@ -27,26 +26,26 @@ RootNode:
             Dock: Fill
             
         pnlDialogButtons: 
-            Margin: 0
+            Padding: 0,0,0,4
+            Height: 35
             Dock: Bottom
             Controls: 
                 Row0: [pnlLeftButtons, pnlRightButtons]
         
         pnlLeftButtons:
             Dock: Fill
-            Margin: 0
             Controls:
                 Row0: [btnHelp]
         
-        btnHelp: {Label=&Help, TabIndex=999, Action=actHelp}
+        btnHelp: {NoLabel=true, Width=12, Height=24, ImageAlign=System.Drawing.ContentAlignment.MiddleCenter, TabIndex=999, Action=actHelp}
             
         pnlRightButtons:
-            Margin: 0
             TabIndex: 998
+            Margin: 0,3,0,0            
             Dock: Right
             Controls: 
                 Row0: [btnOK, btnCancel, btnApply]
          
-        btnOK: {Label=&OK, TabIndex=0, AcceptButton=true, ActionClick=BtnOK_Click}        
-        btnApply: {Label=&Apply, TabIndex=2, Visible=false}
-        btnCancel: {Label=&Cancel, TabIndex=1, Action=actClose}
+        btnOK: {Label=&OK, Height=24, TabIndex=0, AcceptButton=true, ActionClick=BtnOK_Click}        
+        btnApply: {Label=&Apply, Height=24, TabIndex=2, Visible=false}
+        btnCancel: {Label=&Cancel, Height=24, TabIndex=1, Action=actClose}

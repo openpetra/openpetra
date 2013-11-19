@@ -25,6 +25,7 @@ using System.Windows.Forms;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Gui.MPersonnel;
+using Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm;
 
 namespace Ict.Petra.Client.MPersonnel.Gui
 {
@@ -71,6 +72,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui
 
             frm.CalledFromExtracts = true;
             frm.Show();
+        }
+
+        /// Open screen for creating "Short Termer Reports" and offering the user to choose a setting
+        public static void ShortTermerReports(Form AParentForm)
+        {
+            TFrmShortTermerReport frm = new TFrmShortTermerReport(AParentForm);
+
+            frm.ShowWithSettingsSelection();
         }
     }
 }

@@ -448,7 +448,6 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.DateOfIssue, ValidationControlsData.ValidationControlLabel,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
-
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
@@ -799,7 +798,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                if (!ARow.IsBelieverSinceYearNull())
+                if (!ARow.IsBelieverSinceYearNull() && (ARow.BelieverSinceYear != 0))
                 {
                     VerificationResult = TDateChecks.IsDateBetweenDates(
                         new DateTime(ARow.BelieverSinceYear, 12, 31), new DateTime(1850, 1, 1), new DateTime(DateTime.Today.Year, 12, 31),
@@ -927,20 +926,28 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             }
 
             // 'Charged Field' must be a Partner of Class 'UNIT'
-            ValidationColumn = ARow.Table.Columns[PmShortTermApplicationTable.ColumnStFieldChargedId];
-
-            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            //
+            // HOWEVER, 'null' is a perfectly valid value for 'Charged Field' (according to WolfgangB).
+            // If it is null then we must not call TSharedPartnerValidation_Partner.IsValidUNITPartner
+            // as the attempt to retrieve 'ARow.StFieldCharged' would result in
+            // 'System.Data.StrongTypingException("Error: DB null", null)'!!!
+            if (!ARow.IsStFieldChargedNull())
             {
-                VerificationResult = TSharedPartnerValidation_Partner.IsValidUNITPartner(
-                    ARow.StFieldCharged, true, THelper.NiceValueDescription(
-                        ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                ValidationColumn = ARow.Table.Columns[PmShortTermApplicationTable.ColumnStFieldChargedId];
 
-                // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
-                // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
-                // ResultText!
-                AVerificationResultCollection.Remove(ValidationColumn);
-                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    VerificationResult = TSharedPartnerValidation_Partner.IsValidUNITPartner(
+                        ARow.StFieldCharged, true, THelper.NiceValueDescription(
+                            ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+                    // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+                    // ResultText!
+                    AVerificationResultCollection.Remove(ValidationColumn);
+                    AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+                }
             }
 
             // 'Departure Date' must be later than 'Arrival Date'

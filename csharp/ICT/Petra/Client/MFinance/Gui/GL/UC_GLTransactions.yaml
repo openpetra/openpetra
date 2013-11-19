@@ -56,6 +56,7 @@ RootNode:
                 AnalysisTypeCode: {Label=Type, Type=String}
             ActionFocusRow: AnalysisAttributesGridFocusRow
             ActionClick: AnalysisAttributesGridClick
+            Tooltip: Use cursor keys to select and edit an Analysis Attribute
 
         lblAnalAttributes:
             Label: Analysis Attributes
@@ -74,7 +75,7 @@ RootNode:
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}
             ActionFocusRow: FocusedRowChanged
-            SortOrder: ATransaction.TransactionNumber
+            SortOrder: ATransaction.TransactionNumber ASC
             RowFilter: ATransaction.BatchNumber, ATransaction.JournalNumber
             EnableMultiSelection: false
         pnlDetails:
@@ -88,7 +89,8 @@ RootNode:
             Height: 50
             Multiline: true
             ScrollBars: Vertical
-        txtDetailReference: {Label=Reference}
+            Validation: true
+        txtDetailReference: {Label=Reference, Validation=true}
         dtpDetailTransactionDate: {Label=Transaction Date, OnChange=TransDateChanged, Validation=true}
         cmbDetailKeyMinistryKey: {Label=Key Ministry,  Width=330, List=UserDefinedList}
         pnlDetailAmounts:
@@ -103,8 +105,8 @@ RootNode:
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
         txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
         txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
-        txtDebitAmount: {Label=Dr Amount, Format=Currency, NullValueAllowed=false}
-        txtCreditAmount: {Label=Cr Amount, Format=Currency, NullValueAllowed=false}
+        txtDebitAmount: {Label=Dr Amount, Validation=true, Format=Currency, NullValueAllowed=false}
+        txtCreditAmount: {Label=Cr Amount, Validation=true, Format=Currency, NullValueAllowed=false}
         txtDebitAmountBase: {Label=Dr Amount, ReadOnly=true, Format=Currency}
         txtCreditAmountBase: {Label=Cr Amount, ReadOnly=true, Format=Currency}
         txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true, Format=Currency}

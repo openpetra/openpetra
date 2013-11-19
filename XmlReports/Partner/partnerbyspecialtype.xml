@@ -53,6 +53,15 @@
                     <value> AND </value>
                     <value function="csv" text="ptype.p_type_code_c" variable="param_explicit_specialtypes"/>
                 </queryDetail>
+                <queryDetail condition="eq({param_active}, true)">
+                    <value> AND PUB_p_partner.p_status_code_c = 'ACTIVE' </value>
+                </queryDetail>
+                <queryDetail condition="eq({param_familiesOnly}, true)">
+                    <value> AND PUB_p_partner.p_partner_class_c LIKE 'FAMILY%' </value>
+                </queryDetail>
+                <queryDetail condition="eq({param_excludeNoSolicitations}, true)">
+                    <value> AND NOT PUB_p_partner.p_no_solicitations_l </value>
+                </queryDetail>
 			</query>
 		</calculation> <!-- Select Partners -->
 	  

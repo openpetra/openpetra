@@ -21,10 +21,8 @@ RootNode:
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
-            FilterControls: [txtDetailStatusCode, txtDetailPartnerStatusDescription, chkDetailIncludePartnerOnReport, chkDetailPartnerIsActive, chkDetailDeletable]
+            FilterControls: [txtDetailStatusCode, txtDetailPartnerStatusDescription, chkDetailDeletable]
             FindControls: [txtDetailStatusCode, txtDetailPartnerStatusDescription]
-            ControlAttributes:
-                chkDetailIncludePartnerOnReport: {Text=Include on Report}
         pnlButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
@@ -37,20 +35,15 @@ RootNode:
             Width: 80
         grdDetails:
             Dock: Fill
-            Columns: [DetailStatusCode, DetailPartnerStatusDescription, DetailPartnerIsActive, DetailIncludePartnerOnReport, DetailDeletable]
+            Columns: [DetailStatusCode, DetailPartnerStatusDescription, DetailDeletable]
             CustomColumns:
-                DetailPartnerIsActive: {Label=Active Partner, Type=Boolean}            
-                DetailIncludePartnerOnReport: {Label=Include Partners on Reports, Type=Boolean}
             SortOrder: DetailStatusCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailStatusCode, txtDetailPartnerStatusDescription]
-                Row2: [chkDetailPartnerIsActive, chkDetailIncludePartnerOnReport]
-                Row3: [chkDetailDeletable]
+                Row1: [chkDetailDeletable]
         txtDetailStatusCode: {Label=Status Code, CharacterCasing=Upper}
         txtDetailPartnerStatusDescription: {Label=Description, Width: 310}
-        chkDetailPartnerIsActive: {Label=Active Partner}
-        chkDetailIncludePartnerOnReport: {Label=Include Partners on Reports}
         chkDetailDeletable:

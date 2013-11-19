@@ -121,8 +121,15 @@ namespace SourceGrid.Selection
 					//	-To validate the editor
 					//	-To check if I can move the focus on another cell
 					bool canFocus = Grid.Focus(false);
-					if (canFocus == false)
-						return false;
+                    if (canFocus == false)
+                    {
+                        // AlanP: Oct 2013
+                        // The grid cannot be focused, which happens when we call SelectRowInGrid before the screen has been 'activated'.
+                        // We still want to fire our SelectionChanged event
+                        ResetSelection(false, true);
+                        SelectCell(pCellToActivate, true);
+                        return false;
+                    }
 				}
 
 				RangeRegion oldFocusRegion = null;
@@ -461,6 +468,12 @@ namespace SourceGrid.Selection
 
 			////Recalculate the rectangle border
 			//RecalcBorderRange();
+
+            // AlanP: Oct 2013  Some finance screens use the events below.  This ensures we do not get an event cascade.
+            if (m_SuppressSelectionChangedEvent)
+            {
+                return;
+            }
 
 			//Cell Focus Entered
 			Grid.Controller.OnFocusEntered(new CellContext(Grid, e.NewFocusPosition), EventArgs.Empty);

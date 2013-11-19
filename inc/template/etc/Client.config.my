@@ -1,0 +1,66 @@
+<configuration>
+  <system.runtime.remoting>
+    <application>
+      <channels>
+        <channel ref="tcp">
+          <clientProviders>
+            <formatter ref="binary" />
+          </clientProviders>
+        </channel>
+      </channels>
+
+      <client>
+        <wellknown type="Ict.Common.Remoting.Shared.IClientManagerInterface, Ict.Common.Remoting.Shared" url="tcp://localhost:${Server.Port}/Clientmanager" />
+      </client>
+
+    </application>
+  </system.runtime.remoting>
+
+  <appSettings>
+    <add key="Client.DebugLevel" value="${Server.DebugLevel}" />
+    <add key="OpenPetra.PathLog" value="${dir.petraclient.log}" />
+    <add key="OpenPetra.PathTemp" value="${dir.petraclient.tmp}" />
+    <add key="Reporting.PathReportSettings" value="${dir.root}/XmlReports/Settings" />
+    <add key="Reporting.PathReportUserSettings" value="${dir.petraclient.var}/ReportSettings" />
+    <add key="UINavigation.File" value="${dir.petraclient.definitions}" />
+    <add key="Resource.Dir" value="${dir.root}/resources" />
+    <add key="UseWindowsUserID" value="true" />                <!-- Default Value: "false" -->
+    <add key="DelayedDataLoading" value="true" />                <!-- Default Value: "false" -->
+    
+    <add key="ServerPollIntervalInSeconds" value="5" />            <!-- Default Value: "5" -->
+    <add key="ServerObjectKeepAliveIntervalInSeconds" value="10" />        <!-- Default Value: "10" -->
+    
+    <add key="RunAsStandalone" value="false" />                <!-- Default Value: "false" -->
+    <add key="RunAsRemote" value="false" />                    <!-- Default Value: "false" -->
+
+    <add key="Formletters.Path" value="${dir.root}\demodata\formletters" />
+    <add key="PetraServerAdmin.Configfile" value="PetraServerAdminConsole.exe.config" />
+    <add key="PetraServer.Configfile" value="PetraServerConsole.exe.config" />
+
+    <add key="BankNameFor20090500/6853030" value="my bank account with VoBa" />
+
+    
+	<add key="HTMLHelpBaseURLLocal" value="file://localhost/C:/some_folder" />
+	<add key="HTMLHelpBaseURLOnInternet" value="onlinehelp.openpetra.org" />
+	<add key="LocalHTMLHelp" value="false" />
+  <add key="Server.PathData" value="${dir.root}\data" />
+
+    <!--
+    RunAsStandalone = true
+    PetraServerAdmin.Configfile
+    PetraServer.Configfile
+    Petra.Path.bin
+    -->
+    
+    <!-- 
+    RunAsRemote = true
+    Petra.Path.Patches
+    Petra.Path.Dat
+    Petra.Path.RemotePatches
+    -->
+    
+      <add key="AutoLogin" value="demo" />
+    <add key="AutoLoginPasswd" value="demo" />
+    <add key="TestAction" value="Namespace=Ict.Petra.Client.MFinance.Gui.Setup.TFrmGLCreateLedger" />
+</appSettings>
+</configuration>

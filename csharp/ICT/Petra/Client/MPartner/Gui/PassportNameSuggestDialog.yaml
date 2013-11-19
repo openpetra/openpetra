@@ -18,7 +18,8 @@ RootNode:
                 Row2: [txtPassportName]
                 
         lblExplanation:
-            
+            Height: 85
+
         Empty:
 
         txtPassportName:

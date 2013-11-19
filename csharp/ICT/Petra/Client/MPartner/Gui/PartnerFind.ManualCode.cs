@@ -1216,6 +1216,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             // We're done!
             FFormSetupFinished = true;
             this.Cursor = Cursors.Default;
+
+            if (TClientSettings.AutoTestParameters.Contains("run_randomfind"))
+            {
+                ucoFindByPartnerDetails.SetupRandomTestSearchCriteriaAndRunSearch();
+            }
         }
 
         private void TPartnerFindScreen_Closed(System.Object sender, System.EventArgs e)
@@ -1271,19 +1276,23 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Returns the values of the found partner.
         /// </summary>
-        /// <param name="APartnerKey">Partner key</param>
-        /// <param name="AShortName">Partner short name</param>
-        /// <param name="ALocationPK">Location key</param>
+        /// <param name="APartnerKey">Partner key.</param>
+        /// <param name="AShortName">Partner short name.</param>
+        /// <param name="APartnerClass">Partner Class.</param>
+        /// <param name="ALocationPK">Location key.</param>
         /// <returns></returns>
-        public Boolean GetReturnedParameters(out Int64 APartnerKey, out String AShortName, out TLocationPK ALocationPK)
+        public Boolean GetReturnedParameters(out Int64 APartnerKey, out String AShortName, out TPartnerClass? APartnerClass,
+            out TLocationPK ALocationPK)
         {
             APartnerKey = -1;
             AShortName = "";
+            APartnerClass = null;
             ALocationPK = null;
 
             if (FFormSetupFinished)
             {
-                return ucoFindByPartnerDetails.GetReturnedParameters(out APartnerKey, out AShortName, out ALocationPK);
+                return ucoFindByPartnerDetails.GetReturnedParameters(out APartnerKey, out AShortName,
+                    out APartnerClass, out ALocationPK);
             }
 
             return false;
@@ -1364,6 +1373,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </param>
         /// <param name="APartnerKey">PartnerKey of the found Partner.</param>
         /// <param name="AShortName">Partner ShortName of the found Partner.</param>
+        /// <param name="APartnerClass">Partner Class of the found Partner.</param>
         /// <param name="ALocationPK">LocationKey of the found Partner.</param>
         /// <param name="AParentForm"></param>
         /// <returns>True if a Partner was found and accepted by the user,
@@ -1371,6 +1381,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public static bool OpenModalForm(String ARestrictToPartnerClasses,
             out Int64 APartnerKey,
             out String AShortName,
+            out TPartnerClass? APartnerClass,
             out TLocationPK ALocationPK,
             Form AParentForm)
         {
@@ -1379,6 +1390,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             APartnerKey = -1;
             AShortName = String.Empty;
+            APartnerClass = null;
             ALocationPK = new TLocationPK(-1, -1);
 
             PartnerFindForm = new TPartnerFindScreen(AParentForm);
@@ -1388,7 +1400,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (dlgResult == System.Windows.Forms.DialogResult.OK)
             {
-                PartnerFindForm.GetReturnedParameters(out APartnerKey, out AShortName,
+                PartnerFindForm.GetReturnedParameters(out APartnerKey, out AShortName, out APartnerClass,
                     out ALocationPK);
 
                 return true;

@@ -664,7 +664,7 @@
       </level>
       <!-- AnalysisDetail -->
 
-      <level name="TransactionDetail" identification="line_a_cost_centre_code_c, line_a_account_code_c, a_reference_c">
+      <level name="TransactionDetail" identification="line_a_cost_centre_code_c, line_a_account_code_c, a_reference_c, batchNumber, journalNumber, transactionNumber">
         <header>
         </header>
         <detail>

@@ -77,7 +77,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
         private void RunOnceOnActivationManual()
         {
-            TFrmSelectBankStatement DlgSelect = new TFrmSelectBankStatement(FPetraUtilsObject.GetCallerForm());
+            TFrmSelectBankStatementDialog DlgSelect = new TFrmSelectBankStatementDialog(FPetraUtilsObject.GetCallerForm());
 
             DlgSelect.LedgerNumber = FLedgerNumber;
 

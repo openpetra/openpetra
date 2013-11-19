@@ -143,7 +143,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         {
             get
             {
-                return ((TFrmUserPreferences)ParentForm).ViewMode;
+                return ((TFrmUserPreferencesDialog)ParentForm).ViewMode;
             }
         }
 

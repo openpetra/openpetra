@@ -321,7 +321,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 // create or update account for Creditor's Control
 
                 // make sure transaction type exists for gift receipting subsystem
-                if (ATransactionTypeAccess.CountViaASubSystem(CommonAccountingSubSystemsEnum.GR.ToString(), Transaction) == 0)
+                ATransactionTypeTable TemplateTransactionTypeTable;
+                ATransactionTypeRow TemplateTransactionTypeRow;
+                StringCollection TemplateTransactionTypeOperators;
+
+                TemplateTransactionTypeTable = new ATransactionTypeTable();
+                TemplateTransactionTypeRow = TemplateTransactionTypeTable.NewRowTyped(false);
+                TemplateTransactionTypeRow.LedgerNumber = ALedgerNumber;
+                TemplateTransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.GR.ToString();
+                TemplateTransactionTypeOperators = new StringCollection();
+                TemplateTransactionTypeOperators.Add("=");
+
+                if (ATransactionTypeAccess.CountUsingTemplate(TemplateTransactionTypeRow, TemplateTransactionTypeOperators, Transaction) == 0)
                 {
                     ATransactionTypeTable TransactionTypeTable;
                     ATransactionTypeRow TransactionTypeRow;
@@ -423,7 +434,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             if (!IsAccountsPayableSubsystemActivated(ALedgerNumber))
             {
                 // make sure transaction type exists for accounts payable subsystem
-                if (ATransactionTypeAccess.CountViaASubSystem(CommonAccountingSubSystemsEnum.AP.ToString(), Transaction) == 0)
+                ATransactionTypeTable TemplateTransactionTypeTable;
+                ATransactionTypeRow TemplateTransactionTypeRow;
+                StringCollection TemplateTransactionTypeOperators;
+
+                TemplateTransactionTypeTable = new ATransactionTypeTable();
+                TemplateTransactionTypeRow = TemplateTransactionTypeTable.NewRowTyped(false);
+                TemplateTransactionTypeRow.LedgerNumber = ALedgerNumber;
+                TemplateTransactionTypeRow.SubSystemCode = CommonAccountingSubSystemsEnum.AP.ToString();
+                TemplateTransactionTypeOperators = new StringCollection();
+                TemplateTransactionTypeOperators.Add("=");
+
+                if (ATransactionTypeAccess.CountUsingTemplate(TemplateTransactionTypeRow, TemplateTransactionTypeOperators, Transaction) == 0)
                 {
                     ATransactionTypeTable TransactionTypeTable;
                     ATransactionTypeRow TransactionTypeRow;
@@ -2345,8 +2367,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         {
             AVerificationResult = null;
 
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
             // check if such a ledger already exists
-            ALedgerTable tempLedger = ALedgerAccess.LoadByPrimaryKey(ANewLedgerNumber, null);
+            ALedgerTable tempLedger = ALedgerAccess.LoadByPrimaryKey(ANewLedgerNumber, Transaction);
 
             if (tempLedger.Count > 0)
             {
@@ -2379,7 +2403,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             ledgerRow.BaseCurrency = ABaseCurrency;
             ledgerRow.IntlCurrency = AIntlCurrency;
             ledgerRow.ActualsDataRetention = 11;
-            ledgerRow.GiftDataRetention = 5;
+            ledgerRow.GiftDataRetention = 11;
             ledgerRow.BudgetDataRetention = 2;
             ledgerRow.CountryCode = ACountryCode;
             ledgerRow.ForexGainsLossesAccount = "5003";
@@ -2398,7 +2422,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             PPartnerRow partnerRow;
 
-            if (!PPartnerAccess.Exists(PartnerKey, null))
+            if (!PPartnerAccess.Exists(PartnerKey, Transaction))
             {
                 partnerRow = MainDS.PPartner.NewRowTyped();
                 ledgerRow.PartnerKey = PartnerKey;
@@ -2407,16 +2431,58 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 partnerRow.StatusCode = MPartnerConstants.PARTNERSTATUS_ACTIVE;
                 partnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
                 MainDS.PPartner.Rows.Add(partnerRow);
+
+                // create or use addresses (only if partner record is created here as
+                // otherwise we assume that Partner has address already)
+                PLocationRow locationRow;
+                PLocationTable LocTemplateTable;
+                PLocationTable LocResultTable;
+                PLocationRow LocTemplateRow;
+                StringCollection LocTemplateOperators;
+
+                // find address with country set
+                LocTemplateTable = new PLocationTable();
+                LocTemplateRow = LocTemplateTable.NewRowTyped(false);
+                LocTemplateRow.SiteKey = 0;
+                LocTemplateRow.StreetName = Catalog.GetString("No valid address on file");
+                LocTemplateRow.CountryCode = ACountryCode;
+                LocTemplateOperators = new StringCollection();
+
+                LocResultTable = PLocationAccess.LoadUsingTemplate(LocTemplateRow, LocTemplateOperators, Transaction);
+
+                if (LocResultTable.Count > 0)
+                {
+                    locationRow = (PLocationRow)LocResultTable.Rows[0];
+                }
+                else
+                {
+                    // no location record exists yet: create new one
+                    locationRow = MainDS.PLocation.NewRowTyped();
+                    locationRow.SiteKey = 0;
+                    locationRow.LocationKey = (int)DBAccess.GDBAccessObj.GetNextSequenceValue(
+                        TSequenceNames.seq_location_number.ToString(), Transaction);
+                    locationRow.StreetName = Catalog.GetString("No valid address on file");
+                    locationRow.CountryCode = ACountryCode;
+                    MainDS.PLocation.Rows.Add(locationRow);
+                }
+
+                // now create partner location record
+                PPartnerLocationRow partnerLocationRow = MainDS.PPartnerLocation.NewRowTyped();
+                partnerLocationRow.SiteKey = locationRow.SiteKey;
+                partnerLocationRow.PartnerKey = PartnerKey;
+                partnerLocationRow.LocationKey = locationRow.LocationKey;
+                partnerLocationRow.DateEffective = DateTime.Today;
+                MainDS.PPartnerLocation.Rows.Add(partnerLocationRow);
             }
             else
             {
                 // partner record already exists in database -> update ledger name
-                PPartnerAccess.LoadByPrimaryKey(MainDS, PartnerKey, null);
+                PPartnerAccess.LoadByPrimaryKey(MainDS, PartnerKey, Transaction);
                 partnerRow = (PPartnerRow)MainDS.PPartner.Rows[0];
                 partnerRow.PartnerShortName = ALedgerName;
             }
 
-            PPartnerTypeAccess.LoadViaPPartner(MainDS, PartnerKey, null);
+            PPartnerTypeAccess.LoadViaPPartner(MainDS, PartnerKey, Transaction);
             PPartnerTypeRow partnerTypeRow;
 
             // only create special type "LEDGER" if it does not exist yet
@@ -2428,30 +2494,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 MainDS.PPartnerType.Rows.Add(partnerTypeRow);
             }
 
-            if (!PUnitAccess.Exists(PartnerKey, null))
+            if (!PUnitAccess.Exists(PartnerKey, Transaction))
             {
                 PUnitRow unitRow = MainDS.PUnit.NewRowTyped();
                 unitRow.PartnerKey = PartnerKey;
+                unitRow.UnitName = ALedgerName;
                 MainDS.PUnit.Rows.Add(unitRow);
             }
 
-            if (!PLocationAccess.Exists(PartnerKey, 0, null))
-            {
-                PLocationRow locationRow = MainDS.PLocation.NewRowTyped();
-                locationRow.SiteKey = PartnerKey;
-                locationRow.LocationKey = 0;
-                locationRow.StreetName = Catalog.GetString("No valid address on file");
-                locationRow.CountryCode = ACountryCode;
-                MainDS.PLocation.Rows.Add(locationRow);
-
-                PPartnerLocationRow partnerLocationRow = MainDS.PPartnerLocation.NewRowTyped();
-                partnerLocationRow.SiteKey = PartnerKey;
-                partnerLocationRow.PartnerKey = PartnerKey;
-                partnerLocationRow.LocationKey = 0;
-                MainDS.PPartnerLocation.Rows.Add(partnerLocationRow);
-            }
-
-            if (!PPartnerLedgerAccess.Exists(PartnerKey, null))
+            if (!PPartnerLedgerAccess.Exists(PartnerKey, Transaction))
             {
                 PPartnerLedgerRow partnerLedgerRow = MainDS.PPartnerLedger.NewRowTyped();
                 partnerLedgerRow.PartnerKey = PartnerKey;
@@ -2461,7 +2512,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     String.Format("SELECT MAX(p_partner_key_n) FROM PUB_p_partner " +
                         "WHERE p_partner_key_n > {0} AND p_partner_key_n < {1}",
                         PartnerKey,
-                        PartnerKey + 500000), IsolationLevel.ReadCommitted);
+                        PartnerKey + 500000), Transaction);
 
                 if (MaxExistingPartnerKeyObj.GetType() != typeof(DBNull))
                 {
@@ -2477,7 +2528,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             String ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
 
-            if (!SModuleAccess.Exists(ModuleId, null))
+            if (!SModuleAccess.Exists(ModuleId, Transaction))
             {
                 SModuleRow moduleRow = MainDS.SModule.NewRowTyped();
                 moduleRow.ModuleId = ModuleId;
@@ -2486,7 +2537,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
 
             // if this is the first ledger, make it the default site
-            SSystemDefaultsTable systemDefaults = SSystemDefaultsAccess.LoadByPrimaryKey("SiteKey", null);
+            SSystemDefaultsTable systemDefaults = SSystemDefaultsAccess.LoadByPrimaryKey("SiteKey", Transaction);
 
             if (systemDefaults.Rows.Count == 0)
             {
@@ -2530,6 +2581,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 MainDS.AAccountingPeriod.Rows.Add(accountingPeriodRow);
                 periodStartDate = accountingPeriodRow.PeriodEndDate.AddDays(1);
             }
+
+            // mark cached table for accounting periods to be refreshed
+            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
 
             AAccountingSystemParameterRow accountingSystemParameterRow = MainDS.AAccountingSystemParameter.NewRowTyped();
             accountingSystemParameterRow.LedgerNumber = ANewLedgerNumber;
@@ -2593,7 +2648,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             MainDS.ATransactionType.Rows.Add(transactionTypeRow);
 
 
-            AValidLedgerNumberTable validLedgerNumberTable = AValidLedgerNumberAccess.LoadByPrimaryKey(ANewLedgerNumber, PartnerKey, null);
+            AValidLedgerNumberTable validLedgerNumberTable = AValidLedgerNumberAccess.LoadByPrimaryKey(ANewLedgerNumber, PartnerKey, Transaction);
 
             if (validLedgerNumberTable.Rows.Count == 0)
             {
@@ -2654,8 +2709,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 moduleAccessPermissionRow.ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
                 moduleAccessPermissionRow.CanAccess = true;
                 moduleAccessPermissionTable.Rows.Add(moduleAccessPermissionRow);
-
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
                 try
                 {

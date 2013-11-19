@@ -19,9 +19,6 @@ RootNode:
             Controls:
                 Row0: [txtLedgerNumber, txtBatchNumber, txtJournalNumber]
             Dock: Top
-        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
-        txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
-        txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
         pnlDetailGrid:
             Dock: Fill
             Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
@@ -51,7 +48,7 @@ RootNode:
             Width: 300
 
         grdAnalAttributes:
-            TableName: ATransAnalAttrib
+            TableName: ARecurringTransAnalAttrib
             Width: 220
             Height: 100
             Columns: [AnalysisTypeCode]
@@ -59,6 +56,7 @@ RootNode:
                 AnalysisTypeCode: {Label=Type, Type=String}
             ActionFocusRow: AnalysisAttributesGridFocusRow
             ActionClick: AnalysisAttributesGridClick
+            Tooltip: Use cursor keys to select and edit an Analysis Attribute
 
         lblAnalAttributes:
             Label: Analysis Attributes
@@ -91,7 +89,8 @@ RootNode:
             Height: 50
             Multiline: true
             ScrollBars: Vertical
-        txtDetailReference: {Label=Reference}
+            Validation: true
+        txtDetailReference: {Label=Reference, Validation=true}
         pnlDetailAmounts:
             Controls:
                 Row0: [lblTransactionCurrency]
@@ -100,7 +99,10 @@ RootNode:
                 Row3: [txtDebitTotalAmount]
                 Row4: [txtCreditTotalAmount]
         lblTransactionCurrency: {Label=TODOTransactionCurrency}
-        txtDebitAmount: {Label=Dr Amount, Format=Currency, NullValueAllowed=false}
-        txtCreditAmount: {Label=Cr Amount, Format=Currency, NullValueAllowed=false}
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
+        txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
+        txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
+        txtDebitAmount: {Label=Dr Amount, Validation=true, Format=Currency, NullValueAllowed=false}
+        txtCreditAmount: {Label=Cr Amount, Validation=true, Format=Currency, NullValueAllowed=false}
         txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true, Format=Currency}
         txtCreditTotalAmount: {Label=Credit Total, ReadOnly=true, Format=Currency}

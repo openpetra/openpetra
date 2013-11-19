@@ -35,14 +35,10 @@
   <Parameter id="ColumnWidth" column="4" value="eInteger:3" />
   <Parameter id="param_calculation" column="5" value="eString:Event Code" />
   <Parameter id="ColumnWidth" column="5" value="eInteger:3" />
-  <Parameter id="param_calculation" column="6" value="eString:Event Preference 1 Code" />
-  <Parameter id="ColumnWidth" column="6" value="eInteger:3" />
-  <Parameter id="param_calculation" column="7" value="eString:Event Preference 2 Code" />
-  <Parameter id="ColumnWidth" column="7" value="eInteger:3" />
-  <Parameter id="param_calculation" column="8" value="eString:Arrival Date" />
-  <Parameter id="ColumnWidth" column="8" value="eInteger:2" />
-  <Parameter id="param_calculation" column="9" value="eString:Departure Date" />
-  <Parameter id="ColumnWidth" column="9" value="eInteger:2" />
+  <Parameter id="param_calculation" column="6" value="eString:Arrival Date" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:2" />
+  <Parameter id="param_calculation" column="7" value="eString:Departure Date" />
+  <Parameter id="ColumnWidth" column="7" value="eInteger:2" />
   <Parameter id="param_address_detail" value="eString:false" />
   <Parameter id="param_passport_detail" value="eString:false" />
   <Parameter id="param_church_detail" value="eString:false" />

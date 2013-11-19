@@ -37,6 +37,7 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.IO; // implicit reference
 using Ict.Common.Printing;
+using Ict.Common.Verification;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
@@ -338,7 +339,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="e"></param>
         protected void tbtSendEmailClick(System.Object sender, System.EventArgs e)
         {
-            TFrmSendEmailOptions options = new TFrmSendEmailOptions(this);
+            TFrmSendEmailOptionsDialog options = new TFrmSendEmailOptionsDialog(this);
 
             if (options.ShowDialog() == DialogResult.OK)
             {
@@ -349,15 +350,19 @@ namespace Ict.Petra.Client.MReporting.Gui
                     return;
                 }
 
-                if (FCalculator.SendEmail(options.EmailAddresses, options.AttachExcelFile, options.AttachCSVFile, options.AttachPDF, FWrapColumn))
+                TVerificationResultCollection verification;
+
+                if (FCalculator.SendEmail(options.EmailAddresses, options.AttachExcelFile, options.AttachCSVFile, options.AttachPDF, FWrapColumn,
+                        out verification))
                 {
                     MessageBox.Show(Catalog.GetString("Email has been sent successfully"),
                         Catalog.GetString("Success"));
                 }
                 else
                 {
-                    MessageBox.Show(Catalog.GetString("Email was not sent."),
-                        Catalog.GetString("Failure"));
+                    MessageBox.Show(
+                        verification.BuildVerificationResultString(),
+                        Catalog.GetString("Email was not sent."));
                 }
             }
         }
