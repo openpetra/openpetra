@@ -26,8 +26,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
+using System.Xml;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.IO;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
@@ -67,6 +69,53 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
         }
 
+        /// <summary>
+        /// export all partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public bool ExportPartnersInExtract(System.Object sender, EventArgs e)
+        {
+            Boolean Result = false;
+            
+            if (!WarnIfNotSingleSelection(Catalog.GetString("Export Partners in Extract"))
+                && (GetSelectedDetailRow() != null))
+            {
+                String FileName = TImportExportDialogs.GetExportFilename(Catalog.GetString("Save Partners into File"));
+    
+                if (FileName.Length > 0)
+                {
+                    if (FileName.EndsWith("ext"))
+                    {
+                        String doc = TRemote.MPartner.ImportExport.WebConnectors.ExportExtractPartnersExt(GetSelectedDetailRow().ExtractId, false);
+                        Result = TImportExportDialogs.ExportTofile(doc, FileName);
+                    }
+                    else
+                    {
+                        XmlDocument doc = new XmlDocument();
+                        MessageBox.Show("Export with this format is not yet implemented!", Catalog.GetString("Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        // doc.LoadXml(TRemote.MPartner.ImportExport.WebConnectors.ExportExtractPartners(GetSelectedDetailRow().ExtractId, false));
+                        // Result = TImportExportDialogs.ExportTofile(doc, FileName);
+                    }
+                
+                    if (!Result)
+                    {
+                        MessageBox.Show(Catalog.GetString("Export of Partners in Extract failed!"), Catalog.GetString("Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        MessageBox.Show(Catalog.GetString("Export of Partners in Extract finished"), Catalog.GetString("Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                       
+                }
+                
+                return Result;
+            }
+            
+            return false;
+        }
+    
         /// <summary>
         /// save the changes on the screen (code is copied from auto-generated code)
         /// </summary>

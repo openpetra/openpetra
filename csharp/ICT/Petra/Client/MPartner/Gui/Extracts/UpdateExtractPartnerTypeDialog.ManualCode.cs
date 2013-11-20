@@ -82,13 +82,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             if (FAdd)
             {
-                lblExplanation.Text = Catalog.GetString("Please select Type you want to add to all Partners in this Extract:");
-                FindForm().Text = Catalog.GetString("Add Partner Type");
+                lblExplanation.Text = Catalog.GetString("Please select Special Type you want to add to all Partners in this Extract:");
+                FindForm().Text = Catalog.GetString("Add Partner Special Type");
             }
             else
             {
-                lblExplanation.Text = Catalog.GetString("Please select Type you want to delete from all Partners in this Extract:");
-                FindForm().Text = Catalog.GetString("Delete Partner Type");
+                lblExplanation.Text = Catalog.GetString("Please select Special Type you want to delete from all Partners in this Extract:");
+                FindForm().Text = Catalog.GetString("Delete Partner Special Type");
             }
         }
 
@@ -153,15 +153,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             if (FAdd)
             {
-                Message = String.Format(Catalog.GetString("Are you sure that you want to add type '{0}' " +
+                Message = String.Format(Catalog.GetString("Are you sure that you want to add special type '{0}' " +
                         "for all partners in extract '{1}'?"), FTypeCode, FExtractName);
-                Title = Catalog.GetString("Add Partner Type");
+                Title = Catalog.GetString("Add Partner Special Type");
             }
             else
             {
-                Message = String.Format(Catalog.GetString("Are you sure that you want to delete type '{0}' " +
+                Message = String.Format(Catalog.GetString("Are you sure that you want to delete special type '{0}' " +
                         "from all partners in extract '{1}'?"), FTypeCode, FExtractName);
-                Title = Catalog.GetString("Delete Partner Type");
+                Title = Catalog.GetString("Delete Partner Special Type");
             }
 
             if (MessageBox.Show(Message,

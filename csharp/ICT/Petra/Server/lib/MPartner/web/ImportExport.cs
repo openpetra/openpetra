@@ -1625,6 +1625,31 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <summary>
         ///
         /// </summary>
+        /// <returns>Export all partners of an extract into an EXT file.</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static String ExportExtractPartnersExt(int AExtractId, Boolean AIncludeFamilyMembers)
+        {
+            String ExtText = GetExtFileHeader();
+            MExtractTable ExtractPartners = MExtractAccess.LoadViaMExtractMaster(AExtractId, null);
+            TPartnerFileExport Exporter = new TPartnerFileExport();
+            PartnerImportExportTDS MainDS;
+
+            foreach (MExtractRow ExtractPartner in ExtractPartners.Rows)
+            {
+                if (ExtractPartner.PartnerKey != 0)
+                {
+                    MainDS = TExportAllPartnerData.ExportPartner(ExtractPartner.PartnerKey);
+                    ExtText += Exporter.ExportPartnerExt(MainDS, /*ASiteKey*/ 0, /*ALocationKey*/ 0, null);
+                }
+            }
+
+            ExtText += GetExtFileFooter();
+            return ExtText;
+        }
+        
+        /// <summary>
+        ///
+        /// </summary>
         /// <returns>All the text to write into an EXT file.</returns>
         [RequireModulePermission("PTNRUSER")]
         public static String ExportAllPartnersExt()
