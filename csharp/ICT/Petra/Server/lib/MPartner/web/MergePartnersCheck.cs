@@ -172,8 +172,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         TPartnerServerLookups.GetPartnerShortName(AFromPartnerKey, out ToPartnerShortName, out PartnerClass);
 
                         string ErrorMessage = string.Format(Catalog.GetString("WARNING: You are about to change the family of {0} ({1}).") + "\n\n" +
-                            Catalog.GetString("Changing a person's family can affect the person's ability to see their support information in" +
-                                " the Intranet including any support that they may receive from other Fields."), FromPartnerShortName, AFromPartnerKey);
+                            Catalog.GetString(
+                                "Changing a person's family can affect the person's ability to see their support information in" +
+                                " the Intranet including any support that they may receive from other Fields."), FromPartnerShortName,
+                            AFromPartnerKey);
 
                         if (CheckCommitmentsResult == 1)
                         {
@@ -206,8 +208,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (CheckCommitmentsResult == 3)
                         {
                             ErrorMessage = string.Format(Catalog.GetString("WARNING: You are about to change the family of {0} ({1}).") + "\n\n" +
-                                Catalog.GetString("Changing a person's family can affect the person's ability to see their support information in" +
-                                    " the Intranet including any support that they may receive from other Fields."), FromPartnerShortName, AFromPartnerKey);
+                                Catalog.GetString(
+                                    "Changing a person's family can affect the person's ability to see their support information in" +
+                                    " the Intranet including any support that they may receive from other Fields."), FromPartnerShortName,
+                                AFromPartnerKey);
                         }
                         else if (CheckCommitmentsResult == 2)
                         {
