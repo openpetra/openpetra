@@ -42,7 +42,7 @@ RootNode:
         btnGenerateHOSAFiles:
             Label: &Generate HOSA Files
             ActionClick: GenerateHOSAFiles
-        cmbReportPeriod: {Width=100, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList}
+        cmbReportPeriod: {Label=Report Period, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList}
         chkEmailReport:
         cmbCostCentreCode: {Label=Cost Centre, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList}
         cmbICHNumber: {Label=ICH Number, List=UserDefinedList}

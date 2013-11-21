@@ -245,7 +245,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             if ((cmbReportPeriod.SelectedIndex > -1)
                 && (cmbCostCentreCode.SelectedIndex > 0))
             {
-                TFinanceControls.InitialiseICHStewardshipList(ref cmbICHNumber, FLedgerNumber,
+        		TFinanceControls.InitialiseICHStewardshipList(ref cmbICHNumber, FLedgerNumber,
                     cmbReportPeriod.GetSelectedInt32(), cmbCostCentreCode.GetSelectedString());
             }
         }
