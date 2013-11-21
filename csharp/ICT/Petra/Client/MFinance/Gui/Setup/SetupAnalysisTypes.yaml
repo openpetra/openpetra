@@ -44,6 +44,7 @@ RootNode:
         btnNewType:
             Action: actNew
             Width: 80
+            Tooltip: Click to create a new Analysis Type record
         btnDelete:
             Action: actDelete
             Width: 80

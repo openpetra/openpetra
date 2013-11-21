@@ -398,29 +398,29 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// </summary>
         private void PrepareButtons()
         {
-            btnAccept.Enabled = false;
+            btnOK.Enabled = false;
 
             // "Accept" button needs to be disabled if no row is selected
             if (AllowMultipleSelect)
             {
                 if (clbDetails.CheckedItemsCount >= 1)
                 {
-                    btnAccept.Enabled = true;
+                    btnOK.Enabled = true;
                 }
                 else
                 {
-                    btnAccept.Enabled = false;
+                    btnOK.Enabled = false;
                 }
             }
             else
             {
                 if (clbDetails.SelectedDataRowsAsDataRowView.Length >= 1)
                 {
-                    btnAccept.Enabled = true;
+                    btnOK.Enabled = true;
                 }
                 else
                 {
-                    btnAccept.Enabled = false;
+                    btnOK.Enabled = false;
                 }
             }
         }

@@ -72,8 +72,10 @@ RootNode:
             List: UserDefinedList
             Height:140
             Width:318
+            Tooltip:Check the Fees Payable that apply
         clbDetailFeesReceivable:
             NoLabel: true
             List: UserDefinedList
             Height:140
             Width:318
+            Tooltip:Check the Fees Receivable that apply

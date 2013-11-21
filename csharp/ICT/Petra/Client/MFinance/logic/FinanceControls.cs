@@ -944,7 +944,8 @@ namespace Ict.Petra.Client.MFinance.Logic
             ref TCmbAutoPopulated AControl,
             System.Int32 ALedgerNumber)
         {
-        	DataTable AccountingPeriods = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList, ALedgerNumber);
+            DataTable AccountingPeriods = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
+                ALedgerNumber);
 
             ALedgerRow Ledger =
                 ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
@@ -953,16 +954,16 @@ namespace Ict.Petra.Client.MFinance.Logic
             int EndPeriod = CurrentPeriod + Ledger.NumberFwdPostingPeriods;
 
             AControl.InitialiseUserControl(AccountingPeriods,
-               AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),
-               AAccountingPeriodTable.GetAccountingPeriodDescDBName(),
-               null);
-            
+                AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),
+                AAccountingPeriodTable.GetAccountingPeriodDescDBName(),
+                null);
+
             AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
 
             AControl.Filter = String.Format("{0} >= {1} And {0} <= {2}",
-                                                                    AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),
-                                                                    Ledger.CurrentPeriod,
-                                                                    EndPeriod);
+                AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),
+                Ledger.CurrentPeriod,
+                EndPeriod);
         }
 
         /// <summary>

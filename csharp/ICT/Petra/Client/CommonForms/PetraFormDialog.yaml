@@ -19,19 +19,23 @@ RootNode:
         stbMain:
         pnlContent:
             Dock: Fill
-            Controls: [pnlDialogButtons, pnlDialogContent]
+            Controls: [pnlDialogButtons, pnlSpacer]
+
+        pnlSpacer:
+            Dock: Fill
+            Padding: 5,5,5,5
+            Controls: [pnlDialogContent]
 
         pnlDialogContent:
-            Controls:
             Dock: Fill
-            
+
         pnlDialogButtons: 
-            Padding: 0,0,0,4
+            Padding: 3,0,3,4
             Height: 35
             Dock: Bottom
             Controls: 
                 Row0: [pnlLeftButtons, pnlRightButtons]
-        
+
         pnlLeftButtons:
             Dock: Fill
             Controls:

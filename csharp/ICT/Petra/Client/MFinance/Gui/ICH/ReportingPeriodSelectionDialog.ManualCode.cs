@@ -237,7 +237,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 TFinanceControls.InitialiseCostCentreList(ref cmbCostCentreCode, FLedgerNumber, true, false, false, true);
 
                 cmbCostCentreCode.SelectedIndex = 1;
-                
+
                 this.grpGenerateHosaFiles.Text = Catalog.GetString("Generate HOSA Files");
             }
         }
@@ -247,7 +247,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             if ((cmbReportPeriod.SelectedIndex > -1)
                 && (cmbCostCentreCode.SelectedIndex > 0))
             {
-        		TFinanceControls.InitialiseICHStewardshipList(ref cmbICHNumber, FLedgerNumber,
+                TFinanceControls.InitialiseICHStewardshipList(ref cmbICHNumber, FLedgerNumber,
                     cmbReportPeriod.GetSelectedInt32(), cmbCostCentreCode.GetSelectedString());
             }
         }

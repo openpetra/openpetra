@@ -90,9 +90,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
             ucoGeneral.Focus();
             HookupAllInContainer(ucoGeneral);
 
-            mnuMain.Enabled = false;
-            mnuMain.Visible = false;
-
             if (UserInfo.GUserInfo.IsInModule("PTNRUSER"))
             {
                 tpgPartner.Enabled = true;
@@ -102,11 +99,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
             {
                 tpgFinance.Enabled = true;
             }
-        }
-
-        private void BtnHelp_Click(System.Object sender, System.EventArgs e)
-        {
-            // TODO TCommonMenuCommands.PetraHelp.AboutAndHelp(this);
         }
     }
 }
