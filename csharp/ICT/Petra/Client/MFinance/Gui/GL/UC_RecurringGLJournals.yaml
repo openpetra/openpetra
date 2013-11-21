@@ -39,7 +39,7 @@ RootNode:
             Dock: Bottom
             Controls: [btnAdd, btnDelete]
             ControlsOrientation: horizontal
-        btnAdd: {Action=actNew, Width=120}
+        btnAdd: {Action=actNew, Width=120, Tooltip=Click to add a new journal}
         btnDelete: {Action=actDelete, Width=120}
         grdDetails:
             Dock: Fill

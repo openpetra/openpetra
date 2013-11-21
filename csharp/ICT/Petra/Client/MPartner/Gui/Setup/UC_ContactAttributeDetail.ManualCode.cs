@@ -205,7 +205,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 string filter = String.Format("{0}='{1}'", PContactAttributeDetailTable.GetContactAttributeCodeDBName(), NewValue);
                 FFilterPanelControls.SetBaseFilter(filter, true);
                 ApplyFilter();
-                SelectRowInGrid(1);
+                grdDetails.SelectRowWithoutFocus(FPrevRowChangedRow);
             }
 
             FPetraUtilsObject.EnableDataChangedEvent();

@@ -86,6 +86,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             // add a column to the grid and bind it to our new data set column
             grdDetails.AddTextColumn(Catalog.GetString("Number of Detail Codes"), FMainDS.PContactAttribute.Columns[NumDetailCodesColumnOrdinal]);
+
+            SelectRowInGrid(1);
         }
 
         private void NewRowManual(ref PContactAttributeRow ARow)

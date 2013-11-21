@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FFilterPanelControls.SetBaseFilter(rowFilter, true);
                 ApplyFilter();
 
-                SelectRowInGrid(FPrevRowChangedRow);
+                grdDetails.SelectRowWithoutFocus(FPrevRowChangedRow);
             }
         }
         private void NewRow(System.Object sender, EventArgs e)
@@ -113,6 +113,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             myAT.Merge(AT);
             //FMainDS.AFreeformAnalysis.Merge(TRemote.MFinance.Setup.WebConnectors.LoadValues(FLedgerNumber).AFreeformAnalysis);
             FMainDS.AFreeformAnalysis.DefaultView.Sort = AFreeformAnalysisTable.GetAnalysisValueDBName();
+
+            SelectRowInGrid(1);
         }
 
         private void ShowDetailsManual(AFreeformAnalysisRow ARow)

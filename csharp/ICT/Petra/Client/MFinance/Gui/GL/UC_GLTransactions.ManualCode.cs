@@ -59,7 +59,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private GLBatchTDSAJournalRow FJournalRow = null;
         private ATransAnalAttribRow FPSAttributesRow = null;
         private SourceGrid.Cells.Editors.ComboBox FAnalAttribTypeVal;
-        private bool FAttributesGridEntered = false;
         private bool FIsUnposted = true;
 
         private ABatchRow FBatchRow = null;
@@ -115,92 +114,85 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FLoadCompleted = true;
                 this.Cursor = Cursors.Default;
-                return;
-            }
-
-            bool requireControlSetup = (FLedgerNumber == -1) || (FTransactionCurrency != AForeignCurrencyName);
-
-            FLedgerNumber = ALedgerNumber;
-            FBatchNumber = ABatchNumber;
-            FJournalNumber = AJournalNumber;
-            FTransactionNumber = -1;
-            FTransactionCurrency = AForeignCurrencyName;
-            FBatchStatus = ABatchStatus;
-            FJournalStatus = AJournalStatus;
-
-            FAttributesGridEntered = false;
-
-            FPreviouslySelectedDetailRow = null;
-            grdDetails.DataSource = null;
-            grdAnalAttributes.DataSource = null;
-
-            SetTransactionDefaultView();
-
-            //Load from server if necessary
-            if (FMainDS.ATransaction.DefaultView.Count == 0)
-            {
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber));
-            }
-
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransaction.DefaultView);
-
-            FJournalRow = GetJournalRow();
-
-            if (grdAnalAttributes.Columns.Count == 1)
-            {
-                FAnalAttribTypeVal = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
-                FAnalAttribTypeVal.EnableEdit = true;
-                grdAnalAttributes.AddTextColumn("Value",
-                    FMainDS.ATransAnalAttrib.Columns[ATransAnalAttribTable.GetAnalysisAttributeValueDBName()], 100,
-                    FAnalAttribTypeVal);
-                FAnalAttribTypeVal.Control.SelectedValueChanged += new EventHandler(this.AnalysisAttributeValueChanged);
-
-                grdAnalAttributes.Columns[0].Width = 100;
-            }
-
-            SetTransAnalAttributeDefaultView();
-            FMainDS.ATransAnalAttrib.DefaultView.AllowNew = false;
-            grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
-
-            // if this form is readonly or batch is posted, then we need all account and cost centre codes, because old codes might have been used
-            bool ActiveOnly = (this.Enabled && FIsUnposted);
-
-            if (requireControlSetup || (FActiveOnly != ActiveOnly))
-            {
-                FActiveOnly = ActiveOnly;
-
-                //Load all analysis attribute values
-                if (FCacheDS == null)
-                {
-                    FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber);
-                }
-
-                SetupExtraGridFunctionality();
-
-                TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
-                    true, false, ActiveOnly, false, AForeignCurrencyName, true);
-                TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
-            }
-
-            //This will update transaction headers
-            UpdateTransactionTotals(false);
-
-            if (grdDetails.Rows.Count < 2)
-            {
-                ClearControls();
             }
             else
             {
-                SelectRowInGrid(1);
+                // A new ledger/batch
+                bool requireControlSetup = (FLedgerNumber == -1) || (FTransactionCurrency != AForeignCurrencyName);
+
+                FLedgerNumber = ALedgerNumber;
+                FBatchNumber = ABatchNumber;
+                FJournalNumber = AJournalNumber;
+                FTransactionNumber = -1;
+                FTransactionCurrency = AForeignCurrencyName;
+                FBatchStatus = ABatchStatus;
+                FJournalStatus = AJournalStatus;
+
+                FPreviouslySelectedDetailRow = null;
+                grdDetails.DataSource = null;
+                grdAnalAttributes.DataSource = null;
+
+                SetTransactionDefaultView();
+
+                //Load from server if necessary
+                if (FMainDS.ATransaction.DefaultView.Count == 0)
+                {
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber));
+                }
+
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransaction.DefaultView);
+
+                FJournalRow = GetJournalRow();
+
+                if (grdAnalAttributes.Columns.Count == 1)
+                {
+                    grdAnalAttributes.SpecialKeys = GridSpecialKeys.Default | GridSpecialKeys.Tab;
+
+                    FAnalAttribTypeVal = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
+                    FAnalAttribTypeVal.EnableEdit = true;
+                    FAnalAttribTypeVal.EditableMode = EditableMode.Focus;
+                    grdAnalAttributes.AddTextColumn("Value",
+                        FMainDS.ATransAnalAttrib.Columns[ATransAnalAttribTable.GetAnalysisAttributeValueDBName()], 100,
+                        FAnalAttribTypeVal);
+                    FAnalAttribTypeVal.Control.SelectedValueChanged += new EventHandler(this.AnalysisAttributeValueChanged);
+
+                    grdAnalAttributes.Columns[0].Width = 100;
+                }
+
+                SetTransAnalAttributeDefaultView();
+                FMainDS.ATransAnalAttrib.DefaultView.AllowNew = false;
+                grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
+
+                // if this form is readonly or batch is posted, then we need all account and cost centre codes, because old codes might have been used
+                bool ActiveOnly = (this.Enabled && FIsUnposted);
+
+                if (requireControlSetup || (FActiveOnly != ActiveOnly))
+                {
+                    FActiveOnly = ActiveOnly;
+
+                    //Load all analysis attribute values
+                    if (FCacheDS == null)
+                    {
+                        FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber);
+                    }
+
+                    SetupExtraGridFunctionality();
+
+                    TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
+                        true, false, ActiveOnly, false, AForeignCurrencyName, true);
+                    TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
+                }
+
+                //This will update transaction headers
+                UpdateTransactionTotals(false);
+                FLoadCompleted = true;
             }
 
-            UpdateChangeableStatus();
+            SelectRowInGrid(1);
 
+            UpdateChangeableStatus();
             UpdateRecordNumberDisplay();
             SetRecordNumberDisplayProperties();
-
-            grdDetails.Focus();
-            FLoadCompleted = true;
 
             this.Cursor = Cursors.Default;
         }
@@ -369,13 +361,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             this.CreateNewATransaction();
 
-            if (pnlDetails.Enabled == false)
-            {
-                pnlDetails.Enabled = true;
-                pnlTransAnalysisAttributes.Enabled = true;
-            }
-
-            cmbDetailCostCentreCode.Focus();
+            pnlTransAnalysisAttributes.Enabled = true;
 
             //Needs to be called at end of addition process to process Analysis Attributes
             AccountCodeDetailChanged(null, null);
@@ -465,17 +451,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
 
                 // Needs to be called to process Analysis Attributes
-                AccountCodeDetailChanged(null, null);
+                // AlanP: Not sure we need this? It already gets called.
+                //AccountCodeDetailChanged(null, null);
             }
         }
 
         private void ShowDetailsManual(ATransactionRow ARow)
         {
             txtJournalNumber.Text = FJournalNumber.ToString();
+            grdDetails.TabStop = (ARow != null);
+            grdAnalAttributes.Enabled = (ARow != null);
 
             if (ARow == null)
             {
                 FTransactionNumber = -1;
+                ClearControls();
+                btnNew.Focus();
                 return;
             }
 
@@ -545,30 +536,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (grdAnalAttributes.Rows.Count > 1)
             {
-                grdAnalAttributes.SelectRowInGrid(1, true);
+                grdAnalAttributes.SelectRowWithoutFocus(1);
                 FPSAttributesRow = GetSelectedAttributeRow();
-            }
-        }
-
-        private void AnalysisAttributesGridEnter(System.Object sender, EventArgs e)
-        {
-            if (FAttributesGridEntered)
-            {
-                return;
-            }
-            else
-            {
-                FAttributesGridEntered = true;
-            }
-
-            if (grdAnalAttributes.GetFirstHighlightedRowIndex() > 0)
-            {
-                //Ensures that when the user first enters the grid, the combo appears.
-                grdAnalAttributes.Selection.Focus(new Position(grdAnalAttributes.GetFirstHighlightedRowIndex(), 1), true);
-            }
-            else if (grdAnalAttributes.Rows.Count > 1)
-            {
-                grdAnalAttributes.SelectRowInGrid(1);
             }
         }
 
@@ -584,26 +553,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return null;
         }
 
-        private void AnalysisAttributesGridClick(System.Object sender, EventArgs e)
+        private void AnalysisAttributesGrid_RowSelected(System.Object sender, RangeRegionChangedEventArgs e)
         {
-            if (!FAttributesGridEntered)
+            if (grdAnalAttributes.Selection.ActivePosition.IsEmpty() || (grdAnalAttributes.Selection.ActivePosition.Column == 0))
             {
                 return;
             }
 
-            if (grdAnalAttributes.GetFirstHighlightedRowIndex() > 0)
-            {
-                //Ensures that when the user first enters the grid, the combo appears.
-                grdAnalAttributes.Selection.Focus(new Position(grdAnalAttributes.GetFirstHighlightedRowIndex(), 1), true);
-            }
-            else if (grdAnalAttributes.Rows.Count > 1)
-            {
-                grdAnalAttributes.SelectRowInGrid(1);
-            }
-        }
-
-        private void AnalysisAttributesGridFocusRow(System.Object sender, SourceGrid.RowEventArgs e)
-        {
             FPSAttributesRow = GetSelectedAttributeRow();
 
             string currentAnalTypeCode = FPSAttributesRow.AnalysisTypeCode;
@@ -649,10 +605,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FAnalAttribTypeVal.StandardValuesExclusive = true;
             FAnalAttribTypeVal.StandardValues = analTypeValues;
 
-            Int32 RowNumber = grdAnalAttributes.GetFirstHighlightedRowIndex();
-            FAnalAttribTypeVal.EnableEdit = true;
-            FAnalAttribTypeVal.EditableMode = EditableMode.Focus;
-            grdAnalAttributes.Selection.Focus(new Position(RowNumber, grdAnalAttributes.Columns.Count - 1), true);
+            Console.WriteLine("RowSelected: ActivePos is {0}:{1}",
+                grdAnalAttributes.Selection.ActivePosition.Row,
+                grdAnalAttributes.Selection.ActivePosition.Column);
         }
 
         private void AnalysisAttributeValueChanged(System.Object sender, EventArgs e)
@@ -831,7 +786,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailReference.Validated += new EventHandler(ControlValidatedHandler);
             dtpDetailTransactionDate.Validated += new EventHandler(ControlValidatedHandler);
 
-            grdAnalAttributes.Enter += new EventHandler(AnalysisAttributesGridEnter);
+            grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
         }
 
         private void SetupExtraGridFunctionality()
@@ -1697,6 +1652,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             return csvRetVal;
+        }
+
+        /// <summary>
+        /// Shows the Filter/Find UserControl and switches to the Find Tab.
+        /// </summary>
+        public void ShowFindPanel()
+        {
+            if (FucoFilterAndFind == null)
+            {
+                ToggleFilter();
+            }
+
+            FucoFilterAndFind.DisplayFindTab();
         }
     }
 }
