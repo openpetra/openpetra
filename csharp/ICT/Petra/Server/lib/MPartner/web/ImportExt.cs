@@ -1072,19 +1072,22 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     FMainDS.PmGeneralApplication, GeneralApplicationRow, FDoNotOverwrite, ATransaction);
             }
 
-            string KeyWord = ReadString();
-
-            // needs to be kept in to support versions < 3.0.0
-            while (KeyWord == "APPL-FORM")
+            if (APetraVersion.FileMajorPart < 3)
             {
-                ReadApplicationForm(GeneralApplicationRow, ATransaction);
+                string KeyWord = ReadString();
 
-                KeyWord = ReadString();
-            }
-
-            if (KeyWord == "END")
-            {
-                CheckForKeyword("FORMS");
+                // needs to be kept in to support versions < 3.0.0
+                while (KeyWord == "APPL-FORM")
+                {
+                    ReadApplicationForm(GeneralApplicationRow, ATransaction);
+    
+                    KeyWord = ReadString();
+                }
+    
+                if (KeyWord == "END")
+                {
+                    CheckForKeyword("FORMS");
+                }
             }
         }
 
@@ -1234,7 +1237,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             PassportDetailsRow.PassportNumber = ReadString();
 
-            if (APetraVersion.FileMinorPart > 2)
+            if (   APetraVersion.FileMajorPart > 2
+                || (   APetraVersion.FileMajorPart == 2 
+                    && APetraVersion.FileMinorPart > 2))
             {
                 PassportDetailsRow.MainPassport = ReadBoolean();
             }

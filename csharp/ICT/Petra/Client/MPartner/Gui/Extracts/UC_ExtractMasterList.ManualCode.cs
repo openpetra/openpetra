@@ -90,22 +90,22 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     {
                         String doc = TRemote.MPartner.ImportExport.WebConnectors.ExportExtractPartnersExt(GetSelectedDetailRow().ExtractId, false);
                         Result = TImportExportDialogs.ExportTofile(doc, FileName);
+
+                        if (!Result)
+                        {
+                            MessageBox.Show(Catalog.GetString("Export of Partners in Extract failed!"), Catalog.GetString("Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                        else
+                        {
+                            MessageBox.Show(Catalog.GetString("Export of Partners in Extract finished"), Catalog.GetString("Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
                     }
                     else
                     {
                         XmlDocument doc = new XmlDocument();
-                        MessageBox.Show("Export with this format is not yet implemented!", Catalog.GetString("Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(Catalog.GetString("Export with this format is not yet supported!"), Catalog.GetString("Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                         // doc.LoadXml(TRemote.MPartner.ImportExport.WebConnectors.ExportExtractPartners(GetSelectedDetailRow().ExtractId, false));
                         // Result = TImportExportDialogs.ExportTofile(doc, FileName);
-                    }
-                
-                    if (!Result)
-                    {
-                        MessageBox.Show(Catalog.GetString("Export of Partners in Extract failed!"), Catalog.GetString("Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-                    else
-                    {
-                        MessageBox.Show(Catalog.GetString("Export of Partners in Extract finished"), Catalog.GetString("Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                        
                 }
