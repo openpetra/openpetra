@@ -952,14 +952,12 @@ namespace Ict.Petra.Client.MFinance.Logic
             int CurrentPeriod = Ledger.CurrentPeriod;
             int EndPeriod = CurrentPeriod + Ledger.NumberFwdPostingPeriods;
 
-//            AccountingPeriods.DefaultView.Sort = AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " ASC";
-
             AControl.InitialiseUserControl(AccountingPeriods,
                AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),
                AAccountingPeriodTable.GetAccountingPeriodDescDBName(),
                null);
             
-            AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
+            AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
 
             AControl.Filter = String.Format("{0} >= {1} And {0} <= {2}",
                                                                     AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),
