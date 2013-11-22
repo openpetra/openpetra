@@ -104,7 +104,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     }
                     else
                     {
-                        XmlDocument doc = new XmlDocument();
+                        // XmlDocument doc = new XmlDocument();
                         MessageBox.Show(Catalog.GetString("Export with this format is not yet supported!"), Catalog.GetString(
                                 "Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                         // doc.LoadXml(TRemote.MPartner.ImportExport.WebConnectors.ExportExtractPartners(GetSelectedDetailRow().ExtractId, false));
