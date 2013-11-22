@@ -9,11 +9,12 @@ RootNode:
     WindowWidth: 800
     WindowHeight: 700
     Actions:
-        actMaintainExtract: {ActionClick=MaintainExtract}      
-        actVerifyAndUpdateExtract: {ActionClick=VerifyAndUpdateExtract}     
-        actPurgeExtracts: {ActionClick=PurgeExtracts}     
-        actCombineExtracts: {ActionClick=CombineExtracts}     
-        actIntersectExtracts: {ActionClick=IntersectExtracts}     
+        actExportPartnersInExtract: {ActionClick=ExportPartnersInExtract}
+        actMaintainExtract: {ActionClick=MaintainExtract}
+        actVerifyAndUpdateExtract: {ActionClick=VerifyAndUpdateExtract}
+        actPurgeExtracts: {ActionClick=PurgeExtracts}
+        actCombineExtracts: {ActionClick=CombineExtracts}
+        actIntersectExtracts: {ActionClick=IntersectExtracts}
         actSubtractExtracts: {ActionClick=SubtractExtracts}     
         actActivateFilter: {ActionClick=FilterExtracts}     
         actClearFilter: {ActionClick=ClearFilterExtracts}     
@@ -26,8 +27,8 @@ RootNode:
         actCreatePartnerBySpecialTypeExtract: {ActionClick=CreatePartnerBySpecialTypeExtract}     
         actCreateFamilyMembersExtract: {ActionClick=CreateFamilyMembersExtract}     
         actCreateFamilyExtractForPersons: {ActionClick=CreateFamilyExtractForPersons}     
-        actCreatePartnerByConferenceExtract: {ActionClick=CreatePartnerByConferenceExtract}     
-        actCreatePartnerByOutreachExtract: {ActionClick=CreatePartnerByOutreachExtract}     
+        actCreatePartnerByEventExtract: {ActionClick=CreatePartnerByEventExtract}     
+        actCreatePartnerByEventRoleExtract: {ActionClick=CreatePartnerByEventRoleExtract}     
         actCreatePartnerByCommitmentExtract: {ActionClick=CreatePartnerByCommitmentExtract}     
         actCreatePartnerByFieldExtract: {ActionClick=CreatePartnerByFieldExtract}     
         actCreateRecipientByFieldExtract: {ActionClick=CreateRecipientByFieldExtract}     
@@ -83,6 +84,8 @@ RootNode:
             Type: Ict.Petra.Client.MPartner.Gui.Extracts.TUC_ExtractMasterList
 
     Menu:
+        mniFile:
+            mniExportPartnersInExtract: {Label=Export Partners in Extract..., Action=actExportPartnersInExtract}
         mniCreateExtract:
             Label: &Create Extract
             mniCreateGeneralExtract: {Label=General Extract, Action=actCreateGeneralExtract}
@@ -95,8 +98,8 @@ RootNode:
             mniCreateFamilyMembersExtract: {Label=Family Members Extract, Action=actCreateFamilyMembersExtract}
             mniCreateFamilyExtractForPersons: {Label=Family Extract for Persons, Action=actCreateFamilyExtractForPersons}
             mniSeparator:
-            mniCreatePartnerByConferenceExtract: {Label=Partner by Conference, Action=actCreatePartnerByConferenceExtract}
-            mniCreatePartnerByOutreachExtract: {Label=Partner by Outreach, Action=actCreatePartnerByOutreachExtract}
+            mniCreatePartnerByEventExtract: {Label=Partner by Event, Action=actCreatePartnerByEventExtract}
+            mniCreatePartnerByEventRoleExtract: {Label=Partner by Event Role, Action=actCreatePartnerByEventRoleExtract}
             mniSeparator:
             mniCreatePartnerByCommitmentExtract: {Label=Partner by Commitment, Action=actCreatePartnerByCommitmentExtract}
             mniCreatePartnerByFieldExtract: {Label=Partner by Field, Action=actCreatePartnerByFieldExtract}
@@ -123,8 +126,8 @@ RootNode:
             mniDeleteSubscription: {Label=Delete Subscription, Action=actDeleteSubscription}
             mniChangeSubscription: {Label=Change Subscription, Action=actChangeSubscription}
             mniSeparator:
-            mniAddPartnerType: {Label=Add Partner Type, Action=actAddPartnerType}
-            mniDeletePartnerType: {Label=Delete Partner Type, Action=actDeletePartnerType}
+            mniAddPartnerType: {Label=Add Partner Special Type, Action=actAddPartnerType}
+            mniDeletePartnerType: {Label=Delete Partner Special Type, Action=actDeletePartnerType}
             mniUpdateSolicitationFlag: {Label=No Solicitations Flag, Action=actUpdateSolicitationFlag}
             mniSeparator:
             mniUpdateReceiptFrequency: {Label=Receipt Frequency, Action=actUpdateReceiptFrequency}

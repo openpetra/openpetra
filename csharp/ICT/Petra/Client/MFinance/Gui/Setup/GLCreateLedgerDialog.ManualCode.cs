@@ -301,6 +301,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     out UnitName, out PartnerClass, true))
             {
                 txtLedgerName.Text = UnitName;
+                txtLedgerName.Enabled = false;
+            }
+            else
+            {
+                txtLedgerName.Enabled = true;
             }
         }
     }
