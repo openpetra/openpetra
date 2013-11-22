@@ -36,13 +36,13 @@ RootNode:
             ExpandedWidth: 170
             ShowApplyFilterButton: FilterContext.StandardFilterOnly
             ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
-            FilterControls: [Column:JournalNumber, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency]
-            FindControls: [Column:JournalNumber, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency]
+            FilterControls: [Column:JournalStatus, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency]
+            FindControls: [Column:JournalStatus, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency]
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnAdd, btnCancel]
             ControlsOrientation: horizontal
-        btnAdd: {Action=actNew, Width=120}
+        btnAdd: {Action=actNew, Width=120, Tooltip=Click to add a new journal}
         btnCancel: {Action=actCancel, Width=120}
         grdDetails:
             Dock: Fill

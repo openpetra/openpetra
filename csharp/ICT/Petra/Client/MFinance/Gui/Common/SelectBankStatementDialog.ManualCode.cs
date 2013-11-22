@@ -45,7 +45,7 @@ using Ict.Petra.Shared.Interfaces.Plugins.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.Common
 {
-    public partial class TFrmSelectBankStatement
+    public partial class TFrmSelectBankStatementDialog
     {
         private Int32 FLedgerNumber = -1;
         private Int32 FStatementKey = -1;
@@ -133,7 +133,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
 
         private void ImportNewStatement(object sender, EventArgs e)
         {
-            TFrmImportNewBankStatement DlgImport = new TFrmImportNewBankStatement(this);
+            TFrmImportNewBankStatementDialog DlgImport = new TFrmImportNewBankStatementDialog(this);
 
             DlgImport.LedgerNumber = FLedgerNumber;
 
@@ -142,7 +142,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Common
                 // look for available plugin for importing a bank statement.
                 // the plugin will upload the data into the tables a_ep_statement and a_ep_transaction on the server/database
 
-                string BankStatementImportPlugin = TFrmImportNewBankStatement.PluginNamespace + "." + TUserDefaults.GetStringDefault(
+                string BankStatementImportPlugin = TFrmImportNewBankStatementDialog.PluginNamespace + "." + TUserDefaults.GetStringDefault(
                     TUserDefaults.FINANCE_BANKIMPORT_PLUGIN);
 
                 // namespace of the class TBankStatementImport, eg. Plugin.BankImportFromCSV

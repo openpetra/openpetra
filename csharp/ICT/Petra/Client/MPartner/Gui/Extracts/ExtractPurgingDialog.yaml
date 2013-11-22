@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
     FormType: dialog
     Template: window
-    WindowWidth: 400
+    WindowWidth: 410
     WindowHeight: 300
     
     Events:

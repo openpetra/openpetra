@@ -121,6 +121,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             OnTickChangeItem(chkChangeNumberIssuesReceived, null);
             OnTickChangeItem(chkChangeFirstIssue, null);
             OnTickChangeItem(chkChangeLastIssue, null);
+
+            // Hook up this event manually here after all initalisation has happened as otherwise
+            // Bug #2481 would occur if the first Publication in the 'Publication Code' ComboBox is not Valid
+            cmbPSubscriptionPublicationCode.SelectedValueChanged += new System.EventHandler(this.PublicationCodeChanged);
         }
 
         private void OnTickChangeItem(System.Object sender, EventArgs e)

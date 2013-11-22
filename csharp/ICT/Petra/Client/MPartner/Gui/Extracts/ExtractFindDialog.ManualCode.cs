@@ -44,7 +44,7 @@ using Ict.Petra.Client.CommonControls;
 namespace Ict.Petra.Client.MPartner.Gui.Extracts
 {
     /// manual methods for the generated window
-    public partial class TFrmExtractFind
+    public partial class TFrmExtractFindDialog
     {
         private Boolean FAllowMultipleSelect = false;
         private String FCheckedColumnName = "CHECKED";
@@ -398,29 +398,29 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// </summary>
         private void PrepareButtons()
         {
-            btnAccept.Enabled = false;
+            btnOK.Enabled = false;
 
             // "Accept" button needs to be disabled if no row is selected
             if (AllowMultipleSelect)
             {
                 if (clbDetails.CheckedItemsCount >= 1)
                 {
-                    btnAccept.Enabled = true;
+                    btnOK.Enabled = true;
                 }
                 else
                 {
-                    btnAccept.Enabled = false;
+                    btnOK.Enabled = false;
                 }
             }
             else
             {
                 if (clbDetails.SelectedDataRowsAsDataRowView.Length >= 1)
                 {
-                    btnAccept.Enabled = true;
+                    btnOK.Enabled = true;
                 }
                 else
                 {
-                    btnAccept.Enabled = false;
+                    btnOK.Enabled = false;
                 }
             }
         }
@@ -451,7 +451,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             AExtractName = String.Empty;
             AExtractDesc = String.Empty;
 
-            TFrmExtractFind SelectExtract = new TFrmExtractFind(AParentForm);
+            TFrmExtractFindDialog SelectExtract = new TFrmExtractFindDialog(AParentForm);
 
             if (SelectExtract.ShowDialog(true))
             {

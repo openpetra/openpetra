@@ -412,7 +412,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="e"></param>
         private void Analyse(Object sender, EventArgs e)
         {
-            TFrmAPAnalysisAttributes AnalAttrForm = new TFrmAPAnalysisAttributes(this);
+            TFrmAPAnalysisAttributesDialog AnalAttrForm = new TFrmAPAnalysisAttributesDialog(this);
 
             ValidateAllData(false, true);
 //          GetDetailsFromControls(FPreviouslySelectedDetailRow);

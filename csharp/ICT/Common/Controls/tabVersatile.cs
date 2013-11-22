@@ -843,7 +843,7 @@ namespace Ict.Common.Controls
             {
                 if ((e.KeyCode == Keys.Left) || (e.KeyCode == Keys.Up))
                 {
-                    for (Counter1 = (short)(SelIndex - 1); Counter1 <= 0; Counter1 -= 1)
+                    for (Counter1 = (short)(SelIndex - 1); Counter1 >= 0; Counter1 -= 1)
                     {
                         if (this.TabPages[Counter1].Enabled)
                         {

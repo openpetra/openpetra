@@ -39,7 +39,7 @@ using Ict.Petra.Shared.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
-    public partial class TFrmAPAnalysisAttributes
+    public partial class TFrmAPAnalysisAttributesDialog
     {
         private AccountsPayableTDS FMainDS;
         private AApAnalAttribRow PrevSelectedRow = null;
@@ -110,7 +110,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FocusedRowChanged(null, null);
         }
 
-        private void BtnClose_Click(object sender, EventArgs e)
+        private void BtnOK_Click(object sender, EventArgs e)
         {
             Close();
         }

@@ -9,6 +9,7 @@ RootNode:
 
     Controls:
         pnlDialogContent:
+            Padding: 4,0,4,0
             Controls: [lblInfo, clbAddress]
             Dock: Fill
         lblInfo:
@@ -19,3 +20,5 @@ RootNode:
             Dock: Fill
             Stretch: horizontally
             NoLabel: true 
+                        
+        btnOK: {Label=&OK (00)}            

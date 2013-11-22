@@ -4,8 +4,8 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.ICH
     FormType: dialog
     Template: window
-    WindowWidth: 450
-    WindowHeight: 350
+    WindowWidth: 430
+    WindowHeight: 365
     Events:
         #Load: {class=System.EventHandler, method=FPetraUtilsObject.TFrmPetra_Load}
     
@@ -13,19 +13,33 @@ RootNode:
         pnlDialogContent:
             Dock: Fill            
             Controls:
-                Row0: [cmbReportPeriod]
-                Row1: [chkEmailReport]
-                Row2: [btnStewardshipCalculation]
-                Row3: [Empty1]
-                Row4: [rgrCurrency]
-                Row5: [Empty2]
-                Row6: [cmbCostCentreCode]
-                Row7: [cmbICHNumber]
-                Row8: [btnGenerateHOSAFiles]
+                Row0: [grpStewardshipCalculation]
+                Row1: [Empty1]
+                Row2: [rgrCurrency]
+                Row3: [Empty2]
+                Row4: [grpGenerateHosaFiles]
                 
         Empty1:
         Empty2:
+        Empty3:
+        Empty4:
+        Empty5:
+        Empty6:
         
+        grpStewardshipCalculation: {Width:415, Height:105}
+            Controls: 
+                Row0: [Empty3]
+                Row1: [cmbReportPeriod]
+                Row2: [chkEmailReport]
+                Row3: [Empty4]
+                Row4: [btnStewardshipCalculation]
+        grpGenerateHosaFiles: {Width:415, Height:105}
+            Controls: 
+                Row0: [Empty5]
+                Row1: [cmbCostCentreCode]
+                Row2: [cmbICHNumber]
+                Row3: [Empty6]
+                Row4: [btnGenerateHOSAFiles]
         rgrCurrency:
             ParameterName: param_sortby
             Controls: [rbtBase, rbtInternational]
@@ -37,12 +51,12 @@ RootNode:
             ParameterValue: 1
             
         btnStewardshipCalculation:
-            Label: &Stewardship Calculation
+            Label: Run &Stewardship Calculation
             ActionClick: StewardshipCalculation
         btnGenerateHOSAFiles:
-            Label: &Generate HOSA Files
+            Label: Generate &HOSA Files
             ActionClick: GenerateHOSAFiles
-        cmbReportPeriod: {Width=100, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList}
+        cmbReportPeriod: {Label=Report Period, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList}
         chkEmailReport:
         cmbCostCentreCode: {Label=Cost Centre, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList}
         cmbICHNumber: {Label=ICH Number, List=UserDefinedList}

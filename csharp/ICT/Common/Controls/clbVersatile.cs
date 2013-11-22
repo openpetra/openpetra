@@ -178,6 +178,7 @@ namespace Ict.Common.Controls
 
             // DataBind the DataGrid
             DataSource = new DevAge.ComponentModel.BoundDataView(FDataView);
+            this.SelectRowWithoutFocus(1);
 
             // Hook event that allows popping up a question whether to check the CheckBox
             if (!DesignMode)

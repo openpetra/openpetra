@@ -9,6 +9,7 @@ RootNode:
     Actions:
     Controls:
         pnlDialogContent:
+            Padding: 4,0,4,0
             Dock: Fill
             Controls: 
                 Row0: [pnlTop]

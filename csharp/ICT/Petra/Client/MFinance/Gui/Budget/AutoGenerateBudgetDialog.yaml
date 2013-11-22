@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraForm.yaml
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
     FormTitle: Auto Generate Budget
     Namespace: Ict.Petra.Client.MFinance.Gui.Budget
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.BudgetTDS
@@ -14,7 +14,7 @@ RootNode:
         actUnselectAllBudgets: {ActionClick=UnselectAllBudgets}
         actSelectAllBudgets: {ActionClick=SelectAllBudgets}
     Controls:
-        pnlContent:
+        pnlDialogContent:
             Controls: [pnlSettings, pnlGrid]
             Dock: Fill
         pnlSettings:
@@ -25,7 +25,7 @@ RootNode:
                 Row2: [rgrRemainingPeriods]
         pnlGrid:
             Dock: Fill
-            Controls: [clbCostCentreAccountCodes, pnlButtons, pnlGridSelection]
+            Controls: [clbCostCentreAccountCodes, pnlGridSelection]
         pnlGridSelection:
             Dock: Right
             Controls: 
@@ -45,10 +45,6 @@ RootNode:
             Label: Select &All
             Action: actSelectAllBudgets
             Width: 83
-        pnlButtons:
-            Dock: Bottom
-            Controls: 
-                Row0: [btnGenerate, btnClose]
         rgrBudgetScope:
             OptionalValues: [&Selected Budgets, &All Budgets]
             ControlsOrientation: horizontal
@@ -61,17 +57,14 @@ RootNode:
             Align: left
             #NoLabel: true
             OnChange: NewRemainingPeriod
-        btnGenerate:
-            Action: actGenerate
-            Align: left
-        btnClose:
-            Action: actClose
-            Align: right
         txtForecast:
             Width: 26
             Label: Forecast is based on actuals of period 1 to
             ReadOnly: true
             Text: 6
+        btnOK:
+            Action: actGenerate
+            Label: &Generate
     Menu:
     Toolbar:
         

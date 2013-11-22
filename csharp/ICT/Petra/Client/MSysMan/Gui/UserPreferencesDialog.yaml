@@ -1,30 +1,17 @@
 RootNode:
-    BaseYaml: ../../CommonForms/PetraForm.yaml
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
     FormTitle: User Preferences
     Namespace: Ict.Petra.Client.MSysMan.Gui
     FormType: dialog
     Template: window
-    WindowWidth: 450
+    WindowWidth: 470
     WindowHeight: 560
 
     Controls:
-        pnlContent:
-            Controls: [tabPreferences, pnlDialogButtons]
+        pnlDialogContent:
+            Padding: 4,0,4,0
+            Controls: [tabPreferences]
             Dock: Fill
-        pnlDialogButtons:
-            Controls: [pnlRightButtons, pnlLeftButtons]
-            Dock: Bottom
-            ControlsOrientation: horizontal
-            Height: 40
-        pnlLeftButtons:
-            Controls: [btnHelp]
-            Dock: Fill
-            ControlsOrientation: horizontal
-        pnlRightButtons:
-            Controls: [btnOK, btnCancel]
-            Dock: Right
-            ControlsOrientation: horizontal
-            Width: 150
         tabPreferences:
             Dock: Fill
             DragTabPageEnabled: false     
@@ -54,10 +41,3 @@ RootNode:
         ucoFinance:
             Type: Ict.Petra.Client.MSysMan.Gui.TUC_FinancePreferences
             Dock: Fill
- 
-        btnHelp:
-            ActionClick: BtnHelp_Click
-        btnOK:
-            ActionClick: BtnOK_Click
-        btnCancel:
-            ActionClick: actClose

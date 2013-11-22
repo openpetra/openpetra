@@ -52,7 +52,7 @@ using Ict.Petra.Shared.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.Budget
 {
-    public partial class TFrmAutoGenerateBudget
+    public partial class TFrmAutoGenerateBudgetDialog
     {
         private Int32 FLedgerNumber;
         private bool FBudgetsExist = false;
@@ -142,7 +142,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 }
             }
 
-            btnGenerate.Enabled = FBudgetsExist;
+            btnOK.Enabled = FBudgetsExist;
             btnSelectAllBudgets.Enabled = FBudgetsExist;
             btnUnselectAllBudgets.Enabled = FBudgetsExist;
         }

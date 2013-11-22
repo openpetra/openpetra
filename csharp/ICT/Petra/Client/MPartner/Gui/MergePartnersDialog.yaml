@@ -9,8 +9,8 @@ RootNode:
 
     Controls:
         pnlDialogContent:
+            Padding: 4,0,4,0        
             Controls: [grpPartnerKeys, pnlReason]
-            Dock: Fill
         grpPartnerKeys:
             Controls:
                 Row0: [lblFrom]
@@ -54,3 +54,5 @@ RootNode:
         btnClear:
             ActionClick: Clear_Click
             Dock: Right
+            
+        btnOK: {Label=&Merge}

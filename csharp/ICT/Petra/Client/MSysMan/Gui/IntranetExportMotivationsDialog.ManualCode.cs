@@ -39,7 +39,7 @@ using Ict.Common.Verification;
 namespace Ict.Petra.Client.MSysMan.Gui
 {
     /// manual methods for the generated window
-    public partial class TFrmIntranetExportMotivations
+    public partial class TFrmIntranetExportMotivationsDialog
     {
         private GiftBatchTDS FMainDS;
         private Int32 FLedgerNumber;

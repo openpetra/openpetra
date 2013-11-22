@@ -339,7 +339,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="e"></param>
         protected void tbtSendEmailClick(System.Object sender, System.EventArgs e)
         {
-            TFrmSendEmailOptions options = new TFrmSendEmailOptions(this);
+            TFrmSendEmailOptionsDialog options = new TFrmSendEmailOptionsDialog(this);
 
             if (options.ShowDialog() == DialogResult.OK)
             {

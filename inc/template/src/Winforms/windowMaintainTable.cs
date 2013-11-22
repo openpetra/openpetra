@@ -235,6 +235,12 @@ namespace {#NAMESPACE}
                         MCommonResourcestrings.StrAddNewRecordTitle,
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
                     FFilterPanelControls.ClearAllDiscretionaryFilters();
+
+                    if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                    {
+                        ApplyFilter();
+                    }
+
                     SelectDetailRowByDataTableIndex(FMainDS.{#DETAILTABLE}.Rows.Count - 1);
                 }
             }
@@ -1179,10 +1185,10 @@ namespace {#NAMESPACE}
             }
 
             // Validation might have moved the row, so we need to locate it again
-            // If it has moved we will call the special grid-sorting method ReselectGridRowAfterSort to highlight the new row.
+            // If it has moved we will call the special grid-sorting method SelectRowAfterSort to highlight the new row.
             // This will give rise to a Selection_SelectionChanged event with a new ActivePosition but the grdDetails.Sorting property will be True
             // Furthermore with Filter/Find we need to be sure that we have not lost the row altogether by using a different row filter
-            //  and we also need to protect against recursively call ReselectGridRowAfterSort
+            //  and we also need to protect against recursively call SelectRowAfterSort
             int newRowAfterValidation = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow, prevRowBeforeValidation - 1) + 1;
             if (newRowAfterValidation == 0)
             {
@@ -1192,24 +1198,35 @@ namespace {#NAMESPACE}
                 {
                     // Remember the control with the focus
                     Control c = FPetraUtilsObject.GetFocusedControl(pnlDetails);
-                    MessageBox.Show(MCommonResourcestrings.StrEditedRecordIsFiltered, MCommonResourcestrings.StrEditRecordTitle, 
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     // Clear the filters without selecting a new row
                     FClearingDiscretionaryFilters = true;
                     FFilterPanelControls.ClearAllDiscretionaryFilters();
+
+                    if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                    {
+                        ApplyFilter();
+                    }
+
                     FClearingDiscretionaryFilters = false;
 
-                    // Now find the row again - this time we should succeed
+                    // Now find the row again - this time we should succeed.  If not some other piece of code will have to do the selection
                     newRowAfterValidation = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow, prevRowBeforeValidation - 1) + 1;
 
-                    // Select the row
-                    grdDetails.ReselectGridRowAfterSort(newRowAfterValidation);
-                    
-                    // Put the focus back again on the editable control
-                    if (c != null)
+                    if (newRowAfterValidation > 0)
                     {
-                        c.Focus();
+                        // Select the row
+                        grdDetails.SelectRowAfterSort(newRowAfterValidation);
+                    
+                        // Put the focus back again on the editable control
+                        if (c != null)
+                        {
+                            c.Focus();
+                        }
+                        
+                        // Tell the user what we have done
+                        MessageBox.Show(MCommonResourcestrings.StrEditedRecordIsFiltered, MCommonResourcestrings.StrEditRecordTitle, 
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
 {#ENDIF FILTERANDFIND}
@@ -1221,7 +1238,7 @@ namespace {#NAMESPACE}
             {
                 if ((newRowAfterValidation != prevRowBeforeValidation) && !grdDetails.Sorting)
                 {
-                    grdDetails.ReselectGridRowAfterSort(newRowAfterValidation);
+                    grdDetails.SelectRowAfterSort(newRowAfterValidation);
                     //Console.WriteLine("{0}:    Validation: validated row moved to {1}.", DateTime.Now.Millisecond, newRowAfterValidation);
                 }
             }

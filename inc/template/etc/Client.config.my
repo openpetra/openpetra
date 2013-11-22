@@ -61,5 +61,6 @@
     
       <add key="AutoLogin" value="demo" />
     <add key="AutoLoginPasswd" value="demo" />
+    <add key="TestAction" value="Namespace=Ict.Petra.Client.MFinance.Gui.Setup.TFrmGLCreateLedger" />
 </appSettings>
 </configuration>

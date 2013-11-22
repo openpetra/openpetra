@@ -942,38 +942,28 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         public static void InitialiseOpenFinancialPeriodsList(
             ref TCmbAutoPopulated AControl,
-            System.Int32 ALedgerNr)
+            System.Int32 ALedgerNumber)
         {
-            DataTable AccountingPeriods = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList, ALedgerNr);
-
-            AccountingPeriods.DefaultView.Sort = AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " ASC";
+            DataTable AccountingPeriods = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
+                ALedgerNumber);
 
             ALedgerRow Ledger =
-                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNr))[0];
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
 
-            string DisplayMember = "display";
-            string ValueMember = "value";
-            DataTable periods = new DataTable();
-            periods.Columns.Add(new DataColumn(ValueMember, typeof(Int32)));
-            periods.Columns.Add(new DataColumn(DisplayMember, typeof(string)));
+            int CurrentPeriod = Ledger.CurrentPeriod;
+            int EndPeriod = CurrentPeriod + Ledger.NumberFwdPostingPeriods;
 
-            for (int periodCounter = Ledger.CurrentPeriod; periodCounter <= Ledger.CurrentPeriod + Ledger.NumberFwdPostingPeriods; periodCounter++)
-            {
-                DataRow period = periods.NewRow();
-                period[ValueMember] = periodCounter;
-                period[DisplayMember] = ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
-                periods.Rows.Add(period);
-            }
-
-            periods.DefaultView.Sort = ValueMember + " ASC";
-
-            AControl.InitialiseUserControl(periods,
-                ValueMember,
-                DisplayMember,
-                null,
+            AControl.InitialiseUserControl(AccountingPeriods,
+                AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),
+                AAccountingPeriodTable.GetAccountingPeriodDescDBName(),
                 null);
 
-            AControl.AppearanceSetup(new int[] { -1 }, -1);
+            AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
+
+            AControl.Filter = String.Format("{0} >= {1} And {0} <= {2}",
+                AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),
+                Ledger.CurrentPeriod,
+                EndPeriod);
         }
 
         /// <summary>
