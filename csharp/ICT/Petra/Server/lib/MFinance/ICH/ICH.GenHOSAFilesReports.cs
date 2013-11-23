@@ -136,7 +136,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     CurrencySelect = MFinanceConstants.CURRENCY_INTERNATIONAL;
                 }
 
-                //TODO: get number of decimal places for Currency and set format below
                 StoreNumericFormat = "#" + CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator + "##0";
 
                 if (CultureInfo.CurrentCulture.NumberFormat.NumberDecimalDigits > 0)
@@ -145,15 +144,14 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     StoreNumericFormat += CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator + DecPls;
                 }
 
-                //NumDecPl = 2;
-
                 AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriodNumber, DBTransaction);
 
                 AAccountingPeriodRow AccountingPeriodRow = (AAccountingPeriodRow)AccountingPeriodTable.Rows[0];
 
                 /* Change expected number format if necessary - ensure ok to read in ICH */
                 //StoreNumericFormat = "";
-                MonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(AccountingPeriodRow.PeriodEndDate.Month);
+                //MonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(AccountingPeriodRow.PeriodEndDate.Month);
+                MonthName = AccountingPeriodRow.AccountingPeriodDesc;
 
                 //Create table definitions
                 TableForExport.Columns.Add("CostCentre", typeof(string));
@@ -244,17 +242,18 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                              +
                              "WHERE Trans.a_ledger_number_i = Journal.a_ledger_number_i AND Trans.a_batch_number_i = Journal.a_batch_number_i " +
                              "AND Trans.a_journal_number_i = Journal.a_journal_number_i " +
-                             String.Format(
-                        "AND Trans.a_ledger_number_i = {0} AND Trans.a_account_code_c = '{1}' AND Trans.a_cost_centre_code_c = '{2}' " +
-                        "AND Trans.a_transaction_status_l = true AND NOT (Trans.a_narrative_c LIKE '{3}%' AND Trans.a_system_generated_l = true) " +
-                        "AND ((Trans.a_ich_number_i + {4}) = Trans.a_ich_number_i OR Trans.a_ich_number_i = {4}) " +
-                        "AND Journal.a_journal_period_i = {5};",
-                        ALedgerNumber,
-                        gLMAcctCode,
-                        gLMCostCCode,
-                        MFinanceConstants.NARRATIVE_YEAR_END_REALLOCATION,
-                        AIchNumber,
-                        APeriodNumber);
+                             String.Format("AND Trans.a_ledger_number_i = {0} AND Trans.a_account_code_c = '{1}' AND Trans.a_cost_centre_code_c = '{2}' " +
+					                        "AND Trans.a_transaction_status_l = true AND NOT (Trans.a_narrative_c LIKE '{3}%' AND Trans.a_system_generated_l = true) " +
+					                        "AND ((Trans.a_ich_number_i + {4}) = Trans.a_ich_number_i OR Trans.a_ich_number_i = {4}) " +
+					                        "AND Journal.a_journal_period_i = {5};",
+					                        ALedgerNumber,
+					                        gLMAcctCode,
+					                        gLMCostCCode,
+					                        MFinanceConstants.NARRATIVE_YEAR_END_REALLOCATION,
+					                        AIchNumber,
+					                        APeriodNumber
+					                       );
+                    
                     DataTable TmpTransTable = DBAccess.GDBAccessObj.SelectDT(strSql, "Transactions", DBTransaction);
 
                     foreach (DataRow untypedTransactRow in TmpTransTable.Rows)
@@ -308,7 +307,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                         Choice = 0;
 
-                        if ((gLMAcctType != MFinanceConstants.ACCOUNT_TYPE_INCOME.ToUpper())
+                        if ((gLMAcctType.ToUpper() != MFinanceConstants.ACCOUNT_TYPE_INCOME.ToUpper())
                             || !(SystemGenerated && ((Narrative.Substring(0, 27) == MFinanceConstants.NARRATIVE_GIFTS_RECEIVED_GIFT_BATCH)
                                                      || (Narrative.Substring(0, 15) == MFinanceConstants.NARRATIVE_GB_GIFT_BATCH)))
                             )
@@ -330,6 +329,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 }
 
                 TableForExport.AcceptChanges();
+                
+                //TODO: remove
+                TLogging.Log("HOSA-TableForExport: " + TableForExport.Rows.Count.ToString());
 
                 //DataTables to XML to CSV
                 XmlDocument doc = TDataBase.DataTableToXml(TableForExport);
@@ -450,6 +452,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             decimal IntlGiftAmount = 0;
 
             string ExportDescription = string.Empty;
+            Int32 tmpLastRecipKey = 0;
             string tmpLastGroup = string.Empty;
             string tmpLastDetail = string.Empty;
 
@@ -494,7 +497,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 /* Print totals etc. found for last recipient */
                 /* Only do after first loop due to last recipient key check */
 
-                Int32 tmpLastRecipKey = Convert.ToInt32(untypedTransRow[8]);         //a_gift_detail.p_recipient_key_n
+                tmpLastRecipKey = Convert.ToInt32(untypedTransRow[8]);         //a_gift_detail.p_recipient_key_n
                 tmpLastGroup = untypedTransRow[6].ToString();         //a_motivation_detail.a_motivation_group_code_c
                 tmpLastDetail = untypedTransRow[7].ToString();         //a_motivation_detail.a_motivation_detail_code_c
 

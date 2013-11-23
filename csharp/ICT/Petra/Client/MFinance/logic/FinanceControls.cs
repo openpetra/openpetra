@@ -360,6 +360,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             emptyRow[ACostCentreTable.ColumnLedgerNumberId] = ALedgerNumber;
             emptyRow[ACostCentreTable.ColumnCostCentreCodeId] = string.Empty;
             emptyRow[ACostCentreTable.ColumnCostCentreNameId] = Catalog.GetString("Select a valid cost centre");
+            
             Table.Rows.Add(emptyRow);
 
             //Highlight inactive Cost Centres

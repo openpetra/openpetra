@@ -69,7 +69,7 @@ RootNode:
             Type: Ict.Petra.Client.MFinance.Gui.Setup.TUC_SetupAnalysisValues
             Dock: Fill
           
-        txtDetailAnalysisTypeCode: {Label=&Analysis Type Code}
+        txtDetailAnalysisTypeCode: {Label=&Analysis Type Code, CharacterCasing=Upper}
         txtDetailAnalysisTypeDescription: {Label=Description, Width=400, Validation=true}
         chkDetailSystemAnalysisType: {Label=System Analysis Type, ReadOnly=true}
     Menu:

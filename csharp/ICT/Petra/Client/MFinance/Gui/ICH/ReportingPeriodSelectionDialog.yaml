@@ -4,8 +4,8 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.ICH
     FormType: dialog
     Template: window
-    WindowWidth: 430
-    WindowHeight: 365
+    WindowWidth: 425
+    WindowHeight: 370
     Events:
         #Load: {class=System.EventHandler, method=FPetraUtilsObject.TFrmPetra_Load}
     
@@ -19,27 +19,22 @@ RootNode:
                 Row3: [Empty2]
                 Row4: [grpGenerateHosaFiles]
                 
-        Empty1:
-        Empty2:
-        Empty3:
-        Empty4:
-        Empty5:
-        Empty6:
-        
-        grpStewardshipCalculation: {Width:415, Height:105}
+        grpStewardshipCalculation: {Width:410, Height:105}
             Controls: 
                 Row0: [Empty3]
                 Row1: [cmbReportPeriod]
                 Row2: [chkEmailReport]
                 Row3: [Empty4]
                 Row4: [btnStewardshipCalculation]
-        grpGenerateHosaFiles: {Width:415, Height:105}
+                
+        grpGenerateHosaFiles: {Width:410, Height:105}
             Controls: 
                 Row0: [Empty5]
                 Row1: [cmbCostCentreCode]
                 Row2: [cmbICHNumber]
                 Row3: [Empty6]
                 Row4: [btnGenerateHOSAFiles]
+                
         rgrCurrency:
             ParameterName: param_sortby
             Controls: [rbtBase, rbtInternational]
@@ -49,7 +44,7 @@ RootNode:
         rbtInternational: 
             Label: International Currency
             ParameterValue: 1
-            
+
         btnStewardshipCalculation:
             Label: Run &Stewardship Calculation
             ActionClick: StewardshipCalculation
@@ -60,3 +55,9 @@ RootNode:
         chkEmailReport:
         cmbCostCentreCode: {Label=Cost Centre, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList}
         cmbICHNumber: {Label=ICH Number, List=UserDefinedList}
+        Empty1:
+        Empty2:
+        Empty3:
+        Empty4:
+        Empty5:
+        Empty6:

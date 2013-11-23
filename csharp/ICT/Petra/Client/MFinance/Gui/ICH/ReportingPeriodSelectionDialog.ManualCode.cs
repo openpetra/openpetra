@@ -81,6 +81,10 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         {
             int Currency = (this.rbtBase.Checked ? 0 : 1); //0 = base 1 = intl
             string FileName = TClientSettings.PathTemp + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
+            
+            //Test TODO: Remove
+            MessageBox.Show(FileName);
+            
             TVerificationResultCollection VerificationResults;
 
             string msg = string.Empty;
@@ -234,7 +238,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
                 cmbReportPeriod.SelectedIndex = 0;
 
-                TFinanceControls.InitialiseCostCentreList(ref cmbCostCentreCode, FLedgerNumber, true, false, false, true);
+                TFinanceControls.InitialiseCostCentreList(ref cmbCostCentreCode, FLedgerNumber, true, false, false, false, false);
 
                 cmbCostCentreCode.SelectedIndex = 1;
 
