@@ -79,6 +79,25 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
         }
 
+        /// <summary>
+        /// called if user ticks/unticks check box for "All Users"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AllUsersSelectionChanged(object sender, EventArgs e)
+        {
+            if (chkAllUsers.Checked)
+            {
+                cmbUser.Clear();
+                cmbUser.AttachedLabel.Text = "";
+                cmbUser.Enabled = false;
+            }
+            else
+            {
+                cmbUser.Enabled = true;
+            }
+        }
+        
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
             // delete extracts on the server
