@@ -52,11 +52,13 @@ using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MCommon.Gui;
 using Ict.Petra.Client.MConference.Gui;
+using Ict.Petra.Client.MFinance.Gui;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Client.MPartner.Gui.Extracts;
 using Ict.Petra.Client.MPartner.Gui.Setup;
 using Ict.Petra.Client.MPersonnel.Gui;
-using Ict.Petra.Client.MFinance.Gui;
+using Ict.Petra.Client.MReporting.Gui;
+using Ict.Petra.Client.MReporting.Gui.MPartner;
 using Ict.Petra.Client.MSysMan.Gui;
 using SplashScreen;
 using PetraClientShutdown;
@@ -665,6 +667,7 @@ namespace Ict.Petra.Client.App.PetraClient
             TCommonScreensForwarding.OpenExtractFindScreen = @TExtractFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenRangeFindScreen = @TPostcodeRangeSetupManager.OpenModalForm;
             TCommonScreensForwarding.OpenGetMergeDataDialog = @TGetMergeDataManager.OpenModalForm;
+            TCommonScreensForwarding.OpenPrintPartnerDialog = @TPrintPartnerModal.OpenModalForm;
 
             // Set up Delegate for the opening of Forms from the Main Menu
             Ict.Common.Controls.TLstTasks.OpenNewOrExistingForm = @Ict.Petra.Client.CommonForms.TFormsList.OpenNewOrExistingForm;

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Partner\\\\printpartner.xml" />
+  <Parameter id="currentReport" value="eString:Print Partner" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:0" />
+  <Parameter id="param_selection" value="eString:one partner" />
+  <Parameter id="param_extract" value="eString:" />
+  <Parameter id="param_partnerkey" value="eInteger:0" />
+  <Parameter id="param_chkPartnerClassData" value="eString:true" />
+  <Parameter id="param_chkInterests" value="eString:true" />
+  <Parameter id="param_chkSubscriptions" value="eString:true" />
+  <Parameter id="param_chkContacts" value="eString:true" />
+  <Parameter id="param_chkRelationships" value="eString:true" />
+  <Parameter id="param_chkReminders" value="eString:true" />
+  <Parameter id="param_chkLocations" value="eString:true" />
+  <Parameter id="param_chkFinanceDetails" value="eString:true" />
+  <Parameter id="param_chkHideEmpty" value="eString:true" />
+</Parameters>

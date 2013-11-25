@@ -18,51 +18,57 @@ RootNode:
         REPORTSETTINGSDIRECTORY: Partner
     Security:
         ModulePermissionRequired: [PARTNER]
+    Actions:
+        actSelectAll: {ActionClick=SelectAll}
+        actDeselectAll: {ActionClick=DeselectAll}
     Controls:
         tpgGeneralSettings:
             Label: General Settings
-            Controls: [ucoPartnerSelection]
+            Controls: [ucoPartnerSelection,grpReportDetails]
             Order: AlwaysFirst
-        tpgReportDetails:
-            Lable: Report Details
-            Controls: [grpReportDetails]
         ucoPartnerSelection:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
-            Dock: Fill
+            Height: 148
         grpReportDetails:
-            Controls: [chkFamilyMembers, chkAddress, chkPassport, chkPersonalDocuments, chkDriverLicense, chkOtherEmergencyData, chkSpecialNeeds, chkAbilities, chkLanguages, chkEmergencyContacts, chkProofQuestion]
+            Margin: 8,10,0,0
+            Controls:
+                Row0: [chkPartnerClassData, chkFinanceDetails]
+                Row1: [chkSubscriptions, chkInterests]
+                Row2: [chkRelationships, chkContacts]
+                Row3: [chkLocations, chkReminders]
+                Row4: [btnSelectAll, btnDeselectAll]
+                Row5: [chkHideEmpty]
             
-        chkFamilyMembers:
-            Label: Show Family Members
+        chkPartnerClassData:
+            Label: Partner Class Data
             CheckBoxAttachedLabel: right
-        chkAddress:
-            Label: Show Address
+        chkSubscriptions:
+            Label: Subscriptions
             CheckBoxAttachedLabel: right
-        chkPassport:
-            Label: Show Passport
+        chkRelationships:
+            Label: Relationships
             CheckBoxAttachedLabel: right
-        chkPersonalDocuments:
-            Label: Show Personal Documents
+        chkLocations:
+            Label: Locations
             CheckBoxAttachedLabel: right
-        chkDriverLicense:
-            Label: Show Driver License
+        chkFinanceDetails:
+            Label: Finance Details
             CheckBoxAttachedLabel: right
-        chkOtherEmergencyData:
-            Label: Show Other Emergency Data
+        chkInterests:
+            Label: Interests
             CheckBoxAttachedLabel: right
-        chkSpecialNeeds:
-            Label: Show Special Needs
+        chkContacts:
+            Label: Contacts
             CheckBoxAttachedLabel: right
-        chkAbilities:
-            Label: Show Abilities
+        chkReminders:
+            Label: Reminders
             CheckBoxAttachedLabel: right
-        chkLanguages:
-            Label: Show Languages
+        chkHideEmpty:
+            Label: Hide Empty Sections
             CheckBoxAttachedLabel: right
-        chkEmergencyContacts:
-            Label: Show Emergency Contacts
-            CheckBoxAttachedLabel: right
-        chkProofQuestion:
-            Label: Show Proof of Life Question
-            CheckBoxAttachedLabel: right
-            
+
+        btnSelectAll:
+            Action: actSelectAll
+        btnDeselectAll:
+            Action: actDeselectAll
+            Padding: -75,0,0,0
