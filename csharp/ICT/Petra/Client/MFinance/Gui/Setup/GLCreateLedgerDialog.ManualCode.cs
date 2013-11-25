@@ -297,6 +297,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             TPartnerClass PartnerClass;
             Int64 PartnerKey = Convert.ToInt64(nudLedgerNumber.Value) * 1000000L;
 
+            // make sure text is reset if it field is disabled (i.e. text was earlier initialized from database)
+            if (!txtLedgerName.Enabled)
+            {
+                txtLedgerName.Text = "";
+            }
+            
             if (TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(PartnerKey,
                     out UnitName, out PartnerClass, true))
             {
