@@ -21,7 +21,7 @@ RootNode:
             Dock: Top
             Controls:
                 Row0: [rgrBudgetScope]
-                Row1: [txtForecast]
+                Row1: [grpForecast]
                 Row2: [rgrRemainingPeriods]
         pnlGrid:
             Dock: Fill
@@ -46,15 +46,18 @@ RootNode:
             Action: actSelectAllBudgets
             Width: 83
         rgrBudgetScope:
-            OptionalValues: [&Selected Budgets, &All Budgets]
+            Stretch: horizontally            
             ControlsOrientation: horizontal
-            Align: left
+            OptionalValues: [&Selected Budgets, &All Budgets]
             #NoLabel: true
             OnChange: NewBudgetScope
+        grpForecast:
+            Stretch: horizontally
+            Controls: [txtForecast]
         rgrRemainingPeriods:
+            Stretch: horizontally
             OptionalValues: [&This Year's Budgets, &Last Year's Actuals]
             ControlsOrientation: horizontal
-            Align: left
             #NoLabel: true
             OnChange: NewRemainingPeriod
         txtForecast:

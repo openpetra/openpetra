@@ -12,7 +12,7 @@ RootNode:
     Actions:
     Controls:
         pnlDialogContent:
-            Padding: 4,4,4,0        
+            Padding: 4,4,9,0        
             Controls: [grdDetails,pnlDetails]
         grdDetails:
             Dock: Fill
@@ -20,7 +20,7 @@ RootNode:
         pnlDetails: { ControlsOrientation = horizontal}
             Dock: Bottom
             Controls: [cmbDetailAttrib]
-        cmbDetailAttrib: { OnChange=UnloadDetails, AcceptNewValues=false }
+        cmbDetailAttrib: {Label=&Attribute, OnChange=UnloadDetails, AcceptNewValues=false }
 
         btnCancel: 
             Visible: false        

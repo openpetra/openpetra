@@ -4,8 +4,8 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
     FormType: dialog
     Template: window
-    WindowWidth: 600
-    WindowHeight: 200
+    WindowWidth: 480
+    WindowHeight: 165
     
     Events:
         Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
@@ -25,7 +25,7 @@ RootNode:
         chkUpdateReceiptLetterFrequency: {CheckBoxAttachedLabel=right, ActionClick=OnUpdateReceiptLetterFrequencyChecked}
             Label: Update Receipt Letter Frequency:
             
-        cmbReceiptLetterFrequency: {NoLabel=true, List=FrequencyList}
+        cmbReceiptLetterFrequency: {Width=230, NoLabel=true, List=FrequencyList}
 
         chkUpdateReceiptEachGift: {CheckBoxAttachedLabel=right, ActionClick=OnReceiptEachGiftChecked}
             Label: Update Receipt for each Gift:

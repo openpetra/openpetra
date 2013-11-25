@@ -23,21 +23,23 @@ RootNode:
 
         pnlSpacer:
             Dock: Fill
-            Padding: 5,5,5,5
+            Padding: 5,5,2,5
             Controls: [pnlDialogContent]
 
         pnlDialogContent:
             Dock: Fill
 
-        pnlDialogButtons: 
-            Padding: 3,0,3,4
-            Height: 35
+        pnlDialogButtons:             
+            Padding: 4,0,2,4
+            Height: 36
             Dock: Bottom
             Controls: 
                 Row0: [pnlLeftButtons, pnlRightButtons]
 
         pnlLeftButtons:
             Dock: Fill
+            AutoButtonMaxWidths: true
+            AutoButtonMaxWidthsAutoSizesContainerWidth: true
             Controls:
                 Row0: [btnHelp]
         
@@ -45,11 +47,13 @@ RootNode:
             
         pnlRightButtons:
             TabIndex: 998
-            Margin: 0,3,0,0            
             Dock: Right
+            Width: 140
+            AutoButtonMaxWidths: true
+            AutoButtonMaxWidthsAutoSizesContainerWidth: true
             Controls: 
                 Row0: [btnOK, btnCancel, btnApply]
-         
+            
         btnOK: {Label=&OK, Height=24, TabIndex=0, AcceptButton=true, ActionClick=BtnOK_Click}        
         btnApply: {Label=&Apply, Height=24, TabIndex=2, Visible=false}
         btnCancel: {Label=&Cancel, Height=24, TabIndex=1, Action=actClose}
