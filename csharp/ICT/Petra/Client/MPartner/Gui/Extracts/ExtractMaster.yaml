@@ -51,6 +51,7 @@ RootNode:
             Controls: [pnlFilter, pnlExtractMasterList]
             Dock: Fill
         pnlFilter: {ControlsOrientation=horizontal}
+            Dock: Top
             NoLabel: true
             Controls: [grpNameFilter, rgrUserFilter]
         grpNameFilter:
@@ -59,6 +60,7 @@ RootNode:
                 Row0: [txtExtractNameFilter]
                 Row1: [btnActivateFilter, btnClearFilter]
         pnlExtractMasterList:
+            Dock: Fill
             Controls: [ucoExtractMasterList]
                
         txtExtractNameFilter:
@@ -81,6 +83,7 @@ RootNode:
         cmbUserCreatedBy: {NoLabel=true, List=UserList, OnChange=actUserFilterSelectionChanged}
         cmbUserModifiedBy: {NoLabel=true, List=UserList, OnChange=actUserFilterSelectionChanged}
         ucoExtractMasterList:
+            Dock: Fill
             Type: Ict.Petra.Client.MPartner.Gui.Extracts.TUC_ExtractMasterList
 
     Menu:
