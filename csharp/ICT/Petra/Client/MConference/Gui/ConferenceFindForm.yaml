@@ -21,7 +21,7 @@ RootNode:
     Controls: 
         pnlContent:
             Dock: Fill
-            Controls: [grpFindConference, pnlButtons]
+            Controls: [grpFindConference, pnlButtonsPanel]
         grpFindConference:
             Dock: Fill
             Controls:[pnlFilter, grdConferences]
@@ -30,7 +30,7 @@ RootNode:
             Controls:
                 Row0: [txtConference, txtPrefix]
                 Row1: [btnSearch]
-        pnlButtons:
+        pnlButtonsPanel:
             Dock: Bottom
             ControlsOrientation: horizontal
             Controls: [pnlLeftButtons, pnlRightButtons]

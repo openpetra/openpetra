@@ -42,7 +42,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                 chkFinanceDetails.Checked = false;
                 chkFinanceDetails.Enabled = false;
             }
-            
+
             ucoPartnerSelection.ShowAllStaffOption(false);
             ucoPartnerSelection.ShowCurrentStaffOption(false);
         }
@@ -56,7 +56,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             chkRelationships.Checked = true;
             chkReminders.Checked = true;
             chkLocations.Checked = true;
-            
+
             if (UserInfo.GUserInfo.IsInModule("FINANCE-1"))
             {
                 chkFinanceDetails.Checked = true;
@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             chkLocations.Checked = false;
             chkFinanceDetails.Checked = false;
         }
-        
+
         /// <summary>
         /// Used for passing a Partner's partner key to the screen before the screen is actually shown.
         /// </summary>
@@ -82,12 +82,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         public void SetParameters(Int64 APartnerKey)
         {
             TParameterList Parameters = new TParameterList();
+
             Parameters.Add("param_selection", "one partner");
             Parameters.Add("param_partnerkey", APartnerKey);
             this.ucoPartnerSelection.SetControls(Parameters);
         }
     }
-    
+
     /// <summary>
     /// Manages the opening of a new/showing of an existing Instance of the Partner Find Screen.
     /// </summary>

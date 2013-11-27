@@ -1817,7 +1817,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FilePrintPartner(System.Object sender, System.EventArgs e)
         {
-            
             /* Check for new Partner that wasn't saved yet */
             if (IsNewPartner(FMainDS))
             {
