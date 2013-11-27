@@ -4,45 +4,73 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.ICH
     FormType: dialog
     Template: window
-    WindowWidth: 425
-    WindowHeight: 370
+    WindowWidth: 650
+    WindowHeight: 475
     Events:
         #Load: {class=System.EventHandler, method=FPetraUtilsObject.TFrmPetra_Load}
     
     Controls:
         pnlDialogContent:
+            Controls: [pnlDialogContentTop, pnlDialogContentMiddle]
+            Dock: Fill
+                
+        pnlDialogContentTop:
+            Dock: Top            
+            Controls:
+                Row0: [grpStewardshipCalculation, rgrCurrency]
+                Row1: [lblEmpty1]
+                Row2: [cmbICHNumber]
+                Row3: [lblFullReport]
+                
+        pnlDialogContentMiddle:
             Dock: Fill            
             Controls:
-                Row0: [grpStewardshipCalculation]
-                Row1: [Empty1]
-                Row2: [rgrCurrency]
-                Row3: [Empty2]
-                Row4: [grpGenerateHosaFiles]
-                
-        grpStewardshipCalculation: {Width:410, Height:105}
+                Row0: [grpOther, grpHOSA, grpStewardship]
+                Row1: [Empty6]
+                Row2: [btnGenerateHOSAFiles]
+
+        grpStewardshipCalculation: {Width:410, Height:85}
             Controls: 
-                Row0: [Empty3]
+                Row0: [Empty2]
                 Row1: [cmbReportPeriod]
-                Row2: [chkEmailReport]
-                Row3: [Empty4]
-                Row4: [btnStewardshipCalculation]
+                Row2: [Empty3]
+                Row3: [btnStewardshipCalculation]
                 
-        grpGenerateHosaFiles: {Width:410, Height:105}
+        grpOther: {NoLabel:true, Width:165, Height:180}
             Controls: 
-                Row0: [Empty5]
-                Row1: [cmbCostCentreCode]
-                Row2: [cmbICHNumber]
-                Row3: [Empty6]
-                Row4: [btnGenerateHOSAFiles]
+                Row0: [lblFees]
+                Row1: [chkFeesReport]
+                Row2: [Empty4]
+                Row3: [lblGift]
+                Row4: [chkRecipientStatement]
+                Row5: [Empty5]
+                Row6: [lblBranchProcessing]
+                Row7: [chkEmailToHeadOffice]
+
+        grpHOSA: {Label:HOSA, Width:150, Height:180}
+            Controls: 
+                Row0: [chkHOSAReport]
+                Row1: [chkEmailHOSAReport]
+                Row2: [chkHOSAFile]
+                Row3: [txtHOSAPrefix]
+                Row4: [chkEmailHOSAFile]
+
+        grpStewardship: {Label: Stewardship, Width:290, Height:180}
+            Controls: 
+                Row0: [chkEmailStewardshipFileAndReport]
+                Row1: [chkStewardshipReport]
+                Row2: [chkStewardshipFile]
+                Row3: [txtBrowseStewardshipFile, btnBrowse]
                 
         rgrCurrency:
+            Height: 85
             ParameterName: param_sortby
             Controls: [rbtBase, rbtInternational]
         rbtBase: 
-            Label: Base Currency
+            Label: Base
             ParameterValue: 0
         rbtInternational: 
-            Label: International Currency
+            Label: International
             ParameterValue: 1
 
         btnStewardshipCalculation:
@@ -52,12 +80,29 @@ RootNode:
             Label: Generate &HOSA Files
             ActionClick: GenerateHOSAFiles
         cmbReportPeriod: {Label=Report Period, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList}
-        chkEmailReport:
-        cmbCostCentreCode: {Label=Cost Centre, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList}
         cmbICHNumber: {Label=ICH Number, List=UserDefinedList}
-        Empty1:
-        Empty2:
-        Empty3:
-        Empty4:
-        Empty5:
-        Empty6:
+        lblFullReport: {Label=(0=Full report)}
+        lblFees: {Label=Fees}
+        chkFeesReport: {Label=Report, CheckBoxAttachedLabel=right}
+        lblGift: {Label=Gift}
+        chkRecipientStatement: {Label=Recipient Statement, CheckBoxAttachedLabel=right}
+        lblBranchProcessing: {Label=Branch Processing}
+        chkEmailToHeadOffice: {Label=Email to Head Office, CheckBoxAttachedLabel=right}
+        chkHOSAReport: {Label=Report, CheckBoxAttachedLabel=right}
+        chkEmailHOSAReport: {Label=Email Report, CheckBoxAttachedLabel=right}
+        chkHOSAFile: {Label=File, CheckBoxAttachedLabel=right}
+        txtHOSAPrefix: {Label=Prefix, Width=70}
+        chkEmailHOSAFile: {Label=Email File, CheckBoxAttachedLabel=right}
+        chkEmailStewardshipFileAndReport: {Label=Email File and Report, CheckBoxAttachedLabel=right}
+        chkStewardshipReport: {Label=Report, CheckBoxAttachedLabel=right}
+        chkStewardshipFile: {Label=Email File, CheckBoxAttachedLabel=right}
+        txtBrowseStewardshipFile: {NoLabel=true, Width=200}
+        btnBrowse: {Label=&Browse, Height=25}
+        
+        lblEmpty1: {Label=None, Visible=false}
+        Empty2: #{Label=None, Visible=false}
+        Empty3: #{Label=None, Visible=false}
+        Empty4: #{Label=None, Visible=false}
+        Empty5: #{Label=None, Visible=false}
+        Empty6: #{Label=None, Visible=false}
+        Empty7: #{Label=None, Visible=false}
