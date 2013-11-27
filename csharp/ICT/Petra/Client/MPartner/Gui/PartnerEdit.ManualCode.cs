@@ -39,6 +39,7 @@ using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MPartner.Logic;
@@ -136,6 +137,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             "Either save the changes that you have made, or close this Partner Edit screen without saving the data " +
             "and then delete the Partner from the Partner Module screen.");
         private static readonly string StrCannotDeletePartnerTitle = Catalog.GetString("Cannot delete Partner that has unsaved changes");
+        private static readonly string StrCannotPrintPartner = Catalog.GetString(
+            "Cannot print a Partner with unsaved changes.\r\n\r\n" +
+            "Either save the changes that you have made, or close this Partner Edit screen without saving the data " +
+            "and reopen.");
+        private static readonly string StrCannotPrintPartnerTitle = Catalog.GetString("Cannot print a Partner with unsaved changes");
 // TODO        private static readonly string StrDownloadVideoTutorialTitle = Catalog.GetString("Download Video Tutorial");
 // TODO        private static readonly string StrDownloadVideoTutoriaManuallTitle = Catalog.GetString("Manual Download of Video Tutorial");
 // TODO        private static readonly string StrVideoTutorialTitle = Catalog.GetString("Video Tutorial for Partner Edit Screen");
@@ -1811,7 +1817,31 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FilePrintPartner(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            /* Check for new Partner that wasn't saved yet */
+            if (IsNewPartner(FMainDS))
+            {
+                /* Tell user that he can't delete a new Partner that wasn't saved yet */
+                MessageBox.Show(MPartnerResourcestrings.StrErrorNeedToSavePartner1 + MPartnerResourcestrings.StrErrorPrintPartner2,
+                    MPartnerResourcestrings.StrErrorNeedToSavePartnerTitle,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+            else
+            {
+                /* Check for unsaved changes */
+                if (CanClose())
+                {
+                    Form MainWindow = FPetraUtilsObject.GetCallerForm();
+                    TCommonScreensForwarding.OpenPrintPartnerDialog.Invoke(FPartnerKey, MainWindow);
+                }
+                else
+                {
+                    /* Tell user that he can't print a Partner that has changes that weren't saved yet */
+                    MessageBox.Show(StrCannotPrintPartner, StrCannotPrintPartnerTitle,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+                }
+            }
         }
 
         private void FilePrintSection(System.Object sender, System.EventArgs e)

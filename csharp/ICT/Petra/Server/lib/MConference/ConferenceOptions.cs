@@ -82,7 +82,11 @@ namespace Ict.Petra.Server.MConference.WebConnectors
                 if (UnitTable.Rows.Count > 0)
                 {
                     String ConferenceCode = ((PUnitRow)UnitTable.Rows[0]).OutreachCode;
-                    ConferenceCodePrefix = ConferenceCode.Substring(0, 5) + "%";
+
+                    if (ConferenceCode.Length >= 5)
+                    {
+                        ConferenceCodePrefix = ConferenceCode.Substring(0, 5) + "%";
+                    }
 
                     StringCollection operators = new StringCollection();
                     operators.Add("LIKE");
@@ -988,11 +992,14 @@ namespace Ict.Petra.Server.MConference.WebConnectors
 
                 if (UnitTable.Rows.Count > 0)
                 {
-                    ConferencePrefix = (string)UnitTable.Rows[0][PUnitTable.GetOutreachCodeDBName()];
-
-                    if (ConferencePrefix.Length > 5)
+                    if (UnitTable.Rows[0][PUnitTable.GetOutreachCodeDBName()] != System.DBNull.Value)
                     {
-                        ConferencePrefix = ConferencePrefix.Substring(0, 5);
+                        ConferencePrefix = (string)UnitTable.Rows[0][PUnitTable.GetOutreachCodeDBName()];
+
+                        if (ConferencePrefix.Length > 5)
+                        {
+                            ConferencePrefix = ConferencePrefix.Substring(0, 5);
+                        }
                     }
                 }
             }

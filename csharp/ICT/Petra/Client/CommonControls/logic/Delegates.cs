@@ -68,4 +68,8 @@ namespace Ict.Petra.Client.CommonControls.Logic
         long AToPartnerKey,
         string ADataType,
         Form AParentForm);
+
+    /// <summary>Delegate for a call to open a Modal Print Partner report screen</summary>
+    public delegate bool TDelegateOpenPrintPartnerDialog(long APartnerKey,
+        Form AParentForm);
 }

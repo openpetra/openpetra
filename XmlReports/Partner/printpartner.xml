@@ -1,0 +1,1627 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reports SYSTEM "../reports.dtd" >
+<reports>
+
+  <report id="Print Partner">
+	<description>
+		Prints data associated with a partner.
+	</description>
+	<reportparameters>
+		<reportparameter name="param_source"></reportparameter>
+		<reportparameter name="param_extract_name"></reportparameter>
+		<reportparameter name="param_hide_empty_lines"></reportparameter>
+		<reportparameter name="param_print_two_lines"></reportparameter>
+	</reportparameters>
+	
+	<reportheader></reportheader>
+	<pageheader>
+		<field whichfield="title1"><value text ="Print Partner" /></field>
+		<field whichfield="title2"><value function = "getSiteName()"/></field>
+		<field whichfield="descr1">
+			<fielddetail>
+				<value text = "Selection: "/>
+			</fielddetail>
+			<fielddetail condition="eq({param_selection},one partner)">
+				<value text = "Partner "/><value variable = "param_partnerkey"/>
+			</fielddetail>
+			<fielddetail condition="eq({param_selection},an extract)">
+				<value text = "Extract "/><value variable = "param_extract"/>
+			</fielddetail>
+		</field>
+	</pageheader>
+
+    <calculations>
+	
+	<calculation id="Get Partner Details" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT
+					PUB_p_partner.p_partner_key_n AS PartnerKey,
+					PUB_p_partner.p_partner_class_c AS PartnerClass,
+					PUB_p_partner.p_partner_short_name_c AS PartnerShortName,
+					PUB_p_partner.p_status_code_c AS Status,
+					PUB_p_partner.p_acquisition_code_c AS Acquisition,
+					PUB_p_partner.p_language_code_c AS Language,
+					PUB_p_partner.p_restricted_i AS Restricted,
+					PUB_p_partner.p_comment_c AS Comment,
+					PUB_p_partner.p_previous_name_c AS PreviousName,
+					PUB_p_partner.p_user_id_c AS USERID,
+					PUB_p_partner.p_group_id_c AS GROUPID
+				FROM
+					PUB_p_partner
+			</value></queryDetail>
+			<queryDetail condition="eq({param_selection},one partner)">
+            <value>
+        WHERE 
+          PUB_p_partner.p_partner_key_n = {{param_partnerkey}}
+      </value>
+          </queryDetail>
+          <queryDetail condition="eq({param_selection},an extract)">
+            <value>
+                , PUB_m_extract,
+                PUB_m_extract_master
+              WHERE 
+                PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+                AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+                AND PUB_m_extract_master.m_extract_name_c = {param_extract}
+            </value>
+          </queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Get Church Details" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT
+					PUB_p_church.p_church_name_c AS ChurchName,
+					PUB_p_church.p_denomination_code_c AS Denomination,
+					PUB_p_church.p_approximate_size_i AS Size,
+					PUB_p_church.p_accomodation_l AS Accommodation,
+					PUB_p_church.p_accomodation_type_c AS AccommodationType,
+					PUB_p_church.p_accomodation_size_i AS AccommodationSize,
+					PUB_p_church.p_prayer_group_l AS PrayerGroup,
+					PUB_p_church.p_map_on_file_l AS Map
+				FROM
+					PUB_p_church
+				WHERE
+					PUB_p_church.p_partner_key_n = {PartnerKey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Get Family Details" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT
+					PUB_p_family.p_title_c AS Title,
+					PUB_p_family.p_first_name_c AS FirstName,
+					PUB_p_family.p_family_name_c AS FamilyName,
+					PUB_p_family.p_field_key_n AS FieldKey
+				FROM
+					PUB_p_family
+				WHERE
+					PUB_p_family.p_partner_key_n = {PartnerKey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Get Organisation Details" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT
+					PUB_p_organisation.p_organisation_name_c AS OrganisationName,
+					PUB_p_organisation.p_business_code_c AS BusinessCode,
+					PUB_p_organisation.p_religious_l AS Religious
+				FROM
+					PUB_p_organisation
+				WHERE
+					PUB_p_organisation.p_partner_key_n = {PartnerKey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Get Person Details" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT
+					PUB_p_person.p_title_c AS Title,
+					PUB_p_person.p_first_name_c AS FirstName,
+					PUB_p_person.p_middle_name_1_c AS MiddleName,
+					PUB_p_person.p_family_name_c AS FamilyName,
+					PUB_p_person.p_family_key_n AS FamilyKey,
+					PUB_p_person.p_date_of_birth_d AS DOB,
+					PUB_p_person.p_gender_c AS Gender,
+					PUB_p_person.p_marital_status_c AS MaritalStatus,
+					PUB_p_person.p_occupation_code_c AS OccupationCode,
+					PUB_p_person.p_prefered_name_c AS PreferedName,
+					PUB_p_person.p_decorations_c AS Decorations
+				FROM
+					PUB_p_person
+				WHERE
+					PUB_p_person.p_partner_key_n = {PartnerKey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Get Unit Details" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT
+					PUB_p_unit.p_unit_name_c AS UnitName,
+					PUB_p_unit.u_unit_type_code_c AS UnitType,
+					PUB_p_unit.p_outreach_code_c AS OutreachCode,
+					PUB_p_unit.um_present_i AS PresentStaff,
+					PUB_p_unit.um_minimum_i AS MinimumStaff,
+					PUB_p_unit.um_maximum_i AS MaximumStaff,
+					PUB_p_unit.um_part_timers_i AS PartTimers,
+					PUB_p_unit.p_description_c AS Description
+				FROM
+					PUB_p_unit
+				WHERE
+					PUB_p_unit.p_partner_key_n = {PartnerKey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Subscriptions Exist" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT 
+					MAX(PUB_p_subscription.p_partner_key_n) AS SubscriptionsExist
+				FROM
+					PUB_p_subscription
+				WHERE
+					PUB_p_subscription.p_partner_key_n = {PartnerKey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Get Subscriptions" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT
+					PUB_p_subscription.p_publication_code_c AS PublicationCode,
+					PUB_p_subscription.p_subscription_status_c AS SubscriptionStatus,
+					PUB_p_subscription.p_gratis_subscription_l  AS Gratis,
+					PUB_p_subscription.p_start_date_d  AS StartDate,
+					PUB_p_subscription.p_subscription_renewal_date_d  AS RenewalDate,
+					PUB_p_subscription.p_date_notice_sent_d  AS DateNoticeSent,
+					PUB_p_subscription.p_expiry_date_d  AS ExpiryDate,
+					PUB_p_subscription.p_date_cancelled_d  AS DateCancelled,
+					PUB_p_subscription.p_number_complimentary_i  AS CN,
+					PUB_p_subscription.p_number_issues_received_i  AS IR,
+					PUB_p_subscription.p_publication_copies_i  AS PC,
+					PUB_p_subscription.p_reason_subs_given_code_c  AS Given,
+					PUB_p_subscription.p_reason_subs_cancelled_code_c  AS Cancelled
+				FROM
+					PUB_p_subscription
+				WHERE
+					PUB_p_subscription.p_partner_key_n = {PartnerKey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Relationships Exist" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT 
+					MAX(PUB_p_partner_relationship.p_partner_key_n) AS RelationshipsExist
+				FROM
+					PUB_p_partner_relationship
+				WHERE
+					PUB_p_partner_relationship.p_partner_key_n = {PartnerKey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Get Relationships" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT
+					PUB_p_partner_relationship.p_relation_key_n  AS RelationKey,
+					PUB_p_relation.p_relation_description_c AS RelationDescription,
+					PUB_p_partner.p_partner_short_name_c AS RelationName
+				FROM
+					PUB_p_partner_relationship, PUB_p_relation, PUB_p_partner
+				WHERE
+					PUB_p_partner_relationship.p_partner_key_n = {PartnerKey}
+					AND PUB_p_relation.p_relation_name_c = PUB_p_partner_relationship.p_relation_name_c
+					AND PUB_p_partner.p_partner_key_n = PUB_p_partner_relationship.p_relation_key_n
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Locations Exist" returns="LocationsExist" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT 
+					MAX(PUB_p_partner_location.p_partner_key_n) AS LocationsExist
+				FROM
+					PUB_p_partner_location
+				WHERE
+					PUB_p_partner_location.p_partner_key_n = {PartnerKey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Get Locations" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT
+					PUB_p_partner_location.p_partner_key_n AS  LocationPartnerKey,
+					PUB_p_partner_location.p_location_key_i  AS LocationKey,
+					PUB_p_partner_location.p_location_type_c  AS LocationType,
+					PUB_p_partner_location.p_date_effective_d  AS DateEffective,
+					PUB_p_partner_location.p_date_good_until_d  AS GoodUntil,
+					PUB_p_partner_location.p_send_mail_l  AS Mailable,
+					PUB_p_partner_location.p_location_detail_comment_c  AS LocationComment,
+					PUB_p_location.p_locality_c  AS Locality,
+					PUB_p_location.p_street_name_c  AS StreetName,
+					PUB_p_location.p_address_3_c  AS Address,
+					PUB_p_location.p_city_c  AS City,
+					PUB_p_location.p_postal_code_c  AS PostalCode,
+					PUB_p_location.p_county_c  AS County,
+					PUB_p_location.p_country_code_c  AS CountryCode,
+					PUB_p_partner_location.p_telephone_number_c  AS TelephoneNumber,
+					PUB_p_partner_location.p_fax_number_c  AS FaxNumber,
+					PUB_p_partner_location.p_email_address_c  AS EmailAddress,
+					PUB_p_partner_location.p_mobile_number_c  AS MobileNumber,
+					PUB_p_country.p_address_order_i AS AddressOrder
+				FROM
+					PUB_p_partner_location, PUB_p_location, PUB_p_country
+				WHERE
+					PUB_p_partner_location.p_partner_key_n = {PartnerKey}
+					AND PUB_p_location.p_location_key_i = PUB_p_partner_location.p_location_key_i
+					AND PUB_p_country.p_country_code_c = PUB_p_location.p_country_code_c
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Bank Accounts Exist" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT 
+					MAX(PUB_p_partner_banking_details.p_partner_key_n) AS BankAccountsExist
+				FROM
+					PUB_p_partner_banking_details
+				WHERE
+					PUB_p_partner_banking_details.p_partner_key_n = {PartnerKey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Get Finance Details1" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT
+					PUB_p_partner.p_receipt_letter_frequency_c  AS ReceiptLetterFrequency,
+					PUB_p_partner.p_receipt_each_gift_l  AS ReceiptEachGift,
+					PUB_p_partner.p_anonymous_donor_l  AS Anonymous,
+					PUB_p_partner.p_email_gift_statement_l  AS EmailGiftStatement,
+					PUB_p_partner.p_finance_comment_c  AS FinanceComment
+				FROM
+					PUB_p_partner
+				WHERE
+					PUB_p_partner.p_partner_key_n = {PartnerKey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Get Finance Details2" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT
+					PUB_p_banking_details.p_bank_account_number_c  AS AccountNumber,
+					PUB_p_banking_details.p_account_name_c  AS AccountName,
+					PUB_p_bank.p_branch_code_c  AS BranchCode,
+					PUB_p_bank.p_branch_name_c  AS BranchName,
+					PUB_p_bank.p_bic_c  AS BIC,
+					PUB_p_banking_details.p_iban_c  AS IBAN,
+					PUB_p_banking_details.p_comment_c  AS BankingComment
+				FROM
+					PUB_p_banking_details, PUB_p_bank, PUB_p_partner_banking_details
+				WHERE
+					PUB_p_partner_banking_details.p_partner_key_n = {PartnerKey}
+					AND PUB_p_banking_details.p_banking_details_key_i = PUB_p_partner_banking_details.p_banking_details_key_i
+					AND PUB_p_banking_details.p_banking_type_i != '1' <!-- do not show credit cards -->
+					AND PUB_p_bank.p_partner_key_n = PUB_p_banking_details.p_bank_key_n
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Interests Exist" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT 
+					MAX(PUB_p_partner_interest.p_partner_key_n) AS InterestsExist
+				FROM
+					PUB_p_partner_interest
+				WHERE
+					PUB_p_partner_interest.p_partner_key_n = {PartnerKey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Get Partner Interests" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT
+					PUB_p_interest.p_category_c  AS InterestCategory,
+					PUB_p_partner_interest.p_interest_c  AS Interest,
+					PUB_p_partner_interest.p_country_c  AS Country,
+					PUB_p_partner_interest.p_field_key_n  AS FieldKey,
+					PUB_p_partner_interest.p_level_i  AS InterestLevel,
+					PUB_p_partner_interest.p_comment_c  AS InterestComment
+				FROM
+					PUB_p_interest, PUB_p_partner_interest
+				WHERE
+					PUB_p_partner_interest.p_partner_key_n = {PartnerKey}
+					AND PUB_p_interest.p_interest_c = PUB_p_partner_interest.p_interest_c
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Contacts Exist" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT 
+					MAX(PUB_p_partner_contact.p_partner_key_n) AS ContactsExist
+				FROM
+					PUB_p_partner_contact
+				WHERE
+					PUB_p_partner_contact.p_partner_key_n = {PartnerKey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Get Partner Contacts" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT
+					PUB_p_partner_contact.p_contactor_c   AS Contactor,
+					PUB_p_partner_contact.p_contact_code_c  AS ContactCode,
+					PUB_p_partner_contact.s_contact_date_d  AS ContactDate,
+					PUB_p_partner_contact.s_contact_time_i  AS ContactTimeHours
+				FROM
+					PUB_p_partner_contact
+				WHERE
+					PUB_p_partner_contact.p_partner_key_n = {PartnerKey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Reminders Exist" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT 
+					MAX(PUB_p_partner_reminder.p_partner_key_n) AS RemindersExist
+				FROM
+					PUB_p_partner_reminder
+				WHERE
+					PUB_p_partner_reminder.p_partner_key_n = {PartnerKey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation id="Get Partner Reminders" returns="Automatic" returnsFormat="row">
+		<query>
+			<queryDetail><value>
+				SELECT
+					PUB_p_partner_reminder.p_partner_key_n AS  ReminderPartnerKey,
+					PUB_p_partner_reminder.p_next_reminder_date_d AS  Next,
+					PUB_p_partner_reminder.p_contact_id_i  AS  ContactID,
+					PUB_p_partner_reminder.p_action_type_c  AS ActionType,
+					PUB_p_partner_reminder.p_event_date_d  AS Event,
+					PUB_p_partner_reminder.p_reminder_frequency_i AS ReminderFrequency,
+					PUB_p_partner_reminder.p_last_reminder_sent_d AS LastReminder,
+					PUB_p_partner_reminder.p_first_reminder_date_d AS FirstReminder,
+					PUB_p_partner_reminder.p_reminder_active_l AS ReminderActive,
+					PUB_p_partner_reminder.p_reminder_reason_c AS ReminderReason,
+					PUB_p_partner_reminder.p_email_address_c AS ReminderEmail,
+					PUB_p_partner_reminder.p_comment_c AS ReminderComment
+				FROM
+					PUB_p_partner_reminder
+				WHERE
+					PUB_p_partner_reminder.p_partner_key_n = {PartnerKey}
+			</value></queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Publication Code" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="PublicationCode"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Subscription Status" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="SubscriptionStatus"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Gratis" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="Gratis"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Start Date" returns="text" returnsFormat="formatteddate">
+		<query>
+			<queryDetail>
+				<value variable="StartDate"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Renewal Date" returns="text" returnsFormat="formatteddate">
+		<query>
+			<queryDetail>
+				<value variable="RenewalDate"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Date Notice Sent" returns="text" returnsFormat="formatteddate">
+		<query>
+			<queryDetail>
+				<value variable="DateNoticeSent"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Expiry Date" returns="text" returnsFormat="formatteddate">
+		<query>
+			<queryDetail>
+				<value variable="ExpiryDate"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Date Cancelled" returns="text" returnsFormat="formatteddate">
+		<query>
+			<queryDetail>
+				<value variable="DateCancelled"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Complimentary Number" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="CN"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Issues Received" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="IR"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Publication Copies" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="PC"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Reason Given" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="Given"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Reason Cancelled" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="Cancelled"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Location Type" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="LocationType"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+	<calculation align="left" id="Location Partner Key" returns="text" returnsFormat="text">
+		<query>
+			<queryDetail>
+				<value variable="LocationPartnerKey"></value>
+			</queryDetail>
+		</query>
+	</calculation>
+	
+    </calculations>
+	
+	<!-- Main Level -->
+   
+    <levels> 
+	<level name="main">
+		<detail>
+			<lowerLevelReport calculation="Get Partner Details" level="Partner Level"></lowerLevelReport>
+		</detail>
+	</level> 
+	
+	<level name="Partner Level" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Partner Details"></lowerLevelReport>
+			<lowerLevelReport level="Partner Class Details" condition="eq({param_chkPartnerClassData},true)"></lowerLevelReport>
+			<lowerLevelReport level="Partner Subscriptions" calculation="Subscriptions Exist" condition="eq({param_chkSubscriptions},true)"></lowerLevelReport>
+			<lowerLevelReport level="Partner Relationships" calculation="Relationships Exist" condition="eq({param_chkRelationships},true)"></lowerLevelReport>
+			<lowerLevelReport level="Partner Locations" calculation="Locations Exist" condition="eq({param_chkLocations},true)"></lowerLevelReport>
+			<lowerLevelReport level="Finance Details" condition="eq({param_chkFinanceDetails},true)"></lowerLevelReport>
+			<lowerLevelReport level="Partner Interests" calculation="Interests Exist" condition="eq({param_chkInterests},true)"></lowerLevelReport>
+			<lowerLevelReport level="Partner Contacts" calculation="Contacts Exist" condition="eq({param_chkContacts},true)"></lowerLevelReport>
+			<lowerLevelReport level="Partner Reminders" calculation="Reminders Exist" condition="eq({param_chkReminders},true)"></lowerLevelReport>
+			<lowerLevelReport level="Reset Columns For Extract"></lowerLevelReport>
+		</detail>
+		<footer line="below" space="below">
+			<field whichfield="left 0" pos="0cm" width="1cm" >
+				<value text=" "/>
+			</field>
+			<field whichfield="column 0">
+				<value text=" "/>
+			</field>
+		</footer>
+	</level>
+	
+	<!-- Partner Details -->
+	
+	<level name="Partner Details" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Partner Details Lower Level"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Details Lower Level" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Partner Details Lowest Level1"></lowerLevelReport>
+			<lowerLevelReport level="Partner Details Lowest Level2"></lowerLevelReport>
+			<lowerLevelReport level="Partner Details Lowest Level3" condition="gt({Comment},0)"></lowerLevelReport>
+			<lowerLevelReport level="Partner Details Lowest Level4" condition="gt({Comment},0)"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Details Lowest Level1" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text="Name: "/>
+				<value variable="PartnerShortName"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Partner Details Lowest Level2" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text="Key: "/>
+				<value variable="PartnerKey"/>
+				<value text=",  Class: "/>
+				<value variable="PartnerClass"/>
+				<value text=",  Status: "/>
+				<value variable="Status"/>
+				<value text=",  Acquisition: "/>
+				<value variable="Acquisition"/>
+				<value text=",  Language: "/>
+				<value variable="Language"/>
+				<value text=",  Restricted: "/>
+				<value text="No" condition="eq({Restricted},0)"/>
+				<value variable="GROUPID" condition="eq({Restricted},1)"/>
+				<value variable="USERID" condition="eq({Restricted},2)"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Partner Details Lowest Level3" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text=""/>
+			</field>
+		</detail>
+	</level>
+	<level name="Partner Details Lowest Level4" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text="Comment: "/>
+				<value variable="Comment"/>
+			</field>
+		</detail>
+	</level>
+	
+	<!-- Partner Class Details -->
+	
+	<level name="Partner Class Details" identification="PartnerKey">
+		<header>
+			<field whichfield="header 0" pos="0cm" width="27cm">
+				<value text="**************** PARTNER CLASS: "/>
+				<value variable="PartnerClass"/>
+				<value text=" ****************"/>
+			</field>
+		</header>
+		<detail>
+			<lowerLevelReport calculation="Get Church Details" level="Church Details" condition="eq({PartnerClass}, CHURCH)"></lowerLevelReport>
+			<lowerLevelReport calculation="Get Family Details" level="Family Details" condition="eq({PartnerClass}, FAMILY)"></lowerLevelReport>
+			<lowerLevelReport calculation="Get Organisation Details" level="Organisation Details" condition="eq({PartnerClass}, ORGANISATION)"></lowerLevelReport>
+			<lowerLevelReport calculation="Get Person Details" level="Person Details" condition="eq({PartnerClass}, PERSON)"></lowerLevelReport>
+			<lowerLevelReport calculation="Get Unit Details" level="Unit Details" condition="eq({PartnerClass}, UNIT)"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Church Details" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Church Details Lowest Level1"></lowerLevelReport>
+			<lowerLevelReport level="Church Details Lowest Level2"></lowerLevelReport>
+			<lowerLevelReport level="Church Details Lowest Level3"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Church Details Lowest Level1" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text="Church Name: "/>
+				<value variable="ChurchName"/>
+				<value text=",  Denomination: "/>
+				<value variable="Denomination"/>
+				<value text=",  Size: "/>
+				<value variable="Size" condition="gt({Size},0)"/>
+				<value text="UNKNOWN" condition="eq({Size},0)"/>
+				<value text=",  Previous Name: " condition="gt({PreviousName},0)"/>
+				<value variable="PreviousName"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Church Details Lowest Level2" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text="Accommodation Available: "/>
+				<value variable="Accommodation"/>
+				<value text=",  Accommodation Type: " condition="eq({Accommodation},1)"/>
+				<value variable="AccommodationType" condition="eq({Accommodation},1)"/>
+				<value text=",  Accommodation Size: " condition="eq({Accommodation},1)"/>
+				<value variable="AccommodationSize" condition="eq({Accommodation},1)"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Church Details Lowest Level3" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text="Prayer Group: "/>
+				<value variable="PrayerGroup"/>
+				<value text=",  Map on file: "/>
+				<value variable="Map"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Family Details" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Family Details Lowest Level1"></lowerLevelReport>
+			<lowerLevelReport level="Family Details Lowest Level2"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Family Details Lowest Level1" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text="Family Name: "/>
+				<value variable="Title"/>
+				<value text=" " condition="gt({Title},0)"/>
+				<value variable="FirstName" condition="exists({FirstName},0)"/>
+				<value text=" " condition="exists(FirstName)"/>
+				<value variable="FamilyName"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Family Details Lowest Level2" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text="Field Key: " condition="gt({FieldKey},0)"/>
+				<value variable="FieldKey"/>
+				<value text="Previous Name" condition="gt({PreviousName},0)"/>
+				<value variable="PreviousName"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Organisation Details" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Organisation Details Lowest Level"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Organisation Details Lowest Level" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text="Organisation Name: "/>
+				<value variable="OrganisationName"/>
+				<value text=",  Business Code: "/>
+				<value variable="BusinessCode"/>
+				<value text=",  Religious: "/>
+				<value variable="Religious"/>
+				<value text=",  Previous Name: " condition="gt({PreviousName},0)"/>
+				<value variable="PreviousName"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Person Details" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Person Details Lowest Level1"></lowerLevelReport>
+			<lowerLevelReport level="Person Details Lowest Level2"></lowerLevelReport>
+			<lowerLevelReport level="Person Details Lowest Level3"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Person Details Lowest Level1" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text="Person Name: "/>
+				<value variable="Title" condition="exists(Title)"/>
+				<value text=" " condition="exists(Title)"/>
+				<value variable="FirstName" condition="exists(FirstName)"/>
+				<value text=" " condition="exists(FirstName)"/>
+				<value variable="MiddleName"/>
+				<value text=" " condition="exists(MiddleName)"/>
+				<value variable="FamilyName"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Person Details Lowest Level2" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text="DOB: "/>
+				<value variable="DOB"/>
+				<value text=",  Gender: "/>
+				<value variable="Gender"/>
+				<value text=",  Marital Status: "/>
+				<value variable="MaritalStatus"/>
+				<value text=",  Occupation: "/>
+				<value text="UNKNOWN" condition="not(gt({OccupationCode},0))"/>
+				<value variable="OccupationCode"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Person Details Lowest Level3" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text="Prefered Name: " condition="and(exists(PreferedName), gt({PreferedName},0))"/>
+				<value variable="PreferedName"/>
+				<value text=",  " condition="and(and(exists(PreferedName), gt({PreferedName},0)), or(and(exists(PreviousName), gt({PreviousName},0)), and(exists(Decorations), gt({Decorations},0))))"/>
+				<value text="Previous Family Name: " condition="and(exists(PreviousName), gt({PreviousName},0))"/>
+				<value variable="PreviousName"/>
+				<value text=",  " condition="and(and(exists(PreviousName), gt({PreviousName},0)), and(exists(Decorations), gt({Decorations},0))"/>
+				<value text="Decorations: " condition="and(exists(Decorations), gt({Decorations},0))"/>
+				<value variable="Decorations"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Unit Details" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Unit Details Lowest Level1"></lowerLevelReport>
+			<lowerLevelReport level="Unit Details Lowest Level2"></lowerLevelReport>
+			<lowerLevelReport level="Unit Details Lowest Level3"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Unit Details Lowest Level1" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text="Unit Name: "/>
+				<value variable="UnitName"/>
+				<value text=",  Unit Type: "/>
+				<value variable="UnitType"/>
+				<value text="UNKNOWN" condition="not(gt({UnitType},0))"/>
+				<value text=",  Outreach Code: "/>
+				<value variable="OutreachCode"/>
+				<value text="UNKNOWN" condition="not(gt({OutreachCode},0))"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Unit Details Lowest Level2" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text="Present Staff: "/>
+				<value variable="PresentStaff"/>
+				<value text=",  Part Time Staff: "/>
+				<value variable="PartTimers"/>
+				<value text=",  Minimum Staff: "/>
+				<value variable="MinimumStaff" condition="gt({MinimumStaff},0)"/>
+				<value text="UNKNOWN" condition="eq({MinimumStaff},0)"/>
+				<value text=",  Maximum Staff: "/>
+				<value variable="MaximumStaff" condition="gt({MaximumStaff},0)"/>
+				<value text="UNKNOWN" condition="eq({MaximumStaff},0)"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Unit Details Lowest Level3" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text="Description: " condition="gt({Description},0)"/>
+				<value variable="Description"/>
+			</field>
+		</detail>
+	</level>
+	
+	<!-- Partner Subscriptions -->
+	
+	<level name="Partner Subscriptions" identification="PartnerKey" condition="or(gt({SubscriptionsExist},'-1'), eq({param_chkHideEmpty},false))">
+		<header>
+			<field whichfield="header 0" pos="0cm" width="27cm">
+				<value text="**************** SUBSCRIPTIONS ****************"/>
+			</field>
+		</header>
+		<detail>
+			<lowerLevelReport level="Partner Subscriptions Lower Level"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Subscriptions Lower Level" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Partner Subscriptions Lowest Level1"></lowerLevelReport>
+			<lowerLevelReport level="Partner Subscriptions Lowest Level2" calculation="Get Subscriptions"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Subscriptions Lowest Level1" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0">
+				<value text="-Publication-"/>
+			</field>
+			<field whichfield="column 1" pos="2.75cm">
+				<value text="-Status-"/>
+			</field>
+			<field whichfield="column 2" pos="5.5cm">
+				<value text="-Gratis-"/>
+			</field>
+			<field whichfield="column 3" pos="7.75cm">
+				<value text="-Start Date-"/>
+			</field>
+			<field whichfield="column 4" pos="10.25cm">
+				<value text="-Renewal Date-"/>
+			</field>
+			<field whichfield="column 5" pos="12.75cm">
+				<value text="-Date Notice Sent-"/>
+			</field>
+			<field whichfield="column 6" pos="15.25cm">
+				<value text="-Expiry Date-"/>
+			</field>
+			<field whichfield="column 7" pos="17.75cm">
+				<value text="-Date Cancelled-"/>
+			</field>
+			<field whichfield="column 8" pos="20.25cm">
+				<value text="-CN-"/>
+			</field>
+			<field whichfield="column 9" pos="21.5cm">
+				<value text="-IR-"/>
+			</field>
+			<field whichfield="column 10" pos="22.75cm">
+				<value text="-PC-"/>
+			</field>
+			<field whichfield="column 11" pos="24cm">
+				<value text="-Given-"/>
+			</field>
+			<field whichfield="column 12" pos="26.25cm">
+				<value text="-Cancelled-"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Partner Subscriptions Lowest Level2" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0">
+				<value variable="PublicationCode"/>
+			</field>
+			<field whichfield="column 1">
+				<value variable="SubscriptionStatus"/>
+			</field>
+			<field whichfield="column 2">
+				<value variable="Gratis"/>
+			</field>
+			<field whichfield="column 3">
+				<value variable="StartDate"/>
+			</field>
+			<field whichfield="column 4">
+				<value variable="RenewalDate"/>
+			</field>
+			<field whichfield="column 5">
+				<value variable="DateNoticeSent"/>
+			</field>
+			<field whichfield="column 6">
+				<value variable="ExpiryDate"/>
+			</field>
+			<field whichfield="column 7">
+				<value variable="DateCancelled"/>
+			</field>
+			<field whichfield="column 8">
+				<value variable="CN"/>
+			</field>
+			<field whichfield="column 9">
+				<value variable="IR"/>
+			</field>
+			<field whichfield="column 10">
+				<value variable="PC"/>
+			</field>
+			<field whichfield="column 11">
+				<value variable="Given"/>
+			</field>
+			<field whichfield="column 12">
+				<value variable="Cancelled"/>
+			</field>
+		</detail>
+    </level>
+	
+	<!-- Partner Relationships -->
+	
+	<level name="Partner Relationships" identification="PartnerKey" condition="or(gt({RelationshipsExist},'-1'), eq({param_chkHideEmpty},false))">
+		<header>
+			<field whichfield="header 0" pos="0cm" width="27cm">
+				<value text="**************** RELATIONSHIPS ****************"/>
+			</field>
+		</header>
+		<detail>
+			<lowerLevelReport level="Partner Relationships Lower Level"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Relationships Lower Level" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Partner Relationships Lowest Level1" calculation="Get Relationships"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Relationships Lowest Level1" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value variable="RelationKey"/>
+				<value text="   "/>
+				<value variable="RelationDescription"/>
+				<value text="   "/>
+				<value variable="RelationName"/>
+			</field>
+			<field whichfield="column 1">
+				<value text=""/>
+			</field>
+			<field whichfield="column 2">
+				<value text=""/>
+			</field>
+			<field whichfield="column 3">
+				<value text=""/>
+			</field>
+			<field whichfield="column 4">
+				<value text=""/>
+			</field>
+			<field whichfield="column 5">
+				<value text=""/>
+			</field>
+			<field whichfield="column 6">
+				<value text=""/>
+			</field>
+			<field whichfield="column 7">
+				<value text=""/>
+			</field>
+			<field whichfield="column 8">
+				<value text=""/>
+			</field>
+			<field whichfield="column 9">
+				<value text=""/>
+			</field>
+			<field whichfield="column 10">
+				<value text=""/>
+			</field>
+			<field whichfield="column 11">
+				<value text=""/>
+			</field>
+			<field whichfield="column 12">
+				<value text=""/>
+			</field>
+		</detail>
+	</level>
+	
+	<!-- Partner Locations -->
+	
+	<level name="Partner Locations" identification="PartnerKey" condition="or(gt({LocationsExist},'-1'), eq({param_chkHideEmpty},false))">
+		<header>
+			<field whichfield="header 0" pos="0cm" width="27cm">
+				<value text="**************** LOCATIONS ****************"/>
+			</field>
+		</header>
+		<detail>
+			<lowerLevelReport level="Partner Locations Lower Level"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Locations Lower Level" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Partner Locations Lowest Level1"></lowerLevelReport>
+			<lowerLevelReport level="Partner Locations Even Lower Level" calculation="Get Locations"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Locations Even Lower Level" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Partner Locations Lowest Level2"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Locations Lowest Level1" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm">
+				<value text="-Location Key-" condition="or(not(exists(LocationPartnerKey)), and(exists(LocationPartnerKey), ne({LocationPartnerKey},{PartnerKey})))"/>
+				<value text="Address: " condition="and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey}))"/>
+				<value variable="Locality" condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), gt({Locality},0))"/>
+				<value text=", " condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), gt({Locality},0))"/>
+				<value variable="StreetName" condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), gt({StreetName},0))"/>
+				<value text=", " condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), gt({StreetName},0))"/>
+				<value variable="Address" condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), gt({Address},0))"/>
+				<!-- Order changes depending on country -->
+				<value text=", " condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), gt({Address},0))"/>
+				<value variable="City" condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), and(gt({City},0), ne({AddressOrder},1)))"/>
+				<value text=", " condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), and(gt({City},0), ne({AddressOrder},1)))"/>
+				<value variable="County" condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), and(gt({County},0), eq({AddressOrder},2)))"/>
+				<value text=", " condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), and(gt({County},0), eq({AddressOrder},2)))"/>
+				<value variable="PostalCode" condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), gt({PostalCode},0))"/>
+				<value text=", " condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), gt({PostalCode},0))"/>
+				<value variable="City" condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), and(gt({City},0), eq({AddressOrder},1)))"/>
+				<value text=", " condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), and(gt({City},0), eq({AddressOrder},1)))"/>
+				<value variable="County" condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), and(gt({County},0), ne({AddressOrder},2)))"/>
+				<value text=", " condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), and(gt({County},0), ne({AddressOrder},2)))"/>
+				<value variable="CountryCode" condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), gt({CountryCode},0))"/>
+				<value text=".  "/>
+				
+				<value text="Tel: " condition="and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey}))"/>
+				<value variable="TelephoneNumber" condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), gt({TelephoneNumber},0))"/>
+				<value text="UNKNOWN" condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), not(gt({TelephoneNumber},0)))"/>
+				<value text=",  Fax: " condition="and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey}))"/>
+				<value variable="FaxNumber" condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), gt({FaxNumber},0))"/>
+				<value text="UNKNOWN" condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), not(gt({FaxNumber},0)))"/>
+				<value text=",  Email: " condition="and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey}))"/>
+				<value variable="EmailAddress" condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), gt({EmailAddress},0))"/>
+				<value text="UNKNOWN" condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), not(gt({EmailAddress},0)), )"/>
+				<value text=",  Mobile: " condition="and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey}))"/>
+				<value variable="MobileNumber" condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), gt({MobileNumber},0))"/>
+				<value text="UNKNOWN" condition="and(and(exists(LocationPartnerKey), eq({LocationPartnerKey},{PartnerKey})), not(gt({MobileNumber},0)))"/>
+			</field>
+			<field whichfield="column 1" pos="2.75cm">
+				<value text="-Location Type-" condition="or(not(exists(LocationPartnerKey)), and(exists(LocationPartnerKey), ne({LocationPartnerKey},{PartnerKey})))"/>
+			</field>
+			<field whichfield="column 2" pos="5.5cm">
+				<value text="-Date Effective-" condition="or(not(exists(LocationPartnerKey)), and(exists(LocationPartnerKey), ne({LocationPartnerKey},{PartnerKey})))"/>
+			</field>
+			<field whichfield="column 3" pos="7.75cm">
+				<value text="-Good Until-" condition="or(not(exists(LocationPartnerKey)), and(exists(LocationPartnerKey), ne({LocationPartnerKey},{PartnerKey})))"/>
+			</field>
+			<field whichfield="column 4" pos="10.25cm">
+				<value text="-Mailable-" condition="or(not(exists(LocationPartnerKey)), and(exists(LocationPartnerKey), ne({LocationPartnerKey},{PartnerKey})))"/>
+			</field>
+			<field whichfield="column 5" pos="12.75cm">
+				<value text="-Comment-" condition="or(not(exists(LocationPartnerKey)), and(exists(LocationPartnerKey), ne({LocationPartnerKey},{PartnerKey})))"/>
+			</field>
+			<field whichfield="column 6">
+				<value text=""/>
+			</field>
+			<field whichfield="column 7">
+				<value text=""/>
+			</field>
+			<field whichfield="column 8">
+				<value text=""/>
+			</field>
+			<field whichfield="column 9">
+				<value text=""/>
+			</field>
+			<field whichfield="column 10">
+				<value text=""/>
+			</field>
+			<field whichfield="column 11">
+				<value text=""/>
+			</field>
+			<field whichfield="column 12">
+				<value text=""/>
+			</field>
+		</detail>
+	</level>
+	<level name="Partner Locations Lowest Level2" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm">
+				<value variable="LocationKey"/>
+			</field>
+			<field whichfield="column 1" pos="2.75cm">
+				<value variable="LocationType"/>
+			</field>
+			<field whichfield="column 2" pos="5.5cm">
+				<value variable="DateEffective"/>
+			</field>
+			<field whichfield="column 3" pos="7.75cm">
+				<value variable="GoodUntil"/>
+			</field>
+			<field whichfield="column 4" pos="10.25cm">
+				<value text="Yes" condition="eq({Mailable},true)"/>
+				<value text="No" condition="eq({Mailable},false)"/>
+			</field>
+			<field whichfield="column 5" pos="12.75cm">
+				<value variable="LocationComment"/>
+			</field>
+			<field whichfield="column 6">
+				<value text=""/>
+			</field>
+			<field whichfield="column 7">
+				<value text=""/>
+			</field>
+			<field whichfield="column 8">
+				<value text=""/>
+			</field>
+			<field whichfield="column 9">
+				<value text=""/>
+			</field>
+			<field whichfield="column 10">
+				<value text=""/>
+			</field>
+			<field whichfield="column 11">
+				<value text=""/>
+			</field>
+			<field whichfield="column 12">
+				<value text=""/>
+			</field>
+		</detail>
+    </level>
+	
+	<!-- Finance Details -->
+	
+	<level name="Finance Details" identification="PartnerKey">
+		<header>
+			<field whichfield="header 0" pos="0cm" width="27cm">
+				<value text="**************** FINANCE DETAILS ****************"/>
+			</field>
+		</header>
+		<detail>
+			<lowerLevelReport level="Finance Details1 Lower Level" calculation="Get Finance Details1"></lowerLevelReport>
+			<lowerLevelReport level="Finance Details2 Lower Level" calculation="Bank Accounts Exist"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Finance Details1 Lower Level" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Finance Details1 Lowest Level1"></lowerLevelReport>
+			<lowerLevelReport level="Finance Details1 Lowest Level2" condition="gt({FinanceComment},0)"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Finance Details1 Lowest Level1" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text="Receipt Letter Frequency: "/>
+				<value variable="ReceiptLetterFrequency"/>
+				<value text="UNKNOWN" condition="not(gt({ReceiptLetterFrequency},0))"/>
+				<value text=",  Printed Receipt For Each Gift: "/>
+				<value text="Yes" condition="eq({ReceiptEachGift},true)"/>
+				<value text="No" condition="eq({ReceiptEachGift},false)"/>
+				<value text=",  Anonymous Donor: "/>
+				<value text="Yes" condition="eq({Anonymous},true)"/>
+				<value text="No" condition="eq({Anonymous},false)"/>
+				<value text=",  Email Gift Statement: " condition="or(eq({PartnerClass}, FAMILY), eq({PartnerClass}, UNIT))"/>
+				<value text="Yes" condition="and(eq({EmailGiftStatement},true),or(eq({PartnerClass}, FAMILY), eq({PartnerClass}, UNIT)))"/>
+				<value text="No" condition="and(eq({EmailGiftStatement},false),or(eq({PartnerClass}, FAMILY), eq({PartnerClass}, UNIT)))"/>
+			</field>
+			<field whichfield="column 1">
+				<value text=""/>
+			</field>
+			<field whichfield="column 2">
+				<value text=""/>
+			</field>
+			<field whichfield="column 3">
+				<value text=""/>
+			</field>
+			<field whichfield="column 4">
+				<value text=""/>
+			</field>
+			<field whichfield="column 5">
+				<value text=""/>
+			</field>
+			<field whichfield="column 6">
+				<value text=""/>
+			</field>
+			<field whichfield="column 7">
+				<value text=""/>
+			</field>
+			<field whichfield="column 8">
+				<value text=""/>
+			</field>
+			<field whichfield="column 9">
+				<value text=""/>
+			</field>
+			<field whichfield="column 10">
+				<value text=""/>
+			</field>
+			<field whichfield="column 11">
+				<value text=""/>
+			</field>
+			<field whichfield="column 12">
+				<value text=""/>
+			</field>
+		</detail>
+	</level>
+	<level name="Finance Details1 Lowest Level2" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm" width="27cm">
+				<value text="Comment: "/>
+				<value variable="FinanceComment"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Finance Details2 Lower Level" identification="PartnerKey" condition="or(gt({BankAccountsExist},'-1'), eq({param_chkHideEmpty},false))">
+		<detail>
+			<lowerLevelReport level="Finance Details2 Lowest Level1"></lowerLevelReport>
+			<lowerLevelReport level="Finance Details2 Lowest Level2" calculation="Get Finance Details2"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Finance Details2 Lowest Level1" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0">
+				<value text="-Account Number-"/>
+			</field>
+			<field whichfield="column 1" pos="2.75cm">
+				<value text="-Account Name-"/>
+			</field>
+			<field whichfield="column 2" pos="5.5cm">
+				<value text="-Branch Code-"/>
+			</field>
+			<field whichfield="column 3" pos="7.75cm">
+				<value text="-Branch Name-"/>
+			</field>
+			<field whichfield="column 4" pos="10.25cm">
+				<value text="-BIC/SWIFT Code-"/>
+			</field>
+			<field whichfield="column 5" pos="12.75cm">
+				<value text="-IBAN-"/>
+			</field>
+			<field whichfield="column 6" pos="15.25cm">
+				<value text="-Comment-"/>
+			</field>
+		</detail>
+	</level>
+	<level name="Finance Details2 Lowest Level2" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0">
+				<value variable="AccountNumber"/>
+			</field>
+			<field whichfield="column 1">
+				<value variable="AccountName"/>
+			</field>
+			<field whichfield="column 2">
+				<value variable="BranchCode"/>
+			</field>
+			<field whichfield="column 3">
+				<value variable="BranchName"/>
+			</field>
+			<field whichfield="column 4">
+				<value variable="BIC"/>
+			</field>
+			<field whichfield="column 5">
+				<value variable="IBAN"/>
+			</field>
+			<field whichfield="column 6">
+				<value variable="BankingComment"/>
+			</field>
+		</detail>
+    </level>
+	
+	<!-- Partner Interests -->
+	
+	<level name="Partner Interests" identification="PartnerKey" condition="or(gt({InterestsExist},'-1'), eq({param_chkHideEmpty},false))">
+		<header>
+			<field whichfield="header 0" pos="0cm" width="27cm">
+				<value text="**************** PARTNER INTERESTS ****************"/>
+			</field>
+		</header>
+		<detail>
+			<lowerLevelReport level="Partner Interests Lower Level"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Interests Lower Level" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Partner Interests Lowest Level1"></lowerLevelReport>
+			<lowerLevelReport level="Partner Interests Lowest Level2" calculation="Get Partner Interests"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Interests Lowest Level1" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0">
+				<value text="-Category-"/>
+			</field>
+			<field whichfield="column 1" pos="2.75cm">
+				<value text="-Interest-"/>
+			</field>
+			<field whichfield="column 2" pos="5.5cm">
+				<value text="-Country-"/>
+			</field>
+			<field whichfield="column 3" pos="7.75cm">
+				<value text="-Field-"/>
+			</field>
+			<field whichfield="column 4" pos="10.25cm">
+				<value text="-Level-"/>
+			</field>
+			<field whichfield="column 5" pos="12.75cm">
+				<value text="-Comment-"/>
+			</field>
+			<field whichfield="column 6">
+				<value text=""/>
+			</field>
+			<field whichfield="column 7">
+				<value text=""/>
+			</field>
+			<field whichfield="column 8">
+				<value text=""/>
+			</field>
+			<field whichfield="column 9">
+				<value text=""/>
+			</field>
+			<field whichfield="column 10">
+				<value text=""/>
+			</field>
+			<field whichfield="column 11">
+				<value text=""/>
+			</field>
+			<field whichfield="column 12">
+				<value text=""/>
+			</field>
+		</detail>
+	</level>
+	<level name="Partner Interests Lowest Level2" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0">
+				<value variable="InterestCategory"/>
+			</field>
+			<field whichfield="column 1">
+				<value variable="Interest"/>
+			</field>
+			<field whichfield="column 2">
+				<value variable="Country"/>
+			</field>
+			<field whichfield="column 3">
+				<value variable="FieldKey"/>
+			</field>
+			<field whichfield="column 4">
+				<value variable="InterestLevel"/>
+			</field>
+			<field whichfield="column 5">
+				<value variable="InterestComment"/>
+			</field>
+		</detail>
+    </level>
+	
+	<!-- Partner Contacts -->
+	
+	<level name="Partner Contacts" identification="PartnerKey" condition="or(gt({ContactsExist},'-1'), eq({param_chkHideEmpty},false))">
+		<header>
+			<field whichfield="header 0" pos="0cm" width="27cm">
+				<value text="**************** PARTNER CONTACTS ****************"/>
+			</field>
+		</header>
+		<detail>
+			<lowerLevelReport level="Partner Contacts Lower Level"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Contacts Lower Level" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Partner Contacts Lowest Level1"></lowerLevelReport>
+			<lowerLevelReport level="Partner Contacts Lowest Level2" calculation="Get Partner Contacts"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Contacts Lowest Level1" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0">
+				<value text="-Contactor-"/>
+			</field>
+			<field whichfield="column 1" pos="2.75cm">
+				<value text="-Contact Code-"/>
+			</field>
+			<field whichfield="column 2" pos="5.5cm">
+				<value text="-Contact Date-"/>
+			</field>
+			<field whichfield="column 3" pos="7.75cm">
+				<value text="-Contact Time-"/>
+			</field>
+			<field whichfield="column 4">
+				<value text=""/>
+			</field>
+			<field whichfield="column 5">
+				<value text=""/>
+			</field>
+			<field whichfield="column 6">
+				<value text=""/>
+			</field>
+			<field whichfield="column 7">
+				<value text=""/>
+			</field>
+			<field whichfield="column 8">
+				<value text=""/>
+			</field>
+			<field whichfield="column 9">
+				<value text=""/>
+			</field>
+			<field whichfield="column 10">
+				<value text=""/>
+			</field>
+			<field whichfield="column 11">
+				<value text=""/>
+			</field>
+			<field whichfield="column 12">
+				<value text=""/>
+			</field>
+		</detail>
+	</level>
+	<level name="Partner Contacts Lowest Level2" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0">
+				<value variable="Contactor"/>
+			</field>
+			<field whichfield="column 1">
+				<value variable="ContactCode"/>
+			</field>
+			<field whichfield="column 2">
+				<value variable="ContactDate"/>
+			</field>
+			<field whichfield="column 3">
+				<value variable="ContactTimeHours"/>
+			</field>
+		</detail>
+    </level>
+	
+	<!-- Partner Reminders -->
+	
+	<level name="Partner Reminders" identification="PartnerKey" condition="or(gt({RemindersExist},'-1'), eq({param_chkHideEmpty},false))">
+		<header>
+			<field whichfield="header 0" pos="0cm" width="27cm">
+				<value text="**************** REMINDERS ****************"/>
+			</field>
+		</header>
+		<detail>
+			<lowerLevelReport level="Partner Reminders Lower Level"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Reminders Lower Level" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Partner Reminders Lowest Level1"></lowerLevelReport>
+			<lowerLevelReport level="Partner Reminders Even Lower Level" calculation="Get Partner Reminders"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Reminders Even Lower Level" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Partner Reminders Lowest Level2"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Partner Reminders Lowest Level1" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0">
+				<value text="-Next-" condition="or(not(exists(ReminderPartnerKey)), and(exists(ReminderPartnerKey), ne({ReminderPartnerKey},{PartnerKey})))"/>
+				<value text="Reason: " condition="and(exists(ReminderPartnerKey), eq({ReminderPartnerKey},{PartnerKey}))"/>
+				<value variable="ReminderReason" condition="and(and(exists(ReminderPartnerKey), eq({ReminderPartnerKey},{PartnerKey})), exists(ReminderReason)"/>
+				<value text="UNKNOWN" condition="and(and(exists(ReminderPartnerKey), eq({ReminderPartnerKey},{PartnerKey})), not(exists(ReminderReason)))"/>
+				<value text=",  Email Address: " condition="and(and(exists(ReminderPartnerKey), eq({ReminderPartnerKey},{PartnerKey})), gt({ReminderEmail},0))"/>
+				<value variable="ReminderEmail" condition="and(and(exists(ReminderPartnerKey), eq({ReminderPartnerKey},{PartnerKey})), gt({ReminderEmail},0))"/>
+				<value text=",  Comment: " condition="and(and(exists(ReminderPartnerKey), eq({ReminderPartnerKey},{PartnerKey})), gt({ReminderComment},0))"/>
+				<value variable="ReminderComment" condition="and(and(exists(ReminderPartnerKey), eq({ReminderPartnerKey},{PartnerKey})), gt({ReminderComment},0))"/>
+			</field>
+			<field whichfield="column 1" pos="2.75cm">
+				<value text="-Contact-" condition="or(not(exists(FirstReminder)), and(exists(FirstReminder), ne({ReminderPartnerKey},{PartnerKey})))"/>
+			</field>
+			<field whichfield="column 2" pos="5.5cm">
+				<value text="-Action-" condition="or(not(exists(FirstReminder)), and(exists(FirstReminder), ne({ReminderPartnerKey},{PartnerKey})))"/>
+			</field>
+			<field whichfield="column 3" pos="7.75cm">
+				<value text="-Event-" condition="or(not(exists(FirstReminder)), and(exists(FirstReminder), ne({ReminderPartnerKey},{PartnerKey})))"/>
+			</field>
+			<field whichfield="column 4" pos="10.25cm">
+				<value text="-Frequency-" condition="or(not(exists(FirstReminder)), and(exists(FirstReminder), ne({ReminderPartnerKey},{PartnerKey})))"/>
+			</field>
+			<field whichfield="column 5" pos="12.75cm">
+				<value text="-Last-" condition="or(not(exists(FirstReminder)), and(exists(FirstReminder), ne({ReminderPartnerKey},{PartnerKey})))"/>
+			</field>
+			<field whichfield="column 6" pos="15.25cm">
+				<value text="-First-" condition="or(not(exists(FirstReminder)), and(exists(FirstReminder), ne({ReminderPartnerKey},{PartnerKey})))"/>
+			</field>
+			<field whichfield="column 7" pos="17.75cm">
+				<value text="-Active-" condition="or(not(exists(FirstReminder)), and(exists(FirstReminder), ne({ReminderPartnerKey},{PartnerKey})))"/>
+			</field>
+			<field whichfield="column 8">
+				<value text=""/>
+			</field>
+			<field whichfield="column 9">
+				<value text=""/>
+			</field>
+			<field whichfield="column 10">
+				<value text=""/>
+			</field>
+			<field whichfield="column 11">
+				<value text=""/>
+			</field>
+			<field whichfield="column 12">
+				<value text=""/>
+			</field>
+		</detail>
+	</level>
+	<level name="Partner Reminders Lowest Level2" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0" pos="0cm">
+				<value variable="Next"/>
+			</field>
+			<field whichfield="column 1" pos="2.75cm">
+				<value variable="ContactID"/>
+			</field>
+			<field whichfield="column 2" pos="5.5cm">
+				<value variable="ActionType"/>
+			</field>
+			<field whichfield="column 3" pos="7.75cm">
+				<value variable="Event"/>
+			</field>
+			<field whichfield="column 4" pos="10.25cm">
+				<value variable="ReminderFrequency"/>
+			</field>
+			<field whichfield="column 5" pos="12.75cm">
+				<value variable="LastReminder"/>
+			</field>
+			<field whichfield="column 6" pos="15.25cm">
+				<value variable="FirstReminder"/>
+			</field>
+			<field whichfield="column 7" pos="17.75cm">
+				<value variable="ReminderActive"/>
+			</field>
+		</detail>
+    </level>
+	
+	<!-- Reset Columns For Extract -->
+	
+	<level name="Reset Columns For Extract" identification="PartnerKey">
+		<header>
+			<field whichfield="header 0" pos="0cm" width="27cm">
+				<value text=""/>
+			</field>
+		</header>
+		<detail>
+			<lowerLevelReport level="Reset Lower Level"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Reset Lower Level" identification="PartnerKey">
+		<detail>
+			<lowerLevelReport level="Reset Lowest Level"></lowerLevelReport>
+		</detail>
+	</level>
+	<level name="Reset Lowest Level" identification="PartnerKey">
+		<detail>
+			<field whichfield="column 0">
+				<value text=""/>
+			</field>
+			<field whichfield="column 1">
+				<value text=""/>
+			</field>
+			<field whichfield="column 2">
+				<value text=""/>
+			</field>
+			<field whichfield="column 3">
+				<value text=""/>
+			</field>
+			<field whichfield="column 4">
+				<value text=""/>
+			</field>
+			<field whichfield="column 5">
+				<value text=""/>
+			</field>
+			<field whichfield="column 6">
+				<value text=""/>
+			</field>
+			<field whichfield="column 7">
+				<value text=""/>
+			</field>
+			<field whichfield="column 8">
+				<value text=""/>
+			</field>
+			<field whichfield="column 9">
+				<value text=""/>
+			</field>
+			<field whichfield="column 10">
+				<value text=""/>
+			</field>
+			<field whichfield="column 11">
+				<value text=""/>
+			</field>
+			<field whichfield="column 12">
+				<value text=""/>
+			</field>
+		</detail>
+	</level>
+	
+    </levels>
+  </report>
+</reports>
