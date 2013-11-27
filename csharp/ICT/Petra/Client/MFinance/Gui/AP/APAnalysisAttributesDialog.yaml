@@ -1,18 +1,18 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraFormBasic.yaml
-    Template: window
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
     FormTitle: AP Analysis Attributes
     Namespace: Ict.Petra.Client.MFinance.Gui.AP
     MasterTable: AApAnalAttrib
     DetailTable: AApDocumentDetail
     UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data,Ict.Petra.Shared.MFinance.AP.Validation]
     FormType: dialog
+    Template: window
     WindowWidth: 450
     WindowHeight: 250
     Actions:
     Controls:
-        pnlContent:
-            Dock: Fill
+        pnlDialogContent:
+            Padding: 4,4,9,0        
             Controls: [grdDetails,pnlDetails]
         grdDetails:
             Dock: Fill
@@ -20,4 +20,7 @@ RootNode:
         pnlDetails: { ControlsOrientation = horizontal}
             Dock: Bottom
             Controls: [cmbDetailAttrib]
-        cmbDetailAttrib: { OnChange=UnloadDetails, AcceptNewValues=false }
+        cmbDetailAttrib: {Label=&Attribute, OnChange=UnloadDetails, AcceptNewValues=false }
+
+        btnCancel: 
+            Visible: false        

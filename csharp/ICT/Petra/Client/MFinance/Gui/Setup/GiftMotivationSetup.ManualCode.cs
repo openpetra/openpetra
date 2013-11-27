@@ -80,6 +80,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
                 this.Text = this.Text + "   [Ledger = " + FLedgerNumber.ToString() + "]";
 
+                SelectRowInGrid(1);
                 UpdateRecordNumberDisplay();
             }
         }

@@ -32,7 +32,7 @@ using System.Windows.Forms;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
-    public partial class TFrmLinkPartnerCostCentre
+    public partial class TFrmLinkPartnerCostCentreDialog
     {
         private Int32 FLedgerNumber;
         private DataTable FPartnerCostCentreTbl;

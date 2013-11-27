@@ -136,7 +136,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="AParentForm"></param>
         public static void FamilyMembersExtract(Form AParentForm)
         {
-            TFrmExtractFind ExtractFindDialog = new TFrmExtractFind(AParentForm);
+            TFrmExtractFindDialog ExtractFindDialog = new TFrmExtractFindDialog(AParentForm);
             TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(AParentForm);
             int BaseExtractId = 0;
             string BaseExtractName;
@@ -206,7 +206,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="AParentForm"></param>
         public static void FamilyExtractForPersons(Form AParentForm)
         {
-            TFrmExtractFind ExtractFindDialog = new TFrmExtractFind(AParentForm);
+            TFrmExtractFindDialog ExtractFindDialog = new TFrmExtractFindDialog(AParentForm);
             TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(AParentForm);
             int BaseExtractId = 0;
             string BaseExtractName;

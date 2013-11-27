@@ -45,7 +45,7 @@ using Ict.Petra.Client.CommonControls;
 namespace Ict.Petra.Client.MReporting.Gui
 {
     /// manual methods for the generated window
-    public partial class TFrmSendEmailOptions : System.Windows.Forms.Form
+    public partial class TFrmSendEmailOptionsDialog : System.Windows.Forms.Form
     {
         private void InitializeManualCode()
         {

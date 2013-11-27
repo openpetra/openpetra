@@ -1,5 +1,5 @@
 RootNode:
-    BaseClass: System.Windows.Forms.Form
+    BaseClass: PetraFormDialog.yaml
     Namespace: Ict.Petra.Client.CommonForms
     FormType: dialog
     Template: window
@@ -8,12 +8,11 @@ RootNode:
     WindowHeight: 250
     Controls:    
         stbMain:
-        pnlContent:
-            Dock: Fill
-            Padding: 8,12,8,5
-            Controls: [pnlDialogButtons, pnlDialogContent]
-
         pnlDialogContent:
+            Padding: 8,12,8,5
+            Controls: [pnlMain]
+
+        pnlMain:
             Controls: [chkOption, pnlIcon, lblMessage]
             Dock: Fill
 
@@ -22,23 +21,13 @@ RootNode:
             Height: 35
             Dock: Left
 
-        pnlDialogButtons: 
-            Margin: 0
-            Dock: Bottom
-            Controls: [pnlLeftButtons, pnlRightButtons]
-            ColWidths: [0=Percent:80, 1=Percent:20]
 
         pnlLeftButtons:
-            Margin: 0
-            TabIndex: 998
-            Dock: Fill
             Controls: 
-                Row0: [btnYes, btnYesToAll, btnNo, btnNoToAll, btnOK]
+                Row0: [btnYes, btnYesToAll, btnNo, btnNoToAll]
 
         pnlRightButtons:
-            Margin: 0
-            Dock: Right
-            Controls: [btnCancel]
+            Controls: [btnOK, btnCancel]
 
         lblMessage:
             Dock: Fill
@@ -47,10 +36,7 @@ RootNode:
             Dock: Bottom
             ColSpan: 2
 
-        btnYes: {Label=&Yes, TabIndex=0, ActionClick=BtnYes_Click}        
-        btnYesToAll: {Label=Yes to &all, TabIndex=1, ActionClick=BtnYesToAll_Click}        
-        btnNo: {Label=&No, TabIndex=2, ActionClick=BtnNo_Click}        
-        btnNoToAll: {Label=N&o to all, TabIndex=3, ActionClick=BtnNoToAll_Click}        
-        btnOK: {Label=&OK, TabIndex=4, ActionClick=BtnOK_Click}        
-        
-        btnCancel: {Label=&Cancel, TabIndex=5, ActionClick=BtnCancel_Click}
+        btnYes: {Label=&Yes, Height=24, TabIndex=10, ActionClick=BtnYes_Click}        
+        btnYesToAll: {Label=Yes to &all, Height=24, TabIndex=20, ActionClick=BtnYesToAll_Click}        
+        btnNo: {Label=&No, Height=24, TabIndex=30, ActionClick=BtnNo_Click}        
+        btnNoToAll: {Label=N&o to all, Height=24, TabIndex=40, ActionClick=BtnNoToAll_Click}        

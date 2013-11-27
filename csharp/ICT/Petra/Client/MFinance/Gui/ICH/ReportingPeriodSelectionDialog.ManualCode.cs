@@ -237,6 +237,8 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 TFinanceControls.InitialiseCostCentreList(ref cmbCostCentreCode, FLedgerNumber, true, false, false, true);
 
                 cmbCostCentreCode.SelectedIndex = 1;
+
+                this.grpGenerateHosaFiles.Text = Catalog.GetString("Generate HOSA Files");
             }
         }
 

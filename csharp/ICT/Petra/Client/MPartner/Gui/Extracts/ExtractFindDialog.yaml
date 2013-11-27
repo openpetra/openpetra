@@ -1,9 +1,11 @@
 RootNode:
-    BaseClass: System.Windows.Forms.Form
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
     Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
     FormTitle: Find Extract
     FormType: dialog
     Template: window
+    WindowWidth: 700
+    WindowHeight: 500    
     Icon: petraico-big.ico
     Actions:
         actAccept: {ActionClick=AcceptExtract}
@@ -11,10 +13,8 @@ RootNode:
         actSearch: {ActionClick=RefreshExtractList}
         actClear: {ActionClick=ClearSearchCriteria}
     Controls:
-        stbMain:
-        pnlContent:
-            Controls: [pnlFilter, pnlExtractMasterList, pnlDialogButtons]
-            Dock: Fill
+        pnlDialogContent:
+            Controls: [pnlFilter, pnlExtractMasterList]
         pnlFilter:
             Controls: [pnlFilterCriteria, pnlFilterButtons]
             Dock: Top
@@ -28,16 +28,14 @@ RootNode:
                 Row4: [cmbUserModified]
                 Row5: [dtpModifiedFrom, dtpModifiedTo]
         pnlFilterButtons: {ControlsOrientation=horizontal}
+            AutoButtonMaxWidths: true
+            AutoButtonMaxWidthsAutoSizesContainerWidth: true
             NoLabel: true
             Controls: [btnSearch, btnClear]
         pnlExtractMasterList:
+            Padding: 4,0,8,0
             Dock: Fill
             Controls: [clbDetails]
-        pnlDialogButtons: {ControlsOrientation=horizontal}
-            NoLabel: true
-            Dock: Bottom
-            Controls: [btnAccept, btnClose]
-
         txtExtractName: {Label=Extract Name, ColSpan=2, Width=200}
         txtExtractDesc: {Label=Description, ColSpan=2, Width=350}
         cmbUserCreated: {Label=Created by, List=UserList, ColSpan=2}
@@ -58,11 +56,7 @@ RootNode:
             Dock: Fill
             Columns: []
 
-        btnAccept:
-            Label: Accept
-            Dock: Left
+        btnOK:
+            Label: &Accept
             Action: actAccept
-        btnClose:
-            Label: Close
-            Dock: Right
-            Action: actClose
+        btnCancel: {Action=actClose}

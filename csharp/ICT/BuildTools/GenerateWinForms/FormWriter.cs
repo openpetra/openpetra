@@ -534,25 +534,59 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 return "";
             }
 
-            System.Resources.ResXResourceWriter w = new System.Resources.ResXResourceWriter(AImageFileName + ".resx");
+            // AlanP added this retry loop after getting fed up with generating the solution and finding that
+            //  access to go.gif.resx is denied.  The assumption is that multi-threaded code generation
+            //  wants to access a well-used image file in multiple places.  The resx file is only a temporary
+            //  file.  A few lines down we delete it, which is probably why it fails to open.
+            // If that is not the cause the code shouldn't do any harm.
+            int nTries = 0;
+            int nTriesLimit = 4;                // 4 tries over 2 seconds should be enough!
+            string exceptionMsg = String.Empty;
+            TXMLParser parser = null;
 
-            if (AImageOrIcon == "Icon")
+            while (nTries < nTriesLimit)
             {
-                w.AddResource(AImageFileName, new Icon(AImageFileName));
-            }
-            else if ((AImageOrIcon == "Bitmap") && (Path.GetExtension(AImageFileName) == ".ico"))
-            {
-                w.AddResource(AImageFileName, (new Icon(AImageFileName)).ToBitmap());
-            }
-            else
-            {
-                w.AddResource(AImageFileName, new Bitmap(AImageFileName));
+                try
+                {
+                    System.Resources.ResXResourceWriter w = new System.Resources.ResXResourceWriter(AImageFileName + ".resx");
+
+                    if (AImageOrIcon == "Icon")
+                    {
+                        w.AddResource(AImageFileName, new Icon(AImageFileName));
+                    }
+                    else if ((AImageOrIcon == "Bitmap") && (Path.GetExtension(AImageFileName) == ".ico"))
+                    {
+                        w.AddResource(AImageFileName, (new Icon(AImageFileName)).ToBitmap());
+                    }
+                    else
+                    {
+                        w.AddResource(AImageFileName, new Bitmap(AImageFileName));
+                    }
+
+                    w.Close();
+
+                    parser = new TXMLParser(AImageFileName + ".resx", false);
+                    File.Delete(AImageFileName + ".resx");
+
+                    nTries = 999;           // success!
+                }
+                catch (Exception ex)        // probably an IO exception
+                {
+                    nTries++;
+                    parser = null;
+                    exceptionMsg = ex.Message;
+                    Application.DoEvents();
+                    System.Threading.Thread.Sleep(500);
+                }
             }
 
-            w.Close();
+            if ((nTries == nTriesLimit) || (parser == null))
+            {
+                throw new IOException(String.Format(
+                        "The system had {0} attempts to create, parse and delete the file {1}.resx as a resource but the following IO exception was raised: {2}",
+                        nTries, AImageFileName, exceptionMsg));
+            }
 
-            TXMLParser parser = new TXMLParser(AImageFileName + ".resx", false);
-            File.Delete(AImageFileName + ".resx");
             XmlDocument doc = parser.GetDocument();
             XmlNode child = doc.DocumentElement.FirstChild;
 

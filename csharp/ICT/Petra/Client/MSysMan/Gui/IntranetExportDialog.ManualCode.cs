@@ -36,14 +36,14 @@ using Ict.Petra.Shared;
 namespace Ict.Petra.Client.MSysMan.Gui
 {
     /// manual methods for the generated window
-    public partial class TFrmIntranetExport
+    public partial class TFrmIntranetExportDialog
     {
-        private TFrmIntranetExportSettings FSettingsPage;
+        private TFrmIntranetExportSettingsDialog FSettingsPage;
         private DateTime FGiftsSince;
 
         private void InitializeManualCode()
         {
-            FSettingsPage = new TFrmIntranetExportSettings(this);
+            FSettingsPage = new TFrmIntranetExportSettingsDialog(this);
         }
 
         private void UpdateDonationsLabel()
@@ -90,7 +90,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
         private void BtnMotivations_Click(Object Sender, EventArgs e)
         {
-            TFrmIntranetExportMotivations MotivationScreen = new TFrmIntranetExportMotivations(this);
+            TFrmIntranetExportMotivationsDialog MotivationScreen = new TFrmIntranetExportMotivationsDialog(this);
 
             MotivationScreen.ShowDialog();
         }

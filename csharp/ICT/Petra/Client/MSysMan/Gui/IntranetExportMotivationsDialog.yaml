@@ -4,8 +4,8 @@
     Namespace: Ict.Petra.Client.MSysMan.Gui
     FormType: dialog
     Template: window
-    WindowWidth: 575
-    WindowHeight:400
+    WindowWidth: 553
+    WindowHeight:390
 
     Controls:
         pnlDialogContent:

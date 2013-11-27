@@ -1884,6 +1884,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileExportPartner(System.Object sender, System.EventArgs e)
         {
+            Boolean Result = false;
+
             String FileName = TImportExportDialogs.GetExportFilename(Catalog.GetString("Save Partners into File"));
 
             if (FileName.Length > 0)
@@ -1899,7 +1901,23 @@ namespace Ict.Petra.Client.MPartner.Gui
                         this.PartnerKey, SiteKey, LocationKey, false, ASpecificBuildingInfo);
 
                     doc += TRemote.MPartner.ImportExport.WebConnectors.GetExtFileFooter();
-                    TImportExportDialogs.ExportTofile(doc, FileName);
+                    Result = TImportExportDialogs.ExportTofile(doc, FileName);
+
+                    if (!Result)
+                    {
+                        MessageBox.Show(Catalog.GetString("Export of Partner failed!"), Catalog.GetString(
+                                "Export Partner"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                    else
+                    {
+                        MessageBox.Show(Catalog.GetString("Export of Partner finished"), Catalog.GetString(
+                                "Export Partner"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show(Catalog.GetString("Export with this format is not yet supported!"), Catalog.GetString(
+                            "Export Partner"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

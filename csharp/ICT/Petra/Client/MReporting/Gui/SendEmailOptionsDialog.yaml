@@ -4,14 +4,15 @@ RootNode:
     Namespace: Ict.Petra.Client.MReporting.Gui
     FormType: dialog
     Template: window
-    WindowWidth: 600
-    WindowHeight: 300
+    WindowWidth: 520
+    WindowHeight: 175
     
     Events:
         Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
 
     Controls:
         pnlDialogContent:
+            Padding: 0,0,3,0
             Controls:
                 Row0: [txtEmail]
                 Row1: [chkExcelFile]
@@ -20,7 +21,7 @@ RootNode:
                 
         txtEmail:
             Label: Send to these Emails Addresses
-            Width: 300
+            Stretch: horizontally
 
         chkExcelFile:
             Label: Attach Excel file (.xlsx)

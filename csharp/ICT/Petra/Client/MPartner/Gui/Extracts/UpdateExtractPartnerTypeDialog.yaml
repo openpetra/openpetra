@@ -5,13 +5,14 @@ RootNode:
     FormType: dialog
     Template: window
     WindowWidth: 600
-    WindowHeight: 500
+    WindowHeight: 495
     
     Events:
         Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
 
     Controls:
         pnlDialogContent:
+            Padding: 5,0,7,0        
             Controls:
                 Row0: [pnlExtractName]
                 Row1: [grdTypes]

@@ -28,6 +28,7 @@ RootNode:
         btnNew:
             Action: actNew
             Width: 80
+            Tooltip: Click to create a new analysis value record
         btnDelete:
             Action: actDelete
             Width: 80

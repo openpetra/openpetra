@@ -124,10 +124,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ABatchTable.GetBatchNumberDBName()
                 );
 
-            UpdateRecordNumberDisplay();
-
-            grdDetails.Focus();
-
             //Console.WriteLine("{0}: LoadBatches ended - took {1} ms", DateTime.Now.ToLongTimeString(), (DateTime.Now - dtStartLoad).TotalMilliseconds);
         }
 
@@ -280,6 +276,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void ShowDetailsManual(ABatchRow ARow)
         {
             EnableTransactionTabForBatch();
+            grdDetails.TabStop = (ARow != null);
 
             if (ARow == null)
             {
@@ -352,9 +349,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            Int32 yearNumber = 0;
-            Int32 periodNumber = 0;
-
             RadioButton rbtEditing = (RadioButton)FFilterPanelControls.FindControlByName("rbtEditing");
             TCmbAutoComplete cmbYearFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYearFilter");
             TCmbAutoComplete cmbPeriodFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriodFilter");
@@ -369,56 +363,42 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //Set year and period to correct value
-            if (cmbYearFilter.GetSelectedInt32() != 0)
+            if (cmbYearFilter.SelectedIndex != 0)
             {
                 cmbYearFilter.SelectedIndex = 0;
             }
-            else if (cmbPeriodFilter.GetSelectedInt32() != 0)
+            else if (cmbPeriodFilter.SelectedIndex != 0)
             {
                 cmbPeriodFilter.SelectedIndex = 0;
             }
 
-            FPetraUtilsObject.VerificationResultCollection.Clear();
+            string rowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
+            FFilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == 0) && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
+            ApplyFilter();
+
+            CreateNewABatch();
 
             pnlDetails.Enabled = true;
-
             EnableButtonControl(true);
 
-            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateABatch(FLedgerNumber));
-
-            ABatchRow newBatchRow = (ABatchRow)FMainDS.ABatch.Rows[FMainDS.ABatch.Rows.Count - 1];
-
-            newBatchRow.DateEffective = FDefaultDate;
+            ABatchRow newBatchRow = GetSelectedDetailRow();
+            Int32 yearNumber = 0;
+            Int32 periodNumber = 0;
 
             if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out yearNumber, out periodNumber))
             {
                 newBatchRow.BatchPeriod = periodNumber;
             }
 
-            if (!SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1))
-            {
-                if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
-                {
-                    MessageBox.Show(
-                        MCommonResourcestrings.StrNewRecordIsFiltered,
-                        MCommonResourcestrings.StrAddNewRecordTitle,
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    FFilterPanelControls.ClearAllDiscretionaryFilters();
-                    SelectDetailRowByDataTableIndex(FMainDS.ABatch.Rows.Count - 1);
-                }
-            }
-
-            FPreviouslySelectedDetailRow.DateEffective = FDefaultDate;
+            newBatchRow.DateEffective = FDefaultDate;
             dtpDetailDateEffective.Date = FDefaultDate;
 
-            FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+            FSelectedBatchNumber = newBatchRow.BatchNumber;
 
             string enterMsg = Catalog.GetString("Please enter a batch description");
-            FPreviouslySelectedDetailRow.BatchDescription = enterMsg;
+            newBatchRow.BatchDescription = enterMsg;
             txtDetailBatchDescription.Text = enterMsg;
-            txtDetailBatchDescription.Focus();
-
-            UpdateRecordNumberDisplay();
+            txtDetailBatchDescription.SelectAll();
 
             //Needed as GL batches can not be deleted
             ((TFrmGLBatch)ParentForm).SaveChanges();
@@ -832,8 +812,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         {
                             EnableButtonControl(false);
                             ClearDetailControls();
+                            btnNew.Focus();
                             pnlDetails.Enabled = false;
                         }
+
+                        UpdateRecordNumberDisplay();
+                        SetRecordNumberDisplayProperties();
                     }
                 }
             }
@@ -935,8 +919,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     {
                         EnableButtonControl(false);
                         ClearDetailControls();
+                        btnNew.Focus();
                         pnlDetails.Enabled = false;
                     }
+
+                    UpdateRecordNumberDisplay();
+                    SetRecordNumberDisplayProperties();
                 }
             }
         }
@@ -1047,6 +1035,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             if (FSuppressRefreshFilter)
             {
+                return;
+            }
+
+            if ((sender is RadioButton) && (((RadioButton)sender).Checked == false))
+            {
+                // wait for the event to be fired for the button that is now checked
                 return;
             }
 
@@ -1526,6 +1520,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FSuppressRefreshFilter = true;
             TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref cmbPeriodFilter, FLedgerNumber, cmbYearFilter.GetSelectedInt32());
             FSuppressRefreshFilter = false;
+
+            if (sender != null)
+            {
+                RefreshFilter(sender, e);
+            }
         }
 
         private void ToggleOptionButtonCheckedEvent(bool AToggleOn)
@@ -1554,6 +1553,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void ShowFindPanel()
         {
             FucoFilterAndFind.DisplayFindTab();
+        }
+
+        /// <summary>
+        /// A simple flag used to indicate that the form has been shown for the first time
+        /// </summary>
+        private bool FInitialFocusActionComplete = false;
+
+        /// <summary>
+        /// Sets the initial focus to the grid or the New button depending on the row count
+        /// </summary>
+        public void SetInitialFocus()
+        {
+            if (FInitialFocusActionComplete)
+            {
+                return;
+            }
+
+            if (grdDetails.Rows.Count < 2)
+            {
+                btnNew.Focus();
+            }
+            else
+            {
+                grdDetails.Focus();
+            }
+
+            FInitialFocusActionComplete = true;
         }
     }
 }

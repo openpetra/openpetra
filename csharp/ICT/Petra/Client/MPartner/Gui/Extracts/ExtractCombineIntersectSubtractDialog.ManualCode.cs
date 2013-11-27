@@ -142,7 +142,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         private void AddExtractToList(System.Object sender, EventArgs e)
         {
-            TFrmExtractFind ExtractFindDialog = new TFrmExtractFind(this.ParentForm);
+            TFrmExtractFindDialog ExtractFindDialog = new TFrmExtractFindDialog(this.ParentForm);
             MExtractMasterTable ExtractMasterTable = new MExtractMasterTable();
             MExtractMasterRow NewRow;
 
