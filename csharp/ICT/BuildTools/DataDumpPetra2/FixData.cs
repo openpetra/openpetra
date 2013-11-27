@@ -735,6 +735,335 @@ namespace Ict.Tools.DataDumpPetra2
                 }
             }
 
+            // this is a new table with new data (also in basedata)
+            if (ATableName == "pt_skill_category")
+            {
+                // Default categories that old abilities and qualifications are mapped to. Basedata - pt_skill_category
+                string[] SkillCategories = new string[] {"COMMUNICATION", "EDUCATION", "FINANCE", "FOOD", "LAW", "MEDICAL", "MINISTRY", "MUSIC", "OFFICE",
+                        "PEOPLE", "PRACTICAL", "SEA", "TECHNICAL"};
+                
+                foreach (string Category in SkillCategories)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_code_c", Category);
+                    SetValue(AColumnNames, ref ANewRow, "pt_description_c", "");
+                    SetValue(AColumnNames, ref ANewRow, "pt_unassignable_flag_l", "0");
+                    SetValue(AColumnNames, ref ANewRow, "pt_unassignable_date_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "pt_deletable_flag_l", "0");
+                    SetValue(AColumnNames, ref ANewRow, "s_date_created_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
+
+                    AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("\\.");
+                    AWriterTest.WriteLine("ROLLBACK;");
+                    RowCounter++;
+                }
+            }
+
+            // this is a new table with new data (also in basedata)
+            if (ATableName == "pt_skill_level")
+            {
+                // Default levels that old abilities and qualifications levels are mapped to. Basedata - pt_skill_level
+                string[] SkillLevel = new string[] {"1", "2", "3", "4", "99"};
+                string[] SkillLevelDescription = new string[] {"Basic", "Moderate", "Competent", "Professional", "Level of ability not known"};
+                
+                for (int i = 0; i < SkillLevel.Length; i++)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_level_i", SkillLevel[i]);
+                    SetValue(AColumnNames, ref ANewRow, "pt_description_c", SkillLevelDescription[i]);
+                    SetValue(AColumnNames, ref ANewRow, "pt_unassignable_flag_l", "0");
+                    SetValue(AColumnNames, ref ANewRow, "pt_unassignable_date_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "pt_deletable_flag_l", "0");
+                    SetValue(AColumnNames, ref ANewRow, "s_date_created_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
+
+                    AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("\\.");
+                    AWriterTest.WriteLine("ROLLBACK;");
+                    RowCounter++;
+                }
+            }
+
+            // data from pm_person_ability and pm_person_qualification are copied into this new table
+            if (ATableName == "pm_person_skill")
+            {
+                // Default categories that old abilities and qualifications are mapped to. Basedata - pt_skill_category
+                string[] SkillCategories = new string[] {"COMMUNICATION", "EDUCATION", "FINANCE", "FOOD", "LAW", "MEDICAL", "MINISTRY", "MUSIC", "OFFICE",
+                        "PEOPLE", "PRACTICAL", "SEA", "TECHNICAL"};
+                
+                String SkillCategory;
+                String Description;
+                int SkillLevel;
+
+                //*** Copy from pm_person_ability ***//
+                
+                // load the file pm_person_ability.d.gz
+                TTable PersonAbility = TDumpProgressToPostgresql.GetStoreOld().GetTable("pm_person_ability");
+
+                TParseProgressCSV ParserAbility = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pm_person_ability.d.gz",
+                    PersonAbility.grpTableField.Count);
+
+                StringCollection PersonAbilityColumnNames = GetColumnNames(PersonAbility);
+
+                // these columns will be the same for all records
+                SetValue(AColumnNames, ref ANewRow, "pm_description_local_c", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "pm_description_language_c", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "pm_current_occupation_l", "0");
+                SetValue(AColumnNames, ref ANewRow, "pm_degree_c", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "pm_year_of_degree_i", "0");
+
+                while (true)
+                {
+                    string[] OldRow = ParserAbility.ReadNextRow();
+
+                    if (OldRow == null)
+                    {
+                        break;
+                    }
+                    
+                    // map old ability_area_name to new skill category
+                    String AbilityAreaName = GetValue(PersonAbilityColumnNames, OldRow, "pt_ability_area_name_c");
+                    SkillCategory = "OTHER";
+                    Description = "";
+                    
+                    foreach (string Category in SkillCategories)
+                    {
+                        if (AbilityAreaName.Substring(0,3) == Category.Substring(0,3))
+                        {
+                            SkillCategory = Category;
+                            break;
+                        }
+                    }
+
+                    // copy old ability_area description from pt_ability_area to new description
+                    
+                    // load the file pt_ability_area.d.gz so that we can access the values for each person
+                    TTable AbilityArea = TDumpProgressToPostgresql.GetStoreOld().GetTable("pt_ability_area");
+
+                    TParseProgressCSV ParserAbilityArea = new TParseProgressCSV(
+                        TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pt_ability_area.d.gz",
+                        AbilityArea.grpTableField.Count);
+
+                    StringCollection AbilityAreaColumnNames = GetColumnNames(AbilityArea);
+                    
+                    while (true)
+                    {
+                        string[] OldAbilityRow = ParserAbilityArea.ReadNextRow();
+
+                        if (OldAbilityRow == null)
+                        {
+                            break;
+                        }
+                        
+                        if (GetValue(AbilityAreaColumnNames, OldAbilityRow, "pt_ability_area_name_c") == AbilityAreaName)
+                        {
+                            Description = GetValue(AbilityAreaColumnNames, OldAbilityRow, "pt_ability_area_descr_c");
+                            break;
+                        }
+                    }
+                    
+                    // map old ability level to new skill level
+                    int AbilityLevel = Convert.ToInt32(GetValue(PersonAbilityColumnNames, OldRow, "pt_ability_level_i"));
+                    SkillLevel = 99; // remains 99 if unknown
+                    
+                    if (AbilityLevel >= 0 && AbilityLevel <=3)
+                    {
+                        SkillLevel = 1;
+                    }
+                    else if (AbilityLevel >= 4 && AbilityLevel <=5)
+                    {
+                        SkillLevel = 2;
+                    }
+                    else if (AbilityLevel >= 6 && AbilityLevel <=7)
+                    {
+                        SkillLevel = 3;
+                    }
+                    else if (AbilityLevel >= 8 && AbilityLevel <=10)
+                    {
+                        SkillLevel = 4;
+                    }
+                    
+                    string Comment = GetValue(PersonAbilityColumnNames, OldRow, "pm_comment_c");
+                    
+                    if (SkillCategory == "OTHER")
+                    {
+                        Comment += " Copied from Petra (Ability Area Name: " + AbilityAreaName;
+                    }
+
+                    SetValue(AColumnNames, ref ANewRow, "pm_person_skill_key_i", RowCounter.ToString());
+                    SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(PersonAbilityColumnNames, OldRow, "p_partner_key_n"));
+                    SetValue(AColumnNames, ref ANewRow, "pm_skill_category_code_c", SkillCategory);
+                    SetValue(AColumnNames, ref ANewRow, "pm_description_english_c", Description);
+                    SetValue(AColumnNames, ref ANewRow, "pm_skill_level_i", SkillLevel.ToString());
+                    SetValue(AColumnNames, ref ANewRow, "pm_years_of_experience_i", GetValue(PersonAbilityColumnNames, OldRow, "pm_years_of_experience_i"));
+                    SetValue(AColumnNames, ref ANewRow, "pm_years_of_experience_as_of_d", GetValue(PersonAbilityColumnNames, OldRow, "pm_years_of_experience_as_of_d"));
+                    SetValue(AColumnNames, ref ANewRow, "pm_professional_skill_l", "0");
+                    SetValue(AColumnNames, ref ANewRow, "pm_comment_c", Comment);
+                    SetValue(AColumnNames, ref ANewRow, "s_date_created_d", GetValue(PersonAbilityColumnNames, OldRow, "s_date_created_d"));
+                    SetValue(AColumnNames, ref ANewRow, "s_created_by_c", GetValue(PersonAbilityColumnNames, OldRow, "s_created_by_c"));
+                    SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", GetValue(PersonAbilityColumnNames, OldRow, "s_date_modified_d"));
+                    SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", GetValue(PersonAbilityColumnNames, OldRow, "s_modified_by_c"));
+                    SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", GetValue(PersonAbilityColumnNames, OldRow, "s_modification_id_t"));
+
+                    AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("\\.");
+                    AWriterTest.WriteLine("ROLLBACK;");
+                    RowCounter++;
+                }
+
+                //*** Copy from pm_person_qualification ***//
+                
+                // load the file pm_person_qualification.d.gz
+                TTable PersonQualification = TDumpProgressToPostgresql.GetStoreOld().GetTable("pm_person_qualification");
+
+                TParseProgressCSV ParserQualification = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pm_person_qualification.d.gz",
+                    PersonQualification.grpTableField.Count);
+
+                StringCollection PersonQualificationColumnNames = GetColumnNames(PersonQualification);
+
+                while (true)
+                {
+                    string[] OldRow = ParserQualification.ReadNextRow();
+
+                    if (OldRow == null)
+                    {
+                        break;
+                    }
+                    
+                    // map old qualification_area_name to new skill category
+                    String QualificationAreaName = GetValue(PersonAbilityColumnNames, OldRow, "pt_ability_area_name_c");
+                    SkillCategory = "OTHER";
+                    Description = "";
+                    
+                    foreach (string Category in SkillCategories)
+                    {
+                        if (QualificationAreaName.Substring(0,3) == Category.Substring(0,3))
+                        {
+                            SkillCategory = Category;
+                            break;
+                        }
+                    }
+
+                    // copy old qualification_area description from pt_qualification_area to new description
+                    
+                    // load the file pt_ability_area.d.gz so that we can access the values for each person
+                    TTable QualificationArea = TDumpProgressToPostgresql.GetStoreOld().GetTable("pt_qualification_area");
+
+                    TParseProgressCSV ParserQualificationArea = new TParseProgressCSV(
+                        TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pt_qualification_area.d.gz",
+                        QualificationArea.grpTableField.Count);
+
+                    StringCollection QualificationAreaColumnNames = GetColumnNames(QualificationArea);
+                    
+                    while (true)
+                    {
+                        string[] OldQualificationRow = ParserQualificationArea.ReadNextRow();
+
+                        if (OldQualificationRow == null)
+                        {
+                            break;
+                        }
+                        
+                        if (GetValue(QualificationAreaColumnNames, OldQualificationRow, "pt_qualification_area_name_c") == QualificationAreaName)
+                        {
+                            Description = GetValue(QualificationAreaColumnNames, OldQualificationRow, "pt_qualification_area_descr_c");
+                            break;
+                        }
+                    }
+                    
+                    // map old Qualification level to new skill level
+                    int QualificationLevel = Convert.ToInt32(GetValue(PersonQualificationColumnNames, OldRow, "pt_qualification_level_i"));
+                    SkillLevel = 99; // remains 99 if unknown
+                    
+                    if (QualificationLevel >= 0 && QualificationLevel <=3)
+                    {
+                        SkillLevel = 1;
+                    }
+                    else if (QualificationLevel >= 4 && QualificationLevel <=5)
+                    {
+                        SkillLevel = 2;
+                    }
+                    else if (QualificationLevel >= 6 && QualificationLevel <=7)
+                    {
+                        SkillLevel = 3;
+                    }
+                    else if (QualificationLevel >= 8 && QualificationLevel <=10)
+                    {
+                        SkillLevel = 4;
+                    }
+                    
+                    string Comment = GetValue(PersonQualificationColumnNames, OldRow, "pm_comment_c");
+                    
+                    if (SkillCategory == "OTHER")
+                    {
+                        Comment += " Copied from Petra (Qualification Area Name: " + QualificationAreaName;
+                    }
+
+                    // copy old qualification level description from pt_qualification_area to new comment
+                    
+                    // load the file pt_qualification_level.d.gz so that we can access the values for each person
+                    TTable QualificationLevelTable = TDumpProgressToPostgresql.GetStoreOld().GetTable("pt_qualification_level");
+
+                    TParseProgressCSV ParserQualificationLevel = new TParseProgressCSV(
+                        TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pt_qualification_level.d.gz",
+                        QualificationLevelTable.grpTableField.Count);
+
+                    StringCollection QualificationLevelColumnNames = GetColumnNames(QualificationLevelTable);
+                    
+                    while (true)
+                    {
+                        string[] OldQualificationLevelRow = ParserQualificationLevel.ReadNextRow();
+
+                        if (OldQualificationLevelRow == null)
+                        {
+                            break;
+                        }
+                        
+                        if (GetValue(QualificationLevelColumnNames, OldQualificationLevelRow, "pt_qualification_level_i") == QualificationLevel.ToString())
+                        {
+                            Comment += " Qualification Level from Petra: " + QualificationLevel + " - " 
+                                + GetValue(QualificationLevelColumnNames, OldQualificationLevelRow, "pt_qualification_level_descr_c");
+                            break;
+                        }
+                    }
+
+                    SetValue(AColumnNames, ref ANewRow, "pm_person_skill_key_i", RowCounter.ToString());
+                    SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(PersonQualificationColumnNames, OldRow, "p_partner_key_n"));
+                    SetValue(AColumnNames, ref ANewRow, "pm_skill_category_code_c", SkillCategory);
+                    SetValue(AColumnNames, ref ANewRow, "pm_description_english_c", Description);
+                    SetValue(AColumnNames, ref ANewRow, "pm_skill_level_i", SkillLevel.ToString());
+                    SetValue(AColumnNames, ref ANewRow, "pm_years_of_experience_i", GetValue(PersonQualificationColumnNames, OldRow, "pm_years_of_experience_i"));
+                    SetValue(AColumnNames, ref ANewRow, "pm_years_of_experience_as_of_d", GetValue(PersonQualificationColumnNames, OldRow, "pm_years_of_experience_as_of_d"));
+                    SetValue(AColumnNames, ref ANewRow, "pm_professional_skill_l", "1");
+                    SetValue(AColumnNames, ref ANewRow, "pm_comment_c", Comment);
+                    SetValue(AColumnNames, ref ANewRow, "s_date_created_d", GetValue(PersonAbilityColumnNames, OldRow, "s_date_created_d"));
+                    SetValue(AColumnNames, ref ANewRow, "s_created_by_c", GetValue(PersonAbilityColumnNames, OldRow, "s_created_by_c"));
+                    SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", GetValue(PersonAbilityColumnNames, OldRow, "s_date_modified_d"));
+                    SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", GetValue(PersonAbilityColumnNames, OldRow, "s_modified_by_c"));
+                    SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", GetValue(PersonAbilityColumnNames, OldRow, "s_modification_id_t"));
+
+                    AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("\\.");
+                    AWriterTest.WriteLine("ROLLBACK;");
+                    RowCounter++;
+                }
+            }
+
             return RowCounter;
         }
     }
