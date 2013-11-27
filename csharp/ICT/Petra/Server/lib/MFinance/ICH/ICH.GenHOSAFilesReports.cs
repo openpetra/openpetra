@@ -306,11 +306,28 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         }
 
                         Choice = 0;
+                        
+                        TLogging.Log("HOSA-Narrative: " + Narrative);
 
+                        //Check for specific narrative strings
+                        bool IsNarrativeGBGiftBatch = false;
+                        int LenNarrativeGBGiftBatch = MFinanceConstants.NARRATIVE_GB_GIFT_BATCH.Length;
+                        bool IsNarrativeGiftsReceivedGiftBatch = false;
+                        int LenNarrativeGiftsReceivedGiftBatch = MFinanceConstants.NARRATIVE_GIFTS_RECEIVED_GIFT_BATCH.Length;
+                        
+                        if (Narrative.Length >= LenNarrativeGiftsReceivedGiftBatch)
+                        {
+                        	IsNarrativeGiftsReceivedGiftBatch = (Narrative.Substring(0, LenNarrativeGiftsReceivedGiftBatch) == MFinanceConstants.NARRATIVE_GIFTS_RECEIVED_GIFT_BATCH);
+                        }
+                        
+                        if (Narrative.Length >= LenNarrativeGBGiftBatch)
+                        {
+                        	IsNarrativeGBGiftBatch = (Narrative.Substring(0, LenNarrativeGBGiftBatch) == MFinanceConstants.NARRATIVE_GB_GIFT_BATCH);
+                        }
+                        
+                        
                         if ((gLMAcctType.ToUpper() != MFinanceConstants.ACCOUNT_TYPE_INCOME.ToUpper())
-                            || !(SystemGenerated && ((Narrative.Substring(0, 27) == MFinanceConstants.NARRATIVE_GIFTS_RECEIVED_GIFT_BATCH)
-                                                     || (Narrative.Substring(0, 15) == MFinanceConstants.NARRATIVE_GB_GIFT_BATCH)))
-                            )
+                        	|| !(SystemGenerated && (IsNarrativeGBGiftBatch || IsNarrativeGiftsReceivedGiftBatch)))
                         {
                             // Put transaction information
                             DataRow DR = (DataRow)TableForExport.NewRow();

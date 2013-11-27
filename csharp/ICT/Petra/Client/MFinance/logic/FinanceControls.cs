@@ -940,6 +940,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 null);
             AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
 
+			//Alternative way to filter the contents of the combo
             //AControl.Filter = AIchStewardshipTable.GetPeriodNumberDBName() + " = " + APeriodNumber.ToString();
         }
 

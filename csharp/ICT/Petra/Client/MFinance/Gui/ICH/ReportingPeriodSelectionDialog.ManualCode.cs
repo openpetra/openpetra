@@ -304,6 +304,8 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             {
                 TFinanceControls.InitialiseICHStewardshipList(ref cmbICHNumber, FLedgerNumber,
                     cmbReportPeriod.GetSelectedInt32());
+        		
+        		cmbICHNumber.SelectedIndex = 0;
             }
         }
     }
