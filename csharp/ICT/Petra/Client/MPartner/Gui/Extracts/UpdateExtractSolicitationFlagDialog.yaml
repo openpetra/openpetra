@@ -4,8 +4,8 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
     FormType: dialog
     Template: window
-    WindowWidth: 400
-    WindowHeight: 200
+    WindowWidth: 290
+    WindowHeight: 145
     
     Events:
         Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}

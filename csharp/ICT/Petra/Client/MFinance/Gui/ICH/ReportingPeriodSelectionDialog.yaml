@@ -100,9 +100,10 @@ RootNode:
         btnBrowse: {Label=&Browse, Height=25}
         
         lblEmpty1: {Label=None, Visible=false}
-        Empty2: #{Label=None, Visible=false}
-        Empty3: #{Label=None, Visible=false}
-        Empty4: #{Label=None, Visible=false}
-        Empty5: #{Label=None, Visible=false}
-        Empty6: #{Label=None, Visible=false}
-        Empty7: #{Label=None, Visible=false}
+        Empty2:
+        Empty3:
+        Empty4:
+        Empty5:
+        Empty6:
+        Empty7:
+

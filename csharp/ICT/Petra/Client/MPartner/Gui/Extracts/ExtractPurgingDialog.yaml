@@ -5,7 +5,7 @@ RootNode:
     FormType: dialog
     Template: window
     WindowWidth: 410
-    WindowHeight: 300
+    WindowHeight: 185
     
     Events:
         Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
@@ -15,10 +15,11 @@ RootNode:
             Controls:
                 Row0: [lblIntroduction]
                 Row1: [txtNumberOfDays]
-                Row2: [chkAllUsers]
-                Row3: [cmbUser]
+                Row2: [cmbUser]
+                Row3: [chkAllUsers]
                 
         lblIntroduction: {Label=Purge Extracts that are}
         txtNumberOfDays: {Label=Days old, Format=Integer}
-        chkAllUsers: {Label=For all users}
         cmbUser: {Label=For user, List=UserList}
+        chkAllUsers: {Label=For all users, OnChange=AllUsersSelectionChanged}
+        btnOK: {Label=&Purge}

@@ -360,7 +360,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             emptyRow[ACostCentreTable.ColumnLedgerNumberId] = ALedgerNumber;
             emptyRow[ACostCentreTable.ColumnCostCentreCodeId] = string.Empty;
             emptyRow[ACostCentreTable.ColumnCostCentreNameId] = Catalog.GetString("Select a valid cost centre");
-            
+
             Table.Rows.Add(emptyRow);
 
             //Highlight inactive Cost Centres
@@ -915,17 +915,17 @@ namespace Ict.Petra.Client.MFinance.Logic
         {
             DataTable ICHNumbers = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.ICHStewardshipList, ALedgerNumber);
 
-			//Filter for current period
+            //Filter for current period
             ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1}",
-                                                             AIchStewardshipTable.GetPeriodNumberDBName(),
-                                                             APeriodNumber);
-			
-			ICHNumbers.DefaultView.Sort = AIchStewardshipTable.GetIchNumberDBName();
-			
+                AIchStewardshipTable.GetPeriodNumberDBName(),
+                APeriodNumber);
+
+            ICHNumbers.DefaultView.Sort = AIchStewardshipTable.GetIchNumberDBName();
+
             //Get the distinct ICH numbers for the specified period
             DataTable newDataTable = ICHNumbers.DefaultView.ToTable(true, AIchStewardshipTable.GetIchNumberDBName(),
-                                                                    AIchStewardshipTable.GetDateProcessedDBName());
-            
+                AIchStewardshipTable.GetDateProcessedDBName());
+
             // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour
             DataRow emptyRow = newDataTable.NewRow();
 
@@ -940,7 +940,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 null);
             AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
 
-			//Alternative way to filter the contents of the combo
+            //Alternative way to filter the contents of the combo
             //AControl.Filter = AIchStewardshipTable.GetPeriodNumberDBName() + " = " + APeriodNumber.ToString();
         }
 

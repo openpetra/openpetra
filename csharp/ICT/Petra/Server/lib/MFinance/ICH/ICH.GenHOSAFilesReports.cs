@@ -242,18 +242,19 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                              +
                              "WHERE Trans.a_ledger_number_i = Journal.a_ledger_number_i AND Trans.a_batch_number_i = Journal.a_batch_number_i " +
                              "AND Trans.a_journal_number_i = Journal.a_journal_number_i " +
-                             String.Format("AND Trans.a_ledger_number_i = {0} AND Trans.a_account_code_c = '{1}' AND Trans.a_cost_centre_code_c = '{2}' " +
-					                        "AND Trans.a_transaction_status_l = true AND NOT (Trans.a_narrative_c LIKE '{3}%' AND Trans.a_system_generated_l = true) " +
-					                        "AND ((Trans.a_ich_number_i + {4}) = Trans.a_ich_number_i OR Trans.a_ich_number_i = {4}) " +
-					                        "AND Journal.a_journal_period_i = {5};",
-					                        ALedgerNumber,
-					                        gLMAcctCode,
-					                        gLMCostCCode,
-					                        MFinanceConstants.NARRATIVE_YEAR_END_REALLOCATION,
-					                        AIchNumber,
-					                        APeriodNumber
-					                       );
-                    
+                             String.Format(
+                        "AND Trans.a_ledger_number_i = {0} AND Trans.a_account_code_c = '{1}' AND Trans.a_cost_centre_code_c = '{2}' " +
+                        "AND Trans.a_transaction_status_l = true AND NOT (Trans.a_narrative_c LIKE '{3}%' AND Trans.a_system_generated_l = true) " +
+                        "AND ((Trans.a_ich_number_i + {4}) = Trans.a_ich_number_i OR Trans.a_ich_number_i = {4}) " +
+                        "AND Journal.a_journal_period_i = {5};",
+                        ALedgerNumber,
+                        gLMAcctCode,
+                        gLMCostCCode,
+                        MFinanceConstants.NARRATIVE_YEAR_END_REALLOCATION,
+                        AIchNumber,
+                        APeriodNumber
+                        );
+
                     DataTable TmpTransTable = DBAccess.GDBAccessObj.SelectDT(strSql, "Transactions", DBTransaction);
 
                     foreach (DataRow untypedTransactRow in TmpTransTable.Rows)
@@ -306,7 +307,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         }
 
                         Choice = 0;
-                        
+
                         TLogging.Log("HOSA-Narrative: " + Narrative);
 
                         //Check for specific narrative strings
@@ -314,20 +315,20 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         int LenNarrativeGBGiftBatch = MFinanceConstants.NARRATIVE_GB_GIFT_BATCH.Length;
                         bool IsNarrativeGiftsReceivedGiftBatch = false;
                         int LenNarrativeGiftsReceivedGiftBatch = MFinanceConstants.NARRATIVE_GIFTS_RECEIVED_GIFT_BATCH.Length;
-                        
+
                         if (Narrative.Length >= LenNarrativeGiftsReceivedGiftBatch)
                         {
-                        	IsNarrativeGiftsReceivedGiftBatch = (Narrative.Substring(0, LenNarrativeGiftsReceivedGiftBatch) == MFinanceConstants.NARRATIVE_GIFTS_RECEIVED_GIFT_BATCH);
+                            IsNarrativeGiftsReceivedGiftBatch =
+                                (Narrative.Substring(0, LenNarrativeGiftsReceivedGiftBatch) == MFinanceConstants.NARRATIVE_GIFTS_RECEIVED_GIFT_BATCH);
                         }
-                        
+
                         if (Narrative.Length >= LenNarrativeGBGiftBatch)
                         {
-                        	IsNarrativeGBGiftBatch = (Narrative.Substring(0, LenNarrativeGBGiftBatch) == MFinanceConstants.NARRATIVE_GB_GIFT_BATCH);
+                            IsNarrativeGBGiftBatch = (Narrative.Substring(0, LenNarrativeGBGiftBatch) == MFinanceConstants.NARRATIVE_GB_GIFT_BATCH);
                         }
-                        
-                        
+
                         if ((gLMAcctType.ToUpper() != MFinanceConstants.ACCOUNT_TYPE_INCOME.ToUpper())
-                        	|| !(SystemGenerated && (IsNarrativeGBGiftBatch || IsNarrativeGiftsReceivedGiftBatch)))
+                            || !(SystemGenerated && (IsNarrativeGBGiftBatch || IsNarrativeGiftsReceivedGiftBatch)))
                         {
                             // Put transaction information
                             DataRow DR = (DataRow)TableForExport.NewRow();
@@ -346,7 +347,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 }
 
                 TableForExport.AcceptChanges();
-                
+
                 //TODO: remove
                 TLogging.Log("HOSA-TableForExport: " + TableForExport.Rows.Count.ToString());
 

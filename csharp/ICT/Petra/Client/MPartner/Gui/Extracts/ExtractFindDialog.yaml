@@ -28,10 +28,12 @@ RootNode:
                 Row4: [cmbUserModified]
                 Row5: [dtpModifiedFrom, dtpModifiedTo]
         pnlFilterButtons: {ControlsOrientation=horizontal}
+            AutoButtonMaxWidths: true
+            AutoButtonMaxWidthsAutoSizesContainerWidth: true
             NoLabel: true
             Controls: [btnSearch, btnClear]
         pnlExtractMasterList:
-            Padding: 4,0,4,0
+            Padding: 4,0,8,0
             Dock: Fill
             Controls: [clbDetails]
         txtExtractName: {Label=Extract Name, ColSpan=2, Width=200}

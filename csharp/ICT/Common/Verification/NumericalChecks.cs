@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2013 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -38,24 +38,24 @@ namespace Ict.Common.Verification
     {
         #region Resourcestrings
 
-        private static readonly string StrNumberMustBeInteger = Catalog.GetString("{0} must be an integer (= a number without a fraction).");
-        private static readonly string StrNumberMustBeDecimal = Catalog.GetString("{0} must be a decimal number (= a number that has a fraction).");
+        private static readonly string StrNumberMustBeInteger = Catalog.GetString("{0} must be a number without a decimal point.");
+        private static readonly string StrNumberMustBeDecimal = Catalog.GetString("{0} must be a number with a decimal point.");
         private static readonly string StrNumberMustBePositiveInteger = Catalog.GetString(
-            "{0} must be a positive integer (= a number without a fraction).");
+            "{0} must be a positive number without a decimal point.");
         private static readonly string StrNumberMustBePositiveDecimal = Catalog.GetString(
-            "{0} must be a positive decimal number (= a number that has a fraction).");
+            "{0} must be a positive number with a decimal point.");
         private static readonly string StrNumberMustBePositiveIntegerOr0 = Catalog.GetString(
-            "{0} must be a positive integer (= a number without a fraction), or 0.");
+            "{0} must be a positive number without a decimal point, or 0.");
         private static readonly string StrNumberMustBePositiveDecimalOr0 = Catalog.GetString(
-            "{0} must be a positive decimal number (= a number that has a fraction), or 0.");
+            "{0} must be a positive number with a decimal point, or 0.");
         private static readonly string StrNumberMustBeNegativeInteger = Catalog.GetString(
-            "{0} must be a negative integer (= a number without a fraction).");
+            "{0} must be a negative number without a decimal point.");
         private static readonly string StrNumberMustBeNegativeDecimal = Catalog.GetString(
-            "{0} must be a negative decimal number (= a number that has a fraction).");
+            "{0} must be a negative number with a decimal point.");
         private static readonly string StrNumberMustBeNegativeIntegerOr0 = Catalog.GetString(
-            "{0} must be a negative integer (= a number without a fraction), or 0.");
+            "{0} must be a negative number without a decimal point, or 0.");
         private static readonly string StrNumberMustBeNegativeDecimalOr0 = Catalog.GetString(
-            "{0} must be a negative decimal number (= a number that has a fraction), or 0.");
+            "{0} must be a negative number with a decimal point, or 0.");
         private static readonly string StrNumberMustBeNonZero = Catalog.GetString(
             "{0} must be a positive or negative number but not zero.");
         private static readonly string StrNumberCannotBeGreaterThan = Catalog.GetString("{0} cannot be greater than {1}.");

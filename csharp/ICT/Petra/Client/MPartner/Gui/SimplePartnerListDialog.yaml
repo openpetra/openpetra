@@ -10,7 +10,7 @@ RootNode:
     
     Controls:
         pnlDialogContent:
-            Padding: 4,0,4,0
+            Padding: 4,0,7,0
             Dock: Fill
             Controls:
                 Row0: [lblExplanationLine1]
@@ -20,13 +20,17 @@ RootNode:
                 
         lblExplanationLine1:
             Dock: Top
+            Height: 20
 
         lblExplanationLine2:
             Dock: Top
+            Height: 20
             
         lblEmptyLine:
             Dock: Top
+            Height: 10
 
         grdPartners:
             Dock: Fill
             
+        btnCancel: {Visible=false}

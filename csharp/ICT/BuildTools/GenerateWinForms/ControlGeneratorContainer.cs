@@ -747,6 +747,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// </summary>
         public override void ProcessChildren(TFormWriter writer, TControlDef ctrl)
         {
+            SortedSet <int>ButtonWidths = new SortedSet <int>();
+            SortedSet <int>ButtonTops = new SortedSet <int>();
+            List <TControlDef>Buttons = new List <TControlDef>();
+
+            int NewButtonWidthForAll = -1;
+
             if (ctrl.controlName == PNL_FILTER_AND_FIND)
             {
                 listNumericColumns.Clear();
@@ -897,7 +903,182 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else
             {
+                TControlDef subChildCtrl;
+
+                TLogging.LogAtLevel(1, "Processing Control '" + ctrl.controlName + "'");
+
                 base.ProcessChildren(writer, ctrl);
+
+                foreach (TControlDef childCtrl in ctrl.Children)
+                {
+                    TLogging.LogAtLevel(1, "Child Name: " + childCtrl.controlName);
+
+                    if ((childCtrl.HasAttribute("AutoButtonMaxWidths"))
+                        || (childCtrl.GetAttribute("AutoButtonMaxWidths") == "true"))
+                    {
+                        TLogging.LogAtLevel(1, "Control '" + childCtrl.controlName + "' has AutoButtonMaxWidths = true!");
+
+
+                        XmlNode controlsNode = TXMLParser.GetChild(childCtrl.xmlNode, "Controls");
+
+                        if ((controlsNode != null) && TYml2Xml.GetChildren(controlsNode, true)[0].Name.StartsWith("Row"))
+                        {
+                            TLogging.LogAtLevel(1, "Row processing");
+
+                            // this defines the layout with several rows with several controls per row
+                            foreach (XmlNode row in TYml2Xml.GetChildren(controlsNode, true))
+                            {
+                                StringCollection controls = TYml2Xml.GetElements(row);
+
+                                foreach (string ctrlname in controls)
+                                {
+                                    subChildCtrl = writer.CodeStorage.GetControl(ctrlname);
+
+                                    TLogging.LogAtLevel(1, "Child: '" + subChildCtrl.controlName + "'");
+
+                                    ProcessButtonsForMaxWidthDetermination(writer, subChildCtrl, ButtonWidths, ButtonTops, Buttons);
+                                }
+
+                                ProcessButtonsForMaxWidthSizing(writer, childCtrl, ButtonWidths, ButtonTops, Buttons, out NewButtonWidthForAll);
+                            }
+                        }
+                        else
+                        {
+                            if ((controlsNode != null) && (childCtrl.Children.Count != 0))
+                            {
+                                TLogging.LogAtLevel(1, "Controls processing");
+
+                                foreach (TControlDef subChildCtrl2 in childCtrl.Children)
+                                {
+                                    TLogging.LogAtLevel(1, "Child: '" + subChildCtrl2.controlName + "'");
+
+                                    ProcessButtonsForMaxWidthDetermination(writer, subChildCtrl2, ButtonWidths, ButtonTops, Buttons);
+                                }
+
+                                ProcessButtonsForMaxWidthSizing(writer, childCtrl, ButtonWidths, ButtonTops, Buttons, out NewButtonWidthForAll);
+                            }
+                        }
+
+                        if ((Buttons.Count > 0)
+                            && ((childCtrl.HasAttribute("AutoButtonMaxWidthsAutoSizesContainerWidth"))
+                                && ((childCtrl.GetAttribute("AutoButtonMaxWidthsAutoSizesContainerWidth").ToLower() == "true"))))
+                        {
+                            int NewContainerWidth = 5 + 7 + (Buttons.Count * NewButtonWidthForAll) + ((Buttons.Count - 1) * 5); // + ((Buttons.Count - 1) * 12) - (Buttons.Count * 2);
+                            TLogging.LogAtLevel(1, "NewContainerWidth: " + NewContainerWidth.ToString());
+                            writer.SetControlProperty(childCtrl, "Size", "new System.Drawing.Size(" +
+                                NewContainerWidth.ToString() + ", " + childCtrl.GetAttribute("Height").ToString() + ")");
+                        }
+
+                        Buttons.Clear();
+                        ButtonWidths.Clear();
+                    }
+                }
+            }
+        }
+
+        private void ProcessButtonsForMaxWidthDetermination(TFormWriter writer, TControlDef ctrl,
+            SortedSet <int>AButtonWidths, SortedSet <int>AButtonTops, List <TControlDef>AButtons)
+        {
+            if (ctrl.controlName.StartsWith("btn"))
+            {
+                TLogging.LogAtLevel(1, "Found Button: " + ctrl.controlName + ", Width: " + ctrl.Width.ToString());
+
+                if (ctrl.GetAttribute("Visible") != "false")
+                {
+                    AButtons.Add(ctrl);
+                    AButtonWidths.Add(ctrl.Width);
+
+
+                    string ControlLocation = writer.GetControlProperty(ctrl.controlName, "Location");
+//                TLogging.LogAtLevel(1, "ControlLocation '" + Button.controlName + "' ControlLocation: " + ControlLocation);
+                    string StrY = ControlLocation.Substring(ControlLocation.IndexOf(',') + 1, ControlLocation.Length - ControlLocation.IndexOf(
+                            ',') - 2);
+//                TLogging.LogAtLevel(1, "ControlLocation '" + Button.controlName + "' StrY: " + StrY);
+                    int Y = Convert.ToInt32(StrY);
+
+                    AButtonTops.Add(Y);
+                }
+                else
+                {
+                    TLogging.LogAtLevel(1, "Button isn't visible, therefore ignoring it for max. Width determination!");
+                }
+            }
+        }
+
+        private void ProcessButtonsForMaxWidthSizing(TFormWriter writer, TControlDef ctrl, SortedSet <int>ButtonWidths,
+            SortedSet <int>ButtonTops, List <TControlDef>Buttons, out int NewButtonWidthForAll)
+        {
+            const int MIN_BUTTON_WIDTH = 76; // 76 seems to be pretty much a standard width (on the Windows OS)
+            int LeftPos = PanelLayoutGenerator.MARGIN_LEFT;
+            int ButtonCounter = 0;
+            bool EnforceMinimumWidth = false;
+            bool RepositionButtonsHorizontally = ButtonTops.Max == ButtonTops.Min;
+
+            NewButtonWidthForAll = MIN_BUTTON_WIDTH;
+
+            TLogging.LogAtLevel(1, "Max. Button Width: " + ButtonWidths.Max.ToString() + ", Number of Buttons: " + Buttons.Count.ToString());
+
+            if ((!ctrl.HasAttribute("AutoButtonMaxWidthsEnforceMinimumWidth")
+                 || (ctrl.GetAttribute("AutoButtonMaxWidthsEnforceMinimumWidth").ToLower() == "true")))
+            {
+                EnforceMinimumWidth = true;
+            }
+
+            if ((EnforceMinimumWidth)
+                && (ButtonWidths.Max < MIN_BUTTON_WIDTH))
+            {
+                if (Buttons.Count > 0)
+                {
+                    NewButtonWidthForAll = MIN_BUTTON_WIDTH;
+                    TLogging.LogAtLevel(1,
+                        "Max. Button width (" + ButtonWidths.Max.ToString() + ") was smaller than MIN_BUTTON_WIDTH, adjusting to the latter!");
+                }
+            }
+            else
+            {
+                NewButtonWidthForAll = ButtonWidths.Max;
+            }
+
+            foreach (var Button in Buttons)
+            {
+// TLogging.LogAtLevel(1, "Button ' " + Button.controlName + "': Width = " + Button.GetAttribute("Width"));
+
+                if ((!Button.HasAttribute("NoLabel")
+                     || (Button.GetAttribute("NoLabel").ToLower() == "false")))
+                {
+                    TLogging.LogAtLevel(1, "Applying Width to Button '" + Button.controlName + "'");
+                    writer.SetControlProperty(Button, "Size", "new System.Drawing.Size(" +
+                        NewButtonWidthForAll.ToString() + ", " + Button.GetAttribute("Height").ToString() + ")");
+
+                    if (ButtonCounter != 0)
+                    {
+                        LeftPos += NewButtonWidthForAll + PanelLayoutGenerator.HORIZONTAL_SPACE;
+                    }
+                }
+                else
+                {
+                    TLogging.LogAtLevel(
+                        1,
+                        "Not applying Width to Button '" + Button.controlName + "' as its 'NoLabel' Element is set to 'true'! (Current Width: " +
+                        Button.Width.ToString() + ")");
+
+                    if (ButtonCounter != 0)
+                    {
+                        LeftPos += Button.Width + PanelLayoutGenerator.HORIZONTAL_SPACE;
+                    }
+                }
+
+                if (RepositionButtonsHorizontally)
+                {
+                    writer.SetControlProperty(Button, "Location", String.Format("new System.Drawing.Point({0}, {1})", LeftPos, ButtonTops.Max));
+                    TLogging.LogAtLevel(1,
+                        "Repositioned Button '" + Button.controlName + "' horizontally. New Location: " + LeftPos.ToString() + "," +
+                        ButtonTops.Max.ToString());
+                }
+
+                //               TLogging.LogAtLevel(1, "Button '" + Button.controlName + "' Width: " + Button.Width.ToString());
+
+                ButtonCounter++;
             }
         }
 

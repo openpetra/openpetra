@@ -12,6 +12,7 @@ RootNode:
 
     Controls:
         pnlDialogContent:
+            Padding: 0,0,3,0
             Controls:
                 Row0: [txtExtractName]
                 Row1: [txtDescription]
@@ -20,8 +21,8 @@ RootNode:
             Label: Extract Name
 
         txtDescription:
-            Label: Description
+            Stretch: horizontally
             Multiline: true
             ScrollBars: Vertical
             Height: 200
-            Width: 250
+            Label: Description
