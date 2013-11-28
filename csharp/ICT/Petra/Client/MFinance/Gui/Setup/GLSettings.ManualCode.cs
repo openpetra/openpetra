@@ -322,6 +322,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
             else
             {
+                // set ledger row to modified if calendar date has changed (this is necessary as otherwise SaveChanges() would
+                // not call StoreManualCode(...) if there was no other change on that screen and then the calendar change
+                // would not get triggered on server
+                if (FCalendarStartDate != dtpFinancialYearStartDate.Date.Value)
+                {
+                    ARow.SetModified();
+                }
+                
                 FCalendarStartDate = dtpFinancialYearStartDate.Date.Value;
             }
         }
@@ -365,7 +373,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             else
             {
                 nudNumberOfAccountingPeriods.Enabled = true;
-                dtpFinancialYearStartDate.Enabled = false;
+                dtpFinancialYearStartDate.Enabled = true;
                 btnViewCalendar.Text = Catalog.GetString("Edit Calendar");
                 FEditCalendar = true;
             }
