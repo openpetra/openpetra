@@ -930,4 +930,27 @@ namespace Ict.Common.Controls
     #endregion
 
     #endregion
+
+    #region static class TCommonControlsExtensions
+
+    /// <summary>
+    /// A class for extensions to common controls
+    /// </summary>
+    public static class TCommonControlsExtensions
+    {
+        /// <summary>
+        /// Control extension method to set the 'DoubleBuffered' property for various types of control.
+        /// Used in particular for Filter/Find panels
+        /// </summary>
+        /// <param name="AControl">The control whose property is to be set</param>
+        /// <param name="AValue">Set to True to set double buffered painting of the control</param>
+        public static void SetDoubleBuffered(this Control AControl, bool AValue)
+        {
+            Type ControlType = AControl.GetType();
+            PropertyInfo Info = ControlType.GetProperty("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance);
+            Info.SetValue(AControl, AValue, null);
+        }
+    }
+
+    #endregion
 }
