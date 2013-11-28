@@ -700,7 +700,47 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if (ctrl.HasAttribute("ActionClick"))
             {
-                AssignEventHandlerToControl(writer, ctrl, "Click", ctrl.GetAttribute("ActionClick"));
+                if (ctrl.GetAttribute("ActionClick") == "MniFilterFind_Click")
+                {
+                    // MniFilterFind_Click is part of the base template for many forms.
+                    // We only create an action handler if the screen has a pnlFilterAndFind
+                    if (writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
+                    {
+                        AssignEventHandlerToControl(writer, ctrl, "Click", ctrl.GetAttribute("ActionClick"));
+                        
+                        // The manual code sometimes contains a handler, but if not we write a standard one to the auto-generated file
+                        // Filter and Find menu items both use the same handler code - so we ensure we only write this action handler once!
+                        if (!writer.FCodeStorage.ManualFileExistsAndContains("void MniFilterFind_Click(") && (ctrl.controlName == "mniEditFilter"))
+                        {
+                            string ActionHandler =
+                                "/// auto generated" + Environment.NewLine +
+                                "protected void MniFilterFind_Click(object sender, EventArgs e)" + Environment.NewLine +
+                                "{" + Environment.NewLine +
+                                "    if (FucoFilterAndFind == null)" + Environment.NewLine +
+                                "    {" + Environment.NewLine +
+                                "        ToggleFilter();" + Environment.NewLine +
+                                "    }" + Environment.NewLine + Environment.NewLine +
+                                "    if (((ToolStripMenuItem)sender).Name == \"mniEditFind\")" + Environment.NewLine +
+                                "    {" + Environment.NewLine +
+                                "        FucoFilterAndFind.DisplayFindTab();" + Environment.NewLine +
+                                "        FFindPanelControls.FFindPanels[0].PanelControl.Focus();" + Environment.NewLine +
+                                "    }" + Environment.NewLine +
+                                "    else" + Environment.NewLine +
+                                "    {" + Environment.NewLine +
+                                "        FucoFilterAndFind.DisplayFilterTab();" + Environment.NewLine +
+                                "        FFilterPanelControls.FStandardFilterPanels[0].PanelControl.Focus();" + Environment.NewLine +
+                                "    }" + Environment.NewLine +
+                                "}" + Environment.NewLine + Environment.NewLine;
+                            writer.FCodeStorage.FActionHandlers += ActionHandler;
+                        }
+                    }
+                }
+                else
+                {
+                    // The control is not mniEditFilter or mniEditFind, so just write the resource file item
+                    // The manual code file will have the event handler itself
+                    AssignEventHandlerToControl(writer, ctrl, "Click", ctrl.GetAttribute("ActionClick"));
+                }
             }
             else if (ctrl.HasAttribute("ActionDoubleClick"))
             {
