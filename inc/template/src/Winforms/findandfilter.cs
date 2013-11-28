@@ -232,9 +232,16 @@ private void ToggleFilterPanel(System.Object sender, EventArgs e)
 {
     ToggleFilter();
         
-    if (sender != null)
+    if (!FucoFilterAndFind.IsCollapsed)
     {
-        (sender as Control).Focus();
+        if (FucoFilterAndFind.IsFindTabActive)
+        {
+            FFindPanelControls.FFindPanels[0].PanelControl.Focus();
+        }
+        else
+        {
+            FFilterPanelControls.FStandardFilterPanels[0].PanelControl.Focus();
+        }
     }
 }
 
