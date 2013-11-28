@@ -80,35 +80,98 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         private void GenerateHOSAFiles(Object Sender, EventArgs e)
         {
             int Currency = (this.rbtBase.Checked ? 0 : 1); //0 = base 1 = intl
-            string FileName = TClientSettings.PathTemp + Path.DirectorySeparatorChar + "TestGenHOSAFile.csv";
+            string FileName = string.Empty;
+            string CostCentreCode = string.Empty;
+            bool HOSASuccess = false;
+
             TVerificationResultCollection VerificationResults;
 
             string msg = string.Empty;
+            string SuccessfullCostCentres = string.Empty;
+            string FailedCostCentres = string.Empty;
 
-            if (!ValidSelections(true))
+            if (!ValidReportPeriod(true))
             {
                 return;
             }
 
-            //TFinanceControls.InitialiseICHStewardshipList(ref cmbICHNumber, FLedgerNumber, cmbReportPeriod.GetSelectedInt32(), cmbCostCentreCode.GetSelectedString());
-
-            //cmbICHNumber.SelectedIndex = 0;
+            int SelectedReportPeriod = cmbReportPeriod.GetSelectedInt32();
+            int SelectedICHNumber = cmbICHNumber.GetSelectedInt32();
 
             try
             {
                 Cursor = Cursors.WaitCursor;
 
-                if (TRemote.MFinance.ICH.WebConnectors.GenerateHOSAFiles(FLedgerNumber, cmbReportPeriod.GetSelectedInt32(),
-                        cmbICHNumber.GetSelectedInt32(), cmbCostCentreCode.GetSelectedString(), Currency, FileName, out VerificationResults))
+                DataTable ICHNumbers = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.ICHStewardshipList, FLedgerNumber);
+
+                //Filter for current period
+                ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                    AIchStewardshipTable.GetPeriodNumberDBName(),
+                    SelectedReportPeriod,
+                    AIchStewardshipTable.GetIchNumberDBName(),
+                    SelectedICHNumber);
+
+                ICHNumbers.DefaultView.Sort = AIchStewardshipTable.GetCostCentreCodeDBName();
+
+                foreach (DataRowView tmpRow in ICHNumbers.DefaultView)
                 {
-                    msg = Catalog.GetString("HOSA files generated successfully");
-                }
-                else
-                {
-                    msg = Catalog.GetString("UNSUCCESSFUL HOSA files generation!");
+                    AIchStewardshipRow ichRow = (AIchStewardshipRow)tmpRow.Row;
+
+                    CostCentreCode = (string)ichRow[AIchStewardshipTable.ColumnCostCentreCodeId];
+
+                    FileName = TClientSettings.PathTemp + Path.DirectorySeparatorChar + "TestGenHOSAFileFor" + CostCentreCode + ".csv";
+
+                    HOSASuccess = TRemote.MFinance.ICH.WebConnectors.GenerateHOSAFiles(FLedgerNumber, cmbReportPeriod.GetSelectedInt32(),
+                        cmbICHNumber.GetSelectedInt32(), CostCentreCode, Currency, FileName, out VerificationResults);
+
+                    if (HOSASuccess)
+                    {
+                        if (SuccessfullCostCentres.Length == 0)
+                        {
+                            SuccessfullCostCentres = CostCentreCode;
+                        }
+                        else
+                        {
+                            SuccessfullCostCentres += ", " + CostCentreCode;
+                        }
+                    }
+                    else
+                    {
+                        if (FailedCostCentres.Length == 0)
+                        {
+                            FailedCostCentres = CostCentreCode;
+                        }
+                        else
+                        {
+                            FailedCostCentres += ", " + CostCentreCode;
+                        }
+                    }
                 }
 
                 Cursor = Cursors.Default;
+
+                if (SuccessfullCostCentres.Length > 0)
+                {
+                    msg = String.Format(Catalog.GetString("HOSA file generated successfully for Cost Centre(s):{0}{0}{1}{0}{0}"),
+                        Environment.NewLine,
+                        SuccessfullCostCentres);
+                }
+
+                if (FailedCostCentres.Length > 0)
+                {
+                    msg += String.Format(Catalog.GetString("HOSA generation FAILED for Cost Centre(s):{0}{0}{1}"),
+                        Environment.NewLine,
+                        FailedCostCentres);
+                }
+
+                if (msg.Length == 0)
+                {
+                    msg = String.Format(Catalog.GetString("No Cost Centres to process in Ledger {0} for report period: {1} and ICH No.: {2}."),
+                        FLedgerNumber,
+                        SelectedReportPeriod,
+                        SelectedICHNumber);
+                }
+
                 MessageBox.Show(msg, Catalog.GetString("Generate HOSA Files"));
 
                 btnCancel.Text = "Close";
@@ -119,10 +182,9 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             }
         }
 
-        private bool ValidSelections(bool AIsHOSA = false)
+        private bool ValidReportPeriod(bool AIsHOSA = false)
         {
-            if (((cmbReportPeriod.SelectedIndex > -1) && !AIsHOSA)
-                || ((cmbReportPeriod.SelectedIndex > -1) && (cmbCostCentreCode.SelectedIndex > -1)))
+            if ((cmbReportPeriod.SelectedIndex > -1) && !AIsHOSA)
             {
                 return true;
             }
@@ -132,11 +194,9 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 cmbReportPeriod.Focus();
                 return false;
             }
-            else if (cmbCostCentreCode.SelectedIndex == -1)
+            else if (cmbReportPeriod.SelectedIndex > -1)
             {
-                MessageBox.Show(Catalog.GetString("Please select a valid cost centre first."));
-                cmbCostCentreCode.Focus();
-                return false;
+                return true;
             }
             else
             {
@@ -146,7 +206,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
         private void StewardshipCalculation(Object Sender, EventArgs e)
         {
-            if (!ValidSelections())
+            if (!ValidReportPeriod())
             {
                 return;
             }
@@ -206,13 +266,11 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
                 if (FReportingPeriodSelectionMode == TICHReportingPeriodSelectionModeEnum.rpsmICHStatement)
                 {
-                    chkEmailReport.Enabled = true;
-                    lblEmailReport.Enabled = true;
+                    chkEmailHOSAReport.Enabled = true;
                 }
                 else
                 {
-                    chkEmailReport.Enabled = false;
-                    lblEmailReport.Enabled = false;
+                    chkEmailHOSAReport.Enabled = false;
                 }
             }
         }
@@ -234,19 +292,18 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
                 cmbReportPeriod.SelectedIndex = 0;
 
-                TFinanceControls.InitialiseCostCentreList(ref cmbCostCentreCode, FLedgerNumber, true, false, false, true);
-
-                cmbCostCentreCode.SelectedIndex = 1;
+                //this.grpGenerateHosaFiles.Text = Catalog.GetString("Generate HOSA Files");
             }
         }
 
         private void RefreshICHStewardshipNumberList(object sender, EventArgs e)
         {
-            if ((cmbReportPeriod.SelectedIndex > -1)
-                && (cmbCostCentreCode.SelectedIndex > 0))
+            if ((cmbReportPeriod.SelectedIndex > -1))
             {
                 TFinanceControls.InitialiseICHStewardshipList(ref cmbICHNumber, FLedgerNumber,
-                    cmbReportPeriod.GetSelectedInt32(), cmbCostCentreCode.GetSelectedString());
+                    cmbReportPeriod.GetSelectedInt32());
+
+                cmbICHNumber.SelectedIndex = 0;
             }
         }
     }

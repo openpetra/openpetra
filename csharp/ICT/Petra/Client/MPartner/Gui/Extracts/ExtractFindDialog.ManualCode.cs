@@ -425,7 +425,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
         }
 
-        #endregion        
+        #endregion
     }
 
     /// <summary>

@@ -5,7 +5,7 @@ RootNode:
     FormType: dialog
     Template: window
     WindowWidth: 440
-    WindowHeight: 220
+    WindowHeight: 210
     
     Events:
         Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}

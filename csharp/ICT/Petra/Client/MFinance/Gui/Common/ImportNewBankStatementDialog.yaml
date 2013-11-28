@@ -4,14 +4,14 @@ RootNode:
     Namespace: Ict.Petra.Client.MFinance.Gui.Common
     FormType: dialog
     Template: window
-    WindowWidth: 490
-    WindowHeight: 200
+    WindowWidth: 422
+    WindowHeight: 130
     Actions:
     Controls:
         pnlDialogContent:
             Dock: Fill
             Controls: [cmbSelectBankAccount, cmbSelectPlugin]
-        cmbSelectBankAccount: {List=UserDefinedList}
-        cmbSelectPlugin: {Width=200}
+        cmbSelectBankAccount: {List=UserDefinedList, Width=260}
+        cmbSelectPlugin: {Width=263}
     Menu:
     Toolbar:

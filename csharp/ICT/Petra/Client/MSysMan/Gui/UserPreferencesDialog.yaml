@@ -9,7 +9,7 @@ RootNode:
 
     Controls:
         pnlDialogContent:
-            Padding: 4,0,4,0
+            Padding: 4,0,8,0
             Controls: [tabPreferences]
             Dock: Fill
         tabPreferences:

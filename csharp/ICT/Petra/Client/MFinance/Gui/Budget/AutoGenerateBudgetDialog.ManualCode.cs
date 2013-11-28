@@ -147,7 +147,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             btnUnselectAllBudgets.Enabled = FBudgetsExist;
         }
 
-
         private void GenerateBudget(Object sender, EventArgs e)
         {
             //Test

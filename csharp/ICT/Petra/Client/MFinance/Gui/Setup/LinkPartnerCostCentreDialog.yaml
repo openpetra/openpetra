@@ -6,7 +6,7 @@ RootNode:
     FormType: dialog
     Template: window
     WindowWidth: 575
-    WindowHeight: 500
+    WindowHeight: 480
 
     Controls:
         pnlDialogContent:
@@ -20,7 +20,7 @@ RootNode:
             Label: Unlinked Partners having COSTCENTRE type
             Controls: [grdUnlinkedCCs]
 
-        grdLinkedCCs: {Height=160, Width=530}
+        grdLinkedCCs: {Height=160, Width=541}
         grdUnlinkedCCs:{Height=160, Width=350}
         pnlOptions: {ColSpan=2}
             Controls:

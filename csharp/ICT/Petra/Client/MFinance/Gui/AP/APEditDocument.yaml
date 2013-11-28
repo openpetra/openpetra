@@ -112,12 +112,14 @@ RootNode:
         cmbDetailCostCentreCode: {Label=C&ost Centre, List=UserDefinedList}
         cmbDetailAccountCode: {Label=Accou&nt, List=UserDefinedList, OnChange=CheckAccountRequiredAttr}
         pnlItemButtons: {ControlsOrientation = horizontal}
+            Width: 460
+            AutoButtonMaxWidths: true            
             Controls: [btnUseTaxAccount, btnAnalysisAttributes]
         btnUseTaxAccount:
-            Label: Use Ta&x Acct
+            Label: Use Ta&x Account
             Action: actUseTaxAccount
         btnAnalysisAttributes:
-            Label: Anal Attri&b
+            Label: Analysis Attri&butes...
             Action: actAnalyse
         btnAddDetail:
             Width: 120

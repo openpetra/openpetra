@@ -8,7 +8,7 @@ RootNode:
     MasterTable: PSubscription
     FormType: dialog
     Template: window
-    WindowWidth: 950
+    WindowWidth: 921
     WindowHeight: 400
     
     Events:
@@ -44,6 +44,7 @@ RootNode:
             Controls: [txtPSubscriptionNumberComplimentary, txtPSubscriptionPublicationCopies, cmbPSubscriptionReasonSubsGivenCode, cmbPSubscriptionReasonSubsCancelledCode, txtPSubscriptionGiftFromKey]
 
         grpDates: {Label=Change Dates}
+            Width: 289
             Controls: 
                 Row0: [pnlChangeDates, pnlDates]
         pnlChangeDates: {Stretch=horizontally}

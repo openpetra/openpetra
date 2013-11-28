@@ -126,7 +126,10 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             {
                 ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
 
-                ConferenceStartDate = (DateTime)((PcConferenceRow)ConferenceTable.Rows[0]).Start;
+                if (((PcConferenceRow)ConferenceTable.Rows[0]).Start != null)
+                {
+                    ConferenceStartDate = (DateTime)((PcConferenceRow)ConferenceTable.Rows[0]).Start;
+                }
             }
             catch (Exception e)
             {
@@ -164,7 +167,10 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             {
                 ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
 
-                ConferenceEndDate = (DateTime)((PcConferenceRow)ConferenceTable.Rows[0]).End;
+                if (((PcConferenceRow)ConferenceTable.Rows[0]).End != null)
+                {
+                    ConferenceEndDate = (DateTime)((PcConferenceRow)ConferenceTable.Rows[0]).End;
+                }
             }
             catch (Exception e)
             {
