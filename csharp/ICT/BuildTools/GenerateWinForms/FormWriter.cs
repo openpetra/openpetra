@@ -1018,6 +1018,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("INITMANUALCODE", "");
             FTemplate.AddToCodelet("GRIDMULTISELECTION", "");
             FTemplate.AddToCodelet("RUNONCEONACTIVATIONMANUAL", "");
+            FTemplate.AddToCodelet("SETINITIALFOCUS", "");
             FTemplate.AddToCodelet("EXITMANUALCODE", "");
             FTemplate.AddToCodelet("CANCLOSEMANUAL", "");
             FTemplate.AddToCodelet("INITNEWROWMANUAL", "");
@@ -1463,6 +1464,32 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("ADDMAINCONTROLS",
                     "this.Icon = (System.Drawing.Icon)resources.GetObject(\"$this.Icon\");" + Environment.NewLine);
                 AddImageToResource("$this.Icon", iconFileName, "Icon");
+            }
+
+            string initialFocusControl = String.Empty;
+
+            if (FCodeStorage.FControlList.ContainsKey("grdDetails"))
+            {
+                initialFocusControl = "grdDetails";
+            }
+
+            if (TYml2Xml.HasAttribute(rootNode, "InitialFocus"))
+            {
+                string tryFocus = TYml2Xml.GetAttribute(rootNode, "InitialFocus");
+
+                if (FCodeStorage.FControlList.ContainsKey(tryFocus))
+                {
+                    initialFocusControl = tryFocus;
+                }
+                else
+                {
+                    TLogging.Log("Warning !!! Cannot set initial focus.  The specified control was not found: " + tryFocus);
+                }
+            }
+
+            if (initialFocusControl != String.Empty)
+            {
+                FTemplate.SetCodelet("SETINITIALFOCUS", initialFocusControl + ".Focus();");
             }
 
             // add title
