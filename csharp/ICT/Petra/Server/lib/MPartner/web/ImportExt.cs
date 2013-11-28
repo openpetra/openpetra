@@ -653,6 +653,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             PPartnerLocationRow PartnerLocationRow = FMainDS.PPartnerLocation.NewRowTyped();
 
+            int? Extension;
+            
             PartnerLocationRow.PartnerKey = FPartnerKey;
             PartnerLocationRow.SiteKey = LocationRow.SiteKey;
             PartnerLocationRow.LocationKey = LocationRow.LocationKey;
@@ -662,9 +664,30 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerLocationRow.SendMail = ReadBoolean();
             PartnerLocationRow.EmailAddress = ReadString();
             PartnerLocationRow.TelephoneNumber = ReadString();
-            PartnerLocationRow.Extension = ReadInt32();
+            
+            // prevent problems in case Phone Extension is set to null
+            Extension = ReadNullableInt32();
+            if (Extension.HasValue)
+            {
+                PartnerLocationRow.Extension = Extension.Value;
+            }
+            else
+            {
+                PartnerLocationRow.Extension = 0;
+            }
+            
             PartnerLocationRow.FaxNumber = ReadString();
-            PartnerLocationRow.FaxExtension = ReadInt32();
+            
+            // prevent problems in case Fax Extension is set to null
+            Extension = ReadNullableInt32();
+            if (Extension.HasValue)
+            {
+                PartnerLocationRow.FaxExtension = Extension.Value;
+            }
+            else
+            {
+                PartnerLocationRow.FaxExtension = 0;
+            }
 
             if (!FIgnorePartner)
             {
@@ -769,6 +792,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 ReadString();      // field removed: ShortTermApplicationRow.StComment
             }
+
 
             Int64 Option = ReadInt64();
 
