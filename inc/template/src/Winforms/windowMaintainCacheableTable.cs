@@ -1271,6 +1271,7 @@ namespace {#NAMESPACE}
     {
         {#RUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
+        {#SETINITIALFOCUS}
     }
 
     /// <summary>
