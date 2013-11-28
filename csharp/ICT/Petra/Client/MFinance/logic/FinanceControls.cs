@@ -360,6 +360,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             emptyRow[ACostCentreTable.ColumnLedgerNumberId] = ALedgerNumber;
             emptyRow[ACostCentreTable.ColumnCostCentreCodeId] = string.Empty;
             emptyRow[ACostCentreTable.ColumnCostCentreNameId] = Catalog.GetString("Select a valid cost centre");
+
             Table.Rows.Add(emptyRow);
 
             //Highlight inactive Cost Centres
@@ -907,34 +908,40 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AControl"></param>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APeriodNumber"></param>
-        /// <param name="ACostCentreCode"></param>
         public static void InitialiseICHStewardshipList(
             ref TCmbAutoPopulated AControl,
             Int32 ALedgerNumber,
-            Int32 APeriodNumber,
-            String ACostCentreCode)
+            Int32 APeriodNumber)
         {
             DataTable ICHNumbers = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.ICHStewardshipList, ALedgerNumber);
 
-            // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour (selecting the first cost centre etc)
-            DataRow emptyRow = ICHNumbers.NewRow();
+            //Filter for current period
+            ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1}",
+                AIchStewardshipTable.GetPeriodNumberDBName(),
+                APeriodNumber);
 
-            emptyRow[AIchStewardshipTable.ColumnLedgerNumberId] = ALedgerNumber;
-            emptyRow[AIchStewardshipTable.ColumnPeriodNumberId] = APeriodNumber;
-            emptyRow[AIchStewardshipTable.ColumnIchNumberId] = 0;
-            emptyRow[AIchStewardshipTable.ColumnCostCentreCodeId] = ACostCentreCode;
-            emptyRow[AIchStewardshipTable.ColumnDateProcessedId] = DateTime.Today;
+            ICHNumbers.DefaultView.Sort = AIchStewardshipTable.GetIchNumberDBName();
 
-            ICHNumbers.Rows.Add(emptyRow);
+            //Get the distinct ICH numbers for the specified period
+            DataTable newDataTable = ICHNumbers.DefaultView.ToTable(true, AIchStewardshipTable.GetIchNumberDBName(),
+                AIchStewardshipTable.GetDateProcessedDBName());
 
-            AControl.InitialiseUserControl(ICHNumbers,
+            // add empty row so that SetSelectedString for invalid string will not result in undefined behaviour
+            DataRow emptyRow = newDataTable.NewRow();
+
+            emptyRow[0] = 0;  //selecting 0 will mean full HOSA reports for all cost centres
+            emptyRow[1] = DateTime.Today;
+
+            newDataTable.Rows.Add(emptyRow);
+
+            AControl.InitialiseUserControl(newDataTable,
                 AIchStewardshipTable.GetIchNumberDBName(),
                 AIchStewardshipTable.GetDateProcessedDBName(),
                 null);
             AControl.AppearanceSetup(new int[] { -1, 150 }, -1);
 
-            AControl.Filter = AIchStewardshipTable.GetPeriodNumberDBName() + " = " + APeriodNumber.ToString() +
-                              " AND " + AIchStewardshipTable.GetCostCentreCodeDBName() + " = " + ACostCentreCode;
+            //Alternative way to filter the contents of the combo
+            //AControl.Filter = AIchStewardshipTable.GetPeriodNumberDBName() + " = " + APeriodNumber.ToString();
         }
 
         /// <summary>
