@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraForm.yaml
-    FormTitle: Enable Subsystems
+    FormTitle: Enable/Disable Finance Module Subsystems
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     UsingNamespaces: [Ict.Petra.Shared.MCommon.Data]
     FormType: edit

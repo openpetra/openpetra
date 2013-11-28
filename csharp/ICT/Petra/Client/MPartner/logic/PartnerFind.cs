@@ -501,7 +501,7 @@ namespace Ict.Petra.Client.MPartner
         /// </summary>
         public static void PrintPartner()
         {
-// TODO            Logic.UCmdMPartner.RunPrintPartner(Logic.ULogic.ParentForm, Logic.ULogic.PartnerKey);
+// TODO           Logic.UCmdMPartner.RunPrintPartner(Logic.ULogic.ParentForm, Logic.ULogic.PartnerKey);
         }
 
         /// <summary>
