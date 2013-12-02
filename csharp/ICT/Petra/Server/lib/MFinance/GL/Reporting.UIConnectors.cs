@@ -34,9 +34,11 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Setup.WebConnectors;
+using System.Collections;
 
 namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 {
@@ -278,6 +280,25 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             return StringHelper.StrMerge(accountcodes.ToArray(), ',');
         }
 
+        /// <summary>
+        /// Get the name for this Ledger
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static string GetLedgerName(int ledgernumber)
+        {
+            String ReturnValue = "";
+            String strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
+                     StringHelper.IntToStr(ledgernumber) + " and PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
+            DataTable tab = DBAccess.GDBAccessObj.SelectDT(strSql, "GetLedgerName_TempTable", null);
+
+            if (tab.Rows.Count > 0)
+            {
+                ReturnValue = Convert.ToString(tab.Rows[0]["p_partner_short_name_c"]);
+            }
+
+            return ReturnValue;
+        }
+
 
         /// <summary>
         /// Returns a DataSet to the client for use in client-side reporting
@@ -303,6 +324,133 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDs;
         }
+
+        /// <summary>
+        /// Returns a DataSet to the client for use in client-side reporting
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable HosaGiftsTable(Dictionary<String, TVariant> AParameters)
+        {
+            Boolean NewTransaction = false;
+
+            try
+            {
+                Boolean PersonalHosa = (AParameters["param_filter_cost_centres"].ToString() == "PersonalCostcentres");
+                Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+                String CostCentreCodes = AParameters["param_cost_centre_codes"].ToString();
+                Int32 IchNumber = AParameters["param_ich_number"].ToInt32();
+
+                String DateFilter = "";
+                if (AParameters["param_period"].ToBool() == true)
+                {
+                    Int32 periodYear = AParameters["param_year_i"].ToInt32();
+                    Int32 periodStart = AParameters["param_start_period_i"].ToInt32();
+                    Int32 periodEnd = AParameters["param_end_period_i"].ToInt32();
+                    DateFilter = "AND GiftBatch.a_batch_year_i = " + periodYear;
+                    if (periodStart == periodEnd)
+                    {
+                        DateFilter += (" AND GiftBatch.a_batch_period_i = " + periodStart + " ");
+                    }
+                    else
+                    {
+                        DateFilter += (" AND GiftBatch.a_batch_period_i >= " + periodStart
+                                     + " AND GiftBatch.a_batch_period_i <= " + periodEnd + " ");
+                    }
+                }
+                else
+                {
+                    DateTime dateStart = AParameters["param_start_date"].ToDate();
+                    DateTime dateEnd = AParameters["param_end_date"].ToDate();
+                    DateFilter = "AND GiftBatch.a_gl_effective_date_d >= " + dateStart.ToString("yyyy-MM-dd")
+                        + " AND GiftBatch.a_gl_effective_date_d <= " + dateEnd.ToString("yyyy-MM-dd") + " ";
+                }
+
+                String Query = "SELECT ";
+                if (PersonalHosa)
+                {
+                    Query += "LinkedCostCentre.a_cost_centre_code_c AS CostCentre, ";
+                }
+                else
+                {
+                    Query += "GiftDetail.a_cost_centre_code_c AS CostCentre, ";
+                }
+                Query += "MotivationDetail.a_account_code_c AS AccountCode, SUM(GiftDetail.a_gift_amount_n) AS GiftBaseAmount, SUM(a_gift_transaction_amount_n) AS GiftTransactionAmount, "
+                    + "GiftDetail.p_recipient_key_n AS RecipientKey, Partner.p_partner_short_name_c AS RecipientShortname, "
+                    + "Partner.p_partner_short_name_c AS Narrative "
+                    + "FROM a_gift_detail AS GiftDetail, a_gift_batch AS GiftBatch, "
+                    + "a_motivation_detail AS MotivationDetail, a_gift AS Gift, p_partner AS Partner";
+                if (PersonalHosa)
+                {
+                    Query += ",PUB_a_valid_ledger_number AS LinkedCostCentre";
+                }
+
+                Query += " WHERE GiftDetail.a_ledger_number_i = GiftBatch.a_ledger_number_i "
+                    + "AND GiftDetail.a_batch_number_i = GiftBatch.a_batch_number_i "
+                    + "AND GiftDetail.a_ledger_number_i = MotivationDetail.a_ledger_number_i "
+                    + "AND GiftDetail.a_motivation_group_code_c = MotivationDetail.a_motivation_group_code_c "
+                    + "AND GiftDetail.a_motivation_detail_code_c = MotivationDetail.a_motivation_detail_code_c "
+                    + "AND GiftDetail.a_ledger_number_i = Gift.a_ledger_number_i "
+                    + "AND GiftDetail.a_batch_number_i = Gift.a_batch_number_i "
+                    + "AND GiftDetail.a_gift_transaction_number_i = Gift.a_gift_transaction_number_i "
+                    + "AND Partner.p_partner_key_n = GiftDetail.p_recipient_key_n "
+                    + "AND GiftDetail.a_ledger_number_i = " + LedgerNumber + " "
+                    + "AND GiftBatch.a_batch_status_c = '" + MFinanceConstants.BATCH_POSTED + "' "
+                    + DateFilter;
+
+                if (PersonalHosa)
+                {
+                    Query += "AND LinkedCostCentre.a_ledger_number_i = GiftDetail.a_ledger_number_i "
+                    + "AND LinkedCostCentre.a_cost_centre_code_c IN (" + CostCentreCodes + ") "
+                    + "AND GiftDetail.p_recipient_key_n = LinkedCostCentre.p_partner_key_n ";
+                }
+                else
+                {
+                    Query += "AND GiftDetail.a_cost_centre_code_c IN (" + CostCentreCodes + ") ";
+                }
+
+                if (IchNumber != 0)
+                {
+                    Query += "AND GiftDetail.a_ich_number_i = " + IchNumber + " ";
+                }
+
+                Query += "GROUP BY CostCentre, AccountCode, GiftDetail.p_recipient_key_n, Partner.p_partner_short_name_c "
+                    + "ORDER BY Partner.p_partner_short_name_c ASC";
+
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+                DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(Query, "Gifts", Transaction);
+
+                resultTable.Columns.Add("GiftIntlAmount", typeof(Decimal));
+                resultTable.Columns.Add("Reference", typeof(string));
+
+                Boolean InternationalCurrency = AParameters["param_currency"].ToString() == "International";
+                Double ExchangeRate = 1.00;  // TODO Get exchange rate!
+
+                foreach (DataRow r in resultTable.Rows)
+                {
+                    if (InternationalCurrency)
+                    {
+                        r["GiftIntlAmount"] = (Decimal)(Convert.ToDouble(r["GiftBaseAmount"]) * ExchangeRate);
+                    }
+
+                    r["Reference"] = StringHelper.PartnerKeyToStr(Convert.ToInt64(r["RecipientKey"]));
+                }
+
+                return resultTable;
+            }   // try
+            catch (Exception e)
+            {
+                TLogging.Log("Problem gift rows for HOSA report: " + e.ToString());
+                return null;
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+        }
+
 
     }
 }

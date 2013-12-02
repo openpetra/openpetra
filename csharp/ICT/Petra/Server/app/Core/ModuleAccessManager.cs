@@ -224,6 +224,8 @@ namespace Ict.Petra.Server.App.Core.Security
                     {
                         string ParameterName = Parameter.ParameterType.ToString().Replace("&", "");
 
+                        ParameterName = ParameterName.Replace("System.Collections.Generic.Dictionary`2", "DICTIONARY");
+                        ParameterName = ParameterName.Replace("Ict.Common.", string.Empty);
                         ParameterName = ParameterName.Replace("System.", string.Empty);
 
                         if (ParameterName.Contains("."))

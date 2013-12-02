@@ -3,6 +3,7 @@
 //
 // @Authors:
 //       timop
+//       Tim Ingham
 //
 // Copyright 2004-2010 by OM International
 //
@@ -40,7 +41,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     public partial class TFrmAccountDetail
     {
         private Int32 FLedgerNumber;
-        private FastReport.Report FfastReport;
+        FastReportsWrapper FFastReportsPlugin;
 
         /// <summary>
         /// the report should be run for this ledger
@@ -57,13 +58,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
                 pnlSorting.Padding = new System.Windows.Forms.Padding(8); // This tweak bring controls inline.
                 FPetraUtilsObject.LoadDefaultSettings();
-                FPetraUtilsObject.DelegateGenerateReportOverride = GenerateReportManual;
-
-                FfastReport = new FastReport.Report();
-                FfastReport.StoreInResources = false;
-                String PathStandardReports = TAppSettingsManager.GetValue("Reporting.PathStandardReports");
-                FfastReport.Load(PathStandardReports + '/' + FPetraUtilsObject.FXMLFiles);
-
+                FFastReportsPlugin = new FastReportsWrapper(FPetraUtilsObject, LoadReportData);
             }
         }
 
@@ -73,7 +68,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("param_with_analysis_attributes", false);
         }
 
-        private void LoadReportData(TRptCalculator ACalc)
+        private bool LoadReportData(TRptCalculator ACalc)
         {
             Shared.MReporting.TParameterList pm = ACalc.GetParameters();
             String LedgerFilter = "a_ledger_number_i=" + pm.Get("param_ledger_number_i").ToInt32();
@@ -84,13 +79,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 String Filter = "'" + pm.Get("param_account_codes") + "'";
                 Filter = Filter.Replace(",", "','");
-                AccountCodeFilter = "a_account_code_c in (" + Filter + ")";
-                TranctAccountCodeFilter = "a_transaction.a_account_code_c in (" + Filter + ")";
+                AccountCodeFilter = " AND a_account_code_c in (" + Filter + ")";
+                TranctAccountCodeFilter = " AND a_transaction.a_account_code_c in (" + Filter + ")";
             }
             if (pm.Get("param_rgrAccounts").ToString() == "AccountRange")
             {
-                AccountCodeFilter = "a_account_code_c>='" + pm.Get("param_account_code_start") + "' AND a_account_code_c<='" + pm.Get("param_account_code_end") + "'";
-                TranctAccountCodeFilter = "a_transaction.a_account_code_c>='" + pm.Get("param_account_code_start") + "' AND a_transaction.a_account_code_c<='" + pm.Get("param_account_code_end") + "'";
+                AccountCodeFilter = " AND a_account_code_c>='" + pm.Get("param_account_code_start") + "' AND a_account_code_c<='" + pm.Get("param_account_code_end") + "'";
+                TranctAccountCodeFilter = " AND a_transaction.a_account_code_c>='" + pm.Get("param_account_code_start") + "' AND a_transaction.a_account_code_c<='" + pm.Get("param_account_code_end") + "'";
             }
 
 
@@ -101,13 +96,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 String Filter = "'" + pm.Get("param_cost_centre_codes") + "'";
                 Filter = Filter.Replace(",", "','");
-                CostCentreFilter = "a_cost_centre_code_c in (" + Filter + ")";
-                TranctCostCentreFilter = "a_transaction.a_cost_centre_code_c in (" + Filter + ")";
+                CostCentreFilter = " AND a_cost_centre_code_c in (" + Filter + ")";
+                TranctCostCentreFilter = " AND a_transaction.a_cost_centre_code_c in (" + Filter + ")";
             }
             if (pm.Get("param_rgrCostCentres").ToString() == "CostCentreRange")
             {
-                CostCentreFilter = "a_cost_centre_code_c>='" + pm.Get("param_cost_centre_code_start") + "' AND a_cost_centre_code_c<='" + pm.Get("param_cost_centre_code_end") + "'";
-                TranctCostCentreFilter = "a_transaction.a_cost_centre_code_c>='" + pm.Get("param_cost_centre_code_start") + "' AND a_transaction.a_cost_centre_code_c<='" + pm.Get("param_cost_centre_code_end") + "'";
+                CostCentreFilter = " AND a_cost_centre_code_c>='" + pm.Get("param_cost_centre_code_start") + "' AND a_cost_centre_code_c<='" + pm.Get("param_cost_centre_code_end") + "'";
+                TranctCostCentreFilter = " AND a_transaction.a_cost_centre_code_c>='" + pm.Get("param_cost_centre_code_start") + "' AND a_transaction.a_cost_centre_code_c<='" + pm.Get("param_cost_centre_code_end") + "'";
             }
 
             String TranctDateFilter = ""; // Optional Date Filter, as periods or dates
@@ -169,8 +164,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             String Csv = "";
             Csv = StringHelper.AddCSV(Csv, "ALedger/*/a_ledger/" + LedgerFilter);
-            Csv = StringHelper.AddCSV(Csv, "AAccount/*/a_account/" + LedgerFilter + " AND " + AccountCodeFilter + "AND a_posting_status_l='1' AND a_account_active_flag_l='1'");
-            Csv = StringHelper.AddCSV(Csv, "ACostCentre/*/a_cost_centre/" + LedgerFilter + " AND " + CostCentreFilter + " AND a_posting_cost_centre_flag_l='1' AND a_cost_centre_active_flag_l='1'");
+            Csv = StringHelper.AddCSV(Csv, "AAccount/*/a_account/" + LedgerFilter + AccountCodeFilter + "AND a_posting_status_l=true AND a_account_active_flag_l=true");
+            Csv = StringHelper.AddCSV(Csv, "ACostCentre/*/a_cost_centre/" + LedgerFilter + CostCentreFilter + " AND a_posting_cost_centre_flag_l=true AND a_cost_centre_active_flag_l=true");
 
             if (pm.Get("param_sortby").ToString() == "Analysis Type")  // To sort by analysis type, I need a different (and more horible) query:
             {
@@ -184,20 +179,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     + " AND a_trans_anal_attrib.a_transaction_number_i = a_transaction.a_transaction_number_i"
                     + " AND a_trans_anal_attrib.a_analysis_type_code_c = a_analysis_type.a_analysis_type_code_c"
                     + AnalysisTypeFilter
-                    + " AND " + TranctAccountCodeFilter + " AND " + TranctCostCentreFilter + " AND " + TranctDateFilter
-                    + " AND a_transaction_status_l='1' AND NOT (a_system_generated_l='1' AND a_narrative_c LIKE 'Year end re-allocation%')"
+                    + TranctAccountCodeFilter + TranctCostCentreFilter + " AND " + TranctDateFilter
+                    + " AND a_transaction_status_l=true AND NOT (a_system_generated_l=true AND a_narrative_c LIKE 'Year end re-allocation%')"
                     + "/" + OrderBy);
             }
             else
             {
-                Csv = StringHelper.AddCSV(Csv, "ATransaction/*/a_transaction/" + LedgerFilter + " AND " + TranctAccountCodeFilter + " AND " + TranctCostCentreFilter + " AND " + TranctDateFilter + ReferenceFilter
-                    + " AND a_transaction_status_l='1' AND NOT (a_system_generated_l='1' AND a_narrative_c LIKE 'Year end re-allocation%')"
+                Csv = StringHelper.AddCSV(Csv, "ATransaction/*/a_transaction/" + LedgerFilter + TranctAccountCodeFilter 
+                    + TranctCostCentreFilter + " AND " + TranctDateFilter + ReferenceFilter
+                    + " AND a_transaction_status_l=true AND NOT (a_system_generated_l=true AND a_narrative_c LIKE 'Year end re-allocation%')"
                     + "/" + OrderBy);
             }
             GLReportingTDS ReportDs = TRemote.MFinance.Reporting.WebConnectors.GetReportingDataSet(Csv);
 
             //
-            // My report doesn't need a ledger row - only the name of the ledger. And I need the currency code..
+            // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
             {
                 ALedgerRow Row = ReportDs.ALedger[0];
                 ACalc.AddStringParameter("param_ledger_name", Row.LedgerName);
@@ -222,35 +218,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
 
-            FfastReport.RegisterData(ReportDs.ATransAnalAttrib, "a_trans_anal_attrib");
-            FfastReport.RegisterData(ReportDs.AAnalysisType, "a_analysis_type");
-            FfastReport.RegisterData(ReportDs.AAccount, "a_account");
-            FfastReport.RegisterData(ReportDs.ACostCentre, "a_costCentre");
-//          FfastReport.RegisterData(ReportDs.ALedger, "a_ledger");
-            FfastReport.RegisterData(ReportDs.ATransaction, "a_transaction");
-        }
-
-        private void LoadReportParams(TRptCalculator ACalc)
-        {
-            ArrayList reportParam = ACalc.GetParameters().Elems;
-//          FfastReport.Parameters.Clear();
-            foreach (Shared.MReporting.TParameter p in reportParam)
-            {
-                if (p.name.StartsWith("param") && p.name != "param_calculation")
-                {
-                    FfastReport.SetParameterValue(p.name, p.value.ToObject());
-                }
-            }
-        }
-
-        private void GenerateReportManual(TRptCalculator ACalc)
-        {
-            LoadReportData(ACalc);
-            LoadReportParams(ACalc);
-            FfastReport.Design();
-            FfastReport.Show();
-
-            FPetraUtilsObject.UpdateParentFormEndOfReport();
+            FFastReportsPlugin.RegisterData(ReportDs.ATransAnalAttrib, "a_trans_anal_attrib");
+            FFastReportsPlugin.RegisterData(ReportDs.AAnalysisType, "a_analysis_type");
+            FFastReportsPlugin.RegisterData(ReportDs.AAccount, "a_account");
+            FFastReportsPlugin.RegisterData(ReportDs.ACostCentre, "a_costCentre");
+            FFastReportsPlugin.RegisterData(ReportDs.ATransaction, "a_transaction");
+            return true;
         }
     }
 }

@@ -77,6 +77,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         private TDelegateLoadSettingsFinished FDelegateLoadSettingsFinished;
 
         private TDelegateGenerateReportOverride FDelegateGenerateReportOverride;
+        private TDelegateGenerateReportOverride FDelegateViewReportOverride;
 
         /// <summary>number of columns that can be sorted</summary>
         public const Int32 NUMBER_SORTBY = 3;
@@ -162,6 +163,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             FDelegateLoadSettingsStarting = null;
             FDelegateLoadSettingsFinished = null;
             FDelegateGenerateReportOverride = null;
+            FDelegateViewReportOverride = null;
         }
 
         /// set caption of window, used to build window title
@@ -208,6 +210,29 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FDelegateGenerateReportOverride = value;
             }
         }
+
+        /// <summary>
+        /// This property Provides a link to show the FastReports Template.
+        /// </summary>
+        /// <description>Setting this Shows the toolbar button and menu option.</description>
+        public TDelegateGenerateReportOverride DelegateViewReportOverride
+        {
+            set
+            {
+                FDelegateViewReportOverride = value;
+                ToolStripItem tbbItm = ((ToolStripItem)((ToolStrip)FWinForm.Controls["tbrMain"]).Items["tbbEditTemplate"]);
+                if (tbbItm != null)
+                {
+                    tbbItm.Visible = true;
+                }
+                ToolStripItem mniItm = ((ToolStripMenuItem)((MenuStrip)FWinForm.Controls["mnuMain"]).Items["mniFile"]).DropDownItems["mniEditTemplate"];
+                if (mniItm != null)
+                {
+                    mniItm.Visible = true;
+                }
+            }
+        }
+        
 
         /// <summary>
         /// returns the string that is to be displayed in the menuitem
@@ -452,6 +477,19 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 CancelBtns[0].MouseEnter += new EventHandler(CancelBtn_MouseEnter);
                 CancelBtns[0].MouseLeave += new EventHandler(CancelBtn_MouseLeave);
+            }
+        }
+
+        /// <summary>
+        /// Show The template for the report
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void MI_ShowTemplate_Click(System.Object sender, System.EventArgs e)
+        {
+            if (FDelegateViewReportOverride != null)
+            {
+                FDelegateViewReportOverride(FCalculator);
             }
         }
 
