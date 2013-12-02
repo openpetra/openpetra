@@ -15,6 +15,7 @@ RootNode:
 
     Controls:
         pnlDialogContent:
+            Padding: 5,0,0,0
             Controls:
                 Row0: [pnlTop]
                 Row1: [pnlGrid]

@@ -1362,7 +1362,7 @@ namespace Ict.Common.Controls
             if ((FRowSelectedBeforeSort != null) && FKeepRowSelectedAfterSort)
             {
                 int nNewRowIndex = this.Rows.DataSourceRowToIndex(FRowSelectedBeforeSort) + 1;
-                ReselectGridRowAfterSort(nNewRowIndex);
+                SelectRowAfterSort(nNewRowIndex);
             }
         }
 
@@ -1377,15 +1377,36 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        ///
+        /// Selects a grid row after a row has moved due to sorting without putting the focus on the grid.
+        /// Note that no FocusRowLeaving event is called so this call will by-pass any validation (so it can be called from within a validation routine)
+        /// Note also that this will give rise to a RowChanged event, but the grid's 'Sorting' property will be true.
         /// </summary>
-        public void ReselectGridRowAfterSort(Int32 ARowNumberInGrid)
+        public void SelectRowAfterSort(Int32 ARowNumberInGrid)
         {
             FSorting = true;
+            SelectRowWithoutFocus(ARowNumberInGrid);
+            FSorting = false;
+        }
+
+        /// <summary>
+        /// Used as a way of selecting a grid row without putting the focus on the grid.
+        /// Note that no FocusRowLeaving event is called so this call will by-pass any validation (so it can be called from within a validation routine)
+        /// However a SelectionChanged event will be fired.
+        /// </summary>
+        public void SelectRowWithoutFocus(Int32 ARowNumberInGrid)
+        {
+            if (this.Rows.Count > this.FixedRows)
+            {
+                ARowNumberInGrid = Math.Max(Math.Min(ARowNumberInGrid, this.Rows.Count - 1), this.FixedRows);
+            }
+            else
+            {
+                ARowNumberInGrid = -1;
+            }
+
             this.Selection.ResetSelection(false, true);
             this.Selection.SelectRow(ARowNumberInGrid, true);
             this.ShowCell(ARowNumberInGrid);
-            FSorting = false;
         }
 
         #endregion

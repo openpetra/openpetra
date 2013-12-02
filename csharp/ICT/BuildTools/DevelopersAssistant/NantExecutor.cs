@@ -78,17 +78,25 @@ namespace Ict.Tools.DevelopersAssistant
 
                     for (int i = 0; i < cmdProcesses.Length; i++)
                     {
-                        TimeSpan ts = dtServerStart - cmdProcesses[i].StartTime;
-
-                        if (ts >= TimeSpan.Zero)
+                        try
                         {
-                            // This cmd window did start before the server console process
-                            if (ts < tsSmallest)
+                            // If this command window is an administrator's one, we will get access denied when we ask for the start time
+                            // But that's ok - it won't be one we are interested in anyway!  So we can just try the next one.
+                            TimeSpan ts = dtServerStart - cmdProcesses[i].StartTime;
+
+                            if (ts >= TimeSpan.Zero)
                             {
-                                _serverProcessID = cmdProcesses[i].Id;
-                                _serverProcessIdIsCmdWindow = true;
-                                tsSmallest = ts;
+                                // This cmd window did start before the server console process
+                                if (ts < tsSmallest)
+                                {
+                                    _serverProcessID = cmdProcesses[i].Id;
+                                    _serverProcessIdIsCmdWindow = true;
+                                    tsSmallest = ts;
+                                }
                             }
+                        }
+                        catch (Exception)
+                        {
                         }
                     }
                 }

@@ -142,7 +142,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 }
             }
 
-            btnGenerate.Enabled = FBudgetsExist;
+            btnOK.Enabled = FBudgetsExist;
             btnSelectAllBudgets.Enabled = FBudgetsExist;
             btnUnselectAllBudgets.Enabled = FBudgetsExist;
         }

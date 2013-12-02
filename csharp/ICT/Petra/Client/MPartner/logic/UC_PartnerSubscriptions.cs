@@ -50,20 +50,20 @@ namespace Ict.Petra.Client.MPartner
             PPublicationRow TmpRow;
             string SelectedPublication;
 
-            if (APublicationComboBox == null) 
+            if (APublicationComboBox == null)
             {
                 throw new ArgumentNullException("APublicationComboBox must not be null");
             }
-            
-            SelectedPublication = APublicationComboBox.GetSelectedString();            
+
+            SelectedPublication = APublicationComboBox.GetSelectedString();
 
             if (!String.IsNullOrWhiteSpace(SelectedPublication))
             {
                 DataCachePublicationListTable = TDataCache.TMPartner.GetCacheableSubscriptionsTable(TCacheableSubscriptionsTablesEnum.PublicationList);
                 TmpRow = (PPublicationRow)DataCachePublicationListTable.Rows.Find(
                     new Object[] { SelectedPublication });
-    
-                if (TmpRow != null) 
+
+                if (TmpRow != null)
                 {
                     if (!TmpRow.ValidPublication)
                     {
@@ -78,7 +78,7 @@ namespace Ict.Petra.Client.MPartner
                         {
                             APublicationComboBox.cmbCombobox.SelectedIndex = -1;
                         }
-                    }                    
+                    }
                 }
             }
         }

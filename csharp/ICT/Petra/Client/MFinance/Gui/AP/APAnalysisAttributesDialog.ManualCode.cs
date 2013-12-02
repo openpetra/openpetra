@@ -110,7 +110,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FocusedRowChanged(null, null);
         }
 
-        private void BtnClose_Click(object sender, EventArgs e)
+        private void BtnOK_Click(object sender, EventArgs e)
         {
             Close();
         }

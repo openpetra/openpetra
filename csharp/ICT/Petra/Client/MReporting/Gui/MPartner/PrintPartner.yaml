@@ -1,0 +1,74 @@
+RootNode:
+    BaseYaml: ../ReportingForm.yaml
+    FormType: report
+    FormTitle: Print Partner
+    Template: reportwindow
+    UtilObjectClass: TFrmPetraReportingUtils
+    InterfaceName: IFrmReporting
+    Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
+    TemplateParameters:
+        XMLFILES: [Partner\\\\printpartner.xml]
+        REPORTNAME: Print Partner
+        CURRENTREPORT: Print Partner
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+        REPORTSETTINGSDIRECTORY: Partner
+    Security:
+        ModulePermissionRequired: [PARTNER]
+    Actions:
+        actSelectAll: {ActionClick=SelectAll}
+        actDeselectAll: {ActionClick=DeselectAll}
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [ucoPartnerSelection,grpReportDetails]
+            Order: AlwaysFirst
+        ucoPartnerSelection:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
+            Height: 148
+        grpReportDetails:
+            Margin: 8,10,0,0
+            Controls:
+                Row0: [chkPartnerClassData, chkFinanceDetails]
+                Row1: [chkSubscriptions, chkInterests]
+                Row2: [chkRelationships, chkContacts]
+                Row3: [chkLocations, chkReminders]
+                Row4: [btnSelectAll, btnDeselectAll]
+                Row5: [chkHideEmpty]
+            
+        chkPartnerClassData:
+            Label: Partner Class Data
+            CheckBoxAttachedLabel: right
+        chkSubscriptions:
+            Label: Subscriptions
+            CheckBoxAttachedLabel: right
+        chkRelationships:
+            Label: Relationships
+            CheckBoxAttachedLabel: right
+        chkLocations:
+            Label: Locations
+            CheckBoxAttachedLabel: right
+        chkFinanceDetails:
+            Label: Finance Details
+            CheckBoxAttachedLabel: right
+        chkInterests:
+            Label: Interests
+            CheckBoxAttachedLabel: right
+        chkContacts:
+            Label: Contacts
+            CheckBoxAttachedLabel: right
+        chkReminders:
+            Label: Reminders
+            CheckBoxAttachedLabel: right
+        chkHideEmpty:
+            Label: Hide Empty Sections
+            CheckBoxAttachedLabel: right
+
+        btnSelectAll:
+            Action: actSelectAll
+        btnDeselectAll:
+            Action: actDeselectAll
+            Padding: -75,0,0,0

@@ -57,7 +57,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
 
-
         /// <summary>
         /// load the batches into the grid
         /// </summary>
@@ -99,11 +98,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 );
 
             UpdateRecordNumberDisplay();
-
-            grdDetails.Focus();
-
-            SelectRowInGrid(1);
-
             SetAccountCostCentreTableVariables();
         }
 
@@ -243,6 +237,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void ShowDetailsManual(ARecurringBatchRow ARow)
         {
             EnableTransactionTabForBatch();
+            grdDetails.TabStop = (ARow != null);
 
             if (ARow == null)
             {
@@ -300,44 +295,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void NewRow(System.Object sender, EventArgs e)
         {
-            Int32 yearNumber = 0;
-            Int32 periodNumber = 0;
-
             if (FPetraUtilsObject.HasChanges && !((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
             {
                 return;
             }
 
-            FPetraUtilsObject.VerificationResultCollection.Clear();
+            CreateNewARecurringBatch();
 
             pnlDetails.Enabled = true;
-
             EnableButtonControl(true);
 
-            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.CreateARecurringBatch(FLedgerNumber));
-
-            ARecurringBatchRow newBatchRow = (ARecurringBatchRow)FMainDS.ARecurringBatch.Rows[FMainDS.ARecurringBatch.Rows.Count - 1];
-
-            newBatchRow.DateEffective = FDefaultDate;
+            ARecurringBatchRow newBatchRow = GetSelectedDetailRow();
+            Int32 yearNumber = 0;
+            Int32 periodNumber = 0;
 
             if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out yearNumber, out periodNumber))
             {
                 newBatchRow.BatchPeriod = periodNumber;
             }
 
-            SelectDetailRowByDataTableIndex(FMainDS.ARecurringBatch.Rows.Count - 1);
+            newBatchRow.DateEffective = FDefaultDate;
 
-            FPreviouslySelectedDetailRow.DateEffective = FDefaultDate;
-
-
-            FSelectedBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+            FSelectedBatchNumber = newBatchRow.BatchNumber;
 
             string enterMsg = Catalog.GetString("Please enter a batch description");
-            FPreviouslySelectedDetailRow.BatchDescription = enterMsg;
+            newBatchRow.BatchDescription = enterMsg;
             txtDetailBatchDescription.Text = enterMsg;
-            txtDetailBatchDescription.Focus();
-
-            UpdateRecordNumberDisplay();
+            txtDetailBatchDescription.SelectAll();
 
             //Enable the Journals if not already enabled
             ((TFrmRecurringGLBatch)ParentForm).EnableJournals();
@@ -538,6 +522,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ((TFrmRecurringGLBatch)ParentForm).GetJournalsControl().ClearCurrentSelection();
                 ((TFrmRecurringGLBatch)ParentForm).DisableJournals();
             }
+
+            SetInitialFocus();
         }
 
         private void ClearControls()
@@ -992,6 +978,46 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 grdDetails.Focus();
             }
+        }
+
+        /// <summary>
+        /// Shows the Filter/Find UserControl and switches to the Find Tab.
+        /// </summary>
+        public void ShowFindPanel()
+        {
+            if (FucoFilterAndFind == null)
+            {
+                ToggleFilter();
+            }
+
+            FucoFilterAndFind.DisplayFindTab();
+        }
+
+        /// <summary>
+        /// A simple flag used to indicate that the form has been shown for the first time
+        /// </summary>
+        private bool FInitialFocusActionComplete = false;
+
+        /// <summary>
+        /// Sets the initial focus to the grid or the New button depending on the row count
+        /// </summary>
+        public void SetInitialFocus()
+        {
+            if (FInitialFocusActionComplete)
+            {
+                return;
+            }
+
+            if (grdDetails.Rows.Count < 2)
+            {
+                btnNew.Focus();
+            }
+            else
+            {
+                grdDetails.Focus();
+            }
+
+            FInitialFocusActionComplete = true;
         }
     }
 }

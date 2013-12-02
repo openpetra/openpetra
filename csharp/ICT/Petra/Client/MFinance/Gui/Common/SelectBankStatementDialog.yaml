@@ -9,6 +9,7 @@ RootNode:
     Actions:
     Controls:
         pnlDialogContent:
+            Padding: 4,0,0,0
             Dock: Fill
             Controls: 
                 Row0: [pnlTop]
@@ -31,6 +32,7 @@ RootNode:
             Controls: [grdSelectStatement, pnlButtons]
         pnlButtons:
             Dock: Right
+            AutoButtonMaxWidths: true
             Controls: [btnLoadStatement, btnDeleteStatement]
         grdSelectStatement: {Dock=Fill}
             ActionDoubleClick: LoadStatement

@@ -653,6 +653,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             PPartnerLocationRow PartnerLocationRow = FMainDS.PPartnerLocation.NewRowTyped();
 
+            int? Extension;
+
             PartnerLocationRow.PartnerKey = FPartnerKey;
             PartnerLocationRow.SiteKey = LocationRow.SiteKey;
             PartnerLocationRow.LocationKey = LocationRow.LocationKey;
@@ -662,9 +664,32 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerLocationRow.SendMail = ReadBoolean();
             PartnerLocationRow.EmailAddress = ReadString();
             PartnerLocationRow.TelephoneNumber = ReadString();
-            PartnerLocationRow.Extension = ReadInt32();
+
+            // prevent problems in case Phone Extension is set to null
+            Extension = ReadNullableInt32();
+
+            if (Extension.HasValue)
+            {
+                PartnerLocationRow.Extension = Extension.Value;
+            }
+            else
+            {
+                PartnerLocationRow.Extension = 0;
+            }
+
             PartnerLocationRow.FaxNumber = ReadString();
-            PartnerLocationRow.FaxExtension = ReadInt32();
+
+            // prevent problems in case Fax Extension is set to null
+            Extension = ReadNullableInt32();
+
+            if (Extension.HasValue)
+            {
+                PartnerLocationRow.FaxExtension = Extension.Value;
+            }
+            else
+            {
+                PartnerLocationRow.FaxExtension = 0;
+            }
 
             if (!FIgnorePartner)
             {
@@ -1043,7 +1068,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             if (!PUnitAccess.Exists(GeneralApplicationRow.RegistrationOffice, ATransaction))
             {
-                AddVerificationResult(String.Format("Unknown Registration Office {0}.\n{1} substitued in Application form.",
+                AddVerificationResult(String.Format("Unknown Registration Office {0}.\n{1} substituted in Application form.",
                         GeneralApplicationRow.RegistrationOffice, DomainManager.GSiteKey));
                 GeneralApplicationRow.RegistrationOffice = DomainManager.GSiteKey;
 
@@ -1072,19 +1097,22 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     FMainDS.PmGeneralApplication, GeneralApplicationRow, FDoNotOverwrite, ATransaction);
             }
 
-            string KeyWord = ReadString();
-
-            // needs to be kept in to support versions < 3.0.0
-            while (KeyWord == "APPL-FORM")
+            if (APetraVersion.FileMajorPart < 3)
             {
-                ReadApplicationForm(GeneralApplicationRow, ATransaction);
+                string KeyWord = ReadString();
 
-                KeyWord = ReadString();
-            }
+                // needs to be kept in to support versions < 3.0.0
+                while (KeyWord == "APPL-FORM")
+                {
+                    ReadApplicationForm(GeneralApplicationRow, ATransaction);
 
-            if (KeyWord == "END")
-            {
-                CheckForKeyword("FORMS");
+                    KeyWord = ReadString();
+                }
+
+                if (KeyWord == "END")
+                {
+                    CheckForKeyword("FORMS");
+                }
             }
         }
 
@@ -1201,8 +1229,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PastExperienceRow.SiteKey = ReadInt64();
             PastExperienceRow.Key = ReadInt64();
             PastExperienceRow.PrevLocation = ReadString();
-            PastExperienceRow.StartDate = ReadDate();
-            PastExperienceRow.EndDate = ReadDate();
+            PastExperienceRow.StartDate = ReadNullableDate();
+            PastExperienceRow.EndDate = ReadNullableDate();
             PastExperienceRow.PrevWorkHere = ReadBoolean();
             PastExperienceRow.PrevWork = ReadBoolean();
             PastExperienceRow.OtherOrganisation = ReadString();
@@ -1234,7 +1262,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             PassportDetailsRow.PassportNumber = ReadString();
 
-            if (APetraVersion.FileMinorPart > 2)
+            if (APetraVersion.Compare(new TFileVersionInfo("2.3.3")) >= 0)
             {
                 PassportDetailsRow.MainPassport = ReadBoolean();
             }
@@ -1743,6 +1771,16 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
+        private void ImportVision(TDBTransaction ATransaction)
+        {
+            // Table pm_person_vision dropped in OpenPetra as no longer needed
+
+            ReadString(); /* Vision Area */
+
+            ReadInt32(); /* Vision Level */
+            ReadString(); /* Vision Comment */
+        }
+
         private void ImportOptionalDetails(PPartnerRow APartnerRow, TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
         {
             string KeyWord = ReadString();
@@ -1864,6 +1902,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 else if (KeyWord == "V-ROOM")
                 {
                     ImportRoom(ATransaction);
+                }
+                else if (KeyWord == "VISION")
+                {
+                    ImportVision(ATransaction);
                 }
                 else
                 {

@@ -1194,7 +1194,10 @@ namespace SourceGrid
                 m_firstCellShiftSelected = Selection.ActivePosition;
 			}
 
-			if ((keyData == Keys.Enter ||
+			// AlanP: Nov 2013.  Added SHIFT and CTRL ENTER
+            if ((keyData == Keys.Enter ||
+                 keyData == (Keys.Enter | Keys.Shift) ||
+                 keyData == (Keys.Enter | Keys.Control) ||
 			     keyData == Keys.Escape ||
 			     keyData == Keys.Tab ||
 			     keyData == (Keys.Tab | Keys.Shift)) &&
@@ -1274,44 +1277,121 @@ namespace SourceGrid
 				enableEnter = true;
 
 			#region Processing keys
+            // AlanP: Nov 2013. Made some changes to the behaviours of ENTER and Esc so we move to the next editable cell
+            //   Also there was a bug in the code that checked if a cell IsEditing
 			//Escape
 			if (e.KeyCode == Keys.Escape && enableEscape)
 			{
 				CellContext focusCellContext = new CellContext(this, Selection.ActivePosition);
-				if (focusCellContext.Cell != null && focusCellContext.IsEditing())
+                ICellVirtual contextCell = focusCellContext.Cell;
+				if (contextCell != null && contextCell.Editor != null && contextCell.Editor.IsEditing)
 				{
-					if (focusCellContext.EndEdit(true))
-						e.Handled = true;
+                    if (focusCellContext.EndEdit(true))
+                    {
+                        // Move to next editable cell if there is one
+                        bool bFound = false;
+                        do
+                        {
+                            Selection.MoveActiveCell(0, 1, 0, int.MinValue);
+                            ICellVirtual nextContextCell = (new CellContext(this, Selection.ActivePosition)).Cell;
+                            bFound = (nextContextCell != null && nextContextCell.Editor != null && nextContextCell.Editor.EditableMode != EditableMode.None);
+                        }
+                        while (Selection.ActivePosition.Column != 0 && !bFound);
+
+                        e.Handled = true;
+                    }
 				}
 			}
 
 			//Enter
 			if (e.KeyCode == Keys.Enter && enableEnter)
 			{
+                // This is the main special key for dealing with edit-in-place in OpenPetra
+                bool isLastColumn = (Selection.ActivePosition.Column == this.Columns.Count - 1);
+                bool isFirstColumn = (Selection.ActivePosition.Column == this.FixedColumns);
+
 				CellContext focusCellContext = new CellContext(this, Selection.ActivePosition);
-				if (focusCellContext.Cell != null && focusCellContext.IsEditing())
+                //if (focusCellContext.Cell != null && focusCellContext.IsEditing())
+                // AlanP: Nov 2013.  Replcaed the line above with this because focusCellContext.IsEditing() returns false for a reason I don't understand.
+                ICellVirtual contextCell = focusCellContext.Cell;
+                
+                // Pressing ENTER always completes an outstanding edit
+                if (contextCell != null && contextCell.Editor != null && contextCell.Editor.IsEditing)
 				{
 					focusCellContext.EndEdit(false);
-
-					e.Handled = true;
 				}
-			}
+
+                if (isFirstColumn)
+                {
+                    // If we are on the first column and columns exist to the right then ENTER moves us to the next editable cell
+                    //  or back to column 0 if there are no more editable cells
+                    if (!isLastColumn)
+                    {
+                        bool bFound = false;
+                        do
+                        {
+                            Selection.MoveActiveCell(0, 1, 0, int.MinValue);
+                            ICellVirtual nextContextCell = (new CellContext(this, Selection.ActivePosition)).Cell;
+                            bFound = (nextContextCell != null && nextContextCell.Editor != null && nextContextCell.Editor.EditableMode != EditableMode.None);
+                        }
+                        while (Selection.ActivePosition.Column != 0 && !bFound);
+                    }
+                }
+                else
+                {
+                    // If we are NOT on the first column we go somewhere else depending on SHIFT or CTRL
+                    if (e.Modifiers == Keys.Shift)
+                    {
+                        // Go down 1 row in the current column and then ultimately back to column 0 on the last row
+                        this.Selection.MoveActiveCell(1, 0, 0, int.MinValue);
+                    }
+                    else if (e.Modifiers == Keys.Control)
+                    {
+                        // Go down 1 row in column 0
+                        this.Selection.MoveActiveCell(1, -this.Selection.ActivePosition.Column, 0, int.MinValue);
+                    }
+                    else
+                    {
+                        // Neither SHIFT nor CTRL so go across to the right in the current row to the next editable control
+                        //  or go back to column 0 in the current row
+                        bool bFound = false;
+                        do
+                        {
+                            Selection.MoveActiveCell(0, 1, 0, int.MinValue);
+                            ICellVirtual nextContextCell = (new CellContext(this, Selection.ActivePosition)).Cell;
+                            bFound = (nextContextCell != null && nextContextCell.Editor != null && nextContextCell.Editor.EditableMode != EditableMode.None);
+                        }
+                        while (Selection.ActivePosition.Column != 0 && !bFound);
+                    }
+                }
+
+                e.Handled = true;
+                return;
+            }
 
 			//Tab
 			if (e.KeyCode == Keys.Tab && enableTab)
 			{
+                // All we need to do is close down any edit
 				CellContext focusCellContext = new CellContext(this, Selection.ActivePosition);
-				if (focusCellContext.Cell != null && focusCellContext.IsEditing())
-				{
-					//se l'editing non riesce considero il tasto processato
-					// altrimenti no, in questo modo il tab ha effetto anche per lo spostamento
-					if (focusCellContext.EndEdit(false) == false)
-					{
-						e.Handled = true;
-						return;
-					}
+                //if (focusCellContext.Cell != null && focusCellContext.IsEditing())
+                // AlanP: Nov 2013.  Replcaed the line above with this because focusCellContext.IsEditing() returns false for a reason I don't understand.
+                ICellVirtual contextCell = focusCellContext.Cell;
+
+                // Pressing TAB always completes an outstanding edit
+                if (contextCell != null && contextCell.Editor != null && contextCell.Editor.IsEditing)
+                {
+                    focusCellContext.EndEdit(false);
 				}
-			}
+
+                // Be sure to go back to column 0 in the current row
+                if (Selection.ActivePosition.Column != 0)
+                {
+                    this.Selection.Focus(new Position(Selection.ActivePosition.Row, 0), true);
+                }
+
+                return;
+            }
 			#endregion
 
 			#region Navigate keys: arrows, tab and PgDown/Up
@@ -1335,33 +1415,33 @@ namespace SourceGrid
 				Selection.MoveActiveCell(-1, 0, resetSelection);
 				e.Handled = true;
 			}
-			else if (e.KeyCode == Keys.Right && enableArrows)
-			{
-				Selection.MoveActiveCell(0, 1, resetSelection);
-				e.Handled = true;
-			}
-			else if (e.KeyCode == Keys.Left && enableArrows)
-			{
-				Selection.MoveActiveCell(0, -1, resetSelection);
-				e.Handled = true;
-			}
-			else if (e.KeyCode == Keys.Tab && enableTab)
-			{
-				//If the tab failed I automatically select the next control in the form (SelectNextControl)
+            //else if (e.KeyCode == Keys.Right && enableArrows)
+            //{
+            //    Selection.MoveActiveCell(0, 1, resetSelection);
+            //    e.Handled = true;
+            //}
+            //else if (e.KeyCode == Keys.Left && enableArrows)
+            //{
+            //    Selection.MoveActiveCell(0, -1, resetSelection);
+            //    e.Handled = true;
+            //}
+            //else if (e.KeyCode == Keys.Tab && enableTab)
+            //{
+            //    //If the tab failed I automatically select the next control in the form (SelectNextControl)
 
-				if (e.Modifiers == Keys.Shift) // backward
-				{
-					if (Selection.MoveActiveCell(0, -1, -1, int.MaxValue) == false)
-						FindForm().SelectNextControl(this, false, true, true, true);
-					e.Handled = true;
-				}
-				else //forward
-				{
-					if (Selection.MoveActiveCell(0, 1, 1, int.MinValue) == false)
-						FindForm().SelectNextControl(this, true, true, true, true);
-					e.Handled = true;
-				}
-			}
+            //    if (e.Modifiers == Keys.Shift) // backward
+            //    {
+            //        if (Selection.MoveActiveCell(0, -1, -1, int.MaxValue) == false)
+            //            FindForm().SelectNextControl(this, false, true, true, true);
+            //        e.Handled = true;
+            //    }
+            //    else //forward
+            //    {
+            //        if (Selection.MoveActiveCell(0, 1, 1, int.MinValue) == false)
+            //            FindForm().SelectNextControl(this, true, true, true, true);
+            //        e.Handled = true;
+            //    }
+            //}
 			else if ( (e.KeyCode == Keys.PageUp || e.KeyCode == Keys.PageDown)
 			         && enablePageDownUp)
 			{
@@ -1526,12 +1606,16 @@ namespace SourceGrid
 
 				if ((SpecialKeys & GridSpecialKeys.Tab) == GridSpecialKeys.Tab)
 				{
-					switch (keyData)
-					{
-						case Keys.Tab:
-						case (Keys.Tab | Keys.Shift):
-							return true;
-					}
+                    // AlanP: Nov 2013.  In OpenPetra, TAB is only a special key if not in the left column
+                    if (Selection.ActivePosition.Column > 0)
+                    {
+                        switch (keyData)
+                        {
+                            case Keys.Tab:
+                            case (Keys.Tab | Keys.Shift):
+                                return true;
+                        }
+                    }
 				}
 			}
 

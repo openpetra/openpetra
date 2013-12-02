@@ -9,6 +9,7 @@ RootNode:
 
     Controls:
         pnlDialogContent:
+            Padding: 5,0,7,0
             Controls: [lblInfo, clbAddress]
             Dock: Fill
         lblInfo:

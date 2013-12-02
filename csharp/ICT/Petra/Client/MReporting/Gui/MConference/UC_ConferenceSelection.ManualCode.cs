@@ -32,6 +32,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Client.CommonForms;
@@ -84,6 +85,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             rbtAllAttendees.Checked = true;
             txtExtract.Enabled = false;
             FShowSelectOutreachOptionsDialog = true;
+
+            // Get selected conference key
+            long SelectedConferenceKey = TUserDefaults.GetInt64Default("LASTCONFERENCEWORKEDWITH");
+
+            if (SelectedConferenceKey != 0)
+            {
+                txtConference.Text = SelectedConferenceKey.ToString();
+            }
         }
 
         /// <summary>
@@ -237,7 +246,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
             txtOneAttendee.Text = AParameters.Get("param_partnerkey").ToString();
 
-            if (AParameters.Exists("param_conferencekey"))
+            if (AParameters.Exists("param_conferencekey") && (txtConference.Text == ""))
             {
                 txtConference.Text = AParameters.Get("param_conferencekey").ToString();
             }

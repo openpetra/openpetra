@@ -46,9 +46,10 @@ namespace Ict.Common.IO
         {
             SaveFileDialog DialogSave = new SaveFileDialog();
 
-            DialogSave.DefaultExt = "yml";
+            DialogSave.DefaultExt = "ext";
             DialogSave.Filter = Catalog.GetString(
                 "Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Petra export (*.ext)|*.ext|Spreadsheet file (*.csv)|*.csv");
+            DialogSave.FilterIndex = 3; // pre-select .ext extension
             DialogSave.AddExtension = true;
             DialogSave.RestoreDirectory = true;
             DialogSave.Title = ADialogTitle;

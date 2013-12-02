@@ -1,5 +1,5 @@
 RootNode:
-    BaseClass: System.Windows.Forms.Form
+    BaseYaml: ../CommonForms/PetraFormDialog.yaml
     Namespace: Ict.Petra.Client.CommonDialogs
     FormType: dialog
     Template: window
@@ -8,23 +8,12 @@ RootNode:
     WindowWidth: 250
     WindowHeight: 250
     Controls:
-        stbMain:
-        pnlContent:
-            Dock: Fill
-            Padding: 8,12,8,5
-            Controls: [pnlDialogButtons, pnlDialogContent]
-
         pnlDialogContent:
-            Dock: Fill
             Controls: [ucoPetraLogoAndVersionInfo]
 
         ucoPetraLogoAndVersionInfo:
             Dock: Fill
             Type: Ict.Petra.Client.CommonDialogs.TUCPetraLogoAndVersionInfo
             
-        pnlDialogButtons: 
-            Dock: Bottom
-            Controls: 
-                Row0: [btnOK]
-
-        btnOK: {Label=&OK, ActionClick=BtnOK_Click, Align=right}
+        btnCancel: 
+            Visible: false

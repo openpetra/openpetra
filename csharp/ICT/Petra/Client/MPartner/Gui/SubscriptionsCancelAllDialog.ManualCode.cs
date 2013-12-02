@@ -136,6 +136,32 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
+            // Reason for cancellation needs to be set
+            if (cmbPSubscriptionReasonSubsCancelledCode.SelectedIndex < 0)
+            {
+                MessageBox.Show(Catalog.GetString("Cannot have a cancelled subscription without a reason for ending!"),
+                    Catalog.GetString("Problem: no reason for ending set"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return;
+            }
+
+            // this call will validate date field and automatically show error message if date validation fails
+            if (!dtpPSubscriptionDateCancelled.ValidDate())
+            {
+                return;
+            }
+
+            // do not allow empty date field
+            if (dtpPSubscriptionDateCancelled.TextLength == 0)
+            {
+                MessageBox.Show(Catalog.GetString("Cannot have a cancelled subscription without an end date!"),
+                    Catalog.GetString("Problem: no end date set"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return;
+            }
+
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.Close();
         }
