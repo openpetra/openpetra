@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
 
     /// manual methods for the generated window
-    public partial class TFrmReportingPeriodSelectionDialog : System.Windows.Forms.Form
+    public partial class TFrmStewardshipReports : System.Windows.Forms.Form
     {
         /// <summary>
         /// Field to store the reporting period selection mode
@@ -238,16 +238,18 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                         throw new NotImplementedException(Catalog.GetString("ICH Statement functionality is not yet implemented!"));
                 }
 
+                if (retVal)
+                {
+                    RefreshICHStewardshipNumberList(null, null);
+                    cmbICHNumber.Focus();
+                }
+
                 btnCancel.Text = "Close";
             }
             finally
             {
                 Cursor = Cursors.Default;
             }
-        }
-
-        private void BtnOK_Click(Object Sender, EventArgs e)
-        {
         }
 
         /// <summary>
@@ -283,8 +285,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             set
             {
                 FLedgerNumber = value;
-
-                btnOK.Visible = false;
 
                 TFinanceControls.InitialiseOpenFinancialPeriodsList(
                     ref cmbReportPeriod,

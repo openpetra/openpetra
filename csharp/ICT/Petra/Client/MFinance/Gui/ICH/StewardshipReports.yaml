@@ -1,13 +1,15 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
-    FormTitle: ICH Processing
+    FormTitle: Stewardship Reports
     Namespace: Ict.Petra.Client.MFinance.Gui.ICH
     FormType: dialog
     Template: window
     WindowWidth: 650
-    WindowHeight: 475
+    WindowHeight: 375
     Events:
         #Load: {class=System.EventHandler, method=FPetraUtilsObject.TFrmPetra_Load}
+    Actions:
+        actGenerateHOSAFiles: {ActionClick=GenerateHOSAFiles}
     
     Controls:
         pnlDialogContent:
@@ -17,24 +19,21 @@ RootNode:
         pnlDialogContentTop:
             Dock: Top            
             Controls:
-                Row0: [grpStewardshipCalculation, rgrCurrency]
-                Row1: [lblEmpty1]
-                Row2: [cmbICHNumber]
-                Row3: [lblFullReport]
+                Row0: [grpSelection, rgrCurrency]
+                Row1: [Empty1]
                 
         pnlDialogContentMiddle:
             Dock: Fill            
             Controls:
                 Row0: [grpOther, grpHOSA, grpStewardship]
-                Row1: [Empty6]
-                Row2: [btnGenerateHOSAFiles]
 
-        grpStewardshipCalculation: {Width:410, Height:85}
+        grpSelection: {Width:410, Height:100}
             Controls: 
                 Row0: [Empty2]
                 Row1: [cmbReportPeriod]
                 Row2: [Empty3]
-                Row3: [btnStewardshipCalculation]
+                Row3: [cmbICHNumber]
+                Row4: [lblFullReport]
                 
         grpOther: {NoLabel:true, Width:165, Height:180}
             Controls: 
@@ -73,12 +72,6 @@ RootNode:
             Label: International
             ParameterValue: 1
 
-        btnStewardshipCalculation:
-            Label: Run &Stewardship Calculation
-            ActionClick: StewardshipCalculation
-        btnGenerateHOSAFiles:
-            Label: Generate &HOSA Files
-            ActionClick: GenerateHOSAFiles
         cmbReportPeriod: {Label=Report Period, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList}
         cmbICHNumber: {Label=ICH Number, List=UserDefinedList}
         lblFullReport: {Label=(0=Full report)}
@@ -99,11 +92,12 @@ RootNode:
         txtBrowseStewardshipFile: {NoLabel=true, Width=200}
         btnBrowse: {Label=&Browse, Height=25}
         
-        lblEmpty1: {Label=None, Visible=false}
+        Empty1: #{Label=None, Visible=false}
         Empty2:
         Empty3:
         Empty4:
         Empty5:
-        Empty6:
-        Empty7:
-
+        
+        btnOK:
+            Label: &Generate HOSAs
+            Action: actGenerateHOSAFiles
