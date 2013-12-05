@@ -707,32 +707,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     if (writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
                     {
                         AssignEventHandlerToControl(writer, ctrl, "Click", ctrl.GetAttribute("ActionClick"));
-                        
-                        // The manual code sometimes contains a handler, but if not we write a standard one to the auto-generated file
-                        // Filter and Find menu items both use the same handler code - so we ensure we only write this action handler once!
-                        if (!writer.FCodeStorage.ManualFileExistsAndContains("void MniFilterFind_Click(") && (ctrl.controlName == "mniEditFilter"))
-                        {
-                            string ActionHandler =
-                                "/// auto generated" + Environment.NewLine +
-                                "protected void MniFilterFind_Click(object sender, EventArgs e)" + Environment.NewLine +
-                                "{" + Environment.NewLine +
-                                "    if (FucoFilterAndFind == null)" + Environment.NewLine +
-                                "    {" + Environment.NewLine +
-                                "        ToggleFilter();" + Environment.NewLine +
-                                "    }" + Environment.NewLine + Environment.NewLine +
-                                "    if (((ToolStripMenuItem)sender).Name == \"mniEditFind\")" + Environment.NewLine +
-                                "    {" + Environment.NewLine +
-                                "        FucoFilterAndFind.DisplayFindTab();" + Environment.NewLine +
-                                "        FFindPanelControls.FFindPanels[0].PanelControl.Focus();" + Environment.NewLine +
-                                "    }" + Environment.NewLine +
-                                "    else" + Environment.NewLine +
-                                "    {" + Environment.NewLine +
-                                "        FucoFilterAndFind.DisplayFilterTab();" + Environment.NewLine +
-                                "        FFilterPanelControls.FStandardFilterPanels[0].PanelControl.Focus();" + Environment.NewLine +
-                                "    }" + Environment.NewLine +
-                                "}" + Environment.NewLine + Environment.NewLine;
-                            writer.FCodeStorage.FActionHandlers += ActionHandler;
-                        }
                     }
                 }
                 else
@@ -875,6 +849,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if (ctrl.controlTypePrefix == "uco")
             {
+                writer.Template.AddToCodelet("USERCONTROLSRUNONCEONACTIVATION", ctrl.controlName + ".RunOnceOnParentActivation();" + Environment.NewLine);
                 writer.Template.AddToCodelet("SAVEDATA", ctrl.controlName + ".GetDataFromControls();" + Environment.NewLine);
                 writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY",
                     ctrl.controlName + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine);
