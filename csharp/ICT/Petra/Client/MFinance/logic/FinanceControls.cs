@@ -740,7 +740,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         }
 
         /// <summary>
-        /// This function fills the available financial years of a given ledger into a combobox
+        /// This function fills the available financial years of a given ledger into a TCmbAutoPopulated combobox
         /// </summary>
         /// <param name="AControl"></param>
         /// <param name="ALedgerNr"></param>
@@ -761,6 +761,29 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.SelectedIndex = 0;
 
             AControl.AppearanceSetup(new int[] { -1 }, -1);
+        }
+
+        /// <summary>
+        /// This function fills the available financial years of a given ledger into a TCmbAutoComplete combobox
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNr"></param>
+        public static void InitialiseAvailableGiftYearsList(ref TCmbAutoComplete AControl, System.Int32 ALedgerNr)
+        {
+            string DisplayMember;
+            string ValueMember;
+            DataTable Table = TRemote.MFinance.Gift.WebConnectors.GetAvailableGiftYears(ALedgerNr, out DisplayMember, out ValueMember);
+
+            Table.DefaultView.Sort = ValueMember + " DESC";
+
+            AControl.DisplayMember = DisplayMember;
+            AControl.ValueMember = ValueMember;
+            AControl.DataSource = Table.DefaultView;
+
+            if (Table.DefaultView.Count > 0)
+            {
+                AControl.SelectedIndex = 0;
+            }
         }
 
         /// <summary>

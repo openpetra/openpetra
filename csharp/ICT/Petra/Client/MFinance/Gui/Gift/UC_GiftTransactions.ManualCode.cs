@@ -140,6 +140,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            this.Cursor = Cursors.WaitCursor;
+            Application.DoEvents();
+            SuspendLayout();
+
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
             FBatchStatus = ABatchStatus;
@@ -180,16 +184,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
 
-            if (AFromTabClick)
-            {
-                grdDetails.Focus();
-            }
+            //if (AFromTabClick)
+            //{
+            //    grdDetails.Focus();
+            //}
 
-            UpdateRecordNumberDisplay();
             SelectRowInGrid(1);
 
+            UpdateRecordNumberDisplay();
             UpdateTotals();
             UpdateControlsProtection();
+
+            ResumeLayout();
+            this.Cursor = Cursors.Default;
         }
 
         bool FinRecipientKeyChanging = false;
