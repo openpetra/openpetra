@@ -1548,14 +1548,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Shows the Filter/Find UserControl and switches to the Find Tab.
-        /// </summary>
-        public void ShowFindPanel()
-        {
-            FucoFilterAndFind.DisplayFindTab();
-        }
-
-        /// <summary>
         /// A simple flag used to indicate that the form has been shown for the first time
         /// </summary>
         private bool FInitialFocusActionComplete = false;

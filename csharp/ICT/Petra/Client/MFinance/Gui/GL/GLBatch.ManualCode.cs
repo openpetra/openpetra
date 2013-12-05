@@ -58,24 +58,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Shows the Filter/Find UserControl and switches to the Find Tab.
+        /// Handles the click event for filter/find.
         /// </summary>
-        /// <param name="sender">Not evaluated.</param>
+        /// <param name="sender">Pass this on to the user control.</param>
         /// <param name="e">Not evaluated.</param>
-        public void ShowFindPanel(object sender, System.EventArgs e)
+        public void mniFilterFind_Click(object sender, System.EventArgs e)
         {
+
             switch (tabGLBatch.SelectedIndex)
             {
                 case (int)eGLTabs.Batches:
-                    ucoBatches.ShowFindPanel();
+                    ucoBatches.MniFilterFind_Click(sender, e);
                     break;
 
                 case (int)eGLTabs.Journals:
-                    ucoJournals.ShowFindPanel();
+                    ucoJournals.MniFilterFind_Click(sender, e);
                     break;
 
                 case (int)eGLTabs.Transactions:
-                    ucoTransactions.ShowFindPanel();
+                    ucoTransactions.MniFilterFind_Click(sender, e);
                     break;
             }
         }
