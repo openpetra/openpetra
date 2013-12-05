@@ -1332,6 +1332,15 @@ namespace {#NAMESPACE}
         {#RUNONCEINTERFACEIMPLEMENTATION}
     }
 
+    /// auto generated
+    public void RunOnceOnParentActivation()
+    {
+{#IFDEF FILTERANDFIND}
+        FFilterPanelControls.InitialiseComboBoxes();
+        FFindPanelControls.InitialiseComboBoxes();
+{#ENDIF FILTERANDFIND}    
+    }
+
     /// <summary>
     /// Adds event handlers for the appropiate onChange event to call a central procedure
     /// </summary>
