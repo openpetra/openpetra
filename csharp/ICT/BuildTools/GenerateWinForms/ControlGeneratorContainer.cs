@@ -1098,7 +1098,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             foreach (XmlNode child in children)
             {
-                string controlName = child.Attributes["name"].Value;           // eg txtDetailSomeColumn, or Column:table.column
+                string controlName = child.Attributes["name"].Value;           // eg txtDetailSomeColumn, txtSomeColumn$1, or Column:table.column
 
                 if (controlName.StartsWith("Column:"))
                 {
@@ -1149,6 +1149,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     // Create the throw-away label and control so that we can clone them (unless they have been created for a previous panel)
                     if (bHasALabel)
                     {
+                        if ((controlAttributes != null) && (controlAttributes["Label"] != null) && (controlType != "CheckBox"))
+                        {
+                            lblText = controlAttributes["Label"].Value;
+                        }
+
                         CreateCloneableControl(writer, lblName, "Label", lblText, ATargetCodelet);
                     }
 
@@ -1241,6 +1246,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
                 else
                 {
+                    // The control name may include an instance - remember this and work out the control name without the instance
+                    string controlNameWithInstance = controlName;
+                    
+                    if (controlNameWithInstance.Contains("-"))
+                    {
+                        controlName = controlName.Substring(0, controlName.LastIndexOf('-'));
+                    }
+
                     // Does it exist in the main list??
                     if (!FCodeStorage.FControlList.ContainsKey(controlName))
                     {
@@ -1249,7 +1262,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     // The column is specified by its control name
                     string columnName = controlName.Substring(3);
-                    string lblName = "lbl" + columnName;
+                    string lblName = "lbl" + controlName.Substring(3);
 
                     if (columnName.StartsWith("Detail"))
                     {
@@ -1290,6 +1303,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             controlType = "TextBox";
                             break;
 
+                        case "dtp":
+                            controlType = "TtxtPetraDate";
+                            break;
+
                         case "rbt":
                             controlType = "RadioButton";
                             break;
@@ -1310,7 +1327,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             throw new Exception("Unsupported control type to clone from: " + controlName);
                     }
 
-                    XmlAttributeCollection controlAttributes = GetAdditionalAttributes(controlName, AControlAttributesList);
+                    XmlAttributeCollection controlAttributes = GetAdditionalAttributes(controlNameWithInstance, AControlAttributesList);
                     bool bHasALabel = true;
 
                     if ((controlAttributes != null) && (controlType != "CheckBox"))
@@ -1324,7 +1341,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     if (bHasALabel)
                     {
                         // Our new control is to have a label
-                        if (FCodeStorage.FControlList[controlName].GetAttribute("NoLabel", "false").ToLower() == "true")
+                        if (FCodeStorage.FControlList[controlName].GetAttribute("NoLabel", "false").ToLower() == "true" ||
+                            controlType == "GroupBox" ||
+                            controlType == "Panel" ||
+                            controlType == "RadioButton")
                         {
                             // The cloned-from control has no label so we can only do domething if the YAML specifies a label text
                             if ((controlAttributes != null) && (controlAttributes["Label"] != null))
@@ -1345,7 +1365,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         controlType,
                         APanelType,
                         APanelSubType,
-                        controlName,
+                        controlNameWithInstance,
                         lblName,
                         bHasALabel,
                         columnName,
@@ -1354,7 +1374,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         ATargetCodelet,
                         out bHasClearButton);
 
-                    WriteAdditionalProperties(writer, controlType, APanelType, controlName, bHasClearButton, controlAttributes);
+                    WriteAdditionalProperties(writer, controlType, APanelType, controlNameWithInstance, bHasClearButton, controlAttributes);
 
                     NumItemsOnThisPanel++;
                 }
@@ -1401,7 +1421,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             foreach (XmlAttribute att in AControlAttributesList)
             {
-                if ((att.Name == "depth") || (att.Name == "ClearButton") || (att.Name == "ClearValue") || (att.Name == "NoLabel"))
+                if ((att.Name == "depth") ||
+                    (att.Name == "ClearButton") ||
+                    (att.Name == "ClearValue") ||
+                    (att.Name == "NoLabel") ||
+                    (att.Name == "Comparison") ||
+                    (att.Name == "CloneToComboBox"))
                 {
                     // we have dealt with these already
                     continue;
@@ -1411,10 +1436,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     string width = String.Format("Math.Min({0}, FFilterAndFindParameters.FindAndFilterInitialWidth)", att.Value);
                     AddFilterFindProperty(writer, AControlType, APanelType, AControlName, att.Name, width);
                 }
-                else if ((att.Name == "Label") && !listCloneableControlNames.Contains(AControlName))
+                else if (att.Name == "Label")
                 {
-                    string lblName = "lbl" + AControlName.Substring(3);
-                    AddFilterFindProperty(writer, "Label", APanelType, lblName, "Text", "\"" + att.Value + "\"");
+                    if (!listCloneableControlNames.Contains(AControlName))
+                    {
+                        string lblName = "lbl" + AControlName.Substring(3);
+                        AddFilterFindProperty(writer, "Label", APanelType, lblName, "Text", "\"" + att.Value + "\"");
+                    }
                 }
                 else if (att.Name == "Text")
                 {
@@ -1457,7 +1485,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>
         /// Get the tag value for the control using its attributes - includes whether the control has a clear button and the clear value
         /// </summary>
-        private string GetFilterFindTagValue(XmlAttributeCollection AControlAttributesList, out bool AHasClearButton)
+        private string GetFilterFindTagValue(string AInstanceName, XmlAttributeCollection AControlAttributesList, out bool AHasClearButton)
         {
             AHasClearButton = true;
 
@@ -1473,7 +1501,34 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 clearValue = AControlAttributesList["ClearValue"].Value;
             }
 
+            string comparisonValue = String.Empty;
+
+            if ((AControlAttributesList != null) && (AControlAttributesList["Comparison"] != null))
+            {
+                comparisonValue = AControlAttributesList["Comparison"].Value;
+
+                if ((comparisonValue != "gt") &&
+                    (comparisonValue != "gte") &&
+                    (comparisonValue != "lt") &&
+                    (comparisonValue != "lte") &&
+                    (comparisonValue != "eq"))
+                {
+                    throw new NotSupportedException("Only the following comaparisons are allowed: gt, gte, lt, lte, eq");
+                }
+            }
+
+            // Now assemble the tag string
             string strTag = String.Empty;
+
+            if (AInstanceName != String.Empty)
+            {
+                strTag += String.Format("{0}{1};", CommonTagString.INSTANCE_EQUALS, AInstanceName);
+            }
+
+            if (comparisonValue != String.Empty)
+            {
+                strTag += String.Format("{0}{1};", CommonTagString.COMPARISON_EQUALS, comparisonValue);
+            }
 
             if (!AHasClearButton)
             {
@@ -1535,6 +1590,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
             string ATargetCodelet,
             out bool AHasClearButton)
         {
+            string instance = String.Empty;
+
+            if (AControlName.Contains("-"))
+            {
+                int pos = AControlName.LastIndexOf('-');
+                instance = AControlName.Substring(pos);
+                AControlName = AControlName.Substring(0, pos);
+            }
+
             ProcessTemplate snippetFilterFind;
 
             if (AColumnName == null)
@@ -1544,7 +1608,6 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else
             {
                 snippetFilterFind = writer.Template.GetSnippet("SNIPINDIVIDUALFILTERFINDPANEL");
-                snippetFilterFind.SetCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
                 snippetFilterFind.SetCodelet("COLUMNNAME", AColumnName);
                 snippetFilterFind.SetCodelet("COLUMNDATATYPE", AColumnDataType);
             }
@@ -1563,13 +1626,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 snippetFilterFind.SetCodelet("CLONELABEL", "null," + Environment.NewLine);
             }
 
-            snippetFilterFind.SetCodelet("CONTROLCLONE", AControlName.StartsWith("cmb") ? "ShallowCloneToComboBox" : "ShallowClone");
+            bool cloneToComboBox = AControlName.StartsWith("cmb");
+
+            if ((AControlAttributesList != null) && (AControlAttributesList["CloneToComboBox"] != null))
+            {
+                cloneToComboBox = (AControlAttributesList["CloneToComboBox"].Value == "true");
+            }
+
+            snippetFilterFind.SetCodelet("CONTROLCLONE", cloneToComboBox ? "ShallowCloneToComboBox" : "ShallowClone");
             snippetFilterFind.SetCodelet("CONTROLTYPE", AControlType);
             snippetFilterFind.SetCodelet("CLONEDFROMCONTROL", AControlName);
             snippetFilterFind.SetCodelet("PANELTYPE", APanelType);
             snippetFilterFind.SetCodelet("PANELTYPEUC", APanelType.ToUpper());
             snippetFilterFind.SetCodelet("PANELSUBTYPE", APanelSubType);
-            snippetFilterFind.SetCodelet("TAG", GetFilterFindTagValue(AControlAttributesList, out AHasClearButton));
+            snippetFilterFind.SetCodelet("TAG", GetFilterFindTagValue(instance, AControlAttributesList, out AHasClearButton));
 
             writer.Template.InsertSnippet(ATargetCodelet, snippetFilterFind);
             writer.Template.AddToCodelet(ATargetCodelet, Environment.NewLine);
@@ -1725,8 +1795,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
         private string GetColumnDataType(TFormWriter writer, string ATableName, string AColumnName)
         {
             string columnDataType = null;
+            TTable table = null;
+            SortedList<string, TTable> DataSetTables = null;
+            TCodeStorage codeStorage = writer.FCodeStorage;
 
-            TTable table = TDataBinding.FPetraXMLStore.GetTable(ATableName);
+            // load the dataset if there is a dataset defined for this screen. this allows us to reference customtables and custom fields
+            if (codeStorage.HasAttribute("DatasetType"))
+            {
+                DataSetTables = TDataBinding.LoadDatasetTables(CSParser.ICTPath, codeStorage.GetAttribute("DatasetType"), codeStorage);
+            }
+
+            if ((DataSetTables != null) && DataSetTables.ContainsKey(codeStorage.GetAttribute("DetailTable")))
+            {
+                table = DataSetTables[codeStorage.GetAttribute("DetailTable")];
+            }
+            else
+            {
+                table = TDataBinding.FPetraXMLStore.GetTable(ATableName);
+            }
 
             if (table != null)
             {
