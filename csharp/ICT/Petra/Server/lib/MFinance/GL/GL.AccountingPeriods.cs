@@ -679,6 +679,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// </summary>
         /// <param name="ADate"></param>
         /// <returns>Input date minus one year</returns>
+        [RequireModulePermission("FINANCE-1")]
         public static DateTime DecrementYear(DateTime ADate)
         {
             DateTime RetVal;
