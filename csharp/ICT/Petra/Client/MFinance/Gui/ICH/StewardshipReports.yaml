@@ -17,13 +17,13 @@ RootNode:
             Dock: Fill
                 
         pnlDialogContentTop:
-            Dock: Top            
+            Dock: Fill            
             Controls:
                 Row0: [grpSelection, rgrCurrency]
                 Row1: [Empty1]
                 
         pnlDialogContentMiddle:
-            Dock: Fill            
+            Dock: Bottom            
             Controls:
                 Row0: [grpOther, grpHOSA, grpStewardship]
 

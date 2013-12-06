@@ -111,22 +111,23 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             {
                 FLedgerNumber = value;
 
-				ALedgerRow Ledger = ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];                
-                
-				TFinanceControls.InitialiseAvailableFinancialYearsListHOSA(
-					ref cmbYearEnding,
-					FLedgerNumber);
-				
-				//Resize and move label
-				cmbYearEnding.ComboBoxWidth += 18;
-				cmbYearEnding.AttachedLabel.Left += 18;
+                ALedgerRow Ledger =
+                    ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+
+                TFinanceControls.InitialiseAvailableFinancialYearsListHOSA(
+                    ref cmbYearEnding,
+                    FLedgerNumber);
+
+                //Resize and move label
+                cmbYearEnding.ComboBoxWidth += 18;
+                cmbYearEnding.AttachedLabel.Left += 18;
             }
         }
 
         private void RefreshReportPeriodList(object sender, EventArgs e)
         {
-        	if (cmbYearEnding.SelectedIndex > -1)
-        	{
+            if (cmbYearEnding.SelectedIndex > -1)
+            {
                 TFinanceControls.InitialiseAvailableFinancialPeriodsList(
                     ref cmbReportPeriod,
                     FLedgerNumber,
@@ -134,35 +135,34 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                     false);
 
                 cmbReportPeriod.SelectedIndex = 0;
-        	}
+            }
         }
-        
+
         private void RefreshICHStewardshipNumberList(object sender, EventArgs e)
         {
-        	if ((cmbReportPeriod.SelectedIndex > -1) && (cmbYearEnding.SelectedIndex > -1))
+            if ((cmbReportPeriod.SelectedIndex > -1) && (cmbYearEnding.SelectedIndex > -1))
             {
-        		DateTime YearEnding;
-        		DateTime YearStart;
-        		
-        		if (DateTime.TryParse(cmbReportPeriod.GetSelectedDescription(), out YearEnding))
-        		{
-        			
-	        		YearStart = TRemote.MFinance.GL.WebConnectors.DecrementYear(YearEnding).AddDays(1);
-        		
-	        		TFinanceControls.InitialiseICHStewardshipList(ref cmbICHNumber, FLedgerNumber,
-            	                                              cmbReportPeriod.GetSelectedInt32(),
-            	                                              YearStart.ToShortDateString(),
-            	                                              YearEnding.ToShortDateString());
-        		}
-        		else
-        		{
-	        		TFinanceControls.InitialiseICHStewardshipList(ref cmbICHNumber, FLedgerNumber,
-            	                                              cmbReportPeriod.GetSelectedInt32(),
-            	                                              null,
-            	                                              null);
-        		}
+                DateTime YearEnding;
+                DateTime YearStart;
 
-        		cmbICHNumber.SelectedIndex = 0;
+                if (DateTime.TryParse(cmbReportPeriod.GetSelectedDescription(), out YearEnding))
+                {
+                    YearStart = TRemote.MFinance.GL.WebConnectors.DecrementYear(YearEnding).AddDays(1);
+
+                    TFinanceControls.InitialiseICHStewardshipList(ref cmbICHNumber, FLedgerNumber,
+                        cmbReportPeriod.GetSelectedInt32(),
+                        YearStart.ToShortDateString(),
+                        YearEnding.ToShortDateString());
+                }
+                else
+                {
+                    TFinanceControls.InitialiseICHStewardshipList(ref cmbICHNumber, FLedgerNumber,
+                        cmbReportPeriod.GetSelectedInt32(),
+                        null,
+                        null);
+                }
+
+                cmbICHNumber.SelectedIndex = 0;
             }
         }
 
@@ -277,7 +277,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             {
                 return true;
             }
-            else if (cmbReportPeriod.SelectedIndex == -1 && cmbReportPeriod.Count > 0)
+            else if ((cmbReportPeriod.SelectedIndex == -1) && (cmbReportPeriod.Count > 0))
             {
                 MessageBox.Show(Catalog.GetString("Please select a valid reporting period first."));
                 cmbReportPeriod.Focus();
@@ -288,6 +288,5 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 return false;
             }
         }
-
     }
 }

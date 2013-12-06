@@ -240,8 +240,8 @@ OpenPetra:
                         ManageAccounts: {Description:Maintain Accounts and modify their hierarchy, ActionOpenScreen=TFrmGLAccountHierarchy}
                         ManageCostCentres: {Description:Maintain Cost Centres and modify their hierarchy, ActionOpenScreen=TFrmGLCostCentreHierarchy}
                         LinkCostCentresToPartners: {Description:Link or unlink Partners and Cost Centres, ActionOpenScreen=TFrmLinkPartnerCostCentreDialog}
-                        SetupCostCentreTypes: {Description=Maintain types of Cost Centres, ActionOpenScreen=TFrmSetupCostCentreTypes}
-                        SetupAnalysisTypes: {Description=Maintain Analysis Types, ActionOpenScreen=TFrmSetupAnalysisTypes, PermissionsRequired=FINANCE-3}
+                        CostCentreTypes: {Description=Maintain Cost Centres Types, ActionOpenScreen=TFrmSetupCostCentreTypes}
+                        AnalysisTypes: {Description=Maintain Analysis Types, ActionOpenScreen=TFrmSetupAnalysisTypes, PermissionsRequired=FINANCE-3}
                         DeleteLedger: {Description="Careful: Delete the ledger with all finance data", ActionClick=TDeleteLedger.DeleteLedger}
                         #Accounts:
                         #AddPostingAccount:
@@ -258,29 +258,32 @@ OpenPetra:
                         #RenameCostCentre:
                         #LinkCostCentreToPartner:
                     Other:
-                        SetupSuspenseAccounts: {Description="Maintain Suspense Accounts", ActionOpenScreen=TFrmSetupSuspenseAccount}
-                        #LedgerSetupShepherd:
-                        SetupCalendar: {Description="Maintain Accounting Periods", ActionOpenScreen=TFrmSetupAccountingPeriod}
-                        EnableSubsystems: {Description="Enable/Disable Subsystems", ActionOpenScreen=TFrmGLEnableSubsystems}
+                        SuspenseAccounts: {Description="Maintain Suspense Accounts", ActionOpenScreen=TFrmSetupSuspenseAccount}                        
+                        Calendar: {Description="Maintain Accounting Periods", ActionOpenScreen=TFrmSetupAccountingPeriod}
+                        FinanceModuleSubsystems: {Description="Enable/Disable Finance Module Subsystems", ActionOpenScreen=TFrmGLEnableSubsystems}
                         #ChangeNumberOfForwardingPeriods:
                     GiftReceipting: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
-                        MotivationDetails: {Description: "Maintain motivation details towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}
                         MotivationGroup: {Description=Maintain Motivation Groups, ActionOpenScreen=Gift.TFrmMotivationGroupSetup}
-                        SetupAdminGrantsPayable: {Description=Maintain payable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsPayable}
-                        SetupAdminGrantsReceivable: {Description=Maintain receivable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsReceivable}
+                        MotivationDetails: {Description: "Maintain Motivation Details towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}                        
+                        AdminGrantsPayable: {Description=Maintain payable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsPayable}
+                        AdminGrantsReceivable: {Description=Maintain receivable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsReceivable}
         CrossLedgerSetup: {Icon=finance_setup.ico, Namespace=Ict.Petra.Client.MFinance.Gui.Setup, Label="Finance Setup", PermissionsRequired="FINANCE-1"}
             General: {SkipThisLevel=true}
                 Ledger: {DontShowNestedTasksAsLinks=true}
-                    CreateLedger: {Description=Create a new Ledger, ActionOpenScreen=TFrmGLCreateLedgerDialog, PermissionsRequired="FINANCE-3", Singleton=true}
+                    LedgerSetup:
+                        #LedgerSetupShepherd:
+                        CreateLedger: {Description=Create a new Ledger, ActionOpenScreen=TFrmGLCreateLedgerDialog, PermissionsRequired="FINANCE-3", Singleton=true}
                 Setup: {Label="Finance Setup (Cross-Ledger)", DontShowNestedTasksAsLinks=true}
-                    SetupEmailDestinations: {Description=Maintain Email Destinations, ActionOpenScreen=TFrmEmailDestinationSetup, PermissionsRequired=FINANCE-3}
-                    SetupCurrencies: {Description=Maintain Currencies, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmCurrencySetup, PermissionsRequired=FINANCE-3}
-                    SetupCurrencyLanguages: {Description=Maintain Currency Languages, ActionOpenScreen=TFrmCurrencyLanguageSetup, PermissionsRequired=FINANCE-3}
-                    SetupMethodsOfGiving: {Description=Maintain Methods of Giving,ActionOpenScreen=TFrmSetupMethodOfGiving, PermissionsRequired=FINANCE-3}
-                    SetupMethodsOfPayment: {Description=Maintain Methods of Payment, ActionOpenScreen=TFrmSetupMethodOfPayment, PermissionsRequired=FINANCE-3}
-                ExchangeRates: {Label="Exchange Rates (Cross-Ledger)", DontShowNestedTasksAsLinks=true}
-                    SetupCorporateExchangeRates: {Description=Maintain Corporate Exchange Rates, ActionOpenScreen=TFrmSetupCorporateExchangeRate}
-                    SetupDailyExchangeRates: {Description=Maintain Daily Exchange Rates, ActionOpenScreen=TFrmSetupDailyExchangeRate}
+                    ExchangeRates:
+                        CorporateExchangeRates: {Description=Maintain Corporate Exchange Rates, ActionOpenScreen=TFrmSetupCorporateExchangeRate}
+                        DailyExchangeRates: {Description=Maintain Daily Exchange Rates, ActionOpenScreen=TFrmSetupDailyExchangeRate}
+                    Currencies:                   
+                        Currencies: {Description=Maintain Currencies, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmCurrencySetup, PermissionsRequired=FINANCE-3}
+                        CurrencyLanguages: {Description=Maintain Currency Languages, ActionOpenScreen=TFrmCurrencyLanguageSetup, PermissionsRequired=FINANCE-3}
+                    Other:                                       
+                        MethodsOfGiving: {Description=Maintain Methods of Giving,ActionOpenScreen=TFrmSetupMethodOfGiving, PermissionsRequired=FINANCE-3}
+                        MethodsOfPayment: {Description=Maintain Methods of Payment, ActionOpenScreen=TFrmSetupMethodOfPayment, PermissionsRequired=FINANCE-3}
+                        EmailDestinations: {Description=Maintain Email Destinations, ActionOpenScreen=TFrmEmailDestinationSetup, PermissionsRequired=FINANCE-3}
         Personnel: {Icon=personel.ico, PermissionsRequired=PERSONNEL}
             # Module
             Main: {SkipThisLevel=true}
@@ -349,6 +352,7 @@ OpenPetra:
                         TransportType: {Label=Transport Types, Description=Maintain Transport Types, ActionOpenScreen=TFrmTransportTypeSetup}
                     LocalDataRelated: {Label=Local Data-related}
                         LocalDataOptionListNames: {Label=Local Data Option List Names, Description=Maintain Local Data Option List Names, Namespace=Ict.Petra.Client.MPartner.Gui.Setup, ActionOpenScreen=TFrmLocalDataOptionListNameSetup}
+                        LocalDataOptions: {Label=Local Data Options, Description=Maintain Local Data Options, Namespace=Ict.Petra.Client.MPartner.Gui.Setup, ActionOpenScreen=TFrmLocalDataOptionsSetup}
                         #LocalApplicationDataFields: {Label=Local Application Data Fields, Description=Maintain Local Application Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalApplicationDataFieldSetup}
                         LocalPersonnelDataFields: {Label=Local Personnel Data Fields, Description=Maintain Local Personnel Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalPersonnelDataFieldSetup}
                         #LocalDataFieldOrderLongTermApp: {Label=Field Order for Long Term Applications, Description=Maintain Field Order for Long Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=LongTermApp}
@@ -417,11 +421,13 @@ OpenPetra:
             Main: {SkipThisLevel=true}
                 Preferences: {DontShowNestedTasksAsLinks=true}
                     UserPreferences:
-                        SetUserPreferences: {Description="Maintain User Preferences", ActionOpenScreen=TFrmUserPreferencesDialog}
+                        SetUserPreferences: {Label=User Preferences, Description="Maintain User Preferences", ActionOpenScreen=TFrmUserPreferencesDialog}
                 Safety: {DontShowNestedTasksAsLinks=true}
-                    SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
-                Export: {DontShowNestedTasksAsLinks=true, PermissionsRequired=FINANCE-1,PERSONNEL}
-                    ExportDataToIntranet: {Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExportDialog}
+                    Password: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
+                        SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
+                Export: {DontShowNestedTasksAsLinks=true}
+                    DataExport: {PermissionsRequired=FINANCE-1,PERSONNEL}
+                        ExportDataToIntranet: {Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExportDialog}
 
         SystemManager: {Icon=sysman.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN, ShowAsCollapsiblePanels=true}
             Security:

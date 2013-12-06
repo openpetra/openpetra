@@ -555,7 +555,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
-		///    Get the available financial years from the existing batches
+        ///    Get the available financial years from the existing batches
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADisplayMember"></param>
@@ -566,15 +566,15 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static DataTable GetAvailableGLYearsHOSA(Int32 ALedgerNumber,
             out String ADisplayMember, out String AValueMember, out String ADescriptionMember)
         {
-        	string RetVal = string.Empty;
-        	
-		    DateTime YearEndDate;
-			int YearNumber;
-			
-			bool NewTransaction = false;
+            string RetVal = string.Empty;
 
-			TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);	        
-			
+            DateTime YearEndDate;
+            int YearNumber;
+
+            bool NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+
             ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
             AAccountingPeriodTable AccountingPeriods = AAccountingPeriodAccess.LoadViaALedger(ALedgerNumber, Transaction);
@@ -587,27 +587,28 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             ALedgerRow LedgerRow = (ALedgerRow)LedgerTable[0];
 
             AccountingPeriods.DefaultView.RowFilter = String.Format("{0}={1}",
-                                                                    AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),
-                                                                    LedgerRow.NumberOfAccountingPeriods);
+                AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),
+                LedgerRow.NumberOfAccountingPeriods);
 
             AAccountingPeriodRow periodRow = null;
+
             foreach (DataRowView perRow in AccountingPeriods.DefaultView)
             {
-            	periodRow = (AAccountingPeriodRow)perRow.Row;
-            	break;
+                periodRow = (AAccountingPeriodRow)perRow.Row;
+                break;
             }
-            
-	        YearNumber = LedgerRow.CurrentFinancialYear;
-	        RetVal = periodRow.PeriodEndDate + "," + YearNumber.ToString();
-	        YearNumber -= 1;
-	        YearEndDate = DecrementYear(periodRow.PeriodEndDate);
-	        
-			//Retrieve all previous years
-	        string sql =
+
+            YearNumber = LedgerRow.CurrentFinancialYear;
+            RetVal = periodRow.PeriodEndDate + "," + YearNumber.ToString();
+            YearNumber -= 1;
+            YearEndDate = DecrementYear(periodRow.PeriodEndDate);
+
+            //Retrieve all previous years
+            string sql =
                 String.Format("SELECT DISTINCT {0} AS batchYear" +
-            	              " FROM PUB_{1}" +
-            	              " WHERE {2} = {3} And {0} < {4}" +
-                    		  " ORDER BY 1 DESC",
+                    " FROM PUB_{1}" +
+                    " WHERE {2} = {3} And {0} < {4}" +
+                    " ORDER BY 1 DESC",
                     ABatchTable.GetBatchYearDBName(),
                     ABatchTable.GetTableDBName(),
                     ABatchTable.GetLedgerNumberDBName(),
@@ -617,83 +618,84 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             ADisplayMember = "YearEndDate";
             AValueMember = "YearNumber";
             ADescriptionMember = "YearEndDateLong";
-            
+
             DataTable BatchTable = new DataTable();
             BatchTable.Columns.Add(AValueMember, typeof(System.Int32));
             BatchTable.Columns.Add(ADisplayMember, typeof(String));
             BatchTable.Columns.Add(ADescriptionMember, typeof(String));
-            BatchTable.PrimaryKey = new DataColumn[] { BatchTable.Columns[0] };
+            BatchTable.PrimaryKey = new DataColumn[] {
+                BatchTable.Columns[0]
+            };
 
             DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", Transaction);
 
-			BatchYearTable.DefaultView.Sort = String.Format("batchYear DESC");
+            BatchYearTable.DefaultView.Sort = String.Format("batchYear DESC");
 
             YearNumber = LedgerRow.CurrentFinancialYear;
             YearEndDate = periodRow.PeriodEndDate;
 
-          	DataRow resultRow = BatchTable.NewRow();
-          	resultRow[0] = YearNumber;
-          	resultRow[1] = YearEndDate.ToShortDateString();
-          	resultRow[2] = YearEndDate.ToLongDateString();
-			BatchTable.Rows.Add(resultRow);
-			
-			foreach (DataRowView row in BatchYearTable.DefaultView)
+            DataRow resultRow = BatchTable.NewRow();
+            resultRow[0] = YearNumber;
+            resultRow[1] = YearEndDate.ToShortDateString();
+            resultRow[2] = YearEndDate.ToLongDateString();
+            BatchTable.Rows.Add(resultRow);
+
+            foreach (DataRowView row in BatchYearTable.DefaultView)
             {
-            	DataRow currentBatchYearRow = row.Row;
-            	
-            	Int32 currentBatchYear = (Int32)currentBatchYearRow[0];
-				
-				if (YearNumber != currentBatchYear)
-				{
-					YearNumber -= 1;
-			        YearEndDate = DecrementYear(YearEndDate);
-				
-			        if (YearNumber != currentBatchYear)
-			        {
-			        	throw new Exception(String.Format(Catalog.GetString("Year {0} not found for Ledger {1}"),
-			        	                                  YearNumber,
-			        	                                  ALedgerNumber));
-			        }
-				}
+                DataRow currentBatchYearRow = row.Row;
 
-				DataRow resultRow2 = BatchTable.NewRow();
-	          	resultRow2[0] = YearNumber;
-	          	resultRow2[1] = YearEndDate.ToShortDateString();
-	          	resultRow2[2] = YearEndDate.ToLongDateString();
-		        BatchTable.Rows.Add(resultRow2);
+                Int32 currentBatchYear = (Int32)currentBatchYearRow[0];
+
+                if (YearNumber != currentBatchYear)
+                {
+                    YearNumber -= 1;
+                    YearEndDate = DecrementYear(YearEndDate);
+
+                    if (YearNumber != currentBatchYear)
+                    {
+                        throw new Exception(String.Format(Catalog.GetString("Year {0} not found for Ledger {1}"),
+                                YearNumber,
+                                ALedgerNumber));
+                    }
+                }
+
+                DataRow resultRow2 = BatchTable.NewRow();
+                resultRow2[0] = YearNumber;
+                resultRow2[1] = YearEndDate.ToShortDateString();
+                resultRow2[2] = YearEndDate.ToLongDateString();
+                BatchTable.Rows.Add(resultRow2);
             }
-           	
-			if (NewTransaction)
-			{
-				DBAccess.GDBAccessObj.RollbackTransaction();
-			}
 
-	        return BatchTable;
+            if (NewTransaction)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return BatchTable;
         }
 
-		/// <summary>
-		/// Returns the date 1 year prior to the input date, accounting for leap years
-		/// </summary>
-		/// <param name="ADate"></param>
-		/// <returns>Input date minus one year</returns>
+        /// <summary>
+        /// Returns the date 1 year prior to the input date, accounting for leap years
+        /// </summary>
+        /// <param name="ADate"></param>
+        /// <returns>Input date minus one year</returns>
         public static DateTime DecrementYear(DateTime ADate)
         {
-			DateTime RetVal;
+            DateTime RetVal;
 
-			int iYear = ADate.Year;
-			DateTime Date1 = Convert.ToDateTime("28-Feb-" + iYear.ToString());
+            int iYear = ADate.Year;
+            DateTime Date1 = Convert.ToDateTime("28-Feb-" + iYear.ToString());
 
-			if ((DateTime.IsLeapYear(iYear) && ADate > Date1) || (DateTime.IsLeapYear(iYear - 1) && ADate < Date1))
-			{
-				RetVal = ADate.AddDays(-366);
-			}
-			else
-			{
-				RetVal = ADate.AddDays(-365);
-			}
-			
-			return RetVal;
+            if ((DateTime.IsLeapYear(iYear) && (ADate > Date1)) || (DateTime.IsLeapYear(iYear - 1) && (ADate < Date1)))
+            {
+                RetVal = ADate.AddDays(-366);
+            }
+            else
+            {
+                RetVal = ADate.AddDays(-365);
+            }
+
+            return RetVal;
         }
-
     }
 }

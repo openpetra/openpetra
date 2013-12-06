@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Setup Contact Attributes and Details
+    FormTitle: Maintain Contact Attributes and Details
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PContactAttribute
     CacheableTable: ContactAttributeList

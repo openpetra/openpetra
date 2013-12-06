@@ -801,7 +801,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             string DisplayMember;
             string ValueMember;
             string DescriptionMember;
-            
+
             DataTable Table = TRemote.MFinance.GL.WebConnectors.GetAvailableGLYearsHOSA(ALedgerNr,
                 out DisplayMember,
                 out ValueMember,
@@ -820,7 +820,6 @@ namespace Ict.Petra.Client.MFinance.Logic
                 AControl.SelectedIndex = 0;
             }
         }
-
 
         /// <summary>
         /// This function fills the available financial years of a given ledger into a TCmbAutoComplete combobox
@@ -883,13 +882,13 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             if (AShowCurrentAndForwarding)
             {
-	            AControl.InitialiseUserControl(periods, "value", "display", null, null);
-	            AControl.AppearanceSetup(new int[] { AControl.ComboBoxWidth }, -1);
+                AControl.InitialiseUserControl(periods, "value", "display", null, null);
+                AControl.AppearanceSetup(new int[] { AControl.ComboBoxWidth }, -1);
             }
             else
             {
-            	AControl.InitialiseUserControl(periods, "value", "display", null);
-            	AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
+                AControl.InitialiseUserControl(periods, "value", "display", null);
+                AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
             }
         }
 
@@ -914,15 +913,16 @@ namespace Ict.Petra.Client.MFinance.Logic
             periods.Columns.Add(new DataColumn(ValueMember, typeof(Int32)));
             periods.Columns.Add(new DataColumn(DisplayMember, typeof(string)));
 
-			DataRow period;
+            DataRow period;
+
             if (Ledger.CurrentFinancialYear == AYear)
             {
-            	if (AShowCurrentAndForwarding)
+                if (AShowCurrentAndForwarding)
                 {
-	            	period = periods.NewRow();
-	                period[ValueMember] = 0;
-	                period[DisplayMember] = Catalog.GetString("Current and forwarding periods");
-	                periods.Rows.Add(period);
+                    period = periods.NewRow();
+                    period[ValueMember] = 0;
+                    period[DisplayMember] = Catalog.GetString("Current and forwarding periods");
+                    periods.Rows.Add(period);
                 }
 
                 for (int periodCounter = 1; periodCounter <= Ledger.CurrentPeriod + Ledger.NumberFwdPostingPeriods; periodCounter++)
@@ -965,23 +965,23 @@ namespace Ict.Petra.Client.MFinance.Logic
         {
             DataTable ICHNumbers = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.ICHStewardshipList, ALedgerNumber);
 
-			if (AYearStart != null)
-			{
-	            //Filter for current period and date range
-	            ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1} And {2}>#{3}# And {2}<=#{4}#",
-	                AIchStewardshipTable.GetPeriodNumberDBName(),
-	                APeriodNumber,
-	                AIchStewardshipTable.GetDateProcessedDBName(),
-	                AYearStart,
-	                AYearEnding);
-			}
-			else
-			{
-	            //Filter for current period
-	            ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1}",
-	                AIchStewardshipTable.GetPeriodNumberDBName(),
-	                APeriodNumber);
-			}
+            if (AYearStart != null)
+            {
+                //Filter for current period and date range
+                ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1} And {2}>#{3}# And {2}<=#{4}#",
+                    AIchStewardshipTable.GetPeriodNumberDBName(),
+                    APeriodNumber,
+                    AIchStewardshipTable.GetDateProcessedDBName(),
+                    AYearStart,
+                    AYearEnding);
+            }
+            else
+            {
+                //Filter for current period
+                ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1}",
+                    AIchStewardshipTable.GetPeriodNumberDBName(),
+                    APeriodNumber);
+            }
 
             ICHNumbers.DefaultView.Sort = AIchStewardshipTable.GetIchNumberDBName();
 
@@ -1100,7 +1100,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
             AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
         }
-        
+
         /// <summary>
         /// fill checkedlistbox values with fees receivable list
         /// </summary>
