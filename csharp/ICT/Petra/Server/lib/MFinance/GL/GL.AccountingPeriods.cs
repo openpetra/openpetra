@@ -566,8 +566,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static DataTable GetAvailableGLYearsHOSA(Int32 ALedgerNumber,
             out String ADisplayMember, out String AValueMember, out String ADescriptionMember)
         {
-            string RetVal = string.Empty;
-
             DateTime YearEndDate;
             int YearNumber;
 
@@ -599,7 +597,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             YearNumber = LedgerRow.CurrentFinancialYear;
-            RetVal = periodRow.PeriodEndDate + "," + YearNumber.ToString();
             YearNumber -= 1;
             YearEndDate = DecrementYear(periodRow.PeriodEndDate);
 
