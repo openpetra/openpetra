@@ -5,7 +5,7 @@ RootNode:
     FormType: dialog
     Template: window
     WindowWidth: 650
-    WindowHeight: 375
+    WindowHeight: 400
     Events:
         #Load: {class=System.EventHandler, method=FPetraUtilsObject.TFrmPetra_Load}
     Actions:
@@ -27,11 +27,11 @@ RootNode:
             Controls:
                 Row0: [grpOther, grpHOSA, grpStewardship]
 
-        grpSelection: {Width:410, Height:100}
+        grpSelection: {Width:410, Height:120}
             Controls: 
                 Row0: [Empty2]
-                Row1: [cmbReportPeriod]
-                Row2: [Empty3]
+                Row1: [cmbYearEnding]
+                Row2: [cmbReportPeriod]
                 Row3: [cmbICHNumber]
                 Row4: [lblFullReport]
                 
@@ -73,7 +73,8 @@ RootNode:
             ParameterValue: 1
 
         cmbReportPeriod: {Label=Report Period, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList}
-        cmbICHNumber: {Label=ICH Number, List=UserDefinedList}
+        cmbYearEnding: {Label=Year End, List=UserDefinedList, OnChange=RefreshReportPeriodList}
+        cmbICHNumber: {Label=Run Number, List=UserDefinedList}
         lblFullReport: {Label=(0=Full report)}
         lblFees: {Label=Fees}
         chkFeesReport: {Label=Report, CheckBoxAttachedLabel=right}
@@ -94,7 +95,7 @@ RootNode:
         
         Empty1: #{Label=None, Visible=false}
         Empty2:
-        Empty3:
+        #Empty3:
         Empty4:
         Empty5:
         
