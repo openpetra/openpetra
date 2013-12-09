@@ -849,7 +849,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if (ctrl.controlTypePrefix == "uco")
             {
-                writer.Template.AddToCodelet("USERCONTROLSRUNONCEONACTIVATION", ctrl.controlName + ".RunOnceOnParentActivation();" + Environment.NewLine);
+                writer.Template.AddToCodelet("USERCONTROLSRUNONCEONACTIVATION",
+                    ctrl.controlName + ".RunOnceOnParentActivation();" + Environment.NewLine);
                 writer.Template.AddToCodelet("SAVEDATA", ctrl.controlName + ".GetDataFromControls();" + Environment.NewLine);
                 writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY",
                     ctrl.controlName + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine);

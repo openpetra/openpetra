@@ -125,6 +125,7 @@ namespace Ict.Common.Controls
         {
             Type ControlType = AControl.GetType();
             PropertyInfo Info = ControlType.GetProperty("DoubleBuffered", BindingFlags.NonPublic | BindingFlags.Instance);
+
             Info.SetValue(AControl, AValue, null);
         }
     }

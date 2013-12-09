@@ -110,7 +110,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.EnableDataChangedEvent();
             }
-            
+
             Console.WriteLine("End RefreshAll");
         }
 
@@ -165,6 +165,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void LoadBatches(Int32 ALedgerNumber)
         {
             DateTime dtStart = DateTime.Now;
+
             Console.WriteLine("Start LoadBatches");
 
             FLedgerNumber = ALedgerNumber;
@@ -175,7 +176,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             RadioButton rbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
             TCmbAutoComplete cmbYear = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYear");
             TCmbAutoComplete cmbPeriod = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriod");
-            
+
             if (ViewMode)
             {
                 FMainDS.Merge(ViewModeTDS);
@@ -203,8 +204,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // only refresh once, seems we are doing too many loads from the db otherwise
                 //if (this.CanFocus)
                 //{
-                    // No need to call this before the screen is shown
-                    RefreshFilter(null, null);
+                // No need to call this before the screen is shown
+                RefreshFilter(null, null);
                 //}
             }
 
@@ -462,6 +463,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 int newYear = cmbYear.GetSelectedInt32();
                 int newPeriod = cmbPeriod.GetSelectedInt32();
                 string newPeriodText = cmbPeriod.Text;
+
                 if (FSelectedYear == newYear)
                 {
                     if ((newPeriod == -1) && (newPeriodText != String.Empty))
@@ -469,12 +471,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         Console.WriteLine("Skipping period {0} periodText {1}", newPeriod, newPeriodText);
                         return;
                     }
+
                     if ((newPeriod == FSelectedPeriod) && (newPeriodText == FPeriodText))
                     {
                         Console.WriteLine("Skipping period {0} periodText {1}", newPeriod, newPeriodText);
                         return;
                     }
                 }
+
                 Console.WriteLine("Using period {0} periodText {1}", newPeriod, newPeriodText);
             }
             else
@@ -609,7 +613,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (!ASelectOnly)
             {
                 string rowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
-                FFilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == -1) && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
+                FFilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == -1)
+                    && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
                 ApplyFilter();
             }
 
@@ -621,7 +626,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else if (FBatchLoaded == true)
             {
                 //Select same row after refilter
-                int newRowToSelectAfterFilter = (ABatchNumber > 0) ? GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, ABatchNumber) : FPrevRowChangedRow;
+                int newRowToSelectAfterFilter =
+                    (ABatchNumber > 0) ? GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, ABatchNumber) : FPrevRowChangedRow;
 
                 if (ANoFocusChange)
                 {
@@ -856,7 +862,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TCmbAutoComplete cmbYear = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbYear");
             TCmbAutoComplete cmbPeriod = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriod");
 
-
             //If viewing posted batches only, show list of editing batches
             //  instead before adding a new batch
             if (!rbtEditing.Checked)
@@ -892,6 +897,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             Int32 yearNumber = 0;
             Int32 periodNumber = 0;
+
             if (GetAccountingYearPeriodByDate(FLedgerNumber, FDefaultDate, out yearNumber, out periodNumber))
             {
                 FPreviouslySelectedDetailRow.BatchPeriod = periodNumber;
@@ -1447,6 +1453,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             // We have to do these because the filter/find panel is displayed when the screen is loaded, so they don not get populated
             TCmbAutoComplete ffInstance = (TCmbAutoComplete)FFilterPanelControls.FindControlByName(cmbDetailBankCostCentre.Name);
+
             ffInstance.DisplayMember = cmbDetailBankCostCentre.DisplayMember;
             ffInstance.ValueMember = cmbDetailBankCostCentre.ValueMember;
             ffInstance.DataSource = ((DataView)cmbDetailBankCostCentre.cmbCombobox.DataSource).ToTable().DefaultView;

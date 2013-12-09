@@ -2474,7 +2474,7 @@ namespace Ict.Common.Controls
         /// The two end points are the Filter/Find tabs at the bottom of the panel and the close button at the top right
         /// This code takes us straight between these two points.
         /// If you want to enter data in the other controls you need to use the mouse, but then you can continue tabbing through those controls.
-        /// 
+        ///
         /// I had wanted to add the functionality that if you pressed CTRL+TAB you stuck with the original tab order (no skipping).
         /// However I was thwarted by the fact that CTL+TAB switches tabs so we always switch between Filter and Find with CTRL+TAB.
         /// </summary>

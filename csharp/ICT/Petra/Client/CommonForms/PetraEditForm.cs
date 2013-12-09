@@ -439,7 +439,7 @@ namespace Ict.Petra.Client.CommonForms
         public bool ClearControl(Control AControlToClear)
         {
             bool ReturnValue = false;
-            
+
             DisableDataChangedEvent();
 
             try
@@ -469,8 +469,8 @@ namespace Ict.Petra.Client.CommonForms
                     ((NumericUpDown)AControlToClear).Value = ((NumericUpDown)AControlToClear).Minimum;
                     ReturnValue = true;
                 }
-                else if ((AControlToClear.GetType() == typeof(TCmbAutoComplete)) ||
-                        (AControlToClear.GetType() == typeof(TCmbVersatile)))
+                else if ((AControlToClear.GetType() == typeof(TCmbAutoComplete))
+                         || (AControlToClear.GetType() == typeof(TCmbVersatile)))
                 {
                     // NOTE from AlanP: This code looks odd, but it is the way to clear these boxes....
                     // The first call to set the index to -1 actually sets it to 0 (if it isn't 0 already)
@@ -514,7 +514,8 @@ namespace Ict.Petra.Client.CommonForms
             catch (Exception ex)
             {
                 TLogging.LogAtLevel(7,
-                    "Exception caught in TFrmPetraEditUtils.ClearControl(): " + AControlToClear.Name + "(" + AControlToClear.ToString() + "): " + ex.Message);
+                    "Exception caught in TFrmPetraEditUtils.ClearControl(): " + AControlToClear.Name + "(" + AControlToClear.ToString() + "): " +
+                    ex.Message);
             }
 
             EnableDataChangedEvent();

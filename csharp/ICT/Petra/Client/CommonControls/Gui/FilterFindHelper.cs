@@ -33,7 +33,6 @@ using Ict.Common.Controls;
 
 namespace Ict.Petra.Client.CommonControls
 {
-
     #region Helper classes used by Filter/Find panels on individual screens (see ucoFilterAndFind.cs)
 
     #region TIndividualFilterFindPanel
@@ -185,27 +184,33 @@ namespace Ict.Petra.Client.CommonControls
             {
                 int posStart = ATag.IndexOf(CommonTagString.COMPARISON_EQUALS) + CommonTagString.COMPARISON_EQUALS.Length;
                 int posEnd = ATag.IndexOf(';', posStart);
+
                 if (posEnd > 0)
                 {
                     op = ATag.Substring(posStart, posEnd - posStart);
-                    
+
                     switch (op)
                     {
                         case "gt":
                             op = ">";
                             break;
+
                         case "gte":
                             op = ">=";
                             break;
+
                         case "lt":
                             op = "<";
                             break;
+
                         case "lte":
                             op = "<=";
                             break;
+
                         case "eq":
                             op = "=";
                             break;
+
                         default:
                             break;
                     }
@@ -313,11 +318,13 @@ namespace Ict.Petra.Client.CommonControls
                     {
                         if (FPanelLabel.Name.EndsWith(TFilterPanelControls.FILTER_NAME_SUFFIX))
                         {
-                            FPanelLabel.Name = FPanelLabel.Name.Insert(FPanelLabel.Name.LastIndexOf(TFilterPanelControls.FILTER_NAME_SUFFIX), FInstanceName);
+                            FPanelLabel.Name = FPanelLabel.Name.Insert(FPanelLabel.Name.LastIndexOf(
+                                    TFilterPanelControls.FILTER_NAME_SUFFIX), FInstanceName);
                         }
                         else if (FPanelLabel.Name.EndsWith(TFindPanelControls.FIND_NAME_SUFFIX))
                         {
-                            FPanelLabel.Name = FPanelLabel.Name.Insert(FPanelLabel.Name.LastIndexOf(TFindPanelControls.FIND_NAME_SUFFIX), FInstanceName);
+                            FPanelLabel.Name = FPanelLabel.Name.Insert(FPanelLabel.Name.LastIndexOf(
+                                    TFindPanelControls.FIND_NAME_SUFFIX), FInstanceName);
                         }
                     }
 
@@ -325,11 +332,13 @@ namespace Ict.Petra.Client.CommonControls
                     {
                         if (FPanelControl.Name.EndsWith(TFilterPanelControls.FILTER_NAME_SUFFIX))
                         {
-                            FPanelControl.Name = FPanelControl.Name.Insert(FPanelControl.Name.LastIndexOf(TFilterPanelControls.FILTER_NAME_SUFFIX), FInstanceName);
+                            FPanelControl.Name = FPanelControl.Name.Insert(FPanelControl.Name.LastIndexOf(
+                                    TFilterPanelControls.FILTER_NAME_SUFFIX), FInstanceName);
                         }
                         else if (FPanelControl.Name.EndsWith(TFindPanelControls.FIND_NAME_SUFFIX))
                         {
-                            FPanelControl.Name = FPanelControl.Name.Insert(FPanelControl.Name.LastIndexOf(TFindPanelControls.FIND_NAME_SUFFIX), FInstanceName);
+                            FPanelControl.Name = FPanelControl.Name.Insert(FPanelControl.Name.LastIndexOf(
+                                    TFindPanelControls.FIND_NAME_SUFFIX), FInstanceName);
                         }
                     }
                 }
@@ -359,12 +368,12 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>
         /// A list of all the individual standard filter panels
         /// </summary>
-        public List<TIndividualFilterFindPanel> FStandardFilterPanels = new List<TIndividualFilterFindPanel>();
+        public List <TIndividualFilterFindPanel>FStandardFilterPanels = new List <TIndividualFilterFindPanel>();
 
         /// <summary>
         /// A list of all the individual Extra filter panels
         /// </summary>
-        public List<TIndividualFilterFindPanel> FExtraFilterPanels = new List<TIndividualFilterFindPanel>();
+        public List <TIndividualFilterFindPanel>FExtraFilterPanels = new List <TIndividualFilterFindPanel>();
 
         /// <summary>
         /// The suffix to be appended to the control name when it is on the filter panel
@@ -398,13 +407,13 @@ namespace Ict.Petra.Client.CommonControls
         /// Returns a list of panels and their controls on the standard filter panel ready to be passed to the Filter/Find user control
         /// </summary>
         /// <returns>A list of panels and their controls ready to be passed to the Filter/Find user control</returns>
-        public List<Panel> GetFilterPanels()
+        public List <Panel>GetFilterPanels()
         {
-            List<Panel> standardPanels = null;
+            List <Panel>standardPanels = null;
 
             if (FStandardFilterPanels.Count > 0)
             {
-                standardPanels = new List<Panel>();
+                standardPanels = new List <Panel>();
 
                 for (int i = 0; i < FStandardFilterPanels.Count; i++)
                 {
@@ -420,13 +429,13 @@ namespace Ict.Petra.Client.CommonControls
         /// Returns a list of panels and their controls on the Extra filter panel ready to be passed to the Filter/Find user control
         /// </summary>
         /// <returns>A list of panels and their controls ready to be passed to the Filter/Find user control</returns>
-        public List<Panel> GetExtraFilterPanels()
+        public List <Panel>GetExtraFilterPanels()
         {
-            List<Panel> extraPanels = null;
+            List <Panel>extraPanels = null;
 
             if (FExtraFilterPanels.Count > 0)
             {
-                extraPanels = new List<Panel>();
+                extraPanels = new List <Panel>();
 
                 for (int i = 0; i < FExtraFilterPanels.Count; i++)
                 {
@@ -443,7 +452,7 @@ namespace Ict.Petra.Client.CommonControls
         /// </summary>
         /// <param name="AFilterPanelControls">The panel set (standard or extra)</param>
         /// <returns></returns>
-        private string GetCurrentFilter(List<TIndividualFilterFindPanel> AFilterPanelControls)
+        private string GetCurrentFilter(List <TIndividualFilterFindPanel>AFilterPanelControls)
         {
             string filter = String.Empty;
 
@@ -478,6 +487,7 @@ namespace Ict.Petra.Client.CommonControls
                 else if (AFilterPanelControls[i].PanelControl is TtxtPetraDate)
                 {
                     TtxtPetraDate ctrlAsDtp = (TtxtPetraDate)AFilterPanelControls[i].PanelControl;
+
                     if (ctrlAsDtp.Date.HasValue)
                     {
                         value = ctrlAsDtp.Date.Value.ToString("yyyy-MM-dd");
@@ -565,7 +575,7 @@ namespace Ict.Petra.Client.CommonControls
         /// </summary>
         public void ClearAllDiscretionaryFilters()
         {
-            List<TIndividualFilterFindPanel> SearchList;
+            List <TIndividualFilterFindPanel>SearchList;
 
             for (int i = 0; i < 2; i++)
             {
@@ -611,7 +621,7 @@ namespace Ict.Petra.Client.CommonControls
         {
             string LookFor = AFromControl.Name + TFilterPanelControls.FILTER_NAME_SUFFIX;
 
-            List<TIndividualFilterFindPanel> SearchList;
+            List <TIndividualFilterFindPanel>SearchList;
 
             for (int i = 0; i < 2; i++)
             {
@@ -643,7 +653,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <returns>The panel</returns>
         public TIndividualFilterFindPanel FindPanelByColumnName(string AColumnName)
         {
-            List<TIndividualFilterFindPanel> SearchList;
+            List <TIndividualFilterFindPanel>SearchList;
 
             for (int i = 0; i < 2; i++)
             {
@@ -685,7 +695,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <returns>The control</returns>
         public Control FindControlByName(string AControlName)
         {
-            List<TIndividualFilterFindPanel> SearchList;
+            List <TIndividualFilterFindPanel>SearchList;
             string SearchName = AControlName + TFilterPanelControls.FILTER_NAME_SUFFIX;
 
             for (int i = 0; i < 2; i++)
@@ -773,7 +783,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <summary>
         /// A list of all the individual find panels
         /// </summary>
-        public List<TIndividualFilterFindPanel> FFindPanels = new List<TIndividualFilterFindPanel>();
+        public List <TIndividualFilterFindPanel>FFindPanels = new List <TIndividualFilterFindPanel>();
 
         /// <summary>
         /// The suffix to be appended to the control name when it is on the find panel
@@ -784,13 +794,13 @@ namespace Ict.Petra.Client.CommonControls
         /// Returns a list of panels and their controls on the find panel ready to be passed to the Filter/Find user control
         /// </summary>
         /// <returns>A list of panels and their controls ready to be passed to the Filter/Find user control</returns>
-        public List<Panel> GetFindPanels()
+        public List <Panel>GetFindPanels()
         {
-            List<Panel> findPanels = null;
+            List <Panel>findPanels = null;
 
             if (FFindPanels.Count > 0)
             {
-                findPanels = new List<Panel>();
+                findPanels = new List <Panel>();
 
                 for (int i = 0; i < FFindPanels.Count; i++)
                 {
@@ -949,7 +959,7 @@ namespace Ict.Petra.Client.CommonControls
                         }
                     }
                     else if ((iffp.FilterComparison.Contains("#"))
-                            && DateTime.TryParse(ARow[iffp.DBColumnName].ToString(), out dtValue) && DateTime.TryParse(controlText, out dtCompareTo))
+                             && DateTime.TryParse(ARow[iffp.DBColumnName].ToString(), out dtValue) && DateTime.TryParse(controlText, out dtCompareTo))
                     {
                         // It is a date
                         if (iffp.FilterComparison.StartsWith(">=") && (dtValue >= dtCompareTo))
@@ -1005,7 +1015,8 @@ namespace Ict.Petra.Client.CommonControls
                             return false;
                         }
                     }
-                    else if (Decimal.TryParse(ARow[iffp.DBColumnName].ToString(), out decimalValue) && Decimal.TryParse(controlText, out decimalCompareTo))
+                    else if (Decimal.TryParse(ARow[iffp.DBColumnName].ToString(),
+                                 out decimalValue) && Decimal.TryParse(controlText, out decimalCompareTo))
                     {
                         // It is a Int32
                         if (iffp.FilterComparison.StartsWith(">=") && (decimalValue >= decimalCompareTo))
@@ -1062,5 +1073,4 @@ namespace Ict.Petra.Client.CommonControls
     #endregion
 
     #endregion
-
 }

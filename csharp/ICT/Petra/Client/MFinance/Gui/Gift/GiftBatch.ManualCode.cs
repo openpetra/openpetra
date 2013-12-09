@@ -115,7 +115,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e">Not evaluated.</param>
         public void mniFilterFind_Click(object sender, System.EventArgs e)
         {
-
             switch (tabGiftBatch.SelectedIndex)
             {
                 case (int)eGiftTabs.Batches:

@@ -45,24 +45,24 @@ namespace Ict.Petra.Client.CommonControls
         /// <param name="ANameSuffix">A suffix to add to the name to make the new clone name different from the original control</param>
         /// <param name="AParentControl">If AControlToClone is on a Panel or in a GroupBox, set AParentControl to a reference to this control</param>
         /// <returns>The clone</returns>
-        public static T ShallowClone<T>(this T AControlToClone, string ANameSuffix, Control AParentControl = null)
+        public static T ShallowClone <T>(this T AControlToClone, string ANameSuffix, Control AParentControl = null)
         where T : Control
         {
             T instance = null;
 
             if (AControlToClone is Label || AControlToClone is CheckBox || AControlToClone is RadioButton)
             {
-                instance = Activator.CreateInstance<T>();
+                instance = Activator.CreateInstance <T>();
                 instance.Text = AControlToClone.Text;
                 instance.BackColor = System.Drawing.Color.Transparent;
             }
             else if (AControlToClone is TextBox || AControlToClone is TtxtPetraDate)
             {
-                instance = Activator.CreateInstance<T>();
+                instance = Activator.CreateInstance <T>();
             }
             else if (AControlToClone is Panel || AControlToClone is GroupBox)
             {
-                instance = Activator.CreateInstance<T>();
+                instance = Activator.CreateInstance <T>();
 
                 if (AControlToClone is GroupBox)
                 {
@@ -76,18 +76,18 @@ namespace Ict.Petra.Client.CommonControls
 
                     if (ctrl is RadioButton)
                     {
-                        instance.Controls.Add(TCloneFilterFindControl.ShallowClone<RadioButton>((RadioButton)ctrl,
+                        instance.Controls.Add(TCloneFilterFindControl.ShallowClone <RadioButton>((RadioButton)ctrl,
                                 TFilterPanelControls.FILTER_NAME_SUFFIX,
                                 instance));
                     }
                     else if (ctrl is CheckBox)
                     {
-                        instance.Controls.Add(TCloneFilterFindControl.ShallowClone<CheckBox>((CheckBox)ctrl, TFilterPanelControls.FILTER_NAME_SUFFIX,
+                        instance.Controls.Add(TCloneFilterFindControl.ShallowClone <CheckBox>((CheckBox)ctrl, TFilterPanelControls.FILTER_NAME_SUFFIX,
                                 instance));
                     }
                     else if (ctrl is TextBox)
                     {
-                        instance.Controls.Add(TCloneFilterFindControl.ShallowClone<TextBox>((TextBox)ctrl, TFilterPanelControls.FILTER_NAME_SUFFIX,
+                        instance.Controls.Add(TCloneFilterFindControl.ShallowClone <TextBox>((TextBox)ctrl, TFilterPanelControls.FILTER_NAME_SUFFIX,
                                 instance));
                     }
                     else
@@ -145,7 +145,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <param name="AControlToClone">The control to clone</param>
         /// <param name="ANameSuffix">The suffix to add to the name to distinguish it from the source control</param>
         /// <returns></returns>
-        public static TCmbAutoComplete ShallowCloneToComboBox<T>(this T AControlToClone, string ANameSuffix)
+        public static TCmbAutoComplete ShallowCloneToComboBox <T>(this T AControlToClone, string ANameSuffix)
         where T : Control
         {
             // We always clone to a TCmbAutoComplete

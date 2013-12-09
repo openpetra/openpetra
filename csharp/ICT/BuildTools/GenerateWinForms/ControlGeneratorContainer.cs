@@ -1259,7 +1259,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     // The control name may include an instance - remember this and work out the control name without the instance
                     string controlNameWithInstance = controlName;
-                    
+
                     if (controlNameWithInstance.Contains("-"))
                     {
                         controlName = controlName.Substring(0, controlName.LastIndexOf('-'));
@@ -1352,10 +1352,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     if (bHasALabel)
                     {
                         // Our new control is to have a label
-                        if (FCodeStorage.FControlList[controlName].GetAttribute("NoLabel", "false").ToLower() == "true" ||
-                            controlType == "GroupBox" ||
-                            controlType == "Panel" ||
-                            controlType == "RadioButton")
+                        if ((FCodeStorage.FControlList[controlName].GetAttribute("NoLabel", "false").ToLower() == "true")
+                            || (controlType == "GroupBox")
+                            || (controlType == "Panel")
+                            || (controlType == "RadioButton"))
                         {
                             // The cloned-from control has no label so we can only do domething if the YAML specifies a label text
                             if ((controlAttributes != null) && (controlAttributes["Label"] != null))
@@ -1432,12 +1432,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             foreach (XmlAttribute att in AControlAttributesList)
             {
-                if ((att.Name == "depth") ||
-                    (att.Name == "ClearButton") ||
-                    (att.Name == "ClearValue") ||
-                    (att.Name == "NoLabel") ||
-                    (att.Name == "Comparison") ||
-                    (att.Name == "CloneToComboBox"))
+                if ((att.Name == "depth")
+                    || (att.Name == "ClearButton")
+                    || (att.Name == "ClearValue")
+                    || (att.Name == "NoLabel")
+                    || (att.Name == "Comparison")
+                    || (att.Name == "CloneToComboBox"))
                 {
                     // we have dealt with these already
                     continue;
@@ -1524,11 +1524,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 comparisonValue = AControlAttributesList["Comparison"].Value;
 
-                if ((comparisonValue != "gt") &&
-                    (comparisonValue != "gte") &&
-                    (comparisonValue != "lt") &&
-                    (comparisonValue != "lte") &&
-                    (comparisonValue != "eq"))
+                if ((comparisonValue != "gt")
+                    && (comparisonValue != "gte")
+                    && (comparisonValue != "lt")
+                    && (comparisonValue != "lte")
+                    && (comparisonValue != "eq"))
                 {
                     throw new NotSupportedException("Only the following comaparisons are allowed: gt, gte, lt, lte, eq");
                 }
@@ -1813,7 +1813,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             string columnDataType = null;
             TTable table = null;
-            SortedList<string, TTable> DataSetTables = null;
+
+            SortedList <string, TTable>DataSetTables = null;
             TCodeStorage codeStorage = writer.FCodeStorage;
 
             // load the dataset if there is a dataset defined for this screen. this allows us to reference customtables and custom fields

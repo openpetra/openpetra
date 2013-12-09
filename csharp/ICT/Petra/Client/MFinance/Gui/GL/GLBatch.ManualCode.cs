@@ -64,7 +64,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e">Not evaluated.</param>
         public void mniFilterFind_Click(object sender, System.EventArgs e)
         {
-
             switch (tabGLBatch.SelectedIndex)
             {
                 case (int)eGLTabs.Batches:

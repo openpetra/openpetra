@@ -1081,6 +1081,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 int newYear = cmbYearFilter.GetSelectedInt32();
                 int newPeriod = cmbPeriodFilter.GetSelectedInt32();
                 string newPeriodText = cmbPeriodFilter.Text;
+
                 if (FSelectedYear == newYear)
                 {
                     if ((newPeriod == -1) && (newPeriodText != String.Empty))
@@ -1088,12 +1089,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         Console.WriteLine("Skipping period {0} periodText {1}", newPeriod, newPeriodText);
                         return;
                     }
+
                     if ((newPeriod == FSelectedPeriod) && (newPeriodText == FPeriodText))
                     {
                         Console.WriteLine("Skipping period {0} periodText {1}", newPeriod, newPeriodText);
                         return;
                     }
                 }
+
                 Console.WriteLine("Using period {0} periodText {1}", newPeriod, newPeriodText);
             }
 
