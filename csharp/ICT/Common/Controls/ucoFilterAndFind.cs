@@ -662,6 +662,18 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// Returns True if a ComboBox is firing a SelectedValueChanged event that should be ignored.
+        /// ComboBoxes that are being cleared fire an event for index 0 and then another for index -1.
+        /// </summary>
+        public bool CanIgnoreChangeEvent
+        {
+            get
+            {
+                return FIgnoreValueChangedEvent;
+            }
+        }
+
+        /// <summary>
         /// Kludge required for TCmbAutoComplete: This control requires 2 calls to set the selectedIndex to -1.
         /// This property is set to true before the first call and false afterwards.
         /// </summary>
@@ -2013,7 +2025,7 @@ namespace Ict.Common.Controls
                     // the selected row if the first index has, say no matching rows, then the highlight will move to the top - and then
                     // an index of -1 will match all rows, but by then the highlight will have changed.
                     // DO NOT REMOVE ONE OF THE SELECTEDINDEX = -1 ROWS FOR THIS REASON
-                    FIgnoreValueChangedEvent = true;
+                    FIgnoreValueChangedEvent = (ControlToClearAsAutoComplete.SelectedIndex > 0);
                     ControlToClearAsAutoComplete.SelectedIndex = -1;
                     FIgnoreValueChangedEvent = false;
                     ControlToClearAsAutoComplete.SelectedIndex = -1;
