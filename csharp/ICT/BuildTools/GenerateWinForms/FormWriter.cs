@@ -1018,6 +1018,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("INITMANUALCODE", "");
             FTemplate.AddToCodelet("GRIDMULTISELECTION", "");
             FTemplate.AddToCodelet("RUNONCEONACTIVATIONMANUAL", "");
+            FTemplate.AddToCodelet("RUNONCEONPARENTACTIVATIONMANUAL", "");
             FTemplate.AddToCodelet("USERCONTROLSRUNONCEONACTIVATION", "");
             FTemplate.AddToCodelet("SETINITIALFOCUS", "");
             FTemplate.AddToCodelet("EXITMANUALCODE", "");
@@ -1070,6 +1071,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.ManualFileExistsAndContains("RunOnceOnActivationManual"))
             {
                 FTemplate.AddToCodelet("RUNONCEONACTIVATIONMANUAL", "RunOnceOnActivationManual();" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("RunOnceOnParentActivationManual"))
+            {
+                FTemplate.AddToCodelet("RUNONCEONPARENTACTIVATIONMANUAL", "RunOnceOnParentActivationManual();" + Environment.NewLine);
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("ExitManualCode"))

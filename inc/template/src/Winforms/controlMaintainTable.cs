@@ -1336,9 +1336,13 @@ namespace {#NAMESPACE}
     public void RunOnceOnParentActivation()
     {
 {#IFDEF FILTERANDFIND}
-        FFilterPanelControls.InitialiseComboBoxes();
-        FFindPanelControls.InitialiseComboBoxes();
+        if (FFilterAndFindParameters.FindAndFilterInitiallyExpanded)
+        {
+            FFilterPanelControls.InitialiseComboBoxes();
+            FFindPanelControls.InitialiseComboBoxes();
+        }
 {#ENDIF FILTERANDFIND}    
+        {#RUNONCEONPARENTACTIVATIONMANUAL}    
     }
 
     /// <summary>
