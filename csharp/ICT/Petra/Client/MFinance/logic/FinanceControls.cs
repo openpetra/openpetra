@@ -847,7 +847,8 @@ namespace Ict.Petra.Client.MFinance.Logic
         public static void InitialiseAvailableFinancialPeriodsList(
             ref TCmbAutoComplete AControl,
             System.Int32 ALedgerNr,
-            System.Int32 AYear)
+            System.Int32 AYear,
+            System.Int32 AInitialSelectedIndex)
         {
             DataTable periods = InitialiseAvailableFinancialPeriodsList(ALedgerNr, AYear);
 
@@ -855,9 +856,11 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.ValueMember = "value";
             AControl.DataSource = periods.DefaultView;
 
-            if (periods.DefaultView.Count > 0)
+            // If the initial index is -1 we don't need to do anything (which saves an event)
+            // The code used to always select the first item, which we do not want it to do if we are happy with an empty box.
+            if ((periods.DefaultView.Count > 0) && (AInitialSelectedIndex >= 0))
             {
-                AControl.SelectedIndex = 0;
+                AControl.SelectedIndex = AInitialSelectedIndex;
             }
         }
 
