@@ -5,8 +5,8 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
     FormType: browse
     Template: windowTDS
-    WindowWidth: 760
-    WindowHeight: 700
+    WindowWidth: 900
+    WindowHeight: 685
     UsingNamespaces: [Ict.Petra.Shared.Interfaces.MFinance]
 
     Events:

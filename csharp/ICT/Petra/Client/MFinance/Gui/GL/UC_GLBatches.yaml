@@ -10,30 +10,36 @@ RootNode:
     Actions:
         actNew: {Label=&Add Batch, ActionClick=NewRow}
         actCancel: {Label=&Cancel Batch, ActionClick=CancelRow, Image=Delete_Record.ico}
-        actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
+        actPostBatch: {Label=P&ost Batch, ActionClick=PostBatch}
         actTestPostBatch: {Label=&Test Batch, ActionClick=TestPostBatch}
         actImportFromSpreadSheet: {ActionClick=ImportFromSpreadSheet}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
-        actImportFromClipboard: {Label=&Import from Clipboard, ActionClick=ImportFromClipboard}
-        actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
-        actReverseBatch: {Label=&Reverse Batch, ActionClick=ReverseBatch}
+        actImportFromClipboard: {Label=Import from Clip&board, ActionClick=ImportFromClipboard}
+        actExportBatches: {Label=E&xport Batches, ActionClick=ExportBatches}
+        actReverseBatch: {Label=Re&verse Batch, ActionClick=ReverseBatch}
     Controls:
         pnlContent:
             Dock: Fill
             #Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
-            Controls: [pnlDetailGrid, pnlDetails]
+            Controls: [pnlFilterAndFind, pnlDetailGrid, pnlDetails]
         pnlDetailGrid:
             Dock: Fill
-            Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlFilterAndFind:
+            Dock: Left
             ExpandedWidth: 180
             InitiallyExpanded: true     
             ShowApplyFilterButton: FilterContext.ExtraFilterOnly
             ShowFilterIsAlwaysOnLabel: FilterContext.StandardFilterOnly
             ShowKeepFilterTurnedOnButton: FilterContext.ExtraFilterOnly
             FilterControls: [pnlBatchFilter]
-            ExtraFilterControls: [Column:BatchNumber, txtDetailBatchDescription, txtDetailBatchControlTotal]
-            FindControls: [Column:BatchNumber, txtDetailBatchDescription]
+            ExtraFilterControls: [Column:BatchNumber-1, Column:BatchNumber-2, txtDetailBatchDescription, dtpDetailDateEffective-1, dtpDetailDateEffective-2]
+            FindControls: [Column:BatchNumber-1, Column:BatchNumber-2, txtDetailBatchDescription, dtpDetailDateEffective-1, dtpDetailDateEffective-2]
+            ControlAttributes:
+                txtBatchNumber-1: {Label=Batch number -->, Comparison=gte}
+                txtBatchNumber-2: {Label=--> Batch number, Comparison=lte}
+                dtpDetailDateEffective-1: {Label=Effective date -->, Comparison=gte}
+                dtpDetailDateEffective-2: {Label=--> Effective date, Comparison=lte}
             Panels:
                 pnlBatchFilter:
                     Controls: [rgrShowBatches, cmbYearFilter, cmbPeriodFilter]
@@ -44,7 +50,7 @@ RootNode:
                         OptionalValues: [Posting, =Editing, All]
                         
                     cmbYearFilter: {OnChange=RefreshPeriods, ClearButton=false, Width=100}
-                    cmbPeriodFilter: {OnChange=RefreshFilter, ClearButton=false, Width=250}
+                    cmbPeriodFilter: {OnChange=RefreshFilter, Width=250}
                     rbtPosting: {OnChange=RefreshFilter}
                     rbtEditing: {OnChange=RefreshFilter}
                     rbtAll: {OnChange=RefreshFilter}

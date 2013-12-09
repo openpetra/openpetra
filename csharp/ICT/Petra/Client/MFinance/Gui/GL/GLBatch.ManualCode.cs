@@ -102,8 +102,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             tabGLBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
             this.tpgJournals.Enabled = false;
             this.tpgTransactions.Enabled = false;
-
-            this.Width = 815;
         }
 
         /// <summary>

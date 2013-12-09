@@ -15,7 +15,7 @@ RootNode:
             Image: Delete_Record.ico
     Controls:
         pnlContent:
-            Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
+            Controls: [pnlInfo, pnlFilterAndFind, pnlDetailGrid, pnlDetails]
             Dock: Fill
         pnlInfo:
             Dock: Top
@@ -31,13 +31,17 @@ RootNode:
         txtControl: {ReadOnly=true, Label=Hash, Unbound=true, Format=Decimal, Width=147}
         pnlDetailGrid:
             Dock: Fill
-            Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlFilterAndFind:
+            Dock: Left
             ExpandedWidth: 170
             ShowApplyFilterButton: FilterContext.StandardFilterOnly
             ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
-            FilterControls: [Column:JournalStatus, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency]
-            FindControls: [Column:JournalStatus, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency]
+            FilterControls: [Column:JournalStatus, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency, dtpDetailDateEffective-1, dtpDetailDateEffective-2]
+            FindControls: [Column:JournalStatus, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency, dtpDetailDateEffective-1, dtpDetailDateEffective-2]
+            ControlAttributes:
+                dtpDetailDateEffective-1: {Label=Effective date -->, Comparison=gte}
+                dtpDetailDateEffective-2: {Label=--> Effective date, Comparison=lte}
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnAdd, btnCancel]
@@ -64,6 +68,7 @@ RootNode:
             EnableMultiSelection: false
         pnlDetails:
             Dock: Bottom
+            Height: 185
             Controls: 
                 Row0: [txtDetailJournalDescription]
                 Row1: [cmbDetailSubSystemCode]
