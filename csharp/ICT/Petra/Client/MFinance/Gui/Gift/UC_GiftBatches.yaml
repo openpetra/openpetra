@@ -10,10 +10,10 @@ RootNode:
     Actions:
         actNew: {Label=&Add Batch, ActionClick=NewRow}
         actCancel: {Label=&Cancel Batch, ActionClick=CancelRecord, Image=Delete_Record.ico}
-        actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
-        actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
+        actPostBatch: {Label=P&ost Batch, ActionClick=PostBatch}
+        actExportBatches: {Label=E&xport Batches, ActionClick=ExportBatches}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
-        actReverseGiftBatch: {Label=&Reverse Gift Batch, ActionClick=ReverseGiftBatch}
+        actReverseGiftBatch: {Label=Re&verse Gift Batch, ActionClick=ReverseGiftBatch}
         actSetExchangeRate:{Label=Get/Set Exchange Rate, ActionClick=SetExchangeRateValue}
     Controls:
         pnlContent:
@@ -35,7 +35,7 @@ RootNode:
             FindControls: [txtDetailBatchDescription, cmbDetailBankCostCentre, cmbDetailBankAccountCode, cmbDetailCurrencyCode, rgrDetailGiftType]
             ControlAttributes:
                 dtpDetailGlEffectiveDate-1: {Comparison=gte, Label=GL Date -->}
-                dtpDetailGlEffectiveDate-2: {Comparison=lt, Label=--> GL Date}
+                dtpDetailGlEffectiveDate-2: {Comparison=lte, Label=--> GL Date}
                 rgrDetailGiftType: {Label=Gift Type, CloneToComboBox=true}
             Panels:
                 pnlBatchFilter:
@@ -47,7 +47,7 @@ RootNode:
                         OptionalValues: [Posting, =Editing, All]
                         
                     cmbYear: {OnChange=RefreshPeriods, ClearButton=false, Width=100}
-                    cmbPeriod: {OnChange=RefreshFilter, ClearButton=false, Width=250}
+                    cmbPeriod: {OnChange=RefreshFilter, Width=250}
                     rbtPosting: {OnChange=RefreshFilter}
                     rbtEditing: {OnChange=RefreshFilter}
                     rbtAll: {OnChange=RefreshFilter}

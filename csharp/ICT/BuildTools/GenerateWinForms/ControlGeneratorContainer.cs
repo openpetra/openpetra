@@ -1120,6 +1120,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         columnName = controlName.TrimEnd();
                     }
 
+                    // The column name may include an instance - remember this and work out the column name without the instance
+                    string instanceName = String.Empty;
+                    string controlNameWithInstance;
+
+                    if (columnName.Contains("-"))
+                    {
+                        instanceName = columnName.Substring(columnName.LastIndexOf('-'));
+                        columnName = columnName.Substring(0, columnName.LastIndexOf('-'));
+                    }
+
                     lblName = "lbl" + columnName;
                     string lblText = StringHelper.ReverseUpperCamelCase(columnName);
 
@@ -1139,7 +1149,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
 
                     // Get additional attributes for these dummy controls
-                    XmlAttributeCollection controlAttributes = GetAdditionalAttributes(controlName, AControlAttributesList);
+                    controlNameWithInstance = controlName + instanceName;
+                    XmlAttributeCollection controlAttributes = GetAdditionalAttributes(controlNameWithInstance, AControlAttributesList);
 
                     if ((controlAttributes != null) && (controlAttributes["NoLabel"] != null) && (controlType != "CheckBox"))
                     {
@@ -1171,7 +1182,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         controlType,
                         APanelType,
                         APanelSubType,
-                        controlName,
+                        controlNameWithInstance,
                         lblName,
                         bHasALabel,
                         columnName,
@@ -1180,7 +1191,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         ATargetCodelet,
                         out bHasClearButton);
 
-                    WriteAdditionalProperties(writer, controlType, APanelType, controlName, bHasClearButton, controlAttributes);
+                    WriteAdditionalProperties(writer, controlType, APanelType, controlNameWithInstance, bHasClearButton, controlAttributes);
 
                     NumItemsOnThisPanel++;
                 }
@@ -1474,6 +1485,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     }
 
                     AddFilterFindEvent(writer, AControlType, APanelType, AControlName, eventName, att.Value);
+
+                    // ComboBoxes that can be cleared need two events
+                    if (AHasClearButton && AControlName.StartsWith("cmb"))
+                    {
+                        AddFilterFindEvent(writer, AControlType, APanelType, AControlName, "SelectedValueChanged", att.Value);
+                    }
                 }
                 else
                 {

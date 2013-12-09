@@ -90,11 +90,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="ABatchStatus"></param>
-        /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
         public void LoadGifts(Int32 ALedgerNumber,
             Int32 ABatchNumber,
-            string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED,
-            bool AFromTabClick = true)
+            string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
             bool firstLoad = (FLedgerNumber == -1);
 
@@ -123,11 +121,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     GetDetailsFromControls(GetSelectedDetailRow());
-
-                    if (AFromTabClick)
-                    {
-                        grdDetails.Focus();
-                    }
                 }
 
                 UpdateControlsProtection();
@@ -183,11 +176,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //ShowDetails();
 
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
-
-            //if (AFromTabClick)
-            //{
-            //    grdDetails.Focus();
-            //}
 
             SelectRowInGrid(1);
 
@@ -1642,7 +1630,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (reverseWholeBatch && (FBatchNumber != giftBatch.BatchNumber))
             {
-                LoadGifts(giftBatch.LedgerNumber, giftBatch.BatchNumber, MFinanceConstants.BATCH_POSTED, false);
+                LoadGifts(giftBatch.LedgerNumber, giftBatch.BatchNumber, MFinanceConstants.BATCH_POSTED);
             }
 
             TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(FPetraUtilsObject.GetForm());

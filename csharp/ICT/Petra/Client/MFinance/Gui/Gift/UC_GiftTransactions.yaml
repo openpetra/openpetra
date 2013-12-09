@@ -52,8 +52,8 @@ RootNode:
             ExpandedWidth: 170
             ShowApplyFilterButton: FilterContext.StandardFilterOnly
             ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
-            FilterControls: [chkDetailConfidentialGiftFlag, chkDetailChargeFlag, chkDetailTaxDeductable, cmbDetailMailingCode, cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode, txtDetailCostCentreCode, txtDetailAccountCode]
-            FindControls: [Column:GiftBatchTDSAGiftDetailTable.DonorName, Column:GiftBatchTDSAGiftDetailTable.RecipientDescription, chkDetailConfidentialGiftFlag, chkDetailChargeFlag, chkDetailTaxDeductable, cmbDetailMailingCode, cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode, txtDetailCostCentreCode, txtDetailAccountCode]
+            FilterControls: [chkDetailConfidentialGiftFlag, chkDetailChargeFlag, chkDetailTaxDeductable, cmbDetailMailingCode, cmbDetailMotivationGroupCode, Column:MotivationDetailCode, txtDetailCostCentreCode, txtDetailAccountCode, txtDetailGiftCommentOne]
+            FindControls: [Column:GiftBatchTDSAGiftDetailTable.DonorName, Column:GiftBatchTDSAGiftDetailTable.RecipientDescription, chkDetailConfidentialGiftFlag, chkDetailChargeFlag, chkDetailTaxDeductable, cmbDetailMailingCode, cmbDetailMotivationGroupCode, Column:MotivationDetailCode, txtDetailCostCentreCode, txtDetailAccountCode, txtDetailGiftCommentOne]
             ControlAttributes: 
                 chkDetailTaxDeductable: {Text=Tax deductable}
                 chkDetailConfidentialGiftFlag: {Text=Confidential}
