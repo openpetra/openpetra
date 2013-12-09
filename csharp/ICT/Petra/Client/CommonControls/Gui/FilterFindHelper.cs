@@ -936,10 +936,102 @@ namespace Ict.Petra.Client.CommonControls
                         continue;
                     }
 
-                    // Just do a case-insensitive regular expression comparison of the text
-                    if (!System.Text.RegularExpressions.Regex.IsMatch(ARow[iffp.DBColumnName].ToString(), "(?i)" + controlText))
+                    int intValue, intCompareTo;
+                    decimal decimalValue, decimalCompareTo;
+                    DateTime dtValue, dtCompareTo;
+
+                    if (iffp.FilterComparison.Contains("LIKE"))
                     {
-                        return false;
+                        // Just do a case-insensitive regular expression comparison of the text
+                        if (!System.Text.RegularExpressions.Regex.IsMatch(ARow[iffp.DBColumnName].ToString(), "(?i)" + controlText))
+                        {
+                            return false;
+                        }
+                    }
+                    else if ((iffp.FilterComparison.Contains("#"))
+                            && DateTime.TryParse(ARow[iffp.DBColumnName].ToString(), out dtValue) && DateTime.TryParse(controlText, out dtCompareTo))
+                    {
+                        // It is a date
+                        if (iffp.FilterComparison.StartsWith(">=") && (dtValue >= dtCompareTo))
+                        {
+                            continue;
+                        }
+                        else if (iffp.FilterComparison.StartsWith(">") && (dtValue > dtCompareTo))
+                        {
+                            continue;
+                        }
+                        else if (iffp.FilterComparison.StartsWith("<=") && (dtValue <= dtCompareTo))
+                        {
+                            continue;
+                        }
+                        else if (iffp.FilterComparison.StartsWith("<") && (dtValue < dtCompareTo))
+                        {
+                            continue;
+                        }
+                        else if (iffp.FilterComparison.StartsWith("=") && (dtValue == dtCompareTo))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else if (Int32.TryParse(ARow[iffp.DBColumnName].ToString(), out intValue) && Int32.TryParse(controlText, out intCompareTo))
+                    {
+                        // It is a Int32
+                        if (iffp.FilterComparison.StartsWith(">=") && (intValue >= intCompareTo))
+                        {
+                            continue;
+                        }
+                        else if (iffp.FilterComparison.StartsWith(">") && (intValue > intCompareTo))
+                        {
+                            continue;
+                        }
+                        else if (iffp.FilterComparison.StartsWith("<=") && (intValue <= intCompareTo))
+                        {
+                            continue;
+                        }
+                        else if (iffp.FilterComparison.StartsWith("<") && (intValue < intCompareTo))
+                        {
+                            continue;
+                        }
+                        else if (iffp.FilterComparison.StartsWith("=") && (intValue == intCompareTo))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                    else if (Decimal.TryParse(ARow[iffp.DBColumnName].ToString(), out decimalValue) && Decimal.TryParse(controlText, out decimalCompareTo))
+                    {
+                        // It is a Int32
+                        if (iffp.FilterComparison.StartsWith(">=") && (decimalValue >= decimalCompareTo))
+                        {
+                            continue;
+                        }
+                        else if (iffp.FilterComparison.StartsWith(">") && (decimalValue > decimalCompareTo))
+                        {
+                            continue;
+                        }
+                        else if (iffp.FilterComparison.StartsWith("<=") && (decimalValue <= decimalCompareTo))
+                        {
+                            continue;
+                        }
+                        else if (iffp.FilterComparison.StartsWith("<") && (decimalValue < decimalCompareTo))
+                        {
+                            continue;
+                        }
+                        else if (iffp.FilterComparison.StartsWith("=") && (decimalValue == decimalCompareTo))
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            return false;
+                        }
                     }
                 }
             }
