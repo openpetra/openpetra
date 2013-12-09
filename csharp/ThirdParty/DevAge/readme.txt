@@ -6,7 +6,7 @@ based on the source code of SourceGrid as of July 16, 2012
 File SourceGrid.dll:
 --------------------
 Built from the downloaded source code of SourceGrid, plus our changes described above. This is used with OpenPetra!
-The latest version is 4.40.5080.17704, dated 28 November 2013, size 536KB - this fixes all bugs and features below
+The latest version is 4.40.5081.39414, dated 29 November 2013, size 536KB - this fixes all bugs and features below
 
 (Version number 4.40.5049.27439, dated 28 October 2013, size 536KB - this fixed bugs 1 to 5 below
 (Version number 4.40.5029.25553, dated 8 October 2013, size 536KB - this fixed bugs 1 to 4 below)

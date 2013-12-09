@@ -1799,7 +1799,7 @@ namespace SourceGrid
                     {
                         // The position is ok
                     }
-                    else
+                    else if (position.Row >= this.FixedRows)
                     {
                         // always imagine that the click was on the first column
                         position = new Position(position.Row, this.FixedColumns);
