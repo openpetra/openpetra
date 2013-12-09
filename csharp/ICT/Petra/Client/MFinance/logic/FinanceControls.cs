@@ -879,7 +879,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             System.Int32 ALedgerNr,
             System.Int32 AYear,
             System.Int32 AInitialSelectedIndex,
-            Boolean AShowCurrentAndForwarding = true)
+            Boolean AShowCurrentAndForwarding)
         {
             DataTable periods = InitialiseAvailableFinancialPeriodsList(ALedgerNr, AYear, AShowCurrentAndForwarding);
 
@@ -902,7 +902,8 @@ namespace Ict.Petra.Client.MFinance.Logic
             ref TCmbAutoPopulated AControl,
             System.Int32 ALedgerNr,
             System.Int32 AYear,
-            Boolean AShowCurrentAndForwarding = true)
+            System.Int32 AInitialSelectedIndex,
+            Boolean AShowCurrentAndForwarding)
         {
             DataTable periods = InitialiseAvailableFinancialPeriodsList(ALedgerNr, AYear, AShowCurrentAndForwarding);
 
@@ -916,6 +917,11 @@ namespace Ict.Petra.Client.MFinance.Logic
                 AControl.InitialiseUserControl(periods, "value", "display", null);
                 AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
             }
+
+            if (AInitialSelectedIndex >= 0)
+            {
+                AControl.SelectedIndex = AInitialSelectedIndex;
+            }
         }
 
         /// <summary>
@@ -924,7 +930,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         private static DataTable InitialiseAvailableFinancialPeriodsList(
             System.Int32 ALedgerNr,
             System.Int32 AYear,
-            Boolean AShowCurrentAndForwarding = true)
+            Boolean AShowCurrentAndForwarding)
         {
             DataTable AccountingPeriods = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList, ALedgerNr);
 

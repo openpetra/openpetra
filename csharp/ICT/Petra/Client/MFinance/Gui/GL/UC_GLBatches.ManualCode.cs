@@ -1548,7 +1548,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TCmbAutoComplete cmbPeriodFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriodFilter");
 
             FSuppressRefreshFilter = true;
-            TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref cmbPeriodFilter, FLedgerNumber, cmbYearFilter.GetSelectedInt32(), -1);
+            TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref cmbPeriodFilter, FLedgerNumber, cmbYearFilter.GetSelectedInt32(), -1, true);
 
             if (sender is TCmbAutoComplete)
             {
