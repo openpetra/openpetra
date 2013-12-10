@@ -975,7 +975,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
             }
 
-            // validate that there is at least one main account, but not multiple?
+            // validate that there are not multiple main accounts
             int countMainAccount = 0;
 
             foreach (PartnerEditTDSPBankingDetailsRow bdrow in ABankingDetails.Rows)
@@ -989,18 +989,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 }
             }
 
-            if (countMainAccount == 0)
-            {
-                AVerificationResultCollection.Add(
-                    new TScreenVerificationResult(
-                        new TVerificationResult(
-                            AContext,
-                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKINGDETAILS_ATLEASTONEMAINACCOUNT)),
-                        ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnMainAccount,
-                        ValidationControlsData.ValidationControl
-                        ));
-            }
-            else if (countMainAccount > 1)
+            if (countMainAccount > 1)
             {
                 // will we ever get here?
                 AVerificationResultCollection.Add(

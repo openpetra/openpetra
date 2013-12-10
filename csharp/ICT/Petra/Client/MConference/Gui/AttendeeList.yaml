@@ -1,0 +1,49 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraForm.yaml
+    FormTitle: Attendee List
+    Namespace: Ict.Petra.Client.MConference.Gui
+    DatasetType: Ict.Petra.Shared.MConference.Data.ConferenceApplicationTDS
+    MasterTable: PcAttendee
+    UsingNamespaces: [Ict.Petra.Shared.MConference.Data, Ict.Petra.Shared.MConference.Validation, Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.Interfaces.MConference]
+    FormType: browse
+    Template: windowFind
+    TemplateParameters:
+        INITMANUALCODE: InitGridManually();
+    WindowWidth: 950
+    WindowHeight: 500
+    Actions:
+        actRefresh: {Label=&Refresh Attendees, ActionClick=RefreshAttendees}
+        actEditPerson: {Label=Edit Selected Person, ActionClick=EditPerson}
+    Controls:
+        pnlContent:
+            Controls: [pnlConferenceDetails, pnlGrid]
+            Dock: Fill
+        pnlConferenceDetails:
+            Dock: Top
+            Controls: [txtConferenceName]
+            ControlsOrientation: vertical
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlButtons, grdAttendees]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnRefresh, btnEditPerson]
+            ControlsOrientation: horizontal
+        grdAttendees:
+            Dock: Fill
+            Columns: [PPartner.PartnerShortName, PcAttendee.PartnerKey, PcAttendee.OutreachType, PmShortTermApplication.StFieldCharged, PcAttendee.HomeOfficeKey, PmShortTermApplication.StCurrentField]
+            ActionClick: GridRowSelected
+            CustomColumns:
+                PPartner.PartnerShortName: {Label=Attendee Name}
+                PcAttendee.OutreachType: {Label=Outreach}
+                PmShortTermApplication.StFieldCharged: {Label=Charge to Field}
+                PcAttendee.HomeOfficeKey: {Label=Sending Field}
+                PmShortTermApplication.StCurrentField: {Label=Receiving Field}
+
+        btnRefresh:
+            Action: actRefresh
+        btnEditPerson:
+            Action: actEditPerson
+            Enabled: false
+
+        txtConferenceName: {ReadOnly=true, BorderStyle=None, Stretch=horizontally}

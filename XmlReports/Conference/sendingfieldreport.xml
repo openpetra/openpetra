@@ -36,14 +36,14 @@
           </case></switch>
         </fielddetail>
       </field>
-      <field whichfield="period2">
+      <!--<field whichfield="period2">
         <fielddetail>
           <switch><case condition="eq({param_conferenceselection}, one conference)">
               <value text="Selected Outreach Options: "></value>
               <value variable="param_conferenceoptionscode"></value>
           </case></switch>
         </fielddetail>
-      </field>
+      </field>-->
       <field whichfield="period3">
         <fielddetail>
           <value text="Selection: "></value>
@@ -67,66 +67,23 @@
                 <query>
                     <queryDetail><value>
                         SELECT DISTINCT
-                            PUB_pc_attendee.pc_home_office_key_n AS HomeOffice
-                            
+                            PUB_p_unit.p_partner_key_n AS HomeOffice,
+                            PUB_p_unit.p_unit_name_c AS HomeOfficeName
                         FROM   
-                            PUB_pc_attendee,
-                            PUB_pc_conference,
-                            PUB_pm_general_application,
-                            PUB_pm_short_term_application
-                    </value></queryDetail>
-                    <queryDetail condition="eq({param_attendeeselection}, one attendee)"><value>
-                        WHERE 
-                            PUB_pc_attendee.p_partner_key_n  = {{param_partnerkey}}
-                            AND
-                    </value></queryDetail>
-                    <queryDetail condition="eq({param_attendeeselection}, all attendees)"><value>
-                        WHERE 
-                    </value></queryDetail>
-                    <queryDetail condition="eq({param_attendeeselection}, from extract)"><value>
+                            PUB_p_unit
                         WHERE
                     </value></queryDetail>
-                                        
-                    <queryDetail condition="eq({param_conferenceselection}, one conference)"><value>
-                                PUB_pc_conference.pc_conference_key_n = {{param_conferencekey}}
-                            AND PUB_pc_attendee.pc_conference_key_n = {{param_conferencekey}}
-                            AND
-                    </value></queryDetail>
-                    <queryDetail condition="eq({param_conferenceselection}, one conference)">
-                            <value function="csv" text="PUB_pm_short_term_application.pm_st_confirmed_option_n" 
-                                    variable="param_conferenceoptions" calculation="OR" format="Number">
-                            </value>
-                    </queryDetail>
-                    
-                    <!-- get only the fields that are selected -->
-                    <queryDetail condition="eq({param_conferenceselection}, one conference)"><value> 
-                                AND
-                    </value></queryDetail>
                     <queryDetail>
-                            <value function="csv" text="PUB_pc_attendee.pc_home_office_key_n" 
+                            <value function="csv" text="PUB_p_unit.p_partner_key_n" 
                                     variable="param_selected_keys_csv" calculation="OR" format="Number">
                             </value>
                     </queryDetail>
-                    
-                    <queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
-                            AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
-                            AND PUB_pc_conference.pc_outreach_prefix_c = substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) 
-                    </value></queryDetail>
-                    
-                    <queryDetail condition="eq({param_chkAcceptedApplications}, true))"><value>
-                            AND (   PUB_pm_general_application.pm_gen_application_status_c LIKE 'A%'
-                                    OR 
-                                    PUB_pm_general_application.pm_gen_application_status_c LIKE 'H%' )
-                    </value></queryDetail>
-                    
                     <queryDetail><value>
-                            AND PUB_pm_short_term_application.p_partner_key_n = PUB_pc_attendee.p_partner_key_n
-                            AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i
-                            AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n
-                            AND NOT pm_general_application.pm_gen_app_delete_flag_l = 1
+                        ORDER BY 
+							PUB_p_unit.p_unit_name_c
                     </value></queryDetail>
                 </query>
-            </calculation> <!-- SelectSendingFields -->
+            </calculation><!-- SelectSendingFields -->
             
             <calculation id="Select Attendees for field" returns="automatic" returnsFormat="row">
                 <query>
@@ -216,13 +173,8 @@
                     <queryDetail condition="eq({param_conferenceselection}, one conference)"><value>
                             AND PUB_pc_conference.pc_conference_key_n = {{param_conferencekey}}
                             AND PUB_pc_attendee.pc_conference_key_n = {{param_conferencekey}}
-                            AND
+                            AND substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) = PUB_pc_conference.pc_outreach_prefix_c
                     </value></queryDetail>
-                    <queryDetail condition="eq({param_conferenceselection}, one conference)">
-                            <value function="csv" text="PUB_pm_short_term_application.pm_st_confirmed_option_n" 
-                                    variable="param_conferenceoptions" calculation="OR" format="Number">
-                            </value>
-                    </queryDetail>
                     
                     <queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
                             AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
@@ -248,32 +200,6 @@
                     
                 </query>
             </calculation> <!-- Select Attendees for field -->
-            
-            <calculation id="GetHomeOfficeName" returns="HomeOfficeName" returnsFormat="row">
-                <query>
-                    <queryDetail><value>
-                        SELECT DISTINCT
-                            PUB_p_unit.p_unit_name_c AS HomeOfficeName
-                        FROM
-                            PUB_p_unit
-                        WHERE
-                            PUB_p_unit.p_partner_key_n = {HomeOffice}
-                    </value></queryDetail>
-                </query>
-            </calculation>
-            
-            <calculation id="GetHomeOfficeName1" returns="HomeOfficeName1" returnsFormat="row">
-                <query>
-                    <queryDetail><value>
-                        SELECT DISTINCT
-                            PUB_p_unit.p_unit_name_c AS HomeOfficeName1
-                        FROM
-                            PUB_p_unit
-                        WHERE
-                            PUB_p_unit.p_partner_key_n = {HomeOffice}
-                    </value></queryDetail>
-                </query>
-            </calculation>
             
             <calculation id="InitFieldCostsCalculation" returns="automatic" returnsFormat="text">
                 <query>
@@ -573,12 +499,11 @@
     
     <level name="main2">
         <header>
-            <field whichfield="header 0" pos="0.0cm" calculation="GetHomeOfficeName1" width="12.0cm">
-                <value variable="HomeOfficeName1"/>
+            <field whichfield="header 0" pos="0.0cm" width="12.0cm">
+                <value variable="HomeOfficeName"/>
             </field>
         </header>
         <detail>
-            <lowerLevelReport calculation="GetHomeOfficeName" level="DummyLevel"></lowerLevelReport>
             <lowerLevelReport level="main3"></lowerLevelReport>
             <lowerLevelReport calculation="PrintFieldFinancialCosts" level="DummyLevel"></lowerLevelReport>
             <lowerLevelReport calculation="PrintSignOffLines" level="DummyLevel"></lowerLevelReport>
@@ -679,7 +604,7 @@
     
     <level name="main3">
         <detail>
-            <lowerLevelReport calculation="InitFieldCostsCalculation" level="DummyLevel"></lowerLevelReport>
+            <lowerLevelReport calculation="InitFieldCostsCalculation" level="DummyLevel2"></lowerLevelReport>
             <lowerLevelReport calculation="Select Attendees for field" level="Attendee Detail Level" condition="eq({param_chkExtraCosts}, false)"></lowerLevelReport>
             <lowerLevelReport calculation="Select Attendees for field" level="Attendee Detail Level With Extra Cost" condition="eq({param_chkExtraCosts}, true)"></lowerLevelReport>
         </detail>
@@ -742,6 +667,14 @@
     
     <level name="DummyLevel">
         <detail>
+        </detail>
+    </level>
+    
+    <level name="DummyLevel2">
+        <detail>
+			<field whichfield="Columns">
+				<value text=""/>
+			</field>
         </detail>
     </level>
     

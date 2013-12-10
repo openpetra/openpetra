@@ -58,7 +58,7 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <param name="AStream">write the Excel file into this stream</param>
         public static bool DownloadArrivalRegistration(Int64 AConferenceKey, string AEventCode, MemoryStream AStream)
         {
-            TAttendeeManagement.RefreshAttendees(AConferenceKey, AEventCode);
+            TAttendeeManagement.RefreshAttendees(AConferenceKey);
 
             PPartnerTable RegistrationOffices = TApplicationManagement.GetRegistrationOffices();
 
@@ -185,7 +185,7 @@ namespace Ict.Petra.Server.MConference.Applications
         /// <param name="AStream">write the Excel file into this stream</param>
         public static bool GetNumbersOfRolesPerCountry(Int64 AConferenceKey, string AEventCode, MemoryStream AStream)
         {
-            TAttendeeManagement.RefreshAttendees(AConferenceKey, AEventCode);
+            TAttendeeManagement.RefreshAttendees(AConferenceKey);
 
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
             TApplicationManagement.GetApplications(ref MainDS, AConferenceKey, AEventCode, "accepted", -1, null, false);

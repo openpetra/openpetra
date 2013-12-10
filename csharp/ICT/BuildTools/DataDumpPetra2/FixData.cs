@@ -633,6 +633,24 @@ namespace Ict.Tools.DataDumpPetra2
                 }
             }
 
+            // phone and fax extensions should be '0' rather than null
+            if (ATableName == "p_partner_location")
+            {
+                string val = GetValue(AColumnNames, ANewRow, "p_extension_i");
+
+                if ((val.Length == 0) || (val == "\\N"))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "p_extension_i", "0");
+                }
+
+                val = GetValue(AColumnNames, ANewRow, "p_fax_extension_i");
+
+                if ((val.Length == 0) || (val == "\\N"))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "p_fax_extension_i", "0");
+                }
+            }
+
             return true;
         }
 

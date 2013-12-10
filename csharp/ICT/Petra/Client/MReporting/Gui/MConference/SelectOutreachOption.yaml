@@ -51,7 +51,6 @@ RootNode:
             Dock: Fill
             Height: 300
             Width: 500
-            ActionDoubleClick: grdOutreachOptionDoubleClick
         pnlBottom:
             Dock: Bottom
             Controls:

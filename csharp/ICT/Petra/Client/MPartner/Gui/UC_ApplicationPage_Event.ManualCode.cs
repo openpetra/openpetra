@@ -31,6 +31,7 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Validation;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
 
@@ -171,6 +172,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                 && (Convert.ToInt64(txtPlacementPerson.Text) == 0))
             {
                 ARow.SetPlacementPartnerKeyNull();
+            }
+
+            if ((FMainDS.PmShortTermApplication != null) && (FMainDS.PmShortTermApplication.Rows.Count > 0))
+            {
+                if (txtEvent.Text.Length == 0)
+                {
+                    FMainDS.PmShortTermApplication[0].SetConfirmedOptionCodeNull();
+                }
+                else
+                {
+                    FMainDS.PmShortTermApplication[0].ConfirmedOptionCode =
+                        TRemote.MPersonnel.Person.DataElements.WebConnectors.GetOutreachCode(Convert.ToInt64(txtEvent.Text));
+                }
             }
         }
 
