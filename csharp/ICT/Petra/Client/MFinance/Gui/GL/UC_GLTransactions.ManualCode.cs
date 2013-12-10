@@ -118,6 +118,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             else
             {
                 // A new ledger/batch
+                SuspendLayout();
                 bool requireControlSetup = (FLedgerNumber == -1) || (FTransactionCurrency != AForeignCurrencyName);
 
                 FLedgerNumber = ALedgerNumber;
@@ -185,6 +186,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 //This will update transaction headers
                 UpdateTransactionTotals(false);
+                ResumeLayout();
                 FLoadCompleted = true;
             }
 

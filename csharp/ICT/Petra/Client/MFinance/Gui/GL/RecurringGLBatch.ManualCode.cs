@@ -289,20 +289,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         /// <param name="sender">Not evaluated.</param>
         /// <param name="e">Not evaluated.</param>
-        public void ShowFindPanel(object sender, System.EventArgs e)
+        public void mniFilterFind_Click(object sender, System.EventArgs e)
         {
             switch (tabRecurringGLBatch.SelectedIndex)
             {
                 case (int)eGLTabs.RecurringBatches:
-                    ucoRecurringBatches.ShowFindPanel();
+                    ucoRecurringBatches.MniFilterFind_Click(sender, e);
                     break;
 
                 case (int)eGLTabs.RecurringJournals:
-                    ucoRecurringJournals.ShowFindPanel();
+                    ucoRecurringJournals.MniFilterFind_Click(sender, e);
                     break;
 
                 case (int)eGLTabs.RecurringTransactions:
-                    ucoRecurringTransactions.ShowFindPanel();
+                    ucoRecurringTransactions.MniFilterFind_Click(sender, e);
                     break;
             }
         }

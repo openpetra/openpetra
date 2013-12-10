@@ -10,40 +10,54 @@ RootNode:
     Actions:
         actNew: {Label=&Add Batch, ActionClick=NewRow}
         actCancel: {Label=&Cancel Batch, ActionClick=CancelRecord, Image=Delete_Record.ico}
-        actPostBatch: {Label=&Post Batch, ActionClick=PostBatch}
-        actExportBatches: {Label=&Export Batches, ActionClick=ExportBatches}
+        actPostBatch: {Label=P&ost Batch, ActionClick=PostBatch}
+        actExportBatches: {Label=E&xport Batches, ActionClick=ExportBatches}
         actImportBatches: {Label=&Import Batches, ActionClick=ImportBatches}
-        actReverseGiftBatch: {Label=&Reverse Gift Batch, ActionClick=ReverseGiftBatch}
+        actReverseGiftBatch: {Label=Re&verse Gift Batch, ActionClick=ReverseGiftBatch}
         actSetExchangeRate:{Label=Get/Set Exchange Rate, ActionClick=SetExchangeRateValue}
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
-        pnlInfo: 
-            ControlsOrientation: horizontal
-            Controls: [pnlLedgerInfo, rgrShowBatches, cmbYear, cmbPeriod]
-            Dock: Top
-        rgrShowBatches: 
-            Label: Show batches
-            ControlsOrientation: horizontal
-            OptionalValues: [Posting, =Editing, All]
-            SuppressChangeDetection: true
-            OnChange: RefreshFilter
-        cmbYear: {List=UserDefinedList, OnChange=RefreshPeriods, SuppressChangeDetection=true, Width=100}
-        cmbPeriod: {List=UserDefinedList, OnChange=RefreshFilter, SuppressChangeDetection=true, Width=250}
-        pnlLedgerInfo:
-            Controls: [txtLedgerNumber]
-        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
+            #Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
+            Controls: [pnlFilterAndFind, pnlDetailGrid, pnlDetails]
         pnlDetailGrid:
             Dock: Fill
             Controls: [pnlDetailButtons, grdDetails]
+        pnlFilterAndFind:
+            Dock: Left
+            ExpandedWidth: 180
+            InitiallyExpanded: true     
+            ShowApplyFilterButton: FilterContext.ExtraFilterOnly
+            ShowFilterIsAlwaysOnLabel: FilterContext.StandardFilterOnly
+            ShowKeepFilterTurnedOnButton: FilterContext.ExtraFilterOnly
+            FilterControls: [pnlBatchFilter]
+            ExtraFilterControls: [txtDetailBatchDescription, cmbDetailBankCostCentre, cmbDetailBankAccountCode, dtpDetailGlEffectiveDate-1, dtpDetailGlEffectiveDate-2, cmbDetailCurrencyCode, rgrDetailGiftType]
+            FindControls: [txtDetailBatchDescription, cmbDetailBankCostCentre, cmbDetailBankAccountCode, cmbDetailCurrencyCode, rgrDetailGiftType]
+            ControlAttributes:
+                dtpDetailGlEffectiveDate-1: {Comparison=gte, Label=GL Date -->}
+                dtpDetailGlEffectiveDate-2: {Comparison=lte, Label=--> GL Date}
+                rgrDetailGiftType: {Label=Gift Type, CloneToComboBox=true}
+            Panels:
+                pnlBatchFilter:
+                    Controls: [rgrShowBatches, cmbYear, cmbPeriod]
+                    
+                    rgrShowBatches: 
+                        Label: Show batches for
+                        ClearButton: false
+                        OptionalValues: [Posting, =Editing, All]
+                        
+                    cmbYear: {OnChange=RefreshPeriods, ClearButton=false, Width=100}
+                    cmbPeriod: {OnChange=RefreshFilter, Width=250}
+                    rbtPosting: {OnChange=RefreshFilter}
+                    rbtEditing: {OnChange=RefreshFilter}
+                    rbtAll: {OnChange=RefreshFilter}
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNew, btnCancel, btnPostBatch]
             ControlsOrientation: horizontal
         btnNew: {Action=actNew, Width=120}
-        btnCancel: {Action=actCancel, Width=120}
-        btnPostBatch: {Action=actPostBatch, Width=120, StartNewButtonGroup=true}
+        btnCancel: {Action=actCancel, Width=120, Tooltip=Click to Cancel the highlighted batch}
+        btnPostBatch: {Action=actPostBatch, Width=120, StartNewButtonGroup=true, Tooltip=Click to Post the highlighted batch}
         grdDetails:
             Dock: Fill
             TableName: AGiftBatch
@@ -60,15 +74,16 @@ RootNode:
                 Row1: [cmbDetailBankCostCentre]
                 Row2: [cmbDetailBankAccountCode]
                 Row3: [dtpDetailGlEffectiveDate, lblValidDateRange]
-                Row4: [txtDetailHashTotal, cmbDetailCurrencyCode]
+                Row4: [cmbDetailCurrencyCode, txtDetailHashTotal]
                 Row5: [txtDetailExchangeRateToBase, btnGetSetExchangeRate]
-                Row6: [cmbDetailMethodOfPaymentCode]
-                Row7: [rgrDetailGiftType]
+                Row6: [cmbDetailMethodOfPaymentCode, rgrDetailGiftType]
+                #Row6: []
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2, Validation=true}
-        cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, ColSpan=2, Validation=true}
-        cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, ColSpan=2, Validation=true}
+        cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, Validation=true}
+        cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, Validation=true}
         dtpDetailGlEffectiveDate: {Label=GL Effective Date, OnChange=UpdateBatchPeriod, Validation=true}
         lblValidDateRange:
+        Empty1:
         txtDetailHashTotal: {Label=Hash Total, Format=Currency, NullValueAllowed=false, OnChange=HashTotalChanged, Validation=true}
         cmbDetailCurrencyCode: {List=CurrencyCodeList, OnChange=CurrencyChanged}
         txtDetailExchangeRateToBase: {ReadOnly=true, Validation=true, Format=Decimal(10), Width=130}

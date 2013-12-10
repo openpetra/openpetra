@@ -1252,9 +1252,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                             }
 #endif
 
+                            ucoUpperPart.UpdateStatusUpdatedDate();  // this is to refresh 'Status Updated' if it has been changed in the ComboBox and then saved...
+                            
                             ucoLowerPart.RefreshAddressesAfterMerge();
                             ucoLowerPart.RefreshPersonnelDataAfterMerge(AddressesOrRelationsChanged);
-
+                            
                             // Call AcceptChanges so that we don't have any changed data anymore!
                             AInspectDS.AcceptChanges();
 #if DATASETDEBUGGING

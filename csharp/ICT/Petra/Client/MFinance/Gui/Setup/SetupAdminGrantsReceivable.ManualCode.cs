@@ -126,6 +126,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FExtraDS.AFeesPayable.Merge(CacheDT);
             FExtraDS.AFeesPayable.DefaultView.Sort = String.Format("{0}, {1} ASC",
                 AFeesPayableTable.GetLedgerNumberDBName(), AFeesPayableTable.GetFeeCodeDBName());
+
+            SelectRowInGrid(1);
+            UpdateRecordNumberDisplay();
         }
 
         void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
