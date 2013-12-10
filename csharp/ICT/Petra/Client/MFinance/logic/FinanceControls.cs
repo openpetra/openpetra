@@ -740,7 +740,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         }
 
         /// <summary>
-        /// This function fills the available financial years of a given ledger into a combobox
+        /// This function fills the available financial years of a given ledger into a TCmbAutoPopulated combobox
         /// </summary>
         /// <param name="AControl"></param>
         /// <param name="ALedgerNr"></param>
@@ -761,6 +761,29 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.SelectedIndex = 0;
 
             AControl.AppearanceSetup(new int[] { -1 }, -1);
+        }
+
+        /// <summary>
+        /// This function fills the available financial years of a given ledger into a TCmbAutoComplete combobox
+        /// </summary>
+        /// <param name="AControl"></param>
+        /// <param name="ALedgerNr"></param>
+        public static void InitialiseAvailableGiftYearsList(ref TCmbAutoComplete AControl, System.Int32 ALedgerNr)
+        {
+            string DisplayMember;
+            string ValueMember;
+            DataTable Table = TRemote.MFinance.Gift.WebConnectors.GetAvailableGiftYears(ALedgerNr, out DisplayMember, out ValueMember);
+
+            Table.DefaultView.Sort = ValueMember + " DESC";
+
+            AControl.DisplayMember = DisplayMember;
+            AControl.ValueMember = ValueMember;
+            AControl.DataSource = Table.DefaultView;
+
+            if (Table.DefaultView.Count > 0)
+            {
+                AControl.SelectedIndex = 0;
+            }
         }
 
         /// <summary>
@@ -855,7 +878,8 @@ namespace Ict.Petra.Client.MFinance.Logic
             ref TCmbAutoComplete AControl,
             System.Int32 ALedgerNr,
             System.Int32 AYear,
-            Boolean AShowCurrentAndForwarding = true)
+            System.Int32 AInitialSelectedIndex,
+            Boolean AShowCurrentAndForwarding)
         {
             DataTable periods = InitialiseAvailableFinancialPeriodsList(ALedgerNr, AYear, AShowCurrentAndForwarding);
 
@@ -863,9 +887,11 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.ValueMember = "value";
             AControl.DataSource = periods.DefaultView;
 
-            if (periods.DefaultView.Count > 0)
+            // If the initial index is -1 we don't need to do anything (which saves an event)
+            // The code used to always select the first item, which we do not want it to do if we are happy with an empty box.
+            if ((periods.DefaultView.Count > 0) && (AInitialSelectedIndex >= 0))
             {
-                AControl.SelectedIndex = 0;
+                AControl.SelectedIndex = AInitialSelectedIndex;
             }
         }
 
@@ -876,7 +902,8 @@ namespace Ict.Petra.Client.MFinance.Logic
             ref TCmbAutoPopulated AControl,
             System.Int32 ALedgerNr,
             System.Int32 AYear,
-            Boolean AShowCurrentAndForwarding = true)
+            System.Int32 AInitialSelectedIndex,
+            Boolean AShowCurrentAndForwarding)
         {
             DataTable periods = InitialiseAvailableFinancialPeriodsList(ALedgerNr, AYear, AShowCurrentAndForwarding);
 
@@ -890,6 +917,11 @@ namespace Ict.Petra.Client.MFinance.Logic
                 AControl.InitialiseUserControl(periods, "value", "display", null);
                 AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
             }
+
+            if (AInitialSelectedIndex >= 0)
+            {
+                AControl.SelectedIndex = AInitialSelectedIndex;
+            }
         }
 
         /// <summary>
@@ -898,7 +930,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         private static DataTable InitialiseAvailableFinancialPeriodsList(
             System.Int32 ALedgerNr,
             System.Int32 AYear,
-            Boolean AShowCurrentAndForwarding = true)
+            Boolean AShowCurrentAndForwarding)
         {
             DataTable AccountingPeriods = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList, ALedgerNr);
 

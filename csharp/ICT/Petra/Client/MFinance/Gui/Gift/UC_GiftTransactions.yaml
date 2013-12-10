@@ -18,7 +18,7 @@ RootNode:
         actReverseGiftBatch: {Label=Reverse Gift &Batch, ActionClick=ReverseGiftBatch}
     Controls:
         pnlContent:
-            Controls: [pnlInfo, sptTransactions]
+            Controls: [pnlInfo, pnlFilterAndFind, sptTransactions]
             Width: 970
             Height: 800
             Dock: Fill
@@ -26,10 +26,12 @@ RootNode:
             SplitterOrientation: Horizontal
             SplitterDistance: 37
             Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
             Panel1: pnlDetailGrid
             Panel2: pnlDetails1
         pnlDetails1:
             Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
             Controls: [pnlDetails]
         pnlInfo:
             Controls:
@@ -45,14 +47,26 @@ RootNode:
         pnlDetailGrid:
             Dock: Fill
             Controls: [pnlDetailButtons, grdDetails]
+        pnlFilterAndFind:
+            Dock: Left
+            ExpandedWidth: 170
+            ShowApplyFilterButton: FilterContext.StandardFilterOnly
+            ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
+            FilterControls: [chkDetailConfidentialGiftFlag, chkDetailChargeFlag, chkDetailTaxDeductable, cmbDetailMailingCode, cmbDetailMotivationGroupCode, Column:MotivationDetailCode, txtDetailCostCentreCode, txtDetailAccountCode, txtDetailGiftCommentOne]
+            FindControls: [Column:GiftBatchTDSAGiftDetailTable.DonorName, Column:GiftBatchTDSAGiftDetailTable.RecipientDescription, chkDetailConfidentialGiftFlag, chkDetailChargeFlag, chkDetailTaxDeductable, cmbDetailMailingCode, cmbDetailMotivationGroupCode, Column:MotivationDetailCode, txtDetailCostCentreCode, txtDetailAccountCode, txtDetailGiftCommentOne]
+            ControlAttributes: 
+                chkDetailTaxDeductable: {Text=Tax deductable}
+                chkDetailConfidentialGiftFlag: {Text=Confidential}
+                chkDetailChargeFlag: {Text=Charges apply}
+                txtRecipientDescription: {Label=Recipient}
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNewGift, btnNewDetail, btnDelete, btnDeleteAll]
             ControlsOrientation: horizontal
-        btnNewGift: {Action=actNewGift, Width=120}
-        btnNewDetail: {Action=actNewDetail, Width=120, StartNewButtonGroup=true}
+        btnNewGift: {Action=actNewGift, Width=120, Tooltip=Click to add a new gift}
+        btnNewDetail: {Action=actNewDetail, Width=120, StartNewButtonGroup=true, Tooltip=Clieck to add a new gift detail}
         btnDelete: {Action=actDelete, Width=120}
-        btnDeleteAll: {Action=actDeleteAll, Width=120, StartNewButtonGroup=true}
+        btnDeleteAll: {Action=actDeleteAll, Width=120, StartNewButtonGroup=true, Tooltip=Click to delete all gifts from the current batch}
         grdDetails:
             TableName: AGiftDetail
             Dock: Fill
@@ -85,14 +99,14 @@ RootNode:
             Controls:
                 Row0: [grpDetailsForDonor]
                 Row1: [grpDetailsForEachGift]
-        grpDetailsForDonor: {Width:945, Height:123}
-            Controls: 
+        grpDetailsForDonor: {Width:930, Height:123}
+            Controls:
                 Row0: [txtDetailDonorKey, cmbDetailMethodOfGivingCode]
                 Row1: [txtGiftTotal, cmbDetailMethodOfPaymentCode]
-                Row2: [txtDetailReference,cmbDetailReceiptLetterCode]
+                Row2: [txtDetailReference, cmbDetailReceiptLetterCode]
                 Row3: [dtpDateEntered]
-        grpDetailsForEachGift: {Width:945, Height:242}
-            Controls: 
+        grpDetailsForEachGift: {Width:930, Height:242}
+            Controls:
                 Row0: [txtDetailRecipientKey, chkDetailConfidentialGiftFlag]
                 Row1: [txtField, chkDetailChargeFlag]
                 Row2: [cmbMinistry, chkDetailTaxDeductable]
@@ -103,29 +117,29 @@ RootNode:
                 Row7: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
                 Row8: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
         #txtDonorName: {ReadOnly=true, PartnerShortNameLookup=AGiftDetail.DonorKey}
-        dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Help: This date is used for receipt printing, Unbound=true, Validation=true}
-        txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=true, Width=158, Unbound=true}
-        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Unbound=true, OnChange=DonorKeyChanged}
+        dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Tooltip=This date is used for receipt printing, Unbound=true, Validation=true}
+        txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=true, Unbound=true}
+        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor, OnChange=DonorKeyChanged}
         txtDetailReference: {Label=Reference, Width=170}
         cmbDetailReceiptLetterCode:
             Label: Letter Code
             OptionalValues: [NO*RECET]
-        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, OnChange=RecipientKeyChanged}
+        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient, OnChange=RecipientKeyChanged}
         cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
         cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=FilterMotivationDetail}
         cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, OnChange=MotivationDetailChanged}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
-        txtField: {Label=Field, Type=PartnerKey, ReadOnly=true}
+        txtField: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
-        cmbMinistry: {Label=Key Ministry, List=UserDefinedList, Width=250, OnChange=KeyMinistryChanged}
+        cmbMinistry: {Label=Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged, Tooltip=Select a key ministry}
         txtDetailGiftTransactionAmount: {Label=Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
-        chkDetailConfidentialGiftFlag: {Label=Confidential?}
+        chkDetailConfidentialGiftFlag: {Label=Confidential?, Tooltip=Check this box if the gift is to remain confidential}
         chkDetailTaxDeductable: {Label=Tax deductable?}
-        txtDetailGiftCommentOne: {Label=Comment 1,Width=350, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentTwo: {Label=Comment 2,Width=350, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentThree: {Label=Comment 3,Width=350, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentOne: {Label=Comment 1,Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentTwo: {Label=Comment 2,Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentThree: {Label=Comment 3,Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
         cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}
         cmbDetailCommentOneType:
             Label: for

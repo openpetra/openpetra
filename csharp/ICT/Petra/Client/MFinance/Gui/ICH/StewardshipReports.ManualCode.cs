@@ -132,9 +132,8 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                     ref cmbReportPeriod,
                     FLedgerNumber,
                     cmbYearEnding.GetSelectedInt32(),
+                    0,
                     false);
-
-                cmbReportPeriod.SelectedIndex = 0;
             }
         }
 

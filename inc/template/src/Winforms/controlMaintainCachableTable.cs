@@ -1294,6 +1294,19 @@ namespace {#NAMESPACE}
         {#RUNONCEINTERFACEIMPLEMENTATION}
     }
 
+    /// auto generated
+    public void RunOnceOnParentActivation()
+    {
+{#IFDEF FILTERANDFIND}
+        if (FFilterAndFindParameters.FindAndFilterInitiallyExpanded)
+        {
+            FFilterPanelControls.InitialiseComboBoxes();
+            FFindPanelControls.InitialiseComboBoxes();
+        }
+{#ENDIF FILTERANDFIND}    
+        {#RUNONCEONPARENTACTIVATIONMANUAL}    
+    }
+
     /// <summary>
     /// Adds event handlers for the appropiate onChange event to call a central procedure
     /// </summary>

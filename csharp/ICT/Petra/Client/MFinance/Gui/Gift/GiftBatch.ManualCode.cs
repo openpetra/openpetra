@@ -31,6 +31,7 @@ using Ict.Common.Data;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Validation;
 
@@ -76,6 +77,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FLedgerNumber = value;
                 ucoBatches.LoadBatches(FLedgerNumber);
+
+                this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
             }
         }
 
@@ -105,6 +108,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tpgTransactions.Enabled = false;
         }
 
+        /// <summary>
+        /// Handles the click event for filter/find.
+        /// </summary>
+        /// <param name="sender">Pass this on to the user control.</param>
+        /// <param name="e">Not evaluated.</param>
+        public void mniFilterFind_Click(object sender, System.EventArgs e)
+        {
+            switch (tabGiftBatch.SelectedIndex)
+            {
+                case (int)eGiftTabs.Batches:
+                    ucoBatches.MniFilterFind_Click(sender, e);
+                    break;
+
+                case (int)eGiftTabs.Transactions:
+                    ucoTransactions.MniFilterFind_Click(sender, e);
+                    break;
+            }
+        }
+
         private int standardTabIndex = 0;
 
         private void TFrmGiftBatch_Load(object sender, EventArgs e)
@@ -128,23 +150,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="ABatchStatus"></param>
-        /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
         public void LoadTransactions(Int32 ALedgerNumber,
             Int32 ABatchNumber,
-            string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED,
-            bool AFromTabClick = true)
+            string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
-            this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus, AFromTabClick);
-//            try
-//            {
-//                //this.tpgTransactions.Enabled = true;
-//                FPetraUtilsObject.DisableDataChangedEvent();
-//                this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus, AFromTabClick);
-//            }
-//            finally
-//            {
-//                FPetraUtilsObject.EnableDataChangedEvent();
-//            }
+            this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus);
         }
 
         /// <summary>
@@ -215,8 +225,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        bool FChangeTabEventHasRun = false;
-
         private void SelectTabManual(int ASelectedTabIndex)
         {
             if (ASelectedTabIndex == (int)eGiftTabs.Batches)
@@ -233,27 +241,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Switch to the given tab
         /// </summary>
         /// <param name="ATab"></param>
-        /// <param name="AFromTabClick"></param>
-        public void SelectTab(eGiftTabs ATab, bool AFromTabClick = true)
+        public void SelectTab(eGiftTabs ATab)
         {
-            if (FChangeTabEventHasRun && AFromTabClick)
-            {
-                FChangeTabEventHasRun = false;
-                return;
-            }
-            else
-            {
-                FChangeTabEventHasRun = !AFromTabClick;
-            }
-
             if (ATab == eGiftTabs.Batches)
             {
-                //If from grid double click then invoke tab changed event
-                if (!AFromTabClick)
-                {
-                    this.tabGiftBatch.SelectedTab = this.tpgBatches;
-                }
-
+                this.tabGiftBatch.SelectedTab = this.tpgBatches;
                 this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
                 this.ucoBatches.FocusGrid();
             }
@@ -263,9 +255,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     AGiftBatchRow SelectedRow = ucoBatches.GetSelectedDetailRow();
 
-                    //
                     // If there's only one GiftBatch row, I'll not require that the user has selected it!
-
                     if (FMainDS.AGiftBatch.Rows.Count == 1)
                     {
                         SelectedRow = FMainDS.AGiftBatch[0];
@@ -275,16 +265,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         LoadTransactions(SelectedRow.LedgerNumber,
                             SelectedRow.BatchNumber,
-                            SelectedRow.BatchStatus, AFromTabClick);
+                            SelectedRow.BatchStatus);
                     }
 
-                    //If from grid double click then invoke tab changed event
-                    if (!AFromTabClick)
-                    {
-                        this.tabGiftBatch.SelectedTab = this.tpgTransactions;
-                    }
-
-                    //this.ucoTransactions.FocusGrid();
+                    this.tabGiftBatch.SelectedTab = this.tpgTransactions;
+                    ucoTransactions.FocusGrid();
                 }
             }
         }
