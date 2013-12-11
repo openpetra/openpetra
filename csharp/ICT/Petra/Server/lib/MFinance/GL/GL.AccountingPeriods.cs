@@ -588,17 +588,32 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),
                 LedgerRow.NumberOfAccountingPeriods);
 
-            AAccountingPeriodRow periodRow = null;
+            //Get last period row
+            AAccountingPeriodRow periodRow = (AAccountingPeriodRow)AccountingPeriods.DefaultView[0].Row;
 
-            foreach (DataRowView perRow in AccountingPeriods.DefaultView)
-            {
-                periodRow = (AAccountingPeriodRow)perRow.Row;
-                break;
-            }
 
+            //Create the table to populate the combobox
+            ADisplayMember = "YearEndDate";
+            AValueMember = "YearNumber";
+            ADescriptionMember = "YearEndDateLong";
+
+            DataTable BatchTable = new DataTable();
+            BatchTable.Columns.Add(AValueMember, typeof(System.Int32));
+            BatchTable.Columns.Add(ADisplayMember, typeof(String));
+            BatchTable.Columns.Add(ADescriptionMember, typeof(String));
+            BatchTable.PrimaryKey = new DataColumn[] {
+                BatchTable.Columns[0]
+            };
+
+            //Add the current year to the table
             YearNumber = LedgerRow.CurrentFinancialYear;
-            YearNumber -= 1;
-            YearEndDate = DecrementYear(periodRow.PeriodEndDate);
+            YearEndDate = periodRow.PeriodEndDate;
+
+            DataRow ResultRow = BatchTable.NewRow();
+            ResultRow[0] = YearNumber;
+            ResultRow[1] = YearEndDate.ToShortDateString();
+            ResultRow[2] = YearEndDate.ToLongDateString();
+            BatchTable.Rows.Add(ResultRow);
 
             //Retrieve all previous years
             string sql =
@@ -612,55 +627,43 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     ALedgerNumber,
                     YearNumber);
 
-            ADisplayMember = "YearEndDate";
-            AValueMember = "YearNumber";
-            ADescriptionMember = "YearEndDateLong";
-
-            DataTable BatchTable = new DataTable();
-            BatchTable.Columns.Add(AValueMember, typeof(System.Int32));
-            BatchTable.Columns.Add(ADisplayMember, typeof(String));
-            BatchTable.Columns.Add(ADescriptionMember, typeof(String));
-            BatchTable.PrimaryKey = new DataColumn[] {
-                BatchTable.Columns[0]
-            };
-
             DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", Transaction);
 
             BatchYearTable.DefaultView.Sort = String.Format("batchYear DESC");
 
-            YearNumber = LedgerRow.CurrentFinancialYear;
-            YearEndDate = periodRow.PeriodEndDate;
-
-            DataRow resultRow = BatchTable.NewRow();
-            resultRow[0] = YearNumber;
-            resultRow[1] = YearEndDate.ToShortDateString();
-            resultRow[2] = YearEndDate.ToLongDateString();
-            BatchTable.Rows.Add(resultRow);
-
-            foreach (DataRowView row in BatchYearTable.DefaultView)
+            try
             {
-                DataRow currentBatchYearRow = row.Row;
-
-                Int32 currentBatchYear = (Int32)currentBatchYearRow[0];
-
-                if (YearNumber != currentBatchYear)
+                foreach (DataRowView row in BatchYearTable.DefaultView)
                 {
-                    YearNumber -= 1;
-                    YearEndDate = DecrementYear(YearEndDate);
+                    DataRow currentBatchYearRow = row.Row;
+
+                    Int32 currentBatchYear = (Int32)currentBatchYearRow[0];
 
                     if (YearNumber != currentBatchYear)
                     {
-                        throw new Exception(String.Format(Catalog.GetString("Year {0} not found for Ledger {1}"),
-                                YearNumber,
-                                ALedgerNumber));
-                    }
-                }
+                        YearNumber -= 1;
+                        YearEndDate = DecrementYear(YearEndDate);
 
-                DataRow resultRow2 = BatchTable.NewRow();
-                resultRow2[0] = YearNumber;
-                resultRow2[1] = YearEndDate.ToShortDateString();
-                resultRow2[2] = YearEndDate.ToLongDateString();
-                BatchTable.Rows.Add(resultRow2);
+                        if (YearNumber != currentBatchYear)
+                        {
+                            //Gap in year numbers
+                            throw new Exception(String.Format(Catalog.GetString("Year {0} not found for Ledger {1}"),
+                                    YearNumber,
+                                    ALedgerNumber));
+                        }
+                    }
+
+                    DataRow ResultRow2 = BatchTable.NewRow();
+                    ResultRow2[0] = YearNumber;
+                    ResultRow2[1] = YearEndDate.ToShortDateString();
+                    ResultRow2[2] = YearEndDate.ToLongDateString();
+                    BatchTable.Rows.Add(ResultRow2);
+                }
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(ex.Message);
+                //Do nothing
             }
 
             if (NewTransaction)
