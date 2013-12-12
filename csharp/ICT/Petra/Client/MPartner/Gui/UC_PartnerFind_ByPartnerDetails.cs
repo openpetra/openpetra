@@ -1544,7 +1544,6 @@ TLogging.Log("btnEditPartner.InvokeRequired: yes; AEnable: " + Convert.ToBoolean
                     MyUpdateDelegate = new TMyUpdateDelegate(EnableDisableUI);
                     Args[0] = AEnable;
                     btnSearch.Invoke(MyUpdateDelegate, new object[] { AEnable });
-
 TLogging.Log("Invoke finished!");
                 }
                 finally
@@ -1581,9 +1580,11 @@ TLogging.Log("btnEditPartner.InvokeRequired: NO; AEnable: " + Convert.ToBoolean(
                         // Search operation ended without interruption
                         if (FPagedDataTable.Rows.Count > 0)
                         {
+                            btnSearch.Enabled = false;
+                            
                             // At least one result was found by the search operation
                             lblSearchInfo.Text = "";
-                            this.Cursor = Cursors.Default;
+
 
                             //
                             // Setup result DataGrid
@@ -1616,6 +1617,14 @@ TLogging.Log("btnEditPartner.InvokeRequired: NO; AEnable: " + Convert.ToBoolean(
                             grpResult.Text = MPartnerResourcestrings.StrSearchResult + ": " + grdResult.TotalRecords.ToString() + ' ' +
                                              SearchTarget + ' ' +
                                              MPartnerResourcestrings.StrFoundText;
+                            
+                            // StatusBar update
+                            FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrSearchButtonHelpText);
+                            Application.DoEvents();
+                            
+                            btnSearch.Enabled = true;
+                            
+                            this.Cursor = Cursors.Default;                            
                         }
                         else
                         {
@@ -1659,7 +1668,10 @@ TLogging.Log("btnEditPartner.InvokeRequired: NO; AEnable: " + Convert.ToBoolean(
                                 // StatusBar update
                                 FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrGenericReady);
                                 FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrSearchButtonHelpText);
+                                Application.DoEvents();
 
+                                btnSearch.Enabled = true;
+                                
                                 FCurrentGridRow = -1;
                             }
                             else
@@ -1684,11 +1696,12 @@ TLogging.Log("btnEditPartner.InvokeRequired: NO; AEnable: " + Convert.ToBoolean(
 
                         OnPartnerAvailable(false);
                         btnSearch.Enabled = true;
-
+                        
                         // StatusBar update
 
-                        //                        WriteToStatusBar(CommonResourcestrings.StrGenericReady);
+                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrGenericReady);
                         FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrSearchButtonHelpText);
+                        Application.DoEvents();
 
                         FCurrentGridRow = -1;
                     }
