@@ -3311,6 +3311,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="ACostCentreCode"></param>
         /// <param name="ACanBeParent"></param>
         /// <param name="ACanDelete"></param>
+        /// <param name="AMsg"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static Boolean GetCostCentreAttributes(Int32 ALedgerNumber, String ACostCentreCode, out bool ACanBeParent, out bool ACanDelete, out String AMsg)
