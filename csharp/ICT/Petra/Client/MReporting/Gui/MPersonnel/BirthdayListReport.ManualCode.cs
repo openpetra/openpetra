@@ -122,7 +122,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             {
                 ACalc.AddParameter("param_partnertypelist", "false");
             }
-
+/*                                              // "Include family members" removed because it doesn't work properly
             if (chkIncludeFamily.Checked)
             {
                 // Allow sorting of multiple levels
@@ -130,6 +130,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                 // generate a result with multiple levels
                 ACalc.AddParameter("param_sort_multiple_levels", "true");
             }
+*/
+/*                                              // "Sort" options removed because it doesn't work properly
 
             String SortColumns = ACalc.GetParameters().Get("param_sortby_readable").ToString();
 
@@ -153,6 +155,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                     }
                 }
             }
+ */
         }
 
         private void grdTypes_SetControls(TParameterList AParameters)

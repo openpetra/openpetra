@@ -3313,10 +3313,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="ACanDelete"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Boolean GetCostCentreAttributes(Int32 ALedgerNumber, String ACostCentreCode, out bool ACanBeParent, out bool ACanDelete)
+        public static Boolean GetCostCentreAttributes(Int32 ALedgerNumber, String ACostCentreCode, out bool ACanBeParent, out bool ACanDelete, out String AMsg)
         {
             ACanBeParent = true;
             ACanDelete = true;
+            AMsg = "";
             bool DbSuccess = true;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             ACostCentreTable TempTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, ACostCentreCode, Transaction);
@@ -3324,22 +3325,31 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             if (TempTbl.Rows.Count < 1)  // This shouldn't happen..
             {
                 DbSuccess = false;
+                AMsg = Catalog.GetString("Not Found!");
             }
             else
             {
                 bool IsParent = CostCentreHasChildren(ALedgerNumber, ACostCentreCode, Transaction);
                 ACostCentreRow AccountRow = TempTbl[0];
                 ACanBeParent = IsParent; // If it's a summary account, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
-                ACanDelete = !IsParent;
+                if (IsParent)
+                {
+                    ACanDelete = false;
+                    AMsg = Catalog.GetString("Cost Centre has children.");
+                }
 
                 if (!ACanBeParent || ACanDelete)
                 {
                     bool IsInUse = CostCentreCodeHasBeenUsed(ALedgerNumber, ACostCentreCode, Transaction);
-                    ACanBeParent = !IsInUse;    // For posting accounts, I can still add children (and change the account to summary) if there's nothing posted to it yet.
-                    ACanDelete = !IsInUse;      // Once it has transactions posted, I can't delete it, ever.
+                    if (IsInUse)
+                    {
+                        ACanBeParent = false;    // For posting accounts, I can still add children (and change the account to summary) if there's nothing posted to it yet.
+                        ACanDelete = false;      // Once it has transactions posted, I can't delete it, ever.
+                        AMsg = Catalog.GetString("Cost Centre is referenced in transactions.");
+                    }
                 }
 
-                if (ACanBeParent && ACanDelete)     // I need to check whether the Cost Centre has been linked to a partner (but never used).
+                if (ACanBeParent || ACanDelete)     // I need to check whether the Cost Centre has been linked to a partner (but never used).
                 {                                   // If it has, the link must be deleted first.
                     AValidLedgerNumberTable VlnTbl = AValidLedgerNumberAccess.LoadViaACostCentre(ALedgerNumber, ACostCentreCode, Transaction);
 
@@ -3347,6 +3357,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     {
                         ACanBeParent = false;
                         ACanDelete = false;
+                        AMsg = String.Format(Catalog.GetString("Cost Centre is linked to partner {0}."), VlnTbl[0].PartnerKey);
                     }
                 }
             }

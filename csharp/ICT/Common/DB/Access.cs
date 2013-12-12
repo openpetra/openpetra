@@ -562,39 +562,28 @@ namespace Ict.Common.DB
         /// </summary>
         private void CheckDatabaseVersion()
         {
-            string DBPatchVersion;
-            TDBTransaction transaction;
-            TFileVersionInfo dbversion;
-            TFileVersionInfo serverExeInfo;
-
             if (TAppSettingsManager.GetValue("action", string.Empty, false) == "patchDatabase")
             {
                 // we want to upgrade the database, so don't check for the database version
                 return;
             }
 
-            transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
-            try
+            // now check if the database is 'up to date'; otherwise run db patch against it
+            DataTable Tbl = DBAccess.GDBAccessObj.SelectDT(
+                "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
+                "Temp", transaction);
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            if (Tbl.Rows.Count == 0)
             {
-                // now check if the database is 'up to date'; otherwise run db patch against it
-                DBPatchVersion =
-                    Convert.ToString(DBAccess.GDBAccessObj.ExecuteScalar(
-                            "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
-                            transaction));
-            }
-            catch (Exception)
-            {
-                // this can happen when connecting to an old Petra 2.x database, or a completely different database
                 return;
             }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            string DBPatchVersion = Convert.ToString(Tbl.Rows[0]["s_default_value_c"]);
 
-            dbversion = new TFileVersionInfo(DBPatchVersion);
-            serverExeInfo = new TFileVersionInfo(TFileVersionInfo.GetApplicationVersion());
+            TFileVersionInfo dbversion = new TFileVersionInfo(DBPatchVersion);
+            TFileVersionInfo serverExeInfo = new TFileVersionInfo(TFileVersionInfo.GetApplicationVersion());
 
             if (dbversion.CompareWithoutPrivatePart(serverExeInfo) < 0)
             {

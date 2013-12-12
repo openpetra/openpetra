@@ -595,7 +595,7 @@ namespace Ict.Common.DB
                 ReplacedDate = ASqlCommand.Substring(StartIndex + 10, ParameterLength);
             }
 
-            ReplacedDate = ReplacedDate + ", 'DDD'";
+            ReplacedDate = ReplacedDate + ", 'MMDD'";
 
             return ASqlCommand.Substring(0, StartIndex) + "to_char(" + ReplacedDate + ASqlCommand.Substring(EndBracketIndex);
         }

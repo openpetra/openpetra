@@ -198,13 +198,13 @@ namespace Ict.Petra.Server.MPersonnel.queries
                     else
                     {
                         Defines.Add("WITHOUTDATERANGE", string.Empty);
-                        SqlParameterList.Add(new OdbcParameter("startdate", OdbcType.Date)
-                            {
-                                Value = FromDate
-                            });
                         SqlParameterList.Add(new OdbcParameter("enddate", OdbcType.Date)
                             {
                                 Value = ToDate
+                            });
+                        SqlParameterList.Add(new OdbcParameter("startdate", OdbcType.Date)
+                            {
+                                Value = FromDate
                             });
                     }
                 }
@@ -232,10 +232,15 @@ namespace Ict.Petra.Server.MPersonnel.queries
                     return null;
                 }
 
-                // if end date is not set, use today
-                if (AParameters.Get("param_chkUseDate").ToBool() != true)
+                // if end date is not set, use the end of this year
+                DateTime AgeDay = DateTime.Now;
+                if (AParameters.Get("param_chkUseDate").ToBool() == true)
                 {
-                    AParameters.Add("param_dtpToDate", DateTime.Now);
+                    AgeDay = AParameters.Get("param_dtpToDate").ToDate();
+                }
+                else
+                {
+                    AgeDay = new DateTime(AgeDay.Year, 12, 31);
                 }
 
                 // Calculate the age, in new column
@@ -248,13 +253,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                     if (r["DOB"] != DBNull.Value)
                     {
                         DateTime BDay = Convert.ToDateTime(r["DOB"]);
-                        DateTime AgeDay = AParameters.Get("param_dtpToDate").ToDate();
                         age = AgeDay.Year - BDay.Year;
-
-                        if (AgeDay.DayOfYear < BDay.DayOfYear) // If you haven't had your birthday yet, I'll sub 1 from your age.
-                        {
-                            age -= 1;
-                        }
                     }
 
                     r["Age"] = age;
