@@ -289,7 +289,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 TPPartnerAddressAggregate.ApplySecurity(ref ReturnValue);
             }
 
-            return (PartnerFindTDSSearchResultTable)ReturnValue;
+            return ReturnValue;
         }
 
         /// <summary>
