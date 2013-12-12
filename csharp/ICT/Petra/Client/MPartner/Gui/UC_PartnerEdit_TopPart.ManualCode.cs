@@ -242,6 +242,21 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Updates the 'Status Update' Date TextBox to reflect today's date if the 'Partner Status' was just changed
+        /// </summary>
+        public void UpdateStatusUpdatedDate()
+        {
+            if (FMainDS.PPartner[0].IsStatusChangeNull())
+            {
+                dtpStatusUpdated.Date = null;
+            }
+            else
+            {
+                dtpStatusUpdated.Date = FMainDS.PPartner[0].StatusChange;
+            }
+        }
+
+        /// <summary>
         /// Retrieves data that is in the Controls and puts it into the Tables in FMainDS
         /// </summary>
         public void GetDataFromControls()

@@ -1335,6 +1335,12 @@ namespace SourceGrid
                             bFound = (nextContextCell != null && nextContextCell.Editor != null && nextContextCell.Editor.EditableMode != EditableMode.None);
                         }
                         while (Selection.ActivePosition.Column != 0 && !bFound);
+
+                        e.Handled = bFound;
+                    }
+                    else
+                    {
+                        e.Handled = false;
                     }
                 }
                 else
@@ -1363,9 +1369,10 @@ namespace SourceGrid
                         }
                         while (Selection.ActivePosition.Column != 0 && !bFound);
                     }
+
+                    e.Handled = true;
                 }
 
-                e.Handled = true;
                 return;
             }
 
@@ -1787,6 +1794,17 @@ namespace SourceGrid
 				Cells.ICellVirtual cellMouseDown = GetCell(position);
 				if (cellMouseDown != null)
 				{
+                    // AlanP: Nov 2013.  Added this if/else clause to set the position to the first column unless the click is on an editable cell
+                    if (cellMouseDown.Editor != null && cellMouseDown.Editor.EditableMode == EditableMode.Focus)
+                    {
+                        // The position is ok
+                    }
+                    else if (position.Row >= this.FixedRows)
+                    {
+                        // always imagine that the click was on the first column
+                        position = new Position(position.Row, this.FixedColumns);
+                    }
+
 					ChangeMouseDownCell(position, position);
 
 					//Cell.OnMouseDown

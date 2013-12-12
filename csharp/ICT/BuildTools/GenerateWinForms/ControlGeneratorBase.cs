@@ -700,7 +700,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if (ctrl.HasAttribute("ActionClick"))
             {
-                AssignEventHandlerToControl(writer, ctrl, "Click", ctrl.GetAttribute("ActionClick"));
+                if (ctrl.GetAttribute("ActionClick") == "MniFilterFind_Click")
+                {
+                    // MniFilterFind_Click is part of the base template for many forms.
+                    // We only create an action handler if the screen has a pnlFilterAndFind
+                    if (writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
+                    {
+                        AssignEventHandlerToControl(writer, ctrl, "Click", ctrl.GetAttribute("ActionClick"));
+                    }
+                }
+                else
+                {
+                    // The control is not mniEditFilter or mniEditFind, so just write the resource file item
+                    // The manual code file will have the event handler itself
+                    AssignEventHandlerToControl(writer, ctrl, "Click", ctrl.GetAttribute("ActionClick"));
+                }
             }
             else if (ctrl.HasAttribute("ActionDoubleClick"))
             {
@@ -835,6 +849,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
             }
             else if (ctrl.controlTypePrefix == "uco")
             {
+                writer.Template.AddToCodelet("USERCONTROLSRUNONCEONACTIVATION",
+                    ctrl.controlName + ".RunOnceOnParentActivation();" + Environment.NewLine);
                 writer.Template.AddToCodelet("SAVEDATA", ctrl.controlName + ".GetDataFromControls();" + Environment.NewLine);
                 writer.Template.AddToCodelet("PRIMARYKEYCONTROLSREADONLY",
                     ctrl.controlName + ".SetPrimaryKeyReadOnly(AReadOnly);" + Environment.NewLine);
