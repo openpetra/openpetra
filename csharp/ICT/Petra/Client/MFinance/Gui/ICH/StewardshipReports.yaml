@@ -25,7 +25,7 @@ RootNode:
         pnlDialogContentMiddle:
             Dock: Bottom            
             Controls:
-                Row0: [grpOther, grpHOSA, grpStewardship]
+                Row0: [grpHOSA, grpStewardship, grpOther]
 
         grpSelection: {Width:410, Height:120}
             Controls: 
@@ -35,17 +35,6 @@ RootNode:
                 Row3: [cmbICHNumber]
                 Row4: [lblFullReport]
                 
-        grpOther: {NoLabel:true, Width:165, Height:180}
-            Controls: 
-                Row0: [lblFees]
-                Row1: [chkFeesReport]
-                Row2: [Empty4]
-                Row3: [lblGift]
-                Row4: [chkRecipientStatement]
-                Row5: [Empty5]
-                Row6: [lblBranchProcessing]
-                Row7: [chkEmailToHeadOffice]
-
         grpHOSA: {Label:HOSA, Width:150, Height:180}
             Controls: 
                 Row0: [chkHOSAReport]
@@ -61,6 +50,17 @@ RootNode:
                 Row2: [chkStewardshipFile]
                 Row3: [txtBrowseStewardshipFile, btnBrowse]
                 
+        grpOther: {NoLabel:true, Width:165, Height:180}
+            Controls: 
+                Row0: [lblFees]
+                Row1: [chkFeesReport]
+                Row2: [Empty4]
+                Row3: [lblGift]
+                Row4: [chkRecipientStatement]
+                Row5: [Empty5]
+                Row6: [lblBranchProcessing]
+                Row7: [chkEmailToHeadOffice]
+
         rgrCurrency:
             Height: 85
             ParameterName: param_sortby
