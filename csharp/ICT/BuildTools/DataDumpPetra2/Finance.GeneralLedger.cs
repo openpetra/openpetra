@@ -130,27 +130,6 @@ namespace Ict.Tools.DataDumpPetra2
         }
 
         /// <summary>
-        /// fixing table a_budget_type
-        /// </summary>
-        public static bool FixABudgetType(StringCollection AColumnNames, ref string[] ANewRow)
-        {
-            string BudgetTypeCode = GetValue(AColumnNames, ANewRow, "a_budget_type_code_c");
-
-            if (BudgetTypeCode == "INF.BASE")
-            {
-                BudgetTypeCode = "INFLATE_BASE";
-            }
-            else if (BudgetTypeCode == "INF. N")
-            {
-                BudgetTypeCode = "INFLATE_N";
-            }
-
-            SetValue(AColumnNames, ref ANewRow, "a_budget_type_code_c", BudgetTypeCode);
-
-            return true;
-        }
-
-        /// <summary>
         /// Supply the new a_report_column_c field
         /// </summary>
         /// <param name="AColumnNames"></param>
