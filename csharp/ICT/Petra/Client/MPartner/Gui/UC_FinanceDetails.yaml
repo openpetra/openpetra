@@ -55,7 +55,7 @@ RootNode:
             Action: actNew
         btnDelete: {Width=80}
             Action: actDelete
-        btnSetMainAccount: {Width=120, StartNewButtonGroup=true}
+        btnSetMainAccount: {Width=120, StartNewButtonGroup=true, Enabled=false}
             Action: actSetMainAccount
         grdDetails:
             Dock: Fill
@@ -65,12 +65,15 @@ RootNode:
             CustomColumns:
                 MainAccount: {Label=Main Account, Type=Boolean}
             ActionFocusRow: FocusedRowChanged
+            ActionDoubleClick: actSetMainAccount
+            
         pnlDetails: 
             Dock: Bottom
             Type: Ict.Petra.Client.MPartner.Gui.TUC_FinanceDetails
             Height: 130
             Controls: 
                 Row0: [grpAccountDetail]
+            Visible: false
             
         grpAccountDetail: {Label=Account Detail, Strech=horizontally}
             Controls: [txtAccountName, txtBankAccountNumber, txtIban, txtBankKey]

@@ -53,7 +53,6 @@ RootNode:
         grdFields:
             Height: 120
             Width: 500
-            ActionDoubleClick: grdFieldDoubleClick
         pnlButtons:
             Controls:
                 Row1: [btnSelectAll, btnDeselectAll]

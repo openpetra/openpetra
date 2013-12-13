@@ -39,6 +39,7 @@ using Ict.Petra.Shared.MConference;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MConference.Applications;
 
 
 namespace Ict.Petra.Server.MConference.Conference.WebConnectors
@@ -265,7 +266,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         }
 
         /// <summary>
-        /// Create new Conference
+        /// Check that a conference exists for a partner key
         /// </summary>
         /// <param name="APartnerKey">match long for conference key</param>
         /// <returns></returns>
@@ -538,6 +539,66 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             }
 
             return CountByPrimaryKey((Int64)APrimaryKeyValues[0], ATransaction, AWithCascCount, out AVerificationResults, ANestingDepth);
+        }
+
+        /// <summary>
+        /// Check that a conference exists for a partner key
+        /// </summary>
+        /// <param name="AMainDS">Dataset to be populated</param>
+        /// <param name="AConferenceKey">match long for conference key</param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean GetConferenceApplications(ref ConferenceApplicationTDS AMainDS, Int64 AConferenceKey)
+        {
+            Boolean NewTransaction;
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                PcConferenceTable ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(AConferenceKey, ReadTransaction);
+
+                if (ConferenceTable.Count == 0)
+                {
+                    throw new Exception("Cannot find conference " + AConferenceKey.ToString());
+                }
+
+                string OutreachPrefix = ConferenceTable[0].OutreachPrefix;
+
+                // load application data for all conference attendees from db
+                TApplicationManagement.GetApplications(ref AMainDS, AConferenceKey, OutreachPrefix, "all", -1, true, null, false);
+
+                // obtain PPartner records for all the home offices
+                foreach (PcAttendeeRow AttendeeRow in AMainDS.PcAttendee.Rows)
+                {
+                    if (AMainDS.PPartner.Rows.Find(new object[] { AttendeeRow.HomeOfficeKey }) == null)
+                    {
+                        PPartnerTable ptable = PPartnerAccess.LoadByPrimaryKey(AttendeeRow.HomeOfficeKey, ReadTransaction);
+                        AMainDS.PPartner.Merge(ptable);
+                    }
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.GetConferenceApplications: commit own transaction.");
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Load/Refresh Attendees for all outreaches for a conference
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static void RefreshAttendees(Int64 AConferenceKey)
+        {
+            TAttendeeManagement.RefreshAttendees(AConferenceKey);
         }
     }
 }
