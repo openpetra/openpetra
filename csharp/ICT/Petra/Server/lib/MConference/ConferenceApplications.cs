@@ -140,8 +140,8 @@ namespace Ict.Petra.Server.MConference.Applications
         /// consider only the registration office that the user has permissions for, ie. Module REG-00xx0000000
         /// </summary>
         /// <param name="AMainDS"></param>
-        /// <param name="AEventPartnerKey"></param>
-        /// <param name="AEventCode"></param>
+        /// <param name="AEventPartnerKey">The ConferenceKey</param>
+        /// <param name="AEventCode">The OutreachPrefix</param>
         /// <param name="AApplicationStatus"></param>
         /// <param name="ARegistrationOffice">if -1, then show all offices that the user has permission for</param>
         /// <param name="AConferenceOrganisingOffice">if true, all offices are considered</param>
@@ -158,7 +158,11 @@ namespace Ict.Petra.Server.MConference.Applications
             string ARole,
             bool AClearJSONData)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            Boolean NewTransaction;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
 
             try
             {
@@ -349,22 +353,27 @@ namespace Ict.Petra.Server.MConference.Applications
 
             string queryShortTermApplication = "SELECT PUB_pm_short_term_application.* " +
                                                "FROM PUB_pm_short_term_application " +
-                                               "WHERE PUB_pm_short_term_application.pm_confirmed_option_code_c = ? ";
+                                               "WHERE SUBSTRING(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) = ? ";
 
             string queryGeneralApplication = "SELECT PUB_pm_general_application.* " +
                                              "FROM PUB_pm_short_term_application, PUB_pm_general_application " +
-                                             "WHERE PUB_pm_short_term_application.pm_confirmed_option_code_c = ? " +
+                                             "WHERE SUBSTRING(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) = ? " +
                                              "  AND PUB_pm_general_application.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n " +
                                              "  AND PUB_pm_general_application.pm_application_key_i = PUB_pm_short_term_application.pm_application_key_i "
                                              +
                                              "  AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n";
             string queryPerson = "SELECT DISTINCT PUB_p_person.* " +
                                  "FROM PUB_pm_short_term_application, PUB_p_person " +
-                                 "WHERE PUB_pm_short_term_application.pm_confirmed_option_code_c = ? " +
+                                 "WHERE SUBSTRING(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) = ? " +
                                  "  AND PUB_p_person.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n";
+            string queryPartner = "SELECT DISTINCT PUB_p_partner.* " +
+                                  "FROM PUB_p_partner, PUB_pm_short_term_application " +
+                                  "WHERE SUBSTRING(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) = ? " +
+                                  "  AND (PUB_p_partner.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n" +
+                                  " OR PUB_p_partner.p_partner_key_n = PUB_pm_short_term_application.pm_st_field_charged_n)";
             string queryDataLabel = "SELECT DISTINCT PUB_p_data_label_value_partner.* " +
                                     "FROM PUB_pm_short_term_application, PUB_p_data_label_value_partner, PUB_p_data_label " +
-                                    "WHERE PUB_pm_short_term_application.pm_confirmed_option_code_c = ? " +
+                                    "WHERE SUBSTRING(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) = ? " +
                                     "  AND PUB_p_data_label_value_partner.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n" +
                                     "  AND PUB_p_data_label_value_partner.p_data_label_key_i = PUB_p_data_label.p_key_i" +
                                     " AND " + DataLabels;
@@ -384,6 +393,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 queryGeneralApplication += queryRegistrationOffice;
                 queryShortTermApplication += queryRegistrationOffice;
                 queryPerson += queryRegistrationOffice;
+                queryPartner += "  AND PUB_pm_short_term_application.pm_st_congress_code_c LIKE '" + ARole + "%'";
                 queryDataLabel += queryRegistrationOffice;
 
                 parameter = new OdbcParameter("fieldCharged", OdbcType.Decimal, 10);
@@ -399,6 +409,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 queryGeneralApplication += "  AND PUB_pm_short_term_application.p_partner_key_n = ?";
                 queryShortTermApplication += "  AND PUB_pm_short_term_application.p_partner_key_n = ?";
                 queryPerson += "  AND PUB_pm_short_term_application.p_partner_key_n = ?";
+                queryPartner += "  AND PUB_pm_short_term_application.p_partner_key_n = ?";
                 queryDataLabel += "  AND PUB_pm_short_term_application.p_partner_key_n = ?";
 
                 parameter = new OdbcParameter("partnerkey", OdbcType.Decimal, 10);
@@ -413,6 +424,10 @@ namespace Ict.Petra.Server.MConference.Applications
             DBAccess.GDBAccessObj.Select(MainDS,
                 queryPerson,
                 MainDS.PPerson.TableName, ATransaction, parameters.ToArray());
+
+            DBAccess.GDBAccessObj.Select(MainDS,
+                queryPartner,
+                MainDS.PPartner.TableName, ATransaction, parameters.ToArray());
 
             DBAccess.GDBAccessObj.Select(MainDS,
                 queryGeneralApplication,

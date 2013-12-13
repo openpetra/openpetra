@@ -529,6 +529,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     ReturnValue = false;
                 }
+
+                if (!UCFinanceDetails.GetPartnerDataFromControls())
+                {
+                    ReturnValue = false;
+                }
             }
 
             if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucOfficeSpecific))

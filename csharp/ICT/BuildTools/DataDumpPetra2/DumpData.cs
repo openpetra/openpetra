@@ -47,6 +47,18 @@ namespace Ict.Tools.DataDumpPetra2
         private static TDataDefinitionStore storeOld = null;
         private static TDataDefinitionStore storeNew = null;
 
+        static int FBudgetSequenceNumber = 0;
+
+        /// <summary>
+        /// The new sequence number for a_budget after conversion
+        /// </summary>
+        static public int BudgetSequenceNumber {
+            set
+            {
+                FBudgetSequenceNumber = value;
+            }
+        }
+
         /// <summary>
         /// get the data structure for the version that should be upgraded
         /// </summary>
@@ -152,7 +164,8 @@ namespace Ict.Tools.DataDumpPetra2
             TTable oldTable = storeOld.GetTable(oldTableName);
 
             // if this is a new table in OpenPetra, do not dump anything. the table will be empty in OpenPetra
-            if ((oldTable == null) && (newTable.strName != "p_postcode_region_range"))
+            // (except p_postcode_region_range and a_budget_revision which are populated here)
+            if ((oldTable == null) && (newTable.strName != "p_postcode_region_range") && (newTable.strName != "a_budget_revision"))
             {
                 return;
             }
@@ -467,7 +480,25 @@ namespace Ict.Tools.DataDumpPetra2
                             GZipInputStream gzipStream = new GZipInputStream(fs);
                             StreamReader sr = new StreamReader(gzipStream);
 
-                            sw.Write(sr.ReadToEnd());
+                            string Sequence;
+
+                            while (true)
+                            {
+                                Sequence = sr.ReadLine();
+
+                                if (Sequence == null)
+                                {
+                                    break;
+                                }
+
+                                // update the sequence number for a_budget (which will have chaged during conversion)
+                                if (Sequence.Contains("seq_budget") && (FBudgetSequenceNumber > 0))
+                                {
+                                    Sequence = "SELECT pg_catalog.setval('seq_budget', " + FBudgetSequenceNumber + ", false);";
+                                }
+
+                                sw.WriteLine(Sequence);
+                            }
 
                             sr.Close();
                         }
@@ -544,7 +575,25 @@ namespace Ict.Tools.DataDumpPetra2
                             GZipInputStream gzipStream = new GZipInputStream(fs);
                             StreamReader sr = new StreamReader(gzipStream);
 
-                            sw.Write(sr.ReadToEnd());
+                            string Sequence;
+
+                            while (true)
+                            {
+                                Sequence = sr.ReadLine();
+
+                                if (Sequence == null)
+                                {
+                                    break;
+                                }
+
+                                // update the sequence number for a_budget (which will have chaged during conversion)
+                                if ((Sequence.Contains("seq_budget") && (FBudgetSequenceNumber > 0)) && (FBudgetSequenceNumber > 0))
+                                {
+                                    Sequence = "SELECT pg_catalog.setval('seq_budget', " + FBudgetSequenceNumber + ", false);";
+                                }
+
+                                sw.WriteLine(Sequence);
+                            }
 
                             sr.Close();
                         }

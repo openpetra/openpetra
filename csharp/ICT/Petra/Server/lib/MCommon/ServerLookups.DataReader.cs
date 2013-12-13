@@ -152,6 +152,10 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                         tempTable = MExtractAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
                     }
                 }
+                else if (ATablename == PcAttendeeTable.GetTableDBName())
+                {
+                    tempTable = PcAttendeeAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
+                }
                 else if (ATablename == PcConferenceCostTable.GetTableDBName())
                 {
                     tempTable = PcConferenceCostAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
@@ -399,6 +403,18 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                             TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                                 TCacheableFinanceTablesEnum.SuspenseAccountList.ToString());
 
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        }
+                        else
+                        {
+                            SubmissionResult = TSubmitChangesResult.scrError;
+                        }
+                    }
+                    else if (ATablename == PcAttendeeTable.GetTableDBName())
+                    {
+                        if (PcAttendeeAccess.SubmitChanges((PcAttendeeTable)ASubmitTable, SubmitChangesTransaction,
+                                out SingleVerificationResultCollection))
+                        {
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                         else
