@@ -254,10 +254,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Define the screen's Logic
             FLogic = new TPartnerFindScreenLogic();
             FLogic.ParentForm = this;
-            FLogic.DataGrid = grdResult;
 
-            lblSearchInfo.Text = "";
-            grdResult.SendToBack();
+            lblSearchInfo.Text = "";         
         }
 
         private TFrmPetraUtils FPetraUtilsObject;
@@ -297,8 +295,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 // todo: no resourcestrings
                 FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrSearchButtonHelpText);
                 FPetraUtilsObject.SetStatusBarText(btnClearCriteria, MPartnerResourcestrings.StrClearCriteriaButtonHelpText);
-                FPetraUtilsObject.SetStatusBarText(grdResult,
-                    MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
                 FPetraUtilsObject.SetStatusBarText(chkDetailedResults, MPartnerResourcestrings.StrDetailedResultsHelpText);
             }
         }
@@ -378,7 +374,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         // Reduce the columns that are shown in the Grid
                         FLogic.CreateColumns(FPagedDataTable, false, FCriteriaData.Rows[0]["PartnerStatus"].ToString() != "ACTIVE", FieldList);
-                        SetupDataGridVisualAppearance();
+                        SetupDataGridVisualAppearance(false);
                         grdResult.Selection.SelectRow(FCurrentGridRow, true);
                     }
                     else
@@ -387,7 +383,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         {
                             // Show all columns in the Grid
                             FLogic.CreateColumns(FPagedDataTable, true, FCriteriaData.Rows[0]["PartnerStatus"].ToString() != "ACTIVE", FieldList);
-                            SetupDataGridVisualAppearance();
+                            SetupDataGridVisualAppearance(false);
                             grdResult.Selection.SelectRow(FCurrentGridRow, true);
                         }
                         else
@@ -467,7 +463,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void GrdResult_DataPageLoading(System.Object Sender, TDataPageLoadEventArgs e)
         {
-            // MessageBox.Show('DataPageLoading:  Page: ' + e.DataPage.ToString);
+//            TLogging.Log("DataPageLoading:  Page: " + e.DataPage.ToString());
+            
             if (e.DataPage > 0)
             {
                 this.Cursor = Cursors.WaitCursor;
@@ -478,7 +475,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void GrdResult_DataPageLoaded(System.Object Sender, TDataPageLoadEventArgs e)
         {
-            //          MessageBox.Show("DataPageLoaded:  Page: " + e.DataPage.ToString());
+//            TLogging.Log("DataPageLoaded:  Page: " + e.DataPage.ToString());
+            
             if (e.DataPage > 0)
             {
                 this.Cursor = Cursors.Default;
@@ -1063,6 +1061,52 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #region Setup SourceDataGrid
 
+        private void CreateGrid()
+        {
+            this.grdResult = new Ict.Common.Controls.TSgrdDataGridPaged();
+            
+            this.grdResult.AutoFindColumn = ((short)(-1));
+            this.grdResult.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.grdResult.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.grdResult.DeleteQuestionMessage = "You have chosen to delete this record.\'#13#10#13#10\'Dou you really want to delete" +
+                                                   " it?";
+            this.grdResult.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.grdResult.FixedColumns = 3;     // Make PartnerClass, PartnerKey and PartnerName fixed columns
+            this.grdResult.FixedRows = 1;
+            this.grdResult.KeepRowSelectedAfterSort = false;
+            this.grdResult.Location = new System.Drawing.Point(6, 17);
+            this.grdResult.MinimumHeight = 21;
+            this.grdResult.Name = "grdResult";
+            this.grdResult.Size = new System.Drawing.Size(504, 85);
+            this.grdResult.SpecialKeys =
+                ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows | SourceGrid.GridSpecialKeys.PageDownUp) |
+                                                  SourceGrid.GridSpecialKeys.Enter) |
+                                                 SourceGrid.GridSpecialKeys.Escape) |
+                                                SourceGrid.GridSpecialKeys.Control) |
+                                               SourceGrid.GridSpecialKeys.Shift)));
+            this.grdResult.TabIndex = 0;
+            this.grdResult.TabStop = true;
+            this.grdResult.ToolTipText = "";
+            this.grdResult.ToolTipTextDelegate = null;
+            this.grdResult.Visible = true;
+            this.grdResult.DataPageLoaded += new Ict.Common.Controls.TDataPageLoadedEventHandler(this.GrdResult_DataPageLoaded);
+            this.grdResult.MouseDown += new System.Windows.Forms.MouseEventHandler(this.GrdResult_MouseDown);
+            this.grdResult.DataPageLoading += new Ict.Common.Controls.TDataPageLoadingEventHandler(this.GrdResult_DataPageLoading);
+            this.grdResult.DoubleClickCell += new Ict.Common.Controls.TDoubleClickCellEventHandler(this.GrdResult_DoubleClickCell);
+            this.grdResult.EnterKeyPressed += new Ict.Common.Controls.TKeyPressedEventHandler(this.GrdResult_EnterKeyPressed);
+            this.grdResult.SpaceKeyPressed += new Ict.Common.Controls.TKeyPressedEventHandler(this.GrdResult_SpaceKeyPressed);
+            this.grdResult.KeyDown += new KeyEventHandler(this.GrdResult_KeyPressed);
+
+            this.grpResult.Controls.Add(this.grdResult);
+
+            pnlBlankSearchResult.BringToFront();
+
+            FPetraUtilsObject.SetStatusBarText(grdResult,
+                MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
+
+            FLogic.DataGrid = grdResult;
+        }
+        
         /// <summary>
         /// Sets up the DataBinding of the Grid.
         ///
@@ -1085,16 +1129,21 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Sets up the visual appearance of the Grid.
         /// </summary>
+        /// <remarks><em>Caution:</em>Do not call this Method with <paramref name="AAutoSizeCells" /> set to true
+        /// if the Grid holds more than a few hundred Rows, as the Grid will take quite a time for the auto-sizing 
+        /// calculation!</remarks>
         /// <returns>void</returns>
-        private void SetupDataGridVisualAppearance()
+        private void SetupDataGridVisualAppearance(bool AAutoSizeCells = true)
         {
-            // Make PartnerClass, PartnerKey and PartnerName fixed columns
-            grdResult.FixedColumns = 3;
-
             // make the border to the right of the fixed columns bold
             ((TSgrdTextColumn)grdResult.Columns[2]).BoldRightBorder = true;
 
-            grdResult.AutoSizeCells();
+//            TLogging.Log("grdResult.Rows.Count: " + grdResult.Rows.Count.ToString());
+            
+            if (AAutoSizeCells) 
+            {
+                grdResult.AutoSizeCells();    
+            }            
         }
 
         #endregion
@@ -1141,6 +1190,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         public void BtnSearch_Click(System.Object sender, System.EventArgs e)
         {
+//            TLogging.Log("BtnSearch_Click: FKeepUpSearchFinishedCheck = " + FKeepUpSearchFinishedCheck.ToString());
             if (!FKeepUpSearchFinishedCheck)
             {
                 FPartnerInfoUC = ((TUC_PartnerInfo)(ucoPartnerInfo.UserControlInstance));
@@ -1161,9 +1211,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TUserDefaults.PARTNER_FINDOPTIONS_EXACTPARTNERKEYMATCHSEARCH,
                     true);
 
-                // used to destory server object here
-                // Update UI
-                grdResult.SendToBack();
+                CreateGrid();
+
+                // Update UI                
                 grpResult.Text = MPartnerResourcestrings.StrSearchResult;
 
                 if (FPartnerInfoUC != null)
@@ -1213,6 +1263,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
+//TLogging.Log("Asynchronous search operation is being interrupted!");
                 // Asynchronous search operation is being interrupted
                 btnSearch.Enabled = false;
                 lblSearchInfo.Text = MPartnerResourcestrings.StrStoppingSearch;
@@ -1223,7 +1274,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 // Stop asynchronous search operation
                 FPartnerFindObject.AsyncExecProgress.Cancel();
-            }
+            } 
         }
 
         private void BtnClearCriteria_Click(System.Object sender, System.EventArgs e)
@@ -1237,14 +1288,17 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             lblSearchInfo.Text = "";
             grpResult.Text = MPartnerResourcestrings.StrSearchResult;
-            grdResult.SendToBack();
+            
+            if (grdResult != null) 
+            {
+                grdResult.SendToBack();              
+            }            
 
             OnPartnerAvailable(false);
             OnDisableAcceptButton();
 
             ucoPartnerFindCriteria.Focus();
 
-            grdResult.DataSource = null;
             FPagedDataTable = null;
 
             FCurrentGridRow = -1;
@@ -1484,14 +1538,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 Args = new object[1];
 
-                // messagebox.show('btnEditPartner.InvokeRequired: yes; AEnable: ' + Convert.ToBoolean(AEnable).ToString);
+//TLogging.Log("btnEditPartner.InvokeRequired: yes; AEnable: " + Convert.ToBoolean(AEnable).ToString());
                 try
                 {
                     MyUpdateDelegate = new TMyUpdateDelegate(EnableDisableUI);
                     Args[0] = AEnable;
                     btnSearch.Invoke(MyUpdateDelegate, new object[] { AEnable });
-
-                    // messagebox.show('Invoke finished!');
+//TLogging.Log("Invoke finished!");
                 }
                 finally
                 {
@@ -1500,8 +1553,24 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                // Enable/disable buttons for working with found Partners
-                OnPartnerAvailable(Convert.ToBoolean(AEnable));
+//TLogging.Log("btnEditPartner.InvokeRequired: NO; AEnable: " + Convert.ToBoolean(AEnable).ToString());
+                try
+                {
+                    // Enable/disable buttons for working with found Partners
+                    OnPartnerAvailable(Convert.ToBoolean(AEnable));
+                }
+                catch (System.ObjectDisposedException)
+                {
+                    /*
+                     * This Exception occurs if the screen has been closed by the user
+                     * in the meantime -> don't try to do anything further - it will break!
+                     */
+                    return;
+                }
+                catch (Exception)
+                {
+                    throw;
+                }                
 
                 // Enable/disable according to how the search operation ended
                 if (Convert.ToBoolean(AEnable))
@@ -1511,15 +1580,25 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // Search operation ended without interruption
                         if (FPagedDataTable.Rows.Count > 0)
                         {
+                            btnSearch.Enabled = false;
+                            
                             // At least one result was found by the search operation
                             lblSearchInfo.Text = "";
-                            this.Cursor = Cursors.Default;
+
 
                             //
                             // Setup result DataGrid
                             //
                             SetupResultDataGrid();
+//                            TLogging.Log("After SetupResultDataGrid()");
+                            
+                            // For speed reasons we must add the necessary amount of emtpy Rows only here (after .AutoSizeCells() has already 
+                            // been run! See XML Comment on the called Method TSgrdDataGridPaged.AddEmptyRows() for details!
+                            grdResult.AddEmptyRows();  
+//                            TLogging.Log("After AddEmptyRows()");
+                            
                             grdResult.BringToFront();
+//                            TLogging.Log("After BringToFront()");
 
                             // Make the Grid respond on updown keys
                             grdResult.Focus();
@@ -1538,6 +1617,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                             grpResult.Text = MPartnerResourcestrings.StrSearchResult + ": " + grdResult.TotalRecords.ToString() + ' ' +
                                              SearchTarget + ' ' +
                                              MPartnerResourcestrings.StrFoundText;
+                            
+                            // StatusBar update
+                            FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrSearchButtonHelpText);
+                            Application.DoEvents();
+                            
+                            btnSearch.Enabled = true;
+                            
+                            this.Cursor = Cursors.Default;                            
                         }
                         else
                         {
@@ -1581,7 +1668,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 // StatusBar update
                                 FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrGenericReady);
                                 FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrSearchButtonHelpText);
+                                Application.DoEvents();
 
+                                btnSearch.Enabled = true;
+                                
                                 FCurrentGridRow = -1;
                             }
                             else
@@ -1606,11 +1696,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         OnPartnerAvailable(false);
                         btnSearch.Enabled = true;
-
+                        
                         // StatusBar update
 
-                        //                        WriteToStatusBar(CommonResourcestrings.StrGenericReady);
+                        FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrGenericReady);
                         FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrSearchButtonHelpText);
+                        Application.DoEvents();
 
                         FCurrentGridRow = -1;
                     }
@@ -1649,12 +1740,31 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void SearchFinishedCheckThread()
         {
-            // Check whether this thread should still execute
+            TAsyncExecProgressState ProgressState;
+
+            /* Check whether this Thread should still execute */
             while (FKeepUpSearchFinishedCheck)
             {
-                /* The next line of code calls a function on the PetraServer
-                 * > causes a bit of data traffic everytime! */
-                switch (FPartnerFindObject.AsyncExecProgress.ProgressState)
+                try
+                {
+                    /* The next line of code calls a function on the PetraServer
+                     * > causes a bit of data traffic everytime! */
+                    ProgressState = FPartnerFindObject.AsyncExecProgress.ProgressState;
+                }
+                catch (System.NullReferenceException)
+                {
+                    /*
+                     * This Exception occurs if the screen has been closed by the user
+                     * in the meantime -> don't try to do anything further - it will break!
+                     */
+                    return;  // Thread ends here!
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+                switch (ProgressState)
                 {
                     case TAsyncExecProgressState.Aeps_Finished:
                         FKeepUpSearchFinishedCheck = false;
@@ -1662,7 +1772,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // Fetch the first page of data
                         try
                         {
-                            FPagedDataTable = grdResult.LoadFirstDataPage(@GetDataPagedResult);
+                            // For speed reasons we must add the necessary amount of emtpy Rows only *after* .AutoSizeCells()  
+                            // has already been run! See XML Comment on the called Method  
+                            // TSgrdDataGridPaged.LoadFirstDataPage for details!
+                            FPagedDataTable = grdResult.LoadFirstDataPage(@GetDataPagedResult, false);
+//TLogging.Log("grdResult.LoadFirstDataPage finished. FPagedDataTable.Rows.Count: " + FPagedDataTable.Rows.Count.ToString());
                         }
                         catch (Exception E)
                         {
@@ -1728,19 +1842,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // Create SourceDataGrid columns
                     FLogic.CreateColumns(FPagedDataTable, chkDetailedResults.Checked,
                         FCriteriaData.Rows[0]["PartnerStatus"].ToString() != "ACTIVE", FieldList);
-
+//TLogging.Log("SetupResultDataGrid: Before calling SetupDataGridDataBinding()...");
                     // DataBindingrelated stuff
                     SetupDataGridDataBinding();
-
+//TLogging.Log("SetupResultDataGrid: Before calling SetupDataGridVisualAppearance()...");
                     // Setup the DataGrid's visual appearance
                     SetupDataGridVisualAppearance();
-
+//TLogging.Log("SetupResultDataGrid: Before calling SelectRow()...");
                     // Select (highlight) first Row
                     grdResult.Selection.SelectRow(1, true);
-
+//TLogging.Log("SetupResultDataGrid: Before calling ShowCell()...");
                     // Scroll grid to first line (the grid might have been scrolled before to another position)
                     grdResult.ShowCell(new Position(1, 1), true);
-
+//TLogging.Log("SetupResultDataGrid: Before calling OnEnableAcceptButton()...");
                     OnEnableAcceptButton();
                 }
                 else
@@ -1764,17 +1878,19 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns></returns>
         public DataTable GetDataPagedResult(Int16 ANeededPage, Int16 APageSize, out Int32 ATotalRecords, out Int16 ATotalPages)
         {
+            DataTable ReturnValue = null;
+            
+//TLogging.Log(String.Format("GetDataPagedResult got called (ANeededPage: {0}, APageSize: {1}).", ANeededPage, APageSize));
             ATotalRecords = 0;
             ATotalPages = 0;
 
             if (FPartnerFindObject != null)
             {
-                return FPartnerFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
+                ReturnValue = FPartnerFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
             }
-            else
-            {
-                return null;
-            }
+            
+//TLogging.Log(String.Format("GetDataPagedResult finished (ATotalRecords: {0}, ATotalPages: {1}, DataTable.RowsCount: {2}).", ATotalRecords, ATotalPages, ReturnValue.Rows.Count.ToString()));
+            return ReturnValue;            
         }
 
         /// <summary>
