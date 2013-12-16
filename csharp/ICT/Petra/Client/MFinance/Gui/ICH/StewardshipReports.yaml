@@ -84,14 +84,14 @@ RootNode:
         chkEmailToHeadOffice: {Label=Email to Head Office, CheckBoxAttachedLabel=right}
         chkHOSAReport: {Label=Report, CheckBoxAttachedLabel=right}
         chkEmailHOSAReport: {Label=Email Report, CheckBoxAttachedLabel=right}
-        chkHOSAFile: {Label=File, CheckBoxAttachedLabel=right}
-        txtHOSAPrefix: {Label=Prefix, Width=70}
-        chkEmailHOSAFile: {Label=Email File, CheckBoxAttachedLabel=right}
-        chkEmailStewardshipFileAndReport: {Label=Email File and Report, CheckBoxAttachedLabel=right}
+        chkHOSAFile: {Label=File, CheckBoxAttachedLabel=right, OnChange=EnableHOSAFileOptions}
+        txtHOSAPrefix: {Label=Prefix, Width=70, Enabled=false}
+        chkEmailHOSAFile: {Label=Email File, CheckBoxAttachedLabel=right, Enabled=false}
+        chkEmailStewardshipFileAndReport: {Label=Email File and Report, CheckBoxAttachedLabel=right, OnChange=EnableStewardshipFileOptions}
         chkStewardshipReport: {Label=Report, CheckBoxAttachedLabel=right}
-        chkStewardshipFile: {Label=Email File, CheckBoxAttachedLabel=right}
-        txtBrowseStewardshipFile: {NoLabel=true, Width=200}
-        btnBrowse: {Label=&Browse, Height=25}
+        chkStewardshipFile: {Label=Email File, CheckBoxAttachedLabel=right, OnChange=EnableStewardshipFileOptions}
+        txtBrowseStewardshipFile: {NoLabel=true, Width=195, Enabled=false}
+        btnBrowse: {Label=&Browse..., Height=20, Enabled=false}
         
         Empty1: #{Label=None, Visible=false}
         Empty2:

@@ -57,7 +57,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AExcludePosting"></param>
         /// <param name="AActiveOnly"></param>
         /// <param name="ALocalOnly"></param>
-        private static string PrepareCostCentreFilter(bool APostingOnly, bool AExcludePosting, bool AActiveOnly, bool ALocalOnly)
+        public static string PrepareCostCentreFilter(bool APostingOnly, bool AExcludePosting, bool AActiveOnly, bool ALocalOnly)
         {
             string Filter = ACostCentreTable.GetCostCentreCodeDBName() + " = '' OR (";
 
@@ -103,7 +103,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ABankAccountOnly"></param>
         /// <param name="AForeignCurrencyName"></param>
         /// <returns>The filter string which shall be used in the data view</returns>
-        private static string PrepareAccountFilter(bool APostingOnly, bool AExcludePosting,
+        public static string PrepareAccountFilter(bool APostingOnly, bool AExcludePosting,
             bool AActiveOnly, bool ABankAccountOnly,
             string AForeignCurrencyName)
         {
@@ -830,6 +830,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 out ValueMember,
                 out DescriptionMember);
 
+            Table.DefaultView.Sort = ValueMember + " DESC";
+
             AControl.InitialiseUserControl(Table,
                 ValueMember,
                 DisplayMember,
@@ -1000,7 +1002,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             if (AYearStart != null)
             {
                 //Filter for current period and date range
-                ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1} And {2}>#{3}# And {2}<=#{4}#",
+                ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1} And {2}>'{3}' And {2}<='{4}'",
                     AIchStewardshipTable.GetPeriodNumberDBName(),
                     APeriodNumber,
                     AIchStewardshipTable.GetDateProcessedDBName(),
