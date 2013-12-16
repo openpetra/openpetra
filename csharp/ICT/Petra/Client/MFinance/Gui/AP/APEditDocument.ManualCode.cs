@@ -63,7 +63,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             for (Int32 RowNum = FMainDS.AApAnalAttrib.Rows.Count; RowNum > 0; RowNum--)
             {
-                AApAnalAttribRow Row = (AApAnalAttribRow)FMainDS.AApAnalAttrib.Rows[RowNum-1];
+                AApAnalAttribRow Row = (AApAnalAttribRow)FMainDS.AApAnalAttrib.Rows[RowNum - 1];
+
                 if (Row.AnalysisAttributeValue == "")  // I need to delete empty rows
                 {
                     Row.Delete();
@@ -103,6 +104,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             txtDiscountPercentage.Visible = false;
             txtDetailAmount.TextChanged += new EventHandler(UpdateDetailBaseAmount);
             txtExchangeRateToBase.TextChanged += new EventHandler(UpdateDetailBaseAmount);
+
             if (grdAnalAttributes.Columns.Count < 2)
             {
                 grdAnalAttributes.SpecialKeys = GridSpecialKeys.Default | GridSpecialKeys.Tab;
@@ -171,7 +173,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 FPetraUtilsObject.SetChangedFlag();
                 FPSAttributesRow.AnalysisAttributeValue = valueType.Items[selectedValueIndex].ToString();
-                ValidateAllData(false,true);
+                ValidateAllData(false, true);
             }
         }
 
@@ -316,6 +318,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void UpdateAttributeLabel(AccountsPayableTDSAApDocumentDetailRow DetailRow)
         {
             string strAnalAttr = "";
+
             FMainDS.AApAnalAttrib.DefaultView.RowFilter =
                 String.Format("{0}={1}", AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber);
 
@@ -388,6 +391,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 return;
             }
+
             UpdateAttributeLabel(ARow);
         }
 
@@ -580,7 +584,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FMainDS.Merge(new AApAnalAttribTable());
             }
 
-            if (FPetraUtilsObject.SuppressChangeDetection || FPreviouslySelectedDetailRow == null)
+            if (FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
             {
                 return;
             }
@@ -612,11 +616,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             //
             // So I want to remove any attributes attached to this row that don't have the new account code...
-            FMainDS.AApAnalAttrib.DefaultView.RowFilter =  String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}<>'{7}'",
-                        AApAnalAttribTable.GetLedgerNumberDBName(), DetailRow.LedgerNumber,
-                        AApAnalAttribTable.GetApDocumentIdDBName(), DetailRow.ApDocumentId,
-                        AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber,
-                        AApAnalAttribTable.GetAccountCodeDBName(), DetailRow.AccountCode);
+            FMainDS.AApAnalAttrib.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}<>'{7}'",
+                AApAnalAttribTable.GetLedgerNumberDBName(), DetailRow.LedgerNumber,
+                AApAnalAttribTable.GetApDocumentIdDBName(), DetailRow.ApDocumentId,
+                AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber,
+                AApAnalAttribTable.GetAccountCodeDBName(), DetailRow.AccountCode);
 
             for (Int32 RowIdx = FMainDS.AApAnalAttrib.DefaultView.Count; RowIdx > 0; RowIdx--)
             {
@@ -627,18 +631,18 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 String.Format("{0}='{1}'", AAnalysisAttributeTable.GetAccountCodeDBName(), DetailRow.AccountCode);
 
             String AccountCodeRowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}='{7}'",
-                        AApAnalAttribTable.GetLedgerNumberDBName(), DetailRow.LedgerNumber,
-                        AApAnalAttribTable.GetApDocumentIdDBName(), DetailRow.ApDocumentId,
-                        AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber,
-                        AApAnalAttribTable.GetAccountCodeDBName(),  DetailRow.AccountCode);
+                AApAnalAttribTable.GetLedgerNumberDBName(), DetailRow.LedgerNumber,
+                AApAnalAttribTable.GetApDocumentIdDBName(), DetailRow.ApDocumentId,
+                AApAnalAttribTable.GetDetailNumberDBName(), DetailRow.DetailNumber,
+                AApAnalAttribTable.GetAccountCodeDBName(), DetailRow.AccountCode);
 
             foreach (DataRowView rv in FMainDS.AAnalysisAttribute.DefaultView) // List of attributes required for this account
             {
                 AAnalysisAttributeRow AttrRow = (AAnalysisAttributeRow)rv.Row;
 
                 FMainDS.AApAnalAttrib.DefaultView.RowFilter = AccountCodeRowFilter +
-                    String.Format(" AND {0}='{1}'",
-                        AApAnalAttribTable.GetAnalysisTypeCodeDBName(), AttrRow.AnalysisTypeCode);
+                                                              String.Format(" AND {0}='{1}'",
+                    AApAnalAttribTable.GetAnalysisTypeCodeDBName(), AttrRow.AnalysisTypeCode);
 
                 if (FMainDS.AApAnalAttrib.DefaultView.Count == 0)   // No Entry yet for this attribute. This is likely, given I just deleted everything...
                 {
@@ -647,7 +651,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     AARow.ApDocumentId = DetailRow.ApDocumentId;
                     AARow.DetailNumber = DetailRow.DetailNumber;
                     AARow.AnalysisTypeCode = AttrRow.AnalysisTypeCode;
-                    AARow.AccountCode  = DetailRow.AccountCode;
+                    AARow.AccountCode = DetailRow.AccountCode;
                     FMainDS.AApAnalAttrib.Rows.Add(AARow);
                 }
             }
@@ -657,6 +661,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdAnalAttributes.DataSource = null;
             grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AApAnalAttrib.DefaultView);
             UpdateAttributeLabel(DetailRow);
+
             if (grdAnalAttributes.Rows.Count > 2)
             {
                 grdAnalAttributes.SelectRowWithoutFocus(1);
@@ -675,7 +680,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             return null;
         }
-
 
         /// <summary>
         ///

@@ -260,10 +260,14 @@ namespace Ict.Common.Controls
                                 {
                                     ReturnValue += ",";
                                 }
-                                ReturnValue += ('"'+Row[KeyColumn].ToString()+'"'); // This was changed from AddCsv because 
+
+                                ReturnValue += ('"' + Row[KeyColumn].ToString() + '"'); // This was changed from AddCsv because
                             }                                                       // I need it to consistently add quotes to all of the values in the list
+
                         }                                                           // (Or no quotes would also be fine, but not some with and some without!)
+
                     }                                                               // Tim Ingham, Nov 2013
+
                 }
             }
 

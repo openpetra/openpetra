@@ -234,6 +234,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
                 // if end date is not set, use the end of this year
                 DateTime AgeDay = DateTime.Now;
+
                 if (AParameters.Get("param_chkUseDate").ToBool() == true)
                 {
                     AgeDay = AParameters.Get("param_dtpToDate").ToDate();

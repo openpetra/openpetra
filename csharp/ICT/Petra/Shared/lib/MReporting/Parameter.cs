@@ -231,8 +231,9 @@ namespace Ict.Petra.Shared.MReporting
         /// </summary>
         public ArrayList Elems
         {
-        get{
-            return Fparameters;
+            get
+            {
+                return Fparameters;
             }
         }
 

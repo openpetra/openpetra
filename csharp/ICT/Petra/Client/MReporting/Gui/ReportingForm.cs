@@ -221,18 +221,22 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 FDelegateViewReportOverride = value;
                 ToolStripItem tbbItm = ((ToolStripItem)((ToolStrip)FWinForm.Controls["tbrMain"]).Items["tbbEditTemplate"]);
+
                 if (tbbItm != null)
                 {
                     tbbItm.Visible = true;
                 }
-                ToolStripItem mniItm = ((ToolStripMenuItem)((MenuStrip)FWinForm.Controls["mnuMain"]).Items["mniFile"]).DropDownItems["mniEditTemplate"];
+
+                ToolStripItem mniItm =
+                    ((ToolStripMenuItem)((MenuStrip)FWinForm.Controls["mnuMain"]).Items["mniFile"]).DropDownItems["mniEditTemplate"];
+
                 if (mniItm != null)
                 {
                     mniItm.Visible = true;
                 }
             }
         }
-        
+
 
         /// <summary>
         /// returns the string that is to be displayed in the menuitem
@@ -549,7 +553,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
                 {
                     ((IFrmReporting) this.FTheForm).EnableBusy(true);
-                        FGenerateReportThread = new Thread(GenerateReport);
+                    FGenerateReportThread = new Thread(GenerateReport);
                     FGenerateReportThread.IsBackground = true;
                     FGenerateReportThread.Start();
                 }

@@ -3314,7 +3314,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="AMsg"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Boolean GetCostCentreAttributes(Int32 ALedgerNumber, String ACostCentreCode, out bool ACanBeParent, out bool ACanDelete, out String AMsg)
+        public static Boolean GetCostCentreAttributes(Int32 ALedgerNumber,
+            String ACostCentreCode,
+            out bool ACanBeParent,
+            out bool ACanDelete,
+            out String AMsg)
         {
             ACanBeParent = true;
             ACanDelete = true;
@@ -3333,6 +3337,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 bool IsParent = CostCentreHasChildren(ALedgerNumber, ACostCentreCode, Transaction);
                 ACostCentreRow AccountRow = TempTbl[0];
                 ACanBeParent = IsParent; // If it's a summary account, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
+
                 if (IsParent)
                 {
                     ACanDelete = false;
@@ -3342,6 +3347,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 if (!ACanBeParent || ACanDelete)
                 {
                     bool IsInUse = CostCentreCodeHasBeenUsed(ALedgerNumber, ACostCentreCode, Transaction);
+
                     if (IsInUse)
                     {
                         ACanBeParent = false;    // For posting accounts, I can still add children (and change the account to summary) if there's nothing posted to it yet.

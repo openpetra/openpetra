@@ -288,7 +288,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         {
             String ReturnValue = "";
             String strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
-                     StringHelper.IntToStr(ledgernumber) + " and PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
+                            StringHelper.IntToStr(ledgernumber) + " and PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
             DataTable tab = DBAccess.GDBAccessObj.SelectDT(strSql, "GetLedgerName_TempTable", null);
 
             if (tab.Rows.Count > 0)
@@ -299,7 +299,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             return ReturnValue;
         }
 
-
         /// <summary>
         /// Returns a DataSet to the client for use in client-side reporting
         /// </summary>
@@ -308,15 +307,18 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         {
             GLReportingTDS MainDs = new GLReportingTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
             while (ADataSetFilterCsv != "")
             {
                 String Tbl = StringHelper.GetNextCSV(ref ADataSetFilterCsv, ",", "");
                 String[] part = Tbl.Split('/');
                 String OrderBy = "";
+
                 if (part.Length > 4)
                 {
                     OrderBy = part[4];
                 }
+
                 String Query = "SELECT " + part[1] + " FROM " + part[2] + " WHERE " + part[3] + OrderBy;
                 MainDs.Tables[part[0]].Merge(DBAccess.GDBAccessObj.SelectDT(Query, part[0], Transaction));
             }
@@ -329,7 +331,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Returns a DataSet to the client for use in client-side reporting
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static DataTable HosaGiftsTable(Dictionary<String, TVariant> AParameters)
+        public static DataTable HosaGiftsTable(Dictionary <String, TVariant>AParameters)
         {
             Boolean NewTransaction = false;
 
@@ -341,31 +343,34 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 Int32 IchNumber = AParameters["param_ich_number"].ToInt32();
 
                 String DateFilter = "";
+
                 if (AParameters["param_period"].ToBool() == true)
                 {
                     Int32 periodYear = AParameters["param_year_i"].ToInt32();
                     Int32 periodStart = AParameters["param_start_period_i"].ToInt32();
                     Int32 periodEnd = AParameters["param_end_period_i"].ToInt32();
                     DateFilter = "AND GiftBatch.a_batch_year_i = " + periodYear;
+
                     if (periodStart == periodEnd)
                     {
                         DateFilter += (" AND GiftBatch.a_batch_period_i = " + periodStart + " ");
                     }
                     else
                     {
-                        DateFilter += (" AND GiftBatch.a_batch_period_i >= " + periodStart
-                                     + " AND GiftBatch.a_batch_period_i <= " + periodEnd + " ");
+                        DateFilter += (" AND GiftBatch.a_batch_period_i >= " + periodStart +
+                                       " AND GiftBatch.a_batch_period_i <= " + periodEnd + " ");
                     }
                 }
                 else
                 {
                     DateTime dateStart = AParameters["param_start_date"].ToDate();
                     DateTime dateEnd = AParameters["param_end_date"].ToDate();
-                    DateFilter = "AND GiftBatch.a_gl_effective_date_d >= " + dateStart.ToString("yyyy-MM-dd")
-                        + " AND GiftBatch.a_gl_effective_date_d <= " + dateEnd.ToString("yyyy-MM-dd") + " ";
+                    DateFilter = "AND GiftBatch.a_gl_effective_date_d >= " + dateStart.ToString("yyyy-MM-dd") +
+                                 " AND GiftBatch.a_gl_effective_date_d <= " + dateEnd.ToString("yyyy-MM-dd") + " ";
                 }
 
                 String Query = "SELECT ";
+
                 if (PersonalHosa)
                 {
                     Query += "LinkedCostCentre.a_cost_centre_code_c AS CostCentre, ";
@@ -374,34 +379,38 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 {
                     Query += "GiftDetail.a_cost_centre_code_c AS CostCentre, ";
                 }
-                Query += "MotivationDetail.a_account_code_c AS AccountCode, SUM(GiftDetail.a_gift_amount_n) AS GiftBaseAmount, SUM(a_gift_transaction_amount_n) AS GiftTransactionAmount, "
-                    + "GiftDetail.p_recipient_key_n AS RecipientKey, Partner.p_partner_short_name_c AS RecipientShortname, "
-                    + "Partner.p_partner_short_name_c AS Narrative "
-                    + "FROM a_gift_detail AS GiftDetail, a_gift_batch AS GiftBatch, "
-                    + "a_motivation_detail AS MotivationDetail, a_gift AS Gift, p_partner AS Partner";
+
+                Query +=
+                    "MotivationDetail.a_account_code_c AS AccountCode, SUM(GiftDetail.a_gift_amount_n) AS GiftBaseAmount, SUM(a_gift_transaction_amount_n) AS GiftTransactionAmount, "
+                    +
+                    "GiftDetail.p_recipient_key_n AS RecipientKey, Partner.p_partner_short_name_c AS RecipientShortname, " +
+                    "Partner.p_partner_short_name_c AS Narrative " +
+                    "FROM a_gift_detail AS GiftDetail, a_gift_batch AS GiftBatch, " +
+                    "a_motivation_detail AS MotivationDetail, a_gift AS Gift, p_partner AS Partner";
+
                 if (PersonalHosa)
                 {
                     Query += ",PUB_a_valid_ledger_number AS LinkedCostCentre";
                 }
 
-                Query += " WHERE GiftDetail.a_ledger_number_i = GiftBatch.a_ledger_number_i "
-                    + "AND GiftDetail.a_batch_number_i = GiftBatch.a_batch_number_i "
-                    + "AND GiftDetail.a_ledger_number_i = MotivationDetail.a_ledger_number_i "
-                    + "AND GiftDetail.a_motivation_group_code_c = MotivationDetail.a_motivation_group_code_c "
-                    + "AND GiftDetail.a_motivation_detail_code_c = MotivationDetail.a_motivation_detail_code_c "
-                    + "AND GiftDetail.a_ledger_number_i = Gift.a_ledger_number_i "
-                    + "AND GiftDetail.a_batch_number_i = Gift.a_batch_number_i "
-                    + "AND GiftDetail.a_gift_transaction_number_i = Gift.a_gift_transaction_number_i "
-                    + "AND Partner.p_partner_key_n = GiftDetail.p_recipient_key_n "
-                    + "AND GiftDetail.a_ledger_number_i = " + LedgerNumber + " "
-                    + "AND GiftBatch.a_batch_status_c = '" + MFinanceConstants.BATCH_POSTED + "' "
-                    + DateFilter;
+                Query += " WHERE GiftDetail.a_ledger_number_i = GiftBatch.a_ledger_number_i " +
+                         "AND GiftDetail.a_batch_number_i = GiftBatch.a_batch_number_i " +
+                         "AND GiftDetail.a_ledger_number_i = MotivationDetail.a_ledger_number_i " +
+                         "AND GiftDetail.a_motivation_group_code_c = MotivationDetail.a_motivation_group_code_c " +
+                         "AND GiftDetail.a_motivation_detail_code_c = MotivationDetail.a_motivation_detail_code_c " +
+                         "AND GiftDetail.a_ledger_number_i = Gift.a_ledger_number_i " +
+                         "AND GiftDetail.a_batch_number_i = Gift.a_batch_number_i " +
+                         "AND GiftDetail.a_gift_transaction_number_i = Gift.a_gift_transaction_number_i " +
+                         "AND Partner.p_partner_key_n = GiftDetail.p_recipient_key_n " +
+                         "AND GiftDetail.a_ledger_number_i = " + LedgerNumber + " " +
+                         "AND GiftBatch.a_batch_status_c = '" + MFinanceConstants.BATCH_POSTED + "' " +
+                         DateFilter;
 
                 if (PersonalHosa)
                 {
-                    Query += "AND LinkedCostCentre.a_ledger_number_i = GiftDetail.a_ledger_number_i "
-                    + "AND LinkedCostCentre.a_cost_centre_code_c IN (" + CostCentreCodes + ") "
-                    + "AND GiftDetail.p_recipient_key_n = LinkedCostCentre.p_partner_key_n ";
+                    Query += "AND LinkedCostCentre.a_ledger_number_i = GiftDetail.a_ledger_number_i " +
+                             "AND LinkedCostCentre.a_cost_centre_code_c IN (" + CostCentreCodes + ") " +
+                             "AND GiftDetail.p_recipient_key_n = LinkedCostCentre.p_partner_key_n ";
                 }
                 else
                 {
@@ -413,8 +422,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     Query += "AND GiftDetail.a_ich_number_i = " + IchNumber + " ";
                 }
 
-                Query += "GROUP BY CostCentre, AccountCode, GiftDetail.p_recipient_key_n, Partner.p_partner_short_name_c "
-                    + "ORDER BY Partner.p_partner_short_name_c ASC";
+                Query += "GROUP BY CostCentre, AccountCode, GiftDetail.p_recipient_key_n, Partner.p_partner_short_name_c " +
+                         "ORDER BY Partner.p_partner_short_name_c ASC";
 
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
                 DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(Query, "Gifts", Transaction);
@@ -450,7 +459,5 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 }
             }
         }
-
-
     }
 }

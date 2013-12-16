@@ -122,39 +122,41 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             {
                 ACalc.AddParameter("param_partnertypelist", "false");
             }
+
 /*                                              // "Include family members" removed because it doesn't work properly
-            if (chkIncludeFamily.Checked)
-            {
-                // Allow sorting of multiple levels
-                // if the option "Family members" is used, then the report will
-                // generate a result with multiple levels
-                ACalc.AddParameter("param_sort_multiple_levels", "true");
-            }
-*/
+ *          if (chkIncludeFamily.Checked)
+ *          {
+ *              // Allow sorting of multiple levels
+ *              // if the option "Family members" is used, then the report will
+ *              // generate a result with multiple levels
+ *              ACalc.AddParameter("param_sort_multiple_levels", "true");
+ *          }
+ */
+
 /*                                              // "Sort" options removed because it doesn't work properly
-
-            String SortColumns = ACalc.GetParameters().Get("param_sortby_readable").ToString();
-
-            if (SortColumns.Contains("Date of Birth"))
-            {
-                // Replace sorting of "Date of Birth" with "Date Of Birth This Year"
-                String SortingColumns = ACalc.GetParameters().Get("param_sortby_columns").ToString();
-
-                StringCollection SortingColumn = StringHelper.StrSplit(SortingColumns, ",");
-
-                foreach (String StrColumn in SortingColumn)
-                {
-                    int currentColumn = Convert.ToInt32(StrColumn);
-
-                    String ColumnName = ACalc.GetParameters().Get("param_calculation", currentColumn, -1, eParameterFit.eExact).ToString();
-
-                    if (ColumnName == "Date of Birth")
-                    {
-                        ACalc.AddParameter("param_calculation", "Date Of Birth This Year", currentColumn);
-                        break;
-                    }
-                }
-            }
+ *
+ *          String SortColumns = ACalc.GetParameters().Get("param_sortby_readable").ToString();
+ *
+ *          if (SortColumns.Contains("Date of Birth"))
+ *          {
+ *              // Replace sorting of "Date of Birth" with "Date Of Birth This Year"
+ *              String SortingColumns = ACalc.GetParameters().Get("param_sortby_columns").ToString();
+ *
+ *              StringCollection SortingColumn = StringHelper.StrSplit(SortingColumns, ",");
+ *
+ *              foreach (String StrColumn in SortingColumn)
+ *              {
+ *                  int currentColumn = Convert.ToInt32(StrColumn);
+ *
+ *                  String ColumnName = ACalc.GetParameters().Get("param_calculation", currentColumn, -1, eParameterFit.eExact).ToString();
+ *
+ *                  if (ColumnName == "Date of Birth")
+ *                  {
+ *                      ACalc.AddParameter("param_calculation", "Date Of Birth This Year", currentColumn);
+ *                      break;
+ *                  }
+ *              }
+ *          }
  */
         }
 

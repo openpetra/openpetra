@@ -67,10 +67,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             rbtAllCostCentres.Checked = true;
 
 /*
-            rbtAccountRange.Checked = true;
-            rbtAccountFromListCheckedChanged(null, null);
-            rbtCostCentreRange.Checked = true;
-            rbtCostCentreFromListCheckedChanged(null, null);
+ *          rbtAccountRange.Checked = true;
+ *          rbtAccountFromListCheckedChanged(null, null);
+ *          rbtCostCentreRange.Checked = true;
+ *          rbtCostCentreFromListCheckedChanged(null, null);
  */
         }
 
@@ -87,27 +87,29 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             if (((RadioButton)sender).Checked)
             {
-                if (sender == rbtAccountRange && cmbFromAccountCode.Count == 0)
+                if ((sender == rbtAccountRange) && (cmbFromAccountCode.Count == 0))
                 {
                     TFinanceControls.InitialiseAccountList(ref cmbFromAccountCode, FLedgerNumber, true, false, false, false);
                     TFinanceControls.InitialiseAccountList(ref cmbToAccountCode, FLedgerNumber, true, false, false, false);
                     cmbFromAccountCode.SelectedIndex = 1;
                     cmbToAccountCode.SelectedIndex = cmbToAccountCode.Count - 1;
                 }
-                if (sender == rbtAccountFromList && clbAccountCodes.Rows.Count == 1)
+
+                if ((sender == rbtAccountFromList) && (clbAccountCodes.Rows.Count == 1))
                 {
                     TFinanceControls.InitialiseAccountList(ref clbAccountCodes, FLedgerNumber, true, false, false, false);
                     clbAccountCodes.SetCheckedStringList("");
                 }
 
-                if (sender == rbtCostCentreRange && cmbFromCostCentre.Count == 0)
+                if ((sender == rbtCostCentreRange) && (cmbFromCostCentre.Count == 0))
                 {
                     TFinanceControls.InitialiseCostCentreList(ref cmbFromCostCentre, FLedgerNumber, true, false, false, false);
                     TFinanceControls.InitialiseCostCentreList(ref cmbToCostCentre, FLedgerNumber, true, false, false, false);
                     cmbFromCostCentre.SelectedIndex = 1;
                     cmbToCostCentre.SelectedIndex = cmbToCostCentre.Count - 1;
                 }
-                if (sender == rbtCostCentreFromList && clbCostCentres.Rows.Count == 1)
+
+                if ((sender == rbtCostCentreFromList) && (clbCostCentres.Rows.Count == 1))
                 {
                     TFinanceControls.InitialiseCostCentreList(ref cmbSummaryCostCentres, FLedgerNumber, false, true, false, false);
                     TFinanceControls.InitialiseCostCentreList(ref clbCostCentres, FLedgerNumber, true, false, false, false);
@@ -143,10 +145,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_rgrAccounts", "AllAccounts");
                 ACalculator.AddParameter("param_account_list_title", "All Accounts");
             }
-            else
-            if (rbtAccountFromList.Checked)
+            else if (rbtAccountFromList.Checked)
             {
                 String SelectedAccountCodes = clbAccountCodes.GetCheckedStringList();
+
                 if ((SelectedAccountCodes.Length == 0)
                     && (AReportAction == TReportActionEnum.raGenerate))
                 {
@@ -157,11 +159,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
 
                 ACalculator.AddStringParameter("param_account_codes", SelectedAccountCodes);
+
                 if (SelectedAccountCodes.Length > 25)
                 {
                     SelectedAccountCodes = "Selected Accounts";
                 }
-
 
                 // need to set NOTUSED,
                 // otherwise the report generator complains about the missing parameter
@@ -173,7 +175,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
             else
             {
-                ACalculator.AddParameter("param_account_list_title", cmbFromAccountCode.GetSelectedString() + " To " + cmbToAccountCode.GetSelectedString());
+                ACalculator.AddParameter("param_account_list_title",
+                    cmbFromAccountCode.GetSelectedString() + " To " + cmbToAccountCode.GetSelectedString());
                 ACalculator.AddParameter("param_account_codes", "*NOTUSED*");
                 ACalculator.AddParameter("param_account_code_start", cmbFromAccountCode.GetSelectedString());
                 ACalculator.AddParameter("param_account_code_end", cmbToAccountCode.GetSelectedString());
@@ -196,8 +199,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_cost_centre_list_title", "All Cost Centres");
                 ACalculator.AddParameter("param_rgrCostCentres", "AllCostCentres");
             }
-            else
-            if (rbtCostCentreFromList.Checked)
+            else if (rbtCostCentreFromList.Checked)
             {
                 VerificationResult = TGuiChecks.ValidateCheckedListBoxVersatile(clbCostCentres);
 
@@ -228,7 +230,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
             else
             {
-                ACalculator.AddParameter("param_cost_centre_list_title", cmbFromCostCentre.GetSelectedString() + " To " + cmbToCostCentre.GetSelectedString());
+                ACalculator.AddParameter("param_cost_centre_list_title",
+                    cmbFromCostCentre.GetSelectedString() + " To " + cmbToCostCentre.GetSelectedString());
                 ACalculator.AddParameter("param_cost_centre_codes", "*NOTUSED*");
                 ACalculator.AddParameter("param_cost_centre_code_start", cmbFromCostCentre.GetSelectedString());
                 ACalculator.AddParameter("param_cost_centre_code_end", cmbToCostCentre.GetSelectedString());
@@ -246,6 +249,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 ACalculator.AddParameter("param_rgrCostCentres", "CostCentreRange");
             }
+
             ACalculator.AddParameter("param_depth", "standard"); // I don't want this, but I'll keep it for a while...
         }
 
@@ -274,8 +278,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 rbtAllAccounts.Checked = true;
             }
-            else
-            if (rbtSel == "AccountList")
+            else if (rbtSel == "AccountList")
             {
                 rbtAccountFromList.Checked = true;
             }
@@ -299,12 +302,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             rbtSel = AParameters.Get("param_rgrCostCentres").ToString();
+
             if (rbtSel == "AllCostCentres")
             {
                 rbtAllCostCentres.Checked = true;
             }
-            else
-            if (rbtSel == "CostCentreList")
+            else if (rbtSel == "CostCentreList")
             {
                 if (AParameters.Get("param_cost_centre_codes").ToString() == "*LOCAL*")
                 {
@@ -367,13 +370,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private void SetLists()
         {
-            if (FCostCenterCodesDuringLoad.Length > 0 && FCostCenterCodesDuringLoad != "*NOTUSED*")
+            if ((FCostCenterCodesDuringLoad.Length > 0) && (FCostCenterCodesDuringLoad != "*NOTUSED*"))
             {
                 clbCostCentres.SetCheckedStringList(FCostCenterCodesDuringLoad);
                 FCostCenterCodesDuringLoad = "";
             }
 
-            if (FAccountCodesDuringLoad.Length > 0 && FAccountCodesDuringLoad != "*NOTUSED*")
+            if ((FAccountCodesDuringLoad.Length > 0) && (FAccountCodesDuringLoad != "*NOTUSED*"))
             {
                 clbAccountCodes.SetCheckedStringList(FAccountCodesDuringLoad);
                 FAccountCodesDuringLoad = "";

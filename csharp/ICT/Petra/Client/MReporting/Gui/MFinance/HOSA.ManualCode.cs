@@ -146,20 +146,23 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             String LedgerFilter = "a_ledger_number_i=" + pm.Get("param_ledger_number_i").ToInt32();
             String TranctDateFilter = ""; // Optional Date Filter, as periods or dates
             String CostCentreCodes = pm.Get("param_cost_centre_codes").ToString();
+
             if (CostCentreCodes == String.Empty)
             {
                 MessageBox.Show(Catalog.GetString("Please select one or more Cost Centres."), "HOSA");
                 return false;
             }
+
             CostCentreCodes = CostCentreCodes.Replace('"', '\'');
             ACalc.AddStringParameter("param_cost_centre_codes", CostCentreCodes);
 
             if (pm.Get("param_period").ToBool() == true)
             {
                 DataTable AccountingPeriodTbl =
-                    (AAccountingPeriodTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList, pm.Get("param_ledger_number_i").ToInt32());
+                    (AAccountingPeriodTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
+                        pm.Get("param_ledger_number_i").ToInt32());
                 Int32 PeriodStart = pm.Get("param_start_period_i").ToInt32();
-                Int32 PeriodEnd   = pm.Get("param_end_period_i").ToInt32();
+                Int32 PeriodEnd = pm.Get("param_end_period_i").ToInt32();
                 AccountingPeriodTbl.DefaultView.RowFilter = LedgerFilter + " AND a_accounting_period_number_i=" + PeriodStart;
                 DateTime DateStart = Convert.ToDateTime(AccountingPeriodTbl.DefaultView[0].Row["a_period_start_date_d"]);
                 pm.Add("param_start_date", DateStart);
@@ -168,6 +171,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 pm.Add("param_end_date", DateEnd);
 
                 String PeriodTitle = " (" + DateStart.ToString("dd-MMM-yyyy") + " - " + DateEnd.ToString("dd-MMM-yyyy") + ")";
+
                 if (PeriodEnd > PeriodStart)
                 {
                     PeriodTitle = String.Format("{0} - {1}", PeriodEnd, PeriodStart) + PeriodTitle;
@@ -176,29 +180,34 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 {
                     PeriodTitle = String.Format("{0}", PeriodStart) + PeriodTitle;
                 }
+
                 pm.Add("param_date_title", PeriodTitle);
             }
 
             TranctDateFilter = "a_transaction_date_d>='" + pm.Get("param_start_date").DateToString("yyyy-MM-dd") +
-                            "' AND a_transaction_date_d<='" + pm.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";
+                               "' AND a_transaction_date_d<='" + pm.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";
             String TranctCostCentreFilter = " AND a_cost_centre_code_c IN (" + CostCentreCodes + ") ";
             String OrderBy = " ORDER BY a_account_code_c, a_transaction_date_d";
 
 
             Csv = StringHelper.AddCSV(Csv, "AAccount/*/a_account/" + LedgerFilter + " AND a_posting_status_l=true AND a_account_active_flag_l=true");
-            Csv = StringHelper.AddCSV(Csv, "ACostCentre/*/a_cost_centre/" + LedgerFilter + " AND a_cost_centre_code_c IN (" + CostCentreCodes 
-                + ")  AND a_posting_cost_centre_flag_l=true AND a_cost_centre_active_flag_l=true");
-            Csv = StringHelper.AddCSV(Csv, "ATransaction/*/a_transaction/" + LedgerFilter
-                + TranctCostCentreFilter + " AND " + TranctDateFilter
-                + " AND NOT (a_system_generated_l = true AND (a_narrative_c LIKE 'Gifts received - Gift Batch%' OR a_narrative_c LIKE 'GB - Gift Batch%' OR a_narrative_c LIKE 'Year end re-allocation%'))"
-                + "/" + OrderBy);
+            Csv = StringHelper.AddCSV(Csv, "ACostCentre/*/a_cost_centre/" + LedgerFilter + " AND a_cost_centre_code_c IN (" + CostCentreCodes +
+                ")  AND a_posting_cost_centre_flag_l=true AND a_cost_centre_active_flag_l=true");
+            Csv = StringHelper.AddCSV(
+                Csv,
+                "ATransaction/*/a_transaction/" + LedgerFilter +
+                TranctCostCentreFilter + " AND " + TranctDateFilter +
+                " AND NOT (a_system_generated_l = true AND (a_narrative_c LIKE 'Gifts received - Gift Batch%' OR a_narrative_c LIKE 'GB - Gift Batch%' OR a_narrative_c LIKE 'Year end re-allocation%'))"
+                +
+                "/" + OrderBy);
 
             GLReportingTDS ReportDs = TRemote.MFinance.Reporting.WebConnectors.GetReportingDataSet(Csv);
             ArrayList reportParam = ACalc.GetParameters().Elems;
-            Dictionary<String, TVariant> paramsDictionary = new Dictionary<string,TVariant>();
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+
             foreach (Shared.MReporting.TParameter p in reportParam)
             {
-                if (p.name.StartsWith("param") && p.name != "param_calculation")
+                if (p.name.StartsWith("param") && (p.name != "param_calculation"))
                 {
                     paramsDictionary.Add(p.name, p.value);
                 }
@@ -216,10 +225,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
 
             Boolean HasData = (ReportDs.ATransaction.Rows.Count > 0) || (Gifts.Rows.Count > 0);
+
             if (!HasData)
             {
                 MessageBox.Show(Catalog.GetString("No Transactions found for selected Cost Centres."), "HOSA");
             }
+
             return HasData;
         }
     }

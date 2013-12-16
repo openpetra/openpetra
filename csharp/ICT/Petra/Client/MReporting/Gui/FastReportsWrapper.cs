@@ -1,4 +1,27 @@
-﻿using System;
+﻿//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//       >>>> Put your full name or just a shortname here <<<<
+//
+// Copyright 2004-2013 by OM International
+//
+// This file is part of OpenPetra.org.
+//
+// OpenPetra.org is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra.org is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+//
+using System;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Petra.Client.MReporting.Gui;
@@ -15,7 +38,6 @@ namespace Ict.Petra.Client.MReporting.Gui
     /// </summary>
     public class FastReportsWrapper
     {
-
         TFrmPetraReportingUtils FPetraUtilsObject;
         /// <summary>
         /// Delegate for getting data from the server and into the report
@@ -39,7 +61,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 FPetraUtilsObject = PetraUtilsObject;
                 FastReportsDll = Assembly.LoadFrom("FastReport.DLL"); // If there's no FastReports DLL, this will "fall at the first hurdle"!
-                String reportPath = TAppSettingsManager.GetValue("Reporting.PathStandardReports") + "/Finance/" + FPetraUtilsObject.FReportName + ".frx";
+                String reportPath = TAppSettingsManager.GetValue("Reporting.PathStandardReports") + "/Finance/" + FPetraUtilsObject.FReportName +
+                                    ".frx";
 
                 FDataGetter = DataGetter;
                 FfastReportInstance = FastReportsDll.CreateInstance("FastReport.Report");
@@ -63,18 +86,20 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="name"></param>
         public void RegisterData(DataTable data, string name)
         {
-            FFastReportType.GetMethod("RegisterData", new Type[] { data.GetType(), name.GetType() }).Invoke(FfastReportInstance, new object[] { data, name });
+            FFastReportType.GetMethod("RegisterData", new Type[] { data.GetType(), name.GetType() }).Invoke(FfastReportInstance,
+                new object[] { data, name });
         }
 
         private void LoadReportParams(TRptCalculator ACalc)
         {
             ArrayList reportParam = ACalc.GetParameters().Elems;
             MethodInfo FastReport_SetParameterValue = FFastReportType.GetMethod("SetParameterValue");
+
             foreach (Shared.MReporting.TParameter p in reportParam)
             {
-                if (p.name.StartsWith("param") && p.name != "param_calculation")
+                if (p.name.StartsWith("param") && (p.name != "param_calculation"))
                 {
-                    FastReport_SetParameterValue.Invoke(FfastReportInstance, new object[]{ p.name, p.value.ToObject()});
+                    FastReport_SetParameterValue.Invoke(FfastReportInstance, new object[] { p.name, p.value.ToObject() });
                 }
             }
         }

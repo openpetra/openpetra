@@ -580,6 +580,7 @@ namespace Ict.Common.DB
             {
                 return;
             }
+
             string DBPatchVersion = Convert.ToString(Tbl.Rows[0]["s_default_value_c"]);
 
             TFileVersionInfo dbversion = new TFileVersionInfo(DBPatchVersion);
