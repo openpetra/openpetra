@@ -463,7 +463,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void GrdResult_DataPageLoading(System.Object Sender, TDataPageLoadEventArgs e)
         {
-            TLogging.Log("DataPageLoading:  Page: " + e.DataPage.ToString());
+//            TLogging.Log("DataPageLoading:  Page: " + e.DataPage.ToString());
             
             if (e.DataPage > 0)
             {
@@ -475,7 +475,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void GrdResult_DataPageLoaded(System.Object Sender, TDataPageLoadEventArgs e)
         {
-            TLogging.Log("DataPageLoaded:  Page: " + e.DataPage.ToString());
+//            TLogging.Log("DataPageLoaded:  Page: " + e.DataPage.ToString());
             
             if (e.DataPage > 0)
             {
@@ -1138,7 +1138,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // make the border to the right of the fixed columns bold
             ((TSgrdTextColumn)grdResult.Columns[2]).BoldRightBorder = true;
 
-            TLogging.Log("grdResult.Rows.Count: " + grdResult.Rows.Count.ToString());
+//            TLogging.Log("grdResult.Rows.Count: " + grdResult.Rows.Count.ToString());
             
             if (AAutoSizeCells) 
             {
@@ -1190,7 +1190,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         public void BtnSearch_Click(System.Object sender, System.EventArgs e)
         {
-            TLogging.Log("BtnSearch_Click: FKeepUpSearchFinishedCheck = " + FKeepUpSearchFinishedCheck.ToString());
+//            TLogging.Log("BtnSearch_Click: FKeepUpSearchFinishedCheck = " + FKeepUpSearchFinishedCheck.ToString());
             if (!FKeepUpSearchFinishedCheck)
             {
                 FPartnerInfoUC = ((TUC_PartnerInfo)(ucoPartnerInfo.UserControlInstance));
@@ -1538,13 +1538,13 @@ TLogging.Log("Asynchronous search operation is being interrupted!");
             {
                 Args = new object[1];
 
-TLogging.Log("btnEditPartner.InvokeRequired: yes; AEnable: " + Convert.ToBoolean(AEnable).ToString());
+//TLogging.Log("btnEditPartner.InvokeRequired: yes; AEnable: " + Convert.ToBoolean(AEnable).ToString());
                 try
                 {
                     MyUpdateDelegate = new TMyUpdateDelegate(EnableDisableUI);
                     Args[0] = AEnable;
                     btnSearch.Invoke(MyUpdateDelegate, new object[] { AEnable });
-TLogging.Log("Invoke finished!");
+//TLogging.Log("Invoke finished!");
                 }
                 finally
                 {
@@ -1553,7 +1553,7 @@ TLogging.Log("Invoke finished!");
             }
             else
             {
-TLogging.Log("btnEditPartner.InvokeRequired: NO; AEnable: " + Convert.ToBoolean(AEnable).ToString());
+//TLogging.Log("btnEditPartner.InvokeRequired: NO; AEnable: " + Convert.ToBoolean(AEnable).ToString());
                 try
                 {
                     // Enable/disable buttons for working with found Partners
@@ -1590,15 +1590,15 @@ TLogging.Log("btnEditPartner.InvokeRequired: NO; AEnable: " + Convert.ToBoolean(
                             // Setup result DataGrid
                             //
                             SetupResultDataGrid();
-                            TLogging.Log("After SetupResultDataGrid()");
+//                            TLogging.Log("After SetupResultDataGrid()");
                             
                             // For speed reasons we must add the necessary amount of emtpy Rows only here (after .AutoSizeCells() has already 
                             // been run! See XML Comment on the called Method TSgrdDataGridPaged.AddEmptyRows() for details!
                             grdResult.AddEmptyRows();  
-                            TLogging.Log("After AddEmptyRows()");
+//                            TLogging.Log("After AddEmptyRows()");
                             
                             grdResult.BringToFront();
-                            TLogging.Log("After BringToFront()");
+//                            TLogging.Log("After BringToFront()");
 
                             // Make the Grid respond on updown keys
                             grdResult.Focus();
@@ -1776,7 +1776,7 @@ TLogging.Log("btnEditPartner.InvokeRequired: NO; AEnable: " + Convert.ToBoolean(
                             // has already been run! See XML Comment on the called Method  
                             // TSgrdDataGridPaged.LoadFirstDataPage for details!
                             FPagedDataTable = grdResult.LoadFirstDataPage(@GetDataPagedResult, false);
-TLogging.Log("grdResult.LoadFirstDataPage finished. FPagedDataTable.Rows.Count: " + FPagedDataTable.Rows.Count.ToString());
+//TLogging.Log("grdResult.LoadFirstDataPage finished. FPagedDataTable.Rows.Count: " + FPagedDataTable.Rows.Count.ToString());
                         }
                         catch (Exception E)
                         {
@@ -1842,19 +1842,19 @@ TLogging.Log("grdResult.LoadFirstDataPage finished. FPagedDataTable.Rows.Count: 
                     // Create SourceDataGrid columns
                     FLogic.CreateColumns(FPagedDataTable, chkDetailedResults.Checked,
                         FCriteriaData.Rows[0]["PartnerStatus"].ToString() != "ACTIVE", FieldList);
-TLogging.Log("SetupResultDataGrid: Before calling SetupDataGridDataBinding()...");
+//TLogging.Log("SetupResultDataGrid: Before calling SetupDataGridDataBinding()...");
                     // DataBindingrelated stuff
                     SetupDataGridDataBinding();
-TLogging.Log("SetupResultDataGrid: Before calling SetupDataGridVisualAppearance()...");
+//TLogging.Log("SetupResultDataGrid: Before calling SetupDataGridVisualAppearance()...");
                     // Setup the DataGrid's visual appearance
                     SetupDataGridVisualAppearance();
-TLogging.Log("SetupResultDataGrid: Before calling SelectRow()...");
+//TLogging.Log("SetupResultDataGrid: Before calling SelectRow()...");
                     // Select (highlight) first Row
                     grdResult.Selection.SelectRow(1, true);
-TLogging.Log("SetupResultDataGrid: Before calling ShowCell()...");
+//TLogging.Log("SetupResultDataGrid: Before calling ShowCell()...");
                     // Scroll grid to first line (the grid might have been scrolled before to another position)
                     grdResult.ShowCell(new Position(1, 1), true);
-TLogging.Log("SetupResultDataGrid: Before calling OnEnableAcceptButton()...");
+//TLogging.Log("SetupResultDataGrid: Before calling OnEnableAcceptButton()...");
                     OnEnableAcceptButton();
                 }
                 else
@@ -1880,7 +1880,7 @@ TLogging.Log("SetupResultDataGrid: Before calling OnEnableAcceptButton()...");
         {
             DataTable ReturnValue = null;
             
-TLogging.Log(String.Format("GetDataPagedResult got called (ANeededPage: {0}, APageSize: {1}).", ANeededPage, APageSize));
+//TLogging.Log(String.Format("GetDataPagedResult got called (ANeededPage: {0}, APageSize: {1}).", ANeededPage, APageSize));
             ATotalRecords = 0;
             ATotalPages = 0;
 
@@ -1889,7 +1889,7 @@ TLogging.Log(String.Format("GetDataPagedResult got called (ANeededPage: {0}, APa
                 ReturnValue = FPartnerFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
             }
             
-TLogging.Log(String.Format("GetDataPagedResult finished (ATotalRecords: {0}, ATotalPages: {1}, DataTable.RowsCount: {2}).", ATotalRecords, ATotalPages, ReturnValue.Rows.Count.ToString()));
+//TLogging.Log(String.Format("GetDataPagedResult finished (ATotalRecords: {0}, ATotalPages: {1}, DataTable.RowsCount: {2}).", ATotalRecords, ATotalPages, ReturnValue.Rows.Count.ToString()));
             return ReturnValue;            
         }
 

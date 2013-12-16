@@ -360,7 +360,7 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         private void DataTransferDone(bool AAddEmptyRows)
         {
-TLogging.Log("DataTransferDone: FTotalRecords: " + FTotalRecords.ToString() + "; FPageSize: " + FPageSize.ToString());
+//TLogging.Log("DataTransferDone: FTotalRecords: " + FTotalRecords.ToString() + "; FPageSize: " + FPageSize.ToString());
 
             if (AAddEmptyRows) 
             {
@@ -437,8 +437,8 @@ TLogging.Log("DataTransferDone: FTotalRecords: " + FTotalRecords.ToString() + ";
             DataTable ReturnValue;
             TDataPageLoadEventArgs CustomEventArgs;
 
-            TLogging.Log("Enter LoadFirstDataPage...");        
-            TLogging.Log("LoadFirstDataPage:  HScrollBarVisible: " + HScrollBarVisible.ToString());
+//            TLogging.Log("Enter LoadFirstDataPage...");        
+//            TLogging.Log("LoadFirstDataPage:  HScrollBarVisible: " + HScrollBarVisible.ToString());
             
             DeterminePageSize();
             FGetDataPagedResult = ADelegateGetDataPagedResultFunction;
@@ -470,7 +470,7 @@ TLogging.Log("DataTransferDone: FTotalRecords: " + FTotalRecords.ToString() + ";
 
             FGridInitialised = true;
 
-            TLogging.Log("LoadFirstDataPage is finished.");
+//            TLogging.Log("LoadFirstDataPage is finished.");
             return ReturnValue;
         }
 
@@ -565,12 +565,12 @@ TLogging.Log("DataTransferDone: FTotalRecords: " + FTotalRecords.ToString() + ";
         /// <returns>void</returns>
         private void ResetPaging()
         {
-            TLogging.Log("ResetPaging called.");
+//            TLogging.Log("ResetPaging called.");
             // Setup the ArrayList that keeps track of which pages of data have already been retrieved
             FTransferredDataPages.Clear();
             FTransferredDataPages.Add(Convert.ToInt32(0));
             FPerformFullLoadOnDataGridSort = false;
-            TLogging.Log("ResetPaging finished.");            
+//            TLogging.Log("ResetPaging finished.");            
         }
 
         #endregion
@@ -592,7 +592,7 @@ TLogging.Log("DataTransferDone: FTotalRecords: " + FTotalRecords.ToString() + ";
 
             HSize = this.Height;
 
-            TLogging.Log("DetermineMaxNumberOfDisplayableRows:  HSize (initial): " + HSize.ToString());
+//            TLogging.Log("DetermineMaxNumberOfDisplayableRows:  HSize (initial): " + HSize.ToString());
 
             // If horizontal ScrollBar is visible: reduce the horizontal size by its height
             if (this.HScrollBarVisible)
@@ -632,7 +632,7 @@ TLogging.Log("DataTransferDone: FTotalRecords: " + FTotalRecords.ToString() + ";
                 FPageSize = TSgrdDataGridPaged.DEFAULT_PAGESIZE_IF_GRID_TOO_SMALL;
             }
 
-            TLogging.Log("DetermineMaxNumberOfDisplayableRows:  final FPageSize: " + FPageSize.ToString());
+//            TLogging.Log("DetermineMaxNumberOfDisplayableRows:  final FPageSize: " + FPageSize.ToString());
         }
 
         /// <summary>
@@ -663,7 +663,7 @@ TLogging.Log("DataTransferDone: FTotalRecords: " + FTotalRecords.ToString() + ";
 
             base.OnSizeChanged(e);
 
-            TLogging.Log("OnSizeChanged");
+//            TLogging.Log("OnSizeChanged");
 
             if (HSize > FLastHeight)
             {
@@ -673,7 +673,7 @@ TLogging.Log("DataTransferDone: FTotalRecords: " + FTotalRecords.ToString() + ";
                 if ((FPagedDataTable != null) && (FPagedDataTable.Rows.Count != 0))
                 {
                     // There is data in the Grid
-                    TLogging.Log("OnSizeChanged:  HSize: " + HSize.ToString());
+//                    TLogging.Log("OnSizeChanged:  HSize: " + HSize.ToString());
                     OnVScrollPositionChanged(null);
                 }
             }
@@ -698,7 +698,7 @@ TLogging.Log("DataTransferDone: FTotalRecords: " + FTotalRecords.ToString() + ";
             {
                 FIdleSet = true;
 
-                TLogging.Log("OnResize: Hooked up Application.Idle.");
+//                TLogging.Log("OnResize: Hooked up Application.Idle.");
                 Application.Idle += new EventHandler(this.OnIdle);
             }
         }
@@ -714,12 +714,12 @@ TLogging.Log("DataTransferDone: FTotalRecords: " + FTotalRecords.ToString() + ";
 
             Application.Idle -= new EventHandler(this.OnIdle);
 
-            TLogging.Log("OnIdle: Calling base.OnResize.");
+//            TLogging.Log("OnIdle: Calling base.OnResize.");
             this.Cursor = Cursors.WaitCursor;
             base.OnResize(e);
             this.Cursor = Cursors.Default;
 
-            TLogging.Log("OnIdle: Called base.OnResize.");
+//            TLogging.Log("OnIdle: Called base.OnResize.");
         }
 
         /// <summary>
@@ -802,7 +802,7 @@ TLogging.Log("DataTransferDone: FTotalRecords: " + FTotalRecords.ToString() + ";
         #region Custom Events
         private void OnDataPageLoading(TDataPageLoadEventArgs e)
         {
-            TLogging.Log("OnDataPageLoading");
+//            TLogging.Log("OnDataPageLoading");
             if (DataPageLoading != null)
             {
                 DataPageLoading(this, e);
@@ -811,7 +811,7 @@ TLogging.Log("DataTransferDone: FTotalRecords: " + FTotalRecords.ToString() + ";
 
         private void OnDataPageLoaded(TDataPageLoadEventArgs e)
         {
-            TLogging.Log("OnDataPageLoaded");
+//            TLogging.Log("OnDataPageLoaded");
             if (DataPageLoaded != null)
             {
                 DataPageLoaded(this, e);
