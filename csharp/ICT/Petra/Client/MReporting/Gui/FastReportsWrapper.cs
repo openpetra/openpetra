@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       >>>> Put your full name or just a shortname here <<<<
+//     Tim Ingham
 //
 // Copyright 2004-2013 by OM International
 //
