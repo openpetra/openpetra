@@ -71,7 +71,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.ucoPartnerFindCriteria = new Ict.Petra.Client.MPartner.Gui.TUC_PartnerFindCriteria();
             this.ucoPartnerInfo = new TPnlCollapsible();
             this.grpResult = new System.Windows.Forms.GroupBox();
-            this.grdResult = new Ict.Common.Controls.TSgrdDataGridPaged();
             this.pnlBlankSearchResult = new System.Windows.Forms.Panel();
             this.lblSearchInfo = new System.Windows.Forms.Label();
             this.spcPartnerFindByDetails = new System.Windows.Forms.SplitContainer();
@@ -217,7 +216,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             //
             // grpResult
             //
-            this.grpResult.Controls.Add(this.grdResult);
             this.grpResult.Controls.Add(this.pnlBlankSearchResult);
             this.grpResult.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grpResult.FlatStyle = System.Windows.Forms.FlatStyle.System;
@@ -228,40 +226,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.grpResult.TabIndex = 1;
             this.grpResult.TabStop = false;
             this.grpResult.Text = "Fin&d Result";
-
-            //
-            // grdResult
-            //
-            this.grdResult.AutoFindColumn = ((short)(-1));
-            this.grdResult.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.grdResult.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.grdResult.DeleteQuestionMessage = "You have chosen to delete this record.\'#13#10#13#10\'Dou you really want to delete" +
-                                                   " it?";
-            this.grdResult.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.grdResult.FixedRows = 1;
-            this.grdResult.KeepRowSelectedAfterSort = false;
-            this.grdResult.Location = new System.Drawing.Point(6, 17);
-            this.grdResult.MinimumHeight = 21;
-            this.grdResult.Name = "grdResult";
-            this.grdResult.Size = new System.Drawing.Size(504, 85);
-            this.grdResult.SpecialKeys =
-                ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows | SourceGrid.GridSpecialKeys.PageDownUp) |
-                                                  SourceGrid.GridSpecialKeys.Enter) |
-                                                 SourceGrid.GridSpecialKeys.Escape) |
-                                                SourceGrid.GridSpecialKeys.Control) |
-                                               SourceGrid.GridSpecialKeys.Shift)));
-            this.grdResult.TabIndex = 0;
-            this.grdResult.TabStop = true;
-            this.grdResult.ToolTipText = "";
-            this.grdResult.ToolTipTextDelegate = null;
-            this.grdResult.Visible = true;
-            this.grdResult.DataPageLoaded += new Ict.Common.Controls.TDataPageLoadedEventHandler(this.GrdResult_DataPageLoaded);
-            this.grdResult.MouseDown += new System.Windows.Forms.MouseEventHandler(this.GrdResult_MouseDown);
-            this.grdResult.DataPageLoading += new Ict.Common.Controls.TDataPageLoadingEventHandler(this.GrdResult_DataPageLoading);
-            this.grdResult.DoubleClickCell += new Ict.Common.Controls.TDoubleClickCellEventHandler(this.GrdResult_DoubleClickCell);
-            this.grdResult.EnterKeyPressed += new Ict.Common.Controls.TKeyPressedEventHandler(this.GrdResult_EnterKeyPressed);
-            this.grdResult.SpaceKeyPressed += new Ict.Common.Controls.TKeyPressedEventHandler(this.GrdResult_SpaceKeyPressed);
-            this.grdResult.KeyDown += new KeyEventHandler(this.GrdResult_KeyPressed);
 
             //
             // pnlBlankSearchResult

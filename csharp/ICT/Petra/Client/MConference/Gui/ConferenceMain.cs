@@ -175,5 +175,40 @@ namespace Ict.Petra.Client.MConference.Gui
 
             frm.NewConference(new object(), new EventArgs());
         }
+
+        /// <summary>
+        /// opens Attendee List screen for pre selected conference
+        /// </summary>
+        public static void AttendeeListForSelectedConference(Form AParentForm)
+        {
+            if (FPartnerKey > 0)
+            {
+                TFrmAttendeeList.FPartnerKey = FPartnerKey;
+                TFrmAttendeeList frm = new TFrmAttendeeList(AParentForm);
+
+                frm.Show();
+            }
+            else
+            {
+                MessageBox.Show(ERRORMESSAGE, String.Format("Attendee List"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        /// <summary>
+        /// refreshes the attendees for pre selected conference
+        /// </summary>
+        public static void RefreshAttendees(Form AParentForm)
+        {
+            if (FPartnerKey > 0)
+            {
+                TRemote.MConference.Conference.WebConnectors.RefreshAttendees(FPartnerKey);
+            }
+            else
+            {
+                MessageBox.Show(ERRORMESSAGE, String.Format("Refresh Attendees"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
     }
 }

@@ -30,6 +30,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
@@ -140,7 +141,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 String.Format("{0}={1}", AGiftBatchTable.GetBatchNumberDBName(), ABatchNumber);
             Int32 RowToSelect = GetDataTableRowIndexByPrimaryKeys(ALedgerNumber, ABatchNumber);
 
-            RefreshBankCostCentreAndAccountCodes();
+            RefreshBankAccountAndCostCentreData();
             SetupExtraGridFunctionality();
 
             // if this form is readonly, then we need all codes, because old codes might have been used
@@ -224,7 +225,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AGiftBatchTable.GetBatchNumberDBName()
                 );
 
-            RefreshBankCostCentreAndAccountCodes();
+            RefreshBankAccountAndCostCentreData();
             SetupExtraGridFunctionality();
 
             // if this form is readonly, then we need all codes, because old codes might have been used
@@ -276,7 +277,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void RefreshBankCostCentreAndAccountCodes()
+        private void RefreshBankAccountAndCostCentreFilters(bool AActiveOnly, AGiftBatchRow ARow = null)
+        {
+            if (FActiveOnly != AActiveOnly)
+            {
+                FActiveOnly = AActiveOnly;
+                cmbDetailBankAccountCode.Filter = TFinanceControls.PrepareAccountFilter(true, false, AActiveOnly, true, "");
+                cmbDetailBankCostCentre.Filter = TFinanceControls.PrepareCostCentreFilter(true, false, AActiveOnly, true);
+
+                if (ARow != null)
+                {
+                    cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1);
+                    cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
+                }
+            }
+        }
+
+        private void RefreshBankAccountAndCostCentreData()
         {
             //Populate CostCentreList variable
             DataTable costCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
@@ -793,7 +810,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             bool ActiveOnly = (ARow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
-            SetupAccountAndCostCentreCombos(ActiveOnly, ARow);
+            RefreshBankAccountAndCostCentreFilters(ActiveOnly, ARow);
 
             if (ARow.BatchStatus == MFinanceConstants.BATCH_CANCELLED)
             {
@@ -1420,7 +1437,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ParseHashTotal(ARow);
 
             //Check if the user has made a Bank Cost Centre or Account Code inactive
-            RefreshBankCostCentreAndAccountCodes();
+            //this was removed because of speed issues!
+            //RefreshBankCostCentreAndAccountCodes();
 
             TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict, FAccountTable, FCostCentreTable);

@@ -399,11 +399,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FPreviouslySelectedDetailRow != null)
             {
                 ANewRow.CostCentreCode = FPreviouslySelectedDetailRow.CostCentreCode;
+                FPreviouslySelectedDetailRow = null;
+                ClearControls();
             }
 
             FPreviouslySelectedDetailRow = (GLBatchTDSATransactionRow)ANewRow;
 
             btnDeleteAll.Enabled = true;
+
+            ShowDetails(FPreviouslySelectedDetailRow);
+            cmbDetailCostCentreCode.Focus();
         }
 
         /// <summary>
@@ -1612,6 +1617,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((grdDetails != null) && grdDetails.Enabled && grdDetails.TabStop)
             {
                 grdDetails.Focus();
+            }
+        }
+
+        private void DebitAmountChanged(object sender, EventArgs e)
+        {
+            if (sender != null)
+            {
+                if ((txtDebitAmount.NumberValueDecimal != 0) && (txtCreditAmount.NumberValueDecimal != 0))
+                {
+                    txtCreditAmount.NumberValueDecimal = 0;
+                }
+            }
+        }
+
+        private void CreditAmountChanged(object sender, EventArgs e)
+        {
+            if (sender != null)
+            {
+                if ((txtCreditAmount.NumberValueDecimal != 0) && (txtDebitAmount.NumberValueDecimal != 0))
+                {
+                    txtDebitAmount.NumberValueDecimal = 0;
+                }
             }
         }
 

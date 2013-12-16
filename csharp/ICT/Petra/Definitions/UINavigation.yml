@@ -362,10 +362,13 @@ OpenPetra:
         ConferenceManagement: {Icon=conference.ico, PermissionsRequired=CONFERENCE, DependsOnConference=true}
             Main: {SkipThisLevel=true}
                 Conference: {Namespace=Ict.Petra.Client.MConference.Gui, DontShowNestedTasksAsLinks=true}
-                    Conference:    
+                    Conference:
                         SelectConference: {Description=Select a Conference to work on, ActionOpenScreen=TFrmConferenceFindForm}
                         NewConference: {Namespace=Ict.Petra.Client.MConference.Gui, Description=Create a new Conference, ActionClick=TConferenceMain.NewConference}
                         DeleteConference: {Label=Delete This Conference, Description="Careful: Delete the conference with all conference data", ActionClick=TDeleteConference.DeleteThisConference}
+                    Attendees:
+                        AttendeeList: {Namespace=Ict.Petra.Client.MConference.Gui, Description=Browse Conference Attendees, ActionClick=TConferenceMain.AttendeeListForSelectedConference}
+                        RefreshAttendees: {Namespace=Ict.Petra.Client.MConference.Gui, Description=Refresh conference attendees after adding/importing new attendees, ActionClick=TConferenceMain.RefreshAttendees}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MConference, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
                     Reports:
                         AbsenteeReport: {ActionOpenScreen=TFrmAbsenteeReport}

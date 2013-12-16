@@ -60,6 +60,7 @@ namespace Ict.Petra.Client.MConference.Gui
     {
         private String FSelectedConferenceName;
         private Int64 FSelectedConferenceKey;
+        private bool FIsModal;
 
         /// <summary>
         /// publish the selected conference name
@@ -80,6 +81,17 @@ namespace Ict.Petra.Client.MConference.Gui
             get
             {
                 return FSelectedConferenceKey;
+            }
+        }
+
+        /// <summary>
+        /// true if screen has been opened modally
+        /// </summary>
+        public bool IsModal
+        {
+            set
+            {
+                FIsModal = value;
             }
         }
 
@@ -204,7 +216,15 @@ namespace Ict.Petra.Client.MConference.Gui
                 FSelectedConferenceKey = (Int64)((DataRowView)grdConferences.SelectedDataRows[0]).Row[PcConferenceTable.GetConferenceKeyDBName()];
                 FSelectedConferenceName = (String)((DataRowView)grdConferences.SelectedDataRows[0]).Row[PPartnerTable.GetPartnerShortNameDBName()];
 
-                ReloadNavigation();
+                if (!FIsModal)
+                {
+                    ReloadNavigation();
+                }
+                else
+                {
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
             }
         }
 
@@ -311,6 +331,7 @@ namespace Ict.Petra.Client.MConference.Gui
             AConferenceName = String.Empty;
 
             TFrmConferenceFindForm FindConference = new TFrmConferenceFindForm(AParentForm);
+            FindConference.IsModal = true;
 
             dlgResult = FindConference.ShowDialog();
 

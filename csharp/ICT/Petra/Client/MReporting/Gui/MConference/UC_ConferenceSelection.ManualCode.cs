@@ -93,6 +93,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             {
                 txtConference.Text = SelectedConferenceKey.ToString();
             }
+
+            txtConference.ReadOnly = true;
         }
 
         /// <summary>

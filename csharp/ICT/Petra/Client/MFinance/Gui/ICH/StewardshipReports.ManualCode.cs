@@ -124,6 +124,29 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             }
         }
 
+        private void EnableHOSAFileOptions(object sender, EventArgs e)
+        {
+            bool IsEnabled = chkHOSAFile.Checked;
+
+            txtHOSAPrefix.Enabled = IsEnabled;
+            chkEmailHOSAFile.Enabled = IsEnabled;
+        }
+
+        private void EnableStewardshipFileOptions(object sender, EventArgs e)
+        {
+            bool IsEnabled = (chkStewardshipFile.Checked || chkEmailStewardshipFileAndReport.Checked);
+
+            chkStewardshipFile.Enabled = !chkEmailStewardshipFileAndReport.Checked;
+
+            if ((chkStewardshipFile.Checked && chkEmailStewardshipFileAndReport.Checked))
+            {
+                chkStewardshipFile.Checked = false;
+            }
+
+            txtBrowseStewardshipFile.Enabled = IsEnabled;
+            btnBrowse.Enabled = IsEnabled;
+        }
+
         private void RefreshReportPeriodList(object sender, EventArgs e)
         {
             if (cmbYearEnding.SelectedIndex > -1)
@@ -144,7 +167,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 DateTime YearEnding;
                 DateTime YearStart;
 
-                if (DateTime.TryParse(cmbReportPeriod.GetSelectedDescription(), out YearEnding))
+                if (DateTime.TryParse(cmbYearEnding.GetSelectedDescription(), out YearEnding))
                 {
                     YearStart = TRemote.MFinance.GL.WebConnectors.DecrementYear(YearEnding).AddDays(1);
 
@@ -172,19 +195,52 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             string CostCentreCode = string.Empty;
             bool HOSASuccess = false;
 
+            bool DoGenerateHOSAReports = chkHOSAReport.Checked;
+            bool DoEmailHOSAReports = chkEmailHOSAReport.Checked;
+            bool DoGenerateHOSAFiles = chkHOSAFile.Checked;
+            bool DoEmailHOSAFiles = chkEmailHOSAFile.Checked;
+            string HOSAFilePrefix = txtHOSAPrefix.Text;
+
             TVerificationResultCollection VerificationResults;
 
             string msg = string.Empty;
             string SuccessfullCostCentres = string.Empty;
             string FailedCostCentres = string.Empty;
 
+            int SelectedReportPeriod = cmbReportPeriod.GetSelectedInt32();
+            int SelectedICHNumber = cmbICHNumber.GetSelectedInt32();
+
             if (!ValidReportPeriod())
             {
                 return;
             }
 
-            int SelectedReportPeriod = cmbReportPeriod.GetSelectedInt32();
-            int SelectedICHNumber = cmbICHNumber.GetSelectedInt32();
+            bool HOSAFilePrefixExists = (HOSAFilePrefix.Length > 0);
+
+            int IndexOfInvalidFilenameCharacter = 0;
+
+            if (HOSAFilePrefixExists)
+            {
+                IndexOfInvalidFilenameCharacter = HOSAFilePrefix.IndexOfAny(Path.GetInvalidFileNameChars());
+            }
+
+            if (!HOSAFilePrefixExists)
+            {
+                HOSAFilePrefix = Catalog.GetString("HOSAFilesExportFor");
+            }
+            else if (IndexOfInvalidFilenameCharacter >= 0)
+            {
+                msg = String.Format("The HOSA File Prefix: '{0}', contains characters not valid in a filename: {1}{2}{2}Please remove and retry.",
+                    HOSAFilePrefix,
+                    String.Join(", ", Path.GetInvalidFileNameChars()),
+                    Environment.NewLine);
+
+                MessageBox.Show(msg, "Generate HOSA Reports and Files", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                txtHOSAPrefix.Focus();
+                txtHOSAPrefix.Select(IndexOfInvalidFilenameCharacter, 1);
+                return;
+            }
 
             try
             {
@@ -207,10 +263,17 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
                     CostCentreCode = (string)ichRow[AIchStewardshipTable.ColumnCostCentreCodeId];
 
-                    FileName = TClientSettings.PathTemp + Path.DirectorySeparatorChar + "TestGenHOSAFileFor" + CostCentreCode + ".csv";
+                    if (DoGenerateHOSAReports)
+                    {
+                        //TODO code to generate the HOSA reports
+                    }
+                    else if (DoGenerateHOSAFiles)
+                    {
+                        FileName = TClientSettings.PathTemp + Path.DirectorySeparatorChar + HOSAFilePrefix + CostCentreCode + ".csv";
 
-                    HOSASuccess = TRemote.MFinance.ICH.WebConnectors.GenerateHOSAFiles(FLedgerNumber, cmbReportPeriod.GetSelectedInt32(),
-                        cmbICHNumber.GetSelectedInt32(), CostCentreCode, Currency, FileName, out VerificationResults);
+                        HOSASuccess = TRemote.MFinance.ICH.WebConnectors.GenerateHOSAFiles(FLedgerNumber, cmbReportPeriod.GetSelectedInt32(),
+                            cmbICHNumber.GetSelectedInt32(), CostCentreCode, Currency, FileName, out VerificationResults);
+                    }
 
                     if (HOSASuccess)
                     {
