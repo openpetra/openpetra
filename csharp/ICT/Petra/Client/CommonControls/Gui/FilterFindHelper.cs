@@ -47,6 +47,7 @@ namespace Ict.Petra.Client.CommonControls
         private string FDBColumnName;
         private string FDBColumnDataType;
         private string FFilterComparison;
+        private string FFindComparison;
         private bool FHasClearButton;
 
         private string FInstanceName;
@@ -107,6 +108,17 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
+        /// Returns the find comparison to be used for the find as a format string
+        /// </summary>
+        public string FindComparison
+        {
+            get
+            {
+                return FFindComparison;
+            }
+        }
+
+        /// <summary>
         /// Returns whether or not the filter/find Panel has a Clear Button
         /// </summary>
         public bool HasClearButton
@@ -142,8 +154,9 @@ namespace Ict.Petra.Client.CommonControls
             SetPanelControlTag(ATag);
             // Set the instance name (if any)
             SetInstanceFromTag(ATag);
-            // Set the filter comparison from the column name and data type
+            // Set the filter and Find comparisons from the column name and data type and any special features in the Tag
             FFilterComparison = GetFilterComparison(ADBColumnName, ADBColumnDataType, ATag);
+            FFindComparison = GetFindComparison(ADBColumnName, ADBColumnDataType, FFilterComparison, ATag);
 
             if (FPanelControl is CheckBox)
             {
@@ -255,6 +268,89 @@ namespace Ict.Petra.Client.CommonControls
             {
                 throw new Exception("Unsupported column type: " + ADBColumnDataType);
             }
+        }
+
+        private static string GetFindComparison(string ADBColumnName, string ADBColumnDataType, string AFilterComparison, string ATag)
+        {
+            if ((ADBColumnName == null) || (ADBColumnDataType == null))
+            {
+                return null;
+            }
+
+            string op = String.Empty;
+
+            if (ATag.Contains(CommonTagString.FIND_COMPARISON_EQUALS))
+            {
+                int posStart = ATag.IndexOf(CommonTagString.FIND_COMPARISON_EQUALS) + CommonTagString.FIND_COMPARISON_EQUALS.Length;
+                int posEnd = ATag.IndexOf(';', posStart);
+
+                if (posEnd > 0)
+                {
+                    op = ATag.Substring(posStart, posEnd - posStart);
+
+                    switch (op)
+                    {
+                        case "gt":
+                            op = ">";
+                            break;
+
+                        case "gte":
+                            op = ">=";
+                            break;
+
+                        case "lt":
+                            op = "<";
+                            break;
+
+                        case "lte":
+                            op = "<=";
+                            break;
+
+                        case "eq":
+                            op = "=";
+                            break;
+
+                        case "StartsWith":
+                            op = " LIKE '{0}%'";
+                            break;
+
+                        case "EndsWith":
+                            op = " LIKE '%{0}'";
+                            break;
+
+                        case "Contains":
+                            op = " LIKE '%{0}%'";
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            if (op == String.Empty)
+            {
+                return AFilterComparison;
+            }
+            else if (op.Contains("{"))
+            {
+                return op;
+            }
+            else
+            {
+                if ((ADBColumnDataType == "integer") || (ADBColumnDataType == "number"))
+                {
+                    // numbers as numbers not text
+                    return op + "{0}";
+                }
+                else if (ADBColumnDataType == "date")
+                {
+                    // date
+                    return op + "#{0}#";
+                }
+            }
+
+            return AFilterComparison;
         }
 
         /// <summary>
@@ -950,35 +1046,57 @@ namespace Ict.Petra.Client.CommonControls
                     decimal decimalValue, decimalCompareTo;
                     DateTime dtValue, dtCompareTo;
 
-                    if (iffp.FilterComparison.Contains("LIKE"))
+                    if (iffp.FindComparison.Contains("LIKE"))
                     {
-                        // Just do a case-insensitive regular expression comparison of the text
-                        if (!System.Text.RegularExpressions.Regex.IsMatch(ARow[iffp.DBColumnName].ToString(), "(?i)" + controlText))
+                        string columnName = iffp.DBColumnName;
+
+                        if ((iffp.DBColumnDataType == "integer") || (iffp.DBColumnDataType == "number"))
+                        {
+                            columnName = columnName + "_text";
+                        }
+
+                        string columnText = ARow[columnName].ToString().ToLower();
+                        string controlTextLower = controlText.ToLower();
+                        
+                        // Just do a case-insensitive comparison of the text (contains, startswith or endswith)
+                        if (iffp.FindComparison.EndsWith("%{0}%'") && columnText.Contains(controlTextLower))
+                        {
+                            continue;
+                        }
+                        else if (iffp.FindComparison.EndsWith("{0}%'") && columnText.StartsWith(controlTextLower))
+                        {
+                            continue;
+                        }
+                        else if (iffp.FindComparison.EndsWith("%{0}'") && columnText.EndsWith(controlTextLower))
+                        {
+                            continue;
+                        }
+                        else
                         {
                             return false;
                         }
                     }
-                    else if ((iffp.FilterComparison.Contains("#"))
+                    else if ((iffp.FindComparison.Contains("#"))
                              && DateTime.TryParse(ARow[iffp.DBColumnName].ToString(), out dtValue) && DateTime.TryParse(controlText, out dtCompareTo))
                     {
                         // It is a date
-                        if (iffp.FilterComparison.StartsWith(">=") && (dtValue >= dtCompareTo))
+                        if (iffp.FindComparison.StartsWith(">=") && (dtValue >= dtCompareTo))
                         {
                             continue;
                         }
-                        else if (iffp.FilterComparison.StartsWith(">") && (dtValue > dtCompareTo))
+                        else if (iffp.FindComparison.StartsWith(">") && (dtValue > dtCompareTo))
                         {
                             continue;
                         }
-                        else if (iffp.FilterComparison.StartsWith("<=") && (dtValue <= dtCompareTo))
+                        else if (iffp.FindComparison.StartsWith("<=") && (dtValue <= dtCompareTo))
                         {
                             continue;
                         }
-                        else if (iffp.FilterComparison.StartsWith("<") && (dtValue < dtCompareTo))
+                        else if (iffp.FindComparison.StartsWith("<") && (dtValue < dtCompareTo))
                         {
                             continue;
                         }
-                        else if (iffp.FilterComparison.StartsWith("=") && (dtValue == dtCompareTo))
+                        else if (iffp.FindComparison.StartsWith("=") && (dtValue == dtCompareTo))
                         {
                             continue;
                         }
@@ -990,23 +1108,23 @@ namespace Ict.Petra.Client.CommonControls
                     else if (Int32.TryParse(ARow[iffp.DBColumnName].ToString(), out intValue) && Int32.TryParse(controlText, out intCompareTo))
                     {
                         // It is a Int32
-                        if (iffp.FilterComparison.StartsWith(">=") && (intValue >= intCompareTo))
+                        if (iffp.FindComparison.StartsWith(">=") && (intValue >= intCompareTo))
                         {
                             continue;
                         }
-                        else if (iffp.FilterComparison.StartsWith(">") && (intValue > intCompareTo))
+                        else if (iffp.FindComparison.StartsWith(">") && (intValue > intCompareTo))
                         {
                             continue;
                         }
-                        else if (iffp.FilterComparison.StartsWith("<=") && (intValue <= intCompareTo))
+                        else if (iffp.FindComparison.StartsWith("<=") && (intValue <= intCompareTo))
                         {
                             continue;
                         }
-                        else if (iffp.FilterComparison.StartsWith("<") && (intValue < intCompareTo))
+                        else if (iffp.FindComparison.StartsWith("<") && (intValue < intCompareTo))
                         {
                             continue;
                         }
-                        else if (iffp.FilterComparison.StartsWith("=") && (intValue == intCompareTo))
+                        else if (iffp.FindComparison.StartsWith("=") && (intValue == intCompareTo))
                         {
                             continue;
                         }
@@ -1019,23 +1137,23 @@ namespace Ict.Petra.Client.CommonControls
                                  out decimalValue) && Decimal.TryParse(controlText, out decimalCompareTo))
                     {
                         // It is a Int32
-                        if (iffp.FilterComparison.StartsWith(">=") && (decimalValue >= decimalCompareTo))
+                        if (iffp.FindComparison.StartsWith(">=") && (decimalValue >= decimalCompareTo))
                         {
                             continue;
                         }
-                        else if (iffp.FilterComparison.StartsWith(">") && (decimalValue > decimalCompareTo))
+                        else if (iffp.FindComparison.StartsWith(">") && (decimalValue > decimalCompareTo))
                         {
                             continue;
                         }
-                        else if (iffp.FilterComparison.StartsWith("<=") && (decimalValue <= decimalCompareTo))
+                        else if (iffp.FindComparison.StartsWith("<=") && (decimalValue <= decimalCompareTo))
                         {
                             continue;
                         }
-                        else if (iffp.FilterComparison.StartsWith("<") && (decimalValue < decimalCompareTo))
+                        else if (iffp.FindComparison.StartsWith("<") && (decimalValue < decimalCompareTo))
                         {
                             continue;
                         }
-                        else if (iffp.FilterComparison.StartsWith("=") && (decimalValue == decimalCompareTo))
+                        else if (iffp.FindComparison.StartsWith("=") && (decimalValue == decimalCompareTo))
                         {
                             continue;
                         }
