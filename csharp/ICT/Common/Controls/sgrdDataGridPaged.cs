@@ -491,7 +491,7 @@ namespace Ict.Common.Controls
                 CustomEventArgs.DataPage = ANeededPage;
                 this.OnDataPageLoading(CustomEventArgs);
 
-                TLogging.Log("Retrieving Page " + ANeededPage.ToString() + "...");
+//                TLogging.Log("Retrieving Page " + ANeededPage.ToString() + "...");
 
                 Int32 CurrentTotalRecords;  // These two values should be the same as FTotalRecords
                 Int16 CurrentTotalPages;    // and FTotalPages, which were set when the first page was loaded.
@@ -502,7 +502,7 @@ namespace Ict.Common.Controls
                     FTransferredDataPages.Add(ANeededPage);
                     Int32 IdxBase = ANeededPage * FPageSize;
 
-                    TLogging.Log("Inserting Page " + ANeededPage.ToString() + " (PageSize: " + FPageSize.ToString() + "; Records returned: " +  PagedTable.Rows.Count.ToString() + ")...");
+//                    TLogging.Log("Inserting Page " + ANeededPage.ToString() + " (PageSize: " + FPageSize.ToString() + "; Records returned: " +  PagedTable.Rows.Count.ToString() + ")...");
                     for (Int32 Counter = 0; Counter < PagedTable.Rows.Count; Counter++)
                     {
                         DataRow TargetRow;
@@ -540,7 +540,7 @@ namespace Ict.Common.Controls
             {
                 if (!FTransferredDataPages.Contains(Counter))
                 {
-                    TLogging.Log("LoadSingleDataPageIntoPagedTable(" + Counter.ToString() + ")");
+//                    TLogging.Log("LoadSingleDataPageIntoPagedTable(" + Counter.ToString() + ")");
                     LoadSingleDataPage(Counter);
                 }
             }
@@ -599,7 +599,7 @@ namespace Ict.Common.Controls
             {
                 HSize = HSize - this.HScrollBar.Size.Height;
 
-                TLogging.Log("DetermineMaxNumberOfDisplayableRows:  HSize (after reducing it by the HScrollBar Height): " + HSize.ToString());
+//                TLogging.Log("DetermineMaxNumberOfDisplayableRows:  HSize (after reducing it by the HScrollBar Height): " + HSize.ToString());
             }
 
             // If a Header is visible: reduce the horizontal size by its height
@@ -614,7 +614,7 @@ namespace Ict.Common.Controls
                 {
                     HSize = HSize - HeaderHeight;
 
-                    TLogging.Log("DetermineMaxNumberOfDisplayableRows:  HSize (after reducing it by the Header Height): " + HSize.ToString());
+//                    TLogging.Log("DetermineMaxNumberOfDisplayableRows:  HSize (after reducing it by the Header Height): " + HSize.ToString());
                 }
             }
 
@@ -762,7 +762,7 @@ namespace Ict.Common.Controls
 
             base.OnVScrollPositionChanged(e);
 
-            TLogging.Log("OnVScrollPositionChanged.  PageSize: " + FPageSize.ToString());
+//            TLogging.Log("OnVScrollPositionChanged.  PageSize: " + FPageSize.ToString());
 
             if (FPageSize != 0)
             {
@@ -774,20 +774,20 @@ namespace Ict.Common.Controls
                 // causing an OnVScrollPositionChanged Event!
                 BottomRowNumber = BottomRowNumber + 1;
 
-                TLogging.Log("OnVScrollPositionChanged:  TopRowNumber: " + TopRowNumber.ToString() + "; BottomRowNumber: " + BottomRowNumber.ToString());
+//                TLogging.Log("OnVScrollPositionChanged:  TopRowNumber: " + TopRowNumber.ToString() + "; BottomRowNumber: " + BottomRowNumber.ToString());
 
                 for (Counter = TopRowNumber; Counter <= BottomRowNumber; Counter++)
                 {
                     CheckPage = (int)((float)Counter / (float)FPageSize);
 
-                    TLogging.Log("OnVScrollPositionChanged:  CheckPage: " + CheckPage.ToString());
+//                    TLogging.Log("OnVScrollPositionChanged:  CheckPage: " + CheckPage.ToString());
 
                     if ((CheckPage != LastCheckedPage) && (CheckPage < FTotalPages))
                     {
-                        TLogging.Log("OnVScrollPositionChanged:  Checking if Page #" + CheckPage.ToString() + " is already transfered...");
+//                        TLogging.Log("OnVScrollPositionChanged:  Checking if Page #" + CheckPage.ToString() + " is already transfered...");
                         if (!FTransferredDataPages.Contains(CheckPage))
                         {
-                            TLogging.Log("OnVScrollPositionChanged:  Page #" + CheckPage.ToString() + " is NOT transfered yet, requesting it from PetraServer...");
+//                            TLogging.Log("OnVScrollPositionChanged:  Page #" + CheckPage.ToString() + " is NOT transfered yet, requesting it from PetraServer...");
                             LoadSingleDataPage(CheckPage);
                         }
 

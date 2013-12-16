@@ -1263,7 +1263,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-TLogging.Log("Asynchronous search operation is being interrupted!");
+//TLogging.Log("Asynchronous search operation is being interrupted!");
                 // Asynchronous search operation is being interrupted
                 btnSearch.Enabled = false;
                 lblSearchInfo.Text = MPartnerResourcestrings.StrStoppingSearch;
