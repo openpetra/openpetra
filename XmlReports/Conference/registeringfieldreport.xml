@@ -35,14 +35,14 @@
           </case></switch>
         </fielddetail>
       </field>
-      <field whichfield="period2">
+      <!--<field whichfield="period2">
         <fielddetail>
           <switch><case condition="eq({param_conferenceselection}, one conference)">
               <value text="Selected Outreach Options: "></value>
               <value variable="param_conferenceoptionscode"></value>
           </case></switch>
         </fielddetail>
-      </field>
+      </field>-->
       <field whichfield="period3">
         <fielddetail>
           <value text="Selection: "></value>
@@ -170,13 +170,8 @@
                     <queryDetail condition="eq({param_conferenceselection}, one conference)"><value>
                             AND PUB_pc_conference.pc_conference_key_n = {{param_conferencekey}}
                             AND PUB_pc_attendee.pc_conference_key_n = {{param_conferencekey}}
-                            AND
+                            AND substr(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) = PUB_pc_conference.pc_outreach_prefix_c
                     </value></queryDetail>
-                    <queryDetail condition="eq({param_conferenceselection}, one conference)">
-                            <value function="csv" text="PUB_pm_short_term_application.pm_st_confirmed_option_n" 
-                                    variable="param_conferenceoptions" calculation="OR" format="Number">
-                            </value>
-                    </queryDetail>
                     
                     <queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
                             AND PUB_pc_attendee.pc_conference_key_n = PUB_pc_conference.pc_conference_key_n
@@ -612,7 +607,7 @@
     
     <level name="main3">
         <detail>
-            <lowerLevelReport calculation="InitFieldCostsCalculation" level="DummyLevel"></lowerLevelReport>
+            <lowerLevelReport calculation="InitFieldCostsCalculation" level="DummyLevel2"></lowerLevelReport>
             <lowerLevelReport calculation="Select Attendees for field" level="Attendee Detail Level" condition="eq({param_chkExtraCosts}, false)"></lowerLevelReport>
             <lowerLevelReport calculation="Select Attendees for field" level="Attendee Detail Level With Extra Cost" condition="eq({param_chkExtraCosts}, true)"></lowerLevelReport>
         </detail>
@@ -675,6 +670,14 @@
     
     <level name="DummyLevel">
         <detail>
+        </detail>
+    </level>
+    
+    <level name="DummyLevel2">
+        <detail>
+			<field whichfield="Columns">
+				<value text=""/>
+			</field>
         </detail>
     </level>
     

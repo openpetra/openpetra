@@ -234,7 +234,10 @@ namespace Tests.MPartner.Server.PartnerEdit
             result = connector.SubmitChanges(ref ChangedDS, ref ResponseDS, out VerificationResult);
 
             Assert.AreEqual(1, VerificationResult.Count, "should fail because we have no main account anymore");
-            Assert.AreEqual("there is no main account", VerificationResult[0].ResultText, "should fail because we have no main account anymore");
+            Assert.AreEqual(
+                "One Bank Account of a Partner must be set as the 'Main Account'. Please select the record that should become the 'Main Account' and choose 'Set Main Account'.",
+                VerificationResult[0].ResultText,
+                "should fail because we have no main account anymore");
 
             PartnerEditTDSPBankingDetailsRow otherAccount = null;
 

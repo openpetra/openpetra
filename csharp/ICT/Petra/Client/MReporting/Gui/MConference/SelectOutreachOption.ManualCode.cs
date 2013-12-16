@@ -70,12 +70,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             FUnitTable.DefaultView.AllowEdit = true;
             FUnitTable.DefaultView.AllowDelete = false;
 
+            // automatically check all options
+            SelectOutreachOptions(true);
+
             grdOutreachOption.DataSource = new DevAge.ComponentModel.BoundDataView(FUnitTable.DefaultView);
+            grdOutreachOption.DoubleClickCell += new TDoubleClickCellEventHandler(grdOutreachOptionDoubleClick);
         }
 
-        private void grdOutreachOptionDoubleClick(System.Object sender, EventArgs e)
+        private void grdOutreachOptionDoubleClick(System.Object sender, SourceGrid.CellContextEventArgs e)
         {
-            AcceptSelection(sender, e);
+            int Row = e.CellContext.Position.Row;
+
+            if (Row >= 0)
+            {
+                FUnitTable.DefaultView[Row]["Is Selected"] = (System.Object)((!(Boolean)(FUnitTable.DefaultView[Row]["Is Selected"])));
+            }
         }
 
         private void AcceptSelection(System.Object sender, EventArgs e)
