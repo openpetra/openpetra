@@ -1668,5 +1668,34 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FucoFilterAndFind.DisplayFindTab();
         }
+
+        private void RunOnceOnParentActivationManual()
+        {
+        }
+
+        /// <summary>
+        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
+        /// </summary>
+        public void AutoSizeGrid()
+        {
+            //TODO: Using this manual code until we can do something better
+            //      Autosizing all the columns is very time consuming when there are many rows
+            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
+            {
+                column.Width = 100;
+                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
+            }
+
+            grdDetails.Columns[0].Width = 70;
+            grdDetails.Columns[1].Width = 110;
+            grdDetails.Columns[2].Width = 70;
+            grdDetails.Columns[3].Width = 70;
+            grdDetails.Columns[7].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
+
+            grdDetails.AutoStretchColumnsToFitWidth = true;
+            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
+            grdDetails.AutoSizeCells();
+            grdDetails.ShowCell(FPrevRowChangedRow);
+        }
     }
 }

@@ -306,5 +306,43 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     break;
             }
         }
+
+        private void RunOnceOnActivationManual()
+        {
+            this.Resize += new EventHandler(TFrmGLBatch_Resize);
+        }
+
+        private bool FWindowIsMaximized = false;
+        void TFrmGLBatch_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Maximized)
+            {
+                // set the flag that we are maximized
+                FWindowIsMaximized = true;
+                if (tabRecurringGLBatch.SelectedTab == this.tpgBatches)
+                {
+                    ucoRecurringTransactions.AutoSizeGrid();
+                    Console.WriteLine("Maximised - autosizing transactions");
+                }
+                else if (tabRecurringGLBatch.SelectedTab == this.tpgTransactions)
+                {
+                    ucoRecurringBatches.AutoSizeGrid();
+                    Console.WriteLine("Maximised - autosizing batches");
+                }
+                else
+                {
+                    ucoRecurringBatches.AutoSizeGrid();
+                    ucoRecurringTransactions.AutoSizeGrid();
+                }
+            }
+            else if (FWindowIsMaximized && (this.WindowState == FormWindowState.Normal))
+            {
+                // we have been maximized but now are normal.  In this case we need to re-autosize the cells because otherwise they are still 'stretched'.
+                ucoRecurringBatches.AutoSizeGrid();
+                ucoRecurringTransactions.AutoSizeGrid();
+                FWindowIsMaximized = false;
+                Console.WriteLine("Normal - autosizing both");
+            }
+        }
     }
 }

@@ -142,6 +142,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ucoBatches.Focus();
             HookupAllInContainer(ucoBatches);
             HookupAllInContainer(ucoTransactions);
+            this.Resize += new EventHandler(TFrmGiftBatch_Resize);
+        }
+
+        private bool FWindowIsMaximized = false;
+        void TFrmGiftBatch_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Maximized)
+            {
+                // set the flag that we are maximized
+                FWindowIsMaximized = true;
+                if (tabGiftBatch.SelectedTab == this.tpgBatches)
+                {
+                    ucoTransactions.AutoSizeGrid();
+                    Console.WriteLine("Maximised - autosizing transactions");
+                }
+                else
+                {
+                    ucoBatches.AutoSizeGrid();
+                    Console.WriteLine("Maximised - autosizing batches");
+                }
+            }
+            else if (FWindowIsMaximized && (this.WindowState == FormWindowState.Normal))
+            {
+                // we have been maximized but now are normal.  In this case we need to re-autosize the cells because otherwise they are still 'stretched'.
+                ucoBatches.AutoSizeGrid();
+                ucoTransactions.AutoSizeGrid();
+                FWindowIsMaximized = false;
+                Console.WriteLine("Normal - autosizing both");
+            }
         }
 
         /// <summary>
