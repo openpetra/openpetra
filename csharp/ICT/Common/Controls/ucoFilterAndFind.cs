@@ -1839,6 +1839,7 @@ namespace Ict.Common.Controls
                         ClearArgumentCtrlButton.ImageAlign = ContentAlignment.BottomCenter;
                         ClearArgumentCtrlButton.ImageList = imlButtonIcons;
                         ClearArgumentCtrlButton.ImageIndex = 0;  // start off with 'normal' appearance
+                        ClearArgumentCtrlButton.TabStop = false;
                         ClearArgumentCtrlButton.MouseHover += delegate
                         {
                             ClearArgumentCtrlButton.ImageIndex = 1;
