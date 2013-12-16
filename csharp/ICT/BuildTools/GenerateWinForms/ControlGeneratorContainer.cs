@@ -1550,7 +1550,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     && (findComparisonValue != "EndsWith")
                     && (findComparisonValue != "Contains"))
                 {
-                    throw new NotSupportedException("Only the following comaparisons are allowed: gt, gte, lt, lte, eq, StartsWith, EndsWith, Contains");
+                    throw new NotSupportedException(
+                        "Only the following comaparisons are allowed: gt, gte, lt, lte, eq, StartsWith, EndsWith, Contains");
                 }
             }
 

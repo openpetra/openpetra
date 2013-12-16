@@ -206,6 +206,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private void SetBudgetDefaultView()
         {
             DataView myDataView = FMainDS.ABudget.DefaultView;
+
             myDataView.AllowNew = false;
             myDataView.Sort = String.Format("{0} ASC, {1} ASC", ABudgetTable.GetCostCentreCodeDBName(), ABudgetTable.GetAccountCodeDBName());
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);

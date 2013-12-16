@@ -357,6 +357,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 // set the flag that we are maximized
                 FWindowIsMaximized = true;
+
                 if (tabGLBatch.SelectedTab == this.tpgBatches)
                 {
                     ucoTransactions.AutoSizeGrid();

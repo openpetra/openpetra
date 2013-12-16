@@ -1057,7 +1057,7 @@ namespace Ict.Petra.Client.CommonControls
 
                         string columnText = ARow[columnName].ToString().ToLower();
                         string controlTextLower = controlText.ToLower();
-                        
+
                         // Just do a case-insensitive comparison of the text (contains, startswith or endswith)
                         if (iffp.FindComparison.EndsWith("%{0}%'") && columnText.Contains(controlTextLower))
                         {
