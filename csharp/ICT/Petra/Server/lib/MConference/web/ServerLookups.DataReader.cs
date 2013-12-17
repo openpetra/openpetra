@@ -362,14 +362,14 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             {
                 ConferenceTable = PcConferenceAccess.LoadAll(Transaction);
                 UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction);
-                PartnerLocationTable = PPartnerLocationAccess.LoadAll(Transaction);
+                PartnerLocationTable = PPartnerLocationAccess.LoadViaPPartner(APartnerKey, Transaction);
 
                 DateTime Start = new DateTime();
                 DateTime End = new DateTime();
 
                 foreach (PPartnerLocationRow PartnerLocationRow in PartnerLocationTable.Rows)
                 {
-                    if (PartnerLocationRow.PartnerKey == APartnerKey)
+                    if ((PartnerLocationRow.DateEffective != null) || (PartnerLocationRow.DateGoodUntil != null))
                     {
                         if (PartnerLocationRow.DateEffective != null)
                         {
@@ -380,6 +380,8 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                         {
                             End = (DateTime)PartnerLocationRow.DateGoodUntil;
                         }
+
+                        break;
                     }
                 }
 
@@ -408,7 +410,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                     AddRow.End = End;
                 }
 
-                AddRow.CurrencyCode = "USD";
+                AddRow.CurrencyCode = ((PUnitRow)UnitTable.Rows[0]).OutreachCostCurrencyCode;
 
                 // add new row to database table
                 ConferenceTable.Rows.Add(AddRow);

@@ -31,10 +31,12 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Server.MConference.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -369,6 +371,43 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
 
             return UnitTable;
+        }
+
+        /// <summary>
+        /// Check if a PUnit record has a corresponding PcConference record in the db
+        /// </summary>
+        /// <param name="APartnerKey">match long for partner key</param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean IsPUnitAConference(Int64 APartnerKey)
+        {
+            Boolean NewTransaction;
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                PcConferenceTable ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
+
+                if (ConferenceTable.Count == 0)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.IsPUnitAConference: commit own transaction.");
+                }
+            }
         }
     }
 }

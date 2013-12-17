@@ -295,7 +295,6 @@ namespace Ict.Tools.DataDumpPetra2
             string[] BudgetYears = new string[3];
 
             List <string[]>BudgetPeriodRows = new List <string[]>();
-            List <string>Revisions = new List <string>();
             string LedgerNumber = string.Empty;
             int RowCounter = 0;
             int SequenceNumber = 0;
