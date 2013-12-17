@@ -1405,7 +1405,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
-            
         /// <summary>
         /// If the PPartner record on the server has changed since the start of the import process,
         /// I need to abort, with a note to the user.

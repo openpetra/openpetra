@@ -401,7 +401,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             // initialize list of existing options (events) for import of a new partner
             FExistingPartnerOptions.Clear();
             FExistingPartnerOldLinks.Clear();
-            
+
             if (!PPartnerAccess.Exists(FPartnerKey, ATransaction))
             {
                 // look for partners that have the same original key.
@@ -959,14 +959,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 ShortTermApplicationRow.StFieldCharged = ShortTermApplicationRow.RegistrationOffice;
             }
 
-            if (!FIgnoreApplication && !(ShortTermApplicationRow.IsStConfirmedOptionNull() || ShortTermApplicationRow.StConfirmedOption == 0))
+            if (!FIgnoreApplication && !(ShortTermApplicationRow.IsStConfirmedOptionNull() || (ShortTermApplicationRow.StConfirmedOption == 0)))
             {
                 PmShortTermApplicationAccess.AddOrModifyRecord(
                     ShortTermApplicationRow.PartnerKey,
                     ShortTermApplicationRow.ApplicationKey,
                     ShortTermApplicationRow.RegistrationOffice,
                     FMainDS.PmShortTermApplication, ShortTermApplicationRow, FDoNotOverwrite, ATransaction);
-                
+
                 ARecordAddedOrModified = true;
             }
         }
@@ -1022,7 +1022,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     YearProgramApplicationRow.ApplicationKey,
                     YearProgramApplicationRow.RegistrationOffice,
                     FMainDS.PmYearProgramApplication, YearProgramApplicationRow, FDoNotOverwrite, ATransaction);
-                
+
                 ARecordAddedOrModified = true;
             }
         }
@@ -1046,6 +1046,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         private void ImportApplication(TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
         {
             Boolean RecordAddedOrModified = false;
+
             FIgnoreApplication = FIgnorePartner;
 
             PtApplicationTypeRow ApplicationTypeRow = FMainDS.PtApplicationType.NewRowTyped();
@@ -1061,14 +1062,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             GeneralApplicationRow.AppTypeName = ApplicationTypeRow.AppTypeName;
             GeneralApplicationRow.GenAppDate = ReadDate();
             GeneralApplicationRow.OldLink = ReadString();
-            
+
             if (FExistingPartnerOldLinks.Contains(GeneralApplicationRow.OldLink))
             {
                 // if there is already an application with this "OldLink" then don't import this one
-                AddVerificationResult("OldLink already exists for this Person: " + GeneralApplicationRow.OldLink + ". This application will not be imported!");
+                AddVerificationResult(
+                    "OldLink already exists for this Person: " + GeneralApplicationRow.OldLink + ". This application will not be imported!");
                 FIgnoreApplication = true;
             }
-            
+
             GeneralApplicationRow.GenApplicantType = ReadString();
             GeneralApplicationRow.GenApplicationHoldReason = ReadString();
             GeneralApplicationRow.GenApplicationOnHold = ReadBoolean();
@@ -1141,7 +1143,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     FExistingPartnerOldLinks.Add(GeneralApplicationRow.OldLink);
                 }
-                
+
                 PmGeneralApplicationAccess.AddOrModifyRecord(
                     GeneralApplicationRow.PartnerKey,
                     GeneralApplicationRow.ApplicationKey,
@@ -1261,7 +1263,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PersonLanguageRow.YearsOfExperienceAsOf = ReadNullableDate();
             PersonLanguageRow.Comment = ReadString();
 
-            if (!FIgnorePartner && PersonLanguageRow.LanguageCode != "")
+            if (!FIgnorePartner && (PersonLanguageRow.LanguageCode != ""))
             {
                 PmPersonLanguageAccess.AddOrModifyRecord(PersonLanguageRow.PartnerKey,
                     PersonLanguageRow.LanguageCode,
