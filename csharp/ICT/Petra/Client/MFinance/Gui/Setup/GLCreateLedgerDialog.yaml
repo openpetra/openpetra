@@ -6,10 +6,20 @@ RootNode:
     FormType: dialog
     Template: window
     WindowWidth: 600
-    WindowHeight: 405
+    WindowHeight: 500
     Controls:
         pnlDialogContent:
-            Controls: [nudLedgerNumber, txtLedgerName, cmbCountryCode, cmbBaseCurrency, cmbIntlCurrency, dtpCalendarStartDate, nudNumberOfPeriods, nudCurrentPeriod, nudNumberOfFwdPostingPeriods, chkActivateGiftReceipting, txtStartingReceiptNumber, chkActivateAccountsPayable]
+            Controls: [grpGeneral, grpCurrencies, grpAccountingPeriods, grpSubsystems]
+
+        grpGeneral: {Label=General, Stretch=horizontally}
+            Controls: [nudLedgerNumber, txtLedgerName, cmbCountryCode]            
+        grpCurrencies: {Label=Currencies, Stretch=horizontally}
+            Controls: [cmbBaseCurrency, cmbIntlCurrency]            
+        grpAccountingPeriods: {Label=Accounting Periods, Stretch=horizontally}
+            Controls: [dtpCalendarStartDate, nudNumberOfPeriods, nudCurrentPeriod, nudNumberOfFwdPostingPeriods]
+        grpSubsystems: {Label=Subsystems, Stretch=horizontally}
+            Controls: [chkActivateGiftReceipting, txtStartingReceiptNumber, chkActivateAccountsPayable]
+
         nudLedgerNumber: {OnChange=LedgerNumberChanged}
         txtLedgerName: {Width=300}
         cmbCountryCode: {List=CountryList}

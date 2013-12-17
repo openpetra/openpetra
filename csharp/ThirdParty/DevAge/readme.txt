@@ -6,8 +6,9 @@ based on the source code of SourceGrid as of July 16, 2012
 File SourceGrid.dll:
 --------------------
 Built from the downloaded source code of SourceGrid, plus our changes described above. This is used with OpenPetra!
-The latest version is 4.40.5081.39414, dated 29 November 2013, size 536KB - this fixes all bugs and features below
+The latest version is 4.40.5099.15393, dated 17 December 2013, size 536KB - this fixes all bugs and features below
 
+(Version number 4.40.5081.39414, dated 29 November 2013, size 536KB - this fixed bugs 1 to 6 below
 (Version number 4.40.5049.27439, dated 28 October 2013, size 536KB - this fixed bugs 1 to 5 below
 (Version number 4.40.5029.25553, dated 8 October 2013, size 536KB - this fixed bugs 1 to 4 below)
 (Version number 4.40.4937.16700, dated 8 July 2013, size 536KB - this fixed bugs 1 to 3 below)
@@ -44,6 +45,9 @@ Most important of all was the realisation that we absolutely needed to have our 
 ==== 6.  Changes made to the Special Grid Key Handler
 There was a bug in the key handler which meant that the TAB, ENTER and ESC keys did not work as intended when using edit-in-place. This bug was simple to fix, but then additional functionality was added so that ENTER when pressed with SHIFT or CTRL had additional functionality.  SHIFT+ENTER completes the edit and moves down one row in the same column.  CTRL+ENTER completes the edit and moves to the start of the row below.  ENTER moves the focus to the next editable cell in the row, so we can cope with grids with multiple editable columns, even when they are separated by non-editable columns.
 
+==== 7.  Change to fix a bug when we use our DoubleClickHeader event
+Made a small change to the grid that fixed an issue when we use this event.  Added an 'if' clause to the grid so that it does not sort a column that is being resized.  Without this change we could not double click a header to auto-Resize it without also sorting it!  The grid handled this in a different way but our use of the new event kind of exposed this grid 'bug'.
+
 All the changes made for this are commented with // AlanP:
 
 Files affected:
@@ -55,6 +59,8 @@ Files affected:
 /Selection/IGridSelection.cs
 /Selection/RowSelection.cs
 /Selection/SelectionBase.cs
+/Cells/Controllers/Resizable.cs
+/Cells/Controllers/SortableHeader.cs
 
 Other changes
 -------------

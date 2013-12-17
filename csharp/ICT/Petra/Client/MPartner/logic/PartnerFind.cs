@@ -170,10 +170,6 @@ namespace Ict.Petra.Client.MPartner
  *              }
  *          };
  */
-
-
-            // First get rid of columns of previous searches...
-            FDataGrid.Columns.Clear();
             LocalisedStrings.GetLocStrCounty(out LocalisedCountyLabel, out dummy);
 
             // done this way in case it changes

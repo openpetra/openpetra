@@ -53,7 +53,7 @@ namespace Ict.Petra.Client.MReporting.Gui
     public class TFrmPetraReportingUtils : TFrmPetraUtils
     {
         /// <summary>
-        /// Delegate for call before LoadSettings is startin (for pre processing)
+        /// Delegate for call before LoadSettings is starting (for pre processing)
         /// </summary>
         public delegate void TDelegateLoadSettingsStarting();
 
@@ -63,6 +63,10 @@ namespace Ict.Petra.Client.MReporting.Gui
         public delegate void TDelegateLoadSettingsFinished(TParameterList AParameters);
 
         /// <summary>
+        /// Delegate to replace the reporting engine
+        /// </summary>
+        public delegate void TDelegateGenerateReportOverride(TRptCalculator ACalc);
+        /// <summary>
         /// Reference to the Delegate for call before LoadSettings is starting (for pre processing)
         /// </summary>
         private TDelegateLoadSettingsStarting FDelegateLoadSettingsStarting;
@@ -71,6 +75,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// Reference to the Delegate for call after LoadSettings is finished (for post processing)
         /// </summary>
         private TDelegateLoadSettingsFinished FDelegateLoadSettingsFinished;
+
+        private TDelegateGenerateReportOverride FDelegateGenerateReportOverride;
+        private TDelegateGenerateReportOverride FDelegateViewReportOverride;
 
         /// <summary>number of columns that can be sorted</summary>
         public const Int32 NUMBER_SORTBY = 3;
@@ -155,6 +162,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             FDontResizeForm = false;
             FDelegateLoadSettingsStarting = null;
             FDelegateLoadSettingsFinished = null;
+            FDelegateGenerateReportOverride = null;
+            FDelegateViewReportOverride = null;
         }
 
         /// set caption of window, used to build window title
@@ -189,6 +198,45 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FDelegateLoadSettingsFinished = value;
             }
         }
+
+        /// <summary>
+        /// This property allows an alternative reporting engine to be used.
+        /// </summary>
+        /// <description>Seting this prevents the standard call to GenerateReport.</description>
+        public TDelegateGenerateReportOverride DelegateGenerateReportOverride
+        {
+            set
+            {
+                FDelegateGenerateReportOverride = value;
+            }
+        }
+
+        /// <summary>
+        /// This property Provides a link to show the FastReports Template.
+        /// </summary>
+        /// <description>Setting this Shows the toolbar button and menu option.</description>
+        public TDelegateGenerateReportOverride DelegateViewReportOverride
+        {
+            set
+            {
+                FDelegateViewReportOverride = value;
+                ToolStripItem tbbItm = ((ToolStripItem)((ToolStrip)FWinForm.Controls["tbrMain"]).Items["tbbEditTemplate"]);
+
+                if (tbbItm != null)
+                {
+                    tbbItm.Visible = true;
+                }
+
+                ToolStripItem mniItm =
+                    ((ToolStripMenuItem)((MenuStrip)FWinForm.Controls["mnuMain"]).Items["mniFile"]).DropDownItems["mniEditTemplate"];
+
+                if (mniItm != null)
+                {
+                    mniItm.Visible = true;
+                }
+            }
+        }
+
 
         /// <summary>
         /// returns the string that is to be displayed in the menuitem
@@ -437,6 +485,19 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
+        /// Show The template for the report
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void MI_ShowTemplate_Click(System.Object sender, System.EventArgs e)
+        {
+            if (FDelegateViewReportOverride != null)
+            {
+                FDelegateViewReportOverride(FCalculator);
+            }
+        }
+
+        /// <summary>
         /// Generate a report, called by menu item or toolbar button.
         /// Can also cancel a currently running report thread.
         /// </summary>
@@ -483,12 +544,19 @@ namespace Ict.Petra.Client.MReporting.Gui
             MakeCancelButtonAvailable();
             TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
 
-            if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
+            if (FDelegateGenerateReportOverride != null)
             {
-                ((IFrmReporting) this.FTheForm).EnableBusy(true);
-                FGenerateReportThread = new Thread(GenerateReport);
-                FGenerateReportThread.IsBackground = true;
-                FGenerateReportThread.Start();
+                FDelegateGenerateReportOverride(FCalculator);
+            }
+            else
+            {
+                if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
+                {
+                    ((IFrmReporting) this.FTheForm).EnableBusy(true);
+                    FGenerateReportThread = new Thread(GenerateReport);
+                    FGenerateReportThread.IsBackground = true;
+                    FGenerateReportThread.Start();
+                }
             }
         }
 
@@ -627,7 +695,10 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         delegate void CrossThreadUpdate ();
 
-        void UpdateParentFormEndOfReport()
+        /// <summary>
+        /// Remove the Wait Cursor
+        /// </summary>
+        public void UpdateParentFormEndOfReport()
         {
             if (FWinForm.InvokeRequired)
             {

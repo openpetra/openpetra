@@ -30,6 +30,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Verification;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
@@ -140,7 +141,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 String.Format("{0}={1}", AGiftBatchTable.GetBatchNumberDBName(), ABatchNumber);
             Int32 RowToSelect = GetDataTableRowIndexByPrimaryKeys(ALedgerNumber, ABatchNumber);
 
-            RefreshBankCostCentreAndAccountCodes();
+            RefreshBankAccountAndCostCentreData();
             SetupExtraGridFunctionality();
 
             // if this form is readonly, then we need all codes, because old codes might have been used
@@ -224,7 +225,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AGiftBatchTable.GetBatchNumberDBName()
                 );
 
-            RefreshBankCostCentreAndAccountCodes();
+            RefreshBankAccountAndCostCentreData();
             SetupExtraGridFunctionality();
 
             // if this form is readonly, then we need all codes, because old codes might have been used
@@ -256,7 +257,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FBatchLoaded = true;
 
             UpdateRecordNumberDisplay();
-            Console.WriteLine("End LoadBatches: took {0} ms", (DateTime.Now - dtStart).TotalMilliseconds);
         }
 
         private void SetupAccountAndCostCentreCombos(bool AActiveOnly = true, AGiftBatchRow ARow = null)
@@ -277,7 +277,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void RefreshBankCostCentreAndAccountCodes()
+        private void RefreshBankAccountAndCostCentreFilters(bool AActiveOnly, AGiftBatchRow ARow = null)
+        {
+            if (FActiveOnly != AActiveOnly)
+            {
+                FActiveOnly = AActiveOnly;
+                cmbDetailBankAccountCode.Filter = TFinanceControls.PrepareAccountFilter(true, false, AActiveOnly, true, "");
+                cmbDetailBankCostCentre.Filter = TFinanceControls.PrepareCostCentreFilter(true, false, AActiveOnly, true);
+
+                if (ARow != null)
+                {
+                    cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1);
+                    cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
+                }
+            }
+        }
+
+        private void RefreshBankAccountAndCostCentreData()
         {
             //Populate CostCentreList variable
             DataTable costCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
@@ -794,7 +810,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             bool ActiveOnly = (ARow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
-            SetupAccountAndCostCentreCombos(ActiveOnly, ARow);
+            RefreshBankAccountAndCostCentreFilters(ActiveOnly, ARow);
 
             if (ARow.BatchStatus == MFinanceConstants.BATCH_CANCELLED)
             {
@@ -1421,7 +1437,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ParseHashTotal(ARow);
 
             //Check if the user has made a Bank Cost Centre or Account Code inactive
-            RefreshBankCostCentreAndAccountCodes();
+            //this was removed because of speed issues!
+            //RefreshBankCostCentreAndAccountCodes();
 
             TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict, FAccountTable, FCostCentreTable);
@@ -1462,6 +1479,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ffInstance.DisplayMember = cmbDetailBankAccountCode.DisplayMember;
             ffInstance.ValueMember = cmbDetailBankAccountCode.ValueMember;
             ffInstance.DataSource = ((DataView)cmbDetailBankAccountCode.cmbCombobox.DataSource).ToTable().DefaultView;
+
+            ffInstance = (TCmbAutoComplete)FFindPanelControls.FindControlByName(cmbDetailBankCostCentre.Name);
+            ffInstance.DisplayMember = cmbDetailBankCostCentre.DisplayMember;
+            ffInstance.ValueMember = cmbDetailBankCostCentre.ValueMember;
+            ffInstance.DataSource = ((DataView)cmbDetailBankCostCentre.cmbCombobox.DataSource).ToTable().DefaultView;
+
+            ffInstance = (TCmbAutoComplete)FFindPanelControls.FindControlByName(cmbDetailBankAccountCode.Name);
+            ffInstance.DisplayMember = cmbDetailBankAccountCode.DisplayMember;
+            ffInstance.ValueMember = cmbDetailBankAccountCode.ValueMember;
+            ffInstance.DataSource = ((DataView)cmbDetailBankAccountCode.cmbCombobox.DataSource).ToTable().DefaultView;
+
+            grdDetails.DoubleClickHeaderCell += new TDoubleClickHeaderCellEventHandler(grdDetails_DoubleClickHeaderCell);
+            grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
+
+            AutoSizeGrid();
         }
 
         /// <summary>
@@ -1473,6 +1505,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 grdDetails.Focus();
             }
+        }
+
+        /// <summary>
+        /// Fired when the user double clicks a header cell.  We use this to autoSize the specified column.
+        /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="e"></param>
+        protected void grdDetails_DoubleClickHeaderCell(object Sender, SourceGrid.ColumnEventArgs e)
+        {
+            if ((grdDetails.Columns[e.Column].AutoSizeMode & SourceGrid.AutoSizeMode.EnableAutoSize) == SourceGrid.AutoSizeMode.None)
+            {
+                grdDetails.Columns[e.Column].AutoSizeMode |= SourceGrid.AutoSizeMode.EnableAutoSize;
+                grdDetails.AutoSizeCells(new SourceGrid.Range(1, e.Column, grdDetails.Rows.Count - 1, e.Column));
+            }
+        }
+
+        /// <summary>
+        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
+        /// </summary>
+        public void AutoSizeGrid()
+        {
+            //TODO: Using this manual code until we can do something better
+            //      Autosizing all the columns is very time consuming when there are many rows
+            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
+            {
+                column.Width = 100;
+                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
+            }
+
+            grdDetails.Columns[1].Width = 120;
+            grdDetails.Columns[3].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
+
+            grdDetails.AutoStretchColumnsToFitWidth = true;
+            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
+            grdDetails.AutoSizeCells();
+            grdDetails.ShowCell(FPrevRowChangedRow);
         }
     }
 }

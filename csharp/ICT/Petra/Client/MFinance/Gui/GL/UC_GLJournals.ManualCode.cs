@@ -529,6 +529,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             btnGetSetExchangeRate.Click += new EventHandler(SetExchangeRateValue);
             cmbDetailTransactionCurrency.SelectedValueChanged +=
                 new System.EventHandler(ResetCurrencyExchangeRate);
+
+            grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
         }
 
         private void SetExchangeRateValue(Object sender, EventArgs e)

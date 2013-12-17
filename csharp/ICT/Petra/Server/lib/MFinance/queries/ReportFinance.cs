@@ -142,12 +142,18 @@ namespace Ict.Petra.Server.MFinance.queries
                 resultTable.Columns.Add("a_reference_c", typeof(string));
                 resultTable.Columns.Add("a_narrative_c", typeof(string));
 
+                Boolean InternationalCurrency = AParameters.Get("param_currency").ToString() == "International";
+                Double ExchangeRate = 1.00;  // TODO Get exchange rate!
+
                 foreach (DataRow r in resultTable.Rows)
                 {
                     r["a_transaction_amount_n"] = Convert.ToDecimal(r["GiftTransactionAmount"]);
                     r["a_amount_in_base_currency_n"] = Convert.ToDecimal(r["GiftBaseAmount"]);
-                    // TODO convert to international currency, etc
-                    // r["a_amount_in_intl_currency_n"] = Convert.ToDecimal(r["GiftBaseAmount"]) * GetExchangeRate;
+
+                    if (InternationalCurrency)
+                    {
+                        r["a_amount_in_intl_currency_n"] = (Decimal)(Convert.ToDouble(r["GiftBaseAmount"]) * ExchangeRate);
+                    }
 
                     r["a_reference_c"] = StringHelper.PartnerKeyToStr(Convert.ToInt64(r["RecipientKey"]));
                     r["a_narrative_c"] = r["RecipientShortname"].ToString();

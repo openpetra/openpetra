@@ -504,6 +504,8 @@ namespace Ict.Common.Controls
             #region CATALOGI18N
 
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.btnCloseFilter.Text = Catalog.GetString("X");
+            this.lblTitle.Text = Catalog.GetString("List Filter");
             #endregion
         }
 
@@ -1839,6 +1841,7 @@ namespace Ict.Common.Controls
                         ClearArgumentCtrlButton.ImageAlign = ContentAlignment.BottomCenter;
                         ClearArgumentCtrlButton.ImageList = imlButtonIcons;
                         ClearArgumentCtrlButton.ImageIndex = 0;  // start off with 'normal' appearance
+                        ClearArgumentCtrlButton.TabStop = false;
                         ClearArgumentCtrlButton.MouseHover += delegate
                         {
                             ClearArgumentCtrlButton.ImageIndex = 1;
