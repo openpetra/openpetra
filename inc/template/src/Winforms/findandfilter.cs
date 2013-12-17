@@ -418,13 +418,25 @@ void FucoFilterAndFind_ApplyFilterClicked(object sender, TUcoFilterAndFind.TCont
 void ApplyFilter()
 {
     // Get the current filter and optionally call manual code so user can modify it, if necessary
-    FCurrentActiveFilter = FFilterPanelControls.GetCurrentFilter(
-        FucoFilterAndFind == null || FucoFilterAndFind.IsCollapsed,
-        (FucoFilterAndFind == null) ? TUcoFilterAndFind.FilterContext.None : FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed,
-        FFilterAndFindParameters.ShowFilterIsAlwaysOnLabelContext);
-    {#APPLYFILTERMANUAL}
+    string previousFilter = FCurrentActiveFilter;
 
-    ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView.RowFilter = FCurrentActiveFilter;
+    try
+    {
+        FCurrentActiveFilter = FFilterPanelControls.GetCurrentFilter(
+            FucoFilterAndFind == null || FucoFilterAndFind.IsCollapsed,
+            (FucoFilterAndFind == null) ? TUcoFilterAndFind.FilterContext.None : FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed,
+            FFilterAndFindParameters.ShowFilterIsAlwaysOnLabelContext);
+        {#APPLYFILTERMANUAL}
+
+        ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView.RowFilter = FCurrentActiveFilter;
+    }
+    catch (Exception)
+    {
+        MessageBox.Show(MCommonResourcestrings.StrErrorInFilterCriterion, MCommonResourcestrings.StrFilterTitle,
+            MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+        FCurrentActiveFilter = previousFilter;
+    }
 
     UpdateRecordNumberDisplay();
     SetRecordNumberDisplayProperties();
