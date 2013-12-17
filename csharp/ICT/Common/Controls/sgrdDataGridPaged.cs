@@ -354,7 +354,7 @@ namespace Ict.Common.Controls
 
         /// <summary>
         /// Gets called as soon as the Server function has finished returning the first
-        /// page of data. 
+        /// page of data.
         ///
         /// </summary>
         /// <returns>void</returns>
@@ -362,38 +362,38 @@ namespace Ict.Common.Controls
         {
 //TLogging.Log("DataTransferDone: FTotalRecords: " + FTotalRecords.ToString() + "; FPageSize: " + FPageSize.ToString());
 
-            if (AAddEmptyRows) 
+            if (AAddEmptyRows)
             {
                 AddEmptyRows();
-//TLogging.Log("DataTransferDone: empty rows added to the Grid.");                
+//TLogging.Log("DataTransferDone: empty rows added to the Grid.");
             }
 
             FDataTransferDone = true;
-            
+
             // Setup the ArrayList that keeps track of which pages of data have already been retrieved
             ResetPaging();
         }
 
         /// <summary>
         /// Adds the necessary amount of empty rows (all apart from the Rows that make up the first 'Data Page')
-        /// to make the Grid appear as if it has already loaded *all* the Rows with *all* the data so 
-        ///   1) that the user can see the appropriately sized vertical scrollbar; 
+        /// to make the Grid appear as if it has already loaded *all* the Rows with *all* the data so
+        ///   1) that the user can see the appropriately sized vertical scrollbar;
         ///   2) that the user can scroll to anywhere in the total amount of Rows.
         /// </summary>
         /// <remarks>
         /// <em>CAUTION</em>: Calling .AutoSizeCells() can take a considerable amount of time if there
-        /// are many Cells to auto-size (ie. the combination of Columns and Rows is high), that is, if 
+        /// are many Cells to auto-size (ie. the combination of Columns and Rows is high), that is, if
         /// <see cref="AddEmptyRows" /> has been run before a call to .AutoSizeCells(). To avoid that,
-        /// call the Method <see cref="LoadFirstDataPage" /> with Argument 'AAddEmptyRows' set to *false*, and 
+        /// call the Method <see cref="LoadFirstDataPage" /> with Argument 'AAddEmptyRows' set to *false*, and
         /// call <see cref="AddEmptyRows" /> ONLY AFTER you have called .AutoSizeCells() (which will the only take
-        /// the first Data Page's rows into consideration for the auto-sizing, but that is why it will not be slow!)         
+        /// the first Data Page's rows into consideration for the auto-sizing, but that is why it will not be slow!)
         /// </remarks>
         public void AddEmptyRows()
         {
             DataRow EmptyRow;
-            
+
             this.SuspendLayout();
-            
+
             // Add empty rows if needed (these allow scrolling in the DataGrid!)
             try
             {
@@ -410,12 +410,12 @@ namespace Ict.Common.Controls
             {
                 MessageBox.Show("Empty rows cannot be added to the grid (because of DB constraints)", "Exception");
             }
-            
+
             this.ResumeLayout();
-            
+
             this.RecalcCustomScrollBars();
         }
-        
+
         /// <summary>
         /// Needs to be called as soon as it is desired to display the first 'Page' of data.
         /// </summary>
@@ -425,10 +425,10 @@ namespace Ict.Common.Controls
         /// </param>
         /// <param name="AAddEmptyRows">Whether empty Rows for the data that *hasn't* been loaded
         /// in the first 'Data Page' should be added, or not. Set this to false if you are planning to call
-        /// .AutoSizeCells() on the Grid and there is a possibility that there could be more than a couple of hundred 
-        /// records in total. The reason is that calling .AutoSizeCells() can take a considerable amount of time if there  
+        /// .AutoSizeCells() on the Grid and there is a possibility that there could be more than a couple of hundred
+        /// records in total. The reason is that calling .AutoSizeCells() can take a considerable amount of time if there
         /// are many Cells to autosize (ie. the combination of Columns and Rows is high). If set to false, a separate
-        /// call to the Method <see cref="AddEmptyRows" /> needs to be made by the caller after .AutoSizeCells() 
+        /// call to the Method <see cref="AddEmptyRows" /> needs to be made by the caller after .AutoSizeCells()
         /// has been called on the Grid to add the empty rows at that point in time! (This results in the AutoSize only
         /// taking the first Data Page's rows into consideration for the auto-sizing, but that is why it will not be slow!)</param>
         /// <returns>A DataTable holding the records that fitted into the first 'Data Page'.</returns>
@@ -437,9 +437,9 @@ namespace Ict.Common.Controls
             DataTable ReturnValue;
             TDataPageLoadEventArgs CustomEventArgs;
 
-//            TLogging.Log("Enter LoadFirstDataPage...");        
+//            TLogging.Log("Enter LoadFirstDataPage...");
 //            TLogging.Log("LoadFirstDataPage:  HScrollBarVisible: " + HScrollBarVisible.ToString());
-            
+
             DeterminePageSize();
             FGetDataPagedResult = ADelegateGetDataPagedResultFunction;
             FLastHeight = this.Height;
@@ -570,7 +570,7 @@ namespace Ict.Common.Controls
             FTransferredDataPages.Clear();
             FTransferredDataPages.Add(Convert.ToInt32(0));
             FPerformFullLoadOnDataGridSort = false;
-//            TLogging.Log("ResetPaging finished.");            
+//            TLogging.Log("ResetPaging finished.");
         }
 
         #endregion

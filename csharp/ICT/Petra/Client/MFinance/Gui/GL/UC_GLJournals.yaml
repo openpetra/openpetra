@@ -38,10 +38,11 @@ RootNode:
             ShowApplyFilterButton: FilterContext.StandardFilterOnly
             ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
             FilterControls: [Column:JournalStatus, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency, dtpDetailDateEffective-1, dtpDetailDateEffective-2]
-            FindControls: [Column:JournalStatus, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency, dtpDetailDateEffective-1, dtpDetailDateEffective-2]
+            FindControls: [Column:JournalStatus, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency, dtpDetailDateEffective]
             ControlAttributes:
-                dtpDetailDateEffective-1: {Label=Effective date -->, Comparison=gte}
-                dtpDetailDateEffective-2: {Label=--> Effective date, Comparison=lte}
+                dtpDetailDateEffective-1: {Label=From Effective date, Comparison=gte}
+                dtpDetailDateEffective-2: {Label=To Effective date, Comparison=lte}
+                dtpDetailDateEffective: {Label=Effective date, FindComparison=eq}
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnAdd, btnCancel]
@@ -61,7 +62,7 @@ RootNode:
                 SubSystemCode: {Label=Subsystem Code}
                 TransactionTypeCode: {Label=Transaction Type}
             ActionFocusRow: FocusedRowChanged
-            ActionDoubleClick: ShowTransactionTab
+            #ActionDoubleClickCell: ShowTransactionTab     #Not supported by generator
             ActionEnterKeyPressed: ShowTransactionTab
             SortOrder: AJournal.JournalNumber DESC
             RowFilter: AJournal.BatchNumber

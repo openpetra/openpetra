@@ -34,12 +34,14 @@ RootNode:
             ShowKeepFilterTurnedOnButton: FilterContext.ExtraFilterOnly
             FilterControls: [pnlBatchFilter]
             ExtraFilterControls: [Column:BatchNumber-1, Column:BatchNumber-2, txtDetailBatchDescription, dtpDetailDateEffective-1, dtpDetailDateEffective-2]
-            FindControls: [Column:BatchNumber-1, Column:BatchNumber-2, txtDetailBatchDescription, dtpDetailDateEffective-1, dtpDetailDateEffective-2]
+            FindControls: [Column:BatchNumber, txtDetailBatchDescription, dtpDetailDateEffective]
             ControlAttributes:
-                txtBatchNumber-1: {Label=Batch number -->, Comparison=gte}
-                txtBatchNumber-2: {Label=--> Batch number, Comparison=lte}
-                dtpDetailDateEffective-1: {Label=Effective date -->, Comparison=gte}
-                dtpDetailDateEffective-2: {Label=--> Effective date, Comparison=lte}
+                txtBatchNumber: {Label=Batch number, FindComparison=StartsWith}
+                txtBatchNumber-1: {Label=From Batch number, Comparison=gte}
+                txtBatchNumber-2: {Label=To Batch number, Comparison=lte}
+                dtpDetailDateEffective-1: {Label=From Effective date, Comparison=gte}
+                dtpDetailDateEffective-2: {Label=To Effective date, Comparison=lte}
+                dtpDetailDateEffective: {Label=Effective date, FindComparison=eq}
             Panels:
                 pnlBatchFilter:
                     Controls: [rgrShowBatches, cmbYearFilter, cmbPeriodFilter]
@@ -74,7 +76,7 @@ RootNode:
                 BatchControlTotal: {Label=Hash Total, Type=Currency}
                 BatchDescription: {Label=Description}
             ActionFocusRow: FocusedRowChanged
-            ActionDoubleClick: ShowJournalTab
+            #ActionDoubleClickCell: ShowJournalTab     #Not supported by generator
             ActionEnterKeyPressed: ShowJournalTab
             SortOrder: ABatch.BatchNumber DESC
             EnableMultiSelection: false

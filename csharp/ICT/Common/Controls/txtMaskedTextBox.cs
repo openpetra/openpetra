@@ -591,24 +591,24 @@ namespace Ict.Common.Controls
                         if (this.SelectionLength > 0)
                         {
                             if (this.ControlMode == TMaskedTextBoxMode.PartnerKey)
-                            {                            
-                                try 
+                            {
+                                try
                                 {
                                     if (System.Convert.ToInt64(str) != 0)
                                     {
                                         this.SelectedText = str;
                                     }
-                                    
+
                                     ProcessChangedText(this.Text);
-                                } 
+                                }
                                 catch (System.FormatException)
-                                {                   
+                                {
                                     // Ignore this Exception as it will be raised by System.Convert.ToInt64 when
                                     // the txtPartnerKey.Text Property holds something that isn't an Int64 (that
                                     // can happen when a user pastes any string from the Clipboard into the Partner Key TextBox!)
                                 }
                                 catch (Exception)
-                                {                   
+                                {
                                     throw;
                                 }
                             }
@@ -621,28 +621,28 @@ namespace Ict.Common.Controls
                         else
                         {
                             if (this.ControlMode == TMaskedTextBoxMode.PartnerKey)
-                            {                            
-                                try 
+                            {
+                                try
                                 {
                                     if (System.Convert.ToInt64(str) != 0)
                                     {
                                         this.Text = str;
                                     }
-                                } 
+                                }
                                 catch (System.FormatException)
-                                {                   
+                                {
                                     // Ignore this Exception as it will be raised by System.Convert.ToInt64 when
                                     // the txtPartnerKey.Text Property holds something that isn't an Int64 (that
                                     // can happen when a user pastes any string from the Clipboard into the Partner Key TextBox!)
                                 }
                                 catch (Exception)
-                                {                   
+                                {
                                     throw;
                                 }
                             }
                             else
                             {
-                                this.Text = str;                                
+                                this.Text = str;
                             }
                         }
                     }

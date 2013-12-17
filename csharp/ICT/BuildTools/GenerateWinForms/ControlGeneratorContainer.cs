@@ -905,7 +905,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 TControlDef subChildCtrl;
 
-                TLogging.LogAtLevel(1, "Processing Control '" + ctrl.controlName + "'");
+                TLogging.LogAtLevel(1, "PanelGenerator:Processing Children '" + ctrl.controlName + "' (about to call base method)");
 
                 base.ProcessChildren(writer, ctrl);
 
@@ -1437,6 +1437,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     || (att.Name == "ClearValue")
                     || (att.Name == "NoLabel")
                     || (att.Name == "Comparison")
+                    || (att.Name == "FindComparison")
                     || (att.Name == "CloneToComboBox"))
                 {
                     // we have dealt with these already
@@ -1534,6 +1535,26 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
+            string findComparisonValue = String.Empty;
+
+            if ((AControlAttributesList != null) && (AControlAttributesList["FindComparison"] != null))
+            {
+                findComparisonValue = AControlAttributesList["FindComparison"].Value;
+
+                if ((findComparisonValue != "gt")
+                    && (findComparisonValue != "gte")
+                    && (findComparisonValue != "lt")
+                    && (findComparisonValue != "lte")
+                    && (findComparisonValue != "eq")
+                    && (findComparisonValue != "StartsWith")
+                    && (findComparisonValue != "EndsWith")
+                    && (findComparisonValue != "Contains"))
+                {
+                    throw new NotSupportedException(
+                        "Only the following comaparisons are allowed: gt, gte, lt, lte, eq, StartsWith, EndsWith, Contains");
+                }
+            }
+
             // Now assemble the tag string
             string strTag = String.Empty;
 
@@ -1545,6 +1566,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (comparisonValue != String.Empty)
             {
                 strTag += String.Format("{0}{1};", CommonTagString.COMPARISON_EQUALS, comparisonValue);
+            }
+
+            if (findComparisonValue != String.Empty)
+            {
+                strTag += String.Format("{0}{1};", CommonTagString.FIND_COMPARISON_EQUALS, findComparisonValue);
             }
 
             if (!AHasClearButton)

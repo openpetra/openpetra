@@ -428,71 +428,71 @@ namespace Ict.Petra.Server.MCommon
 
             TLogging.LogAtLevel(9, (this.GetType().FullName + ".ExecuteFullQuery SQL:" + FSelectSQL));
 
-			// create temp table
-			FTmpDataTable = new DataTable(FFindParameters.FPagedTable + "_for_paging");
-			
+            // create temp table
+            FTmpDataTable = new DataTable(FFindParameters.FPagedTable + "_for_paging");
+
             // Fill temporary table with query results (all records)
             FDataAdapter = null;
             DBAccess.GDBAccessObj.PrepareNextCommand();
             DBAccess.GDBAccessObj.SetTimeoutForNextCommand(60);
 
-			FDataAdapter = (DbDataAdapter)DBAccess.GDBAccessObj.SelectDA(FSelectSQL, null, FFindParameters.FParametersArray);
-			
-			if ((FFindParameters.FColumNameMapping != null) && (FDataAdapter != null))
-			{
-				PerformColumnNameMapping();
-			}
+            FDataAdapter = (DbDataAdapter)DBAccess.GDBAccessObj.SelectDA(FSelectSQL, null, FFindParameters.FParametersArray);
 
-			//
-			// Actual DB call for execution of SELECT query
-			//
-			try
-			{
-				FTotalRecords = FDataAdapter.Fill(FTmpDataTable);
-			}
-            catch(NpgsqlException Exp)
+            if ((FFindParameters.FColumNameMapping != null) && (FDataAdapter != null))
+            {
+                PerformColumnNameMapping();
+            }
+
+            //
+            // Actual DB call for execution of SELECT query
+            //
+            try
+            {
+                FTotalRecords = FDataAdapter.Fill(FTmpDataTable);
+            }
+            catch (NpgsqlException Exp)
             {
                 if (Exp.Code == "57014")  // Exception with Code 57014 is what Npgsql raises as a response to a Cancel request of a Command
                 {
-                        TLogging.LogAtLevel(7, this.GetType().FullName + ".ExecuteFullQuery: Query got cancelled; proper reply from Npgsql!");
+                    TLogging.LogAtLevel(7, this.GetType().FullName + ".ExecuteFullQuery: Query got cancelled; proper reply from Npgsql!");
                 }
                 else
                 {
-                    TLogging.Log(this.GetType().FullName + ".ExecuteFullQuery: Query got cancelled; general NpgsqlException occured: " + Exp.ToString());                    
+                    TLogging.Log(this.GetType().FullName + ".ExecuteFullQuery: Query got cancelled; general NpgsqlException occured: " + Exp.ToString());
                 }
 
                 FAsyncExecProgress.ProgressInformation = "Query cancelled!";
-				FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;
-				return;                    
-            }			
-			catch (Exception Exp)
-			{
+                FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;
+                return;
+            }
+            catch (Exception Exp)
+            {
                 TLogging.LogAtLevel(7, this.GetType().FullName + ".ExecuteFullQuery: Query got cancelled; general Exception occured: " + Exp.ToString());
-                
-				FAsyncExecProgress.ProgressInformation = "Query cancelled!";
-				FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;
-				
-				return;
-			}           
-                
-			/*
-			 * Check if query execution cancellation was requested - this is only a back-stop for the corner case where
-			 * the user cancelled the query after the query execution was finished by the DB (if the user had cancelled
-			 * while the query was still being executed by the DB, the appropriate Exception would have be handled in the
-			 * Exception handler above and this Method would have already been exited!)
-			 */
-			if (FAsyncExecProgress.FCancelExecution)
-			{
+
+                FAsyncExecProgress.ProgressInformation = "Query cancelled!";
+                FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;
+
+                return;
+            }
+
+            /*
+             * Check if query execution cancellation was requested - this is only a back-stop for the corner case where
+             * the user cancelled the query after the query execution was finished by the DB (if the user had cancelled
+             * while the query was still being executed by the DB, the appropriate Exception would have be handled in the
+             * Exception handler above and this Method would have already been exited!)
+             */
+            if (FAsyncExecProgress.FCancelExecution)
+            {
                 TLogging.LogAtLevel(7, this.GetType().FullName + ".ExecuteFullQuery: Query got cancelled (FCancelExecution = true)!");
-                
-				FAsyncExecProgress.ProgressInformation = "Query cancelled!";
-				FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;
-				
-				return;
-			}
 
+                FAsyncExecProgress.ProgressInformation = "Query cancelled!";
+                FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;
 
-			TLogging.LogAtLevel(7, (this.GetType().FullName + ".ExecuteFullQuery: FDataAdapter.Fill finished. FTotalRecords: " + FTotalRecords.ToString()));
+                return;
+            }
+
+            TLogging.LogAtLevel(7,
+                (this.GetType().FullName + ".ExecuteFullQuery: FDataAdapter.Fill finished. FTotalRecords: " + FTotalRecords.ToString()));
 
             FPageDataTable = FTmpDataTable.Clone();
             FPageDataTable.TableName = FFindParameters.FSearchName;
@@ -601,7 +601,7 @@ namespace Ict.Petra.Server.MCommon
         private void CopyRowsInPage(Int16 APage, Int16 APageSize)
         {
             TLogging.LogAtLevel(7, String.Format("TPagedDataSet.CopyRowsInPage called (APage: {0}, APageSize={1})", APage, APageSize));
-            
+
             Int32 RowInPage;
             Int32 MaxRowInPage;
 
@@ -616,29 +616,29 @@ namespace Ict.Petra.Server.MCommon
             {
                 FPageDataTable.ImportRow(FTmpDataTable.Rows[RowInPage]);
             }
-            
+
             TLogging.LogAtLevel(7, String.Format("TPagedDataSet.CopyRowsInPage imported {0} rows into FPageDataTable", RowInPage));
         }
 
-		/// <summary>
-		/// Creates a mapping between the names of the fields in the DB and how they
-		/// should be named in the resulting DataTable.
-		///
-		/// </summary>
-		/// <returns>void</returns>
-		private void PerformColumnNameMapping()
-		{
-			DataTableMapping AliasNames;
-			IDictionaryEnumerator ColumNameMappingEnumerator;
+        /// <summary>
+        /// Creates a mapping between the names of the fields in the DB and how they
+        /// should be named in the resulting DataTable.
+        ///
+        /// </summary>
+        /// <returns>void</returns>
+        private void PerformColumnNameMapping()
+        {
+            DataTableMapping AliasNames;
+            IDictionaryEnumerator ColumNameMappingEnumerator;
 
-			AliasNames = FDataAdapter.TableMappings.Add(FFindParameters.FPagedTable + "_for_paging", FFindParameters.FPagedTable + "_for_paging");
-			ColumNameMappingEnumerator = FFindParameters.FColumNameMapping.GetEnumerator();
+            AliasNames = FDataAdapter.TableMappings.Add(FFindParameters.FPagedTable + "_for_paging", FFindParameters.FPagedTable + "_for_paging");
+            ColumNameMappingEnumerator = FFindParameters.FColumNameMapping.GetEnumerator();
 
-			while (ColumNameMappingEnumerator.MoveNext())
-			{
-				AliasNames.ColumnMappings.Add(ColumNameMappingEnumerator.Key.ToString(), ColumNameMappingEnumerator.Value.ToString());
-			}
-		}
+            while (ColumNameMappingEnumerator.MoveNext())
+            {
+                AliasNames.ColumnMappings.Add(ColumNameMappingEnumerator.Key.ToString(), ColumNameMappingEnumerator.Value.ToString());
+            }
+        }
 
         /// <summary>
         /// Cancels an asynchronously executing query. This might take some time;
@@ -648,24 +648,26 @@ namespace Ict.Petra.Server.MCommon
         /// <returns>void</returns>
         public void StopQuery()
         {
-            TLogging.LogAtLevel(7, (this.GetType().FullName + ".StopQuery: ProgressState = " + Enum.GetName(typeof(TAsyncExecProgressState), FAsyncExecProgress.ProgressState)));
-                                
+            TLogging.LogAtLevel(7,
+                (this.GetType().FullName + ".StopQuery: ProgressState = " +
+                 Enum.GetName(typeof(TAsyncExecProgressState), FAsyncExecProgress.ProgressState)));
+
             try
             {
-			    if (FAsyncExecProgress.ProgressState == TAsyncExecProgressState.Aeps_Stopping)
-			    {                    
+                if (FAsyncExecProgress.ProgressState == TAsyncExecProgressState.Aeps_Stopping)
+                {
                     // Cancel the executing query.
                     TLogging.LogAtLevel(7, "TPagedDataSet.StopQuery called...");
                     FDataAdapter.SelectCommand.Cancel();
                     TLogging.LogAtLevel(7, "TPagedDataSet.StopQuery finished.");
-			    }
-			    else
-			    {
-			        TLogging.LogAtLevel(7, this.GetType().FullName + ".StopQuery: Query got cancelled after returning records.");
-			    }
-			    
-			    FAsyncExecProgress.ProgressInformation = "Query cancelled!";
-				FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;			    
+                }
+                else
+                {
+                    TLogging.LogAtLevel(7, this.GetType().FullName + ".StopQuery: Query got cancelled after returning records.");
+                }
+
+                FAsyncExecProgress.ProgressInformation = "Query cancelled!";
+                FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;
             }
             catch (Exception exp)
             {

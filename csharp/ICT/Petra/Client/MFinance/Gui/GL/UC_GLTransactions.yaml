@@ -36,10 +36,10 @@ RootNode:
             FilterControls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, dtpDetailTransactionDate-1, dtpDetailTransactionDate-2, Column:TransactionAmount-1, Column:TransactionAmount-2]
             FindControls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, dtpDetailTransactionDate-1, dtpDetailTransactionDate-2, Column:TransactionAmount-1, Column:TransactionAmount-2]
             ControlAttributes:
-                dtpDetailTransactionDate-1: {Label=Transaction date -->, Comparison=gte}
-                dtpDetailTransactionDate-2: {Label=--> Transaction date, Comparison=lte}
-                txtTransactionAmount-1: {Label=Dr/Cr amount -->, Comparison=gte}
-                txtTransactionAmount-2: {Label=--> Dr/Cr amount, Comparison=lte}
+                dtpDetailTransactionDate-1: {Label=From Transaction date, Comparison=gte}
+                dtpDetailTransactionDate-2: {Label=To Transaction date, Comparison=lte}
+                txtTransactionAmount-1: {Label=From Dr/Cr amount, Comparison=gte}
+                txtTransactionAmount-2: {Label=To Dr/Cr amount, Comparison=lte}
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete, btnDeleteAll]

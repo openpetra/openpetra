@@ -255,7 +255,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FLogic = new TPartnerFindScreenLogic();
             FLogic.ParentForm = this;
 
-            lblSearchInfo.Text = "";         
+            lblSearchInfo.Text = "";
         }
 
         private TFrmPetraUtils FPetraUtilsObject;
@@ -464,7 +464,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void GrdResult_DataPageLoading(System.Object Sender, TDataPageLoadEventArgs e)
         {
 //            TLogging.Log("DataPageLoading:  Page: " + e.DataPage.ToString());
-            
+
             if (e.DataPage > 0)
             {
                 this.Cursor = Cursors.WaitCursor;
@@ -476,7 +476,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void GrdResult_DataPageLoaded(System.Object Sender, TDataPageLoadEventArgs e)
         {
 //            TLogging.Log("DataPageLoaded:  Page: " + e.DataPage.ToString());
-            
+
             if (e.DataPage > 0)
             {
                 this.Cursor = Cursors.Default;
@@ -1064,7 +1064,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void CreateGrid()
         {
             this.grdResult = new Ict.Common.Controls.TSgrdDataGridPaged();
-            
+
             this.grdResult.AutoFindColumn = ((short)(-1));
             this.grdResult.BackColor = System.Drawing.SystemColors.ControlDark;
             this.grdResult.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -1106,7 +1106,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FLogic.DataGrid = grdResult;
         }
-        
+
         /// <summary>
         /// Sets up the DataBinding of the Grid.
         ///
@@ -1130,7 +1130,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Sets up the visual appearance of the Grid.
         /// </summary>
         /// <remarks><em>Caution:</em>Do not call this Method with <paramref name="AAutoSizeCells" /> set to true
-        /// if the Grid holds more than a few hundred Rows, as the Grid will take quite a time for the auto-sizing 
+        /// if the Grid holds more than a few hundred Rows, as the Grid will take quite a time for the auto-sizing
         /// calculation!</remarks>
         /// <returns>void</returns>
         private void SetupDataGridVisualAppearance(bool AAutoSizeCells = true)
@@ -1139,11 +1139,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             ((TSgrdTextColumn)grdResult.Columns[2]).BoldRightBorder = true;
 
 //            TLogging.Log("grdResult.Rows.Count: " + grdResult.Rows.Count.ToString());
-            
-            if (AAutoSizeCells) 
+
+            if (AAutoSizeCells)
             {
-                grdResult.AutoSizeCells();    
-            }            
+                grdResult.AutoSizeCells();
+            }
         }
 
         #endregion
@@ -1213,7 +1213,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 CreateGrid();
 
-                // Update UI                
+                // Update UI
                 grpResult.Text = MPartnerResourcestrings.StrSearchResult;
 
                 if (FPartnerInfoUC != null)
@@ -1274,7 +1274,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 // Stop asynchronous search operation
                 FPartnerFindObject.AsyncExecProgress.Cancel();
-            } 
+            }
         }
 
         private void BtnClearCriteria_Click(System.Object sender, System.EventArgs e)
@@ -1288,11 +1288,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             lblSearchInfo.Text = "";
             grpResult.Text = MPartnerResourcestrings.StrSearchResult;
-            
-            if (grdResult != null) 
+
+            if (grdResult != null)
             {
-                grdResult.SendToBack();              
-            }            
+                grdResult.SendToBack();
+            }
 
             OnPartnerAvailable(false);
             OnDisableAcceptButton();
@@ -1570,7 +1570,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 catch (Exception)
                 {
                     throw;
-                }                
+                }
 
                 // Enable/disable according to how the search operation ended
                 if (Convert.ToBoolean(AEnable))
@@ -1581,7 +1581,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         if (FPagedDataTable.Rows.Count > 0)
                         {
                             btnSearch.Enabled = false;
-                            
+
                             // At least one result was found by the search operation
                             lblSearchInfo.Text = "";
 
@@ -1591,12 +1591,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                             //
                             SetupResultDataGrid();
 //                            TLogging.Log("After SetupResultDataGrid()");
-                            
-                            // For speed reasons we must add the necessary amount of emtpy Rows only here (after .AutoSizeCells() has already 
+
+                            // For speed reasons we must add the necessary amount of emtpy Rows only here (after .AutoSizeCells() has already
                             // been run! See XML Comment on the called Method TSgrdDataGridPaged.AddEmptyRows() for details!
-                            grdResult.AddEmptyRows();  
+                            grdResult.AddEmptyRows();
 //                            TLogging.Log("After AddEmptyRows()");
-                            
+
                             grdResult.BringToFront();
 //                            TLogging.Log("After BringToFront()");
 
@@ -1617,14 +1617,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                             grpResult.Text = MPartnerResourcestrings.StrSearchResult + ": " + grdResult.TotalRecords.ToString() + ' ' +
                                              SearchTarget + ' ' +
                                              MPartnerResourcestrings.StrFoundText;
-                            
+
                             // StatusBar update
                             FPetraUtilsObject.SetStatusBarText(btnSearch, MPartnerResourcestrings.StrSearchButtonHelpText);
                             Application.DoEvents();
-                            
+
                             btnSearch.Enabled = true;
-                            
-                            this.Cursor = Cursors.Default;                            
+
+                            this.Cursor = Cursors.Default;
                         }
                         else
                         {
@@ -1671,7 +1671,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 Application.DoEvents();
 
                                 btnSearch.Enabled = true;
-                                
+
                                 FCurrentGridRow = -1;
                             }
                             else
@@ -1696,7 +1696,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         OnPartnerAvailable(false);
                         btnSearch.Enabled = true;
-                        
+
                         // StatusBar update
 
                         FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrGenericReady);
@@ -1772,8 +1772,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // Fetch the first page of data
                         try
                         {
-                            // For speed reasons we must add the necessary amount of emtpy Rows only *after* .AutoSizeCells()  
-                            // has already been run! See XML Comment on the called Method  
+                            // For speed reasons we must add the necessary amount of emtpy Rows only *after* .AutoSizeCells()
+                            // has already been run! See XML Comment on the called Method
                             // TSgrdDataGridPaged.LoadFirstDataPage for details!
                             FPagedDataTable = grdResult.LoadFirstDataPage(@GetDataPagedResult, false);
 //TLogging.Log("grdResult.LoadFirstDataPage finished. FPagedDataTable.Rows.Count: " + FPagedDataTable.Rows.Count.ToString());
@@ -1879,7 +1879,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public DataTable GetDataPagedResult(Int16 ANeededPage, Int16 APageSize, out Int32 ATotalRecords, out Int16 ATotalPages)
         {
             DataTable ReturnValue = null;
-            
+
 //TLogging.Log(String.Format("GetDataPagedResult got called (ANeededPage: {0}, APageSize: {1}).", ANeededPage, APageSize));
             ATotalRecords = 0;
             ATotalPages = 0;
@@ -1888,9 +1888,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 ReturnValue = FPartnerFindObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
             }
-            
+
 //TLogging.Log(String.Format("GetDataPagedResult finished (ATotalRecords: {0}, ATotalPages: {1}, DataTable.RowsCount: {2}).", ATotalRecords, ATotalPages, ReturnValue.Rows.Count.ToString()));
-            return ReturnValue;            
+            return ReturnValue;
         }
 
         /// <summary>
