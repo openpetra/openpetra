@@ -59,7 +59,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private DateTime EndDateLastForwardingPeriod;
         private string FCurrentBatchViewOption = MFinanceConstants.GL_BATCH_VIEW_EDITING;
         private Int32 FSelectedYear;
-        private Int32 FSelectedPeriod;
+        private Int32 FSelectedPeriod = -1;
+        private string FPeriodText = String.Empty;
         private DateTime FDefaultDate;
 
         private bool FSuppressRefreshFilter = false;
@@ -1070,6 +1071,35 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
+            if (sender is TCmbAutoComplete)
+            {
+                if (FucoFilterAndFind.CanIgnoreChangeEvent)
+                {
+                    return;
+                }
+
+                int newYear = cmbYearFilter.GetSelectedInt32();
+                int newPeriod = cmbPeriodFilter.GetSelectedInt32();
+                string newPeriodText = cmbPeriodFilter.Text;
+
+                if (FSelectedYear == newYear)
+                {
+                    if ((newPeriod == -1) && (newPeriodText != String.Empty))
+                    {
+                        Console.WriteLine("Skipping period {0} periodText {1}", newPeriod, newPeriodText);
+                        return;
+                    }
+
+                    if ((newPeriod == FSelectedPeriod) && (newPeriodText == FPeriodText))
+                    {
+                        Console.WriteLine("Skipping period {0} periodText {1}", newPeriod, newPeriodText);
+                        return;
+                    }
+                }
+
+                Console.WriteLine("Using period {0} periodText {1}", newPeriod, newPeriodText);
+            }
+
             //Record the current batch
             if (FPreviouslySelectedDetailRow != null)
             {
@@ -1121,9 +1151,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FSelectedYear = cmbYearFilter.GetSelectedInt32();
             FSelectedPeriod = cmbPeriodFilter.GetSelectedInt32();
+            FPeriodText = cmbPeriodFilter.Text;
 
             FPeriodFilter = String.Format(
-                "{0} = {1} AND ",
+                "{0} = {1}",
                 ABatchTable.GetBatchYearDBName(), FSelectedYear);
 
             if (FSelectedPeriod == 0)
@@ -1132,15 +1163,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
 
                 FPeriodFilter += String.Format(
-                    "{0} >= {1}",
+                    " AND {0} >= {1}",
                     ABatchTable.GetBatchPeriodDBName(), Ledger.CurrentPeriod);
             }
-            else
+            else if (FSelectedPeriod > 0)
             {
                 FPeriodFilter += String.Format(
-                    "{0} = {1}",
+                    " AND {0} = {1}",
                     ABatchTable.GetBatchPeriodDBName(), FSelectedPeriod);
             }
+
+            Console.WriteLine(" ** " + FPeriodFilter);
 
             if (rbtEditing.Checked)
             {
@@ -1182,18 +1215,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
 
             string rowFilter = String.Format("({0}) AND ({1})", FPeriodFilter, FStatusFilter);
-            FFilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == 0) && (FCurrentBatchViewOption == MFinanceConstants.GIFT_BATCH_VIEW_ALL));
+            FFilterPanelControls.SetBaseFilter(rowFilter, (FSelectedPeriod == -1) && (FCurrentBatchViewOption == MFinanceConstants.GL_BATCH_VIEW_ALL));
             ApplyFilter();
 
-            newRowToSelectAfterFilter = (batchNumber > 0) ? GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, batchNumber) : -1;
+            newRowToSelectAfterFilter = (batchNumber > 0) ? GetDataTableRowIndexByPrimaryKeys(FLedgerNumber, batchNumber) : FPrevRowChangedRow;
 
-            if (newRowToSelectAfterFilter != -1)
+            if (sender is TCmbAutoComplete)
             {
-                SelectDetailRowByDataTableIndex(newRowToSelectAfterFilter);
+                grdDetails.SelectRowWithoutFocus(newRowToSelectAfterFilter);
             }
             else
             {
-                SelectRowInGrid(1);
+                SelectRowInGrid(newRowToSelectAfterFilter);
             }
         }
 
@@ -1518,7 +1551,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TCmbAutoComplete cmbPeriodFilter = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbPeriodFilter");
 
             FSuppressRefreshFilter = true;
-            TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref cmbPeriodFilter, FLedgerNumber, cmbYearFilter.GetSelectedInt32());
+            TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref cmbPeriodFilter, FLedgerNumber, cmbYearFilter.GetSelectedInt32(), -1, true);
+
+            if (sender is TCmbAutoComplete)
+            {
+                FPetraUtilsObject.ClearControl(cmbPeriodFilter);
+            }
+
             FSuppressRefreshFilter = false;
 
             if (sender != null)
@@ -1548,14 +1587,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Shows the Filter/Find UserControl and switches to the Find Tab.
-        /// </summary>
-        public void ShowFindPanel()
-        {
-            FucoFilterAndFind.DisplayFindTab();
-        }
-
-        /// <summary>
         /// A simple flag used to indicate that the form has been shown for the first time
         /// </summary>
         private bool FInitialFocusActionComplete = false;
@@ -1580,6 +1611,55 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             FInitialFocusActionComplete = true;
+        }
+
+        private void RunOnceOnParentActivationManual()
+        {
+            grdDetails.DoubleClickHeaderCell += new TDoubleClickHeaderCellEventHandler(grdDetails_DoubleClickHeaderCell);
+            grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowJournalTab);
+
+            AutoSizeGrid();
+        }
+
+        /// <summary>
+        /// Fired when the user double clicks a header cell.  We use this to autoSize the specified column.
+        /// </summary>
+        /// <param name="Sender"></param>
+        /// <param name="e"></param>
+        protected void grdDetails_DoubleClickHeaderCell(object Sender, SourceGrid.ColumnEventArgs e)
+        {
+            if ((grdDetails.Columns[e.Column].AutoSizeMode & SourceGrid.AutoSizeMode.EnableAutoSize) == SourceGrid.AutoSizeMode.None)
+            {
+                grdDetails.Columns[e.Column].AutoSizeMode |= SourceGrid.AutoSizeMode.EnableAutoSize;
+                grdDetails.AutoSizeCells(new SourceGrid.Range(1, e.Column, grdDetails.Rows.Count - 1, e.Column));
+            }
+        }
+
+        /// <summary>
+        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
+        /// </summary>
+        public void AutoSizeGrid()
+        {
+            //TODO: Using this manual code until we can do something better
+            //      Autosizing all the columns is very time consuming when there are many rows
+            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
+            {
+                column.Width = 100;
+                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
+            }
+
+            grdDetails.Columns[0].Width = 80;
+            grdDetails.Columns[6].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
+
+            grdDetails.AutoStretchColumnsToFitWidth = true;
+            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
+            grdDetails.AutoSizeCells();
+            grdDetails.ShowCell(FPrevRowChangedRow);
+        }
+
+        private void CreateFilterFindPanelsManual()
+        {
+            ((Label)FFindPanelControls.FindControlByName("lblBatchNumber")).Text = "Batch number";
         }
     }
 }

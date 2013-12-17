@@ -76,7 +76,7 @@ namespace Tests.MConference.OnlineBackend
         [Test, Explicit]
         public void TestRefreshAttendees()
         {
-            TAttendeeManagement.RefreshAttendees(EventPartnerKey, EventCode);
+            TAttendeeManagement.RefreshAttendees(EventPartnerKey);
         }
 
         /// <summary>

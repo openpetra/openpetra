@@ -135,7 +135,7 @@ OpenPetra:
 
                     Mailing-related:
                         Mailings: {Label=Mailings, Description=Maintain Mailings, ActionOpenScreen=TFrmMailingSetup}
-						
+
             #MoreFunctions:
                 #SetupPartnerModule:
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
@@ -215,10 +215,11 @@ OpenPetra:
                         MonthEnd: {Description:Close a month, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndMonth}
                         YearEnd: {Description:Close a year, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndYear}
                     ICHProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.ICH}
-                        ICHStewardshipCalculation: {ActionOpenScreen=TFrmReportingPeriodSelectionDialog, ReportingPeriodSelectionMode=rpsmICHStewardshipCalc}
+                        StewardshipCalculation: {ActionOpenScreen=TFrmStewardshipCalculation, ReportingPeriodSelectionMode=rpsmICHStewardshipCalc}
+                        StewardshipReports: {ActionOpenScreen=TFrmStewardshipReports}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
-                        AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}
+#                       AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}
                         TrialBalance: {ActionOpenScreen=TFrmTrialBalance}
                         HOSA: {Description: Home Office Statement of Accounts, ActionOpenScreen=TFrmHOSA}
                         SurplusDeficit: {ActionOpenScreen=TFrmSurplusDeficit}
@@ -361,10 +362,13 @@ OpenPetra:
         ConferenceManagement: {Icon=conference.ico, PermissionsRequired=CONFERENCE, DependsOnConference=true}
             Main: {SkipThisLevel=true}
                 Conference: {Namespace=Ict.Petra.Client.MConference.Gui, DontShowNestedTasksAsLinks=true}
-                    Conference:    
+                    Conference:
                         SelectConference: {Description=Select a Conference to work on, ActionOpenScreen=TFrmConferenceFindForm}
                         NewConference: {Namespace=Ict.Petra.Client.MConference.Gui, Description=Create a new Conference, ActionClick=TConferenceMain.NewConference}
                         DeleteConference: {Label=Delete This Conference, Description="Careful: Delete the conference with all conference data", ActionClick=TDeleteConference.DeleteThisConference}
+                    Attendees:
+                        AttendeeList: {Namespace=Ict.Petra.Client.MConference.Gui, Description=Browse Conference Attendees, ActionClick=TConferenceMain.AttendeeListForSelectedConference}
+                        RefreshAttendees: {Namespace=Ict.Petra.Client.MConference.Gui, Description=Refresh conference attendees after adding/importing new attendees, ActionClick=TConferenceMain.RefreshAttendees}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MConference, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
                     Reports:
                         AbsenteeReport: {ActionOpenScreen=TFrmAbsenteeReport}

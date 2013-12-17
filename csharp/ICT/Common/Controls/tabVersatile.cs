@@ -971,7 +971,7 @@ namespace Ict.Common.Controls
             else if ((e.KeyCode == Keys.Tab) && (e.Control && e.Shift))
             {
                 // MessageBox.Show('CTRL+SHIFT+TAB pressed. Current SelectedIndex: ' + SelIndex.ToString);
-                for (Counter1 = SelIndex - 1; Counter1 <= 0; Counter1 -= 1)
+                for (Counter1 = SelIndex - 1; Counter1 >= 0; Counter1 -= 1)
                 {
                     if (this.TabPages[Counter1].Enabled)
                     {
@@ -992,7 +992,7 @@ namespace Ict.Common.Controls
 
                 if (!TabFound)
                 {
-                    for (Counter2 = this.TabPages.Count - 1; Counter2 <= 0; Counter2 -= 1)
+                    for (Counter2 = this.TabPages.Count - 1; Counter2 >= 0; Counter2 -= 1)
                     {
                         if (this.TabPages[Counter2].Enabled)
                         {

@@ -79,6 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             /// </summary>
             public Boolean? CanDelete;
             public Boolean IsNew;
+            public String Msg;
             /// <summary>..and here's the actual data! </summary>
             public ACostCentreRow CostCentreRow;
         };
@@ -483,12 +484,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 bool RemoteCanBeParent = false;
                 bool RemoteCanDelete = false;
+                String RemoteMsg = "";
 
                 if (TRemote.MFinance.Setup.WebConnectors.GetCostCentreAttributes(FLedgerNumber, nodeDetails.CostCentreRow.CostCentreCode,
-                        out RemoteCanBeParent, out RemoteCanDelete))
+                        out RemoteCanBeParent, out RemoteCanDelete, out RemoteMsg))
                 {
                     nodeDetails.CanHaveChildren = RemoteCanBeParent;
                     nodeDetails.CanDelete = RemoteCanDelete;
+                    nodeDetails.Msg = RemoteMsg;
                 }
             }
 
@@ -703,7 +706,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
             else
             {
-                MessageBox.Show(Catalog.GetString("This Cost Centre Code is in use and cannot be deleted."));
+                MessageBox.Show(
+                    Catalog.GetString("This Cost Centre Code is in use and cannot be deleted.") + "\n" + NodeDetails.Msg,
+                    Catalog.GetString("Delete Cost Centre"));
             }
         }
 

@@ -29,7 +29,7 @@ RootNode:
             Action: actDelete
         btnRefreshGrid: {NoLabel=true, Width=50}
             Action: actRefreshGrid
-            Help: Refresh Extract List (e.g. after a new extract has been created)
+            Tooltip: Refresh Extract List (e.g. after a new extract has been created)
         grdDetails:
             Dock: Fill
             Columns: [MExtractMaster.ExtractName, MExtractMaster.CreatedBy, MExtractMaster.KeyCount, MExtractMaster.ExtractDesc, MExtractMaster.DateCreated, MExtractMaster.Deletable]

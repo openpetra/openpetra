@@ -64,6 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FMainDS.AAccount.Merge(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber));
 
                 LoadDataAndFinishScreenSetup();
+                SelectRowInGrid(1);
 
                 // set up combobox with accounts available for set up as suspense accounts
                 TFinanceControls.InitialiseAccountList(ref cmbDetailSuspenseAccountCode, FLedgerNumber, true, false, false, false);

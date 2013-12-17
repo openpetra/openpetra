@@ -12,7 +12,8 @@ RootNode:
     Events:
         Load: {class=System.EventHandler, method=TFrmRecurringGLBatch_Load}    
     Actions:
-        actEditFind: {ActionClick=ShowFindPanel}
+        actEditFind: {ActionClick=mniFilterFind_Click}
+        actEditFilter: {ActionClick=mniFilterFind_Click}
 
     Controls:
         pnlContent:

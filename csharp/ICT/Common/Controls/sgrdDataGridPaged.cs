@@ -358,11 +358,42 @@ namespace Ict.Common.Controls
         ///
         /// </summary>
         /// <returns>void</returns>
-        private void DataTransferDone()
+        private void DataTransferDone(bool AAddEmptyRows)
+        {
+//TLogging.Log("DataTransferDone: FTotalRecords: " + FTotalRecords.ToString() + "; FPageSize: " + FPageSize.ToString());
+
+            if (AAddEmptyRows)
+            {
+                AddEmptyRows();
+//TLogging.Log("DataTransferDone: empty rows added to the Grid.");
+            }
+
+            FDataTransferDone = true;
+
+            // Setup the ArrayList that keeps track of which pages of data have already been retrieved
+            ResetPaging();
+        }
+
+        /// <summary>
+        /// Adds the necessary amount of empty rows (all apart from the Rows that make up the first 'Data Page')
+        /// to make the Grid appear as if it has already loaded *all* the Rows with *all* the data so
+        ///   1) that the user can see the appropriately sized vertical scrollbar;
+        ///   2) that the user can scroll to anywhere in the total amount of Rows.
+        /// </summary>
+        /// <remarks>
+        /// <em>CAUTION</em>: Calling .AutoSizeCells() can take a considerable amount of time if there
+        /// are many Cells to auto-size (ie. the combination of Columns and Rows is high), that is, if
+        /// <see cref="AddEmptyRows" /> has been run before a call to .AutoSizeCells(). To avoid that,
+        /// call the Method <see cref="LoadFirstDataPage" /> with Argument 'AAddEmptyRows' set to *false*, and
+        /// call <see cref="AddEmptyRows" /> ONLY AFTER you have called .AutoSizeCells() (which will the only take
+        /// the first Data Page's rows into consideration for the auto-sizing, but that is why it will not be slow!)
+        /// </remarks>
+        public void AddEmptyRows()
         {
             DataRow EmptyRow;
 
-            // MessageBox.Show('FTotalRecords: ' + FTotalRecords.ToString + '; FPageSize: ' + FPageSize.ToString);
+            this.SuspendLayout();
+
             // Add empty rows if needed (these allow scrolling in the DataGrid!)
             try
             {
@@ -380,26 +411,34 @@ namespace Ict.Common.Controls
                 MessageBox.Show("Empty rows cannot be added to the grid (because of DB constraints)", "Exception");
             }
 
-            FDataTransferDone = true;
+            this.ResumeLayout();
 
-            // Setup the ArrayList that keeps track of which pages of data have already been retrieved
-            ResetPaging();
+            this.RecalcCustomScrollBars();
         }
 
         /// <summary>
-        /// Needs to be called as soon as it is desired to display the first page of data.
-        ///
-        /// @comment All further pages are loaded by the control on demand.
-        ///
+        /// Needs to be called as soon as it is desired to display the first 'Page' of data.
         /// </summary>
+        /// <remarks>All further pages are loaded by the control on demand!</remarks>
         /// <param name="ADelegateGetDataPagedResultFunction">Delegate function that gets called
         /// when a Page of data needs to be retrieved.
         /// </param>
-        /// <returns>void</returns>
-        public DataTable LoadFirstDataPage(TDelegateGetDataPagedResult ADelegateGetDataPagedResultFunction)
+        /// <param name="AAddEmptyRows">Whether empty Rows for the data that *hasn't* been loaded
+        /// in the first 'Data Page' should be added, or not. Set this to false if you are planning to call
+        /// .AutoSizeCells() on the Grid and there is a possibility that there could be more than a couple of hundred
+        /// records in total. The reason is that calling .AutoSizeCells() can take a considerable amount of time if there
+        /// are many Cells to autosize (ie. the combination of Columns and Rows is high). If set to false, a separate
+        /// call to the Method <see cref="AddEmptyRows" /> needs to be made by the caller after .AutoSizeCells()
+        /// has been called on the Grid to add the empty rows at that point in time! (This results in the AutoSize only
+        /// taking the first Data Page's rows into consideration for the auto-sizing, but that is why it will not be slow!)</param>
+        /// <returns>A DataTable holding the records that fitted into the first 'Data Page'.</returns>
+        public DataTable LoadFirstDataPage(TDelegateGetDataPagedResult ADelegateGetDataPagedResultFunction, bool AAddEmptyRows = true)
         {
             DataTable ReturnValue;
             TDataPageLoadEventArgs CustomEventArgs;
+
+//            TLogging.Log("Enter LoadFirstDataPage...");
+//            TLogging.Log("LoadFirstDataPage:  HScrollBarVisible: " + HScrollBarVisible.ToString());
 
             DeterminePageSize();
             FGetDataPagedResult = ADelegateGetDataPagedResultFunction;
@@ -415,7 +454,7 @@ namespace Ict.Common.Controls
                 // Fetch the first page of data
                 FPagedDataTable = FGetDataPagedResult(0, FPageSize, out FTotalRecords, out FTotalPages);
                 ReturnValue = FPagedDataTable;
-                DataTransferDone();
+                DataTransferDone(AAddEmptyRows);
 
                 // Fire OnDataPageLoaded event.
                 CustomEventArgs = new TDataPageLoadEventArgs();
@@ -431,6 +470,7 @@ namespace Ict.Common.Controls
 
             FGridInitialised = true;
 
+//            TLogging.Log("LoadFirstDataPage is finished.");
             return ReturnValue;
         }
 
@@ -451,7 +491,7 @@ namespace Ict.Common.Controls
                 CustomEventArgs.DataPage = ANeededPage;
                 this.OnDataPageLoading(CustomEventArgs);
 
-                // MessageBox.Show('Retrieving Page ' + ANeededPage.ToString + '...');
+//                TLogging.Log("Retrieving Page " + ANeededPage.ToString() + "...");
 
                 Int32 CurrentTotalRecords;  // These two values should be the same as FTotalRecords
                 Int16 CurrentTotalPages;    // and FTotalPages, which were set when the first page was loaded.
@@ -462,7 +502,7 @@ namespace Ict.Common.Controls
                     FTransferredDataPages.Add(ANeededPage);
                     Int32 IdxBase = ANeededPage * FPageSize;
 
-                    // MessageBox.Show('Inserting Page ' + ANeededPage.ToString + ' (PageSize: ' + FPageSize.ToString + '; Records returned: ' +  PagedTable.Rows.Count.ToString + ')...');
+//                    TLogging.Log("Inserting Page " + ANeededPage.ToString() + " (PageSize: " + FPageSize.ToString() + "; Records returned: " +  PagedTable.Rows.Count.ToString() + ")...");
                     for (Int32 Counter = 0; Counter < PagedTable.Rows.Count; Counter++)
                     {
                         DataRow TargetRow;
@@ -500,7 +540,7 @@ namespace Ict.Common.Controls
             {
                 if (!FTransferredDataPages.Contains(Counter))
                 {
-                    // MessageBox.Show('LoadSingleDataPageIntoPagedTable(' + Counter.ToString + ')');
+//                    TLogging.Log("LoadSingleDataPageIntoPagedTable(" + Counter.ToString() + ")");
                     LoadSingleDataPage(Counter);
                 }
             }
@@ -525,10 +565,12 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         private void ResetPaging()
         {
+//            TLogging.Log("ResetPaging called.");
             // Setup the ArrayList that keeps track of which pages of data have already been retrieved
             FTransferredDataPages.Clear();
             FTransferredDataPages.Add(Convert.ToInt32(0));
             FPerformFullLoadOnDataGridSort = false;
+//            TLogging.Log("ResetPaging finished.");
         }
 
         #endregion
@@ -631,7 +673,7 @@ namespace Ict.Common.Controls
                 if ((FPagedDataTable != null) && (FPagedDataTable.Rows.Count != 0))
                 {
                     // There is data in the Grid
-                    // MessageBox.Show('OnSizeChanged:  HSize;' + HSize.ToString);
+//                    TLogging.Log("OnSizeChanged:  HSize: " + HSize.ToString());
                     OnVScrollPositionChanged(null);
                 }
             }
@@ -672,12 +714,12 @@ namespace Ict.Common.Controls
 
             Application.Idle -= new EventHandler(this.OnIdle);
 
-//             TLogging.Log("OnIdle: Calling base.OnResize.");
+//            TLogging.Log("OnIdle: Calling base.OnResize.");
             this.Cursor = Cursors.WaitCursor;
             base.OnResize(e);
             this.Cursor = Cursors.Default;
 
-//             TLogging.Log("OnIdle: Called base.OnResize.");
+//            TLogging.Log("OnIdle: Called base.OnResize.");
         }
 
         /// <summary>
@@ -732,20 +774,20 @@ namespace Ict.Common.Controls
                 // causing an OnVScrollPositionChanged Event!
                 BottomRowNumber = BottomRowNumber + 1;
 
-//                TLogging.Log("TopRowNumber: " + TopRowNumber.ToString() + "; BottomRowNumber: " + BottomRowNumber.ToString());
+//                TLogging.Log("OnVScrollPositionChanged:  TopRowNumber: " + TopRowNumber.ToString() + "; BottomRowNumber: " + BottomRowNumber.ToString());
 
                 for (Counter = TopRowNumber; Counter <= BottomRowNumber; Counter++)
                 {
                     CheckPage = (int)((float)Counter / (float)FPageSize);
 
-//                    TLogging.Log("CheckPage: " + CheckPage.ToString());
+//                    TLogging.Log("OnVScrollPositionChanged:  CheckPage: " + CheckPage.ToString());
 
                     if ((CheckPage != LastCheckedPage) && (CheckPage < FTotalPages))
                     {
-//                        TLogging.Log("Checking if Page #" + CheckPage.ToString() + " is already transfered...");
+//                        TLogging.Log("OnVScrollPositionChanged:  Checking if Page #" + CheckPage.ToString() + " is already transfered...");
                         if (!FTransferredDataPages.Contains(CheckPage))
                         {
-//                            TLogging.Log("Page #" + CheckPage.ToString() + " is NOT transfered yet, requesting it from PetraServer...");
+//                            TLogging.Log("OnVScrollPositionChanged:  Page #" + CheckPage.ToString() + " is NOT transfered yet, requesting it from PetraServer...");
                             LoadSingleDataPage(CheckPage);
                         }
 
@@ -760,7 +802,7 @@ namespace Ict.Common.Controls
         #region Custom Events
         private void OnDataPageLoading(TDataPageLoadEventArgs e)
         {
-            // MessageBox.Show('OnDataPageLoading');
+//            TLogging.Log("OnDataPageLoading");
             if (DataPageLoading != null)
             {
                 DataPageLoading(this, e);
@@ -769,7 +811,7 @@ namespace Ict.Common.Controls
 
         private void OnDataPageLoaded(TDataPageLoadEventArgs e)
         {
-            // MessageBox.Show('OnDataPageLoaded');
+//            TLogging.Log("OnDataPageLoaded");
             if (DataPageLoaded != null)
             {
                 DataPageLoaded(this, e);

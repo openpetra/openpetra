@@ -68,7 +68,7 @@ namespace Ict.Petra.Server.MConference.Applications
         {
             string InputSeparator = StringHelper.GetCSVSeparator(APrintedBadgesCSV);
 
-            TAttendeeManagement.RefreshAttendees(AEventPartnerKey, AEventCode);
+            TAttendeeManagement.RefreshAttendees(AEventPartnerKey);
 
             ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
             TApplicationManagement.GetApplications(

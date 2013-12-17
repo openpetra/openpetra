@@ -15,7 +15,7 @@ RootNode:
             Image: Delete_Record.ico
     Controls:
         pnlContent:
-            Controls: [pnlInfo, pnlDetailGrid, pnlDetails]
+            Controls: [pnlInfo, pnlFilterAndFind, pnlDetailGrid, pnlDetails]
             Dock: Fill
         pnlInfo:
             Dock: Top
@@ -31,13 +31,18 @@ RootNode:
         txtControl: {ReadOnly=true, Label=Hash, Unbound=true, Format=Decimal, Width=147}
         pnlDetailGrid:
             Dock: Fill
-            Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlFilterAndFind:
+            Dock: Left
             ExpandedWidth: 170
             ShowApplyFilterButton: FilterContext.StandardFilterOnly
             ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
-            FilterControls: [Column:JournalStatus, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency]
-            FindControls: [Column:JournalStatus, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency]
+            FilterControls: [Column:JournalStatus, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency, dtpDetailDateEffective-1, dtpDetailDateEffective-2]
+            FindControls: [Column:JournalStatus, txtDetailJournalDescription, cmbDetailTransactionTypeCode, cmbDetailTransactionCurrency, dtpDetailDateEffective]
+            ControlAttributes:
+                dtpDetailDateEffective-1: {Label=From Effective date, Comparison=gte}
+                dtpDetailDateEffective-2: {Label=To Effective date, Comparison=lte}
+                dtpDetailDateEffective: {Label=Effective date, FindComparison=eq}
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnAdd, btnCancel]
@@ -57,13 +62,14 @@ RootNode:
                 SubSystemCode: {Label=Subsystem Code}
                 TransactionTypeCode: {Label=Transaction Type}
             ActionFocusRow: FocusedRowChanged
-            ActionDoubleClick: ShowTransactionTab
+            #ActionDoubleClickCell: ShowTransactionTab     #Not supported by generator
             ActionEnterKeyPressed: ShowTransactionTab
             SortOrder: AJournal.JournalNumber DESC
             RowFilter: AJournal.BatchNumber
             EnableMultiSelection: false
         pnlDetails:
             Dock: Bottom
+            Height: 185
             Controls: 
                 Row0: [txtDetailJournalDescription]
                 Row1: [cmbDetailSubSystemCode]

@@ -2220,5 +2220,20 @@ namespace Ict.Common
         /// </summary>
         /// <remarks>The 'Clear Value' is what gets set on the Control when its 'Clear Value' Button gets clicked.</remarks>
         public const string ARGUMENTCONTROLTAG_CLEARVALUE = "ClearValue";
+
+        /// <summary>
+        /// Tag for Filter/Find where multiple instances of a control are cloned (e.g. for date ranges)
+        /// </summary>
+        public const string INSTANCE_EQUALS = "Instance=";
+
+        /// <summary>
+        /// Tag for Filter/Find to modify the default comparison (e.g. gte, lt, eq etc).  Used paticularly for numeric and date comparisons
+        /// </summary>
+        public const string COMPARISON_EQUALS = "Comparison=";
+
+        /// <summary>
+        /// Tag for 'Find' to use a different comparison from the Filter one (e.g. gte, lt, eq, StartsWith etc).  Used paticularly for numeric and date comparisons
+        /// </summary>
+        public const string FIND_COMPARISON_EQUALS = "FindComparison=";
     }
 }

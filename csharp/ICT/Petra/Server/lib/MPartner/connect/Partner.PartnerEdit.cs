@@ -240,7 +240,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     {
                         AVerificationResult.Add(new TVerificationResult(
                                 "Banking Details",
-                                "there is no main account",
+                                "One Bank Account of a Partner must be set as the 'Main Account'. Please select the record that should become the 'Main Account' and choose 'Set Main Account'.",
                                 TResultSeverity.Resv_Critical));
                         return;
                     }

@@ -51,6 +51,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
         private DataTable FUnitTableList;
 
+        private long FCurrentConferenceKey = 0;
+
         #region accessor
         /// <summary>
         /// Accessor for the derived classes (Charged Field Report, Sending Field Report, ...)
@@ -88,9 +90,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             rbtFull.Checked = true;
             cmbSignOffLines.SelectedIndex = 0;
             cmbChargedFields.SelectedIndex = 0;
+            FCurrentConferenceKey = Convert.ToInt64(this.ucoConferenceSelection.ConferenceKey);
 
             ucoConferenceSelection.DisableRadioButtonAllConferences(true);
             ucoConferenceSelection.FShowSelectOutreachOptionsDialog = false;
+
+            grdFields.DoubleClickCell += new TDoubleClickCellEventHandler(grdFieldDoubleClick);
         }
 
         /// <summary>
@@ -101,16 +106,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         {
             FUnitType = AUnitType;
 
-            if (ucoConferenceSelection.ConferenceKey == grdFields.Text)
+            if ((FCurrentConferenceKey.ToString() == grdFields.Text) || (FCurrentConferenceKey == 0))
             {
                 // don't reload the grid if the confernece key didn't change
                 return;
             }
 
-            grdFields.Text = ucoConferenceSelection.ConferenceKey;
+            grdFields.Text = FCurrentConferenceKey.ToString();
 
             String ConferencePrefix;
-            long ConferenceKey = Convert.ToInt64(ucoConferenceSelection.ConferenceKey);
+            long ConferenceKey = FCurrentConferenceKey;
 
             if (ucoConferenceSelection.AllConferenceSelected)
             {
@@ -139,6 +144,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 grdFields.AddTextColumn(Catalog.GetString("Unit Name"), FUnitTableList.Columns["Unit Name"]);
             }
 
+            UpdateUnitGrid("");
+
             FUnitTableList.DefaultView.AllowNew = false;
             FUnitTableList.DefaultView.AllowEdit = true;
             FUnitTableList.DefaultView.AllowDelete = false;
@@ -146,6 +153,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             grdFields.DataSource = new DevAge.ComponentModel.BoundDataView(FUnitTableList.DefaultView);
 
             grdFields.Text = ConferenceKey.ToString();
+
+            // select all units by default
+            foreach (DataRow Row in FUnitTableList.Rows)
+            {
+                Row["Selection"] = true;
+            }
         }
 
         private void grdFields_ReadControls(TRptCalculator ACalc, TReportActionEnum AReportAction)
@@ -209,8 +222,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             rbtSummaries.Checked = (AParameters.Get("param_report_detail").ToString() == "Summary");
         }
 
-        private void grdFieldDoubleClick(System.Object sender, EventArgs e)
+        private void grdFieldDoubleClick(System.Object sender, SourceGrid.CellContextEventArgs e)
         {
+            int Row = e.CellContext.Position.Row;
+
+            if (Row >= 0)
+            {
+                FUnitTableList.DefaultView[Row]["Selection"] = (System.Object)((!(Boolean)(FUnitTableList.DefaultView[Row]["Selection"])));
+            }
         }
 
         private void SelectAll(System.Object sender, EventArgs e)
@@ -244,7 +263,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
             if (ucoConferenceSelection.AllConferenceSelected)
             {
-                FUnitTableList.DefaultView.RowFilter = "Used_in_Conference = true";
+                FUnitTableList.DefaultView.RowFilter = "Used_in_Conference = false";
             }
             else
             {
@@ -279,16 +298,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         /// <param name="AValidConference">True if conference key and conference name are from a valid conference</param>
         private void ConferenceKeyChanged(long AConferenceKey, String AConferenceName, bool AValidConference)
         {
+            FCurrentConferenceKey = AConferenceKey;
+
             if (AValidConference)
             {
-                if (ucoConferenceSelection.ConferenceKey == grdFields.Text)
+                if ((AConferenceKey.ToString() == grdFields.Text) || (AConferenceKey == 0))
                 {
                     // don't reload the grid if the confernece key didn't change
                     return;
                 }
 
                 grdFields_InitialiseData(FUnitType);
-                UpdateUnitGrid("");
             }
             else
             {

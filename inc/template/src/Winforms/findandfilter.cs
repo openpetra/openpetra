@@ -232,9 +232,16 @@ private void ToggleFilterPanel(System.Object sender, EventArgs e)
 {
     ToggleFilter();
         
-    if (sender != null)
+    if (!FucoFilterAndFind.IsCollapsed)
     {
-        (sender as Control).Focus();
+        if (FucoFilterAndFind.IsFindTabActive)
+        {
+            FFindPanelControls.FFindPanels[0].PanelControl.Focus();
+        }
+        else
+        {
+            FFilterPanelControls.FStandardFilterPanels[0].PanelControl.Focus();
+        }
     }
 }
 
@@ -423,6 +430,27 @@ void ApplyFilter()
     SetRecordNumberDisplayProperties();
 }
 
+/// Handler for the menu items Edit/Filter and Edit/Find
+/// If this is part of a user control, it can be called from the parent
+public void MniFilterFind_Click(object sender, EventArgs e)
+{
+    if (FucoFilterAndFind == null)
+    {
+        ToggleFilter();
+    }
+
+    if (((ToolStripMenuItem)sender).Name == "mniEditFind")
+    {
+        FucoFilterAndFind.DisplayFindTab();
+        FFindPanelControls.FFindPanels[0].PanelControl.Focus();
+    }
+    else
+    {
+        FucoFilterAndFind.DisplayFilterTab();
+        FFilterPanelControls.FStandardFilterPanels[0].PanelControl.Focus();
+    }
+}
+
 
 {##SNIPCLONELABEL}
 TCloneFilterFindControl.ShallowClone<Label>({#CLONEDFROMLABEL}, T{#PANELTYPE}PanelControls.{#PANELTYPEUC}_NAME_SUFFIX),
@@ -430,7 +458,7 @@ TCloneFilterFindControl.ShallowClone<Label>({#CLONEDFROMLABEL}, T{#PANELTYPE}Pan
 {##SNIPINDIVIDUALFILTERFINDPANEL}
 iffp = new TIndividualFilterFindPanel(
     {#CLONELABEL}TCloneFilterFindControl.{#CONTROLCLONE}<{#CONTROLTYPE}>({#CLONEDFROMCONTROL}, T{#PANELTYPE}PanelControls.{#PANELTYPEUC}_NAME_SUFFIX),
-    {#DETAILTABLE}Table.Get{#COLUMNNAME}DBName(),
+    {#DETAILTABLETYPE}Table.Get{#COLUMNNAME}DBName(),
     "{#COLUMNDATATYPE}",
     {#TAG});
 F{#PANELTYPE}PanelControls.F{#PANELSUBTYPE}Panels.Add(iffp);

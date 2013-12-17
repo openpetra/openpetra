@@ -650,6 +650,30 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// Whether a TabControl with both Filter and Find options is shown and whether the Find tab is the active tab.
+        /// </summary>
+        /// <returns></returns>
+        public bool IsFindTabActive
+        {
+            get
+            {
+                return FShowFindPanel && (FTabFilterAndFind.SelectedIndex == 1);
+            }
+        }
+
+        /// <summary>
+        /// Returns True if a ComboBox is firing a SelectedValueChanged event that should be ignored.
+        /// ComboBoxes that are being cleared fire an event for index 0 and then another for index -1.
+        /// </summary>
+        public bool CanIgnoreChangeEvent
+        {
+            get
+            {
+                return FIgnoreValueChangedEvent;
+            }
+        }
+
+        /// <summary>
         /// Kludge required for TCmbAutoComplete: This control requires 2 calls to set the selectedIndex to -1.
         /// This property is set to true before the first call and false afterwards.
         /// </summary>
@@ -741,6 +765,19 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// Displays the filter tab
+        /// </summary>
+        public void DisplayFilterTab()
+        {
+            this.FTabFilterAndFind.SelectedIndex = 0;
+
+            if (IsCollapsed)
+            {
+                Expand();
+            }
+        }
+
+        /// <summary>
         /// Expands (=shows) the Filter/Find Panel to its original width.
         /// </summary>
         public void Expand()
@@ -748,6 +785,7 @@ namespace Ict.Common.Controls
             if (this.Width != FInitialWidth)
             {
                 this.Width = FInitialWidth;
+                this.Visible = true;
 
                 FocusFirstArgumentControl();
 
@@ -888,6 +926,7 @@ namespace Ict.Common.Controls
             UpdateExtraFilterDisplay();
 
             SetupTitleText();
+            pnlTitle.SetDoubleBuffered(true);
 
             if ((FFindControls != null)
                 && (FFindControls.Count > 0))
@@ -1505,6 +1544,7 @@ namespace Ict.Common.Controls
             pnlFindOptions.Tag = TSingleLineFlow.BeginGroupIndicator;
             pnlFindOptions.Controls.Add(btnFindNext);
             pnlFindOptions.Controls.Add(grpFindDirection);
+            pnlFindOptions.SetDoubleBuffered(true);
 
             FPnlFindControls.Controls.Add(pnlFindOptions);
 
@@ -1799,6 +1839,7 @@ namespace Ict.Common.Controls
                         ClearArgumentCtrlButton.ImageAlign = ContentAlignment.BottomCenter;
                         ClearArgumentCtrlButton.ImageList = imlButtonIcons;
                         ClearArgumentCtrlButton.ImageIndex = 0;  // start off with 'normal' appearance
+                        ClearArgumentCtrlButton.TabStop = false;
                         ClearArgumentCtrlButton.MouseHover += delegate
                         {
                             ClearArgumentCtrlButton.ImageIndex = 1;
@@ -1985,7 +2026,7 @@ namespace Ict.Common.Controls
                     // the selected row if the first index has, say no matching rows, then the highlight will move to the top - and then
                     // an index of -1 will match all rows, but by then the highlight will have changed.
                     // DO NOT REMOVE ONE OF THE SELECTEDINDEX = -1 ROWS FOR THIS REASON
-                    FIgnoreValueChangedEvent = true;
+                    FIgnoreValueChangedEvent = (ControlToClearAsAutoComplete.SelectedIndex > 0);
                     ControlToClearAsAutoComplete.SelectedIndex = -1;
                     FIgnoreValueChangedEvent = false;
                     ControlToClearAsAutoComplete.SelectedIndex = -1;
@@ -2427,6 +2468,43 @@ namespace Ict.Common.Controls
 
         #endregion
 
+        #region Overrides
+
+        /// <summary>
+        /// This overrides the behaviour of TAB keypresses. We skip all the controls that make up the body of the filter/find panel
+        /// The two end points are the Filter/Find tabs at the bottom of the panel and the close button at the top right
+        /// This code takes us straight between these two points.
+        /// If you want to enter data in the other controls you need to use the mouse, but then you can continue tabbing through those controls.
+        ///
+        /// I had wanted to add the functionality that if you pressed CTRL+TAB you stuck with the original tab order (no skipping).
+        /// However I was thwarted by the fact that CTL+TAB switches tabs so we always switch between Filter and Find with CTRL+TAB.
+        /// </summary>
+        /// <param name="forward">True when SHIFT not pressed, false when SHIFT is pressed</param>
+        /// <returns>Handled</returns>
+        protected override bool ProcessTabKey(bool forward)
+        {
+            if (forward)
+            {
+                if (FTabFilterAndFind.Focused)
+                {
+                    btnCloseFilter.Focus();
+                    return true;
+                }
+            }
+            else
+            {
+                if (btnCloseFilter.Focused)
+                {
+                    FTabFilterAndFind.Focus();
+                    return true;
+                }
+            }
+
+            return base.ProcessTabKey(forward);
+        }
+
+        #endregion
+
         /// <summary>
         /// Helper Class for 'Argument Panels' for the TUcoFilterAndFind UserControl.
         /// </summary>
@@ -2489,6 +2567,7 @@ namespace Ict.Common.Controls
                 ArgumentPanel.Controls.Add(AControl);
 
                 ArgumentPanel.BackColor = System.Drawing.Color.Teal;
+                ArgumentPanel.SetDoubleBuffered(true);
 
 
                 return ArgumentPanel;

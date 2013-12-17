@@ -53,15 +53,15 @@ RootNode:
         btnFamilyIDHelp: {NoLabel=true}
             Action: actFamilyIDHelp
             Width: 14
-            Help: Family ID explained
+            Tooltip: Family ID explained
         btnFamilyMemberDemote: {NoLabel=true}
             Action: actFamilyMemberDemote
             Width: 14
-            Help: Demote Family ID
+            Tooltip: Demote Family ID
         btnFamilyMemberPromote: {NoLabel=true}
             Action: actFamilyMemberPromote
             Width: 14
-            Help: Promote Family ID
+            Tooltip: Promote Family ID
         btnEditFamilyID:
             Width: 108
             Action: actEditFamilyID
@@ -72,7 +72,7 @@ RootNode:
         btnRefreshGrid: {NoLabel=true}
             Action: actRefreshGrid
             Width: 14
-            Help: Refresh Family Members List (e.g. after moving Persons from/to Family)
+            Tooltip: Refresh Family Members List (e.g. after moving Persons from/to Family)
 
         txtFamilyPartnerKey: {NoLabel=true, ReadOnly=true, Type=PartnerKey}
         btnEditFamily:

@@ -41,7 +41,7 @@ RootNode:
                 BatchControlTotal: {Label=Hash Total, Type=Currency}
                 BatchDescription: {Label=Description}
             ActionFocusRow: FocusedRowChanged
-            ActionDoubleClick: ShowJournalTab
+            #ActionDoubleClickCell: ShowJournalTab     #Not supported by generator
             ActionEnterKeyPressed: ShowJournalTab
             SortOrder: ARecurringBatch.BatchNumber DESC
             EnableMultiSelection: false

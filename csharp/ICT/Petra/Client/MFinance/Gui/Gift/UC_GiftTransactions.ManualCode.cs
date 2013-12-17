@@ -90,12 +90,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="ABatchStatus"></param>
-        /// <param name="AFromTabClick">Indicates if called from a click on a tab or from grid doubleclick</param>
         public void LoadGifts(Int32 ALedgerNumber,
             Int32 ABatchNumber,
-            string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED,
-            bool AFromTabClick = true)
+            string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
+            Console.WriteLine("LoadGifts");
+            DateTime dtStart = DateTime.Now;
+
             bool firstLoad = (FLedgerNumber == -1);
 
             if (firstLoad)
@@ -123,11 +124,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     GetDetailsFromControls(GetSelectedDetailRow());
-
-                    if (AFromTabClick)
-                    {
-                        grdDetails.Focus();
-                    }
                 }
 
                 UpdateControlsProtection();
@@ -137,8 +133,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     UpdateBaseAmount(false);
                 }
 
+                Console.WriteLine("LoadGifts - Quick exit  {0} ms", (DateTime.Now - dtStart).TotalMilliseconds);
                 return;
             }
+
+            this.Cursor = Cursors.WaitCursor;
+            Application.DoEvents();
+            SuspendLayout();
 
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
@@ -155,6 +156,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FActiveOnly = this.Enabled;
 
+                Console.WriteLine("Populating ComboBoxes  {0} ms", ((DateTime.Now - dtStart).TotalMilliseconds));
                 TFinanceControls.InitialiseMotivationGroupList(ref cmbDetailMotivationGroupCode, FLedgerNumber, FActiveOnly);
                 TFinanceControls.InitialiseMotivationDetailList(ref cmbDetailMotivationDetailCode, FLedgerNumber, FActiveOnly);
                 TFinanceControls.InitialiseMethodOfGivingCodeList(ref cmbDetailMethodOfGivingCode, FActiveOnly);
@@ -172,6 +174,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // otherwise we would overwrite transactions that have already been modified
             if (FMainDS.AGiftDetail.DefaultView.Count == 0)
             {
+                Console.WriteLine("Loading transactions...  {0}", ((DateTime.Now - dtStart).TotalMilliseconds));
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
             }
 
@@ -180,16 +183,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
 
-            if (AFromTabClick)
-            {
-                grdDetails.Focus();
-            }
-
-            UpdateRecordNumberDisplay();
             SelectRowInGrid(1);
 
+            UpdateRecordNumberDisplay();
             UpdateTotals();
             UpdateControlsProtection();
+
+            ResumeLayout();
+            Console.WriteLine("LoadGifts completed  {0}", ((DateTime.Now - dtStart).TotalMilliseconds));
+            this.Cursor = Cursors.Default;
         }
 
         bool FinRecipientKeyChanging = false;
@@ -1581,6 +1583,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void RefreshAll()
         {
+            Console.WriteLine("RefreshAll()");
+
             if ((FMainDS != null) && (FMainDS.AGiftDetail != null))
             {
                 FMainDS.AGiftDetail.Rows.Clear();
@@ -1635,7 +1639,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (reverseWholeBatch && (FBatchNumber != giftBatch.BatchNumber))
             {
-                LoadGifts(giftBatch.LedgerNumber, giftBatch.BatchNumber, MFinanceConstants.BATCH_POSTED, false);
+                LoadGifts(giftBatch.LedgerNumber, giftBatch.BatchNumber, MFinanceConstants.BATCH_POSTED);
             }
 
             TFrmGiftRevertAdjust revertForm = new TFrmGiftRevertAdjust(FPetraUtilsObject.GetForm());
@@ -1856,6 +1860,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     break;
                 }
             }
+        }
+
+        private void RunOnceOnParentActivationManual()
+        {
+            AutoSizeGrid();
+        }
+
+        /// <summary>
+        /// AutoSize the grid columns (call this after the window has been restored to normal size after being maximized)
+        /// </summary>
+        public void AutoSizeGrid()
+        {
+            //TODO: Using this manual code until we can do something better
+            //      Autosizing all the columns is very time consuming when there are many rows
+            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
+            {
+                column.Width = 100;
+                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
+            }
+
+            grdDetails.Columns[0].Width = 60;
+            grdDetails.Columns[1].Width = 60;
+            grdDetails.Columns[2].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
+            grdDetails.Columns[3].Width = 50;
+            grdDetails.Columns[4].Width = 25;
+            grdDetails.Columns[6].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
+
+            grdDetails.AutoStretchColumnsToFitWidth = true;
+            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
+            grdDetails.AutoSizeCells();
+            grdDetails.ShowCell(FPrevRowChangedRow);
         }
     }
 }

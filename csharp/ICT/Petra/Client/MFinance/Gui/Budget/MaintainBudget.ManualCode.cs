@@ -85,13 +85,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 LoadBudgets();
 
-                UpdateRecordNumberDisplay();
+                //UpdateRecordNumberDisplay();
             }
         }
 
         private void LoadBudgets()
         {
+            Console.WriteLine("LoadBudgets() ...");
+            DateTime dtStart = DateTime.Now;
+
             FMainDS = TRemote.MFinance.Budget.WebConnectors.LoadBudget(FLedgerNumber);
+
+            Console.WriteLine("Budgets loaded -- {0} ms", (DateTime.Now - dtStart).TotalMilliseconds);
 
             //Prepare form for correct number of periods
             //FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadLedgerInfo(FLedgerNumber));
@@ -116,12 +121,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
 
             SetBudgetDefaultView();
-            grdDetails.AutoSizeCells();
+            //grdDetails.AutoSizeCells();
 
             SelectRowInGrid(1);
 
             RefreshComboLabels();
 
+            Console.WriteLine("Load complete  {0} ms", (DateTime.Now - dtStart).TotalMilliseconds);
             FLoadCompleted = true;
         }
 
@@ -202,9 +208,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             DataView myDataView = FMainDS.ABudget.DefaultView;
 
             myDataView.AllowNew = false;
-            myDataView.RowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), FCurrentBudgetYear);
             myDataView.Sort = String.Format("{0} ASC, {1} ASC", ABudgetTable.GetCostCentreCodeDBName(), ABudgetTable.GetAccountCodeDBName());
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+
+            string rowFilter = String.Format("{0} = {1}", ABudgetTable.GetYearDBName(), FCurrentBudgetYear);
+            FFilterPanelControls.SetBaseFilter(rowFilter, true);
+            ApplyFilter();
+            UpdateRecordNumberDisplay();
+            SetRecordNumberDisplayProperties();
         }
 
         private void InitialiseControls()
