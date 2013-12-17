@@ -517,9 +517,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             // update detail panel
             FIAmUpdating = true;
+            FPetraUtilsObject.SuppressChangeDetection = true;
             ACostCentreRow TempRow = ((CostCentreNodeDetails)e.Node.Tag).CostCentreRow;
             ShowDetails(TempRow);
             FIAmUpdating = false;
+            FPetraUtilsObject.SuppressChangeDetection = false;
             strOldDetailCostCentreCode = TempRow.CostCentreCode;
         }
 
@@ -922,6 +924,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     return;
                 }  // If not changed, or the rename didn't happen, I can carry on...
+
+                if (Row.CostCentreActiveFlag != chkDetailCostCentreActiveFlag.Checked)
+                {
+                    FPetraUtilsObject.SetChangedFlag();
+                }
 
                 GetDataFromControlsManual();
 
