@@ -1015,6 +1015,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void SetBatchLastGiftNumber()
         {
             DataView dv = new DataView(FMainDS.AGift);
+
             dv.RowFilter = String.Format("{0}={1}",
                 AGiftTable.GetBatchNumberDBName(),
                 FBatchNumber);
