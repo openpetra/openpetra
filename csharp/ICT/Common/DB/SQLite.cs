@@ -421,7 +421,7 @@ namespace Ict.Common.DB
                 return ASqlCommand;
             }
 
-            return ASqlCommand.Substring(0, StartIndex) + "strftime(%j, " +
+            return ASqlCommand.Substring(0, StartIndex) + "strftime('%j', " +
                    ASqlCommand.Substring(StartIndex + 10);
         }
 
