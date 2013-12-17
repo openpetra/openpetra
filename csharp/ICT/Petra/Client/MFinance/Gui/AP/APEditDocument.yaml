@@ -9,12 +9,11 @@ RootNode:
     FormType: edit
     Template: windowEditWebConnectorMasterDetail
     WindowWidth: 750
-    WindowHeight: 600
+    WindowHeight: 620
     Actions:
         cndDiscountEnabled: {InitialValue=false}
         actNewDetail: {Label=Add De&tail, ActionClick=NewDetail, Image=New_Record.ico}
         actDelete:  {Label=&Remove Detail, ActionClick=DeleteRecord}
-        actAnalyse: {ActionClick=Analyse}
         actPostDocument: {Label=Post, ActionClick=PostDocument}
         actPayDocument: {Label=Pay, ActionClick=PayDocument}
         actUseTaxAccount: {ActionClick=UseTaxAccount}
@@ -69,7 +68,7 @@ RootNode:
             Dock: Fill
             Controls: [pnlDetailGrid, pnlDetails]
         pnlDetailGrid:
-            Dock: Fill
+            Height:120
             Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
             Dock: Bottom
@@ -80,18 +79,41 @@ RootNode:
             TableName:AApDocumentDetail
             Columns: [Amount, Narrative, ItemRef, AccountCode, AnalAttr]
             ActionFocusRow: FocusedRowChanged
+
+        pnlTransAnalysisAttributes:
+            Controls: [lblAnalAttributes, grdAnalAttributes]
+            Width: 240
+
+        lblAnalAttributes:
+            Label: Analysis Attributes
+
+        grdAnalAttributes:
+            TableName: AApAnalAttrib
+            Width: 280
+            Height: 100
+            Columns: [AnalysisTypeCode]
+            CustomColumns:
+                AnalysisTypeCode: {Label=Type, Type=String}
+            Tooltip: Use cursor keys to select and edit an Analysis Attribute
+
         pnlDetails:
-            Dock: Bottom
+            Height:200
             Controls:
                 Row0: [txtDetailNarrative]
                 Row1: [txtDetailItemRef]
-                Row2: [txtDetailAmount, cmbDetailCostCentreCode]
-                Row3: [txtDetailBaseAmount, cmbDetailAccountCode]
-                Row4: [Empty1, pnlItemButtons]
-        txtDetailNarrative: {ColSpan=2}
+                Row2: [pnlDetailsLeft, pnlTransAnalysisAttributes]
+        pnlDetailsLeft:
+            Width:370
+            Controls:
+                Row0: [txtDetailAmount]
+                Row1: [cmbDetailCostCentreCode]
+                Row2: [txtDetailBaseAmount]
+                Row3: [cmbDetailAccountCode]
+                Row4: [pnlItemButtons]
+        txtDetailNarrative: {ColSpan=2 }
             Width: 365
             Label: Narrati&ve
-        txtDetailItemRef: {ColSpan=2}
+        txtDetailItemRef: {ColSpan=2 }
             Width: 365
             Label: Detail &Ref
         txtDetailAmount:
@@ -102,7 +124,6 @@ RootNode:
             Label: Base
             Format: Currency(2)
             ReadOnly: true
-            #TODO: calculate using exchange rate from document
         Empty1:
 
 # TODO: Approval completely disabled for the moment
@@ -110,17 +131,14 @@ RootNode:
 #            Label: Approved On
 #            ReadOnly: true
         cmbDetailCostCentreCode: {Label=C&ost Centre, List=UserDefinedList}
-        cmbDetailAccountCode: {Label=Accou&nt, List=UserDefinedList, OnChange=CheckAccountRequiredAttr}
+        cmbDetailAccountCode: {Label=Accou&nt, List=UserDefinedList, OnChange=ShowAnalysisAttributesForAccount}
         pnlItemButtons: {ControlsOrientation = horizontal}
             Width: 460
-            AutoButtonMaxWidths: true            
-            Controls: [btnUseTaxAccount, btnAnalysisAttributes]
+            AutoButtonMaxWidths: true
+            Controls: [btnUseTaxAccount]
         btnUseTaxAccount:
             Label: Use Ta&x Account
             Action: actUseTaxAccount
-        btnAnalysisAttributes:
-            Label: Analysis Attri&butes...
-            Action: actAnalyse
         btnAddDetail:
             Width: 120
             Action: actNewDetail
