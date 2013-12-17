@@ -237,7 +237,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FMainDS.ATransaction.DefaultView.RowFilter = rowFilter;
                 FFilterPanelControls.SetBaseFilter(rowFilter, true);
-                FCurrentActiveFilter = rowFilter;
+
+                if (grdDetails.DataSource != null)
+                {
+                    ApplyFilter();
+                    UpdateRecordNumberDisplay();
+                    SetRecordNumberDisplayProperties();
+                }
             }
         }
 
