@@ -69,9 +69,11 @@
 					<value text = " Show only ages: "/>
 					<value variable = "param_txtAnniversaries"/>
 				</fielddetail>
+<!--
 				<fielddetail condition="eq({param_chkIncludeFamily},true)">
 					<value text = " Family Members Included"/>
 				</fielddetail>
+-->
 			</field>
 			<field whichfield="period2">
 				<fielddetail condition="eq({param_chkSelectTypes},true)">
@@ -222,6 +224,8 @@
 		<levels>
 			<level name="main">
 			<detail>
+				<lowerLevelReport level="Partner Detail" calculation ="Select Partners"/>
+<!--
 				<switch>
 					<case condition="not({param_chkIncludeFamily})">
 						<lowerLevelReport level="Partner Detail" calculation ="Select Partners">
@@ -232,6 +236,7 @@
 						</lowerLevelReport>
 					</case>
 				</switch>
+-->
 			</detail>
 		</level> <!-- main -->
 
