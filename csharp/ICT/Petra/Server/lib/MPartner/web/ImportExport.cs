@@ -1318,6 +1318,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         AddVerificationResult(ref ReferenceResults, "Adding Document Code " + rv.DocCode);
                         PmDocumentTypeRow Row = MainDS.PmDocumentType.NewRowTyped();
                         Row.DocCode = rv.DocCode;
+                        Row.DocCategory = rv.DocCategory;
                         Row.Description = FNewRowDescription;
                         MainDS.PmDocumentType.Rows.Add(Row);
                     }
@@ -1380,6 +1381,31 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
+        private static void CheckJobRefs(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
+        {
+            // Position: We can't have jobs for positions we've not heard of
+            foreach (UmJobRow rv in MainDS.UmJob.Rows)
+            {
+                if ((rv.PositionName != "") && (!PtPositionAccess.Exists(rv.PositionName, rv.PositionScope, Transaction)))
+                {
+                    MainDS.PtPosition.DefaultView.RowFilter = String.Format("{0}='{1}'", PtPositionTable.GetPositionNameDBName(), rv.PositionName);
+
+                    if (MainDS.PtPosition.DefaultView.Count == 0) // Check I've not just added this a moment ago..
+                    {
+                        AddVerificationResult(ref ReferenceResults, "Adding new Position " + rv.PositionName);
+                        PtPositionRow Row = MainDS.PtPosition.NewRowTyped();
+                        Row.PositionName = rv.PositionName;
+                        Row.PositionScope = rv.PositionScope;
+                        Row.PositionDescr = FNewRowDescription;
+                        MainDS.PtPosition.Rows.Add(Row);
+                    }
+                }
+            }
+        }
+
+            
         /// <summary>
         /// If the PPartner record on the server has changed since the start of the import process,
         /// I need to abort, with a note to the user.
@@ -1467,6 +1493,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             CheckPassportType(MainDS, ref ReferenceResults, Transaction);
             CheckDocumentRefs(MainDS, ref ReferenceResults, Transaction);
             CheckSubscriptions(MainDS, ref ReferenceResults, Transaction);
+            CheckJobRefs(MainDS, ref ReferenceResults, Transaction);
             return true;
         }
 
