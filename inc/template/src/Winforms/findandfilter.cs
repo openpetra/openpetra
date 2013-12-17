@@ -325,7 +325,7 @@ void FucoFilterAndFind_FindNextClicked(object sender, TUcoFilterAndFind.TContext
         }
         else
         {
-            for (int rowNum = FPrevRowChangedRow + 1; rowNum < grdDetails.Rows.Count; rowNum++)
+            for (int rowNum = Math.Max(2, FPrevRowChangedRow + 1); rowNum < grdDetails.Rows.Count; rowNum++)
             {
                 DataRowView rowView = (DataRowView)grdDetails.Rows.IndexToDataSourceRow(rowNum);
                 if ({#ISMATCHINGROW}(rowView.Row))
