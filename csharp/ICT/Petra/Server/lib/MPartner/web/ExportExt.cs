@@ -820,7 +820,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         ///             interests, personnel data, commitments, applications
         /// For units there is more specific data, used eg. for the events file
         /// </summary>
-        public string ExportPartnerExt(PartnerImportExportTDS AMainDS, Int32 ASiteKey, Int32 ALocationKey, StringCollection ASpecificBuildingInfo)
+        public string ExportPartnerExt(PartnerImportExportTDS AMainDS, Int64 ASiteKey, Int32 ALocationKey, StringCollection ASpecificBuildingInfo)
         {
             PPartnerRow PartnerRow = AMainDS.PPartner[0];
 

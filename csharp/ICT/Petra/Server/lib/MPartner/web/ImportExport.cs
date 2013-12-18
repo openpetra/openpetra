@@ -1593,7 +1593,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <returns>One partner in EXT format</returns>
         [RequireModulePermission("PTNRUSER")]
         public static string ExportPartnerExt(Int64 APartnerKey,
-            Int32 ASiteKey,
+            Int64 ASiteKey,
             Int32 ALocationKey,
             Boolean ANoFamily,
             StringCollection ASpecificBuildingInfo)
