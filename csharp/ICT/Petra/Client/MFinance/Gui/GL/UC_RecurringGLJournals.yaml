@@ -53,7 +53,7 @@ RootNode:
                 SubSystemCode: {Label=Subsystem Code}
                 TransactionTypeCode: {Label=Transaction Type}
             ActionFocusRow: FocusedRowChanged
-            ActionDoubleClick: ShowTransactionTab
+            #ActionDoubleClickCell: ShowTransactionTab     #Not supported by generator
             ActionEnterKeyPressed: ShowTransactionTab
             SortOrder: ARecurringJournal.JournalNumber DESC
             RowFilter: ARecurringJournal.BatchNumber

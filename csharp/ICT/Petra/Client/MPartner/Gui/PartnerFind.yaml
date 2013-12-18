@@ -23,6 +23,10 @@ RootNode:
         actFileRecentPartner9: {ActionClick=MniFileRecentPartner_Click}
         actFileRecentPartner10: {ActionClick=MniFileRecentPartner_Click}
         actFileNewPartner: {ActionClick=MniFile_Click, Image: NewPartner.ico}
+        actFileNewPartnerWithShepherdFamily: {ActionClick=MniFile_Click, Image: NewPartner.ico}
+        actFileNewPartnerWithShepherdChurch: {ActionClick=MniFile_Click, Image: NewPartner.ico}
+        actFileNewPartnerWithShepherdOrganisation: {ActionClick=MniFile_Click, Image: NewPartner.ico}
+        actFileNewPartnerWithShepherdUnit: {ActionClick=MniFile_Click, Image: NewPartner.ico}
         actFileEditPartner: {ActionClick=MniFile_Click, Image: EditPartner.ico}
         actFileMergePartners: {ActionClick=MniFile_Click, Image=MergePartner.ico}
         actFileDeletePartner: {ActionClick=MniFile_Click, Image=DeletePartner.ico}

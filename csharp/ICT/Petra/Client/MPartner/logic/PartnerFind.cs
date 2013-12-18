@@ -108,16 +108,23 @@ namespace Ict.Petra.Client.MPartner
         {
             get
             {
-                DataRowView[] TheDataRowViewArray = FDataGrid.SelectedDataRowsAsDataRowView;
-
-                if (TheDataRowViewArray.Length > 0)
+                if (FDataGrid != null) 
                 {
-                    return TheDataRowViewArray[0].Row;
+                    DataRowView[] TheDataRowViewArray = FDataGrid.SelectedDataRowsAsDataRowView;
+    
+                    if (TheDataRowViewArray.Length > 0)
+                    {
+                        return TheDataRowViewArray[0].Row;
+                    }
+                    else
+                    {
+                        return null;
+                    }                    
                 }
                 else
                 {
                     return null;
-                }
+                }                    
             }
         }
 
@@ -170,10 +177,6 @@ namespace Ict.Petra.Client.MPartner
  *              }
  *          };
  */
-
-
-            // First get rid of columns of previous searches...
-            FDataGrid.Columns.Clear();
             LocalisedStrings.GetLocStrCounty(out LocalisedCountyLabel, out dummy);
 
             // done this way in case it changes
@@ -546,6 +549,7 @@ namespace Ict.Petra.Client.MPartner
             }
             else
             {
+                throw new NotImplementedException();
 // TODO                Logic.UCmdMSysMan.SendEmail(EmailAddress);
             }
         }

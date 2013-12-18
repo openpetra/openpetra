@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE reports SYSTEM "../reports.dtd">
 <reports>
-	<report id="Birthday List">      
+	<report id="Birthday List">
 		<description>
 			Lists the birthday of a partner, all partners in an extract, 
 			all current staff at a certain date should be printed.
@@ -18,10 +18,8 @@
 				<option name="an extract"/>
 				<option name="all current staff"/>
 			</reportparameter>
-			<reportparameter name="param_extract"
-				condition="param_selection=an extract"/>
-			<reportparameter name="param_partnerkey"
-				condition="param_selection=one partner"/>
+			<reportparameter name="param_extract" condition="param_selection=an extract"/>
+			<reportparameter name="param_partnerkey" condition="param_selection=one partner"/>
 			<reportparameter name="param_dtpFromDate"/>
 			<reportparameter name="param_dtpToDate"/>
 			<reportparameter name="param_currentstaffdate"/>
@@ -35,7 +33,7 @@
 			<reportparameter name="param_sortby_readable"/>
 
 		</reportparameters>
-		
+
 		<reportheader/>
 		<pageheader>
 			<field whichfield="title1"><value text ="Birthday List" /></field>
@@ -129,7 +127,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="Partner Firstname" returnsFormat="text" returns="text">
 				<caption><value text="Firstname"/></caption>
 				<query>
@@ -138,7 +136,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="Partner Type" returnsFormat="csvlistslash:text" returns="text">
 				<caption><value text="Type"/></caption>
 				<query>
@@ -147,7 +145,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="Family Key" returnsFormat="partnerkey" returns="text">
 				<caption><value text="Family Key"/></caption>
 				<query>
@@ -156,7 +154,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="Date of Birth" returnsFormat="formatteddate" returns="date">
 				<caption><value text="Date of Birth"/></caption>
 				<query>
@@ -165,7 +163,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="Date Of Birth This Year" returnsFormat="number" returns="number">
 				<caption><value text="Date Of Birth This Year"/></caption>
 				<query>
@@ -174,7 +172,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="Start Date of Commitment" returnsFormat="date" returns="formatteddate">
 				<caption><value text="Start Date of\nCommitment"/></caption>
 				<query>
@@ -183,7 +181,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="End Date of Commitment" returnsFormat="date" returns="formatteddate">
 				<caption><value text="End Date of\nCommitment"/></caption>
 				<query>
@@ -192,7 +190,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation id="Gender" returnsFormat="text" returns="text">
 				<caption><value text="Gender"/></caption>
 				<query>
@@ -210,7 +208,7 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
+
 			<calculation align="left" id="Address Fax" returns="text" returnsFormat="text">
 				<caption><value text="Fax Number"></value></caption>
 				<query>
@@ -219,7 +217,6 @@
 					</queryDetail>
 				</query>
 			</calculation>
-			
 		</calculations>
 
 		<levels>

@@ -32,8 +32,8 @@ RootNode:
             FilterControls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, Column:TransactionAmount-1, Column:TransactionAmount-2]
             FindControls: [cmbDetailCostCentreCode, cmbDetailAccountCode, txtDetailNarrative, txtDetailReference, Column:TransactionAmount-1, Column:TransactionAmount-2]
             ControlAttributes:
-                txtTransactionAmount-1: {Label=Dr/Cr amount -->, Comparison=gte}
-                txtTransactionAmount-2: {Label=--> Dr/Cr amount, Comparison=lte}
+                txtTransactionAmount-1: {Label=From Dr/Cr amount, Comparison=gte}
+                txtTransactionAmount-2: {Label=To Dr/Cr amount, Comparison=lte}
         pnlDetailsSection:
             Dock: Bottom
             Controls: [pnlTransAnalysisAttributes, pnlDetails]

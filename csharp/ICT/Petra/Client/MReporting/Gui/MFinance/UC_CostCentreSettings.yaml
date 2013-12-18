@@ -36,7 +36,7 @@ RootNode:
             Action: actUnselectAll
         chkCostCentreBreakdown: 
             ParameterName: param_cost_centre_breakdown
-            Help: group not by costcentre but by account
+            Tooltip: group not by costcentre but by account
             CheckBoxAttachedLabel: right
         rgrDepth:
             ParameterName: param_depth

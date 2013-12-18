@@ -52,7 +52,7 @@ OpenPetra:
                         ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from a file or satellite database}
                 Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, DontShowNestedTasksAsLinks=true}
                     Administration:
-                        ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
+                        ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster, Singleton=true}
                     GenerateExtracts: {Label=Generate Partner Extract}
                         GeneralExtract: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=General Extract, ActionClick=TPartnerExtractsMain.PartnerByGeneralCriteriaExtract}
                         ManualExtract: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Manual Extract, ActionClick=TPartnerExtractsMain.PartnerNewManualExtract}
@@ -135,7 +135,7 @@ OpenPetra:
 
                     Mailing-related:
                         Mailings: {Label=Mailings, Description=Maintain Mailings, ActionOpenScreen=TFrmMailingSetup}
-						
+
             #MoreFunctions:
                 #SetupPartnerModule:
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
@@ -219,7 +219,7 @@ OpenPetra:
                         StewardshipReports: {ActionOpenScreen=TFrmStewardshipReports}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
-                        AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}
+#                       AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}
                         TrialBalance: {ActionOpenScreen=TFrmTrialBalance}
                         HOSA: {Description: Home Office Statement of Accounts, ActionOpenScreen=TFrmHOSA}
                         SurplusDeficit: {ActionOpenScreen=TFrmSurplusDeficit}
@@ -388,7 +388,7 @@ OpenPetra:
                         NationalitySummaryReport: {ActionOpenScreen=TFrmNationalitySummaryReport}
                         PresentAttendeeReport: {ActionOpenScreen=TFrmPresentAttendeeReport}
                         TransportReport: {ActionOpenScreen=TFrmTransportReport}
-                        Payment:  {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance, ActionOpenScreen=TFrmARConferencePayments}
+                        #Payment:  {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance, ActionOpenScreen=TFrmARConferencePayments}
                     FieldReports:
                         ChargedFieldReport: {ActionOpenScreen=TFrmChargedFieldReport}
                         SendingFieldReport: {ActionOpenScreen=TFrmSendingFieldReport}

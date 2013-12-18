@@ -249,3 +249,27 @@ msgstr "do not translate"
 
 msgid "Further action on finish"
 msgstr "do not translate"
+
+msgid "X"
+msgstr "do not translate"
+
+msgid "Client"
+msgstr "do not translate"
+
+msgid "ClientGroup"
+msgstr "do not translate"
+
+msgid "TestingFile"
+msgstr "do not translate"
+
+msgid "Repeats"
+msgstr "do not translate"
+
+msgid "Disc.Time"
+msgstr "do not translate"
+
+msgid "GuiTesting Telltale Window"
+msgstr "do not translate"
+
+msgid "n records"
+msgstr "do not translate"

@@ -36,8 +36,8 @@ RootNode:
             CheckBoxAttachedLabel: right
             Controls: [txtAnniversaries]
         txtAnniversaries:
-            Help: "Please enter comma separated list of anniversaries, eg. 5,10,25"
-            
+            Tooltip: "Please enter comma separated list of anniversaries, eg. 5,10,25"
+
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para1b:
             Name: Length of Commitment

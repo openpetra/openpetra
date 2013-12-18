@@ -687,5 +687,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FucoFilterAndFind.DisplayFindTab();
         }
+
+        private void RunOnceOnParentActivationManual()
+        {
+            grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
+        }
     }
 }

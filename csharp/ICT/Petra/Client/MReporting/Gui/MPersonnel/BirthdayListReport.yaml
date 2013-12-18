@@ -15,9 +15,6 @@ RootNode:
     Security:
         ModulePermissionRequired: [PERSONNEL]
     Controls:
-        tpgReportSorting:
-            Label: Sorting
-            Controls: [ucoReportSorting]
         tpgGeneralSettings:
             Label: General Settings
             Controls: [ucoPartnerSelection]
@@ -25,12 +22,9 @@ RootNode:
         tpgAdditionalSettings:
             Label: Additional Settings
             Controls: [grpDate, grpOptions]
-        ucoReportSorting:
-            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
-            Dock: Fill
         ucoPartnerSelection:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
-            Dock: Fill            
+            Dock: Fill
         grpDate:
             Label: Date
             Dock: Top
@@ -38,7 +32,7 @@ RootNode:
         grpOptions:
             Label: Options
             Dock: Fill
-            Controls: [chkAnniversaries, chkIncludeFamily, chkSelectTypes, grdTypes]           
+            Controls: [chkAnniversaries, chkSelectTypes, grdTypes]
         chkUseDate:
             Label: Use date range
             Controls: [dtpFromDate, dtpToDate]
@@ -46,24 +40,21 @@ RootNode:
         dtpFromDate:
             Label: From
         dtpToDate:
-            Label: To        
-        chkIncludeFamily:
-            Label: Include families
-            CheckBoxAttachedLabel: right            
+            Label: To
         chkSelectTypes:
             Label: Include only persons of selected type(s)
             CheckBoxAttachedLabel: right
-            OnChange: SelectTypesChanged            
+            OnChange: SelectTypesChanged
         chkAnniversaries:
             Label: Only these anniversaries :
             CheckBoxAttachedLabel: right
             Controls: [txtAnniversaries]
         txtAnniversaries:
-            Help: "Please enter comma separated list of anniversaries, eg. 40,50,75"
+            Tooltip: "Please enter comma separated list of anniversaries, eg. 40,50,75"
         grdTypes:
             Height: 200
             Width: 320
-            
+
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para0:
             Name: Date of Birth
@@ -125,4 +116,3 @@ RootNode:
         Para18:
             Name: Address Country
             Parameter: 2.0
-        

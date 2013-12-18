@@ -76,6 +76,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewAEmailDestination();
+
+            // AlanP: Until we can get a fix for the auto-code that sets the initial focus, we need to do it here
+            cmbDetailFileCode.Focus();
         }
 
         private void ShowDetailsManual(AEmailDestinationRow ARow)
