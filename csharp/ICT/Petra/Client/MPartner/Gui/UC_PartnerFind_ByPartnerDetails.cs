@@ -38,6 +38,8 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MPartner;
+using Ict.Petra.Client.MPartner.Logic;
+using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.CommonControls;
@@ -203,7 +205,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             get
             {
-                return grdResult.SelectedDataRowsAsDataRowView;
+                if (grdResult != null) 
+                {
+                    return grdResult.SelectedDataRowsAsDataRowView;    
+                }
+                else
+                {
+                    return new DataRowView[0];
+                }
             }
         }
 
@@ -560,70 +569,34 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 TPartnerMain.DeletePartner(FLogic.PartnerKey);
             }
-            else if ((AToolStripItem.Name == "mniFileWorkWithLastPartner")
-                     || (AToolStripItem.Name == "mniFileWorkWithLastPartner"))
+            else if (AToolStripItem.Name == "mniFileWorkWithLastPartner")
             {
                 TPartnerMain.OpenLastUsedPartnerEditScreen(this.ParentForm);
+            }
+            else if (AToolStripItem.Name == "mniFileMergePartners")
+            {
+                new Ict.Petra.Client.MPartner.Gui.TFrmMergePartnersDialog(FPetraUtilsObject.GetForm()).Show();
+            }
+            else if (AToolStripItem.Name == "mniFilePrintPartner")
+            {
+                TCommonScreensForwarding.OpenPrintPartnerDialog.Invoke(FLogic.PartnerKey, this.ParentForm);
+            }
+            else if (AToolStripItem.Name == "mniFileExportPartner")
+            {
+                TPartnerExportLogic.ExportSinglePartner(FLogic.PartnerKey, FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey);
+            }
+            else if (AToolStripItem.Name == "mniFileImportPartner")
+            {
+                new Ict.Petra.Client.MPartner.Gui.TFrmPartnerImport(FPetraUtilsObject.GetForm()).Show();
+            }
+            else if (AToolStripItem.Name == "mniFileSendEmail")
+            {
+                TMenuFunctions.SendEmailToPartner();
             }
             else
             {
                 throw new NotImplementedException();
-            }
-
-#if TODO
-            String ClickedMenuItemText;
-
-            ClickedMenuItemText = ((MenuItem)sender).Text;
-
-            if (ClickedMenuItemText == mniFileSearch.Text)
-            {
-                BtnSearch_Click(this, new EventArgs());
-            }
-            else if (ClickedMenuItemText == mniFileMergePartners.Text)
-            {
-                TMenuFunctions.MergePartners();
-            }
-            else if (ClickedMenuItemText == mniFileDeletePartner.Text)
-            {
-                TMenuFunctions.DeletePartner();
-            }
-            else if (ClickedMenuItemText == mniFileCopyAddress.Text)
-            {
-                OpenCopyAddressToClipboardScreen();
-            }
-            else if (ClickedMenuItemText == mniFileCopyPartnerKey.Text)
-            {
-                TMenuFunctions.CopyPartnerKeyToClipboard();
-            }
-            else if (ClickedMenuItemText == mniFileSendEmail.Text)
-            {
-                TMenuFunctions.SendEmailToPartner();
-            }
-            else if (ClickedMenuItemText == mniFilePrintPartner.Text)
-            {
-                TMenuFunctions.PrintPartner();
-            }
-            else if (ClickedMenuItemText == mniFileExportPartner.Text)
-            {
-                TMenuFunctions.ExportPartner();
-            }
-            else if (ClickedMenuItemText == mniFileImportPartner.Text)
-            {
-                TMenuFunctions.ImportPartner();
-            }
-            else if (ClickedMenuItemText == mniFileClose.Text)
-            {
-                base.MniFile_Click(sender, e);
-            }
-            else if (ClickedMenuItemText == mniFileRecentPartners.Text)
-            {
-                SetupRecentlyUsedPartnersMenu();
-            }
-            else
-            {
-                NotifyFunctionNotYetImplemented(ClickedMenuItemText);
-            }
-#endif
+            }            
         }
 
         void HandleEditMenuItemOrToolBarButton(ToolStripItem AToolStripItem)
@@ -632,18 +605,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 BtnSearch_Click(this, new EventArgs());
             }
-            else if (AToolStripItem.Name == "mniMaintainDonorHistory")
+            else if (AToolStripItem.Name == "mniEditCopyPartnerKey")
             {
-                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(AToolStripItem.Name,
-                    PartnerKey,
-                    FPetraUtilsObject.GetForm());
-            }
-            else if (AToolStripItem.Name == "mniMaintainRecipientHistory")
+                TMenuFunctions.CopyPartnerKeyToClipboard();
+            }            
+            else if (AToolStripItem.Name == "mniEditCopyAddress")
             {
-                Ict.Petra.Client.MFinance.Gui.Gift.TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(AToolStripItem.Name,
-                    PartnerKey,
-                    FPetraUtilsObject.GetForm());
-            }
+                OpenCopyAddressToClipboardScreen();
+            }            
             else
             {
                 throw new NotImplementedException();
@@ -654,15 +623,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ClickedMenuItemText = ((MenuItem)sender).Text;
 
-            if (ClickedMenuItemText == mniEditCopyAddress.Text)
-            {
-                OpenCopyAddressToClipboardScreen();
-            }
-            else if (ClickedMenuItemText == mniEditCopyPartnerKey.Text)
-            {
-                FMenuFunctions.CopyPartnerKeyToClipboard();
-            }
-            else if (ClickedMenuItemText == mniEditCopyEmailAddress.Text)
+            if (ClickedMenuItemText == mniEditCopyEmailAddress.Text)
             {
                 FMenuFunctions.CopyEmailAddressToClipboard();
             }
@@ -772,18 +733,27 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         void HandleMailingMenuItemOrToolBarButton(ToolStripItem AToolStripItem)
-        {
-            throw new NotImplementedException();
+        {   
+            string ClickedMenuItemName = AToolStripItem.Name;            
+            
+            if (ClickedMenuItemName == "mniMailingExtracts")
+            {
+                if (TCommonScreensForwarding.OpenExtractMasterScreen != null)
+                {
+                    TCommonScreensForwarding.OpenExtractMasterScreen.Invoke(this.ParentForm);
+                }
+            }
+            else
+            {
+                throw new NotImplementedException();    
+            }                       
+            
 #if TODO
             String ClickedMenuItemText;
 
             ClickedMenuItemText = ((MenuItem)sender).Text;
 
-            if (ClickedMenuItemText == mniMailingExtracts.Text)
-            {
-                TMenuFunctions.OpenExtracts();
-            }
-            else if (ClickedMenuItemText == mniMailingDuplicateAddressCheck.Text)
+            if (ClickedMenuItemText == mniMailingDuplicateAddressCheck.Text)
             {
                 TMenuFunctions.DuplicateAddressCheck();
             }
@@ -1291,7 +1261,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (grdResult != null)
             {
-                grdResult.SendToBack();
+                this.grpResult.Controls.Remove(grdResult);
+                grdResult = null;
             }
 
             OnPartnerAvailable(false);
@@ -1322,7 +1293,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void OpenPartnerEditScreen(TPartnerEditTabPageEnum AShowTabPage, Int64 APartnerKey, bool AOpenOnBestLocation)
         {
             FPetraUtilsObject.WriteToStatusBar("Opening Partner in Partner Edit screen...");
-            FPetraUtilsObject.SetStatusBarText(grdResult, "Opening Partner in Partner Edit screen...");
+            
+            if (grdResult != null) 
+            {
+                FPetraUtilsObject.SetStatusBarText(grdResult, "Opening Partner in Partner Edit screen...");    
+            }
+            
             this.Cursor = Cursors.WaitCursor;
 
             // Set Partner to be the "Last Used Partner"
@@ -1354,8 +1330,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             finally
             {
                 this.Cursor = Cursors.Default;
-                FPetraUtilsObject.SetStatusBarText(grdResult,
-                    MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
+                
+                if (grdResult != null) 
+                {
+                    FPetraUtilsObject.SetStatusBarText(grdResult,
+                        MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);                    
+                }
             }
         }
 
@@ -1420,6 +1400,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void OpenCopyAddressToClipboardScreen()
         {
+            throw new NotImplementedException();
+            
 // TODO OpenCopyAddressToClipboardScreen
 #if TODO
             TLocationPK LocationPK;

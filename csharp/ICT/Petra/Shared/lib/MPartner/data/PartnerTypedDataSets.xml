@@ -426,13 +426,14 @@
       <CustomField name="Category" type="string"/>
     </Table>
 
+    <Table sqltable="pt_position"/>
     <Table sqltable="um_job"/>
       
     <Table sqltable="pm_personal_data"/>
     <Table sqltable="pt_passport_type"/>
     <Table sqltable="pm_passport_details"/>
-    <Table sqltable="pm_document_type"/>
     <Table sqltable="pm_document_category"/>
+    <Table sqltable="pm_document_type"/>
     <Table sqltable="pm_document">
       <CustomField name="DocCategory" type="string"/>
     </Table>
@@ -455,7 +456,6 @@
     <Table sqltable="pt_contact"/>
     <Table sqltable="pm_general_application"/>
     <Table sqltable="pt_congress_code"/>
-    <Table sqltable="pt_position"/>
     <Table sqltable="pt_special_applicant"/>
     <Table sqltable="pt_leadership_rating"/>
     <Table sqltable="pm_short_term_application"/>

@@ -322,6 +322,14 @@ namespace Ict.Petra.Client.MCommon
         public static readonly string StrUpDownFindDirection = Catalog.GetString(
             "Choose up or down to set the search direction");
 
+        /// <summary>todoComment</summary>
+        public static readonly string StrErrorInFilterCriterion = Catalog.GetString(
+            "There is an error in the input text of one of the filter panel controls");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrFilterTitle = Catalog.GetString(
+            "Filtering Records");
+
         #endregion
     }
 }

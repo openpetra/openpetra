@@ -885,4 +885,19 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         #endregion
     }
+    
+    /// <summary>
+    /// Manages the opening of a new Instance of the Extract Master screen.
+    /// </summary>
+    public static class TExtractMasterScreenManager
+    {
+        /// <summary>
+        /// Opens an instance of the Extract Master screen.
+        /// </summary>
+        /// <param name="AParentForm"></param>
+        public static void OpenForm(Form AParentForm)
+        {
+            new TFrmExtractMaster(AParentForm).Show();
+        }
+    }   
 }

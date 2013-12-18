@@ -1014,16 +1014,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void SetBatchLastGiftNumber()
         {
-            FMainDS.AGift.DefaultView.RowFilter = String.Format("{0}={1}",
+            DataView dv = new DataView(FMainDS.AGift);
+
+            dv.RowFilter = String.Format("{0}={1}",
                 AGiftTable.GetBatchNumberDBName(),
                 FBatchNumber);
 
-            FMainDS.AGift.DefaultView.Sort = String.Format("{0} DESC",
+            dv.Sort = String.Format("{0} DESC",
                 AGiftTable.GetGiftTransactionNumberDBName());
 
-            if (FMainDS.AGift.DefaultView.Count > 0)
+            if (dv.Count > 0)
             {
-                AGiftRow transRow = (AGiftRow)FMainDS.AGift.DefaultView[0].Row;
+                AGiftRow transRow = (AGiftRow)dv[0].Row;
                 FBatchRow.LastGiftNumber = transRow.GiftTransactionNumber;
             }
             else
@@ -1034,7 +1036,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ClearGiftDetailDefaultView()
         {
-            FMainDS.AGiftDetail.DefaultView.RowFilter = String.Empty;
+            FFilterPanelControls.SetBaseFilter(String.Empty, true);
         }
 
         private void SetGiftDetailDefaultView()
@@ -1043,13 +1045,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 ClearGiftDetailDefaultView();
 
-                FMainDS.AGiftDetail.DefaultView.RowFilter = String.Format("{0}={1}",
+                string rowFilter = String.Format("{0}={1}",
                     AGiftDetailTable.GetBatchNumberDBName(),
                     FBatchNumber);
+                FFilterPanelControls.SetBaseFilter(rowFilter, true);
 
                 FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0} DESC, {1} ASC",
                     AGiftDetailTable.GetGiftTransactionNumberDBName(),
                     AGiftDetailTable.GetDetailNumberDBName());
+
+                if (grdDetails.DataSource != null)
+                {
+                    ApplyFilter();
+                    UpdateRecordNumberDisplay();
+                    SetRecordNumberDisplayProperties();
+                }
             }
         }
 

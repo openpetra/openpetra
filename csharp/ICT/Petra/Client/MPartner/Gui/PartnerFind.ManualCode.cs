@@ -212,6 +212,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 mniClose.Enabled = true;
                 mniFileRecentPartners.Enabled = true;
                 mniFileNewPartner.Enabled = true;
+                mniFileNewPartnerWithShepherd.Enabled = true;
+                mniFileNewPartnerWithShepherdFamily.Enabled = true;
+                mniFileNewPartnerWithShepherdChurch.Enabled = true;
+                mniFileNewPartnerWithShepherdOrganisation.Enabled = true;
+                mniFileNewPartnerWithShepherdUnit.Enabled = true;
                 mniFileImportPartner.Enabled = true;
                 mniFileMergePartners.Enabled = true;
             }
@@ -298,8 +303,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MniMailing_DropDownOpening(System.Object sender, System.EventArgs e)
         {
-            DataRowView[] GridRows;
-            GridRows = ucoFindByPartnerDetails.SelectedDataRowsAsDataRowView;
+            DataRowView[] GridRows = ucoFindByPartnerDetails.SelectedDataRowsAsDataRowView;
 
             // Check if a Grid Row is selected
             if (GridRows.Length <= 0)
