@@ -183,7 +183,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FLedgerNumber < 0)
             {
-                MessageBox.Show(Catalog.GetString("Select Ledger then press 'Browse'."), Catalog.GetString("Ledger Error"));
+                MessageBox.Show(Catalog.GetString("Select Ledger then press 'Search'."), Catalog.GetString("Ledger Error"));
                 return;
             }
 
