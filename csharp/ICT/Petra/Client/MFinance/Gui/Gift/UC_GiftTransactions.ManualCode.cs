@@ -174,22 +174,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //TFinanceControls.InitialiseKeyMinList(ref cmbMinistry, (Int64)0);
             }
             
-            //SetGiftDetailDefaultView();
-
-            //TODO: remove below before committing
-            //************************************************
-            string rowFilter = String.Format("{0}={1}",
-                AGiftDetailTable.GetBatchNumberDBName(),
-                FBatchNumber
-                );
-            
-            FMainDS.AGiftDetail.DefaultView.RowFilter = rowFilter;
-
-            FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0} DESC, {1} ASC",
-                AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                AGiftDetailTable.GetDetailNumberDBName());
-            
-            //************************************************
+            SetGiftDetailDefaultView();
 
             // only load from server if there are no transactions loaded yet for this batch
             // otherwise we would overwrite transactions that have already been modified
