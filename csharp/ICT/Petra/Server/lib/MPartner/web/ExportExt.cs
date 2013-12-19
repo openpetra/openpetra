@@ -271,7 +271,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     PmYearProgramApplicationTable.GetYpBasicAppTypeDBName(),
                     AGeneralApplicationRow.AppTypeName,
                     PmYearProgramApplicationTable.GetYpAppDateDBName(),
-                    AGeneralApplicationRow.GenAppDate);
+                    AGeneralApplicationRow.GenAppDate.Date.ToString("yyyy-MM-dd"));
 
             // The RowFilter above will be applied when the Count property is accessed.
             //
@@ -385,7 +385,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     {
                         WriteShortApplicationForm(AMainDS, GeneralApplicationRow);
                     }
-                    else if (ApplicationTypeRow.AppFormType == MPersonnelConstants.APPLICATIONFORMTYPE_SHORTFORM)
+                    else if (ApplicationTypeRow.AppFormType == MPersonnelConstants.APPLICATIONFORMTYPE_LONGFORM)
                     {
                         WriteLongApplicationForm(AMainDS, GeneralApplicationRow);
                     }
@@ -820,7 +820,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         ///             interests, personnel data, commitments, applications
         /// For units there is more specific data, used eg. for the events file
         /// </summary>
-        public string ExportPartnerExt(PartnerImportExportTDS AMainDS, Int32 ASiteKey, Int32 ALocationKey, StringCollection ASpecificBuildingInfo)
+        public string ExportPartnerExt(PartnerImportExportTDS AMainDS, Int64 ASiteKey, Int32 ALocationKey, StringCollection ASpecificBuildingInfo)
         {
             PPartnerRow PartnerRow = AMainDS.PPartner[0];
 

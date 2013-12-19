@@ -37,6 +37,7 @@ namespace Ict.Petra.Client.CommonControls.Logic
         static TDelegateOpenConferenceFindScreen FOpenConferenceFindScreen;
         static TDelegateOpenEventFindScreen FOpenEventFindScreen;
         static TDelegateOpenExtractFindScreen FOpenExtractFindScreen;
+        static TDelegateOpenExtractMasterScreen FOpenExtractMasterScreen;
         static TDelegateOpenRangeFindScreen FOpenRangeFindScreen;
         static TDelegateOpenGetMergeDataDialog FOpenGetMergeDataDialog;
         static TDelegateOpenPrintPartnerDialog FOpenPrintPartnerDialog;
@@ -109,6 +110,23 @@ namespace Ict.Petra.Client.CommonControls.Logic
             }
         }
 
+        /// <summary>
+        /// This property is used to provide a function which opens the Extract Master screen.
+        /// </summary>
+        /// <description>The Delegate is set up at the start of the application.</description>
+        public static TDelegateOpenExtractMasterScreen OpenExtractMasterScreen
+        {
+            get
+            {
+                return FOpenExtractMasterScreen;
+            }
+
+            set
+            {
+                FOpenExtractMasterScreen = value;
+            }
+        }
+    
         /// <summary>
         /// This property is used to provide a function which opens the Range find screen.
         /// </summary>

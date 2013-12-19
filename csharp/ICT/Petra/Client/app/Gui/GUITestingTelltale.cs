@@ -25,6 +25,8 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
+using Ict.Common;
+
 namespace Ict.Petra.Client.App.Gui
 {
     /// <summary>
@@ -43,6 +45,16 @@ namespace Ict.Petra.Client.App.Gui
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.label1.Text = Catalog.GetString("Client") + ":";
+            this.label3.Text = Catalog.GetString("ClientGroup") + ":";
+            this.label10.Text = Catalog.GetString("TestingFile") + ":";
+            this.label5.Text = Catalog.GetString("Repeats") + ":";
+            this.label7.Text = Catalog.GetString("Disc.Time") + ":";
+            this.Text = Catalog.GetString("GuiTesting Telltale Window");
+            #endregion
 
             //
             // TODO: Add constructor code after the InitializeComponent() call.
