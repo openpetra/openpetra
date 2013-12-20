@@ -149,13 +149,13 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 return;
             }
 
-            // 'Date of Birth' must be valid
+            // 'Date of Birth' must not be a future date
             ValidationColumn = ARow.Table.Columns[PPersonTable.ColumnDateOfBirthId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.DateOfBirth,
-                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, false,
+                VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.DateOfBirth,
+                    ValidationControlsData.ValidationControlLabel,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
