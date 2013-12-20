@@ -552,6 +552,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
+            txtDetailCostCentreCode.Focus();
             if (ValidateAllData(true, true))
             {
                 CostCentreNodeDetails ParentNodeDetails = GetCostCentreAttributes(FCurrentNode);
@@ -575,7 +576,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         countNewCostCentre++;
                     }
 
-                    FnameForNewCostCentre += countNewCostCentre.ToString();
+                    newCostCentreName += countNewCostCentre.ToString();
                 }
 
                 ACostCentreRow newCostCentre = FMainDS.ACostCentre.NewRowTyped();
@@ -590,6 +591,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ParentRow.PostingCostCentreFlag = false;
                 ParentNodeDetails.CanDelete = false;
 
+                FRecentlyUpdatedDetailCostCentreCode = INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE;
                 trvCostCentres.BeginUpdate();
                 TreeNode newNode = FCurrentNode.Nodes.Add(newCostCentreName);
 
@@ -597,11 +599,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 NewNodeDetails.CostCentreRow = newCostCentre;
                 NewNodeDetails.IsNew = true;
                 newNode.Tag = NewNodeDetails;
-
                 trvCostCentres.EndUpdate();
 
                 trvCostCentres.SelectedNode = newNode;
-                txtDetailCostCentreCode.Focus();
+                txtDetailCostCentreCode.SelectAll();
                 FPetraUtilsObject.SetChangedFlag();
             }
         }
@@ -781,7 +782,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         NodeDetails.CostCentreRow.BeginEdit();
                         NodeDetails.CostCentreRow.CostCentreCode = strNewDetailCostCentreCode;
-                        NodeDetails.CostCentreRow.EndEdit();
+                        NodeDetails.CostCentreRow.EndEdit();  // A constraint exception might occur here
 
                         trvCostCentres.BeginUpdate();
                         trvCostCentres.SelectedNode.Text = NodeLabel(NodeDetails.CostCentreRow);
