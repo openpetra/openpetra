@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         AGiftRow FGift = null;
         string FFilterAllDetailsOfGift = string.Empty;
         DataView FGiftDetailView = null;
-        
+
         private Boolean ViewMode
         {
             get
@@ -83,8 +83,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             sptTransactions.TabStop = false;
 
             txtDetailRecipientKey.PartnerClass = "WORKER,UNIT,FAMILY";
-            
-			//Setup hidden Key Ministry text box
+
+            //Setup hidden Key Ministry text box
             txtKeyMinistry.Top = cmbMinistry.Top;
             txtKeyMinistry.Width = cmbMinistry.Width;
         }
@@ -101,7 +101,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             Console.WriteLine("LoadGifts");
             DateTime dtStart = DateTime.Now;
-            
+
             //Reset Batch method of payment variable
             FBatchMethodOfPayment = ((TFrmGiftBatch)ParentForm).GetBatchControl().MethodOfPaymentCode;
 
@@ -143,18 +143,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Application.DoEvents();
             SuspendLayout();
 
-			//Read key fields
+            //Read key fields
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
             FBatchRow = GetBatchRow();
-            
+
             //Process Batch status
             FBatchStatus = ABatchStatus;
             FBatchUnposted = (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED);
-           
-			//Handle Key Ministry Controls
+
+            //Handle Key Ministry Controls
             cmbMinistry.Visible = FBatchUnposted;
-           	txtKeyMinistry.Visible = !FBatchUnposted;
+            txtKeyMinistry.Visible = !FBatchUnposted;
 
             //Apply new filter
             FPreviouslySelectedDetailRow = null;
@@ -173,7 +173,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 TFinanceControls.InitialisePMailingList(ref cmbDetailMailingCode, FActiveOnly);
                 //TFinanceControls.InitialiseKeyMinList(ref cmbMinistry, (Int64)0);
             }
-            
+
             SetGiftDetailDefaultView();
 
             // only load from server if there are no transactions loaded yet for this batch
@@ -1283,92 +1283,92 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             this.Cursor = Cursors.WaitCursor;
-            
-			//Show gift table values
+
+            //Show gift table values
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
             ShowDetailsForGift(giftRow);
 
-			//Set Gift Details controls
+            //Set Gift Details controls
             cmbDetailMotivationGroupCode.SetSelectedString(ARow.MotivationGroupCode);
             cmbDetailMotivationDetailCode.SetSelectedString(ARow.MotivationDetailCode);
 
-			if (FBatchUnposted)
-			{
-	            // show cost centre
-	            MotivationDetailChanged(null, null);
-	
-	            TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, ARow.RecipientKey);
-	
-	            if (ARow.IsDonorKeyNull())
-	            {
-	                txtDetailDonorKey.Text = "0";
-	            }
-	            else
-	            {
-	                txtDetailDonorKey.Text = ARow.DonorKey.ToString();
-	            }
-	
-	            if ((Convert.ToInt64(txtDetailRecipientKey.Text) == 0) && (cmbDetailMotivationGroupCode.SelectedIndex == -1))
-	            {
-	                txtDetailCostCentreCode.Text = string.Empty;
-	            }
-			}
-			else
-			{
-	            if (ARow.IsDonorKeyNull())
-	            {
-	                txtDetailDonorKey.Text = "0";
-	            }
-	            else
-	            {
-	            	txtDetailDonorKey.Text = ARow.DonorKey.ToString();
-	            }
+            if (FBatchUnposted)
+            {
+                // show cost centre
+                MotivationDetailChanged(null, null);
 
-	            if (ARow.IsCostCentreCodeNull())
-	            {
-	            	txtDetailCostCentreCode.Text = string.Empty;
-	            }
-	            else
-	            {
-	            	txtDetailCostCentreCode.Text = ARow.CostCentreCode;
-	            }
-	            
-	            if (ARow.IsRecipientKeyNull())
-	            {
-	            	txtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
-	            }
-	            else
-	            {
-	            	txtDetailRecipientKey.Text = String.Format("{0:0000000000}", ARow.RecipientKey);
-	            }
-	            
-	            if (ARow.IsRecipientFieldNull())
-	            {
-	            	txtField.Text = string.Empty;
-	            }
-	            else
-	            {
-	            	txtField.Text = ARow.RecipientField.ToString();
-	            }
-	            
-	            if (ARow.IsRecipientKeyMinistryNull())
-	            {
-					txtKeyMinistry.Text = string.Empty;
-	            }
-	            else
-	            {
-	            	txtKeyMinistry.Text = ARow.RecipientKeyMinistry;
-	            }
-			}
+                TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, ARow.RecipientKey);
+
+                if (ARow.IsDonorKeyNull())
+                {
+                    txtDetailDonorKey.Text = "0";
+                }
+                else
+                {
+                    txtDetailDonorKey.Text = ARow.DonorKey.ToString();
+                }
+
+                if ((Convert.ToInt64(txtDetailRecipientKey.Text) == 0) && (cmbDetailMotivationGroupCode.SelectedIndex == -1))
+                {
+                    txtDetailCostCentreCode.Text = string.Empty;
+                }
+            }
+            else
+            {
+                if (ARow.IsDonorKeyNull())
+                {
+                    txtDetailDonorKey.Text = "0";
+                }
+                else
+                {
+                    txtDetailDonorKey.Text = ARow.DonorKey.ToString();
+                }
+
+                if (ARow.IsCostCentreCodeNull())
+                {
+                    txtDetailCostCentreCode.Text = string.Empty;
+                }
+                else
+                {
+                    txtDetailCostCentreCode.Text = ARow.CostCentreCode;
+                }
+
+                if (ARow.IsRecipientKeyNull())
+                {
+                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
+                }
+                else
+                {
+                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", ARow.RecipientKey);
+                }
+
+                if (ARow.IsRecipientFieldNull())
+                {
+                    txtField.Text = string.Empty;
+                }
+                else
+                {
+                    txtField.Text = ARow.RecipientField.ToString();
+                }
+
+                if (ARow.IsRecipientKeyMinistryNull())
+                {
+                    txtKeyMinistry.Text = string.Empty;
+                }
+                else
+                {
+                    txtKeyMinistry.Text = ARow.RecipientKeyMinistry;
+                }
+            }
 
             UpdateControlsProtection(ARow);
-            
-			this.Cursor = Cursors.Default;
+
+            this.Cursor = Cursors.Default;
         }
 
         private void ShowDetailsForGift(AGiftRow ACurrentGiftRow)
         {
-			//Set GiftRow controls
+            //Set GiftRow controls
             dtpDateEntered.Date = ACurrentGiftRow.DateEntered;
 
             if (cmbMinistry.Count == 0)
@@ -1376,7 +1376,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbMinistry.SelectedIndex = -1;
                 cmbMinistry.Text = string.Empty;
             }
-            
+
             txtDetailDonorKey.Text = ACurrentGiftRow.DonorKey.ToString();
             //cmbMinistry.SetSelectedString(ACurrentGiftRow.);
 
@@ -1549,14 +1549,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (FBatchMethodOfPayment == string.Empty)
             {
-            	FBatchMethodOfPayment = ((TFrmGiftBatch)ParentForm).GetBatchControl().MethodOfPaymentCode;
+                FBatchMethodOfPayment = ((TFrmGiftBatch)ParentForm).GetBatchControl().MethodOfPaymentCode;
             }
-        	return FBatchMethodOfPayment;
+
+            return FBatchMethodOfPayment;
         }
 
         private void GetDetailDataFromControlsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
-		    //Handle gift detail level fields
+            //Handle gift detail level fields
             if (txtDetailCostCentreCode.Text.Length == 0)
             {
                 ARow.SetCostCentreCodeNull();
@@ -1595,58 +1596,58 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (cmbMinistry.SelectedIndex == -1)
             {
-            	ARow.SetRecipientKeyMinistryNull();
+                ARow.SetRecipientKeyMinistryNull();
             }
             else
             {
                 ARow.RecipientKeyMinistry = cmbMinistry.GetSelectedString();
             }
 
-		    //Handle gift table fields for first detail only
+            //Handle gift table fields for first detail only
             if (ARow.DetailNumber == 1)
             {
-	            AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
-	
-	            giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
-	            giftRow.DateEntered = (dtpDateEntered.Date.HasValue ? dtpDateEntered.Date.Value : FBatchRow.GlEffectiveDate);
-	
-	            if (cmbDetailMethodOfGivingCode.SelectedIndex == -1)
-	            {
-	                giftRow.SetMethodOfGivingCodeNull();
-	            }
-	            else
-	            {
-	                giftRow.MethodOfGivingCode = cmbDetailMethodOfGivingCode.GetSelectedString();
-	            }
-	
-	            if (cmbDetailMethodOfPaymentCode.SelectedIndex == -1)
-	            {
-	                giftRow.SetMethodOfPaymentCodeNull();
-	            }
-	            else
-	            {
-	                giftRow.MethodOfPaymentCode = cmbDetailMethodOfPaymentCode.GetSelectedString();
-	            }
-	
-	            if (txtDetailReference.Text.Length == 0)
-	            {
-	                giftRow.SetReferenceNull();
-	                ARow.SetReferenceNull();
-	            }
-	            else
-	            {
-	                giftRow.Reference = txtDetailReference.Text;
-	                ARow.Reference = txtDetailReference.Text;
-	            }
-	
-	            if (cmbDetailReceiptLetterCode.SelectedIndex == -1)
-	            {
-	                giftRow.SetReceiptLetterCodeNull();
-	            }
-	            else
-	            {
-	                giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
-	            }
+                AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
+
+                giftRow.DonorKey = Convert.ToInt64(txtDetailDonorKey.Text);
+                giftRow.DateEntered = (dtpDateEntered.Date.HasValue ? dtpDateEntered.Date.Value : FBatchRow.GlEffectiveDate);
+
+                if (cmbDetailMethodOfGivingCode.SelectedIndex == -1)
+                {
+                    giftRow.SetMethodOfGivingCodeNull();
+                }
+                else
+                {
+                    giftRow.MethodOfGivingCode = cmbDetailMethodOfGivingCode.GetSelectedString();
+                }
+
+                if (cmbDetailMethodOfPaymentCode.SelectedIndex == -1)
+                {
+                    giftRow.SetMethodOfPaymentCodeNull();
+                }
+                else
+                {
+                    giftRow.MethodOfPaymentCode = cmbDetailMethodOfPaymentCode.GetSelectedString();
+                }
+
+                if (txtDetailReference.Text.Length == 0)
+                {
+                    giftRow.SetReferenceNull();
+                    ARow.SetReferenceNull();
+                }
+                else
+                {
+                    giftRow.Reference = txtDetailReference.Text;
+                    ARow.Reference = txtDetailReference.Text;
+                }
+
+                if (cmbDetailReceiptLetterCode.SelectedIndex == -1)
+                {
+                    giftRow.SetReceiptLetterCodeNull();
+                }
+                else
+                {
+                    giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
+                }
             }
         }
 

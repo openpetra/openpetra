@@ -403,10 +403,10 @@ namespace Ict.Petra.Client.CommonDialogs
                     {
                         string line = sr.ReadLine();
 
-                        if (line.Contains("System.Exception: Unsupported upgrade"))
+                        if (line.Contains("Unsupported upgrade"))
                         {
                             countExceptionLine = 12;
-                            ErrorMessage = line.Substring("System.Exception: Unsupported upgrade".Length + 2);
+                            ErrorMessage = line.Substring(line.IndexOf("Unsupported upgrade"));
                         }
                         else
                         {

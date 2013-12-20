@@ -1201,14 +1201,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftDetail.RecipientField = GetRecipientLedgerNumber(MainDS, giftDetail.RecipientKey);
                     PPartnerRow RecipientRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
                     giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
-					PUnitRow RecipientUnitRow = (PUnitRow)MainDS.RecipientUnit.Rows.Find(giftDetail.RecipientKey);
+                    PUnitRow RecipientUnitRow = (PUnitRow)MainDS.RecipientUnit.Rows.Find(giftDetail.RecipientKey);
+
                     if (RecipientUnitRow != null)
                     {
-                    	giftDetail.RecipientKeyMinistry = RecipientUnitRow.UnitName;
+                        giftDetail.RecipientKeyMinistry = RecipientUnitRow.UnitName;
                     }
                     else
                     {
-                    	giftDetail.SetRecipientKeyMinistryNull();
+                        giftDetail.SetRecipientKeyMinistryNull();
                     }
                 }
                 else
@@ -1218,19 +1219,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftDetail.SetRecipientKeyMinistryNull();
                 }
 
-	            //And account code
+                //And account code
                 AMotivationDetailRow motivationDetail = (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(
-	                new object[] { ALedgerNumber, giftDetail.MotivationGroupCode, giftDetail.MotivationDetailCode});
-	
-	            if (motivationDetail != null)
-	            {
-	                giftDetail.AccountCode = motivationDetail.AccountCode.ToString();
-	            }
-	            else
-	            {
+                    new object[] { ALedgerNumber, giftDetail.MotivationGroupCode, giftDetail.MotivationDetailCode });
+
+                if (motivationDetail != null)
+                {
+                    giftDetail.AccountCode = motivationDetail.AccountCode.ToString();
+                }
+                else
+                {
                     giftDetail.SetAccountCodeNull();
-	            }
-	
+                }
+
                 giftDetail.DateEntered = giftRow.DateEntered;
                 giftDetail.Reference = giftRow.Reference;
             }
