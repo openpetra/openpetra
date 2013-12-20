@@ -132,8 +132,7 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    throw new Exception(
-                        "to the developer: please use NumberValueDecimal or NumberValueInt or SetCurrencyValue to assign a value to the txtNumericTextBox");
+                    throw new Exception("Text property cannot be set directly in Numeric TextBox.");
                 }
             }
         }
