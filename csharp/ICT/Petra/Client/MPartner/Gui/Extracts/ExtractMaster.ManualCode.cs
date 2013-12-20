@@ -885,7 +885,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         #endregion
     }
-    
+
     /// <summary>
     /// Manages the opening of a new Instance of the Extract Master screen.
     /// </summary>
@@ -899,5 +899,5 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             new TFrmExtractMaster(AParentForm).Show();
         }
-    }   
+    }
 }
