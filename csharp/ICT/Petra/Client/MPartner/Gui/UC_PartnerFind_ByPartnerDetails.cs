@@ -205,9 +205,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             get
             {
-                if (grdResult != null) 
+                if (grdResult != null)
                 {
-                    return grdResult.SelectedDataRowsAsDataRowView;    
+                    return grdResult.SelectedDataRowsAsDataRowView;
                 }
                 else
                 {
@@ -583,7 +583,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (AToolStripItem.Name == "mniFileExportPartner")
             {
-                TPartnerExportLogic.ExportSinglePartner(FLogic.PartnerKey, FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey);
+                TPartnerExportLogic.ExportSinglePartner(FLogic.PartnerKey,
+                    FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey);
             }
             else if (AToolStripItem.Name == "mniFileImportPartner")
             {
@@ -596,7 +597,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 throw new NotImplementedException();
-            }            
+            }
         }
 
         void HandleEditMenuItemOrToolBarButton(ToolStripItem AToolStripItem)
@@ -608,11 +609,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             else if (AToolStripItem.Name == "mniEditCopyPartnerKey")
             {
                 TMenuFunctions.CopyPartnerKeyToClipboard();
-            }            
+            }
             else if (AToolStripItem.Name == "mniEditCopyAddress")
             {
                 OpenCopyAddressToClipboardScreen();
-            }            
+            }
             else
             {
                 throw new NotImplementedException();
@@ -733,9 +734,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         void HandleMailingMenuItemOrToolBarButton(ToolStripItem AToolStripItem)
-        {   
-            string ClickedMenuItemName = AToolStripItem.Name;            
-            
+        {
+            string ClickedMenuItemName = AToolStripItem.Name;
+
             if (ClickedMenuItemName == "mniMailingExtracts")
             {
                 if (TCommonScreensForwarding.OpenExtractMasterScreen != null)
@@ -745,9 +746,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                throw new NotImplementedException();    
-            }                       
-            
+                throw new NotImplementedException();
+            }
+
 #if TODO
             String ClickedMenuItemText;
 
@@ -1293,12 +1294,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void OpenPartnerEditScreen(TPartnerEditTabPageEnum AShowTabPage, Int64 APartnerKey, bool AOpenOnBestLocation)
         {
             FPetraUtilsObject.WriteToStatusBar("Opening Partner in Partner Edit screen...");
-            
-            if (grdResult != null) 
+
+            if (grdResult != null)
             {
-                FPetraUtilsObject.SetStatusBarText(grdResult, "Opening Partner in Partner Edit screen...");    
+                FPetraUtilsObject.SetStatusBarText(grdResult, "Opening Partner in Partner Edit screen...");
             }
-            
+
             this.Cursor = Cursors.WaitCursor;
 
             // Set Partner to be the "Last Used Partner"
@@ -1330,11 +1331,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             finally
             {
                 this.Cursor = Cursors.Default;
-                
-                if (grdResult != null) 
+
+                if (grdResult != null)
                 {
                     FPetraUtilsObject.SetStatusBarText(grdResult,
-                        MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);                    
+                        MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
                 }
             }
         }
@@ -1401,7 +1402,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void OpenCopyAddressToClipboardScreen()
         {
             throw new NotImplementedException();
-            
+
 // TODO OpenCopyAddressToClipboardScreen
 #if TODO
             TLocationPK LocationPK;

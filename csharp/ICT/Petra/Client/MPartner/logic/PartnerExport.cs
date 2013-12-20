@@ -48,7 +48,7 @@ namespace Ict.Petra.Client.MPartner.Logic
             bool Result = false;
             StringCollection ASpecificBuildingInfo = null;
             String ExtFormattedDocument;
-            
+
             string FileName = TImportExportDialogs.GetExportFilename(Catalog.GetString("Save Partners into File"));
 
             if (FileName.Length > 0)
@@ -67,20 +67,20 @@ namespace Ict.Petra.Client.MPartner.Logic
                     if (!Result)
                     {
                         MessageBox.Show(Catalog.GetString("Export of Partner failed!"), Catalog.GetString(
-                            "Export Partner"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                "Export Partner"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                     else
                     {
                         MessageBox.Show(Catalog.GetString("Export of Partner finished"), Catalog.GetString(
-                            "Export Partner"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                "Export Partner"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
                 else
                 {
                     MessageBox.Show(Catalog.GetString("Export with this format is not yet supported!"), Catalog.GetString(
-                        "Export Partner"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            "Export Partner"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-        }    
+        }
     }
 }
