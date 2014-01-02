@@ -286,6 +286,7 @@ namespace {#NAMESPACE}
         {
             ARow.BeginEdit();
             {#SAVEDETAILS}
+            {#SAVEDETAILSEXTRA}
             ARow.EndEdit();
         }
     }
