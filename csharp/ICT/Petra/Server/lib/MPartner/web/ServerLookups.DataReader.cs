@@ -405,9 +405,76 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.IsPUnitAConference: commit own transaction.");
+                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.IsPUnitAConference: commit own transaction.");
                 }
             }
+        }
+
+        /// <summary>
+        /// Finds and returns a BankingDetailsRow with given BankingDetailsKey
+        /// </summary>
+        /// <param name="ABankingDetailsKey"></param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static PBankingDetailsTable GetBankingDetailsRow(int ABankingDetailsKey)
+        {
+            PBankingDetailsTable ReturnRow = null;
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction;
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+            try
+            {
+                ReturnRow = PBankingDetailsAccess.LoadByPrimaryKey(ABankingDetailsKey, ReadTransaction);
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetBankingDetailsRow: committed own transaction.");
+                }
+            }
+
+            return ReturnRow;
+        }
+
+        /// <summary>
+        /// Finds if a PBankingDetailsRow is used by more than one partner
+        /// </summary>
+        /// <param name="ABankingDetailsKey"></param>
+        /// <returns>True if row is shared, false if it is not.</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool IsBankingDetailsRowShared(int ABankingDetailsKey)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction;
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+            try
+            {
+                PPartnerBankingDetailsTable PartnerBankingDetailsTable = PPartnerBankingDetailsAccess.LoadViaPBankingDetails(ABankingDetailsKey,
+                    ReadTransaction);
+
+                if (PartnerBankingDetailsTable.Rows.Count >= 2)
+                {
+                    return true;
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.IsBankingDetailsRowShared: committed own transaction.");
+                }
+            }
+
+            return false;
         }
     }
 }

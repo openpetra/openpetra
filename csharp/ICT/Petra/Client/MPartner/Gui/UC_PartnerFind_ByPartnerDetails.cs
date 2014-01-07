@@ -98,6 +98,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private Boolean FRunningInsideModalForm;
 
+        // true when being used for the 'Find by bank details' tab
+        private Boolean FBankDetailsTab = false;
+
         /// <summary>
         /// event for when the search result changes, and more or less partners match the search criteria
         /// </summary>
@@ -205,9 +208,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             get
             {
-                if (grdResult != null) 
+                if (grdResult != null)
                 {
-                    return grdResult.SelectedDataRowsAsDataRowView;    
+                    return grdResult.SelectedDataRowsAsDataRowView;
                 }
                 else
                 {
@@ -489,10 +492,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (e.DataPage > 0)
             {
                 this.Cursor = Cursors.Default;
-                FPetraUtilsObject.WriteToStatusBar(
-                    MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
-                FPetraUtilsObject.SetStatusBarText(grdResult,
-                    MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
+
+                if (!FBankDetailsTab)
+                {
+                    FPetraUtilsObject.WriteToStatusBar(
+                        MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
+                    FPetraUtilsObject.SetStatusBarText(grdResult,
+                        MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
+                }
+                else
+                {
+                    FPetraUtilsObject.WriteToStatusBar(
+                        MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindByBankDetailsSearchTargetText);
+                    FPetraUtilsObject.SetStatusBarText(grdResult,
+                        MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindByBankDetailsSearchTargetText);
+                }
             }
         }
 
@@ -583,7 +597,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (AToolStripItem.Name == "mniFileExportPartner")
             {
-                TPartnerExportLogic.ExportSinglePartner(FLogic.PartnerKey, FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey);
+                TPartnerExportLogic.ExportSinglePartner(FLogic.PartnerKey,
+                    FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey);
             }
             else if (AToolStripItem.Name == "mniFileImportPartner")
             {
@@ -596,7 +611,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 throw new NotImplementedException();
-            }            
+            }
         }
 
         void HandleEditMenuItemOrToolBarButton(ToolStripItem AToolStripItem)
@@ -608,11 +623,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             else if (AToolStripItem.Name == "mniEditCopyPartnerKey")
             {
                 TMenuFunctions.CopyPartnerKeyToClipboard();
-            }            
+            }
             else if (AToolStripItem.Name == "mniEditCopyAddress")
             {
                 OpenCopyAddressToClipboardScreen();
-            }            
+            }
             else
             {
                 throw new NotImplementedException();
@@ -733,9 +748,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         void HandleMailingMenuItemOrToolBarButton(ToolStripItem AToolStripItem)
-        {   
-            string ClickedMenuItemName = AToolStripItem.Name;            
-            
+        {
+            string ClickedMenuItemName = AToolStripItem.Name;
+
             if (ClickedMenuItemName == "mniMailingExtracts")
             {
                 if (TCommonScreensForwarding.OpenExtractMasterScreen != null)
@@ -745,9 +760,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                throw new NotImplementedException();    
-            }                       
-            
+                throw new NotImplementedException();
+            }
+
 #if TODO
             String ClickedMenuItemText;
 
@@ -972,7 +987,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             Thread FinishedCheckThread;
 
             // Start the asynchronous search operation on the PetraServer
-            FPartnerFindObject.PerformSearch(FCriteriaData, chkDetailedResults.Checked);
+            if (!FBankDetailsTab)
+            {
+                FPartnerFindObject.PerformSearch(FCriteriaData, chkDetailedResults.Checked);
+            }
+            else
+            {
+                FPartnerFindObject.PerformSearchByBankDetails(FCriteriaData);
+            }
 
             // Start thread that checks for the end of the search operation on the PetraServer
             FinishedCheckThread = new Thread(new ThreadStart(SearchFinishedCheckThread));
@@ -986,9 +1008,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="AShortName">Partner short name</param>
         /// <param name="APartnerClass">Partner Class.</param>
         /// <param name="ALocationPK">Location key</param>
+        /// <param name="ABankingDetailsKey">Location key</param>
         /// <returns></returns>
         public Boolean GetReturnedParameters(out Int64 APartnerKey, out String AShortName, out TPartnerClass? APartnerClass,
-            out TLocationPK ALocationPK)
+            out TLocationPK ALocationPK, out int ABankingDetailsKey)
         {
             DataRowView[] SelectedGridRow = grdResult.SelectedDataRowsAsDataRowView;
 
@@ -999,6 +1022,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 AShortName = "";
                 APartnerClass = null;
                 ALocationPK = new TLocationPK(-1, -1);
+                ABankingDetailsKey = -1;
             }
             else
             {
@@ -1006,9 +1030,21 @@ namespace Ict.Petra.Client.MPartner.Gui
                 APartnerKey = Convert.ToInt64(SelectedGridRow[0][PPartnerTable.GetPartnerKeyDBName()]);
                 AShortName = Convert.ToString(SelectedGridRow[0][PPartnerTable.GetPartnerShortNameDBName()]);
                 APartnerClass = SharedTypes.PartnerClassStringToEnum(Convert.ToString(SelectedGridRow[0][PPartnerTable.GetPartnerClassDBName()]));
-                ALocationPK =
-                    new TLocationPK(Convert.ToInt64(SelectedGridRow[0][PPartnerLocationTable.GetSiteKeyDBName()]),
-                        Convert.ToInt32(SelectedGridRow[0][PPartnerLocationTable.GetLocationKeyDBName()]));
+
+                if (!FBankDetailsTab)
+                {
+                    ALocationPK =
+                        new TLocationPK(Convert.ToInt64(SelectedGridRow[0][PPartnerLocationTable.GetSiteKeyDBName()]),
+                            Convert.ToInt32(SelectedGridRow[0][PPartnerLocationTable.GetLocationKeyDBName()]));
+
+                    ABankingDetailsKey = -1;
+                }
+                else
+                {
+                    ABankingDetailsKey = Convert.ToInt32(SelectedGridRow[0][PBankingDetailsTable.GetBankingDetailsKeyDBName()]);
+
+                    ALocationPK = null;
+                }
             }
 
             return true;
@@ -1071,8 +1107,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             pnlBlankSearchResult.BringToFront();
 
-            FPetraUtilsObject.SetStatusBarText(grdResult,
-                MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
+            if (!FBankDetailsTab)
+            {
+                FPetraUtilsObject.SetStatusBarText(grdResult,
+                    MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
+            }
+            else
+            {
+                FPetraUtilsObject.SetStatusBarText(grdResult,
+                    MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindByBankDetailsSearchTargetText);
+            }
 
             FLogic.DataGrid = grdResult;
         }
@@ -1129,12 +1173,24 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoPartnerFindCriteria.InitUserControl();
 
             // Load items that should go into the left and right columns from User Defaults
-            ucoPartnerFindCriteria.CriteriaFieldsLeft =
-                new ArrayList(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_FINDOPTIONS_CRITERIAFIELDSLEFT,
-                        TFindOptionsForm.PARTNER_FINDOPTIONS_CRITERIAFIELDSLEFT_DEFAULT).Split(new Char[] { (';') }));
-            ucoPartnerFindCriteria.CriteriaFieldsRight =
-                new ArrayList(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT,
-                        TFindOptionsForm.PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT_DEFAULT).Split(new Char[] { (';') }));
+            if (!FBankDetailsTab)
+            {
+                ucoPartnerFindCriteria.CriteriaFieldsLeft =
+                    new ArrayList(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_FINDOPTIONS_CRITERIAFIELDSLEFT,
+                            TFindOptionsForm.PARTNER_FINDOPTIONS_CRITERIAFIELDSLEFT_DEFAULT).Split(new Char[] { (';') }));
+                ucoPartnerFindCriteria.CriteriaFieldsRight =
+                    new ArrayList(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT,
+                            TFindOptionsForm.PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT_DEFAULT).Split(new Char[] { (';') }));
+            }
+            else if (FBankDetailsTab)
+            {
+                ucoPartnerFindCriteria.CriteriaFieldsLeft =
+                    new ArrayList(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_FINDOPTIONS_CRITERIAFIELDSLEFT,
+                            TFindOptionsForm.PARTNER_FINDOPTIONSBYBANKDETAILS_CRITERIAFIELDSLEFT_DEFAULT).Split(new Char[] { (';') }));
+                ucoPartnerFindCriteria.CriteriaFieldsRight =
+                    new ArrayList(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT,
+                            TFindOptionsForm.PARTNER_FINDOPTIONSBYBANKDETAILS_CRITERIAFIELDSRIGHT_DEFAULT).Split(new Char[] { (';') }));
+            }
 
             ucoPartnerFindCriteria.DisplayCriteriaFieldControls();
             ucoPartnerFindCriteria.InitialiseCriteriaFields();
@@ -1281,7 +1337,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="AShowTabPage">Tab Page to open the Partner Edit screen on.</param>
         private void OpenPartnerEditScreen(TPartnerEditTabPageEnum AShowTabPage)
         {
-            OpenPartnerEditScreen(AShowTabPage, FLogic.PartnerKey, false);
+            if (!FBankDetailsTab)
+            {
+                OpenPartnerEditScreen(AShowTabPage, FLogic.PartnerKey, false);
+            }
+            else
+            {
+                OpenPartnerEditScreen(AShowTabPage, FLogic.PartnerKey, true);
+            }
         }
 
         /// <summary>
@@ -1293,12 +1356,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void OpenPartnerEditScreen(TPartnerEditTabPageEnum AShowTabPage, Int64 APartnerKey, bool AOpenOnBestLocation)
         {
             FPetraUtilsObject.WriteToStatusBar("Opening Partner in Partner Edit screen...");
-            
-            if (grdResult != null) 
+
+            if (grdResult != null)
             {
-                FPetraUtilsObject.SetStatusBarText(grdResult, "Opening Partner in Partner Edit screen...");    
+                FPetraUtilsObject.SetStatusBarText(grdResult, "Opening Partner in Partner Edit screen...");
             }
-            
+
             this.Cursor = Cursors.WaitCursor;
 
             // Set Partner to be the "Last Used Partner"
@@ -1330,11 +1393,19 @@ namespace Ict.Petra.Client.MPartner.Gui
             finally
             {
                 this.Cursor = Cursors.Default;
-                
-                if (grdResult != null) 
+
+                if (grdResult != null)
                 {
-                    FPetraUtilsObject.SetStatusBarText(grdResult,
-                        MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);                    
+                    if (!FBankDetailsTab)
+                    {
+                        FPetraUtilsObject.SetStatusBarText(grdResult,
+                            MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
+                    }
+                    else
+                    {
+                        FPetraUtilsObject.SetStatusBarText(grdResult,
+                            MPartnerResourcestrings.StrResultGridHelpText + MPartnerResourcestrings.StrPartnerFindByBankDetailsSearchTargetText);
+                    }
                 }
             }
         }
@@ -1401,7 +1472,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void OpenCopyAddressToClipboardScreen()
         {
             throw new NotImplementedException();
-            
+
 // TODO OpenCopyAddressToClipboardScreen
 #if TODO
             TLocationPK LocationPK;
@@ -1586,14 +1657,29 @@ namespace Ict.Petra.Client.MPartner.Gui
                             grdResult.Focus();
                             DataGrid_FocusRowEntered(this, new RowEventArgs(1));
 
-                            // Display the number of found Partners/Locations
-                            if (grdResult.TotalRecords > 1)
+                            if (!FBankDetailsTab)
                             {
-                                SearchTarget = MPartnerResourcestrings.StrPartnerFindSearchTargetPluralText;
+                                // Display the number of found Partners/Locations
+                                if (grdResult.TotalRecords > 1)
+                                {
+                                    SearchTarget = MPartnerResourcestrings.StrPartnerFindSearchTargetPluralText;
+                                }
+                                else
+                                {
+                                    SearchTarget = MPartnerResourcestrings.StrPartnerFindSearchTargetText;
+                                }
                             }
                             else
                             {
-                                SearchTarget = MPartnerResourcestrings.StrPartnerFindSearchTargetText;
+                                // Display the number of found Partners/Bank Accounts
+                                if (grdResult.TotalRecords > 1)
+                                {
+                                    SearchTarget = MPartnerResourcestrings.StrPartnerFindByBankDetailsSearchTargetPluralText;
+                                }
+                                else
+                                {
+                                    SearchTarget = MPartnerResourcestrings.StrPartnerFindByBankDetailsSearchTargetText;
+                                }
                             }
 
                             grpResult.Text = MPartnerResourcestrings.StrSearchResult + ": " + grdResult.TotalRecords.ToString() + ' ' +
@@ -1822,8 +1908,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     // Create SourceDataGrid columns
-                    FLogic.CreateColumns(FPagedDataTable, chkDetailedResults.Checked,
-                        FCriteriaData.Rows[0]["PartnerStatus"].ToString() != "ACTIVE", FieldList);
+                    if (!FBankDetailsTab)
+                    {
+                        FLogic.CreateColumns(FPagedDataTable, chkDetailedResults.Checked,
+                            FCriteriaData.Rows[0]["PartnerStatus"].ToString() != "ACTIVE", FieldList);
+                    }
+                    else if (FBankDetailsTab)
+                    {
+                        FLogic.CreateBankDetailsColumns(FPagedDataTable,
+                            FCriteriaData.Rows[0]["PartnerStatus"].ToString() != "ACTIVE", FieldList);
+                    }
+
 //TLogging.Log("SetupResultDataGrid: Before calling SetupDataGridDataBinding()...");
                     // DataBindingrelated stuff
                     SetupDataGridDataBinding();
@@ -1902,7 +1997,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Pass on FRestrictToPartnerClasses to UC_PartnerFind_Criteria
+        /// Init class as FindPartnerDetail tab. Pass on FRestrictToPartnerClasses to UC_PartnerFind_Criteria
         /// </summary>
         /// <param name="AInitiallyFocusLocationKey"></param>
         /// <param name="ARestrictToPartnerClasses">this will be an empty array
@@ -1919,6 +2014,29 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 ucoPartnerFindCriteria.FocusLocationKey(APassedLocationKey);
             }
+
+            ucoPartnerFindCriteria.Focus();
+        }
+
+        /// <summary>
+        /// Init class as FindBankDetail tab.
+        /// </summary>
+        /// <param name="ARestrictToPartnerClasses">this will be an empty array
+        ///     or an array of strings to determine which partner classes are allowed</param>
+        public void InitBankDetailsTab(string[] ARestrictToPartnerClasses)
+        {
+            FBankDetailsTab = true;
+
+            InitialisePartnerFindCriteria();
+            ucoPartnerFindCriteria.RestrictedPartnerClass = ARestrictToPartnerClasses;
+
+            // no option for detailed results
+            chkDetailedResults.Checked = false;
+            chkDetailedResults.Visible = false;
+
+            // disable PartnerInfo panel
+            ucoPartnerInfo.Enabled = false;
+            ucoPartnerInfo.Visible = false;
 
             ucoPartnerFindCriteria.Focus();
         }

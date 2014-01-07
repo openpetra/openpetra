@@ -36,6 +36,14 @@ namespace Ict.Petra.Client.CommonControls.Logic
         out TLocationPK ALocationPK,
         Form AParentForm);
 
+    /// <summary>Delegate for a call to open a Modal Partner Find screen with only the Find By Bank Details tab enabled.</summary>
+    public delegate bool TDelegateOpenPartnerFindByBankDetailsScreen(String ARestrictToPartnerClass,
+        out Int64 APartnerKey,
+        out String AShortName,
+        out TPartnerClass? APartnerClass,
+        out int ABankingDetailsKey,
+        Form AParentForm);
+
     /// <summary>Delegate for a call to open a Modal Conference Find screen</summary>
     public delegate bool TDelegateOpenConferenceFindScreen(String AConferenceNamePattern,
         String AOutreachCodePattern,
@@ -58,7 +66,7 @@ namespace Ict.Petra.Client.CommonControls.Logic
 
     /// <summary>Delegate for a call to open the Extract Master screen</summary>
     public delegate void TDelegateOpenExtractMasterScreen(Form AParentForm);
-    
+
     /// <summary>Delegate for a call to open a Modal Range Find screen</summary>
     public delegate bool TDelegateOpenRangeFindScreen(String ARegionName,
         out String[] ARangeName,

@@ -9,8 +9,10 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
+        actShare: {Label=&Share Existing Bank Account, ActionClick=ShareExistingBankAccount}
         actDelete: {Label=&Delete, SkipReferenceCheck=true, ActionClick=DeleteRecord}
         actSetMainAccount: {ActionClick=SetMainAccount}
+        actCopyPartnerName: {Label=<- Partner's Name, ActionClick=CopyPartnerName}
     Controls:
         pnlContent:
             Controls: [grpBankAccounts, grpDonorGiftReceipting, grpRecipientGiftReceipting, grpOther]
@@ -38,7 +40,7 @@ RootNode:
         txtFinanceComment:
             Multiline: true
             Height: 60
-            Width: 300
+            Stretch: horizontally
         grpBankAccounts:
             Controls: [pnlGrid, pnlDetails]
             Dock: Top
@@ -49,10 +51,12 @@ RootNode:
             Controls: [pnlButtons, grdDetails]
         pnlButtons:
             Dock: Bottom
-            Controls: [btnNew, btnDelete, btnSetMainAccount]
+            Controls: [btnNew, btnShare, btnDelete, btnSetMainAccount]
             ControlsOrientation: horizontal
         btnNew: {Width=80}
             Action: actNew
+        btnShare:
+            Action: actShare
         btnDelete: {Width=80}
             Action: actDelete
         btnSetMainAccount: {Width=120, StartNewButtonGroup=true, Enabled=false}
@@ -71,17 +75,34 @@ RootNode:
             Dock: Bottom
             Type: Ict.Petra.Client.MPartner.Gui.TUC_FinanceDetails
             Height: 130
-            Controls: 
-                Row0: [grpAccountDetail]
+            Controls: [grpAccountDetail]
             Visible: false
             
-        grpAccountDetail: {Label=Account Detail, Strech=horizontally}
-            Controls: [txtAccountName, txtBankAccountNumber, txtIban, txtBankKey]
-    
+        grpAccountDetail: {Label=Account Detail, Dock=Fill}
+            Controls: 
+                Row0: [txtAccountName, btnCopyPartnerName]
+                Row1: [txtBankAccountNumber]
+                Row2: [txtIban]
+                Row3: [txtBankKey]
+
         txtAccountName:
-            Label: Account Name       
+            Label: Account Name
+            Width: 275
+            OnEnter: CheckIfRowIsShared
+        btnCopyPartnerName:
+            Action: actCopyPartnerName
+            Padding: -115,0,0,0
+            OnEnter: CheckIfRowIsShared
         txtBankAccountNumber:
             Label: Bank Account Number
+            Width: 160
+            OnEnter: CheckIfRowIsShared
         txtIban:
             Label: IBAN
-        txtBankKey: {Label=Bank, Type=PartnerKey, PartnerClass=BANK}
+            Width: 275
+            OnEnter: CheckIfRowIsShared
+        txtBankKey:
+            Label: Bank
+            Type: PartnerKey
+            PartnerClass: BANK
+            OnEnter: CheckIfRowIsShared

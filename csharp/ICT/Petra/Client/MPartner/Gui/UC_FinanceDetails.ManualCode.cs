@@ -29,6 +29,8 @@ using Ict.Common.Controls;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
@@ -117,13 +119,113 @@ namespace Ict.Petra.Client.MPartner.Gui
             btnSetMainAccount.Enabled = true;
         }
 
+        /// <summary>
+        /// share an existing bank account of another partner
+        /// </summary>
+        private void ShareExistingBankAccount(System.Object sender, EventArgs e)
+        {
+            PPartnerBankingDetailsRow NewRow;
+
+            long PartnerKey = 0;
+            string PartnerShortName;
+            TPartnerClass? PartnerClass;
+            int BankingDetailsKey;
+
+            DataRow[] ExistingPartnerDataRows;
+
+            // If the delegate is defined, the host form will launch a Modal Partner Find screen for us
+            if (TCommonScreensForwarding.OpenPartnerFindByBankDetailsScreen != null)
+            {
+                // delegate IS defined
+                try
+                {
+                    TCommonScreensForwarding.OpenPartnerFindByBankDetailsScreen.Invoke
+                        ("",
+                        out PartnerKey,
+                        out PartnerShortName,
+                        out PartnerClass,
+                        out BankingDetailsKey,
+                        this.ParentForm);
+
+                    if ((PartnerKey != -1) && (BankingDetailsKey != -1))
+                    {
+                        ExistingPartnerDataRows = FMainDS.PPartnerBankingDetails.Select(
+                            PPartnerBankingDetailsTable.GetPartnerKeyDBName() + " = " + FMainDS.PPartner[0].PartnerKey.ToString() +
+                            " AND " + PPartnerBankingDetailsTable.GetBankingDetailsKeyDBName() + " = " + BankingDetailsKey.ToString());
+
+                        if (ExistingPartnerDataRows.Length > 0)
+                        {
+                            // check if partner already exists in extract
+                            MessageBox.Show(Catalog.GetString("The selected bank account already exists for this partner"),
+                                Catalog.GetString("Add Bank Account to partner"),
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Information);
+
+                            return;
+                        }
+
+                        // add bank account
+                        NewRow = FMainDS.PPartnerBankingDetails.NewRowTyped();
+                        NewRow.PartnerKey = FMainDS.PPartner[0].PartnerKey;
+                        NewRow.BankingDetailsKey = BankingDetailsKey;
+                        FMainDS.PPartnerBankingDetails.Rows.Add(NewRow);
+
+                        // get the PBankingDetailsRow that corresponds to the PPartnerBankingDetailsRow NewRow
+                        PBankingDetailsTable SharedBankingDetailsTable = TRemote.MPartner.Partner.WebConnectors.GetBankingDetailsRow(
+                            BankingDetailsKey);
+
+                        if (SharedBankingDetailsTable == null)
+                        {
+                            throw new Exception();
+                        }
+
+                        FMainDS.PBankingDetails.Merge(SharedBankingDetailsTable);
+
+                        PartnerEditTDSPBankingDetailsRow SharedRow = (PartnerEditTDSPBankingDetailsRow)FMainDS.PBankingDetails.Rows.Find(
+                            BankingDetailsKey);
+
+                        // automatically set to main account if it is the only account
+                        SharedRow.MainAccount = (grdDetails.Rows.Count == 2);
+
+                        btnSetMainAccount.Enabled = true;
+
+                        // enable save button on screen
+                        FPetraUtilsObject.SetChangedFlag();
+
+                        // select the added bank account in the grid so the user can see the change
+                        SelectDetailRowByDataTableIndex(FMainDS.PBankingDetails.Rows.Count - 1);
+
+                        UpdateRecordNumberDisplay();
+                    }
+                }
+                catch (Exception exp)
+                {
+                    throw new ApplicationException("Exception occured while calling PartnerFindScreen Delegate!",
+                        exp);
+                }
+                // end try
+            }
+        }
+
         private bool PreDeleteManual(PartnerEditTDSPBankingDetailsRow ARowToDelete, ref String ADeletionQuestion)
         {
-            ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
+            ADeletionQuestion = "";
+
+            // additional message if the bank account to be deleted is shared with one or more other Partners
+            if (TRemote.MPartner.Partner.WebConnectors.IsBankingDetailsRowShared(ARowToDelete.BankingDetailsKey))
+            {
+                ADeletionQuestion = Catalog.GetString("This bank account is currently shared with one or more other Partners. " +
+                    "The bank account will not be removed from the other Partners this account is shared with, " +
+                    "only the account you are currently working on.") +
+                                    Environment.NewLine + Environment.NewLine;
+            }
+
+            ADeletionQuestion += Catalog.GetString("Are you sure you want to delete the current row?");
             ADeletionQuestion += String.Format("{0}{0}({1} {2})",
                 Environment.NewLine,
                 lblAccountName.Text,
                 txtAccountName.Text);
+
             return true;
         }
 
@@ -145,11 +247,30 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            // TODO what if several people are using the same bank account?
             FMainDS.PPartnerBankingDetails.DefaultView.Sort = PPartnerBankingDetailsTable.GetBankingDetailsKeyDBName();
             FMainDS.PPartnerBankingDetails.DefaultView.FindRows(ARowToDelete.BankingDetailsKey)[0].Row.Delete();
 
-            ARowToDelete.Delete();
+            // if bank account is a 'Main' account then a record in PBankingDetailsUsage will also need deleted.
+            if (FMainDS.PBankingDetailsUsage != null)
+            {
+                FMainDS.PBankingDetailsUsage.DefaultView.Sort = PBankingDetailsUsageTable.GetBankingDetailsKeyDBName();
+                DataRowView[] RowsToDelete = FMainDS.PBankingDetailsUsage.DefaultView.FindRows(ARowToDelete.BankingDetailsKey);
+
+                foreach (DataRowView Row in RowsToDelete)
+                {
+                    Row.Delete();
+                }
+            }
+
+            // only delete PBankingDetailsRow if it is not shared with any other Partners
+            if (!TRemote.MPartner.Partner.WebConnectors.IsBankingDetailsRowShared(ARowToDelete.BankingDetailsKey))
+            {
+                ARowToDelete.Delete();
+            }
+            else
+            {
+                FMainDS.PBankingDetails.Rows.Remove(ARowToDelete);
+            }
 
             return true;
         }
@@ -295,6 +416,26 @@ namespace Ict.Petra.Client.MPartner.Gui
             return true;
         }
 
+        private PBankingDetailsRow LastRowChecked = null;
+
+        private void CheckIfRowIsShared(System.Object Sender, EventArgs e)
+        {
+            // When a bank account is edited, check if it is shared with any other partners. If it is, display a message informing the user.
+            if ((FPreviouslySelectedDetailRow != LastRowChecked)
+                && TRemote.MPartner.Partner.WebConnectors.IsBankingDetailsRowShared(FPreviouslySelectedDetailRow.BankingDetailsKey))
+            {
+                string EditQuestion = Catalog.GetString("This bank account is currently shared with one or more other Partners. " +
+                    "Changes to the Bank Account details here will take effect on the other Partners too.");
+
+                MessageBox.Show(EditQuestion,
+                    Catalog.GetString("Bank Account is used by another Partner"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+
+            LastRowChecked = FPreviouslySelectedDetailRow;
+        }
+
         // set the main account flag, remove that flag from the other accounts (p_banking_details_usage)
         private void SetMainAccount(System.Object Sender, EventArgs e)
         {
@@ -314,6 +455,56 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // MainAccount PBankingDetailsUsage is processed on the server side!!!
+        }
+
+        // copy the partner's name to the account name
+        private void CopyPartnerName(System.Object Sender, EventArgs e)
+        {
+            PPartnerRow PartnerRow = (PPartnerRow)FMainDS.PPartner.Rows[0];
+
+            if (PartnerRow.PartnerClass == "PERSON")
+            {
+                PPersonRow PersonRow = (PPersonRow)FMainDS.PPerson.Rows[0];
+                txtAccountName.Text = PersonRow.FirstName;
+
+                if ((PersonRow.MiddleName1 != null) && (PersonRow.MiddleName1.Length > 0)
+                    && (txtAccountName.Text.Length > 0))
+                {
+                    txtAccountName.Text += " " + PersonRow.MiddleName1;
+                }
+                else
+                {
+                    txtAccountName.Text += PersonRow.MiddleName1;
+                }
+
+                if ((PersonRow.FamilyName != null) && (PersonRow.FamilyName.Length > 0)
+                    && (txtAccountName.Text.Length > 0))
+                {
+                    txtAccountName.Text += " " + PersonRow.FamilyName;
+                }
+                else
+                {
+                    txtAccountName.Text += PersonRow.FamilyName;
+                }
+            }
+            else if (PartnerRow.PartnerClass == "FAMILY")
+            {
+                PFamilyRow FamilyRow = (PFamilyRow)FMainDS.PFamily.Rows[0];
+                txtAccountName.Text = FamilyRow.FirstName;
+
+                if (txtAccountName.Text.Length > 0)
+                {
+                    txtAccountName.Text += " " + FamilyRow.FamilyName;
+                }
+                else
+                {
+                    txtAccountName.Text += FamilyRow.FamilyName;
+                }
+            }
+            else
+            {
+                txtAccountName.Text = PartnerRow.PartnerShortName;
+            }
         }
     }
 }
