@@ -589,7 +589,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ucoAccountAnalysisAttributes.AccountCode = ARow.AccountCode;
 
                 chkDetailForeignCurrencyFlag.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag);
-                cmbDetailForeignCurrencyCode.Enabled = !ARow.SystemAccountFlag;
+                cmbDetailForeignCurrencyCode.Enabled = (!ARow.SystemAccountFlag && ARow.ForeignCurrencyFlag);
+                if (!ARow.ForeignCurrencyFlag)
+                {
+                    cmbDetailForeignCurrencyCode.SelectedIndex = -1;
+                    ARow.ForeignCurrencyCode = "";
+                }
                 chkDetailAccountActiveFlag.Enabled = !ARow.SystemAccountFlag;
 
                 // I allow the user to attempt to change the primary key,

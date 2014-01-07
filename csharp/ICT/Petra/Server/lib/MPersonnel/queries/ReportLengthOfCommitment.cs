@@ -42,8 +42,10 @@ namespace Ict.Petra.Server.MPersonnel.queries
     /// </summary>
     public class QueryLengthOfCommitmentReport
     {
-        private static int TotalMonths(TimeSpan value)
+        private static Int32 ElapsedDays(TimeSpan value)
         {
+            return Convert.ToInt32(value.TotalDays);
+            /*
             DateTime BaseDate = new DateTime(1, 1, 1);
             DateTime endDate = BaseDate.AddTicks(Math.Abs(value.Ticks));
 
@@ -55,18 +57,19 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
             // don't include this month
             return ((endDate.Year - 1) * 12) + endDate.Month - 1;
+             */
         }
 
         /// <summary>
         /// return the date of a full year before or on the given current end date
         /// </summary>
-        private static DateTime AnniversaryDate(int monthsServed, DateTime ACurrentEndDate)
+        private static DateTime AnniversaryDate(int daysServed, DateTime ACurrentEndDate)
         {
-            return ACurrentEndDate.AddMonths(-1 * monthsServed % 12);
+            return ACurrentEndDate.AddDays(-1 * daysServed % 365);
         }
 
         private static void StoreCommitmentTotal(LengthOfCommitmentReportTDSPmStaffDataRow PreviousRow,
-            Int32 monthsServed,
+            Int32 daysServed,
             DateTime AReportStartDate,
             DateTime AReportEndDate,
             DateTime previousStartDate,
@@ -78,7 +81,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
             if (!previousEndDate.HasValue)
             {
-                monthsServed += TotalMonths(AReportEndDate - previousStartDate);
+                daysServed += ElapsedDays(AReportEndDate - previousStartDate);
 
                 ThisWorkerEndDate = AReportEndDate;
             }
@@ -86,36 +89,29 @@ namespace Ict.Petra.Server.MPersonnel.queries
             {
                 if (AReportEndDate < previousEndDate)
                 {
-                    monthsServed += TotalMonths(AReportEndDate - previousStartDate);
+                    daysServed += ElapsedDays(AReportEndDate - previousStartDate);
                     ThisWorkerEndDate = AReportEndDate;
                 }
                 else
                 {
-                    monthsServed += TotalMonths(previousEndDate.Value - previousStartDate);
+                    daysServed += ElapsedDays(previousEndDate.Value - previousStartDate);
                     ThisWorkerEndDate = previousEndDate.Value;
                 }
             }
 
             // we need the date where an anniversary happens, in the report time
-            int TotalYears = Convert.ToInt32(monthsServed / 12);
+            int TotalYears = Convert.ToInt32(daysServed / 365);
 
-            DateTime anniversaryDate = AnniversaryDate(monthsServed, ThisWorkerEndDate);
+            DateTime anniversaryDate = AnniversaryDate(daysServed, ThisWorkerEndDate);
 
-            bool doStore = false;
+            bool doStore = (
+                   (anniversaryDate.DayOfYear >= AReportStartDate.DayOfYear)
+                && (anniversaryDate.DayOfYear <= AReportEndDate.DayOfYear));
 
-            if (ASpecialAnniversaries.Count == 0)
+            if (ASpecialAnniversaries.Count > 0)
             {
-                doStore = true;
-            }
-
-            foreach (int specialanniversary in ASpecialAnniversaries)
-            {
-                if ((TotalYears == specialanniversary)
-                    && (anniversaryDate >= AReportStartDate))
-                {
-                    doStore = true;
-                    break;
-                }
+                if (!ASpecialAnniversaries.Contains(TotalYears))
+                    doStore = false;
             }
 
             if (doStore)
@@ -217,7 +213,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                     else
                     {
                         // store previous commitment time, and start a new commitment
-                        monthsServed += TotalMonths(previousEndDate.Value - previousStartDate);
+                        monthsServed += ElapsedDays(previousEndDate.Value - previousStartDate);
                         previousStartDate = row.StartOfCommitment;
                         previousEndDate = row.IsEndOfCommitmentNull() ? new Nullable <DateTime>() : row.EndOfCommitment;
                     }

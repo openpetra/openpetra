@@ -612,7 +612,7 @@
 			</field>
 		</header>
 		<detail>
-			<lowerLevelReport level="Special Need lower Level" calculation="SelectSpecialNeeds"></lowerLevelReport>
+			<lowerLevelReport level="Special Need lower Level" calculation="SelectSpecialNeeds" condition="HasChildRows"></lowerLevelReport>
 		</detail>
 		<footer space="below">
 			<field whichfield="column 0" pos="0cm">

@@ -244,6 +244,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     method.Invoke(MainWindow, new object[] { });
                 }
 
+                method = MainWindow.GetType().GetMethod("SelectFinanceFolder");
+                if (method != null)
+                {
+                    method.Invoke(MainWindow, new object[] { });
+                }
                 Close();
             }
         }
