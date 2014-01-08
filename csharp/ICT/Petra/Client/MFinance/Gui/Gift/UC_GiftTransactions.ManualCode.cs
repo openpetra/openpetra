@@ -63,6 +63,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         string FFilterAllDetailsOfGift = string.Empty;
         DataView FGiftDetailView = null;
 
+        private string FMotivationGroup = string.Empty;
+        private string FMotivationDetail = string.Empty;
+
+        private bool FShowingDetails = false;
+
         private Boolean ViewMode
         {
             get
@@ -84,9 +89,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             txtDetailRecipientKey.PartnerClass = "WORKER,UNIT,FAMILY";
 
-            //Setup hidden Key Ministry text box
+            //Setup hidden text boxes used to speed up reading transactions
+            SetKeyMinistryInvisible();
             txtKeyMinistry.Top = cmbMinistry.Top;
             txtKeyMinistry.Width = cmbMinistry.Width;
+
+            txtKeyMinistry.Click += new EventHandler(SetKeyMinistryVisible);
+
+            SetMotivationGroupDetailInvisible();
+            txtMotivationGroupCode.Top = cmbDetailMotivationGroupCode.Top;
+            txtMotivationGroupCode.Width = cmbDetailMotivationGroupCode.Width - cmbDetailMotivationGroupCode.LabelWidth;
+            txtMotivationDetailCode.Top = cmbDetailMotivationDetailCode.Top;
+            txtMotivationDetailCode.Width = cmbDetailMotivationDetailCode.Width - cmbDetailMotivationDetailCode.LabelWidth;
+
+            txtMotivationGroupCode.Click += new EventHandler(SetMotivationGroupVisible);
+            txtMotivationDetailCode.Click += new EventHandler(SetMotivationDetailVisible);
         }
 
         /// <summary>
@@ -99,9 +116,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Int32 ABatchNumber,
             string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
-            Console.WriteLine("LoadGifts");
-            DateTime dtStart = DateTime.Now;
-
             //Reset Batch method of payment variable
             FBatchMethodOfPayment = ((TFrmGiftBatch)ParentForm).GetBatchControl().MethodOfPaymentCode;
 
@@ -135,7 +149,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     UpdateBaseAmount(false);
                 }
 
-                Console.WriteLine("LoadGifts - Quick exit  {0} ms", (DateTime.Now - dtStart).TotalMilliseconds);
+                SetKeyMinistryInvisible();
+                SetMotivationGroupDetailInvisible();
+
                 return;
             }
 
@@ -152,10 +168,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FBatchStatus = ABatchStatus;
             FBatchUnposted = (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
-            //Handle Key Ministry Controls
-            cmbMinistry.Visible = FBatchUnposted;
-            txtKeyMinistry.Visible = !FBatchUnposted;
-
             //Apply new filter
             FPreviouslySelectedDetailRow = null;
             grdDetails.DataSource = null;
@@ -165,7 +177,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FActiveOnly = this.Enabled;
 
-                Console.WriteLine("Populating ComboBoxes  {0} ms", ((DateTime.Now - dtStart).TotalMilliseconds));
                 TFinanceControls.InitialiseMotivationGroupList(ref cmbDetailMotivationGroupCode, FLedgerNumber, FActiveOnly);
                 TFinanceControls.InitialiseMotivationDetailList(ref cmbDetailMotivationDetailCode, FLedgerNumber, FActiveOnly);
                 TFinanceControls.InitialiseMethodOfGivingCodeList(ref cmbDetailMethodOfGivingCode, FActiveOnly);
@@ -180,7 +191,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // otherwise we would overwrite transactions that have already been modified
             if (FMainDS.AGiftDetail.DefaultView.Count == 0)
             {
-                Console.WriteLine("Loading transactions...  {0}", ((DateTime.Now - dtStart).TotalMilliseconds));
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
             }
 
@@ -194,7 +204,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateControlsProtection();
 
             ResumeLayout();
-            Console.WriteLine("LoadGifts completed  {0}", ((DateTime.Now - dtStart).TotalMilliseconds));
             this.Cursor = Cursors.Default;
         }
 
@@ -207,7 +216,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             String strMotivationGroup;
             String strMotivationDetail;
 
-            if (FinRecipientKeyChanging | FPetraUtilsObject.SuppressChangeDetection)
+            if (FinRecipientKeyChanging || FPetraUtilsObject.SuppressChangeDetection || FShowingDetails)
             {
                 return;
             }
@@ -265,6 +274,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FPetraUtilsObject.SuppressChangeDetection)
             {
                 FLastDonor = APartnerKey;
+            }
+            else if (FShowingDetails)
+            {
+                return;
             }
             else
             {
@@ -328,6 +341,48 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
             }
+        }
+
+        private void SetMotivationGroupVisible(object sender, EventArgs e)
+        {
+            txtMotivationGroupCode.Visible = false;
+            txtMotivationDetailCode.Visible = false;
+            cmbDetailMotivationGroupCode.Visible = true;
+            cmbDetailMotivationDetailCode.Visible = true;
+            FilterMotivationDetail(null, null);
+            cmbDetailMotivationGroupCode.Focus();
+        }
+
+        private void SetMotivationDetailVisible(object sender, EventArgs e)
+        {
+            txtMotivationGroupCode.Visible = false;
+            txtMotivationDetailCode.Visible = false;
+            cmbDetailMotivationGroupCode.Visible = true;
+            cmbDetailMotivationDetailCode.Visible = true;
+            FilterMotivationDetail(null, null);
+            cmbDetailMotivationDetailCode.Focus();
+        }
+
+        private void SetMotivationGroupDetailInvisible()
+        {
+            txtMotivationGroupCode.Visible = true;
+            txtMotivationDetailCode.Visible = true;
+            cmbDetailMotivationGroupCode.Visible = false;
+            cmbDetailMotivationDetailCode.Visible = false;
+        }
+
+        private void SetKeyMinistryVisible(object sender, EventArgs e)
+        {
+            txtKeyMinistry.Visible = false;
+            cmbMinistry.Visible = true;
+            PopulateKeyMinistry();
+            cmbMinistry.Focus();
+        }
+
+        private void SetKeyMinistryInvisible()
+        {
+            txtKeyMinistry.Visible = true;
+            cmbMinistry.Visible = false;
         }
 
         private void DetailCommentTypeChanged(object sender, EventArgs e)
@@ -402,19 +457,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void FilterMotivationDetail(object sender, EventArgs e)
         {
-            TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, cmbDetailMotivationGroupCode.GetSelectedString());
-
-            if ((cmbDetailMotivationDetailCode.Count > 0) && (cmbDetailMotivationDetailCode.Text.Trim() == string.Empty))
+            if (!FBatchUnposted)
             {
-                cmbDetailMotivationDetailCode.SelectedIndex = 0;
+                return;
             }
 
-            RetrieveMotivationDetailAccountCode();
+            string MotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
 
-            if ((txtDetailRecipientKey.Text == string.Empty) || (Convert.ToInt64(txtDetailRecipientKey.Text) == 0))
+            if (FMotivationGroup != MotivationGroup)
             {
-                txtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
-                RetrieveMotivationDetailCostCentreCode();
+                FMotivationGroup = MotivationGroup;
+                TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, MotivationGroup);
+
+                if ((cmbDetailMotivationDetailCode.Count > 0) && (cmbDetailMotivationDetailCode.Text.Trim() == string.Empty))
+                {
+                    cmbDetailMotivationDetailCode.SelectedIndex = 0;
+                }
+
+                RetrieveMotivationDetailAccountCode();
+
+                if ((txtDetailRecipientKey.Text == string.Empty) || (Convert.ToInt64(txtDetailRecipientKey.Text) == 0))
+                {
+                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
+                    RetrieveMotivationDetailCostCentreCode();
+                }
             }
         }
 
@@ -484,6 +550,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void MotivationDetailChanged(object sender, EventArgs e)
         {
+            if (!FBatchUnposted || !cmbDetailMotivationDetailCode.Visible)
+            {
+                return;
+            }
+
             string MotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
             string MotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
 
@@ -503,12 +574,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, PartnerKey);
-
-                long FieldNumber = Convert.ToInt64(txtField.Text);
-
-                txtDetailCostCentreCode.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
+                PopulateKeyMinistry(PartnerKey);
             }
+        }
+
+        private void PopulateKeyMinistry(long APartnerKey = 0)
+        {
+            if (APartnerKey == 0)
+            {
+                APartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
+            }
+
+            if (APartnerKey == 0)
+            {
+                cmbMinistry.Clear();
+                return;
+            }
+
+            TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, APartnerKey);
+
+            long FieldNumber = Convert.ToInt64(txtField.Text);
+
+            txtDetailCostCentreCode.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
         }
 
         private void GiftDetailAmountChanged(object sender, EventArgs e)
@@ -1277,6 +1364,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
+            if (cmbDetailMotivationGroupCode.Visible)
+            {
+                SetMotivationGroupDetailInvisible();
+            }
+
+            if (cmbMinistry.Visible)
+            {
+                SetKeyMinistryInvisible();
+            }
+
             if (ARow == null)
             {
                 return;
@@ -1284,84 +1381,104 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             this.Cursor = Cursors.WaitCursor;
 
+            FShowingDetails = true;
+
             //Show gift table values
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
             ShowDetailsForGift(giftRow);
 
             //Set Gift Details controls
-            cmbDetailMotivationGroupCode.SetSelectedString(ARow.MotivationGroupCode);
-            cmbDetailMotivationDetailCode.SetSelectedString(ARow.MotivationDetailCode);
-
-            if (FBatchUnposted)
+            if (FBatchUnposted && cmbDetailMotivationGroupCode.Visible)
             {
-                // show cost centre
-                MotivationDetailChanged(null, null);
-
-                TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, ARow.RecipientKey);
-
-                if (ARow.IsDonorKeyNull())
+                if (ARow.IsMotivationGroupCodeNull())
                 {
-                    txtDetailDonorKey.Text = "0";
+                    cmbDetailMotivationGroupCode.SelectedIndex = -1;
                 }
                 else
                 {
-                    txtDetailDonorKey.Text = ARow.DonorKey.ToString();
+                    cmbDetailMotivationGroupCode.SetSelectedString(ARow.MotivationGroupCode);
                 }
 
-                if ((Convert.ToInt64(txtDetailRecipientKey.Text) == 0) && (cmbDetailMotivationGroupCode.SelectedIndex == -1))
+                if (ARow.IsMotivationDetailCodeNull())
                 {
-                    txtDetailCostCentreCode.Text = string.Empty;
+                    cmbDetailMotivationDetailCode.SelectedIndex = -1;
+                }
+                else
+                {
+                    cmbDetailMotivationDetailCode.SetSelectedString(ARow.MotivationDetailCode);
                 }
             }
             else
             {
-                if (ARow.IsDonorKeyNull())
+                if (ARow.IsMotivationGroupCodeNull())
                 {
-                    txtDetailDonorKey.Text = "0";
+                    txtMotivationGroupCode.Text = string.Empty;
                 }
                 else
                 {
-                    txtDetailDonorKey.Text = ARow.DonorKey.ToString();
+                    txtMotivationGroupCode.Text = ARow.MotivationGroupCode;
                 }
 
-                if (ARow.IsCostCentreCodeNull())
+                if (ARow.IsMotivationDetailCodeNull())
                 {
-                    txtDetailCostCentreCode.Text = string.Empty;
+                    txtMotivationDetailCode.Text = string.Empty;
                 }
                 else
                 {
-                    txtDetailCostCentreCode.Text = ARow.CostCentreCode;
-                }
-
-                if (ARow.IsRecipientKeyNull())
-                {
-                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
-                }
-                else
-                {
-                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", ARow.RecipientKey);
-                }
-
-                if (ARow.IsRecipientFieldNull())
-                {
-                    txtField.Text = string.Empty;
-                }
-                else
-                {
-                    txtField.Text = ARow.RecipientField.ToString();
-                }
-
-                if (ARow.IsRecipientKeyMinistryNull())
-                {
-                    txtKeyMinistry.Text = string.Empty;
-                }
-                else
-                {
-                    txtKeyMinistry.Text = ARow.RecipientKeyMinistry;
+                    txtMotivationDetailCode.Text = ARow.MotivationDetailCode;
                 }
             }
 
+            if (ARow.IsDonorKeyNull())
+            {
+                txtDetailDonorKey.Text = "0";
+            }
+            else
+            {
+                txtDetailDonorKey.Text = ARow.DonorKey.ToString();
+            }
+
+            if (ARow.IsCostCentreCodeNull())
+            {
+                txtDetailCostCentreCode.Text = string.Empty;
+            }
+            else
+            {
+                txtDetailCostCentreCode.Text = ARow.CostCentreCode;
+            }
+
+            if (ARow.IsRecipientKeyNull())
+            {
+                txtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
+            }
+            else
+            {
+                txtDetailRecipientKey.Text = String.Format("{0:0000000000}", ARow.RecipientKey);
+            }
+
+            if (ARow.IsRecipientFieldNull())
+            {
+                txtField.Text = string.Empty;
+            }
+            else
+            {
+                txtField.Text = ARow.RecipientField.ToString();
+            }
+
+            if (ARow.IsRecipientKeyMinistryNull())
+            {
+                txtKeyMinistry.Text = string.Empty;
+            }
+            else
+            {
+                txtKeyMinistry.Text = ARow.RecipientKeyMinistry;
+            }
+
+//            }
+
             UpdateControlsProtection(ARow);
+
+            FShowingDetails = false;
 
             this.Cursor = Cursors.Default;
         }
@@ -1378,7 +1495,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             txtDetailDonorKey.Text = ACurrentGiftRow.DonorKey.ToString();
-            //cmbMinistry.SetSelectedString(ACurrentGiftRow.);
 
             if (ACurrentGiftRow.IsMethodOfGivingCodeNull())
             {
@@ -1519,14 +1635,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ARow == null)
             {
-                PnlDetailsProtected = true;
+                PnlDetailsProtected = (ViewMode
+                                       || !FBatchUnposted);
             }
             else
             {
                 PnlDetailsProtected = (ViewMode
                                        || !FBatchUnposted
-                                       || ((ARow != null) && (ARow.GiftTransactionAmount < 0)
-                                           && (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0))
+                                       || (ARow.GiftTransactionAmount < 0 && GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0)
                                        );    // taken from old petra
             }
 
@@ -1594,13 +1710,48 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ARow.RecipientField = Convert.ToInt64(txtField.Text);
             }
 
-            if (cmbMinistry.SelectedIndex == -1)
+            if (!cmbDetailMotivationGroupCode.Visible)
             {
-                ARow.SetRecipientKeyMinistryNull();
+                if (txtMotivationGroupCode.Text.Length == 0)
+                {
+                    ARow.SetMotivationGroupCodeNull();
+                }
+                else
+                {
+                    ARow.MotivationGroupCode = txtMotivationGroupCode.Text;
+                }
+
+                if (txtMotivationDetailCode.Text.Length == 0)
+                {
+                    ARow.SetMotivationDetailCodeNull();
+                }
+                else
+                {
+                    ARow.MotivationDetailCode = txtMotivationDetailCode.Text;
+                }
+            }
+
+            if (cmbMinistry.Visible)
+            {
+                if (cmbMinistry.SelectedIndex == -1)
+                {
+                    ARow.SetRecipientKeyMinistryNull();
+                }
+                else
+                {
+                    ARow.RecipientKeyMinistry = cmbMinistry.GetSelectedString();
+                }
             }
             else
             {
-                ARow.RecipientKeyMinistry = cmbMinistry.GetSelectedString();
+                if (txtKeyMinistry.Text.Length == 0)
+                {
+                    ARow.SetRecipientKeyMinistryNull();
+                }
+                else
+                {
+                    ARow.RecipientKeyMinistry = txtKeyMinistry.Text;
+                }
             }
 
             //Handle gift table fields for first detail only
@@ -1632,12 +1783,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (txtDetailReference.Text.Length == 0)
                 {
                     giftRow.SetReferenceNull();
-                    ARow.SetReferenceNull();
                 }
                 else
                 {
                     giftRow.Reference = txtDetailReference.Text;
-                    ARow.Reference = txtDetailReference.Text;
                 }
 
                 if (cmbDetailReceiptLetterCode.SelectedIndex == -1)
@@ -1691,8 +1840,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void RefreshAll()
         {
-            Console.WriteLine("RefreshAll()");
-
             if ((FMainDS != null) && (FMainDS.AGiftDetail != null))
             {
                 FMainDS.AGiftDetail.Rows.Clear();

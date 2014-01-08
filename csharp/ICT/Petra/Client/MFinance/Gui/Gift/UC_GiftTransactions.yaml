@@ -117,6 +117,7 @@ RootNode:
                 Row7: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
                 Row8: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
                 Row9: [txtKeyMinistry]
+                Row10: [txtMotivationGroupCode, txtMotivationDetailCode]
         #txtDonorName: {ReadOnly=true, PartnerShortNameLookup=AGiftDetail.DonorKey}
         dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Tooltip=This date is used for receipt printing, Unbound=true, Validation=true}
         txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=true, Unbound=true}
@@ -130,6 +131,8 @@ RootNode:
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
         cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=FilterMotivationDetail}
         cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, OnChange=MotivationDetailChanged}
+        txtMotivationGroupCode: {Label=Motivation Group, Unbound=true, ReadOnly=true, Visible=false}
+        txtMotivationDetailCode: {Label=Motivation Detail, Unbound=true, ReadOnly=true, Visible=false}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
         txtField: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}

@@ -173,8 +173,8 @@ namespace Tests.MFinance.Server.ICH
             string AcctCode = "0200";
             string MonthName = "January";
             int PeriodNumber = 1;
-            DateTime PeriodStartDate = new DateTime(2013, 1, 1);
-            DateTime PeriodEndDate = new DateTime(2013, 1, 31);
+            DateTime PeriodStartDate = new DateTime(DateTime.Today.Year, 1, 1);
+            DateTime PeriodEndDate = new DateTime(DateTime.Today.Year, 1, 31);
             string Base = MFinanceConstants.CURRENCY_BASE;
             int IchNumber = 0;
             DataTable TableForExport = new DataTable();
