@@ -30,10 +30,8 @@ public class {#DATASETNAME}Access
 {##SUBMITCHANGESFUNCTION}
 
 /// auto generated
-static public TSubmitChangesResult SubmitChanges({#DATASETNAME} AInspectDS, out TVerificationResultCollection AVerificationResult)
+static public TSubmitChangesResult SubmitChanges({#DATASETNAME} AInspectDS)
 {
-    AVerificationResult = new TVerificationResultCollection();
-
     if (AInspectDS == null)
     {
         return TSubmitChangesResult.scrOK;
@@ -88,7 +86,6 @@ static public TSubmitChangesResult SubmitChanges({#DATASETNAME} AInspectDS, out 
 if (SubmissionResult == TSubmitChangesResult.scrOK
     && !TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
             TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION},
-            out AVerificationResult,
             UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD}))
 {
     SubmissionResult = TSubmitChangesResult.scrError;
@@ -110,7 +107,6 @@ if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.{#TABLEVARIABLE
     }
     if (!TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
             TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION},
-            out AVerificationResult,
             UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD}))
     {
         SubmissionResult = TSubmitChangesResult.scrError;

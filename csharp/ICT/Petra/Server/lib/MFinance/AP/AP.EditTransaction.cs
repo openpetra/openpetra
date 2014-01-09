@@ -342,9 +342,12 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         SetOutstandingAmount(NewDocRow, NewDocRow.LedgerNumber, AInspectDS.AApDocumentPayment);
                     }
 
-                    if (!AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction, out AVerificationResult))
+                    TVerificationResultCollection VerificationResult2;
+                    
+                    if (!AApDocumentAccess.SubmitChanges(AInspectDS.AApDocument, SubmitChangesTransaction, out VerificationResult2))
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
+                        AVerificationResult.AddCollection(VerificationResult2);
                     }
                 }
 
@@ -356,23 +359,29 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     ValidateApDocumentDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
                     ValidateApDocumentDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
 
-                    if (!AVerificationResult.HasCriticalErrors)
+                    TVerificationResultCollection VerificationResult3 = null;
+                    
+                    if (TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                     {
                         DetailsaveOK = AApDocumentDetailAccess.SubmitChanges(AInspectDS.AApDocumentDetail, SubmitChangesTransaction,
-                            out AVerificationResult);
+                            out VerificationResult3);
                     }
 
                     if (!DetailsaveOK)
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
+                        AVerificationResult.AddCollection(VerificationResult3);
                     }
                 }
 
                 if ((SubmissionResult == TSubmitChangesResult.scrOK) && (AInspectDS.AApAnalAttrib != null)) // Analysis attributes
                 {
-                    if (!AApAnalAttribAccess.SubmitChanges(AInspectDS.AApAnalAttrib, SubmitChangesTransaction, out AVerificationResult))
+                    TVerificationResultCollection VerificationResult4;
+                    
+                    if (!AApAnalAttribAccess.SubmitChanges(AInspectDS.AApAnalAttrib, SubmitChangesTransaction, out VerificationResult4))
                     {
                         SubmissionResult = TSubmitChangesResult.scrError;
+                        AVerificationResult.AddCollection(VerificationResult4);
                     }
                 }
 
@@ -398,6 +407,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
 
+                if (AVerificationResult == null) 
+                {
+                    AVerificationResult = new TVerificationResultCollection();
+                }
+                
                 AVerificationResult.Add(new TVerificationResult("Save AP Document", e.Message,
                         TResultSeverity.Resv_Critical));
                 throw new Exception(e.ToString() + " " + e.Message);
@@ -1025,7 +1039,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         {
             AccountsPayableTDS MainDS = LoadDocumentsAndCheck(ALedgerNumber, AAPDocumentIds, APostingDate, Reversal, out AVerificationResult);
 
-            if (AVerificationResult.HasCriticalErrors)
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
             {
                 return false;
             }

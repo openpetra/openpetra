@@ -2162,7 +2162,6 @@ namespace Ict.Common.Data
         /// <param name="ATable"></param>
         /// <param name="ATransaction"></param>
         /// <param name="ASelectedOperations"></param>
-        /// <param name="AVerificationResult"></param>
         /// <param name="AUserId">the current user, for auditing</param>
         /// <param name="ASequenceName"></param>
         /// <param name="ASequenceField"></param>
@@ -2171,14 +2170,10 @@ namespace Ict.Common.Data
             TTypedDataTable ATable,
             TDBTransaction ATransaction,
             eSubmitChangesOperations ASelectedOperations,
-            out TVerificationResultCollection AVerificationResult,
             string AUserId,
             string ASequenceName, string ASequenceField)
         {
             bool ResultValue = true;
-            bool ExceptionReported = false;
-
-            AVerificationResult = new TVerificationResultCollection();
 
             // allow this method to be called with null values, eg. when saving complex TypedDataSets with some removed empty tables
             if (ATable == null)
@@ -2240,10 +2235,7 @@ namespace Ict.Common.Data
                         {
                             if (!hasPrimaryKey)
                             {
-                                AVerificationResult.Add(new TVerificationResult(
-                                        "[DB] NO PRIMARY KEY",
-                                        "Cannot update record because table " + TTypedDataTable.GetTableName(TableId) + " has no primary key.",
-                                        "Primary Key missing", TTypedDataTable.GetTableNameSQL(TableId), TResultSeverity.Resv_Critical));
+                                throw new System.Exception("[DB] NO PRIMARY KEY --- Cannot update record because table " + TTypedDataTable.GetTableName(TableId) + " has no primary key.");
                             }
                             else
                             {
@@ -2255,10 +2247,7 @@ namespace Ict.Common.Data
                         {
                             if (!hasPrimaryKey)
                             {
-                                AVerificationResult.Add(new TVerificationResult(
-                                        "[DB] NO PRIMARY KEY",
-                                        "Cannot delete record because table " + TTypedDataTable.GetTableName(TableId) + " has no primary key.",
-                                        "Primary Key missing", TTypedDataTable.GetTableNameSQL(TableId), TResultSeverity.Resv_Critical));
+                                throw new System.Exception("[DB] NO PRIMARY KEY --- Cannot delete record because table " + TTypedDataTable.GetTableName(TableId) + " has no primary key.");
                             }
                             else
                             {
@@ -2275,17 +2264,14 @@ namespace Ict.Common.Data
                         InsertParameters = new List <OdbcParameter>();
                     }
                 }
-                catch (OdbcException ex)
+                catch (OdbcException)
                 {
-                    ResultValue = false;
-                    ExceptionReported = false;
-
-                    if ((ExceptionReported == false))
-                    {
-                        AVerificationResult.Add(new TVerificationResult("[ODBC]", ex.Errors[0].Message, "ODBC error for table PLanguage",
-                                ex.Errors[0].NativeError.ToString(), TResultSeverity.Resv_Critical));
-                    }
+                    throw;
                 }
+                catch (System.Exception)
+                {
+                    throw;
+                }                
             }
 
             if (InsertStatement.Length > 0)
@@ -2295,17 +2281,14 @@ namespace Ict.Common.Data
                     // Inserts in one query
                     DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray());
                 }
-                catch (OdbcException ex)
+                catch (OdbcException)
                 {
-                    ResultValue = false;
-                    ExceptionReported = false;
-
-                    if ((ExceptionReported == false))
-                    {
-                        AVerificationResult.Add(new TVerificationResult("[ODBC]", ex.Errors[0].Message, "ODBC error for table PLanguage",
-                                ex.Errors[0].NativeError.ToString(), TResultSeverity.Resv_Critical));
-                    }
+                    throw;
                 }
+                catch (System.Exception)
+                {
+                    throw;
+                }                
             }
 
             return ResultValue;
@@ -2317,7 +2300,6 @@ namespace Ict.Common.Data
         public static bool SubmitChanges(
             TTypedDataTable ATable,
             TDBTransaction ATransaction,
-            out TVerificationResultCollection AVerificationResult,
             string AUserId,
             string ASequenceName, string ASequenceField)
         {
@@ -2325,7 +2307,6 @@ namespace Ict.Common.Data
                 ATable,
                 ATransaction,
                 eSubmitChangesOperations.eAll,
-                out AVerificationResult,
                 AUserId,
                 ASequenceName,
                 ASequenceField);
@@ -2337,10 +2318,9 @@ namespace Ict.Common.Data
         public static bool SubmitChanges(
             TTypedDataTable ATable,
             TDBTransaction ATransaction,
-            out TVerificationResultCollection AVerificationResult,
             string AUserId)
         {
-            return SubmitChanges(ATable, ATransaction, eSubmitChangesOperations.eAll, out AVerificationResult, AUserId, "", "");
+            return SubmitChanges(ATable, ATransaction, eSubmitChangesOperations.eAll, AUserId, "", "");
         }
 
         /// <summary>
@@ -2350,10 +2330,9 @@ namespace Ict.Common.Data
             TTypedDataTable ATable,
             TDBTransaction ATransaction,
             eSubmitChangesOperations ASelectedOperations,
-            out TVerificationResultCollection AVerificationResult,
             string AUserId)
         {
-            return SubmitChanges(ATable, ATransaction, ASelectedOperations, out AVerificationResult, AUserId, "", "");
+            return SubmitChanges(ATable, ATransaction, ASelectedOperations, AUserId, "", "");
         }
 
         /// <summary>

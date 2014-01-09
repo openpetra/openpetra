@@ -671,12 +671,9 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private void HandleVerificationResuls()
         {
-            if (VerificationResult != null)
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(VerificationResult))
             {
-                if (VerificationResult.HasCriticalErrors)
-                {
-                    throw new ApplicationException("TLedgerInitFlagHandler does not work");
-                }
+                throw new ApplicationException("TLedgerInitFlagHandler does not work");
             }
         }
     }

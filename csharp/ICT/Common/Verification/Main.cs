@@ -697,9 +697,15 @@ namespace Ict.Common.Verification
         /// Checks whether there are any <see cref="TVerificationResult" />s  in the collection that denote a
         /// critical error.
         /// </summary>
-        /// <remarks>Does not check/count any <see cref="TVerificationResult" /> whose
-        /// <see cref="TVerificationResult.ResultSeverity" /> </remarks> is <see cref="TResultSeverity.Resv_Noncritical" />
-        /// or <see cref="TResultSeverity.Resv_Info" />.
+        /// <remarks>
+        /// Prefer using Method <see cref="TVerificationHelper.IsNullOrOnlyNonCritical" /> over the use of  
+        /// this Method as using the latter takes care of a null check on the <see cref="TVerificationResultCollection" /> 
+        /// to guard against a <see cref="NullReferenceException" /> in case the 
+        /// <see cref="TVerificationResultCollection" /> is null.
+        /// <p>This Method does not check/count any <see cref="TVerificationResult" /> instances whose
+        /// <see cref="TVerificationResult.ResultSeverity" /> is <see cref="TResultSeverity.Resv_Noncritical" />
+        /// or <see cref="TResultSeverity.Resv_Info" /></p>
+        /// </remarks> .
         public bool HasCriticalErrors
         {
             get
@@ -1754,6 +1760,40 @@ namespace Ict.Common.Verification
             return true;
         }
 
+        /// <summary>
+        /// Checks that a <see cref="TVerificationResultCollection" /> is either null or that it doesn't contain
+        /// any <see cref="TVerificationResult" /> items that are 'CriticalErrors'!
+        /// </summary>
+        /// <remarks>
+        /// Prefer using this Method over the use of the <see cref="TVerificationResultCollection.HasCriticalErrors" /> 
+        /// Method as using the latter involves a null check on the <see cref="TVerificationResultCollection" /> 
+        /// to guard against a <see cref="NullReferenceException" /> in case the <see cref="TVerificationResultCollection" />
+        /// is null --- <see cref="IsNullOrOnlyNonCritical"/> takes care of that!
+        /// In the context of Unit Testing this Method can be used for 'Guard Asserts' to check that the 
+        /// <see cref="TVerificationResultCollection " /> that is returned from server calls is null or  
+        /// holds only non-critical <see cref="TVerificationResult" /> items (see also Method 
+        /// 'EnsureNullOrOnlyNonCriticalVerificationResults' of the CommonNUnitFunctions Class for a convenient 'wrapper'!!!)
+        /// </remarks>
+        /// <param name="AVerificationResult"><see cref="TVerificationResultCollection " /> reference (can be null!).</param>
+        /// <returns>True if <paramref name="AVerificationResult" /> is null. If isn't null and it contains any <see cref="TVerificationResult" /> 
+        /// items that are CriticalErrors then this Method returns false, otherwise true.</returns>
+        public static bool IsNullOrOnlyNonCritical(TVerificationResultCollection AVerificationResult)
+        {
+            if (AVerificationResult == null)
+            {
+                return true;
+            }
+            
+            if (AVerificationResult.HasCriticalErrors)
+            {
+                return false;
+            }            
+            else
+            {
+                return true;
+            }
+        }
+        
         /// <summary>
         /// Creates a string that contains the data of all the <see cref="TVerificationResult" />s in the Collection.
         /// </summary>

@@ -2043,7 +2043,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             AResultList = FResultList;
 
-            if (AResultList.HasCriticalErrors)
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AResultList))
             {
                 return new PartnerImportExportTDS();
             }

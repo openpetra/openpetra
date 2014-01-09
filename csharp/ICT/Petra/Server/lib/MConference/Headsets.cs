@@ -202,9 +202,8 @@ namespace Ict.Petra.Server.MConference.Applications
                 MainDS.PPartnerContactAttribute.Rows.Add(PartnerContactAttributeRow);
             }
 
-            TVerificationResultCollection VerificationResult;
             MainDS.ThrowAwayAfterSubmitChanges = true;
-            return TSubmitChangesResult.scrOK == ContactTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+            return TSubmitChangesResult.scrOK == ContactTDSAccess.SubmitChanges(MainDS);
         }
 
         private static void GetDataForHeadsetReports(string AEventCode,

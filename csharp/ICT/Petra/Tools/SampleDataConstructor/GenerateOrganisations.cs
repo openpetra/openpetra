@@ -140,14 +140,12 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            TVerificationResultCollection VerificationResult;
-            PartnerEditTDSAccess.SubmitChanges(MainDS, out VerificationResult);
-
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
+            if (PartnerEditTDSAccess.SubmitChanges(MainDS) != TSubmitChangesResult.scrOK)
             {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
+                throw new Exception("A problem occured during a call to PartnerEditTDSAccess.SubmitChanges(AInspectDS)");
             }
 
+            TVerificationResultCollection VerificationResult;
             AApSupplierAccess.SubmitChanges(supplierTable, null, out VerificationResult);
 
             if (VerificationResult.HasCriticalOrNonCriticalErrors)

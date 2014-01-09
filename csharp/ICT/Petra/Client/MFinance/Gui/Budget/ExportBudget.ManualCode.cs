@@ -210,7 +210,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             if ((AMessages != null) && (AMessages.Count > 0))
             {
-                if (AMessages.HasCriticalErrors)
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
                 {
                     MessageBox.Show(AMessages.BuildVerificationResultString(), Catalog.GetString("Error"),
                         MessageBoxButtons.OK,

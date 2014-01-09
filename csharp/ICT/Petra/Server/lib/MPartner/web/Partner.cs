@@ -166,9 +166,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 partnerlocation.SendMail = false;
                 MainDS.PPartnerLocation.Rows.Add(partnerlocation);
 
-                TVerificationResultCollection VerificationResult;
-
-                if (PartnerEditTDSAccess.SubmitChanges(MainDS, out VerificationResult) == TSubmitChangesResult.scrOK)
+                if (PartnerEditTDSAccess.SubmitChanges(MainDS) == TSubmitChangesResult.scrOK)
                 {
                     return newPartner.PartnerKey;
                 }

@@ -632,7 +632,7 @@ namespace Ict.Petra.Server.MFinance.Common
             if (DoExecuteableCode)
             {
                 TSubmitChangesResult tSubmitChangesResult =
-                    GLPostingTDSAccess.SubmitChanges(PostingToDS, out verificationResults);
+                    GLPostingTDSAccess.SubmitChanges(PostingToDS);
 
                 if (tSubmitChangesResult == TSubmitChangesResult.scrError)
                 {

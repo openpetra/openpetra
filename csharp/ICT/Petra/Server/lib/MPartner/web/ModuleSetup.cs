@@ -68,17 +68,13 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         /// save modified partner tables
         /// </summary>
         /// <param name="AInspectDS"></param>
-        /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static TSubmitChangesResult SavePartnerMaintenanceTables(ref PartnerSetupTDS AInspectDS,
-            out TVerificationResultCollection AVerificationResult)
+        public static TSubmitChangesResult SavePartnerMaintenanceTables(ref PartnerSetupTDS AInspectDS)
         {
-            AVerificationResult = null;
-
             if (AInspectDS != null)
             {
-                return PartnerSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                return PartnerSetupTDSAccess.SubmitChanges(AInspectDS);
             }
 
             return TSubmitChangesResult.scrError;

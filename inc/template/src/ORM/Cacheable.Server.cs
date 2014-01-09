@@ -662,7 +662,7 @@ case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
         {#DATATABLENAME}Validation.Validate(ASubmitTable, ref AVerificationResult);
         Validate{#ENUMNAME}Manual(ref AVerificationResult, ASubmitTable);
 
-        if (!AVerificationResult.HasCriticalErrors)
+        if (TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
         {
             if ({#DATATABLENAME}Access.SubmitChanges(({#DATATABLENAME}Table)ASubmitTable, SubmitChangesTransaction,
                 out SingleVerificationResultCollection))

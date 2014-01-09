@@ -1256,7 +1256,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 AddOrRemoveLedgerInitFlag(ALedgerNumber, "CURRENT-PERIOD", !LedgerRow.IsCurrentPeriodNull(), Transaction, ref AVerificationResult);
                 AddOrRemoveLedgerInitFlag(ALedgerNumber, "CAL", !LedgerRow.IsNumberOfAccountingPeriodsNull(), Transaction, ref AVerificationResult);
 
-                ReturnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                ReturnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS);
 
                 if (AVerificationResult.Count > 0)
                 {
@@ -1398,7 +1398,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     ValidateAAnalysisType(ValidationControlsDict, ref AVerificationResult, AInspectDS.AAnalysisType);
                     ValidateAAnalysisTypeManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AAnalysisType);
 
-                    if (AVerificationResult.HasCriticalErrors)
+                    if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                     {
                         ReturnValue = TSubmitChangesResult.scrError;
                     }
@@ -1407,7 +1407,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             if (ReturnValue != TSubmitChangesResult.scrError)
             {
-                ReturnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                ReturnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS);
             }
 
             TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
@@ -2685,7 +2685,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             // TODO: modify UI navigation yml file etc?
             // TODO: permissions for which users?
 
-            TSubmitChangesResult result = GLSetupTDSAccess.SubmitChanges(MainDS, out AVerificationResult);
+            TSubmitChangesResult result = GLSetupTDSAccess.SubmitChanges(MainDS);
 
             // activate gift receipting subsystem
             if (AActivateGiftReceipting)

@@ -236,7 +236,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         // save data
         private TSubmitChangesResult StoreManualCode(ref PostcodeRegionsTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
         {
-            TSubmitChangesResult Result = TRemote.MPartner.Mailroom.WebConnectors.SavePostcodeRegionsTDS(ref ASubmitDS, out AVerificationResult);
+            AVerificationResult = null;
+            
+            TSubmitChangesResult Result = TRemote.MPartner.Mailroom.WebConnectors.SavePostcodeRegionsTDS(ref ASubmitDS);
 
             if (ASubmitDS.PPostcodeRegion != null)
             {
@@ -283,7 +285,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 TVerificationResultCollection VerificationResults = null;
 
-                if (!FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors)
+                if (TVerificationHelper.IsNullOrOnlyNonCritical(FPetraUtilsObject.VerificationResultCollection))
                 {
                     this.Cursor = Cursors.WaitCursor;
                     TRemote.MPartner.ReferenceCount.WebConnectors.GetNonCacheableRecordReferenceCount(

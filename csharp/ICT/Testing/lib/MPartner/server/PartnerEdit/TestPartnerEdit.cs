@@ -54,6 +54,7 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MHospitality.Data;
+using Ict.Testing.NUnitTools;
 
 namespace Tests.MPartner.Server.PartnerEdit
 {
@@ -106,11 +107,8 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             TSubmitChangesResult result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalErrors)
-            {
-                TLogging.Log(VerificationResult.BuildVerificationResultString());
-                Assert.Fail("There was a critical error when saving. Please check the logs");
-            }
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
+                "There was a critical error when saving:");
 
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "TPartnerEditUIConnector SubmitChanges return value");
 
@@ -145,12 +143,9 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             TSubmitChangesResult result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalErrors)
-            {
-                TLogging.Log(VerificationResult.BuildVerificationResultString());
-                Assert.Fail("There was a critical error when saving. Please check the logs");
-            }
-
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
+                "There was a critical error when saving:");
+            
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "Create a partner with location 0");
 
             TCreateTestPartnerData.CreateNewLocation(PartnerRow.PartnerKey, MainDS);
@@ -175,12 +170,9 @@ namespace Tests.MPartner.Server.PartnerEdit
             ResponseDS = new PartnerEditTDS();
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalErrors)
-            {
-                TLogging.Log(VerificationResult.BuildVerificationResultString());
-                Assert.Fail("There was a critical error when saving. Please check the logs");
-            }
-
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
+                "There was a critical error when saving:");
+            
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "Replace location 0 of partner");
 
             Assert.AreEqual(1, MainDS.PPartnerLocation.Rows.Count, "the partner should only have one location in the dataset");
@@ -210,12 +202,9 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             TSubmitChangesResult result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalErrors)
-            {
-                TLogging.Log(VerificationResult.BuildVerificationResultString());
-                Assert.Fail("There was a critical error when saving. Please check the logs");
-            }
-
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
+                "There was a critical error when saving:");
+            
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "saving the first partner with a location");
 
             Int32 LocationKey = MainDS.PLocation[0].LocationKey;
@@ -235,11 +224,8 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalErrors)
-            {
-                TLogging.Log(VerificationResult.BuildVerificationResultString());
-                Assert.Fail("There was a critical error when saving. Please check the logs");
-            }
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
+                "There was a critical error when saving:");
 
             PPartnerTable PartnerAtAddress = PPartnerAccess.LoadViaPLocation(
                 DomainManager.GSiteKey, LocationKey, null);
@@ -264,12 +250,9 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             TSubmitChangesResult result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalErrors)
-            {
-                TLogging.Log(VerificationResult.BuildVerificationResultString());
-                Assert.Fail("There was a critical error when saving. Please check the logs");
-            }
-
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
+                "There was a critical error when saving:");
+            
             // now change on partner location. should ask about everyone else
             // it seems, the change must be to PLocation. In Petra 2.3, changes to the PartnerLocation are not propagated
             // MainDS.PPartnerLocation[0].DateGoodUntil = new DateTime(2011, 01, 01);
@@ -282,12 +265,9 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalErrors)
-            {
-                TLogging.Log(VerificationResult.BuildVerificationResultString());
-                Assert.Fail("There was a critical error when saving. Please check the logs");
-            }
-
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
+                "There was a critical error when saving:");
+            
             Assert.AreEqual(TSubmitChangesResult.scrInfoNeeded,
                 result,
                 "should ask if the partner locations of the other members of the family should be changed as well");
@@ -666,12 +646,9 @@ namespace Tests.MPartner.Server.PartnerEdit
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "add relationship record to church record");
 
-            if (VerificationResult.HasCriticalErrors)
-            {
-                TLogging.Log(VerificationResult.BuildVerificationResultString());
-                Assert.Fail("There was a critical error when saving. Please check the logs");
-            }
-
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
+                "There was a critical error when saving:");
+            
             // now deletion must not be possible since relationship as SUPPCHURCH exists
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(ChurchPartnerRow.PartnerKey, out TextMessage);
 

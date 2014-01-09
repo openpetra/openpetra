@@ -122,19 +122,14 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            TVerificationResultCollection VerificationResult;
-            PartnerImportExportTDSAccess.SubmitChanges(PartnerDS, out VerificationResult);
-
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
+            if(PartnerImportExportTDSAccess.SubmitChanges(PartnerDS) != TSubmitChangesResult.scrOK)
             {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
+                throw new Exception("A problem occured during a call to PartnerImportExportTDSAccess.SubmitChanges(AInspectDS)");
             }
 
-            GLSetupTDSAccess.SubmitChanges(GLSetupDS, out VerificationResult);
-
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
+            if(GLSetupTDSAccess.SubmitChanges(GLSetupDS) != TSubmitChangesResult.scrOK)
             {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
+                throw new Exception("A problem occured during a call to GLSetupTDSAccess.SubmitChanges(AInspectDS)");
             }
         }
 
@@ -179,13 +174,9 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            TVerificationResultCollection VerificationResult;
-
-            GLSetupTDSAccess.SubmitChanges(GLSetupDS, out VerificationResult);
-
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
+            if(GLSetupTDSAccess.SubmitChanges(GLSetupDS) != TSubmitChangesResult.scrOK)
             {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
+                throw new Exception("A problem occured during a call to GLSetupTDSAccess.SubmitChanges(AInspectDS)");
             }
         }
 
@@ -254,12 +245,9 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            TVerificationResultCollection VerificationResult;
-            PartnerImportExportTDSAccess.SubmitChanges(PartnerDS, out VerificationResult);
-
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
+            if(PartnerImportExportTDSAccess.SubmitChanges(PartnerDS) != TSubmitChangesResult.scrOK)
             {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
+                throw new Exception("A problem occured during a call to PartnerImportExportTDSAccess.SubmitChanges(AInspectDS)");
             }
         }
     }

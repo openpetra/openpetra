@@ -93,17 +93,13 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// save modified budgets
         /// </summary>
         /// <param name="AInspectDS"></param>
-        /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
-        public static TSubmitChangesResult SaveBudget(ref BudgetTDS AInspectDS,
-            out TVerificationResultCollection AVerificationResult)
+        public static TSubmitChangesResult SaveBudget(ref BudgetTDS AInspectDS)
         {
-            AVerificationResult = null;
-
             if (AInspectDS != null)
             {
-                return BudgetTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                return BudgetTDSAccess.SubmitChanges(AInspectDS);
             }
 
             return TSubmitChangesResult.scrError;

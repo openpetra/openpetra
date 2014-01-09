@@ -213,21 +213,20 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             FinishConsolidateBudget(SubmitChangesTransaction, out AVerificationResult);
 
-            if (AVerificationResult.HasCriticalErrors)
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
             {
                 retVal = false;
                 TLogging.Log(AVerificationResult.BuildVerificationResultString());
             }
             else
-            {
+            {                
                 GLPostingDS.ThrowAwayAfterSubmitChanges = true;
-                GLPostingTDSAccess.SubmitChanges(GLPostingDS, out AVerificationResult);
+                TSubmitChangesResult SubmitChangesRes = GLPostingTDSAccess.SubmitChanges(GLPostingDS);
                 GLPostingDS.Clear();
 
-                if (AVerificationResult.HasCriticalErrors)
+                if (SubmitChangesRes != TSubmitChangesResult.scrOK)
                 {
                     retVal = false;
-                    TLogging.Log(AVerificationResult.BuildVerificationResultString());
                 }
             }
 

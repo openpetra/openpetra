@@ -173,14 +173,12 @@ namespace Ict.Petra.Server.MConference.Applications
                     }
                 }
 
-                TVerificationResultCollection VerificationResult;
-
                 int shorttermApplicationsCount = MainDS.PmShortTermApplication.Count;
                 int attendeeCount = MainDS.PcAttendee.Count;
 
                 MainDS.ThrowAwayAfterSubmitChanges = true;
 
-                ConferenceApplicationTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+                ConferenceApplicationTDSAccess.SubmitChanges(MainDS);
 
                 TLogging.Log(String.Format(
                         "RefreshAttendees: finished. OutreachPrefix: {0}, {1} Shortterm Applications, {2} Attendees",

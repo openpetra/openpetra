@@ -1114,7 +1114,7 @@ namespace Ict.Petra.Server.MConference.Applications
             }
 
 
-            TSubmitChangesResult result = ConferenceApplicationTDSAccess.SubmitChanges(AMainDS, out VerificationResult);
+            TSubmitChangesResult result = ConferenceApplicationTDSAccess.SubmitChanges(AMainDS);
 
             // this takes 6 seconds!
             AMainDS.AcceptChanges();
@@ -1151,7 +1151,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            TSubmitChangesResult result = ConferenceApplicationTDSAccess.SubmitChanges(MainDS, out AVerificationResult);
+            TSubmitChangesResult result = ConferenceApplicationTDSAccess.SubmitChanges(MainDS);
 
             ARow.AcceptChanges();
 
@@ -1664,14 +1664,12 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 PartnerImportExportTDS MainDS = importer.ImportAllData(lines, AEventCode, true, out AVerificationResult);
 
-                if (AVerificationResult.HasCriticalErrors)
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                 {
                     return false;
                 }
 
-                TVerificationResultCollection VerificationResult;
-
-                if (TSubmitChangesResult.scrOK == PartnerImportExportTDSAccess.SubmitChanges(MainDS, out VerificationResult))
+                if (TSubmitChangesResult.scrOK == PartnerImportExportTDSAccess.SubmitChanges(MainDS))
                 {
                     return true;
                 }

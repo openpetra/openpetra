@@ -778,7 +778,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                 // now submit the whole dataset at once
                 if (SubmissionResult != TSubmitChangesResult.scrError)
                 {
-                    SubmissionResult = IndividualDataTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                    SubmissionResult = IndividualDataTDSAccess.SubmitChanges(AInspectDS);
 
                     // Need to merge tables back into APartnerEditInspectDS so the updated s_modification_id_t is returned
                     // correctly to the Partner Edit.

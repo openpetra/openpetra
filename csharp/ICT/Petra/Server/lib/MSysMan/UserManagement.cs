@@ -383,10 +383,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// this is called from the MaintainUsers screen, for adding users, retiring users, set the password, etc
         /// </summary>
         [RequireModulePermission("SYSMAN")]
-        public static TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
+        public static TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS)
         {
-            AVerificationResult = null;
-
             TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
 
             bool CanCreateUser;
@@ -434,7 +432,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             try
             {
-                ReturnValue = MaintainUsersTDSAccess.SubmitChanges(ASubmitDS, out AVerificationResult);
+                ReturnValue = MaintainUsersTDSAccess.SubmitChanges(ASubmitDS);
             }
             catch (Exception e)
             {

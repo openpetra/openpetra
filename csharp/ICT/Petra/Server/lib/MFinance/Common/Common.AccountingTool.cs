@@ -436,7 +436,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             TSubmitChangesResult submissionResult = GLBatchTDSAccess.SubmitChanges(
-                aBatchTable, out AVerifications);
+                aBatchTable);
 
             if (submissionResult != TSubmitChangesResult.scrOK)
             {

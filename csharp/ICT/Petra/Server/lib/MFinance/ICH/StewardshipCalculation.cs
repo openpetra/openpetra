@@ -658,7 +658,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                         if (IsSuccessful)
                         {
-                            IsSuccessful = (TSubmitChangesResult.scrOK == GLBatchTDSAccess.SubmitChanges(MainDS, out AVerificationResult));
+                            IsSuccessful = (TSubmitChangesResult.scrOK == GLBatchTDSAccess.SubmitChanges(MainDS));
 
                             if (IsSuccessful)
                             {
@@ -686,11 +686,21 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             }
             catch (ArgumentException ex)
             {
+                if (AVerificationResult == null) 
+                {
+                    AVerificationResult = new TVerificationResultCollection();                            
+                }
+                
                 AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
                 Console.WriteLine(ex.Message);
             }
             catch (InvalidOperationException ex)
             {
+                if (AVerificationResult == null) 
+                {
+                    AVerificationResult = new TVerificationResultCollection();                            
+                }
+                
                 AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
                 Console.WriteLine(ex.Message);
             }
@@ -702,6 +712,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     ALedgerNumber,
                     APeriodNumber);
                 ErrorType = TResultSeverity.Resv_Critical;
+
+                if (AVerificationResult == null) 
+                {
+                    AVerificationResult = new TVerificationResultCollection();                            
+                }
+                
                 AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
                 Console.WriteLine(ex.Message);
             }
@@ -1177,7 +1193,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     {
                         //Post the batch just created
 
-                        IsSuccessful = (TSubmitChangesResult.scrOK == GLBatchTDSAccess.SubmitChanges(AdminFeeDS, out Verification));
+                        IsSuccessful = (TSubmitChangesResult.scrOK == GLBatchTDSAccess.SubmitChanges(AdminFeeDS));
 
                         if (IsSuccessful)
                         {
@@ -1190,7 +1206,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         }
                     }
 
-                    if ((Verification == null) || Verification.HasCriticalErrors)
+                    if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verification))
                     {
                         //Petra error: GL0067
                         ErrorContext = Catalog.GetString("Posting Admin Fee Batch");

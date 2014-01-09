@@ -190,7 +190,12 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                 return false;
                             }
-
+                            
+                            if (AMessages == null)
+                            {
+                                AMessages = new TVerificationResultCollection();
+                            }
+                                            
                             MainDS.ABatch.AcceptChanges();
                         }
                         else if (RowType == "J")
@@ -283,7 +288,12 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                 return false;
                             }
-
+                            
+                            if (AMessages == null)
+                            {
+                                AMessages = new TVerificationResultCollection();
+                            }
+                            
                             MainDS.AJournal.AcceptChanges();
                         }
                         else if (RowType == "T")
@@ -447,7 +457,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 }
                             }
 
-                            if (AMessages.HasCriticalErrors)
+                            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
                             {
                                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                     Catalog.GetString("Batch has critical errors"),
@@ -474,6 +484,11 @@ namespace Ict.Petra.Server.MFinance.GL
 
                                 return false;
                             }
+                            
+                            if (AMessages == null)
+                            {
+                                AMessages = new TVerificationResultCollection();
+                            }                            
 
                             MainDS.ATransaction.AcceptChanges();
                             FImportMessage = Catalog.GetString("Saving the attributes:");
@@ -489,6 +504,11 @@ namespace Ict.Petra.Server.MFinance.GL
                                 return false;
                             }
 
+                            if (AMessages == null)
+                            {
+                                AMessages = new TVerificationResultCollection();
+                            }
+                            
                             MainDS.ATransAnalAttrib.AcceptChanges();
 
                             // Update progress tracker every 40 records
@@ -528,6 +548,12 @@ namespace Ict.Petra.Server.MFinance.GL
             catch (Exception ex)
             {
                 String speakingExceptionText = SpeakingExceptionMessage(ex);
+
+                if (AMessages == null)
+                {
+                    AMessages = new TVerificationResultCollection();
+                }
+                                
                 AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
                         String.Format(Catalog.GetString("There is a problem parsing the file in row {0}:"), RowNumber) +
                         FNewLine +
@@ -560,6 +586,12 @@ namespace Ict.Petra.Server.MFinance.GL
                 else
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
+
+                    if (AMessages == null)
+                    {
+                        AMessages = new TVerificationResultCollection();
+                    }
+                                
                     AMessages.Add(new TVerificationResult("Import",
                             Catalog.GetString("Data could not be saved."),
                             TResultSeverity.Resv_Critical));

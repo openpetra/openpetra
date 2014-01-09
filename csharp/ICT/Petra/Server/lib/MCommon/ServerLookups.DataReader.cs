@@ -487,7 +487,7 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                         ValidateInternationalPostalType(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
                         ValidateInternationalPostalTypeManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
 
-                        if (!AVerificationResult.HasCriticalErrors)
+                        if (TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                         {
                             if (PInternationalPostalTypeAccess.SubmitChanges((PInternationalPostalTypeTable)ASubmitTable, SubmitChangesTransaction,
                                     out SingleVerificationResultCollection))

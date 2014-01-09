@@ -846,7 +846,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         "SaveGLBatchTDS: need to call GetChangesTyped before saving, otherwise confusion about recurring or normal gl batch");
                 }
 
-                return SaveRecurringGLBatchTDS(ref AInspectDS, ref AVerificationResult);
+                return SaveRecurringGLBatchTDS(ref AInspectDS);
             }
 
             if (batchTableInDataSet)
@@ -1065,13 +1065,13 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 }
             }
 
-            if (AVerificationResult.HasCriticalErrors)
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
             {
                 return TSubmitChangesResult.scrError;
             }
 
             //Need to save changes before deleting any transactions
-            TSubmitChangesResult SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+            TSubmitChangesResult SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS);
 
             if ((SubmissionResult == TSubmitChangesResult.scrOK) && (transTableInDataSet) && (AInspectDS.ATransaction.Rows.Count > 0))
             {
@@ -1117,7 +1117,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             }
 
                             //Submit all changes
-                            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS);
                         }
                     }
                     catch (Exception ex)
@@ -1271,8 +1271,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             int ALedgerNumber,
             int ABatchNumber,
             int AJournalNumber,
-            ref TSubmitChangesResult ASubmissionResult,
-            ref TVerificationResultCollection AVerificationResult)
+            ref TSubmitChangesResult ASubmissionResult)
         {
             //check if the necessary rows for the given account are there, automatically add/update account
             GLSetupTDS glSetupCacheDS = LoadAAnalysisAttributes(ALedgerNumber);
@@ -1373,7 +1372,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
 
-                ASubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                ASubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS);
                 AInspectDS.ATransAnalAttrib.AcceptChanges();
             }
 
@@ -1384,8 +1383,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             int ALedgerNumber,
             int ABatchNumber,
             int AJournalNumber,
-            ref TSubmitChangesResult ASubmissionResult,
-            ref TVerificationResultCollection AVerificationResult)
+            ref TSubmitChangesResult ASubmissionResult)
         {
             //check if the necessary rows for the given account are there, automatically add/update account
             GLSetupTDS glSetupCacheDS = LoadAAnalysisAttributes(ALedgerNumber);
@@ -1487,7 +1485,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
 
-                ASubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                ASubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS);
                 AInspectDS.ARecurringTransAnalAttrib.AcceptChanges();
             }
 
@@ -1498,11 +1496,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// this will store all new and modified recurring batches, journals, transactions
         /// </summary>
         /// <param name="AInspectDS"></param>
-        /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        private static TSubmitChangesResult SaveRecurringGLBatchTDS(ref GLBatchTDS AInspectDS,
-            ref TVerificationResultCollection AVerificationResult)
+        private static TSubmitChangesResult SaveRecurringGLBatchTDS(ref GLBatchTDS AInspectDS)
         {
             bool NewTransaction = false;
             Int32 LedgerNumber;
@@ -1659,7 +1655,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             // now submit the changes
-            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS);
 
             if ((SubmissionResult == TSubmitChangesResult.scrOK) && (recurrTransactionTableInDataSet))
             {
@@ -1705,7 +1701,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             }
 
                             //save changes
-                            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS);
                         }
                     }
                     catch (Exception ex)

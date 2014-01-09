@@ -1205,7 +1205,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 dialog.ShowDialog();
             }
 
-            if ((Verifications != null) && Verifications.HasCriticalErrors)
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verifications))
             {
                 string ErrorMessages = String.Empty;
 

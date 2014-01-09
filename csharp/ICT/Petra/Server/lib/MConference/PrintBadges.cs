@@ -323,11 +323,9 @@ namespace Ict.Petra.Server.MConference.Applications
                 if (ADoNotReprint)
                 {
                     // store modified date printed for badges
-                    TVerificationResultCollection VerificationResult;
-
                     MainDS.ThrowAwayAfterSubmitChanges = true;
 
-                    ConferenceApplicationTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+                    ConferenceApplicationTDSAccess.SubmitChanges(MainDS);
                 }
 
                 return PDFPath;

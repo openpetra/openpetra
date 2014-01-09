@@ -1375,13 +1375,10 @@ namespace Ict.Petra.Server.MFinance.ICH
                 goto PostGenerateBatch;
             }
 
-            TVerificationResultCollection VerificationResult;
-
-            if (GLBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult) != TSubmitChangesResult.scrOK)
+            if (GLBatchTDSAccess.SubmitChanges(MainDS) != TSubmitChangesResult.scrOK)
             {
                 LogMessage = String.Format(Catalog.GetString("Problem saving the ICH batch for File {0}"), AFileName);
                 ALogWriter.WriteLine(LogMessage);
-                ALogWriter.WriteLine(VerificationResult.BuildVerificationResultString());
                 return false;
             }
 

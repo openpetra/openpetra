@@ -66,14 +66,11 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         {
             GiftBatchTDS MainDS = CreateGiftBatches(GiftsPerDate, APeriodNumber);
 
-            TVerificationResultCollection VerificationResult;
-
             MainDS.ThrowAwayAfterSubmitChanges = true;
-            GiftBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
+            if (GiftBatchTDSAccess.SubmitChanges(MainDS) != TSubmitChangesResult.scrOK)
             {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
+                throw new Exception("A problem occured during a call to GiftBatchTDSAccess.SubmitChanges(AInspectDS)");
             }
         }
 

@@ -138,21 +138,17 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            TVerificationResultCollection VerificationResult;
             MainDS.ThrowAwayAfterSubmitChanges = true;
-            PartnerEditTDSAccess.SubmitChanges(MainDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
+            if (PartnerEditTDSAccess.SubmitChanges(MainDS) != TSubmitChangesResult.scrOK)
             {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
+                throw new Exception("A problem occured during a call to PartnerEditTDSAccess.SubmitChanges(AInspectDS)");
             }
 
             PersonnelDS.ThrowAwayAfterSubmitChanges = true;
-            PersonnelTDSAccess.SubmitChanges(PersonnelDS, out VerificationResult);
-
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
+            if(PersonnelTDSAccess.SubmitChanges(PersonnelDS) != TSubmitChangesResult.scrOK)
             {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
+                throw new Exception("A problem occured during a call to PersonnelTDSAccess.SubmitChanges(AInspectDS)");
             }
 
             TLogging.Log("after saving workers");

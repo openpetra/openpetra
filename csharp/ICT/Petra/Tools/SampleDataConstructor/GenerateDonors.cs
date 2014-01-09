@@ -134,15 +134,13 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 partnerRow.Delete();
             }
 
-            TVerificationResultCollection VerificationResult;
             MainDS.ThrowAwayAfterSubmitChanges = true;
-            PartnerEditTDSAccess.SubmitChanges(MainDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
+            if (PartnerEditTDSAccess.SubmitChanges(MainDS) != TSubmitChangesResult.scrOK)
             {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
+                throw new Exception("A problem occured during a call to PartnerEditTDSAccess.SubmitChanges(AInspectDS)");
             }
-
+            
             TLogging.Log("after saving donors");
         }
     }

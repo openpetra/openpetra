@@ -178,7 +178,9 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 //New batch so set total amount of Batch for previous batch
                                 giftBatch.BatchTotal = totalBatchAmount;
 
-                                if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
+                                TVerificationResultCollection Messages2;
+                                
+                                if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out Messages2))
                                 {
                                     if (NewTransaction)
                                     {
@@ -188,6 +190,9 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                         Catalog.GetString("Database I/O Failure"),
                                         0);
+                                    
+                                    AMessages.AddCollection(Messages2);
+                                    
                                     return false;
                                 }
 
@@ -231,7 +236,9 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftBatch.GiftType = ImportString(Catalog.GetString("gift type"), AGiftBatchTable.GetGiftTypeLength());
                             FImportMessage = Catalog.GetString("Saving gift batch");
 
-                            if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
+                            TVerificationResultCollection Messages3;
+                            
+                            if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out Messages3))
                             {
                                 if (NewTransaction)
                                 {
@@ -242,6 +249,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     Catalog.GetString("Database I/O Failure"),
                                     0);
 
+                                AMessages.AddCollection(Messages3);
+                                
                                 return false;
                             }
 
@@ -387,7 +396,9 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             FImportMessage = Catalog.GetString("Saving gift");
 
-                            if (!AGiftAccess.SubmitChanges(FMainDS.AGift, FTransaction, out AMessages))
+                            TVerificationResultCollection Messages4;
+                            
+                            if (!AGiftAccess.SubmitChanges(FMainDS.AGift, FTransaction, out Messages4))
                             {
                                 if (NewTransaction)
                                 {
@@ -398,13 +409,17 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     Catalog.GetString("Database I/O Failure"),
                                     0);
 
+                                AMessages.AddCollection(Messages4);
+                                
                                 return false;
                             }
 
                             FMainDS.AGift.AcceptChanges();
                             FImportMessage = Catalog.GetString("Saving giftdetails");
 
-                            if (!AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, FTransaction, out AMessages))
+                            TVerificationResultCollection Messages5;
+                            
+                            if (!AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, FTransaction, out Messages5))
                             {
                                 if (NewTransaction)
                                 {
@@ -415,6 +430,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     Catalog.GetString("Database I/O Failure"),
                                     0);
 
+                                AMessages.AddCollection(Messages5);
+                                
                                 return false;
                             }
 
@@ -444,10 +461,14 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                 FImportMessage = Catalog.GetString("Saving all data into the database");
 
+                TVerificationResultCollection Messages6;
+                
                 //Finally save pending changes (the last number is updated !)
-                if (AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out AMessages))
+                if (AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out Messages6))
                 {
-                    if (ALedgerAccess.SubmitChanges(LedgerTable, FTransaction, out AMessages))
+                    TVerificationResultCollection Messages7;
+                    
+                    if (ALedgerAccess.SubmitChanges(LedgerTable, FTransaction, out Messages7))
                     {
                         FMainDS.AGiftBatch.AcceptChanges();
                         FMainDS.ALedger.AcceptChanges();

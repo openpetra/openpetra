@@ -1980,7 +1980,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 PrepareBankingDetailsForSaving(ref AInspectDS, ref AVerificationResult, SubmitChangesTransaction);
 
-                if (AVerificationResult.HasCriticalErrors)
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                     return TSubmitChangesResult.scrError;
@@ -2067,8 +2067,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         // all tables in the dataset will be stored.
                         // there are exceptions: for example cascading delete of foundations, change of unique key of family id
                         // those tables need to have run AcceptChanges
-                        SubmissionResult = PartnerEditTDSAccess.SubmitChanges(AInspectDS, out SingleVerificationResultCollection);
-                        AVerificationResult.AddCollection(SingleVerificationResultCollection);
+                        SubmissionResult = PartnerEditTDSAccess.SubmitChanges(AInspectDS);
                     }
 
                     if (SubmissionResult == TSubmitChangesResult.scrOK)
@@ -2297,7 +2296,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         ValidatePPartner(ValidationControlsDict, ref AVerificationResult, AInspectDS.PPartner);
                         ValidatePPartnerManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.PPartner);
 
-                        if (AVerificationResult.HasCriticalErrors)
+                        if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                         {
                             AllSubmissionsOK = false;
                         }
@@ -2369,7 +2368,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             ValidatePBank(ValidationControlsDict, ref AVerificationResult, AInspectDS.PBank);
                             ValidatePBankManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.PBank);
 
-                            if (AVerificationResult.HasCriticalErrors)
+                            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                             {
                                 AllSubmissionsOK = false;
                             }

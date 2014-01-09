@@ -533,12 +533,8 @@ namespace Ict.Petra.Server.MPartner.Import
                     NewPersonPartnerKey = CreatePerson(ref MainDS, NewFamilyPartnerKey, data);
                     CreateAddress(ref MainDS, data, NewFamilyPartnerKey);
 
-                    TVerificationResultCollection VerificationResult;
-                    PartnerEditTDSAccess.SubmitChanges(MainDS, out VerificationResult);
-
-                    if (VerificationResult.HasCriticalErrors)
+                    if(PartnerEditTDSAccess.SubmitChanges(MainDS) != TSubmitChangesResult.scrOK)
                     {
-                        TLogging.Log(VerificationResult.BuildVerificationResultString());
                         string message = "There is some critical error when saving to the database";
                         return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
                     }
@@ -578,11 +574,8 @@ namespace Ict.Petra.Server.MPartner.Import
 
                     // TODO ApplicationForms
 
-                    ConferenceApplicationTDSAccess.SubmitChanges(ConfDS, out VerificationResult);
-
-                    if (VerificationResult.HasCriticalErrors)
+                    if(ConferenceApplicationTDSAccess.SubmitChanges(ConfDS) != TSubmitChangesResult.scrOK)
                     {
-                        TLogging.Log(VerificationResult.BuildVerificationResultString());
                         string message = "There is some critical error when saving to the database";
                         return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
                     }

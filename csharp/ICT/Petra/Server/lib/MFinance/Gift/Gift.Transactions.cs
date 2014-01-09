@@ -719,7 +719,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ValidateGiftBatch(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftBatch);
                 ValidateGiftBatchManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftBatch);
 
-                if (AVerificationResult.HasCriticalErrors)
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                 {
                     AllValidationsOK = false;
                 }
@@ -730,7 +730,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ValidateGiftDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftDetail);
                 ValidateGiftDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftDetail);
 
-                if (AVerificationResult.HasCriticalErrors)
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                 {
                     AllValidationsOK = false;
                 }
@@ -745,7 +745,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (AllValidationsOK)
             {
-                SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS);
 
                 if ((SubmissionResult == TSubmitChangesResult.scrOK) && giftTableInDataSet)
                 {
@@ -788,7 +788,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 }
                             }
 
-                            SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                            SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS);
                         }
                         catch (Exception ex)
                         {
@@ -838,7 +838,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ValidateRecurringGiftBatch(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
                 ValidateRecurringGiftBatchManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
 
-                if (AVerificationResult.HasCriticalErrors)
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                 {
                     AllValidationsOK = false;
                 }
@@ -849,7 +849,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ValidateRecurringGiftDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftDetail);
                 ValidateRecurringGiftDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftDetail);
 
-                if (AVerificationResult.HasCriticalErrors)
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                 {
                     AllValidationsOK = false;
                 }
@@ -864,7 +864,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (AllValidationsOK)
             {
-                SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS);
 
                 if ((SubmissionResult == TSubmitChangesResult.scrOK) && recurrGiftTableInDataSet && (AInspectDS.ARecurringGift.Count > 0))
                 {
@@ -912,7 +912,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 }
                             }
 
-                            SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                            SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS);
                         }
                         catch (Exception ex)
                         {
@@ -1737,9 +1737,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         MainDS.ThrowAwayAfterSubmitChanges = true;
 
-                        if (GiftBatchTDSAccess.SubmitChanges(MainDS, out SingleVerificationResultCollection) != TSubmitChangesResult.scrOK)
+                        if (GiftBatchTDSAccess.SubmitChanges(MainDS) != TSubmitChangesResult.scrOK)
                         {
-                            AVerifications.AddCollection(SingleVerificationResultCollection);
                             return false;
                         }
                     }

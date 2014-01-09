@@ -408,7 +408,9 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
         // save data
         private TSubmitChangesResult StoreManualCode(ref ConferenceSetupTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
-            return TRemote.MConference.Conference.WebConnectors.SaveConferenceSetupTDS(ref ASubmitChanges, out AVerificationResult);
+            AVerificationResult = null;
+            
+            return TRemote.MConference.Conference.WebConnectors.SaveConferenceSetupTDS(ref ASubmitChanges);
         }
 
         private void ValidateDataManual(PcConferenceRow ARow)

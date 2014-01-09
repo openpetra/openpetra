@@ -124,7 +124,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static bool SavePartner(PartnerEditTDS AMainDS, out TVerificationResultCollection AVerificationResult)
+        public static bool SavePartner(PartnerEditTDS AMainDS)
         {
             if (!PAcquisitionAccess.Exists(MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT, null))
             {
@@ -142,7 +142,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
 
-            return PartnerEditTDSAccess.SubmitChanges(AMainDS, out AVerificationResult) == TSubmitChangesResult.scrOK;
+            return PartnerEditTDSAccess.SubmitChanges(AMainDS) == TSubmitChangesResult.scrOK;
         }
     }
 }
