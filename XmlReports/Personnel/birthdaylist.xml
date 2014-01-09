@@ -247,7 +247,7 @@
 			</detail>
 		</level>  <!-- Partner Detail -->
 
-		<level name="Family Members" identification="FamilyKey">
+		<level name="Family Members" identification="FamilyKey" condition="HasColumns">
 			<detail>
 				<lowerLevelReport level="Partner Detail" calculation="Select Partners">
 				</lowerLevelReport>

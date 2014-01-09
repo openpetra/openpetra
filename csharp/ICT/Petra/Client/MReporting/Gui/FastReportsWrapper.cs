@@ -73,8 +73,9 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FPetraUtilsObject.DelegateGenerateReportOverride = GenerateReport;
                 FPetraUtilsObject.DelegateViewReportOverride = DesignReport;
             }
-            catch (Exception) // If there's no FastReports DLL, this object will do nothing.
+            catch (Exception e) // If there's no FastReports DLL, this object will do nothing.
             {
+                TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
             }
         }
 

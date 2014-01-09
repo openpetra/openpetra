@@ -238,12 +238,17 @@ namespace Ict.Common.Controls
         ///
         /// </summary>
         /// <returns>void</returns>
-        public String GetCheckedStringList()
+        public String GetCheckedStringList(Boolean AddQuotes=false)
         {
             String ReturnValue;
 
             ReturnValue = "";
 
+            // The values in the string list might be in pairs, comma separated,
+            // eg. motivation group and detail.
+            // If this is the case, the AddQuotes option should be specified.
+
+            String OptionalQuote = AddQuotes ? "\"" : "";
             if (FDataView != null)
             {
                 foreach (DataRowView Row in FDataView)
@@ -252,8 +257,6 @@ namespace Ict.Common.Controls
                     {
                         if (Convert.ToBoolean(Row[FCheckedColumn]) == true)
                         {
-                            // notice: the value in the string list might be in pairs, comma separated; addCSV will put quotes around it
-                            // eg. motivation group and detail
                             foreach (String KeyColumn in FKeyColumns)
                             {
                                 if (ReturnValue != String.Empty)
@@ -261,13 +264,12 @@ namespace Ict.Common.Controls
                                     ReturnValue += ",";
                                 }
 
-                                ReturnValue += ('"' + Row[KeyColumn].ToString() + '"'); // This was changed from AddCsv because
-                            }                                                       // I need it to consistently add quotes to all of the values in the list
-
-                        }                                                           // (Or no quotes would also be fine, but not some with and some without!)
-
-                    }                                                               // Tim Ingham, Nov 2013
-
+                                ReturnValue += (OptionalQuote + Row[KeyColumn].ToString() + OptionalQuote); 
+                                             // This was changed from AddCsv because
+                            }                // I need it to consistently add quotes to all of the values in the list
+                        }                    // (Or no quotes would also be fine, but not some with and some without!)
+                    }                        // AddCsv removes leading zeroes, so for example it makes the Cost Code "0300" into 300
+                                             // Tim Ingham, Nov 2013, Jan 2014
                 }
             }
 
