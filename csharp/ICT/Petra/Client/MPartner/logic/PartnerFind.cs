@@ -108,10 +108,10 @@ namespace Ict.Petra.Client.MPartner
         {
             get
             {
-                if (FDataGrid != null) 
+                if (FDataGrid != null)
                 {
                     DataRowView[] TheDataRowViewArray = FDataGrid.SelectedDataRowsAsDataRowView;
-    
+
                     if (TheDataRowViewArray.Length > 0)
                     {
                         return TheDataRowViewArray[0].Row;
@@ -119,12 +119,12 @@ namespace Ict.Petra.Client.MPartner
                     else
                     {
                         return null;
-                    }                    
+                    }
                 }
                 else
                 {
                     return null;
-                }                    
+                }
             }
         }
 

@@ -328,10 +328,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.FAMILY))
             {
                 ARow.NoSolicitations = chkFamilyNoSolicitations.Checked;
+                ARow.AddresseeTypeCode = cmbFamilyAddresseeTypeCode.GetSelectedString();
             }
             else if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
             {
                 ARow.NoSolicitations = chkPersonNoSolicitations.Checked;
+                ARow.AddresseeTypeCode = cmbPersonAddresseeTypeCode.GetSelectedString();
             }
         }
 

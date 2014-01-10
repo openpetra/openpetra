@@ -67,7 +67,7 @@ namespace Ict.Common.Verification
         private static readonly string StrMustBeDate = Catalog.GetString("{0} must be a date.");
         private static readonly string StrDateNotInRange = Catalog.GetString(
             "{0} is not allowed as it does not lie within the required date range. It must lie between {1} and {2}.");
-        private static readonly string StrDateNotSensible = "{0} is not a possible value in this case.";
+        private static readonly string StrDateNotSensible = Catalog.GetString("{0} is not a sensible value in this case.");
 
         #endregion
 

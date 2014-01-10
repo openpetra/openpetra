@@ -126,7 +126,7 @@ namespace Ict.Petra.Client.CommonControls.Logic
                 FOpenExtractMasterScreen = value;
             }
         }
-    
+
         /// <summary>
         /// This property is used to provide a function which opens the Range find screen.
         /// </summary>
