@@ -254,21 +254,25 @@ namespace {#NAMESPACE}
             Control[] pnl = this.Controls.Find("pnlDetails", true);
             if (pnl.Length > 0)
             {
-                //Look for Key & Description fields
-                Control keyControl = null;
-                Control descriptionControl = null;
-                GetKeyControlsOnPanel(pnl[0], ref keyControl, ref descriptionControl);
+                // Build up a list of controls on this panel that is sorted in true nested tab order
+                SortedList<string, Control> controlsSortedByTabOrder = new SortedList<string, Control>();
+                GetSortedControlList(ref controlsSortedByTabOrder, pnl[0], String.Empty);
 
-                if ((descriptionControl != null) && (descriptionControl.Text == String.Empty))
+                if (controlsSortedByTabOrder.Count > 0)
                 {
-                    descriptionControl.Text = MCommonResourcestrings.StrPleaseEnterDescription;
-                }
+                    foreach (Control c in controlsSortedByTabOrder.Values)
+                    {
+                        if (c is TextBox && c.Name.Contains("Desc"))
+                        {
+                            // Set the default text for the first TextBox whose name contains 'Desc'
+                            c.Text = MCommonResourcestrings.StrPleaseEnterDescription;
+                            ValidateAllData(true, false);
+                            break;
+                        }
+                    }
 
-                ValidateAllData(true, false);
-
-                if (keyControl != null)
-                {
-                    keyControl.Focus();
+                    // Focus the first control in our sorted list
+                    controlsSortedByTabOrder.Values[0].Focus();
                 }
             }
         
@@ -285,44 +289,25 @@ namespace {#NAMESPACE}
     }
 
     /// <summary>
-    /// A generic method to discover the key controls on a Panel (usually pnlDetails).
+    /// Gets a list of relevant controls, sorted correctly by multi-level TabIndex in exactly the same way that the system uses to determine screen tab order.
+    /// This includes nested controls so the tab order is, say, 100, 110, 120.30, 120.40, 130
+    /// The method calls itself recursively for each contained panel
     /// </summary>
-    /// <param name="APanel">A reference to the Panel to search</param>
-    /// <param name="AKeyControl">Initialise this to null.  On return it will contain a reference to the 'prime' control (if found) editable by the user.</param>
-    /// <param name="ADescriptionControl">Initialise this to null.  On return it will contain a reference to the TextBox control (if found)
-    ///    that corresponds to a 'Description' column in the database.</param>
-    /// <param name="ASkipSearchForDescription">You can set this to True if you only need to know the KeyControl.</param>
-      private void GetKeyControlsOnPanel(Control APanel, ref Control AKeyControl, ref Control ADescriptionControl, bool ASkipSearchForDescription = false)
+    /// <param name="ASortedControlList">Pass in the SortedList that will be the final result</param>
+    /// <param name="AContainerControl">The contianer control (a Panel) that is to be searched for controls and sub-Panels</param>
+    /// <param name="APrefix">A TabIndex prefix - use an empty string for the initial call</param>
+    private void GetSortedControlList(ref SortedList<string, Control> ASortedControlList, Control AContainerControl, string APrefix)
     {
-        foreach (Control detailsCtrl in APanel.Controls)
+        foreach (Control control in AContainerControl.Controls)
         {
-            if (detailsCtrl is Panel)
+            if (control is Panel)
             {
-                // If the control is a panel we call ourself recursively
-                GetKeyControlsOnPanel(detailsCtrl, ref AKeyControl, ref ADescriptionControl, ASkipSearchForDescription);
-
-                if ((ADescriptionControl != null) || ((AKeyControl != null) && ASkipSearchForDescription))
-                {
-                    break;
-                }
-
-                continue;
+                // Recursive call with an extended prefix
+                GetSortedControlList(ref ASortedControlList, control, String.Format("{0}{1}.", APrefix, control.TabIndex.ToString("0000")));
             }
-
-            if (AKeyControl == null && (detailsCtrl is TextBox || detailsCtrl is ComboBox || detailsCtrl is TCmbAutoPopulated))
+            else if (control is TextBox || control is ComboBox || control is TCmbAutoPopulated)
             {
-                AKeyControl = detailsCtrl;
-
-                if (ASkipSearchForDescription)
-                {
-                    break;
-                }
-            }
-
-            if (detailsCtrl is TextBox && detailsCtrl.Name.Contains("Desc"))
-            {
-                ADescriptionControl = detailsCtrl;
-                break;
+                ASortedControlList.Add(String.Format("{0}{1}", APrefix, control.TabIndex.ToString("0000")), control);
             }
         }
     }
