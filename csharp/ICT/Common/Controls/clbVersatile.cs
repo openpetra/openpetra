@@ -241,6 +241,7 @@ namespace Ict.Common.Controls
         public String GetCheckedStringList(Boolean AddQuotes=false)
         {
             String ReturnValue;
+            Boolean RetEmpty = true;
 
             ReturnValue = "";
 
@@ -259,16 +260,18 @@ namespace Ict.Common.Controls
                         {
                             foreach (String KeyColumn in FKeyColumns)
                             {
-                                if (ReturnValue != String.Empty)
+                                if (!RetEmpty)
                                 {
                                     ReturnValue += ",";
                                 }
+                                RetEmpty = false;
 
                                 ReturnValue += (OptionalQuote + Row[KeyColumn].ToString() + OptionalQuote); 
                                              // This was changed from AddCsv because
                             }                // I need it to consistently add quotes to all of the values in the list
                         }                    // (Or no quotes would also be fine, but not some with and some without!)
-                    }                        // AddCsv removes leading zeroes, so for example it makes the Cost Code "0300" into 300
+                    }                        // AddCsv Adds quotes if the string has leading zeroes, 
+                                             // so for example it adds quotes to Cost Code "0300" but not 3000.
                                              // Tim Ingham, Nov 2013, Jan 2014
                 }
             }
