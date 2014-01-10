@@ -77,6 +77,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     "1", FNumberOfAccountingPeriods);
 
                 ReadOnly = !TRemote.MFinance.Setup.WebConnectors.IsCalendarChangeAllowed(FLedgerNumber);
+
+                SelectRowInGrid(1);
             }
         }
 
