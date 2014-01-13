@@ -734,6 +734,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 FUcoFinanceDetails.RefreshRecordsAfterMerge();
             }
+
+            if (FUcoPartnerTypes != null)
+            {
+                FUcoPartnerTypes.RefreshDataGrid();
+            }
         }
 
         /// <summary>

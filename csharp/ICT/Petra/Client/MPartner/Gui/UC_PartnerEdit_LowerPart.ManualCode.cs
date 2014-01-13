@@ -459,7 +459,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        public void RefreshAddressesAfterMerge()
+        public void RefreshRecordsAfterMerge()
         {
             if (FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
             {

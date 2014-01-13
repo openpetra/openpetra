@@ -362,9 +362,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void RefreshRecordsAfterMerge()
         {
+            int CurrentSelectedRowIndex = GetSelectedRowIndex();
+
             FPreviouslySelectedDetailRow = null;
             grdDetails.Selection.ResetSelection(false);
             ShowData();
+
+            // reselect the previously selected row
+            SelectRowInGrid(CurrentSelectedRowIndex);
         }
 
         private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)

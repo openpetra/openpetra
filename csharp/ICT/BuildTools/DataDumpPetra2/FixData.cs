@@ -26,9 +26,12 @@ using System.IO;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
 using Ict.Common;
 using Ict.Tools.DBXML;
 using ICSharpCode.SharpZipLib.GZip;
+using PasswordUtilities;
 
 namespace Ict.Tools.DataDumpPetra2
 {
@@ -256,6 +259,14 @@ namespace Ict.Tools.DataDumpPetra2
 
             string[] NewRow = CreateRow(NewColumnNames);
 
+            // This existing and populated table's data is completely changed. We do not want to import any of it's contents.
+            if (ANewTable.strName == "pt_language_level")
+            {
+                RowCounter += FixData(ANewTable.strName, NewColumnNames, ref NewRow, AWriter, AWriterTest);
+
+                return RowCounter;
+            }
+
             while (true)
             {
                 string[] OldRow = AParser.ReadNextRow();
@@ -437,7 +448,8 @@ namespace Ict.Tools.DataDumpPetra2
                 }
             }
 
-            // pm_person_language, language code cannot be null, should be 99
+            // pm_person_language, language code cannot be null, should be 99.
+            // Old language levels need mapped to new levels.
             if (ATableName == "pm_person_language")
             {
                 string val = GetValue(AColumnNames, ANewRow, "p_language_code_c");
@@ -445,6 +457,67 @@ namespace Ict.Tools.DataDumpPetra2
                 if ((val.Length == 0) || (val == "\\N"))
                 {
                     SetValue(AColumnNames, ref ANewRow, "p_language_code_c", "99");
+                }
+
+                int val2 = Convert.ToInt32(GetValue(AColumnNames, ANewRow, "pt_language_level_i"));
+
+                if (val2 <= 3)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "1");
+                }
+                else if ((val2 >= 4) && (val2 <= 7))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "2");
+                }
+                else if (val2 >= 8)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "3");
+                }
+            }
+
+            // um_unit_language, language code cannot be null, should be 99.
+            // Old language levels need mapped to new levels.
+            if (ATableName == "um_unit_language")
+            {
+                string val = GetValue(AColumnNames, ANewRow, "p_language_code_c");
+
+                if ((val.Length == 0) || (val == "\\N"))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "p_language_code_c", "99");
+                }
+
+                int val2 = Convert.ToInt32(GetValue(AColumnNames, ANewRow, "pt_language_level_i"));
+
+                if (val2 <= 3)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "1");
+                }
+                else if ((val2 >= 4) && (val2 <= 7))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "2");
+                }
+                else if (val2 >= 8)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "3");
+                }
+            }
+
+            // Old language levels need mapped to new levels.
+            if (ATableName == "um_job_language")
+            {
+                int val = Convert.ToInt32(GetValue(AColumnNames, ANewRow, "pt_language_level_i"));
+
+                if (val <= 3)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "1");
+                }
+                else if ((val >= 4) && (val <= 7))
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "2");
+                }
+                else if (val >= 8)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", "3");
                 }
             }
 
@@ -659,6 +732,58 @@ namespace Ict.Tools.DataDumpPetra2
                 {
                     SetValue(AColumnNames, ref ANewRow, "p_fax_extension_i", "0");
                 }
+            }
+
+            // A new password and password salt needs to be generated for every user.
+            // Passwords are writed to a file in the fulldump folder.
+            if (ATableName == "s_user")
+            {
+                // generate a new password
+                string Password = "Petra";
+                double Entropy = 0;
+                PasswordGenerator Generator = new PasswordGenerator();
+
+                while (Entropy < 72)
+                {
+                    Generator.GeneratePassword();
+                    Entropy = Generator.PasswordEntropy;
+                }
+
+                Password = Generator.Password;
+
+                // generate a new salt
+                byte[] saltBytes = new byte[32];
+                RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+                rng.GetNonZeroBytes(new byte[32]);
+
+                SetValue(AColumnNames, ref ANewRow, "s_password_salt_c", Convert.ToBase64String(saltBytes));
+
+                // create password hash using password and salt
+                string PasswordHash = BitConverter.ToString(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(
+                            String.Concat(Password, Convert.ToBase64String(saltBytes))))).Replace("-", "");
+
+                SetValue(AColumnNames, ref ANewRow, "s_password_hash_c", PasswordHash);
+
+                // write userIDs and new passwords to a file
+                string UserPasswordsDir = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +
+                                          Path.DirectorySeparatorChar + "_credentials.txt";
+                StreamWriter MyWriter;
+
+                if (File.Exists(UserPasswordsDir))
+                {
+                    MyWriter = File.AppendText(UserPasswordsDir);
+                }
+                else
+                {
+                    FileStream outStreamCount = File.Create(UserPasswordsDir);
+                    MyWriter = new StreamWriter(outStreamCount);
+                }
+
+                string UserID = GetValue(AColumnNames, ANewRow, "s_user_id_c");
+
+                MyWriter.WriteLine(UserID + "\t" + Password);
+
+                MyWriter.Close();
             }
 
             return true;
@@ -1055,6 +1180,52 @@ namespace Ict.Tools.DataDumpPetra2
                     SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", GetValue(PersonAbilityColumnNames, OldRow, "s_date_modified_d"));
                     SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", GetValue(PersonAbilityColumnNames, OldRow, "s_modified_by_c"));
                     SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", GetValue(PersonAbilityColumnNames, OldRow, "s_modification_id_t"));
+
+                    AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                    AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                    AWriterTest.WriteLine("\\.");
+                    AWriterTest.WriteLine("ROLLBACK;");
+                    RowCounter++;
+                }
+            }
+
+            // This existing and populated table's data is completely changed. We do not want to import any of it's contents.
+            // This data is also in the basedata
+            if (ATableName == "pt_language_level")
+            {
+                // Default language levels data
+                string[] LanguageLevels = new string[] {
+                    "1", "2", "3", "99"
+                };
+                string[] LanguageLevelDescriptions = new string[] {
+                    "BASIC", "INTERMEDIATE", "ADVANCED", "UNKNOWN"
+                };
+                string[] LanguageComments = new string[] {
+                    "Uses a narrow range of language, adequate for basic needs and simple situations. " +
+                    "Does not really have sufficient language to cope with normal day-to-day, real-life communication, " +
+                    "but basic communication is possible with adequate opportunities for assistance.",
+                    "Uses the language independently and effectively in familiar situations. Rather frequent lapses in accuracy, fluency, " +
+                    "appropriateness and organisation, but usually succeeds in communication and comprehending the general message.",
+                    "Uses a full range of language with proficiency approaching that in the learner's own mother tongue. " +
+                    "Copes well even with demanding and complex language situations. Makes minor lapses in accuracy, fluency, " +
+                    "appropriateness and organisation which do not affect communication.",
+                    "Speaks the language to some extent, level unknown."
+                };
+
+                for (int i = 0; i < 4; i++)
+                {
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_i", LanguageLevels[i]);
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_level_descr_c", LanguageLevelDescriptions[i]);
+                    SetValue(AColumnNames, ref ANewRow, "pt_unassignable_flag_l", "0");
+                    SetValue(AColumnNames, ref ANewRow, "pt_unassignable_date_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "pt_deletable_flag_l", "0");
+                    SetValue(AColumnNames, ref ANewRow, "pt_language_comment_c", LanguageComments[i]);
+                    SetValue(AColumnNames, ref ANewRow, "s_date_created_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
+                    SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
 
                     AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
                     AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
