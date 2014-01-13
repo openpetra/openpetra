@@ -108,8 +108,9 @@ public class TServer
                 TLogging.Log("Maybe a nant initConfigFile helps ...");
                 throw new ApplicationException();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                TLogging.Log(ex.Message);
                 throw;
             }
 

@@ -437,8 +437,8 @@ namespace Ict.Common.DB
                 DBAccess.GDBAccessObj.CloseDBConnection();
 
                 throw new EDBUnsupportedDBUpgradeException(String.Format(Catalog.GetString(
-                            "Unsupported upgrade: Please rename the file {0} so that we can start with a fresh database!" +
-                            Environment.NewLine + "Please restart the OpenPetra Client after that."),
+                            "Unsupported upgrade: Please rename the file {0} so that we can start with a fresh database!   " +
+                            "Please restart the OpenPetra Client after that."),
                         AHostOrFile));
             }
 
