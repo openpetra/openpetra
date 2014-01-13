@@ -68,10 +68,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             MainDS.ThrowAwayAfterSubmitChanges = true;
 
-            if (GiftBatchTDSAccess.SubmitChanges(MainDS) != TSubmitChangesResult.scrOK)
-            {
-                throw new Exception("A problem occured during a call to GiftBatchTDSAccess.SubmitChanges(AInspectDS)");
-            }
+            GiftBatchTDSAccess.SubmitChanges(MainDS);
         }
 
         /// <summary>

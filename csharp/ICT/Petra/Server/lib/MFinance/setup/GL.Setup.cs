@@ -1256,7 +1256,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 AddOrRemoveLedgerInitFlag(ALedgerNumber, "CURRENT-PERIOD", !LedgerRow.IsCurrentPeriodNull(), Transaction, ref AVerificationResult);
                 AddOrRemoveLedgerInitFlag(ALedgerNumber, "CAL", !LedgerRow.IsNumberOfAccountingPeriodsNull(), Transaction, ref AVerificationResult);
 
-                ReturnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS);
+                GLSetupTDSAccess.SubmitChanges(AInspectDS);
+                
+                ReturnValue = TSubmitChangesResult.scrOK;
 
                 if (AVerificationResult.Count > 0)
                 {
@@ -1407,7 +1409,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             if (ReturnValue != TSubmitChangesResult.scrError)
             {
-                ReturnValue = GLSetupTDSAccess.SubmitChanges(AInspectDS);
+                GLSetupTDSAccess.SubmitChanges(AInspectDS);
+                
+                ReturnValue = TSubmitChangesResult.scrOK;
             }
 
             TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
@@ -2685,8 +2689,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             // TODO: modify UI navigation yml file etc?
             // TODO: permissions for which users?
 
-            TSubmitChangesResult result = GLSetupTDSAccess.SubmitChanges(MainDS);
-
+            GLSetupTDSAccess.SubmitChanges(MainDS);
+            
             // activate gift receipting subsystem
             if (AActivateGiftReceipting)
             {
@@ -2699,33 +2703,30 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ActivateAccountsPayableSubsystem(ANewLedgerNumber, out AVerificationResult);
             }
 
-            if (result == TSubmitChangesResult.scrOK)
+            // give the current user access permissions to this new ledger
+            SUserModuleAccessPermissionTable moduleAccessPermissionTable = new SUserModuleAccessPermissionTable();
+
+            SUserModuleAccessPermissionRow moduleAccessPermissionRow = moduleAccessPermissionTable.NewRowTyped();
+            moduleAccessPermissionRow.UserId = UserInfo.GUserInfo.UserID;
+            moduleAccessPermissionRow.ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
+            moduleAccessPermissionRow.CanAccess = true;
+            moduleAccessPermissionTable.Rows.Add(moduleAccessPermissionRow);
+
+            try
             {
-                // give the current user access permissions to this new ledger
-                SUserModuleAccessPermissionTable moduleAccessPermissionTable = new SUserModuleAccessPermissionTable();
-
-                SUserModuleAccessPermissionRow moduleAccessPermissionRow = moduleAccessPermissionTable.NewRowTyped();
-                moduleAccessPermissionRow.UserId = UserInfo.GUserInfo.UserID;
-                moduleAccessPermissionRow.ModuleId = "LEDGER" + ANewLedgerNumber.ToString("0000");
-                moduleAccessPermissionRow.CanAccess = true;
-                moduleAccessPermissionTable.Rows.Add(moduleAccessPermissionRow);
-
-                try
+                if (!SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, Transaction, out AVerificationResult))
                 {
-                    if (!SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, Transaction, out AVerificationResult))
-                    {
-                        return false;
-                    }
+                    return false;
+                }
 
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                finally
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            return result == TSubmitChangesResult.scrOK;
+            return true;
         }
 
         /// <summary>

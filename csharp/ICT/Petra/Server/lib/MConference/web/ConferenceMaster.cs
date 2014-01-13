@@ -106,7 +106,9 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("CONFERENCE")]
         public static TSubmitChangesResult SaveConferenceSetupTDS(ref ConferenceSetupTDS AInspectDS)
         {
-            return ConferenceSetupTDSAccess.SubmitChanges(AInspectDS);
+            ConferenceSetupTDSAccess.SubmitChanges(AInspectDS);
+            
+            return TSubmitChangesResult.scrOK;
         }
     }
 }

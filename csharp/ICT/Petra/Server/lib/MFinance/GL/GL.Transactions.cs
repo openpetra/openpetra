@@ -1071,9 +1071,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             //Need to save changes before deleting any transactions
-            TSubmitChangesResult SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS);
+            GLBatchTDSAccess.SubmitChanges(AInspectDS);
+            
+            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrOK;
 
-            if ((SubmissionResult == TSubmitChangesResult.scrOK) && (transTableInDataSet) && (AInspectDS.ATransaction.Rows.Count > 0))
+            if ((transTableInDataSet) && (AInspectDS.ATransaction.Rows.Count > 0))
             {
                 //Accept deletion of Attributes to allow deletion of transactions
                 if (attrTableInDataSet)
@@ -1117,7 +1119,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             }
 
                             //Submit all changes
-                            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS);
+                            GLBatchTDSAccess.SubmitChanges(AInspectDS);
+                            
+                            SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                     }
                     catch (Exception ex)
@@ -1372,7 +1376,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
 
-                ASubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS);
+                GLBatchTDSAccess.SubmitChanges(AInspectDS);
+                
+                ASubmissionResult = TSubmitChangesResult.scrOK;
+                
                 AInspectDS.ATransAnalAttrib.AcceptChanges();
             }
 
@@ -1485,7 +1492,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
 
-                ASubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS);
+                GLBatchTDSAccess.SubmitChanges(AInspectDS);
+                
+                ASubmissionResult = TSubmitChangesResult.scrOK;
+                
                 AInspectDS.ARecurringTransAnalAttrib.AcceptChanges();
             }
 
@@ -1655,9 +1665,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             // now submit the changes
-            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS);
+            GLBatchTDSAccess.SubmitChanges(AInspectDS);
+            
+            SubmissionResult = TSubmitChangesResult.scrOK;
 
-            if ((SubmissionResult == TSubmitChangesResult.scrOK) && (recurrTransactionTableInDataSet))
+            if (recurrTransactionTableInDataSet)
             {
                 //Accept deletion of Attributes to allow deletion of transactions
                 if (recurrTransAnalTableInDataSet)
@@ -1701,7 +1713,9 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                             }
 
                             //save changes
-                            SubmissionResult = GLBatchTDSAccess.SubmitChanges(AInspectDS);
+                            GLBatchTDSAccess.SubmitChanges(AInspectDS);
+                            
+                            SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                     }
                     catch (Exception ex)

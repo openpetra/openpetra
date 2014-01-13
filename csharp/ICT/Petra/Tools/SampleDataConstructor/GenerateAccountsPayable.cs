@@ -117,10 +117,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 ;
-            if(AccountsPayableTDSAccess.SubmitChanges(MainDS) != TSubmitChangesResult.scrOK)
-            {
-                throw new Exception("A problem occured during a call to AccountsPayableTDSAccess.SubmitChanges(AInspectDS)");
-            }
+            AccountsPayableTDSAccess.SubmitChanges(MainDS);
         }
 
         /// <summary>

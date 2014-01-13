@@ -74,7 +74,9 @@ namespace Ict.Petra.Server.MPartner.TableMaintenance.WebConnectors
         {
             if (AInspectDS != null)
             {
-                return PartnerSetupTDSAccess.SubmitChanges(AInspectDS);
+                PartnerSetupTDSAccess.SubmitChanges(AInspectDS);
+                
+                return TSubmitChangesResult.scrOK;
             }
 
             return TSubmitChangesResult.scrError;

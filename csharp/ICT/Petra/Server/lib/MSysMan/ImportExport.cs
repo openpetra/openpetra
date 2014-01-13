@@ -591,7 +591,9 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         [RequireModulePermission("SYSMAN")]
         public static bool SaveTDS(SampleDataConstructorTDS dataTDS)
         {
-            return SampleDataConstructorTDSAccess.SubmitChanges(dataTDS) == TSubmitChangesResult.scrOK;
+            SampleDataConstructorTDSAccess.SubmitChanges(dataTDS);
+            
+            return true;
         }
     }
 }

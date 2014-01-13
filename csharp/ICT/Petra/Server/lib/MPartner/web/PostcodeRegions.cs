@@ -58,20 +58,17 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static TSubmitChangesResult SavePostcodeRegionsTDS(ref PostcodeRegionsTDS AInspectDS)
         {
-            TSubmitChangesResult Result = PostcodeRegionsTDSAccess.SubmitChanges(AInspectDS);
+            PostcodeRegionsTDSAccess.SubmitChanges(AInspectDS);
 
-            // If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
+            // Update the Cacheable DataTable in the Servers'
             // Cache and inform all other Clients that they need to reload this Cacheable DataTable
             // the next time something in the Client accesses it.
-            if (Result == TSubmitChangesResult.scrOK)
-            {
-                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                    TCacheableMailingTablesEnum.PostcodeRegionList.ToString());
-                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                    TCacheableMailingTablesEnum.PostcodeRegionRangeList.ToString());
-            }
+            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                TCacheableMailingTablesEnum.PostcodeRegionList.ToString());
+            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                TCacheableMailingTablesEnum.PostcodeRegionRangeList.ToString());
 
-            return Result;
+            return TSubmitChangesResult.scrOK;
         }
     }
 }

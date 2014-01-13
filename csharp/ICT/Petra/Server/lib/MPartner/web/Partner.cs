@@ -166,10 +166,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 partnerlocation.SendMail = false;
                 MainDS.PPartnerLocation.Rows.Add(partnerlocation);
 
-                if (PartnerEditTDSAccess.SubmitChanges(MainDS) == TSubmitChangesResult.scrOK)
-                {
-                    return newPartner.PartnerKey;
-                }
+                PartnerEditTDSAccess.SubmitChanges(MainDS);
+
+                return newPartner.PartnerKey;
             }
 
             throw new Exception("problem for GetBankBySortCode, cannot find or create bank");

@@ -82,21 +82,20 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             {
                 // Must not throw away the changes because we need the correct statement keys
                 AStatementAndTransactionsDS.DontThrowAwayAfterSubmitChanges = true;
-                SubmissionResult = BankImportTDSAccess.SubmitChanges(AStatementAndTransactionsDS);
+                BankImportTDSAccess.SubmitChanges(AStatementAndTransactionsDS);
 
+                SubmissionResult = TSubmitChangesResult.scrOK;
+                
                 AFirstStatementKey = -1;
 
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                        Catalog.GetString("starting to train"),
-                        1);
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("starting to train"),
+                    1);
 
-                    AFirstStatementKey = AStatementAndTransactionsDS.AEpStatement[0].StatementKey;
+                AFirstStatementKey = AStatementAndTransactionsDS.AEpStatement[0].StatementKey;
 
-                    // search for already posted gift batches, and do the matching for these imported statements
-                    TBankImportMatching.Train(AStatementAndTransactionsDS);
-                }
+                // search for already posted gift batches, and do the matching for these imported statements
+                TBankImportMatching.Train(AStatementAndTransactionsDS);
 
                 TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
             }
@@ -164,7 +163,9 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
             MainDS.ThrowAwayAfterSubmitChanges = true;            
 
-            return (BankImportTDSAccess.SubmitChanges(MainDS) == TSubmitChangesResult.scrOK);
+            BankImportTDSAccess.SubmitChanges(MainDS);
+            
+            return true;
         }
 
         private static bool FindDonorByAccountNumber(AEpMatchRow AMatchRow,
@@ -461,7 +462,10 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         public static bool CommitMatches(BankImportTDS AMainDS)
         {
             AMainDS.ThrowAwayAfterSubmitChanges = true;
-            return BankImportTDSAccess.SubmitChanges(AMainDS) == TSubmitChangesResult.scrOK;
+            
+            BankImportTDSAccess.SubmitChanges(AMainDS);
+            
+            return true;
         }
 
         /// <summary>

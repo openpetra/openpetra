@@ -2067,7 +2067,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         // all tables in the dataset will be stored.
                         // there are exceptions: for example cascading delete of foundations, change of unique key of family id
                         // those tables need to have run AcceptChanges
-                        SubmissionResult = PartnerEditTDSAccess.SubmitChanges(AInspectDS);
+                        PartnerEditTDSAccess.SubmitChanges(AInspectDS);
                     }
 
                     if (SubmissionResult == TSubmitChangesResult.scrOK)

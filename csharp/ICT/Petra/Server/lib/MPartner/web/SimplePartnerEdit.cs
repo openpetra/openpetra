@@ -142,7 +142,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
 
-            return PartnerEditTDSAccess.SubmitChanges(AMainDS) == TSubmitChangesResult.scrOK;
+            PartnerEditTDSAccess.SubmitChanges(AMainDS);
+            
+            return true;
         }
     }
 }

@@ -122,15 +122,9 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            if(PartnerImportExportTDSAccess.SubmitChanges(PartnerDS) != TSubmitChangesResult.scrOK)
-            {
-                throw new Exception("A problem occured during a call to PartnerImportExportTDSAccess.SubmitChanges(AInspectDS)");
-            }
-
-            if(GLSetupTDSAccess.SubmitChanges(GLSetupDS) != TSubmitChangesResult.scrOK)
-            {
-                throw new Exception("A problem occured during a call to GLSetupTDSAccess.SubmitChanges(AInspectDS)");
-            }
+            PartnerImportExportTDSAccess.SubmitChanges(PartnerDS);
+            
+            GLSetupTDSAccess.SubmitChanges(GLSetupDS);
         }
 
         /// <summary>
@@ -174,10 +168,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            if(GLSetupTDSAccess.SubmitChanges(GLSetupDS) != TSubmitChangesResult.scrOK)
-            {
-                throw new Exception("A problem occured during a call to GLSetupTDSAccess.SubmitChanges(AInspectDS)");
-            }
+            GLSetupTDSAccess.SubmitChanges(GLSetupDS);
         }
 
         /// <summary>
@@ -245,10 +236,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            if(PartnerImportExportTDSAccess.SubmitChanges(PartnerDS) != TSubmitChangesResult.scrOK)
-            {
-                throw new Exception("A problem occured during a call to PartnerImportExportTDSAccess.SubmitChanges(AInspectDS)");
-            }
+            PartnerImportExportTDSAccess.SubmitChanges(PartnerDS);
         }
     }
 }

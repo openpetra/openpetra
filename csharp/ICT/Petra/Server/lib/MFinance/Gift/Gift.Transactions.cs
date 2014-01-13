@@ -74,7 +74,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
-
                 TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
                 MainDS.AGiftBatch[0].BatchDescription = ABatchDescription;
 
@@ -86,7 +85,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     {
                         success = true;
                     }
-                }
+                }                
             }
             finally
             {
@@ -745,9 +744,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (AllValidationsOK)
             {
-                SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS);
+                GiftBatchTDSAccess.SubmitChanges(AInspectDS);
+                
+                SubmissionResult = TSubmitChangesResult.scrOK;
 
-                if ((SubmissionResult == TSubmitChangesResult.scrOK) && giftTableInDataSet)
+                if (giftTableInDataSet)
                 {
                     if (giftDetailTableInDataSet)
                     {
@@ -788,7 +789,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 }
                             }
 
-                            SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS);
+                            GiftBatchTDSAccess.SubmitChanges(AInspectDS);
+                            
+                            SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                         catch (Exception ex)
                         {
@@ -864,9 +867,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (AllValidationsOK)
             {
-                SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS);
+                GiftBatchTDSAccess.SubmitChanges(AInspectDS);
+                
+                SubmissionResult = TSubmitChangesResult.scrOK;
 
-                if ((SubmissionResult == TSubmitChangesResult.scrOK) && recurrGiftTableInDataSet && (AInspectDS.ARecurringGift.Count > 0))
+                if (recurrGiftTableInDataSet && (AInspectDS.ARecurringGift.Count > 0))
                 {
                     if (recurrGiftBatchTableInDataSet)
                     {
@@ -912,7 +917,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 }
                             }
 
-                            SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS);
+                            GiftBatchTDSAccess.SubmitChanges(AInspectDS);
+                            
+                            SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                         catch (Exception ex)
                         {
@@ -1636,11 +1643,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     if ((motivationFeeRow.MotivationDetailCode == motivationRow.MotivationDetailCode)
                         && (motivationFeeRow.MotivationGroupCode == motivationRow.MotivationGroupCode))
                     {
+                        TVerificationResultCollection Verifications2;
+                        
                         decimal FeeAmount = CalculateAdminFee(MainDS,
                             ALedgerNumber,
                             motivationFeeRow.FeeCode,
                             giftDetail.GiftAmount,
-                            out AVerifications);
+                            out Verifications2);
+                        
+                        if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verifications2))
+                        {
+                            AVerifications.AddCollection(Verifications2);
+                                
+                            return null;                                    
+                        }
+                        
                         AddToFeeTotals(MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, GiftBatchRow.BatchPeriod);
                     }
                 }
@@ -1737,10 +1754,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         MainDS.ThrowAwayAfterSubmitChanges = true;
 
-                        if (GiftBatchTDSAccess.SubmitChanges(MainDS) != TSubmitChangesResult.scrOK)
-                        {
-                            return false;
-                        }
+                        GiftBatchTDSAccess.SubmitChanges(MainDS);
                     }
                     else
                     {
@@ -1778,7 +1792,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 TLogging.Log("In posting Gift batches: exception " + e.Message);
 
-                throw new Exception(e.ToString() + " " + e.Message);
+                throw;
             }
             finally
             {

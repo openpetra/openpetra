@@ -1375,12 +1375,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 goto PostGenerateBatch;
             }
 
-            if (GLBatchTDSAccess.SubmitChanges(MainDS) != TSubmitChangesResult.scrOK)
-            {
-                LogMessage = String.Format(Catalog.GetString("Problem saving the ICH batch for File {0}"), AFileName);
-                ALogWriter.WriteLine(LogMessage);
-                return false;
-            }
+            GLBatchTDSAccess.SubmitChanges(MainDS);
 
             Complete = true;
 

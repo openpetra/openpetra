@@ -221,13 +221,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             else
             {                
                 GLPostingDS.ThrowAwayAfterSubmitChanges = true;
-                TSubmitChangesResult SubmitChangesRes = GLPostingTDSAccess.SubmitChanges(GLPostingDS);
+                GLPostingTDSAccess.SubmitChanges(GLPostingDS);
                 GLPostingDS.Clear();
-
-                if (SubmitChangesRes != TSubmitChangesResult.scrOK)
-                {
-                    retVal = false;
-                }
             }
 
             if (newTransaction)

@@ -432,7 +432,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             try
             {
-                ReturnValue = MaintainUsersTDSAccess.SubmitChanges(ASubmitDS);
+                MaintainUsersTDSAccess.SubmitChanges(ASubmitDS);
+                
+                ReturnValue = TSubmitChangesResult.scrOK;
             }
             catch (Exception e)
             {

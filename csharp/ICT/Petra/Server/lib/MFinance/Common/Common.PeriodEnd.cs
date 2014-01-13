@@ -630,19 +630,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             if (DoExecuteableCode)
-            {
-                TSubmitChangesResult tSubmitChangesResult =
-                    GLPostingTDSAccess.SubmitChanges(PostingToDS);
-
-                if (tSubmitChangesResult == TSubmitChangesResult.scrError)
-                {
-                    FHasCriticalErrors = true;
-                }
-
-                if (tSubmitChangesResult == TSubmitChangesResult.scrInfoNeeded)
-                {
-                    FHasCriticalErrors = true;
-                }
+            {                
+                GLPostingTDSAccess.SubmitChanges(PostingToDS);
             }
         }
     }

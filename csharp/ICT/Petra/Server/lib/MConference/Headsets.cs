@@ -203,7 +203,10 @@ namespace Ict.Petra.Server.MConference.Applications
             }
 
             MainDS.ThrowAwayAfterSubmitChanges = true;
-            return TSubmitChangesResult.scrOK == ContactTDSAccess.SubmitChanges(MainDS);
+            
+            ContactTDSAccess.SubmitChanges(MainDS);
+            
+            return true;
         }
 
         private static void GetDataForHeadsetReports(string AEventCode,

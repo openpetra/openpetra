@@ -98,10 +98,7 @@ namespace Tests.MPartner.Server.PartnerExports
 
             try
             {
-                if (TSubmitChangesResult.scrOK == PartnerImportExportTDSAccess.SubmitChanges(MainDS))
-                {
-                    //return;
-                }
+                PartnerImportExportTDSAccess.SubmitChanges(MainDS);
             }
             catch (Exception e)
             {

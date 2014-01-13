@@ -89,13 +89,11 @@ namespace Ict.Common.Data.Testing
             batch.HashTotal = 83;
             MainDS.AGiftBatch.Rows.Add(batch);
 
-            TSubmitChangesResult result = GiftBatchTDSAccess.SubmitChanges(MainDS);
-            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "SubmitChanges should be ok");
+            GiftBatchTDSAccess.SubmitChanges(MainDS);
             MainDS.AcceptChanges();
 
             MainDS.AGiftBatch[0].BatchDescription = "test2";
-            result = GiftBatchTDSAccess.SubmitChanges(MainDS);
-            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "SubmitChanges of update should be ok");
+            GiftBatchTDSAccess.SubmitChanges(MainDS);
 
 
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();

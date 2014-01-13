@@ -658,12 +658,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                         if (IsSuccessful)
                         {
-                            IsSuccessful = (TSubmitChangesResult.scrOK == GLBatchTDSAccess.SubmitChanges(MainDS));
-
-                            if (IsSuccessful)
-                            {
-                                IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, GLBatchNumber, out AVerificationResult);
-                            }
+                            GLBatchTDSAccess.SubmitChanges(MainDS);
+                            
+                            IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, GLBatchNumber, out AVerificationResult);
                         }
                     }
                     else
@@ -1193,13 +1190,10 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     {
                         //Post the batch just created
 
-                        IsSuccessful = (TSubmitChangesResult.scrOK == GLBatchTDSAccess.SubmitChanges(AdminFeeDS));
+                        GLBatchTDSAccess.SubmitChanges(AdminFeeDS);
 
-                        if (IsSuccessful)
-                        {
-                            IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, BatchRow.BatchNumber, out Verification);
-                        }
-
+                        IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, BatchRow.BatchNumber, out Verification);
+                        
                         if (IsSuccessful)
                         {
                             AProcessedFeeAccess.SubmitChanges(ProcessedFeeDataTable, ADBTransaction, out Verification);

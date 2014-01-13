@@ -1070,10 +1070,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 TLogging.Log("Posting: SubmitChanges...");
             }
 
-            if (GLPostingTDSAccess.SubmitChanges(AMainDS.GetChangesTyped(true)) != TSubmitChangesResult.scrOK) 
-            {
-                return false;
-            }
+            GLPostingTDSAccess.SubmitChanges(AMainDS.GetChangesTyped(true));
 
             if (TLogging.DebugLevel >= POSTING_LOGLEVEL)
             {
@@ -1206,20 +1203,20 @@ namespace Ict.Petra.Server.MFinance.Common
                     }
                 }
 
-                if (GLBatchTDSAccess.SubmitChanges(MainDS) == TSubmitChangesResult.scrOK)
-                {
-                    AReversalBatchNumber = NewBatchRow.BatchNumber;
+                GLBatchTDSAccess.SubmitChanges(MainDS);
+                
+                AReversalBatchNumber = NewBatchRow.BatchNumber;
 
-                    if (PostGLBatch(ALedgerNumber, AReversalBatchNumber, out AVerifications))
+                if (PostGLBatch(ALedgerNumber, AReversalBatchNumber, out AVerifications))
+                {
+                    if (NewTransactionStarted)
                     {
-                        if (NewTransactionStarted)
-                        {
-                            DBAccess.GDBAccessObj.CommitTransaction();
-                            NewTransactionStarted = false;
-                            return true;
-                        }
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                        NewTransactionStarted = false;
+                        return true;
                     }
                 }
+
             }
             catch (Exception ex)
             {
@@ -1398,13 +1395,10 @@ namespace Ict.Petra.Server.MFinance.Common
             // post each journal, each transaction; add sums for costcentre/account combinations
             MarkAsPostedAndCollectData(BatchDS, APostingDS, APostingLevel, BatchToPost);
 
-            if (GLBatchTDSAccess.SubmitChanges(BatchDS) == TSubmitChangesResult.scrOK)
-            {
-                // if posting goes wrong later, the transation will be rolled back
-                return true;
-            }
+            GLBatchTDSAccess.SubmitChanges(BatchDS);
 
-            return false;
+            // if posting goes wrong later, the transation will be rolled back
+            return true;
         }
 
         /// <summary>
@@ -1491,7 +1485,9 @@ namespace Ict.Petra.Server.MFinance.Common
                 TempTDS.ATransaction.Rows.Clear();
                 TempTDS.ATransAnalAttrib.Rows.Clear();
 
-                return GLBatchTDSAccess.SubmitChanges(TempTDS) == TSubmitChangesResult.scrOK;
+                GLBatchTDSAccess.SubmitChanges(TempTDS);
+                
+                return true;
             }
         }
 
@@ -1529,10 +1525,9 @@ namespace Ict.Petra.Server.MFinance.Common
                 NewRow.BatchYear = MainDS.ALedger[0].CurrentFinancialYear;
                 MainDS.ABatch.Rows.Add(NewRow);
 
-                if (GLBatchTDSAccess.SubmitChanges(MainDS) == TSubmitChangesResult.scrOK)
-                {
-                    MainDS.AcceptChanges();
-                }
+                GLBatchTDSAccess.SubmitChanges(MainDS);
+                
+                MainDS.AcceptChanges();
             }
             catch (Exception ex)
             {
@@ -1543,6 +1538,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 ErrorType = TResultSeverity.Resv_Critical;
                 VerificationResult = new TVerificationResultCollection();
                 VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                
+                throw new Exception(VerificationResult.BuildVerificationResultString(), ex);
             }
             finally
             {
@@ -1611,10 +1608,9 @@ namespace Ict.Petra.Server.MFinance.Common
                 NewRow.BatchControlTotal = ABatchControlTotal;
                 MainDS.ABatch.Rows.Add(NewRow);
 
-                if (GLBatchTDSAccess.SubmitChanges(MainDS) == TSubmitChangesResult.scrOK)
-                {
-                    MainDS.AcceptChanges();
-                }
+                GLBatchTDSAccess.SubmitChanges(MainDS);
+                
+                MainDS.AcceptChanges();
             }
             catch (Exception ex)
             {
@@ -1625,6 +1621,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 ErrorType = TResultSeverity.Resv_Critical;
                 VerificationResult = new TVerificationResultCollection();
                 VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                
+                throw new Exception(VerificationResult.BuildVerificationResultString(), ex);
             }
             finally
             {
@@ -1668,10 +1666,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 NewRow.BatchNumber = MainDS.ALedger[0].LastRecurringBatchNumber;
                 MainDS.ARecurringBatch.Rows.Add(NewRow);
 
-                if (GLBatchTDSAccess.SubmitChanges(MainDS) == TSubmitChangesResult.scrOK)
-                {
-                    MainDS.AcceptChanges();
-                }
+                MainDS.AcceptChanges();
             }
             catch (Exception ex)
             {
@@ -1682,6 +1677,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 ErrorType = TResultSeverity.Resv_Critical;
                 VerificationResult = new TVerificationResultCollection();
                 VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                
+                throw new Exception(VerificationResult.BuildVerificationResultString(), ex);
             }
             finally
             {

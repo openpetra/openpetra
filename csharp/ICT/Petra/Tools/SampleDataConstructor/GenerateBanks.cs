@@ -113,10 +113,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             }
 
             PartnerDS.ThrowAwayAfterSubmitChanges = true;
-            if(PartnerImportExportTDSAccess.SubmitChanges(PartnerDS) != TSubmitChangesResult.scrOK)
-            {
-                throw new Exception("A problem occured during a call to PartnerImportExportTDSAccess.SubmitChanges(AInspectDS)");
-            }
+            PartnerImportExportTDSAccess.SubmitChanges(PartnerDS);
 
             TLogging.Log("after saving banks");
         }

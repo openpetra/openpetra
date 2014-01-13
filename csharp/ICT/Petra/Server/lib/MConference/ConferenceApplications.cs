@@ -1114,7 +1114,9 @@ namespace Ict.Petra.Server.MConference.Applications
             }
 
 
-            TSubmitChangesResult result = ConferenceApplicationTDSAccess.SubmitChanges(AMainDS);
+            ConferenceApplicationTDSAccess.SubmitChanges(AMainDS);
+            
+            TSubmitChangesResult result = TSubmitChangesResult.scrOK;
 
             // this takes 6 seconds!
             AMainDS.AcceptChanges();
@@ -1151,7 +1153,9 @@ namespace Ict.Petra.Server.MConference.Applications
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            TSubmitChangesResult result = ConferenceApplicationTDSAccess.SubmitChanges(MainDS);
+            ConferenceApplicationTDSAccess.SubmitChanges(MainDS);
+            
+            TSubmitChangesResult result = TSubmitChangesResult.scrOK;
 
             ARow.AcceptChanges();
 
@@ -1669,10 +1673,9 @@ namespace Ict.Petra.Server.MConference.Applications
                     return false;
                 }
 
-                if (TSubmitChangesResult.scrOK == PartnerImportExportTDSAccess.SubmitChanges(MainDS))
-                {
-                    return true;
-                }
+                PartnerImportExportTDSAccess.SubmitChanges(MainDS);
+                
+                return true;
             }
             catch (Exception e)
             {
@@ -1683,8 +1686,6 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 return false;
             }
-
-            return true;
         }
     }
 }

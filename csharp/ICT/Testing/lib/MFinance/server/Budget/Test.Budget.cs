@@ -105,7 +105,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult, 
                 "ImportBudgets has critical errors:");
 
-            Assert.AreEqual(TSubmitChangesResult.scrOK, BudgetTDSAccess.SubmitChanges(ImportDS), "submitchanges of imported budget");
+            BudgetTDSAccess.SubmitChanges(ImportDS);
 
             // check for value in budget table
             string sqlQueryBudget =

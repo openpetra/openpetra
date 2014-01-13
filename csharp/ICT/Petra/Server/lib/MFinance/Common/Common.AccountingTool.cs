@@ -435,13 +435,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 aBatchRow.BatchControlTotal += journal.JournalDebitTotal - journal.JournalCreditTotal;
             }
 
-            TSubmitChangesResult submissionResult = GLBatchTDSAccess.SubmitChanges(
-                aBatchTable);
-
-            if (submissionResult != TSubmitChangesResult.scrOK)
-            {
-                throw new ApplicationException("Batch could not be saved!");
-            }
+            GLBatchTDSAccess.SubmitChanges(aBatchTable);
 
             TGLPosting.PostGLBatch(
                 aBatchRow.LedgerNumber, aBatchRow.BatchNumber, out AVerifications);

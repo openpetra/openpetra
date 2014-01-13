@@ -140,16 +140,10 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             MainDS.ThrowAwayAfterSubmitChanges = true;
 
-            if (PartnerEditTDSAccess.SubmitChanges(MainDS) != TSubmitChangesResult.scrOK)
-            {
-                throw new Exception("A problem occured during a call to PartnerEditTDSAccess.SubmitChanges(AInspectDS)");
-            }
+            PartnerEditTDSAccess.SubmitChanges(MainDS);
 
             PersonnelDS.ThrowAwayAfterSubmitChanges = true;
-            if(PersonnelTDSAccess.SubmitChanges(PersonnelDS) != TSubmitChangesResult.scrOK)
-            {
-                throw new Exception("A problem occured during a call to PersonnelTDSAccess.SubmitChanges(AInspectDS)");
-            }
+            PersonnelTDSAccess.SubmitChanges(PersonnelDS);
 
             TLogging.Log("after saving workers");
         }

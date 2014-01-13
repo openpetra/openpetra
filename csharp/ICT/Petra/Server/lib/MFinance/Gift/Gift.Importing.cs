@@ -182,11 +182,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 
                                 if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out Messages2))
                                 {
-                                    if (NewTransaction)
-                                    {
-                                        DBAccess.GDBAccessObj.RollbackTransaction();
-                                    }
-
                                     TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                         Catalog.GetString("Database I/O Failure"),
                                         0);
@@ -240,11 +235,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                             
                             if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out Messages3))
                             {
-                                if (NewTransaction)
-                                {
-                                    DBAccess.GDBAccessObj.RollbackTransaction();
-                                }
-
                                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                     Catalog.GetString("Database I/O Failure"),
                                     0);
@@ -400,11 +390,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                             
                             if (!AGiftAccess.SubmitChanges(FMainDS.AGift, FTransaction, out Messages4))
                             {
-                                if (NewTransaction)
-                                {
-                                    DBAccess.GDBAccessObj.RollbackTransaction();
-                                }
-
                                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                     Catalog.GetString("Database I/O Failure"),
                                     0);
@@ -421,11 +406,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                             
                             if (!AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, FTransaction, out Messages5))
                             {
-                                if (NewTransaction)
-                                {
-                                    DBAccess.GDBAccessObj.RollbackTransaction();
-                                }
-
                                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                     Catalog.GetString("Database I/O Failure"),
                                     0);
@@ -479,6 +459,26 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                         ok = true;
                     }
+                    else
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                            Catalog.GetString("Database I/O Failure"),
+                            0);
+    
+                        AMessages.AddCollection(Messages7);
+                        
+                        return false;
+                    }
+                }
+                else
+                {
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Database I/O Failure"),
+                        0);
+
+                    AMessages.AddCollection(Messages6);
+                    
+                    return false;                   
                 }
 
                 sr.Close();

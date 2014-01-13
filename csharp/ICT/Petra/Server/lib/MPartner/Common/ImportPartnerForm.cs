@@ -533,9 +533,13 @@ namespace Ict.Petra.Server.MPartner.Import
                     NewPersonPartnerKey = CreatePerson(ref MainDS, NewFamilyPartnerKey, data);
                     CreateAddress(ref MainDS, data, NewFamilyPartnerKey);
 
-                    if(PartnerEditTDSAccess.SubmitChanges(MainDS) != TSubmitChangesResult.scrOK)
+                    try 
                     {
-                        string message = "There is some critical error when saving to the database";
+                       PartnerEditTDSAccess.SubmitChanges(MainDS); 
+                    } 
+                    catch (Exception Exc)
+                    {
+                        string message = "There is some critical error when saving to the database: " + Exc.ToString();
                         return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
                     }
 
@@ -574,10 +578,14 @@ namespace Ict.Petra.Server.MPartner.Import
 
                     // TODO ApplicationForms
 
-                    if(ConferenceApplicationTDSAccess.SubmitChanges(ConfDS) != TSubmitChangesResult.scrOK)
+                    try
                     {
-                        string message = "There is some critical error when saving to the database";
-                        return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
+                       ConferenceApplicationTDSAccess.SubmitChanges(ConfDS); 
+                    }
+                    catch (Exception Exc)
+                    {
+                        string message = "There is some critical error when saving to the database: " + Exc.ToString();
+                        return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";                        
                     }
 
                     // process Photo
