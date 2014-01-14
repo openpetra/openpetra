@@ -410,7 +410,7 @@ namespace {#NAMESPACE}
 {#IFDEF SHOWDETAILS OR GENERATEGETSELECTEDDETAILROW}
 
     /// <summary>
-    /// Gets the selected Data Row as a PBusiness record from the grid
+    /// Gets the selected Data Row as a {#DETAILTABLETYPE} record from the grid
     /// </summary>
     /// <returns>The selected row - or null if no row is selected</returns>
     public {#DETAILTABLETYPE}Row GetSelectedDetailRow()
