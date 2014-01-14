@@ -99,8 +99,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS.ARecurringJournal.Clear();
                 }
 
-                grdDetails.DataSource = null;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringJournal.DefaultView);
+                ShowData();
 
                 SetJournalDefaultView();
 
@@ -111,7 +110,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndContent(ALedgerNumber, ABatchNumber));
                 }
 
-                ShowData();
+                // Now set up the complete current filter
+                ApplyFilter();
             }
 
             SelectRowInGrid(1);

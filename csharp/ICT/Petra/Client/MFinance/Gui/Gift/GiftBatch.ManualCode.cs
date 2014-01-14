@@ -293,9 +293,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     if (SelectedRow != null)
                     {
+                        this.Cursor = Cursors.WaitCursor;
                         LoadTransactions(SelectedRow.LedgerNumber,
                             SelectedRow.BatchNumber,
                             SelectedRow.BatchStatus);
+                        this.Cursor = Cursors.Default;
                     }
 
                     this.tabGiftBatch.SelectedTab = this.tpgTransactions;

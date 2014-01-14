@@ -882,7 +882,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                 if (FCodeStorage.ManualFileExistsAndContains("void ApplyFilterManual(ref"))
                 {
-                    writer.Template.SetCodelet("APPLYFILTERMANUAL", "ApplyFilterManual(ref filter);" + Environment.NewLine);
+                    writer.Template.SetCodelet("APPLYFILTERMANUAL", "ApplyFilterManual(ref FCurrentActiveFilter);" + Environment.NewLine);
                 }
                 else
                 {
