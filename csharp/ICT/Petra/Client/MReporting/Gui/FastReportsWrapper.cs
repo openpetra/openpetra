@@ -107,6 +107,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         private void DesignReport(TRptCalculator ACalc)
         {
+            LoadReportParams(ACalc);
             FFastReportType.GetMethod("Design", new Type[0]).Invoke(FfastReportInstance, null);
         }
 
@@ -115,7 +116,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             if (FDataGetter(ACalc))
             {
                 LoadReportParams(ACalc);
-                //DesignReport(null, null);
+//              DesignReport(ACalc);
                 FFastReportType.GetMethod("Show", new Type[0]).Invoke(FfastReportInstance, null);
                 FPetraUtilsObject.UpdateParentFormEndOfReport();
             }

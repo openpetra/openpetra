@@ -328,6 +328,103 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         }
 
         /// <summary>
+        /// Collects the period opening / closing balances for the Account Detail report
+        /// </summary>
+        /// <param name="ALedgerFilter"></param>
+        /// <param name="AAccountCodeFilter"></param>
+        /// <param name="ACostCentreFilter"></param>
+        /// <param name="AStartPeriod"></param>
+        /// <param name="AEndPeriod"></param>
+        /// <param name="AInternational"></param>
+        /// <returns>DataTable</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable GetPeriodBalances(String ALedgerFilter,
+                    String AAccountCodeFilter,
+                    String ACostCentreFilter,
+                    Int32 AStartPeriod,
+                    Int32 AEndPeriod,
+                    Boolean AInternational)
+        {
+            Boolean FromStartOfYear = (AStartPeriod == 1);
+            if (!FromStartOfYear)
+            {
+                AStartPeriod -= 1; // I want the closing balance of the previous period.
+            }
+            String Query = "SELECT * FROM a_ledger WHERE " + ALedgerFilter;
+            DataTable LedgerTable = DBAccess.GDBAccessObj.SelectDT(Query, "Ledger", null);
+            Int32 FiancialYear = Convert.ToInt32(LedgerTable.Rows[0]["a_current_financial_year_i"]);
+
+            String BalanceField = (AInternational) ? "glmp.a_actual_intl_n" : "glmp.a_actual_base_n";
+            String StartBalanceField = (AInternational) ? "glm.a_start_balance_intl_n" : "glm.a_start_balance_base_n";
+
+            Query = "SELECT glm.a_cost_centre_code_c, glm.a_account_code_c, glmp.a_period_number_i, "
+                + StartBalanceField + " AS start_balance, "
+                + BalanceField + " AS balance "
+                + " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp"
+                + " WHERE glm." + ALedgerFilter
+                + " AND glm.a_year_i = " + FiancialYear
+                + AAccountCodeFilter
+                + ACostCentreFilter
+                + " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i"
+                + " AND glmp.a_period_number_i >= " + AStartPeriod
+                + " AND glmp.a_period_number_i <= " + AEndPeriod
+                + " ORDER BY glm.a_cost_centre_code_c, glm.a_account_code_c, glmp.a_period_number_i";
+            DataTable GlmTbl = DBAccess.GDBAccessObj.SelectDT(Query, "balances", null);
+            DataTable Results = new DataTable();
+            Results.Columns.Add(new DataColumn("a_cost_centre_code_c", typeof(string)));
+            Results.Columns.Add(new DataColumn("a_account_code_c", typeof(string)));
+            Results.Columns.Add(new DataColumn("OpeningBalance", typeof(Decimal)));
+            Results.Columns.Add(new DataColumn("ClosingBalance", typeof(Decimal)));
+
+            String CostCentre = "";
+            String AccountCode = "";
+            Decimal OpeningBalance = 0;
+            Decimal ClosingBalance = 0;
+            Int32 MaxPeriod = -1;
+            Int32 MinPeriod = 99;
+
+            // For each CostCentre / Account combination  I want just a single row, with the opening and closing balances,
+            // so I need to pre-process the stuff I've got in this table, and generate another table.
+
+            foreach (DataRow row in GlmTbl.Rows)
+            {
+                if ((row["a_cost_centre_code_c"].ToString() != CostCentre) || (row["a_account_code_c"].ToString() != AccountCode)) // a new CC/AC combination
+                {
+                    if (CostCentre != "" && AccountCode != "") // Add a new row, but not if there's no data yet.
+                    {
+                        DataRow NewRow = Results.NewRow();
+                        NewRow["a_cost_centre_code_c"] = CostCentre;
+                        NewRow["a_account_code_c"] = AccountCode;
+                        NewRow["OpeningBalance"] = OpeningBalance;
+                        NewRow["ClosingBalance"] = ClosingBalance;
+                        Results.Rows.Add(NewRow);
+                    }
+
+                    CostCentre = row["a_cost_centre_code_c"].ToString();
+                    AccountCode = row["a_account_code_c"].ToString();
+                    MaxPeriod = -1;
+                    MinPeriod = 99;
+                }
+
+                Int32 ThisPeriod = Convert.ToInt32(row["a_period_number_i"]);
+
+                if (ThisPeriod < MinPeriod)
+                {
+                    MinPeriod = ThisPeriod;
+                    OpeningBalance = (FromStartOfYear) ? Convert.ToDecimal(row["start_balance"]) : Convert.ToDecimal(row["balance"]);
+                }
+
+                if (ThisPeriod > MaxPeriod)
+                {
+                    MaxPeriod = ThisPeriod;
+                    ClosingBalance = Convert.ToDecimal(row["balance"]);
+                }
+            }
+
+            return Results;
+        }
+
+        /// <summary>
         /// Returns a DataSet to the client for use in client-side reporting
         /// </summary>
         [RequireModulePermission("FINANCE-1")]

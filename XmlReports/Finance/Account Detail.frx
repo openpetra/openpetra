@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="11/28/2013 16:28:55" ReportInfo.CreatorVersion="2013.4.4.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="01/14/2014 11:51:17" ReportInfo.CreatorVersion="2013.4.4.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -46,6 +46,13 @@ namespace FastReport
             +(String)Report.GetColumnValue(&quot;a_transaction.a_analysis_type_description_c&quot;);
         default: return &quot;Group&quot;;
       }
+    }
+    
+    Decimal OpeningBalance()
+    {
+      String Account = (String)Report.GetColumnValue(&quot;a_transaction.a_account_code_c&quot;);
+      string CostCentre = (String)Report.GetColumnValue(&quot;a_transaction.a_cost_centre_code_c&quot;);
+      return 0;
     }
   }
 }
@@ -253,10 +260,17 @@ namespace FastReport
       <Column Name="s_modified_by_c" DataType="System.String"/>
       <Column Name="s_modification_id_t" DataType="System.DateTime"/>
     </TableDataSource>
+    <TableDataSource Name="balances" ReferenceName="balances" DataType="System.Int32" Enabled="true">
+      <Column Name="a_cost_centre_code_c" DataType="System.String"/>
+      <Column Name="a_account_code_c" DataType="System.String"/>
+      <Column Name="OpeningBalance" DataType="System.Decimal"/>
+      <Column Name="ClosingBalance" DataType="System.Decimal"/>
+    </TableDataSource>
     <Relation Name="a_account_a_transaction" ParentDataSource="a_account" ChildDataSource="a_transaction" ParentColumns="a_account_code_c" ChildColumns="a_account_code_c" Enabled="true"/>
     <Relation Name="a_costCentre_a_transaction" ParentDataSource="a_costCentre" ChildDataSource="a_transaction" ParentColumns="a_cost_centre_code_c" ChildColumns="a_cost_centre_code_c" Enabled="true"/>
     <Relation Name="a_trans_anal_attrib_a_transaction" ParentDataSource="a_trans_anal_attrib" ChildDataSource="a_transaction" ParentColumns="a_ledger_number_i&#13;&#10;a_batch_number_i&#13;&#10;a_journal_number_i&#13;&#10;a_transaction_number_i" ChildColumns="a_ledger_number_i&#13;&#10;a_batch_number_i&#13;&#10;a_journal_number_i&#13;&#10;a_transaction_number_i" Enabled="true"/>
     <Relation Name="a_analysis_type_a_trans_anal_attrib" ParentDataSource="a_analysis_type" ChildDataSource="a_trans_anal_attrib" ParentColumns="a_analysis_type_code_c" ChildColumns="a_analysis_type_code_c" Enabled="true"/>
+    <Relation Name="balances_a_transaction" ParentDataSource="balances" ChildDataSource="a_transaction" ParentColumns="a_cost_centre_code_c&#13;&#10;a_account_code_c" ChildColumns="a_cost_centre_code_c&#13;&#10;a_account_code_c" Enabled="true"/>
     <Parameter Name="param_diff_period_i" DataType="System.Int32"/>
     <Parameter Name="param_account_hierarchy_c" DataType="System.String"/>
     <Parameter Name="param_currency" DataType="System.String"/>
@@ -366,11 +380,15 @@ namespace FastReport
             </Highlight>
           </TextObject>
           <TextObject Name="Text26" Left="103.95" Top="18.9" Width="94.5" Height="18.9" Text="Balance :" HorzAlign="Right" Font="Arial, 9pt, style=Italic"/>
-          <LineObject Name="Line2" Left="378" Width="-283.5" Border.Width="1.5"/>
           <TextObject Name="Text32" Width="9.45" Height="18.9" TextFill.Color="White"/>
           <TextObject Name="Text33" Left="9.45" Width="9.45" Height="18.9" TextFill.Color="White"/>
           <TextObject Name="Text34" Top="18.9" Width="9.45" Height="18.9" TextFill.Color="White"/>
           <TextObject Name="Text35" Left="9.45" Top="18.9" Width="9.45" Height="18.9" TextFill.Color="White"/>
+          <TextObject Name="Text54" Left="453.6" Top="18.9" Width="103.95" Height="18.9" Text="[a_transaction.balances.OpeningBalance]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" Font="Arial, 9pt, style=Bold"/>
+          <TextObject Name="Text55" Left="557.55" Top="18.9" Width="103.95" Height="18.9" Text="[a_transaction.balances.ClosingBalance]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" Font="Arial, 9pt, style=Bold"/>
+          <TextObject Name="Text52" Left="453.6" Width="103.95" Height="18.9" Text="Opening Balance" HorzAlign="Right" Font="Arial, 8pt, style=Bold"/>
+          <TextObject Name="Text53" Left="557.55" Width="103.95" Height="18.9" Text="Closing Balance" HorzAlign="Right" Font="Arial, 8pt, style=Bold"/>
+          <LineObject Name="Line2" Left="661.5" Width="-567" Border.Width="1.5"/>
         </GroupFooterBand>
       </GroupHeaderBand>
       <GroupFooterBand Name="GroupFooter1" Top="221.78" Width="718.2" Height="47.25" KeepChild="true" KeepWithData="true">

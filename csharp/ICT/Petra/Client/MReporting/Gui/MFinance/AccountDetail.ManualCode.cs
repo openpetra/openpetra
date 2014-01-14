@@ -217,6 +217,23 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             GLReportingTDS ReportDs = TRemote.MFinance.Reporting.WebConnectors.GetReportingDataSet(Csv);
 
             //
+            // If I'm reporting period, 
+            // I want to include opening and closing balances for each Cost Centre / Account, in the selected currency:
+            if (pm.Get("param_period").ToBool() == true)
+            {
+                DataTable Balances = TRemote.MFinance.Reporting.WebConnectors.GetPeriodBalances(
+                    LedgerFilter,
+                    AccountCodeFilter,
+                    CostCentreFilter,
+                    pm.Get("param_start_period_i").ToInt32(),
+                    pm.Get("param_end_period_i").ToInt32(),
+                    pm.Get("param_currency").ToString() == "International"
+                    );
+                ReportDs.Merge(Balances);
+                FFastReportsPlugin.RegisterData(Balances, "balances");
+            }
+
+
             // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
             {
                 ALedgerRow Row = ReportDs.ALedger[0];
