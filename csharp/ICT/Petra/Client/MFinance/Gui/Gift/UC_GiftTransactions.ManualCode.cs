@@ -106,7 +106,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Enable buttons accordingly
             btnDelete.Enabled = (!FPetraUtilsObject.DetailProtectedMode && !ViewMode && ABatchStatus == MFinanceConstants.BATCH_UNPOSTED);
-            btnDeleteAll.Enabled = ((FFilterPanelControls.BaseFilter == FCurrentActiveFilter) && !FPetraUtilsObject.DetailProtectedMode && !ViewMode && ABatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+            btnDeleteAll.Enabled =
+                ((FFilterPanelControls.BaseFilter ==
+                  FCurrentActiveFilter) && !FPetraUtilsObject.DetailProtectedMode && !ViewMode && ABatchStatus == MFinanceConstants.BATCH_UNPOSTED);
             btnNewDetail.Enabled = (!FPetraUtilsObject.DetailProtectedMode && !ViewMode && ABatchStatus == MFinanceConstants.BATCH_UNPOSTED);
             btnNewGift.Enabled = (!FPetraUtilsObject.DetailProtectedMode && !ViewMode && ABatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
@@ -1880,11 +1882,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
         {
-            btnDeleteAll.Enabled = (FFilterPanelControls.BaseFilter == FCurrentActiveFilter) &&
-                                (grdDetails.Rows.Count > 1) && 
-                                !FPetraUtilsObject.DetailProtectedMode && 
-                                !ViewMode && 
-                                (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+            btnDeleteAll.Enabled = (FFilterPanelControls.BaseFilter == FCurrentActiveFilter)
+                                   && (grdDetails.Rows.Count > 1)
+                                   && !FPetraUtilsObject.DetailProtectedMode
+                                   && !ViewMode
+                                   && (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED);
         }
 
         /// <summary>

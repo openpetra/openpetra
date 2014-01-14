@@ -1110,7 +1110,8 @@ namespace Ict.Tools.DevelopersAssistant
                 // Ready to run - overriding the usual root location with the specified folder
                 RunSimpleNantTarget(task, dlg.SelectedPath, ref NumFailures, ref NumWarnings);
             }
-            else if (task.Item == NantTask.TaskItem.test || task.Item == NantTask.TaskItem.testWithoutDisplay || task.Item == NantTask.TaskItem.mainNavigationTests)
+            else if ((task.Item == NantTask.TaskItem.test) || (task.Item == NantTask.TaskItem.testWithoutDisplay)
+                     || (task.Item == NantTask.TaskItem.mainNavigationTests))
             {
                 BuildConfiguration dbBldConfig = new BuildConfiguration(txtBranchLocation.Text, _localSettings);
                 string curConfig = dbBldConfig.CurrentConfig;
@@ -1121,12 +1122,16 @@ namespace Ict.Tools.DevelopersAssistant
 
                 if (String.Compare(dbName, "nantTest", true) != 0)
                 {
-                    string msg = String.Format("You are about to run tests using the '{0}' database.  This is a friendly reminder that all the data in the database will be lost.\r\n\r\n", dbName);
-                    msg += "Click OK to continue, or 'Cancel' if you want to select a different database for testing (by moving to the 'database' tab of the Assistant).\r\n\r\n";
+                    string msg = String.Format(
+                        "You are about to run tests using the '{0}' database.  This is a friendly reminder that all the data in the database will be lost.\r\n\r\n",
+                        dbName);
+                    msg +=
+                        "Click OK to continue, or 'Cancel' if you want to select a different database for testing (by moving to the 'database' tab of the Assistant).\r\n\r\n";
                     msg += "The best advice is to create a specific database for testing purposes using PgAdmin or equivalent.\r\n\r\n";
                     msg += "Tip: if you call your test database 'nantTest', it will be used without displaying this message!";
 
-                    if (MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Cancel)
+                    if (MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.OKCancel,
+                            MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Cancel)
                     {
                         return;
                     }

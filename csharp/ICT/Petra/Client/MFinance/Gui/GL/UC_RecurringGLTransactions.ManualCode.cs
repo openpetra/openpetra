@@ -1582,7 +1582,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void DataSource_ListChanged(object sender, ListChangedEventArgs e)
         {
-            btnDeleteAll.Enabled = (FFilterPanelControls.BaseFilter == FCurrentActiveFilter) && (grdDetails.Rows.Count > 1) && !FPetraUtilsObject.DetailProtectedMode;
+            btnDeleteAll.Enabled = (FFilterPanelControls.BaseFilter == FCurrentActiveFilter) && (grdDetails.Rows.Count > 1)
+                                   && !FPetraUtilsObject.DetailProtectedMode;
         }
 
         /// <summary>
