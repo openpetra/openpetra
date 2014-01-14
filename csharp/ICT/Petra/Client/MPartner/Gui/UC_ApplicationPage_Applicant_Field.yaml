@@ -33,11 +33,11 @@ RootNode:
             Multiline: true
             ScrollBars: Vertical
             
-        cmbApplicationStatus: {Label=Application Status, List=ApplicantStatusList, DataField=PmGeneralApplication.GenApplicationStatus, ColSpan=2}
+        cmbApplicationStatus: {Label=Application Status, List=ApplicantStatusList, OnChange=ApplicationStatusChanged, DataField=PmGeneralApplication.GenApplicationStatus, ColSpan=2}
         txtReason: {Label=Reason, DataField=PmGeneralApplication.GenApplicationHoldReason, ColSpan=2, Stretch=horizontally}
         dtpCancellationDate: {Label= Cancellation Date, DataField=PmGeneralApplication.GenAppCancelled}
         dtpAcceptanceDate: {Label=Sending Field Acceptance Date, DataField=PmGeneralApplication.GenAppSendFldAcceptDate}
-        chkAcceptedByReceivingField: {Label=Accepted by Receiving Field, DataField=PmGeneralApplication.GenAppSrvFldAccept, OnChange=EnableDisableReceivingFieldAcceptanceDate}
+        chkAcceptedByReceivingField: {Label=Accepted by Receiving Field, DataField=PmGeneralApplication.GenAppSrvFldAccept, OnChange=ReceivingFieldAcceptanceChanged}
         dtpFieldAcceptance: {Label=Receiving Field Acceptance Date, DataField=PmGeneralApplication.GenAppRecvgFldAccept, Validation=true}
         
         cmbApplicationCurrency: {Label=Application Currency, List=CurrencyCodeList, DataField=PmGeneralApplication.GenAppCurrencyCode, OnChange=ApplicationCurrencyChanged, ColSpan=2}
