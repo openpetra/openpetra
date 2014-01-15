@@ -1226,10 +1226,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (motivationDetail != null)
                 {
                     giftDetail.AccountCode = motivationDetail.AccountCode.ToString();
+                    giftDetail.MotivationDetailDescription = motivationDetail.MotivationDetailDesc; 
                 }
                 else
                 {
                     giftDetail.SetAccountCodeNull();
+                    giftDetail.SetMotivationDetailDescriptionNull();
                 }
 
                 giftDetail.DateEntered = giftRow.DateEntered;
