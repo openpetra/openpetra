@@ -1046,7 +1046,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                  */
                 #region Calculations
 
-                // Determine Gift Receipting settings
+                // Determine Gift Processing settings
                 GiftReceiptingDefaults = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
                     TSystemDefaultsCache.PARTNER_GIFTRECEIPTINGDEFAULTS);
 

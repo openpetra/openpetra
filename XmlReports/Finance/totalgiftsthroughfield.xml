@@ -3,7 +3,7 @@
 <reports>
   <report id="TotalGiftsThroughField">
     <description>
-      This report gives a summary of all gifts which have been entered through your gift receipting system,
+      This report gives a summary of all gifts which have been entered through your gift processing system,
       both for your own field and for other fields. The report shows the gifts for workers and the gifts for
       Fields, analysed by month, by amount and quantity, with totals. You can produce this report for up to
       the last 12 years.
