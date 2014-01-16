@@ -36,6 +36,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Exceptions;
+using Ict.Common.Data.Exceptions;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;

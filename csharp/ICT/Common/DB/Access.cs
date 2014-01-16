@@ -804,8 +804,6 @@ namespace Ict.Common.DB
             catch (Exception exp)
             {
                 LogExceptionAndThrow(exp, ACommandText, AParametersArray, "Error creating Command. The command was: ");
-
-                throw;
             }
 
             FLastDBAction = DateTime.Now;
@@ -1275,7 +1273,7 @@ namespace Ict.Common.DB
 
             if (this.Transaction != null)
             {
-                throw new Exception("BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction " +
+                throw new EOPDBException("BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction " +
                     "as concurrent transactions are not supported");
             }
 
@@ -1354,9 +1352,7 @@ namespace Ict.Common.DB
                     }
                     catch (Exception e2)
                     {
-                        TLogging.Log("BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
-
-                        throw;
+                        LogExceptionAndThrow(e2, "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
                     }
 
                     return BeginTransaction(ARetryAfterXSecWhenUnsuccessful);
@@ -1386,12 +1382,12 @@ namespace Ict.Common.DB
 
             if (FDataBaseRDBMS == null)
             {
-                throw new Exception("DBAccess BeginTransaction: FDataBaseRDBMS is null");
+                throw new EOPDBException("DBAccess BeginTransaction: FDataBaseRDBMS is null");
             }
 
             if (this.Transaction != null)
             {
-                throw new Exception("BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction " +
+                throw new EOPDBException("BeginTransaction would overwrite existing transaction, you must use GetNewOrExistingTransaction " +
                     "as concurrent transactions are not supported");
             }
 
@@ -1475,9 +1471,7 @@ namespace Ict.Common.DB
                     }
                     catch (Exception e2)
                     {
-                        TLogging.Log("BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
-
-                        throw;
+                        LogExceptionAndThrow(e2, "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
                     }
 
                     return BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful);
@@ -1961,11 +1955,6 @@ namespace Ict.Common.DB
                     {
                         ReturnValue = ExecuteScalar(ASqlStatement, EnclosingTransaction, AParametersArray);
                     }
-                    catch (Exception)
-                    {
-                        // Exception logging occurs already inside the other ExecuteScalar overload, so we don't need to do it here!
-                        throw;
-                    }
                     finally
                     {
                         CommitTransaction();
@@ -2037,7 +2026,7 @@ namespace Ict.Common.DB
 
                         if (ReturnValue == null)
                         {
-                            throw new Exception("Execute Scalar returned no value");
+                            throw new EOPDBException("Execute Scalar returned no value");
                         }
 
                         if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
@@ -2049,6 +2038,10 @@ namespace Ict.Common.DB
                         {
                             CommitTransaction();
                         }
+                    }
+                    catch (EOPDBException exp)
+                    {
+                        LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error executing scalar SQL statement.");
                     }
                     catch (Exception exp)
                     {
@@ -2579,7 +2572,14 @@ namespace Ict.Common.DB
 
             if (AThrowExceptionAfterLogging)
             {
-                throw AException;
+                if (!String.IsNullOrEmpty(AContext)) 
+                {
+                    throw new EOPDBException(" - Context: " + AContext, AException);
+                }
+                else
+                {
+                    throw new EOPDBException(AException);
+                }
             }
         }
     }

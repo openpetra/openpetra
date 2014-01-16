@@ -359,25 +359,41 @@ namespace Ict.Common
         {
         }
 
+        #region Remoting and serialization
+        
         /// <summary>
-        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info">The object that holds the serialized object data.</param>
-        /// <param name="context">The contextual information about the source or destination.</param>
-        public EHelpLauncherException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EHelpLauncherException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
-
+        
         /// <summary>
-        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info">The <see cref="SerializationInfo" /> that holds the
-        /// serialized object data about the exception being thrown. </param>
-        /// <param name="context">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
         {
-            base.GetObjectData(info, context);
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
         }
+    
+        #endregion
     }
+    
     #endregion
 }

@@ -29,6 +29,8 @@ using System.Windows.Forms;
 using System.Xml;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Exceptions;
+using Ict.Common.Data.Exceptions;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Verification;

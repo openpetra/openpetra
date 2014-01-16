@@ -23,16 +23,17 @@
 //
 using System;
 using System.Windows.Forms;
-using Ict.Common.Verification;
+using System.Diagnostics;
+using Ict.Common;
 using Ict.Common.Exceptions;
+using Ict.Common.Data;
+using Ict.Common.Data.Exceptions;
+using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MPartner;
-using System.Diagnostics;
 using GNU.Gettext;
-using Ict.Common;
-using Ict.Common.Data;
-using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.App.Gui
 {

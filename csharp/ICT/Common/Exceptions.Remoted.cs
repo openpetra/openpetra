@@ -36,18 +36,241 @@ using System.Runtime.Serialization;
 
 namespace Ict.Common.Exceptions
 {
-    #region OutOfRangeException
+    #region EOPException
 
     /// <summary>
-    /// Thrown if a value is out of range
+    /// Base Class for OpenPetra-specific Exceptions.
+    /// </summary>
+    /// <remarks> 
+    /// *** *** *** *** ALL CUSTOM EXCEPTIONS THAT ARE THROWN BY ANY OF OpenPetra's CLASSES
+    /// MUST DERIVE FROM THIS EXCEPTION!!! *** *** *** *** *** *** *** *** *** *** *** *** 
+    /// </remarks>
+    [Serializable()]
+    public class EOPException : System.Exception
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EOPException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public EOPException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EOPException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+        
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EOPException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+        
+        #endregion
+    }
+    
+    #endregion
+    
+    #region EOPAppException
+    
+    /// <summary>
+    /// Base Class for OpenPetra-specific application-level Exceptions.
     /// </summary>
     [Serializable()]
-    public class EOutOfRangeException : ApplicationException
+    public class EOPAppException : EOPException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EOPAppException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EOPAppException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EOPAppException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EOPAppException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+                
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+        
+        #endregion
+    }
+    
+    #endregion        
+
+    #region EOPDBException
+    
+    /// <summary>
+    /// Base Class for OpenPetra-specific data access-level and database-level Exceptions.
+    /// </summary>
+    [Serializable()]
+    public class EOPDBException : EOPException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EOPDBException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EOPDBException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a a reference to the inner <see cref="Exception" /> 
+        /// that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EOPDBException(Exception AInnerException) : base("Database Access Exception occured", AInnerException)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EOPDBException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+        
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EOPDBException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+        
+        #endregion
+    }
+    
+    #endregion
+ 
+    #region EOutOfRangeException
+
+    /// <summary>
+    /// Thrown if a value is out of range.
+    /// </summary>
+    [Serializable()]
+    public class EOutOfRangeException : EOPAppException
     {
         private String FCaption;
 
         /// <summary>
-        /// Caption
+        /// Caption.
         /// </summary>
         public String Caption
         {
@@ -63,363 +286,574 @@ namespace Ict.Common.Exceptions
         }
 
         /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="msg"></param>
-        public EOutOfRangeException(String msg) : base(msg)
-        {
-        }
-
-        /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public EOutOfRangeException() : base()
         {
         }
-
+        
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public EOutOfRangeException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EOutOfRangeException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified  error message and <see cref="Caption" />.
         /// </summary>
-        /// <param name="msg"></param>
-        /// <param name="caption"></param>
-        public EOutOfRangeException(String msg, String caption) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="ACaption">Caption.</param>
+        public EOutOfRangeException(String AMessage, String ACaption) : base(AMessage)
         {
-            FCaption = caption;
+            FCaption = ACaption;
+        }
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EOutOfRangeException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+        
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EOutOfRangeException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+            FCaption = AInfo.GetString("Caption");            
         }
 
         /// <summary>
-        /// needed for serialization
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
         {
-            base.GetObjectData(info, context);
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            AInfo.AddValue("Caption", FCaption);            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);            
         }
+        
+        #endregion
     }
+    
     #endregion
 
-    #region PagedTableNoRecordsException
+    #region EPagedTableNoRecordsException
 
     /// <summary>
-    /// Thrown by TPagedDataSet class if no records where found by the query
+    /// Thrown by the TPagedDataSet Class if no records where found by the query.
     /// </summary>
     [Serializable()]
-    public class EPagedTableNoRecordsException : ApplicationException
+    public class EPagedTableNoRecordsException : EOPAppException
     {
         /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public EPagedTableNoRecordsException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="msg"></param>
-        public EPagedTableNoRecordsException(String msg) : base(msg)
-        {
-        }
-
-        /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public EPagedTableNoRecordsException() : base()
         {
         }
 
         /// <summary>
-        /// needed for remoting, serialization
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EPagedTableNoRecordsException(String AMessage) : base(AMessage)
         {
-            base.GetObjectData(info, context);
         }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EPagedTableNoRecordsException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+        
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EPagedTableNoRecordsException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+        
+        #endregion
     }
+    
     #endregion
 
     #region PagedTableNoSuchPageException
 
     /// <summary>
-    /// Thrown by TPagedDataSet class if a page was requested that does not exist
+    /// Thrown by the TPagedDataSet Class if a page was requested that does not exist.
     /// </summary>
     [Serializable()]
-    public class EPagedTableNoSuchPageException : ApplicationException
+    public class EPagedTableNoSuchPageException : EOPAppException
     {
         /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public EPagedTableNoSuchPageException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="msg"></param>
-        public EPagedTableNoSuchPageException(String msg) : base(msg)
-        {
-        }
-
-        /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public EPagedTableNoSuchPageException() : base()
         {
         }
 
         /// <summary>
-        /// needed for remoting, serialization
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EPagedTableNoSuchPageException(String AMessage) : base(AMessage)
         {
-            base.GetObjectData(info, context);
         }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EPagedTableNoSuchPageException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+        
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EPagedTableNoSuchPageException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+        
+        #endregion
     }
+    
     #endregion
 
     #region ECachedDataTableNotImplementedException
 
     /// <summary>
-    /// Thrown by a Cache Instantiator class if a Cached DataTable was requested that does not exist
+    /// Thrown by a Cache Instantiator Class if a Cached DataTable was requested that does not exist.
     /// </summary>
     [Serializable()]
-    public class ECachedDataTableNotImplementedException : ApplicationException
+    public class ECachedDataTableNotImplementedException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public ECachedDataTableNotImplementedException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public ECachedDataTableNotImplementedException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public ECachedDataTableNotImplementedException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public ECachedDataTableNotImplementedException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ECachedDataTableNotImplementedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+        
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public ECachedDataTableNotImplementedException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 
         /// <summary>
-        /// needed for remoting, serialization
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
         {
-            base.GetObjectData(info, context);
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
         }
+        
+        #endregion
     }
+    
     #endregion
 
     #region ECachedDataTableReturnedNoDataException
 
     /// <summary>
-    /// Thrown by a Cache Instantiator class if a Cached DataTable that was requested returned no DataTable object
+    /// Thrown by a Cache Instantiator Class if a Cached DataTable that was requested returned no DataTable object.
     /// </summary>
     [Serializable()]
-    public class ECachedDataTableReturnedNothingException : ApplicationException
+    public class ECachedDataTableReturnedNothingException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public ECachedDataTableReturnedNothingException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public ECachedDataTableReturnedNothingException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public ECachedDataTableReturnedNothingException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public ECachedDataTableReturnedNothingException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ECachedDataTableReturnedNothingException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+        
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public ECachedDataTableReturnedNothingException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 
         /// <summary>
-        /// needed for remoting, serialization
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
         {
-            base.GetObjectData(info, context);
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
         }
+        
+        #endregion
     }
+    
     #endregion
 
     #region ECachedDataTableTableNameMismatchException
 
     /// <summary>
-    /// Thrown by a Cache Instantiator class if a Cached DataTable that was requested is named differently than the Enum
+    /// Thrown by a Cache Instantiator Class if a Cached DataTable that was requested is named differently than the Enum.
     /// </summary>
     [Serializable()]
-    public class ECachedDataTableTableNameMismatchException : ApplicationException
+    public class ECachedDataTableTableNameMismatchException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public ECachedDataTableTableNameMismatchException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public ECachedDataTableTableNameMismatchException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public ECachedDataTableTableNameMismatchException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public ECachedDataTableTableNameMismatchException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ECachedDataTableTableNameMismatchException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+        
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public ECachedDataTableTableNameMismatchException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 
         /// <summary>
-        /// needed for remoting, serialization
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
         {
-            base.GetObjectData(info, context);
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
         }
+        
+        #endregion
     }
+    
     #endregion
 
     #region ELoginFailedServerTooBusyException
 
     /// <summary>
-    /// exception is thrown if login was not possible, because the server was too busy
+    /// Thrown if login was not possible because the Server was too busy.
     /// </summary>
     [Serializable()]
-    public class ELoginFailedServerTooBusyException : ApplicationException
+    public class ELoginFailedServerTooBusyException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public ELoginFailedServerTooBusyException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public ELoginFailedServerTooBusyException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public ELoginFailedServerTooBusyException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public ELoginFailedServerTooBusyException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ELoginFailedServerTooBusyException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+        
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public ELoginFailedServerTooBusyException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 
         /// <summary>
-        /// needed for remoting, serialization
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
         {
-            base.GetObjectData(info, context);
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
         }
+        
+        #endregion
     }
+    
     #endregion
 
     #region ESecurityAccessDeniedException
 
     /// <summary>
-    /// Base class for all Security Exceptions
+    /// Base Class for all Security Exceptions.
     /// </summary>
     [Serializable()]
-    public class ESecurityAccessDeniedException : ApplicationException
+    public class ESecurityAccessDeniedException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public ESecurityAccessDeniedException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public ESecurityAccessDeniedException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public ESecurityAccessDeniedException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public ESecurityAccessDeniedException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ESecurityAccessDeniedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+        
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public ESecurityAccessDeniedException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 
         /// <summary>
-        /// needed for remoting, serialization
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
         {
-            base.GetObjectData(info, context);
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
         }
+        
+        #endregion
     }
+    
     #endregion
 
     #region ESecurityDBTableAccessDeniedException
 
     /// <summary>
-    /// Thrown by TDataBasePetra class if the user doesn't have enough rights to execute the query
+    /// Thrown by the TDataBase Class if the user doesn't have enough rights to execute the query.
     /// </summary>
     [Serializable()]
     public class ESecurityDBTableAccessDeniedException : ESecurityAccessDeniedException
@@ -459,186 +893,291 @@ namespace Ict.Common.Exceptions
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public ESecurityDBTableAccessDeniedException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public ESecurityDBTableAccessDeniedException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public ESecurityDBTableAccessDeniedException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public ESecurityDBTableAccessDeniedException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ESecurityDBTableAccessDeniedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
-            FDBTable = info.GetString("DBTable");
-            FAccessRight = info.GetString("AccessRight");
         }
-
+        
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message, access richt and Database Table.
         /// </summary>
-        /// <param name="msg"></param>
-        /// <param name="AAccessRight"></param>
-        /// <param name="ADBTable"></param>
-        public ESecurityDBTableAccessDeniedException(String msg, String AAccessRight, String ADBTable) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AAccessRight">Access right.</param>
+        /// <param name="ADBTable">Database Table.</param>
+        public ESecurityDBTableAccessDeniedException(String AMessage, String AAccessRight, String ADBTable) : base(AMessage)
         {
             FAccessRight = AAccessRight;
             FDBTable = ADBTable;
         }
 
+        #region Remoting and serialization
+        
         /// <summary>
-        /// needed for remoting, serialization
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public ESecurityDBTableAccessDeniedException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
-            base.GetObjectData(info, context);
-            info.AddValue("DBTable", FDBTable);
-            info.AddValue("AccessRight", FAccessRight);
+            FDBTable = AInfo.GetString("DBTable");
+            FAccessRight = AInfo.GetString("AccessRight");
         }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {            
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            AInfo.AddValue("DBTable", FDBTable);
+            AInfo.AddValue("AccessRight", FAccessRight);
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);            
+        }
+        
+        #endregion        
     }
+    
     #endregion
 
     #region ESecurityScreenAccessDeniedException
 
     /// <summary>
-    /// Thrown if a Petra screen (WinForm) cannot be opened for security reasons
+    /// Thrown if an OpenPetra screen (WinForm) cannot be opened for security reasons.
     /// </summary>
     [Serializable()]
     public class ESecurityScreenAccessDeniedException : ESecurityAccessDeniedException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public ESecurityScreenAccessDeniedException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public ESecurityScreenAccessDeniedException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public ESecurityScreenAccessDeniedException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public ESecurityScreenAccessDeniedException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ESecurityScreenAccessDeniedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+        
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public ESecurityScreenAccessDeniedException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 
         /// <summary>
-        /// needed for remoting, serialization
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
         {
-            base.GetObjectData(info, context);
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
         }
+        
+        #endregion
     }
+    
     #endregion
 
     #region ESecurityModuleAccessDeniedException
 
     /// <summary>
-    /// Thrown if a Petra User has no rights for a certain Security Module
+    /// Thrown if an OpenPetra User has no rights for a certain Security Module.
     /// </summary>
     [Serializable()]
     public class ESecurityModuleAccessDeniedException : ESecurityAccessDeniedException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public ESecurityModuleAccessDeniedException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public ESecurityModuleAccessDeniedException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public ESecurityModuleAccessDeniedException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public ESecurityModuleAccessDeniedException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ESecurityModuleAccessDeniedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+               
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public ESecurityModuleAccessDeniedException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 
         /// <summary>
-        /// needed for remoting, serialization
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
         {
-            base.GetObjectData(info, context);
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
         }
+        
+        #endregion
     }
+    
     #endregion
 
     #region ESecurityGroupAccessDeniedException
 
     /// <summary>
-    /// Thrown if a Petra User has no rights for a certain Security Group
+    /// Thrown if an OpenPetra User has no rights for a certain Security Group.
     /// </summary>
     [Serializable()]
     public class ESecurityGroupAccessDeniedException : ESecurityAccessDeniedException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public ESecurityGroupAccessDeniedException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public ESecurityGroupAccessDeniedException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public ESecurityGroupAccessDeniedException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public ESecurityGroupAccessDeniedException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ESecurityGroupAccessDeniedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+        
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public ESecurityGroupAccessDeniedException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 
         /// <summary>
-        /// needed for remoting, serialization
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
         {
-            base.GetObjectData(info, context);
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
         }
+        
+        #endregion
     }
+    
     #endregion
-}
+ }

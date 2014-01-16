@@ -30,6 +30,8 @@ using System.Data;
 using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Data.Exceptions;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 
 namespace Ict.Common.Data
@@ -242,8 +244,8 @@ namespace Ict.Common.Data
 
             if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(query, ATransaction, parameters.ToArray()))
             {
-                throw new Exception("problems inserting a row");
-            }
+                throw new EDBSubmitException("[TTypedDataAccess.InsertRow] Problems INSERTing a row", eSubmitChangesOperations.eInsert);
+            }                
 
             DateTime LastModificationId;
             string LastModifiedBy;
@@ -341,14 +343,14 @@ namespace Ict.Common.Data
                     // check if modification id has been changed and committed to the database, but AcceptChanges has not been applied
                     if (OriginalModificationID != CurrentModificationID)
                     {
-                        throw new Exception(
-                            "Developer should fix this: Forgot to call AcceptChanges on table " + DBTableName);
+                        throw new EDBSubmitException(
+                            "[TTypedDataAccess.UpdateRow] Developer should fix this: Forgot to call AcceptChanges on table " + DBTableName, eSubmitChangesOperations.eUpdate);
                     }
 
                     if (LastModificationId != OriginalModificationID)
                     {
                         throw new EDBConcurrencyException(
-                            "Cannot update row of table " + DBTableName + " because the row has been edited by user " + LastModifiedBy,
+                            "[TTypedDataAccess.UpdateRow] Cannot update row of table " + DBTableName + " because the row has been edited by user " + LastModifiedBy,
                             "update",
                             DBTableName,
                             LastModifiedBy,
@@ -363,12 +365,12 @@ namespace Ict.Common.Data
 
                     if (RowsChanged == 0)
                     {
-                        throw new Exception("cannot UPDATE row due to problems most likely with the timestamp");
+                        throw new EDBSubmitException("[TTypedDataAccess.UpdateRow] Cannot UPDATE row due to problems most likely with the timestamp", eSubmitChangesOperations.eUpdate);
                     }
                 }
                 else
                 {
-                    throw new EDBConcurrencyRowDeletedException("Cannot update row of table " + DBTableName + " because the row has been deleted.",
+                    throw new EDBConcurrencyRowDeletedException("[TTypedDataAccess.UpdateRow] Cannot update row of table " + DBTableName + " because the row has been deleted.",
                         "update",
                         DBTableName,
                         "",
@@ -1146,8 +1148,8 @@ namespace Ict.Common.Data
                 else
                 {
                     // cannot guarantuee for correct result; probably a bug
-                    throw new Exception(
-                        "TTypedDataAccess.NotEquals: cannot compare types " + OriginalValue.GetType().ToString() + " and " +
+                    throw new EOPDBTypedDataAccessException(
+                        "[TTypedDataAccess.NotEquals]: Cannot compare types " + OriginalValue.GetType().ToString() + " and " +
                         CurrentValue.GetType().ToString());
                 }
             }
@@ -2199,96 +2201,75 @@ namespace Ict.Common.Data
             for (RowCount = 0; (RowCount != ATable.Rows.Count); RowCount++)
             {
                 DataRow TheRow = ATable.Rows[RowCount];
-                try
+               
+                if ((TheRow.RowState == DataRowState.Added) && ((ASelectedOperations & eSubmitChangesOperations.eInsert) != 0))
                 {
-                    if ((TheRow.RowState == DataRowState.Added) && ((ASelectedOperations & eSubmitChangesOperations.eInsert) != 0))
+                    bool TreatRowAsAdded = false;
+
+                    if (ASequenceField.Length > 0)
                     {
-                        bool TreatRowAsAdded = false;
+                        // only insert next sequence value if the field has negative value.
+                        // this is needed when creating location 0 for a new site/ledger
+                        if (Convert.ToInt64(TheRow[ASequenceField]) < 0)
+                        {
+                            // accept changes for the row, so that we can update the dataset on the client and still know the negative temp sequence number
+                            TheRow.AcceptChanges();
+                            TheRow[ASequenceField] = (System.Object)DBAccess.GDBAccessObj.GetNextSequenceValue(ASequenceName, ATransaction);
+                            TreatRowAsAdded = true;   // setting this variable to 'true' is *vital* for the retrieval of the s_modification_id_t for that record once it is saved!
+                        }
+                    }
 
-                        if (ASequenceField.Length > 0)
-                        {
-                            // only insert next sequence value if the field has negative value.
-                            // this is needed when creating location 0 for a new site/ledger
-                            if (Convert.ToInt64(TheRow[ASequenceField]) < 0)
-                            {
-                                // accept changes for the row, so that we can update the dataset on the client and still know the negative temp sequence number
-                                TheRow.AcceptChanges();
-                                TheRow[ASequenceField] = (System.Object)DBAccess.GDBAccessObj.GetNextSequenceValue(ASequenceName, ATransaction);
-                                TreatRowAsAdded = true;   // setting this variable to 'true' is *vital* for the retrieval of the s_modification_id_t for that record once it is saved!
-                            }
-                        }
-
-                        if (ATable.ThrowAwayAfterSubmitChanges)
-                        {
-                            TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId, InsertStatement, InsertParameters);
-                        }
-                        else
-                        {
-                            TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId, TreatRowAsAdded);
-                        }
+                    if (ATable.ThrowAwayAfterSubmitChanges)
+                    {
+                        TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId, InsertStatement, InsertParameters);
                     }
                     else
                     {
-                        bool hasPrimaryKey = TTypedDataTable.GetPrimaryKeyColumnOrdList(TableId).Length > 0;
-
-                        if ((TheRow.RowState == DataRowState.Modified) && ((ASelectedOperations & eSubmitChangesOperations.eUpdate) != 0))
-                        {
-                            if (!hasPrimaryKey)
-                            {
-                                throw new System.Exception("[DB] NO PRIMARY KEY --- Cannot update record because table " + TTypedDataTable.GetTableName(TableId) + " has no primary key.");
-                            }
-                            else
-                            {
-                                TTypedDataAccess.UpdateRow(TableId, ATable.ThrowAwayAfterSubmitChanges, ref TheRow, ATransaction, AUserId);
-                            }
-                        }
-
-                        if ((TheRow.RowState == DataRowState.Deleted) && ((ASelectedOperations & eSubmitChangesOperations.eDelete) != 0))
-                        {
-                            if (!hasPrimaryKey)
-                            {
-                                throw new System.Exception("[DB] NO PRIMARY KEY --- Cannot delete record because table " + TTypedDataTable.GetTableName(TableId) + " has no primary key.");
-                            }
-                            else
-                            {
-                                TTypedDataAccess.DeleteRow(TableId, TheRow, ATransaction);
-                            }
-                        }
+                        TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId, TreatRowAsAdded);
                     }
+                }
+                else
+                {
+                    bool hasPrimaryKey = TTypedDataTable.GetPrimaryKeyColumnOrdList(TableId).Length > 0;
 
-                    if (InsertParameters.Count > MAX_SQL_PARAMETERS)
+                    if ((TheRow.RowState == DataRowState.Modified) && ((ASelectedOperations & eSubmitChangesOperations.eUpdate) != 0))
                     {
-                        // Inserts in one query
-                        DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray());
-                        InsertStatement = new StringBuilder();
-                        InsertParameters = new List <OdbcParameter>();
+                        if (!hasPrimaryKey)
+                        {
+                            throw new EDBSubmitException("[TTypedDataAccess.SubmitChanges] NO PRIMARY KEY --- Cannot update record because table " + TTypedDataTable.GetTableName(TableId) + " has no primary key.", eSubmitChangesOperations.eUpdate);
+                        }
+                        else
+                        {
+                            TTypedDataAccess.UpdateRow(TableId, ATable.ThrowAwayAfterSubmitChanges, ref TheRow, ATransaction, AUserId);
+                        }
+                    }
+
+                    if ((TheRow.RowState == DataRowState.Deleted) && ((ASelectedOperations & eSubmitChangesOperations.eDelete) != 0))
+                    {
+                        if (!hasPrimaryKey)
+                        {
+                            throw new EDBSubmitException("[TTypedDataAccess.SubmitChanges] NO PRIMARY KEY --- Cannot delete record because table " + TTypedDataTable.GetTableName(TableId) + " has no primary key.", eSubmitChangesOperations.eDelete);
+                        }
+                        else
+                        {
+                            TTypedDataAccess.DeleteRow(TableId, TheRow, ATransaction);
+                        }
                     }
                 }
-                catch (OdbcException)
+
+                if (InsertParameters.Count > MAX_SQL_PARAMETERS)
                 {
-                    throw;
+                    // Inserts in one query
+                    DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray());
+                    InsertStatement = new StringBuilder();
+                    InsertParameters = new List <OdbcParameter>();
                 }
-                catch (System.Exception)
-                {
-                    throw;
-                }                
             }
 
             if (InsertStatement.Length > 0)
             {
-                try
-                {
-                    // Inserts in one query
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray());
-                }
-                catch (OdbcException)
-                {
-                    throw;
-                }
-                catch (System.Exception)
-                {
-                    throw;
-                }                
+                // Inserts in one query
+                DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray());
             }
 
             return ResultValue;
