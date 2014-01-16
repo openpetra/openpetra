@@ -31,6 +31,8 @@ using System.Data;
 using SourceGrid;
 using System.Globalization;
 
+using Ict.Common.Exceptions;
+
 namespace Ict.Common.Controls
 {
     #region TSgrdDataGridPaged
@@ -131,7 +133,7 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    throw new TDataGridPagedNotInitialisedException(
+                    throw new EDataGridPagedNotInitialisedException(
                         "The " + this.GetType().FullName + " control is not properly initialised yet. " +
                         "The LoadFirstDataPage method needs to be called before the PageSize property can be accessed");
                 }
@@ -153,7 +155,7 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    throw new TDataGridPagedNoDataLoadedYetException(
+                    throw new EDataGridPagedNoDataLoadedYetException(
                         "The " + this.GetType().FullName + " control has not loaded any data yet. " +
                         "The LoadFirstDataPage method needs to be called before the TotalRecords property can be accessed");
                 }
@@ -175,7 +177,7 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    throw new TDataGridPagedNoDataLoadedYetException(
+                    throw new EDataGridPagedNoDataLoadedYetException(
                         "The " + this.GetType().FullName + " control has not loaded any data yet. " +
                         "The LoadFirstDataPage method needs to be called before the TotalPages property can be accessed");
                 }
@@ -197,7 +199,7 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    throw new TDataGridPagedNoDataLoadedYetException(
+                    throw new EDataGridPagedNoDataLoadedYetException(
                         "The " + this.GetType().FullName + " control has not loaded any data yet. " +
                         "The LoadFirstDataPage method needs to be called before the PagedDataTable property can be accessed");
                 }
@@ -229,7 +231,7 @@ namespace Ict.Common.Controls
             {
                 if (!InDesignMode)
                 {
-                    throw new TDataGridPagedAutoFindNotSupportedException("The AutoFind functionality is not supported in sgrdDataGridPaged");
+                    throw new EDataGridPagedAutoFindNotSupportedException("The AutoFind functionality is not supported in sgrdDataGridPaged");
                 }
 
                 return TAutoFindModeEnum.NoAutoFind;
@@ -240,7 +242,7 @@ namespace Ict.Common.Controls
                 {
                     if (!InDesignMode)
                     {
-                        throw new TDataGridPagedAutoFindNotSupportedException("The AutoFind functionality is not supported in sgrdDataGridPaged");
+                        throw new EDataGridPagedAutoFindNotSupportedException("The AutoFind functionality is not supported in sgrdDataGridPaged");
                     }
                 }
             }
@@ -260,7 +262,7 @@ namespace Ict.Common.Controls
             {
                 if (!InDesignMode)
                 {
-                    throw new TDataGridPagedAutoFindNotSupportedException("The AutoFind functionality is not supported in sgrdDataGridPaged");
+                    throw new EDataGridPagedAutoFindNotSupportedException("The AutoFind functionality is not supported in sgrdDataGridPaged");
                 }
 
                 return -1;
@@ -271,7 +273,7 @@ namespace Ict.Common.Controls
                 {
                     if (!InDesignMode)
                     {
-                        throw new TDataGridPagedAutoFindNotSupportedException("The AutoFind functionality is not supported in sgrdDataGridPaged");
+                        throw new EDataGridPagedAutoFindNotSupportedException("The AutoFind functionality is not supported in sgrdDataGridPaged");
                     }
                 }
             }
@@ -463,7 +465,7 @@ namespace Ict.Common.Controls
             }
             else
             {
-                throw new TDataGridPagedDelegateFunctionNotSpecifiedException(
+                throw new EDataGridPagedDelegateFunctionNotSpecifiedException(
                     "The " + this.GetType().FullName + " control is not properly initialised yet. " +
                     "The ADelegateGetDataPagedResultFunction parameter of the InitialiseGrid method needs to be set to the delegate function that returns a page of data");
             }
@@ -824,101 +826,143 @@ namespace Ict.Common.Controls
 
 
     #region Exceptions
-    #region TDataGridPagedNotInitialisedException
+    
+    #region EDataGridPagedNotInitialisedException
 
     /// <summary>
-    /// error when not initialised
+    /// Error when not initialised.
     /// </summary>
-    public class TDataGridPagedNotInitialisedException : ApplicationException
+    public class EDataGridPagedNotInitialisedException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public TDataGridPagedNotInitialisedException() : base()
+        public EDataGridPagedNotInitialisedException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public TDataGridPagedNotInitialisedException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public EDataGridPagedNotInitialisedException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDataGridPagedNotInitialisedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }
+    
     #endregion
 
-    #region TDataGridPagedNoDataLoadedYetException
+    #region EDataGridPagedNoDataLoadedYetException
 
     /// <summary>
-    /// no data available yet
+    /// No data available yet.
     /// </summary>
-    public class TDataGridPagedNoDataLoadedYetException : ApplicationException
+    public class EDataGridPagedNoDataLoadedYetException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public TDataGridPagedNoDataLoadedYetException() : base()
+        public EDataGridPagedNoDataLoadedYetException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public TDataGridPagedNoDataLoadedYetException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public EDataGridPagedNoDataLoadedYetException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDataGridPagedNoDataLoadedYetException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }
+    
     #endregion
 
-    #region TDataGridPagedDelegateFunctionNotSpecifiedException
+    #region EDataGridPagedDelegateFunctionNotSpecifiedException
 
     /// <summary>
-    /// no delegate
+    /// No Delegate.
     /// </summary>
-    public class TDataGridPagedDelegateFunctionNotSpecifiedException : ApplicationException
+    public class EDataGridPagedDelegateFunctionNotSpecifiedException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public TDataGridPagedDelegateFunctionNotSpecifiedException() : base()
+        public EDataGridPagedDelegateFunctionNotSpecifiedException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public TDataGridPagedDelegateFunctionNotSpecifiedException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public EDataGridPagedDelegateFunctionNotSpecifiedException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDataGridPagedDelegateFunctionNotSpecifiedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }
+    
     #endregion
 
-    #region TDataGridPagedAutoFindNotSupportedException
+    #region EDataGridPagedAutoFindNotSupportedException
 
     /// <summary>
     /// auto find not supported
     /// </summary>
-    public class TDataGridPagedAutoFindNotSupportedException : ApplicationException
+    public class EDataGridPagedAutoFindNotSupportedException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public TDataGridPagedAutoFindNotSupportedException() : base()
+        public EDataGridPagedAutoFindNotSupportedException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public TDataGridPagedAutoFindNotSupportedException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public EDataGridPagedAutoFindNotSupportedException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDataGridPagedAutoFindNotSupportedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }
+    
     #endregion
+    
     #endregion
 
 

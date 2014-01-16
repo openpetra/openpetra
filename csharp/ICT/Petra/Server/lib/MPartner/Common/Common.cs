@@ -27,6 +27,7 @@ using System.Data.Odbc;
 using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -169,7 +170,7 @@ namespace Ict.Petra.Server.MPartner.Common
                     else
                     {
                         DBAccess.GDBAccessObj.RollbackTransaction();
-                        throw new ApplicationException(Messages.BuildMessageFromVerificationResult(
+                        throw new EOPAppException(Messages.BuildMessageFromVerificationResult(
                                 "An Error occured while creating a new Partner Key:", VerificationResult));
                     }
                 }

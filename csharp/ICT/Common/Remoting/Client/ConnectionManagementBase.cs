@@ -386,48 +386,67 @@ namespace Ict.Common.Remoting.Client
         }
     }
 
+
+    #region EServerConnectionServerNotReachableException
+    
     /// <summary>
     /// todoComment
     /// </summary>
-    public class EServerConnectionServerNotReachableException : ApplicationException
+    public class EServerConnectionServerNotReachableException : EOPAppException
     {
-        #region EServerConnectionServerNotReachableException
-
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public EServerConnectionServerNotReachableException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public EServerConnectionServerNotReachableException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public EServerConnectionServerNotReachableException(String AMessage) : base(AMessage)
         {
         }
 
-        #endregion
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EServerConnectionServerNotReachableException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
     }
+    
+    #endregion
 
     /// <summary>
     /// todoComment
     /// </summary>
-    public class EServerConnectionGeneralException : ApplicationException
+    public class EServerConnectionGeneralException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public EServerConnectionGeneralException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public EServerConnectionGeneralException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public EServerConnectionGeneralException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EServerConnectionGeneralException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }

@@ -27,6 +27,7 @@ using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
@@ -830,8 +831,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                         catch (Exception exp)
                         {
-                            throw new ApplicationException("Exception occured while calling PartnerFindScreen Delegate!",
-                                exp);
+                            throw new EOPAppException("Exception occured while calling PartnerFindScreen Delegate!", exp);
                         }
                         // end try
                     }
@@ -869,7 +869,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else
                 {
-                    throw new ApplicationException("Delegate FGetLocationKeyOfCurrentlySelectedAddress is not set up");
+                    throw new EOPAppException("Delegate FGetLocationKeyOfCurrentlySelectedAddress is not set up");
                 }
 
                 TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
@@ -1501,8 +1501,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                         catch (Exception exp)
                         {
-                            throw new ApplicationException("Exception occured while calling PartnerFindScreen Delegate!",
-                                exp);
+                            throw new EOPAppException("Exception occured while calling PartnerFindScreen Delegate!", exp);
                         }
                         // end try
                     }

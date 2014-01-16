@@ -23,6 +23,7 @@
 //
 using System;
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
@@ -108,17 +109,17 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                 {
                     if (ExtractNotDeletable)
                     {
-                        throw new ApplicationException("Cannot delete Extract because it is not deletable");
+                        throw new EOPAppException("Cannot delete Extract because it is not deletable");
                     }
                     else
                     {
-                        throw new ApplicationException("Cannot delete Extract. Reason: " + VerificationResult.ResultText);
+                        throw new EOPAppException("Cannot delete Extract. Reason: " + VerificationResult.ResultText);
                     }
                 }
             }
             else
             {
-                throw new ApplicationException("Cannot delete Extract that wasn't yet created by " +
+                throw new EOPAppException("Cannot delete Extract that wasn't yet created by " +
                     "this UIConnector!");
             }
         }

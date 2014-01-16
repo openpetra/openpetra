@@ -27,6 +27,8 @@ using Microsoft.Win32;
 using System.Windows.Forms;
 using System.Runtime.Serialization;
 
+using Ict.Common.Exceptions;
+
 namespace Ict.Common
 {
     /// <summary>
@@ -248,7 +250,7 @@ namespace Ict.Common
             }
             else
             {
-                throw new ApplicationException("DEVELOPER NEEDS TO FIX THIS: Delegate for determining a Help Topic is not set!");
+                throw new EOPAppException("DEVELOPER NEEDS TO FIX THIS: Delegate for determining a Help Topic is not set!");
             }
         }
 
@@ -342,20 +344,29 @@ namespace Ict.Common
     /// commands.
     /// </summary>
     [Serializable()]
-    public class EHelpLauncherException : ApplicationException
+    public class EHelpLauncherException : EOPAppException
     {
         /// <summary>
-        /// Default Constructor.
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public EHelpLauncherException() : base()
         {
         }
 
         /// <summary>
-        /// Use this to pass on a message with the Exception
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AInfo">Exception message</param>
-        public EHelpLauncherException(String AInfo) : base(AInfo)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public EHelpLauncherException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EHelpLauncherException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
 

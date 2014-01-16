@@ -28,6 +28,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
@@ -673,7 +674,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             if (!TVerificationHelper.IsNullOrOnlyNonCritical(VerificationResult))
             {
-                throw new ApplicationException("TLedgerInitFlagHandler does not work");
+                throw new EOPAppException("TLedgerInitFlagHandler does not work");
             }
         }
     }

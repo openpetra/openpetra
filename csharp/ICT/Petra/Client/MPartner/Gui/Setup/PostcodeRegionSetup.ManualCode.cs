@@ -30,6 +30,7 @@ using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.Exceptions;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
@@ -228,7 +229,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 }
                 catch (Exception exp)
                 {
-                    throw new ApplicationException("Exception occured while calling OpenRangeFindScreen Delegate!", exp);
+                    throw new EOPAppException("Exception occured while calling OpenRangeFindScreen Delegate!", exp);
                 }
             }
         }

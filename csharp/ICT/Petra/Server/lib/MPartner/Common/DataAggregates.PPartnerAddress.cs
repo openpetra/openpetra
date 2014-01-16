@@ -30,6 +30,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
@@ -1351,7 +1352,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 }
                 else
                 {
-                    throw new ApplicationException(
+                    throw new EOPAppException(
                         "Expected a PLocationRow or a PPartnerLocationRow for ADataRow parameter, but received other DataRow");
                 }
             }
@@ -1369,7 +1370,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 }
                 else
                 {
-                    throw new ApplicationException(
+                    throw new EOPAppException(
                         "Expected a PLocationRow or a PPartnerLocationRow for ADataRow parameter, but received other DataRow");
                 }
             }
@@ -1677,7 +1678,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     }
                     else
                     {
-                        throw new ApplicationException("Expected Typed DataTable, received normal DataTable");
+                        throw new EOPAppException("Expected Typed DataTable, received normal DataTable");
                     }
                 }
                 else
@@ -1699,7 +1700,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     }
                     else
                     {
-                        throw new ApplicationException("Expected Typed DataTable, received normal DataTable");
+                        throw new EOPAppException("Expected Typed DataTable, received normal DataTable");
                     }
                 }
                 else
@@ -1721,7 +1722,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     }
                     else
                     {
-                        throw new ApplicationException("Expected Typed DataTable, received normal DataTable");
+                        throw new EOPAppException("Expected Typed DataTable, received normal DataTable");
                     }
                 }
                 else
@@ -2667,7 +2668,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         }
                         else
                         {
-                            throw new ApplicationException("ReUsedLocationDR for SiteKey " +
+                            throw new EOPAppException("ReUsedLocationDR for SiteKey " +
                                 SimilarLocationReUseKeyMapping[LocationReUseCounter,
                                                                0].SiteKey.ToString() + " and LocationKey " +
                                 SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString() + " could not be found!");
@@ -2703,7 +2704,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         }
                         else
                         {
-                            throw new ApplicationException("ReUsedPartnerLocationDR for SiteKey " +
+                            throw new EOPAppException("ReUsedPartnerLocationDR for SiteKey " +
                                 SimilarLocationReUseKeyMapping[LocationReUseCounter,
                                                                0].SiteKey.ToString() + " and LocationKey " +
                                 SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString() + " could not be found!");
@@ -2747,7 +2748,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 
                     if (PPartnerLocationAccess.Exists(APartnerKey, APartnerLocationRow.SiteKey, 0, ASubmitChangesTransaction))
                     {
-                        throw new ApplicationException(
+                        throw new EOPAppException(
                             "A new PPartnerLocation DataRow with LocationKey 0 was added, but the Partner already has a PPartnerLocation with LocationKey 0");
                     }
                     else
@@ -2759,7 +2760,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             }
             else
             {
-                throw new ApplicationException(
+                throw new EOPAppException(
                     "A new PPartnerLocation DataRow with LocationKey 0 was added, but the Partner already has a PPartnerLocation with LocationKey 0");
             }
         }
@@ -3268,7 +3269,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     }
                     else
                     {
-                        throw new ApplicationException(
+                        throw new EOPAppException(
                             "TPPartnerAddressAggregate.PerformLocationFamilyMemberPropagationChecks: PPartnerLocation record for Family is missing");
                     }
                 }
@@ -3421,7 +3422,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         }
                         else
                         {
-                            throw new ApplicationException(
+                            throw new EOPAppException(
                                 "PerformSimilarLocationReUseChecks: PartnerLocationCheckRow with SiteKey " + ALocationRow.SiteKey.ToString() +
                                 " and LocationKey " +
                                 ALocationRow.LocationKey.ToString() + " not found!");
@@ -3452,7 +3453,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         }
                         else
                         {
-                            throw new ApplicationException(
+                            throw new EOPAppException(
                                 "Couldn''t find existing Similar Location with SiteKey " + ALocationRow.SiteKey.ToString() + " and LocationKey " +
                                 ALocationRow.LocationKey.ToString() + '!');
                         }

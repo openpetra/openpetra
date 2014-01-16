@@ -27,6 +27,7 @@ using System.Reflection;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
@@ -283,15 +284,15 @@ namespace Ict.Petra.Server.App.Core.Security
                             String.Format(Catalog.GetString("Module access permission was violated for method {0} in Connector class {1}: {2}"),
                                 AMethodName, AConnectorType, evException.Message);
                         TLogging.Log(msg);
-                        throw new ApplicationException(msg);
+                        throw new EOPAppException(msg);
                     }
                     catch (ArgumentException argException)
                     {
-                        throw new ApplicationException("Problem with ModulePermissions, " +
+                        throw new EOPAppException("Problem with ModulePermissions, " +
                             argException.Message + ": '" +
                             moduleExpression + "' for " +
                             AConnectorType.ToString() + "." +
-                            AMethodName + "()");
+                            AMethodName + "()", argException);
                     }
 
                     return true;
@@ -300,7 +301,7 @@ namespace Ict.Petra.Server.App.Core.Security
 
             // TODO: resolve module permission from namespace?
 
-            throw new ApplicationException(
+            throw new EOPAppException(
                 "Missing definition of access permission for method " + AMethodName + " in Connector class " + AConnectorType);
         }
     }

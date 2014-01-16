@@ -556,8 +556,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 }
                 catch (Exception exp)
                 {
-                    throw new ApplicationException("Exception occured while calling PartnerFindScreen Delegate!",
-                        exp);
+                    throw new EOPAppException("Exception occured while calling PartnerFindScreen Delegate!", exp);
                 }
                 // end try
             }

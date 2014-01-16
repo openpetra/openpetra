@@ -1615,7 +1615,7 @@ namespace Ict.Common.Data
             }
             else
             {
-                throw new ApplicationException(
+                throw new EOPDBTypedDataAccessException(
                     "Cannot generate UPDATE Clause for Table '" + ATableName + "' because the submitted DataTable has more columns (" +
                     Convert.ToString(ADataRow.ItemArray.Length) + ") than the Table in the DB (" + Convert.ToString(AColumnNames.Length) + ")!");
             }

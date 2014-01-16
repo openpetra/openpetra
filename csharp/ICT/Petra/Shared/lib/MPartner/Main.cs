@@ -23,6 +23,7 @@
 //
 using System;
 using System.Runtime.Serialization;
+using Ict.Common.Exceptions;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Shared.MPartner
@@ -33,42 +34,68 @@ namespace Ict.Petra.Shared.MPartner
     /// Throw this Exception when a Business Object is asked to load data for a Partner that does either not exist or is deleted, not active, etc.  whatever is applicable to the situation.
     /// </summary>
     [Serializable()]
-    public class EPartnerNotExistantException : ApplicationException
+    public class EPartnerNotExistantException : EOPAppException
     {
         /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public EPartnerNotExistantException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="msg"></param>
-        public EPartnerNotExistantException(String msg) : base(msg)
-        {
-        }
-
-        /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public EPartnerNotExistantException() : base()
         {
         }
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EPartnerNotExistantException(String AMessage) : base(AMessage)
+        {
+        }
 
         /// <summary>
-        /// needed for serialization
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="info">needed for serialization</param>
-        /// <param name="context">needed for serialization</param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EPartnerNotExistantException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
-            base.GetObjectData(info, context);
         }
+        
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EPartnerNotExistantException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+        
+        #endregion
     }
+    
     #endregion
 
     #region EPartnerLocationKeyNotExistantException
@@ -77,42 +104,69 @@ namespace Ict.Petra.Shared.MPartner
     /// Can be thrown to signalise that a PPartnerLocation Key does not exist in the DB
     /// </summary>
     [Serializable()]
-    public class EPartnerLocationNotExistantException : ApplicationException
+    public class EPartnerLocationNotExistantException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public EPartnerLocationNotExistantException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public EPartnerLocationNotExistantException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public EPartnerLocationNotExistantException(String AMessage) : base(AMessage)
+        {
+            
+        }
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EPartnerLocationNotExistantException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+        
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EPartnerLocationNotExistantException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 
         /// <summary>
-        /// constructor for serialization
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public EPartnerLocationNotExistantException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
         {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
         }
-
-        /// <summary>
-        /// needed for serialization
-        /// </summary>
-        /// <param name="info">needed for serialization</param>
-        /// <param name="context">needed for serialization</param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-        }
+        
+        #endregion
     }
+    
     #endregion
 
     #region EPartnerFamilyIDException
@@ -121,41 +175,67 @@ namespace Ict.Petra.Shared.MPartner
     /// Throw this exception to signalize that there is a problem in finding a family ID
     /// </summary>
     [Serializable()]
-    public class EPartnerFamilyIDException : ApplicationException
+    public class EPartnerFamilyIDException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public EPartnerFamilyIDException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public EPartnerFamilyIDException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EPartnerFamilyIDException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// constructor for serialization
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="info">needed for serialization</param>
-        /// <param name="context">needed for serialization</param>
-        public EPartnerFamilyIDException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EPartnerFamilyIDException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+        
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EPartnerFamilyIDException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 
         /// <summary>
-        /// needed for serialization
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info">needed for serialization</param>
-        /// <param name="context">needed for serialization</param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
         {
-            base.GetObjectData(info, context);
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
         }
+        
+        #endregion
     }
+    
     #endregion
 }

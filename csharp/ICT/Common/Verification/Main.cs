@@ -37,6 +37,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Windows.Forms;
+using Ict.Common.Exceptions;
 
 namespace Ict.Common.Verification
 {
@@ -1872,24 +1873,29 @@ namespace Ict.Common.Verification
     /// TVerificationResultCollection object, so that the user gets this message on the
     /// "normal" message box.
     /// </summary>
-    public class TVerificationException : Exception
+    public class EVerificationException : EOPAppException
     {
         /// <summary>
-        /// Constructor with inner exception
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        /// <param name="innerException"></param>
-        /// <param name="message"></param>
-        public TVerificationException(Exception innerException, string message)
-            : base(message, innerException)
+        public EVerificationException() : base()
         {
         }
 
         /// <summary>
-        /// Constructor without inner exception
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="message"></param>
-        public TVerificationException(string message)
-            : base(message)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public EVerificationException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EVerificationException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
 
