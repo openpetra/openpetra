@@ -1958,6 +1958,55 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Check if Key Ministry exists
+        /// </summary>
+        /// <param name="APartnerKey">Partner Key </param>
+        /// <param name="AIsActive">return true if Key Ministry is active </param>
+        /// <returns>return true if APartnerKey identifies a Key Ministry</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Boolean KeyMinistryExists(Int64 APartnerKey, out Boolean AIsActive)
+        {
+            Boolean KeyMinistryExists = false;
+            TDBTransaction Transaction = null;
+
+            AIsActive = false;
+
+            try
+            {
+                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+                PUnitTable UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction);
+
+                if (UnitTable.Rows.Count == 1)
+                {
+                    // this partner is indeed a unit
+                    PUnitRow UnitRow = UnitTable[0];
+    
+                    if (UnitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
+                    {
+                        KeyMinistryExists = true;
+                        
+                        PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction);
+                        PPartnerRow PartnerRow = PartnerTable[0];
+                        if (SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerRow.StatusCode) == TStdPartnerStatusCode.spscACTIVE)
+                        {
+                            AIsActive = true;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                if (Transaction != null)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+            
+            return KeyMinistryExists;
+        }
+
+        /// <summary>
         /// Load key Ministry
         /// </summary>
         /// <param name="partnerKey">Partner Key </param>
@@ -1986,7 +2035,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             return unitTable;
         }
-
+        
         /// <summary>
         /// get the key ministries. If Recipient is a field, get the key ministries of that field.
         /// If Recipient is a key ministry itself, get all key ministries of the same field

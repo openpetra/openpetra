@@ -46,25 +46,34 @@ RootNode:
         pnlDetails:
             Dock: Bottom
             Controls:
-                Row0: [cmbDetailMotivationGroupCode]
-                Row1: [txtDetailMotivationDetailCode, txtDetailMotivationDetailDesc]
-                Row3: [cmbDetailAccountCode, pnlMoreChecks]
-                Row4: [cmbDetailCostCentreCode, cmbReportColumn]
-                Row5: [lblFeePayable, lblFeeReceivable]
-                Row6: [clbDetailFeesPayable, clbDetailFeesReceivable]
+                Row0: [cmbDetailMotivationGroupCode, txtDetailMotivationDetailCode]
+                Row1: [txtDetailShortCode, cmbReportColumn]
+                Row2: [txtDetailMotivationDetailDesc, txtDetailMotivationDetailDescLocal]
+                Row3: [cmbDetailCostCentreCode]
+                Row4: [cmbDetailAccountCode]
+                Row6: [txtDetailRecipientKey]
+                Row5: [pnlMoreChecks]
+                Row7: [lblFeePayable, lblFeeReceivable]
+                Row8: [clbDetailFeesPayable, clbDetailFeesReceivable]
             ColWidths: [1=Fixed:220, 2=Fixed:120]
         pnlMoreChecks:
             ControlsOrientation: horizontal
-            Controls: [chkDetailMotivationStatus, chkDetailReceipt]
-        cmbReportColumn:
-            OptionalValues: [Worker, =Field]
+            Controls: [chkDetailAutopopdesc, chkDetailMotivationStatus, chkDetailReceipt, chkDetailTaxDeductable, chkDetailExportToIntranet]
         cmbDetailMotivationGroupCode: {Label=Group, List=UserDefinedList}
         txtDetailMotivationDetailCode: {Label=Detail, CharacterCasing=Upper}
         txtDetailMotivationDetailDesc: {Label=Description, Width=185}
-        cmbDetailAccountCode: {Label=Account, List=UserDefinedList, Width=200}
-        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, Width=200}
+        txtDetailShortCode: {Label=Short Code} 
+        txtDetailMotivationDetailDescLocal: {Label=Local Description, Width=185}
+        cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, Width=300}
+        cmbDetailAccountCode: {Label=Account, List=UserDefinedList, Width=300}
+        chkDetailAutopopdesc: {Label=Populate Gift Description}
         chkDetailMotivationStatus: {Label=Active}
         chkDetailReceipt: {Label=Print Receipt}
+        chkDetailTaxDeductable: {Label=Tax Deductable}
+        chkDetailExportToIntranet: {Label=Export to Intranet}
+        cmbReportColumn:
+            OptionalValues: [Worker, =Field]
+        txtDetailRecipientKey: {Label=Key Ministry, Type=PartnerKey, PartnerClass=UNIT, Validation=true}
         lblFeePayable:
         lblFeeReceivable:
         clbDetailFeesPayable:

@@ -9555,14 +9555,15 @@
                 format="X(80)"
                 label="Detail Description (Local Language)"
                 columnlabel="Description"
-                help="Enter a description"/>
+                help="Enter a description in local language"/>
     <tablefield name="a_short_code_c"
                 type="varchar"
                 descr="A short code for the motivation which can then be used on receipts"
+                charlength="4"
                 format="X(4)"
                 label="Short Code"
                 columnlabel="Short Code"
-                help="Enter a short code for the motivation detail"/>
+                help="Use this if you want to show a special code on receipts"/>
     <tablefield name="a_restricted_l"
                 type="bit"
                 descr="Indicates whether or not the motivation has restricted access. If it does then the access will be controlled by s_group_motivation"
