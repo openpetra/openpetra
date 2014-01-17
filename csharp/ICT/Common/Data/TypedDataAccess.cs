@@ -2168,19 +2168,17 @@ namespace Ict.Common.Data
         /// <param name="ASequenceName"></param>
         /// <param name="ASequenceField"></param>
         /// <returns></returns>
-        public static bool SubmitChanges(
+        public static void SubmitChanges(
             TTypedDataTable ATable,
             TDBTransaction ATransaction,
             eSubmitChangesOperations ASelectedOperations,
             string AUserId,
             string ASequenceName, string ASequenceField)
         {
-            bool ResultValue = true;
-
             // allow this method to be called with null values, eg. when saving complex TypedDataSets with some removed empty tables
             if (ATable == null)
             {
-                return true;
+                return;
             }
 
             short TableId = Convert.ToInt16(ATable.GetType().GetField("TableId").GetValue(null));
@@ -2271,20 +2269,18 @@ namespace Ict.Common.Data
                 // Inserts in one query
                 DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray());
             }
-
-            return ResultValue;
         }
 
         /// <summary>
         /// overloaded version without ASelectedOperations
         /// </summary>
-        public static bool SubmitChanges(
+        public static void SubmitChanges(
             TTypedDataTable ATable,
             TDBTransaction ATransaction,
             string AUserId,
             string ASequenceName, string ASequenceField)
         {
-            return SubmitChanges(
+            SubmitChanges(
                 ATable,
                 ATransaction,
                 eSubmitChangesOperations.eAll,
@@ -2296,24 +2292,24 @@ namespace Ict.Common.Data
         /// <summary>
         /// overloaded version without sequence
         /// </summary>
-        public static bool SubmitChanges(
+        public static void SubmitChanges(
             TTypedDataTable ATable,
             TDBTransaction ATransaction,
             string AUserId)
         {
-            return SubmitChanges(ATable, ATransaction, eSubmitChangesOperations.eAll, AUserId, "", "");
+            SubmitChanges(ATable, ATransaction, eSubmitChangesOperations.eAll, AUserId, "", "");
         }
 
         /// <summary>
         /// overloaded version without sequence, but with ASelectedOperations
         /// </summary>
-        public static bool SubmitChanges(
+        public static void SubmitChanges(
             TTypedDataTable ATable,
             TDBTransaction ATransaction,
             eSubmitChangesOperations ASelectedOperations,
             string AUserId)
         {
-            return SubmitChanges(ATable, ATransaction, ASelectedOperations, AUserId, "", "");
+            SubmitChanges(ATable, ATransaction, ASelectedOperations, AUserId, "", "");
         }
 
         /// <summary>
