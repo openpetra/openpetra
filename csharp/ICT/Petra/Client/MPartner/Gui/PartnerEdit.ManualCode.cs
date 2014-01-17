@@ -106,6 +106,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private String FNewPartnerAcquisitionCode;
         private Boolean FNewPartnerPrivatePartner;
         private Boolean FNewPartnerShowNewPartnerDialog;
+        private String FCallerContext = "";
         private TPartnerEditTabPageEnum FShowTabPage;
         private TPartnerEditTabPageEnum FInitiallySelectedTabPage;
         private Boolean FUppperPartInitiallyCollapsed;
@@ -201,6 +202,26 @@ namespace Ict.Petra.Client.MPartner.Gui
             set
             {
                 FShowTabPage = value;
+            }
+        }
+
+        /// <summary>
+        /// Used in the 'Form Messaging' implementation in <see cref="SaveChanges(ref PartnerEditTDS)"></see>.
+        /// </summary>
+        /// <description>
+        /// Several running instances of the same screen (e.g. Partner Find screen)
+        /// can distinguish between messages for certain instances of the screen through that.
+        /// </description>
+        public string CallerContext
+        {
+            get
+            {
+                return FCallerContext;
+            }
+
+            set
+            {
+                FCallerContext = value;
             }
         }
 
@@ -849,8 +870,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             int RowIndex;
             int NumRows;
             Int32 MaxColumn;
+            Boolean SavedPartnerIsNewParter = false;
             bool AddressesOrRelationsChanged = false;
             System.Int32 ChangedColumns;
+            TFormsMessage BroadcastMessage;
+            String PartnerShortNameForBroadcast;
 #if SHOWCHANGES
             String DebugMessage;
 #endif
@@ -1082,9 +1106,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         case TSubmitChangesResult.scrOK:
 
+                            SavedPartnerIsNewParter = IsNewPartner(AInspectDS);
+
                             // MessageBox.Show('DUMMY: ' + (SubmitDS.Tables['Locations'].Rows[0]['DUMMY']).ToString() );
                             if ((SharedTypes.PartnerClassStringToEnum(AInspectDS.PPartner[0].PartnerClass) == TPartnerClass.UNIT)
-                                && (IsNewPartner(AInspectDS)))
+                                && SavedPartnerIsNewParter)
                             {
                                 /*
                                  * A new Partner of PartnerClass UNIT has been created
@@ -1439,6 +1465,38 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(false));
+            }
+
+            // if the partner has been saved then broadcast a message to any listening forms to inform them
+            if (ReturnValue)
+            {
+                if (SavedPartnerIsNewParter)
+                {
+                    BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcNewPartnerSaved,
+                        FCallerContext);
+                }
+                else
+                {
+                    BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcExistingPartnerSaved,
+                        FCallerContext);
+                }
+
+                if (!FMainDS.PPartner[0].IsPartnerShortNameNull())
+                {
+                    PartnerShortNameForBroadcast = FMainDS.PPartner[0].PartnerShortName;
+                }
+                else
+                {
+                    PartnerShortNameForBroadcast = String.Empty;
+                }
+
+                BroadcastMessage.SetMessageDataPartner(
+                    FPartnerKey,
+                    SharedTypes.PartnerClassStringToEnum(FPartnerClass),
+                    PartnerShortNameForBroadcast,
+                    FMainDS.PPartner[0].StatusCode);
+
+                TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
             }
 
             return ReturnValue;

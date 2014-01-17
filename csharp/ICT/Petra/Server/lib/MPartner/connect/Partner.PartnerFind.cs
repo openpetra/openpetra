@@ -166,5 +166,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             return AddAllFoundPartnersToExtract(AExtractID, out AVerificationResult);
         }
+
+        /// <summary>
+        /// Checks if a search result contains a given partner
+        /// </summary>
+        /// <param name="APartnerKey">Partner key of partner</param>
+        /// <returns>True if partner is included, false if not.</returns>
+        public bool CheckIfResultsContainPartnerKey(long APartnerKey)
+        {
+            return FPartnerFind.CheckIfResultsContainPartnerKey(APartnerKey);
+        }
     }
 }

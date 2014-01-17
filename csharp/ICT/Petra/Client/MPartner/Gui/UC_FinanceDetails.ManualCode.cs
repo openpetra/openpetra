@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
@@ -207,17 +208,42 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        List <long>FSharedPartnerKeys = null;
+
         private bool PreDeleteManual(PartnerEditTDSPBankingDetailsRow ARowToDelete, ref String ADeletionQuestion)
         {
             ADeletionQuestion = "";
 
             // additional message if the bank account to be deleted is shared with one or more other Partners
-            if (TRemote.MPartner.Partner.WebConnectors.IsBankingDetailsRowShared(ARowToDelete.BankingDetailsKey))
+            if (TRemote.MPartner.Partner.WebConnectors.IsBankingDetailsRowShared(ARowToDelete.BankingDetailsKey, FMainDS.PPartner[0].PartnerKey,
+                    out FSharedPartnerKeys))
             {
-                ADeletionQuestion = Catalog.GetString("This bank account is currently shared with one or more other Partners. " +
-                    "The bank account will not be removed from the other Partners this account is shared with, " +
-                    "only the account you are currently working on.") +
-                                    Environment.NewLine + Environment.NewLine;
+                if (FSharedPartnerKeys.Count == 1)
+                {
+                    ADeletionQuestion = Catalog.GetString("This bank account is currently shared with the following partner:\n");
+                }
+                else if (FSharedPartnerKeys.Count > 1)
+                {
+                    ADeletionQuestion = Catalog.GetString("This bank account is currently shared with the following partners:\n");
+                }
+
+                foreach (long PartnerKey in FSharedPartnerKeys)
+                {
+                    string PartnerShortName;
+                    TPartnerClass PartnerClass;
+                    TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(PartnerKey, out PartnerShortName, out PartnerClass);
+
+                    ADeletionQuestion += "\n" + PartnerShortName + " [" + PartnerKey + "]";
+                }
+
+                if (FSharedPartnerKeys.Count == 1)
+                {
+                    ADeletionQuestion += Catalog.GetString("\n\nThe bank account will not be removed from this other partner.\n\n");
+                }
+                else if (FSharedPartnerKeys.Count > 1)
+                {
+                    ADeletionQuestion += Catalog.GetString("\n\nThe bank account will not be removed from these other partners.\n\n");
+                }
             }
 
             ADeletionQuestion += Catalog.GetString("Are you sure you want to delete the current row?");
@@ -263,7 +289,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // only delete PBankingDetailsRow if it is not shared with any other Partners
-            if (!TRemote.MPartner.Partner.WebConnectors.IsBankingDetailsRowShared(ARowToDelete.BankingDetailsKey))
+            if (FSharedPartnerKeys.Count == 0)
             {
                 ARowToDelete.Delete();
             }
@@ -425,12 +451,41 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void CheckIfRowIsShared(System.Object Sender, EventArgs e)
         {
+            List <long>SharedPartnerKeys = null;
+
             // When a bank account is edited, check if it is shared with any other partners. If it is, display a message informing the user.
             if ((FPreviouslySelectedDetailRow != LastRowChecked)
-                && TRemote.MPartner.Partner.WebConnectors.IsBankingDetailsRowShared(FPreviouslySelectedDetailRow.BankingDetailsKey))
+                && TRemote.MPartner.Partner.WebConnectors.IsBankingDetailsRowShared(
+                    FPreviouslySelectedDetailRow.BankingDetailsKey, FMainDS.PPartner[0].PartnerKey, out SharedPartnerKeys))
             {
-                string EditQuestion = Catalog.GetString("This bank account is currently shared with one or more other Partners. " +
-                    "Changes to the Bank Account details here will take effect on the other Partners too.");
+                string EditQuestion = "";
+
+                if (SharedPartnerKeys.Count == 1)
+                {
+                    EditQuestion = Catalog.GetString("This bank account is currently shared with the following partner:\n");
+                }
+                else if (SharedPartnerKeys.Count > 1)
+                {
+                    EditQuestion = Catalog.GetString("This bank account is currently shared with the following partners:\n");
+                }
+
+                foreach (long PartnerKey in SharedPartnerKeys)
+                {
+                    string PartnerShortName;
+                    TPartnerClass PartnerClass;
+                    TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(PartnerKey, out PartnerShortName, out PartnerClass);
+
+                    EditQuestion += "\n" + PartnerShortName + " [" + PartnerKey + "]";
+                }
+
+                if (SharedPartnerKeys.Count == 1)
+                {
+                    EditQuestion += Catalog.GetString("\n\nChanges to the Bank Account details here will take effect on the other partner's too.");
+                }
+                else if (SharedPartnerKeys.Count > 1)
+                {
+                    EditQuestion += Catalog.GetString("\n\nChanges to the Bank Account details here will take effect on the other partners' too.");
+                }
 
                 MessageBox.Show(EditQuestion,
                     Catalog.GetString("Bank Account is used by another Partner"),

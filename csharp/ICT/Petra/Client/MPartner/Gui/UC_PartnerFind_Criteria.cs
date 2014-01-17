@@ -26,19 +26,20 @@ using System.Collections;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Reflection;
 using System.Windows.Forms;
 using GNU.Gettext;
+using Ict.Common.Controls;
+using Ict.Common.Controls.Formatting;
+using Ict.Common;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MPartner;
-using System.Globalization;
 using Ict.Petra.Client.App.Gui;
-using Ict.Common.Controls;
-using Ict.Common.Controls.Formatting;
-using Ict.Common;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -112,7 +113,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #region Properties
 
-        private string PartnerStatus
+        /// <summary>todoComment</summary>
+        public string PartnerStatus
         {
             get
             {
@@ -2698,6 +2700,81 @@ namespace Ict.Petra.Client.MPartner.Gui
                 txtLocationKey.Text = APassedLocationKey.ToString();
                 txtLocationKey.SelectAll();
             }
+        }
+
+        /// <summary>
+        /// Set the partner key in txtPartnerKey
+        /// </summary>
+        /// <param name="APassedPartnerKey"></param>
+        public void FocusPartnerKey(Int64 APassedPartnerKey)
+        {
+            /* First make sure that the PartnerKey Panel is there... */
+            if (!pnlRightColumn.Controls.Contains(pnlPartnerKey))
+            {
+                pnlRightColumn.Controls.Add(pnlPartnerKey);
+            }
+
+            /* Set Focus on txtPartnerKey */
+            txtPartnerKey.Focus();
+
+            /* Set PartnerKey if APassedPartnerKey is passed in */
+            if (APassedPartnerKey != -1)
+            {
+                txtPartnerKey.Text = APassedPartnerKey.ToString();
+                txtPartnerKey.SelectAll();
+
+                // Make sure that the underlying data is updated
+                // (this is needed when called from a Thread).
+                FFindCriteriaDataTable.Rows[0]["PartnerKey"] = APassedPartnerKey;
+
+                // Disable all other Panels, since the PartnerKey is
+                // an exclusive Search Criteria.
+                DisableAllPanel(pnlPartnerKey);
+            }
+        }
+
+        /// <summary>
+        /// Set the partner status manually
+        /// </summary>
+        /// <param name="APartnerStatus"></param>
+        public void FocusPartnerStatus(string APartnerStatus)
+        {
+//MessageBox.Show("FocusPartnerStatus: APartnerStatus = " + APartnerStatus);
+
+            /* First make sure that the PartnerStatus Panel is there... */
+            if (!pnlRightColumn.Controls.Contains(pnlPartnerStatus))
+            {
+                pnlRightColumn.Controls.Add(pnlPartnerStatus);
+            }
+
+            if (APartnerStatus == SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))
+            {
+                // Check corresponding Radio Button
+                rbtStatusActive.Checked = true;
+
+                // Make sure that the underlying data is updated (this is needed when called from a Thread).
+                FFindCriteriaDataTable.Rows[0]["PartnerStatus"] =
+                    SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE);
+            }
+            else if (APartnerStatus == SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscPRIVATE))
+            {
+                // Check corresponding Radio Button
+                rbtPrivate.Checked = true;
+
+                // Make sure that the underlying data is updated (this is needed when called from a Thread).
+                FFindCriteriaDataTable.Rows[0]["PartnerStatus"] =
+                    SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscPRIVATE);
+            }
+            else
+            {
+                // Check corresponding Radio Button
+                rbtStatusAll.Checked = true;
+
+                // Make sure that the underlying data is updated (this is needed when called from a Thread).
+                FFindCriteriaDataTable.Rows[0]["PartnerStatus"] = "ALL";
+            }
+
+//MessageBox.Show("FocusPartnerStatus: FFindCriteriaDataTable.Rows[0][\"PartnerStatus\"] = " + FFindCriteriaDataTable.Rows[0]["PartnerStatus"]);
         }
 
         /// <summary>

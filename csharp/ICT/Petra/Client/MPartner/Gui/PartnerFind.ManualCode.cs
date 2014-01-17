@@ -1397,6 +1397,69 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
+
+
+        #region Forms Messaging Interface Implementation
+
+        /// <summary>
+        /// Will be called by TFormsList to inform any Form that is registered in TFormsList
+        /// about any 'Forms Messages' that are broadcasted.
+        /// </summary>
+        /// <remarks>The Partner Find 'listens' to such 'Forms Message' broadcasts by
+        /// implementing this virtual Method. This Method will be called each time a
+        /// 'Forms Message' broadcast occurs.
+        /// </remarks>
+        /// <param name="AFormsMessage">An instance of a 'Forms Message'. This can be
+        /// inspected for parameters in the Method Body and the Form can use those to choose
+        /// to react on the Message, or not.</param>
+        /// <returns>Returns True if the Form reacted on the specific Forms Message,
+        /// otherwise false.</returns>
+        public bool ProcessFormsMessage(TFormsMessage AFormsMessage)
+        {
+            IFormsMessagePartnerInterface FormsMessagePartner;
+            bool MessageProcessed = false;
+            Thread FinishedCheckThread;
+
+            if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcNewPartnerSaved)
+            {
+                if ((FRunAsModalForm)
+                    && (AFormsMessage.MessageContext == FCurrentlySelectedTab.NewPartnerContext))
+                {
+                    FormsMessagePartner = (IFormsMessagePartnerInterface)AFormsMessage.MessageObject;
+
+                    // Start a Thread that searches for the newly created Partner.
+                    FinishedCheckThread = new Thread(FCurrentlySelectedTab.SearchForNewlyCreatedPartnerThread);
+                    FinishedCheckThread.SetApartmentState(ApartmentState.STA);
+                    FinishedCheckThread.Start(FormsMessagePartner);
+                }
+
+                MessageProcessed = true;
+            }
+            else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved)
+            {
+                bool FoundRow = false;
+
+                FormsMessagePartner = (IFormsMessagePartnerInterface)AFormsMessage.MessageObject;
+                FoundRow = FPartnerFindObject.CheckIfResultsContainPartnerKey(FormsMessagePartner.PartnerKey);
+
+                // if the results grid contains the partner that has just been edited and saved...
+                if (FoundRow)
+                {
+                    // Start a Thread that runs the search again with updated partner
+                    FinishedCheckThread = new Thread(FCurrentlySelectedTab.SearchForExistingPartnerSavedThread);
+                    FinishedCheckThread.SetApartmentState(ApartmentState.STA);
+                    FinishedCheckThread.Start(FormsMessagePartner);
+
+                    //MessageBox.Show(Catalog.GetString("TPartnerFindScreen.ProcessFormsMessage: Updated Partner was in Find Result!"));
+                }
+
+                MessageProcessed = true;
+            }
+
+            return MessageProcessed;
+        }
+
+        #endregion
     }
 
     /// <summary>

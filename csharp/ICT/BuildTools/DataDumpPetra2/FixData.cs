@@ -26,12 +26,9 @@ using System.IO;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
 using Ict.Common;
 using Ict.Tools.DBXML;
 using ICSharpCode.SharpZipLib.GZip;
-using PasswordUtilities;
 
 namespace Ict.Tools.DataDumpPetra2
 {
@@ -738,31 +735,17 @@ namespace Ict.Tools.DataDumpPetra2
             // Passwords are writed to a file in the fulldump folder.
             if (ATableName == "s_user")
             {
-                // generate a new password
-                string Password = "Petra";
-                double Entropy = 0;
-                PasswordGenerator Generator = new PasswordGenerator();
+                string Password;
+                string Salt;
+                string PasswordHash;
 
-                while (Entropy < 72)
-                {
-                    Generator.GeneratePassword();
-                    Entropy = Generator.PasswordEntropy;
-                }
+                PasswordHelper.GetNewPasswordSaltAndHash(out Password, out Salt, out PasswordHash);
 
-                Password = Generator.Password;
-
-                // generate a new salt
-                byte[] saltBytes = new byte[32];
-                RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-                rng.GetNonZeroBytes(new byte[32]);
-
-                SetValue(AColumnNames, ref ANewRow, "s_password_salt_c", Convert.ToBase64String(saltBytes));
-
-                // create password hash using password and salt
-                string PasswordHash = BitConverter.ToString(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(
-                            String.Concat(Password, Convert.ToBase64String(saltBytes))))).Replace("-", "");
-
+                SetValue(AColumnNames, ref ANewRow, "s_password_salt_c", Salt);
                 SetValue(AColumnNames, ref ANewRow, "s_password_hash_c", PasswordHash);
+
+                // the user will have to change their password the first time they log in
+                SetValue(AColumnNames, ref ANewRow, "s_password_needs_change_l", "true");
 
                 // write userIDs and new passwords to a file
                 string UserPasswordsDir = TAppSettingsManager.GetValue("fulldumpPath", "fulldump") +

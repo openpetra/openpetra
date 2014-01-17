@@ -82,6 +82,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>Tells whether any change occured in the Search Criteria since the last search operation</summary>
         private Boolean FCriteriaContentChanged;
 
+        /// <summary>Search is called as the result of a broadcast message.</summary>
+        private Boolean FBroadcastMessageSearch = false;
+
         // <summary>If the Form should set the Focus to the LocationKey field, set the LocationKey to this value</summary>
 // TODO        private Int32 FPassedLocationKey;
         /// <summary>Object that holds the logic for this screen</summary>
@@ -89,6 +92,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>The Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerFind FPartnerFindObject;
+
+        /// <summary>Indicates whether PartnerStatus UserDefault should be saved, or not.</summary>
+        private bool FNoSavingOfPartnerStatusUserDefault = false;
 
 //TODO        private Int32 FSplitterDistForm;
 //TODO        private Int32 FSplitterDistFindByDetails;
@@ -130,6 +136,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>todoComment</summary>
         public event System.EventHandler DisableAcceptButton;
+
+        private String FNewPartnerContext = "";
 
         private void OnPartnerInfoPaneCollapsed()
         {
@@ -232,6 +240,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             set
             {
                 FRunningInsideModalForm = value;
+            }
+        }
+
+        /// <summary>This is used in Method 'ProcessFormsMessage' to determine whether the 'Form Message'
+        /// received is for *this* Instance of the Modal Partner Find screen.</summary>
+        public string NewPartnerContext
+        {
+            get
+            {
+                return FNewPartnerContext;
             }
         }
 
@@ -1440,7 +1458,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                      * determine whether the 'Form Message' received is for *this* Instance
                      * of the Modal Partner Find screen.
                      */
-// TODO             FNewPartnerContext = System.Guid.NewGuid().ToString();
+                    FNewPartnerContext = System.Guid.NewGuid().ToString();
 
                     PartnerClass = PartnerClass.Replace("OM-FAM", "FAMILY");
                 }
@@ -1449,7 +1467,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 frm.SetParameters(TScreenMode.smNew,
                     PartnerClass, -1, -1, String.Empty);
-// TODO                frm.CallerContext = FNewPartnerContext;
+                frm.CallerContext = FNewPartnerContext;
 
                 if (!ARunAsModalForm)
                 {
@@ -1654,7 +1672,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 //                            TLogging.Log("After BringToFront()");
 
                             // Make the Grid respond on updown keys
-                            grdResult.Focus();
+                            // Not if this search is called as the result of a broadcast message. We do not want to change the focus.
+                            if (!FBroadcastMessageSearch)
+                            {
+                                grdResult.Focus();
+                            }
+
                             DataGrid_FocusRowEntered(this, new RowEventArgs(1));
 
                             if (!FBankDetailsTab)
@@ -1752,7 +1775,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                          * Saves 'Mailing Addresses Only' and 'Partner Status' Criteria
                          * settings to UserDefaults.
                          */
-                        ucoPartnerFindCriteria.FindCriteriaUserDefaultSave();
+                        if (!FNoSavingOfPartnerStatusUserDefault)
+                        {
+                            ucoPartnerFindCriteria.FindCriteriaUserDefaultSave();
+                        }
                     }
                     else
                     {
@@ -1863,6 +1889,176 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             EnableDisableUI(true);
+        }
+
+        /// <summary>
+        /// Search for a newly created partner and display in grid
+        /// </summary>
+        /// <param name="AFormsMessagePartner"></param>
+        public void SearchForNewlyCreatedPartnerThread(object AFormsMessagePartner)
+        {
+            object[] Args;
+            IFormsMessagePartnerInterface FormsMessagePartner;
+            TMyUpdateDelegate MyUpdateDelegate;
+            bool KeepRetrying = true;
+
+            // Since this procedure is called from a separate (background) Thread, it is
+            // necessary to execute this procedure in the Thread of the GUI!
+            if (btnSearch.InvokeRequired)
+            {
+                Args = new object[1];
+
+                try
+                {
+                    MyUpdateDelegate = new TMyUpdateDelegate(SearchForNewlyCreatedPartnerThread);
+                    Args[0] = AFormsMessagePartner;
+                    btnSearch.Invoke(MyUpdateDelegate, new object[] { AFormsMessagePartner });
+                }
+                finally
+                {
+                    Args = new object[0];
+                }
+            }
+            else
+            {
+                // Cast the Method Argument from an Object to the concrete Type
+                FormsMessagePartner = (IFormsMessagePartnerInterface)AFormsMessagePartner;
+
+                this.Cursor = Cursors.WaitCursor;
+
+                // Prevent saving of a PartnerStatus that we need to temporarily change to at a later point
+                if (FormsMessagePartner.PartnerStatus != ucoPartnerFindCriteria.PartnerStatus)
+                {
+                    FNoSavingOfPartnerStatusUserDefault = true;
+                }
+
+                // Reset all the Search Criteria (and Search Result) in preparation for displaying the new Partner
+                BtnClearCriteria_Click(this, null);
+
+                // Set PartnerKey Criteria
+                ucoPartnerFindCriteria.FocusPartnerKey(FormsMessagePartner.PartnerKey);
+                // Set PartnerClass Criteria
+                ucoPartnerFindCriteria.FocusPartnerStatus(FormsMessagePartner.PartnerStatus);
+
+                while (KeepRetrying)
+                {
+                    if (FPagedDataTable == null)
+                    {
+                        // Search operation not finished yet
+                        KeepRetrying = true;
+                    }
+                    else if (FPagedDataTable.Rows.Count == 0)
+                    {
+                        // Search operation finished, but Partner not found yet
+                        // (due to DataMirroring not having mirrored the Partner yet!)
+                        KeepRetrying = true;
+                    }
+                    else
+                    {
+                        // Newly created Partner Found!
+                        KeepRetrying = false;
+                    }
+
+                    if (KeepRetrying)
+                    {
+                        if (!FKeepUpSearchFinishedCheck)
+                        {
+                            // Search operation finished, but Partner not found yet
+                            // (due to DataMirroring not having mirrored the Partner yet!)
+                            // --> Run Search again to try and find the new Partner.
+                            BtnSearch_Click(this, null);
+                        }
+
+                        Thread.Sleep(500);
+                        Application.DoEvents();
+                    }
+                }
+
+                this.Cursor = Cursors.Default;
+            }
+        }
+
+        /// <summary>
+        /// Research using existing criteria so that results can be updated with the edited partner's details
+        /// </summary>
+        /// <param name="AFormsMessagePartner"></param>
+        public void SearchForExistingPartnerSavedThread(object AFormsMessagePartner)
+        {
+            object[] Args;
+            IFormsMessagePartnerInterface FormsMessagePartner;
+            TMyUpdateDelegate MyUpdateDelegate;
+            bool KeepRetrying = true;
+
+            // Since this procedure is called from a separate (background) Thread, it is
+            // necessary to execute this procedure in the Thread of the GUI!
+            if (btnSearch.InvokeRequired)
+            {
+                Args = new object[1];
+
+                try
+                {
+                    MyUpdateDelegate = new TMyUpdateDelegate(SearchForExistingPartnerSavedThread);
+                    Args[0] = AFormsMessagePartner;
+                    btnSearch.Invoke(MyUpdateDelegate, new object[] { AFormsMessagePartner });
+                }
+                finally
+                {
+                    Args = new object[0];
+                }
+            }
+            else
+            {
+                // Cast the Method Argument from an Object to the concrete Type
+                FormsMessagePartner = (IFormsMessagePartnerInterface)AFormsMessagePartner;
+
+                FBroadcastMessageSearch = true;
+                this.Cursor = Cursors.WaitCursor;
+
+                if (grdResult != null)
+                {
+                    grdResult = null;
+                }
+
+                FPagedDataTable = null;
+
+                while (KeepRetrying)
+                {
+                    if (FPagedDataTable == null)
+                    {
+                        // Search operation not finished yet
+                        KeepRetrying = true;
+                    }
+                    else if (FPagedDataTable.Rows.Count == 0) // what if there are no partners in new search?! TODO
+                    {
+                        // Search operation finished, but Partner not found yet
+                        // (due to DataMirroring not having mirrored the Partner yet!)
+                        KeepRetrying = true;
+                    }
+                    else
+                    {
+                        // Newly created Partner Found!
+                        KeepRetrying = false;
+                    }
+
+                    if (KeepRetrying)
+                    {
+                        if (!FKeepUpSearchFinishedCheck)
+                        {
+                            // Search operation finished, but Partner not found yet
+                            // (due to DataMirroring not having mirrored the Partner yet!)
+                            // --> Run Search again to try and find the new Partner.
+                            BtnSearch_Click(this, null);
+                        }
+
+                        Thread.Sleep(500);
+                        Application.DoEvents();
+                    }
+                }
+
+                this.Cursor = Cursors.Default;
+
+                FBroadcastMessageSearch = false;
+            }
         }
 
         #endregion

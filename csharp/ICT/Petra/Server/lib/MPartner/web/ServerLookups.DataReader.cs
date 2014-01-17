@@ -445,24 +445,33 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// Finds if a PBankingDetailsRow is used by more than one partner
         /// </summary>
         /// <param name="ABankingDetailsKey"></param>
+        /// <param name="APartnerKey">Partner key for current partner</param>
+        /// <param name="ASharedPartnerKeys"></param>
         /// <returns>True if row is shared, false if it is not.</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static bool IsBankingDetailsRowShared(int ABankingDetailsKey)
+        public static bool IsBankingDetailsRowShared(int ABankingDetailsKey, long APartnerKey, out List <long>ASharedPartnerKeys)
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
+            bool ReturnValue = false;
+
+            ASharedPartnerKeys = new List <long>();
 
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
             try
             {
                 PPartnerBankingDetailsTable PartnerBankingDetailsTable = PPartnerBankingDetailsAccess.LoadViaPBankingDetails(ABankingDetailsKey,
                     ReadTransaction);
 
-                if (PartnerBankingDetailsTable.Rows.Count >= 2)
+                foreach (PPartnerBankingDetailsRow Row in PartnerBankingDetailsTable.Rows)
                 {
-                    return true;
+                    // if record exists with a different partner key then the Bank Account is shared
+                    if (Row.PartnerKey != APartnerKey)
+                    {
+                        ASharedPartnerKeys.Add(Row.PartnerKey);
+                        ReturnValue = true;
+                    }
                 }
             }
             finally
@@ -474,7 +483,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 }
             }
 
-            return false;
+            return ReturnValue;
         }
     }
 }
