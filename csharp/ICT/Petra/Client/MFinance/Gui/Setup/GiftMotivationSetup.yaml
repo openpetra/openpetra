@@ -58,7 +58,7 @@ RootNode:
             ColWidths: [1=Fixed:220, 2=Fixed:120]
         pnlMoreChecks:
             ControlsOrientation: horizontal
-            Controls: [chkDetailAutopopdesc, chkDetailMotivationStatus, chkDetailReceipt, chkDetailTaxDeductable, chkDetailExportToIntranet]
+            Controls: [chkDetailAutopopdesc, chkDetailMotivationStatus, chkDetailReceipt, chkDetailTaxDeductible, chkDetailExportToIntranet]
         cmbDetailMotivationGroupCode: {Label=Group, List=UserDefinedList}
         txtDetailMotivationDetailCode: {Label=Detail, CharacterCasing=Upper}
         txtDetailMotivationDetailDesc: {Label=Description, Width=185}
@@ -69,7 +69,7 @@ RootNode:
         chkDetailAutopopdesc: {Label=Populate Gift Description}
         chkDetailMotivationStatus: {Label=Active}
         chkDetailReceipt: {Label=Print Receipt}
-        chkDetailTaxDeductable: {Label=Tax Deductable}
+        chkDetailTaxDeductible: {Label=Tax Deductible}
         chkDetailExportToIntranet: {Label=Export to Intranet}
         cmbReportColumn:
             OptionalValues: [Worker, =Field]

@@ -281,7 +281,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         detail.RecipientLedgerNumber = recGiftDetail.RecipientLedgerNumber;
                                         detail.ChargeFlag = recGiftDetail.ChargeFlag;
                                         detail.ConfidentialGiftFlag = recGiftDetail.ConfidentialGiftFlag;
-                                        detail.TaxDeductable = recGiftDetail.TaxDeductable;
+                                        detail.TaxDeductible = recGiftDetail.TaxDeductible;
                                         detail.MailingCode = recGiftDetail.MailingCode;
 
                                         if (detail.MailingCode.Length == 0)

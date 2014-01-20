@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -381,7 +381,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     "gift comment three"), AGiftDetailTable.GetGiftCommentThreeLength());
                             giftDetails.CommentThreeType = ImportString(Catalog.GetString(
                                     "comment three type"), AGiftDetailTable.GetCommentThreeTypeLength());
-                            giftDetails.TaxDeductable = ImportBoolean(Catalog.GetString("tax deductable"));
+                            giftDetails.TaxDeductible = ImportBoolean(Catalog.GetString("tax deductible"));
 
                             gift.DateEntered = giftBatch.GlEffectiveDate;
 

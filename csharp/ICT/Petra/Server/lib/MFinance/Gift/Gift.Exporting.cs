@@ -480,7 +480,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             WriteStringQuoted(giftDetails.CommentTwoType);
             WriteStringQuoted(giftDetails.GiftCommentThree);
             WriteStringQuoted(giftDetails.CommentThreeType);
-            WriteBoolean(giftDetails.TaxDeductable, true);
+            WriteBoolean(giftDetails.TaxDeductible, true);
 //            WriteLineDate(gift.DateEntered);  //Don't write this - it can't be used by import.
         }
 
