@@ -1226,12 +1226,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (motivationDetail != null)
                 {
                     giftDetail.AccountCode = motivationDetail.AccountCode.ToString();
-                    giftDetail.MotivationDetailDescription = motivationDetail.MotivationDetailDesc; 
                 }
                 else
                 {
                     giftDetail.SetAccountCodeNull();
-                    giftDetail.SetMotivationDetailDescriptionNull();
                 }
 
                 giftDetail.DateEntered = giftRow.DateEntered;
@@ -1302,7 +1300,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftDetail.RecipientDescription = "INVALID";
                 }
 
-                //giftDetail.DateEntered = giftRow.DateEntered;
+                //And account code
+                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(
+                    new object[] { ALedgerNumber, giftDetail.MotivationGroupCode, giftDetail.MotivationDetailCode });
+
+                if (motivationDetail != null)
+                {
+                    giftDetail.AccountCode = motivationDetail.AccountCode.ToString();
+                }
+                else
+                {
+                    giftDetail.SetAccountCodeNull();
+                }
             }
 
             AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
