@@ -119,7 +119,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbDetailMotivationGroupCode.Enter += new EventHandler(SetKeyMinistryTextBoxInvisible);
             cmbDetailMotivationDetailCode.Enter += new EventHandler(SetKeyMinistryTextBoxInvisible);
             
-            SetOverlayOnKeyMinistryCombo();
+            SetTextBoxOverlayOnKeyMinistryCombo();
         }
 
 		/// <summary>
@@ -165,7 +165,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     UpdateBaseAmount(false);
                 }
 
-               SetOverlayOnKeyMinistryCombo();
+               SetTextBoxOverlayOnKeyMinistryCombo();
 
                 return;
             }
@@ -246,8 +246,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.SuppressChangeDetection = true;
 
-                strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString(); //txtDetailMotivationGroupCode.Text; 
-                strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString(); //txtDetailMotivationDetailCode.Text;
+                strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString(); 
+                strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
 
                 if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
                         APartnerKey, ref strMotivationGroup, ref strMotivationDetail))
@@ -358,7 +358,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void SetOverlayOnKeyMinistryCombo()
+        private void SetTextBoxOverlayOnKeyMinistryCombo()
         {
         	ResetMotivationDetailCodeFilter();
 
@@ -408,7 +408,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 			FInEditMode = false;
 			if (!txtKeyMinistry.Visible)
 			{
-				SetOverlayOnKeyMinistryCombo();
+				SetTextBoxOverlayOnKeyMinistryCombo();
 			}
         }
 
@@ -1354,8 +1354,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 newRow.DonorName = ACurrentRow.DonorName;
                 newRow.DateEntered = giftRow.DateEntered;
                 cmbDetailMotivationGroupCode.SelectedIndex = 0;
-                newRow.MotivationGroupCode = cmbDetailMotivationGroupCode.GetSelectedString(); //txtDetailMotivationGroupCode.Text;
-                newRow.MotivationDetailCode = cmbDetailMotivationDetailCode.GetSelectedString(); //txtDetailMotivationDetailCode.Text;
+                newRow.MotivationGroupCode = cmbDetailMotivationGroupCode.GetSelectedString();
+                newRow.MotivationDetailCode = cmbDetailMotivationDetailCode.GetSelectedString();
                 RetrieveMotivationDetailCostCentreCode();
                 newRow.CostCentreCode = txtDetailCostCentreCode.Text;
 
@@ -1400,7 +1400,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (!txtKeyMinistry.Visible)
             {
-                SetOverlayOnKeyMinistryCombo();
+                SetTextBoxOverlayOnKeyMinistryCombo();
             }
             
             if (ARow == null)
