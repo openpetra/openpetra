@@ -2017,13 +2017,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     // this partner is indeed a unit
                     PUnitRow UnitRow = UnitTable[0];
-    
+
                     if (UnitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
                     {
                         KeyMinistryExists = true;
-                        
+
                         PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction);
                         PPartnerRow PartnerRow = PartnerTable[0];
+
                         if (SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerRow.StatusCode) == TStdPartnerStatusCode.spscACTIVE)
                         {
                             AIsActive = true;
@@ -2038,7 +2039,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }
-            
+
             return KeyMinistryExists;
         }
 
@@ -2071,7 +2072,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             return unitTable;
         }
-        
+
         /// <summary>
         /// get the key ministries. If Recipient is a field, get the key ministries of that field.
         /// If Recipient is a key ministry itself, get all key ministries of the same field

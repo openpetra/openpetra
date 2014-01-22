@@ -220,7 +220,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 txtDetailMotivationDetailCode.Text);
             return true;
         }
-        
+
         private void ValidateDataDetailsManual(AMotivationDetailRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
@@ -243,8 +243,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                             // Key Ministry is deactivated and therefore can't be used here
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_KEY_MINISTRY_DEACTIVATED)),
-                                    ValidationColumn, ValidationControlsData.ValidationControl);
-            
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+
                             // Handle addition to/removal from TVerificationResultCollection.
                             VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
                         }
@@ -254,15 +254,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                         // Partner Key does not refer to Key Ministry
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
                                 ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_NOT_A_KEY_MINISTRY)),
-                                ValidationColumn, ValidationControlsData.ValidationControl);
-        
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+
                         // Handle addition to/removal from TVerificationResultCollection.
                         VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
                     }
                 }
             }
-            
         }
-        
     }
 }

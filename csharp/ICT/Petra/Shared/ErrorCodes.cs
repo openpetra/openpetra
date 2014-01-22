@@ -203,7 +203,7 @@ namespace Ict.Petra.Shared
         [ErrCodeAttribute("Key Ministry not active.",
              ErrorMessageText = "Key Ministry has been deactivated and cannot be used.")]
         public const String ERR_KEY_MINISTRY_DEACTIVATED = "FIN.00009V";
-        
+
         #endregion
 
         #region Partner Module-specific error codes
