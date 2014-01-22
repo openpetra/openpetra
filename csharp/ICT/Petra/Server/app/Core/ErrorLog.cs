@@ -46,23 +46,19 @@ namespace Ict.Petra.Server.App.Core.Security
         /// <param name="AMessageLine1"></param>
         /// <param name="AMessageLine2"></param>
         /// <param name="AMessageLine3"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
-        public Boolean AddErrorLogEntry(String AErrorCode,
+        public void AddErrorLogEntry(String AErrorCode,
             String AContext,
             String AMessageLine1,
             String AMessageLine2,
-            String AMessageLine3,
-            out TVerificationResultCollection AVerificationResult)
+            String AMessageLine3)
         {
-            return AddErrorLogEntry(AErrorCode,
+            AddErrorLogEntry(AErrorCode,
                 AContext,
                 AMessageLine1,
                 AMessageLine2,
                 AMessageLine3,
                 UserInfo.GUserInfo.UserID,
-                UserInfo.GUserInfo.ProcessID,
-                out AVerificationResult);
+                UserInfo.GUserInfo.ProcessID);
         }
 
         /// <summary>
@@ -80,19 +76,16 @@ namespace Ict.Petra.Server.App.Core.Security
         /// <param name="AMessageLine3"></param>
         /// <param name="AUserID"></param>
         /// <param name="AProcessID"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
-        public Boolean AddErrorLogEntry(String AErrorCode,
+        public void AddErrorLogEntry(String AErrorCode,
             String AContext,
             String AMessageLine1,
             String AMessageLine2,
             String AMessageLine3,
             String AUserID,
-            Int32 AProcessID,
-            out TVerificationResultCollection AVerificationResult)
+            Int32 AProcessID)
         {
             TDBTransaction WriteTransaction;
-            Boolean SubmissionOK;
+
             SErrorLogTable ErrorLogTable;
             SErrorLogRow NewErrorLogRow;
             DateTime ErrorLogDateTime;
@@ -129,24 +122,27 @@ namespace Ict.Petra.Server.App.Core.Security
             WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
-            SubmissionOK = SErrorLogAccess.SubmitChanges(ErrorLogTable, WriteTransaction, out AVerificationResult);
-
-            if (SubmissionOK)
+            
+            try 
             {
+                SErrorLogAccess.SubmitChanges(ErrorLogTable, WriteTransaction);
+                
                 if (NewTransaction)
-                {
+                {                
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
-            }
-            else
+            } 
+            catch (Exception Exc) 
             {
+                TLogging.Log("An Exception occured during the saving of the Error Log:" + Environment.NewLine + Exc.ToString());
+                
                 if (NewTransaction)
-                {
+                {                
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-            }
-
-            return SubmissionOK;
+                
+                throw;
+            }                        
         }
     }
 }

@@ -124,7 +124,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static bool SavePartner(PartnerEditTDS AMainDS)
+        public static void SavePartner(PartnerEditTDS AMainDS)
         {
             if (!PAcquisitionAccess.Exists(MPartnerConstants.PARTNERIMPORT_AQUISITION_DEFAULT, null))
             {
@@ -134,17 +134,25 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 row.AcquisitionDescription = Catalog.GetString("Imported Data");
                 AcqTable.Rows.Add(row);
 
-                TVerificationResultCollection VerificationResult;
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-                PAcquisitionAccess.SubmitChanges(AcqTable, Transaction, out VerificationResult);
+                try
+                {
+                    PAcquisitionAccess.SubmitChanges(AcqTable, Transaction);
 
-                DBAccess.GDBAccessObj.CommitTransaction();
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                } 
+                catch (Exception Exc) 
+                {
+                    TLogging.Log("An Exception occured during the saving of a Partner's Acquisition:" + Environment.NewLine + Exc.ToString());
+                    
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    
+                    throw;
+                }                               
             }
 
-            PartnerEditTDSAccess.SubmitChanges(AMainDS);
-            
-            return true;
+            PartnerEditTDSAccess.SubmitChanges(AMainDS);           
         }
     }
 }

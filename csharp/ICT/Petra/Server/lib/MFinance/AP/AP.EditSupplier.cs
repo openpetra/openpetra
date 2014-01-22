@@ -150,28 +150,15 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
         ///
         /// All DataTables contained in the Typed DataSet are inspected for added,
         /// changed or deleted rows by submitting them to the DataStore.
-        ///
         /// </summary>
         /// <param name="AInspectDS">Typed DataSet that needs to contain known DataTables</param>
-        /// <param name="AVerificationResult">Null if all verifications are OK and all DB calls
-        /// succeded, otherwise filled with 1..n TVerificationResult objects
-        /// (can also contain DB call exceptions)</param>
-        /// <returns>true if all verifications are OK and all DB calls succeeded, false if
-        /// any verification or DB call failed
-        /// </returns>
-        public TSubmitChangesResult SubmitChanges(ref AccountsPayableTDS AInspectDS,
-            out TVerificationResultCollection AVerificationResult)
+        /// <returns>TSubmitChangesResult.scrOK in case everything went fine, otherwise throws an Exception.</returns>
+        public TSubmitChangesResult SubmitChanges(ref AccountsPayableTDS AInspectDS)
         {
             TDBTransaction SubmitChangesTransaction;
-            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-            TVerificationResultCollection SingleVerificationResultCollection;
-
-            AVerificationResult = null;
 
             if (AInspectDS != null)
             {
-                AVerificationResult = new TVerificationResultCollection();
-
                 // I won't allow any null fields related to discount:
 
                 if (AInspectDS.AApSupplier[0].IsDefaultDiscountDaysNull())
@@ -185,38 +172,24 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                 }
 
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                
                 try
                 {
-                    if (AApSupplierAccess.SubmitChanges(AInspectDS.AApSupplier, SubmitChangesTransaction,
-                            out SingleVerificationResultCollection))
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrOK;
-                    }
-                    else
-                    {
-                        SubmissionResult = TSubmitChangesResult.scrError;
-                    }
+                    AApSupplierAccess.SubmitChanges(AInspectDS.AApSupplier, SubmitChangesTransaction);
 
-                    if (SubmissionResult == TSubmitChangesResult.scrOK)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                    }
-                    else
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
+                    DBAccess.GDBAccessObj.CommitTransaction();
                 }
-                catch (Exception e)
+                catch (Exception Exc)
                 {
-                    TLogging.Log("after submitchanges: exception " + e.Message);
+                    TLogging.Log("An Exception occured during the storing of the AP Supplier):" + Environment.NewLine + Exc.ToString());
 
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
                     throw;
                 }
             }
-
-            return SubmissionResult;
+            
+            return TSubmitChangesResult.scrOK;
         }
     }
 }

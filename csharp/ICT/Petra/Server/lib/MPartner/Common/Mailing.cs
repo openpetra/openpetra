@@ -202,14 +202,12 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="ABestAddressPK">Primary Key of the 'Best Address' Location</param>
         /// <param name="ALocationDR">DataRow containing the 'Best Address' Location</param>
         /// <param name="APartnerLocationDR">DataRow containing the 'Best Address' PartnerLocation</param>
-        /// <param name="AVerificationResult">Contains DB call exceptions, if there are any.</param>
         /// <returns>False if an invalid PartnerKey was passed in or if Petra Security
         /// denied access to the Partner or if Location/PartnerLocation Data could not be loaded for the
         /// Partner, otherwise true.</returns>
         public static bool GetPartnersBestLocationData(Int64 APartnerKey,
             out TLocationPK ABestAddressPK,
-            out PLocationRow ALocationDR, out PPartnerLocationRow APartnerLocationDR,
-            out TVerificationResultCollection AVerificationResult)
+            out PLocationRow ALocationDR, out PPartnerLocationRow APartnerLocationDR)
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
@@ -218,15 +216,12 @@ namespace Ict.Petra.Server.MPartner.Common
 
             ALocationDR = null;
             APartnerLocationDR = null;
-            AVerificationResult = null;
             ABestAddressPK = null;
 
             if (APartnerKey > 0)
             {
                 ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                    IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
+                    IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
                 try
                 {
@@ -293,21 +288,18 @@ namespace Ict.Petra.Server.MPartner.Common
         /// </summary>
         /// <param name="APartnerKey">PartneKey of the Partner for which the 'Best Address'
         /// should be loaded for.</param>
-        /// <param name="AVerificationResult">Contains DB call exceptions, if there are any.</param>
         /// <returns>TLocationPK(-1,-1) if an invalid PartnerKey was passed in or if Petra Security
         /// denied access to the Partner or if Location/PartnerLocation Data could not be loaded for the
         /// Partner, otherwise the Primary Key of the Location of the 'Best Address' of the Partner.</returns>
-        public static TLocationPK GetPartnersBestLocation(Int64 APartnerKey,
-            out TVerificationResultCollection AVerificationResult)
+        public static TLocationPK GetPartnersBestLocation(Int64 APartnerKey)
         {
             TLocationPK ReturnValue = new TLocationPK(-1, -1);
             TLocationPK LocationPK;
-
             PLocationRow LocationDR;
             PPartnerLocationRow PartnerLocationDR;
 
             if (GetPartnersBestLocationData(APartnerKey, out LocationPK, out LocationDR,
-                    out PartnerLocationDR, out AVerificationResult))
+                out PartnerLocationDR))
             {
                 ReturnValue = LocationPK;
             }

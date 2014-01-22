@@ -89,9 +89,8 @@ namespace Tests.MFinance.Server.CrossLedger
                     AddTestRow(FTestLedgerList[1], "NUnitTestLedger2", true, "JPY");
                     AddTestRow(FTestLedgerList[2], "NUnitTestLedger2", true);
 
-                    // Save these new rows
-                    TVerificationResultCollection resultCollection;
-                    ALedgerAccess.SubmitChanges(FMainDS.ALedger, null, out resultCollection);
+                    // Save these new rows                    
+                    ALedgerAccess.SubmitChanges(FMainDS.ALedger, null);
                     FMainDS.AcceptChanges();
 
                     FInitSucceeded = true;
@@ -114,9 +113,8 @@ namespace Tests.MFinance.Server.CrossLedger
             {
                 DeleteTestRowIfExists(LedgerNum);
             }
-
-            TVerificationResultCollection resultCollection;
-            ALedgerAccess.SubmitChanges(FMainDS.ALedger, null, out resultCollection);
+            
+            ALedgerAccess.SubmitChanges(FMainDS.ALedger, null);
 
             // Disconnect
             TPetraServerConnector.Disconnect();

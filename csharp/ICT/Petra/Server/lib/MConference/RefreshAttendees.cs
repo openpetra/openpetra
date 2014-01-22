@@ -53,14 +53,20 @@ namespace Ict.Petra.Server.MConference.Applications
         /// </summary>
         public static void RefreshAttendees(Int64 AConferenceKey)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-            PcConferenceTable ConferenceTable = new PcConferenceTable();
-            PUnitTable UnitTable = new PUnitTable();
+            TDBTransaction Transaction;
+            PcConferenceTable ConferenceTable;
+            PUnitTable UnitTable;
             string OutreachPrefix = String.Empty;
-            ConferenceApplicationTDS MainDS = new ConferenceApplicationTDS();
+            ConferenceApplicationTDS MainDS;
 
+            Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            
             try
             {
+                ConferenceTable = new PcConferenceTable();
+                UnitTable = new PUnitTable();
+                MainDS = new ConferenceApplicationTDS();
+                
                 // get the conference prefix which links all outreaches associated with a conference
                 ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(AConferenceKey, Transaction);
 
@@ -134,7 +140,6 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 PcRoomAllocTable RoomAllocTable = null;
                 PcExtraCostTable ExtraCostTable = null;
-                TVerificationResultCollection ResultCollection;
 
                 // now check the other way: all attendees of this conference, are they still valid?
                 foreach (PcAttendeeRow AttendeeRow in MainDS.PcAttendee.Rows)
@@ -152,7 +157,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
                         if (RoomAllocTable != null)
                         {
-                            PcRoomAllocAccess.SubmitChanges(RoomAllocTable, Transaction, out ResultCollection);
+                            PcRoomAllocAccess.SubmitChanges(RoomAllocTable, Transaction);
                         }
 
                         // remove any extra costs
@@ -165,7 +170,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
                         if (ExtraCostTable != null)
                         {
-                            PcExtraCostAccess.SubmitChanges(ExtraCostTable, Transaction, out ResultCollection);
+                            PcExtraCostAccess.SubmitChanges(ExtraCostTable, Transaction);
                         }
 
                         // remove attendee
@@ -180,14 +185,20 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 ConferenceApplicationTDSAccess.SubmitChanges(MainDS);
 
+                DBAccess.GDBAccessObj.CommitTransaction();
+
                 TLogging.Log(String.Format(
                         "RefreshAttendees: finished. OutreachPrefix: {0}, {1} Shortterm Applications, {2} Attendees",
-                        OutreachPrefix, shorttermApplicationsCount, attendeeCount));
-            }
-            finally
+                        OutreachPrefix, shorttermApplicationsCount, attendeeCount));                
+            } 
+            catch (Exception Exc) 
             {
+                TLogging.Log("An Exception occured during the refreshing of the Attendees:" + Environment.NewLine + Exc.ToString());
+                
                 DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                
+                throw;
+            }           
         }
 
         /// <summary>

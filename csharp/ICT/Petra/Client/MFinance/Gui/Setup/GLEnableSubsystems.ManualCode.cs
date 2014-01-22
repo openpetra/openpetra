@@ -115,9 +115,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void BtnActivateGiftReceipting_Click(System.Object sender, EventArgs e)
         {
-            TVerificationResultCollection VerificationResult;
-            TSubmitChangesResult Result;
-
             if (FGiftReceiptingActivated)
             {
                 // deactivate gift receipting
@@ -150,10 +147,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         return;
                     }
 
-                    Result = TRemote.MFinance.Setup.WebConnectors.
+                    TRemote.MFinance.Setup.WebConnectors.
                              ActivateGiftReceiptingSubsystem(FLedgerNumber, Convert.ToInt32(
-                            txtStartingReceiptNumber.NumberValueInt) - 1, out VerificationResult);
-                    FGiftReceiptingActivated = (Result == TSubmitChangesResult.scrOK);
+                            txtStartingReceiptNumber.NumberValueInt) - 1);
+                    FGiftReceiptingActivated = true;
 
                     if (FGiftReceiptingActivated)
                     {
@@ -167,9 +164,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void BtnActivateAccountsPayable_Click(System.Object sender, EventArgs e)
         {
-            TVerificationResultCollection VerificationResult;
-            TSubmitChangesResult Result;
-
             if (FAccountsPayableActivated)
             {
                 // deactivate accounts payable
@@ -191,9 +185,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         MessageBoxButtons.YesNo,
                         MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    Result = TRemote.MFinance.Setup.WebConnectors.
-                             ActivateAccountsPayableSubsystem(FLedgerNumber, out VerificationResult);
-                    FAccountsPayableActivated = (Result == TSubmitChangesResult.scrOK);
+                    TRemote.MFinance.Setup.WebConnectors.
+                             ActivateAccountsPayableSubsystem(FLedgerNumber);
+                    FAccountsPayableActivated = true;
 
                     if (FAccountsPayableActivated)
                     {

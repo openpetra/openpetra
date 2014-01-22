@@ -390,7 +390,7 @@ namespace Tests.MPartner.Server.PartnerEdit
                     FrequencyRow.FrequencyDescription = "Annual Frequency";
                     FrequencyTable.Rows.Add(FrequencyRow);
 
-                    Assert.IsTrue(AFrequencyAccess.SubmitChanges(FrequencyTable, DBAccess.GDBAccessObj.Transaction, out VerificationResult));
+                    AFrequencyAccess.SubmitChanges(FrequencyTable, DBAccess.GDBAccessObj.Transaction);
                 }
 
                 // now add the publication "TESTPUBLICATION"
@@ -399,7 +399,7 @@ namespace Tests.MPartner.Server.PartnerEdit
                 PublicationRow.FrequencyCode = "Annual";
                 PublicationTable.Rows.Add(PublicationRow);
 
-                Assert.IsTrue(PPublicationAccess.SubmitChanges(PublicationTable, DBAccess.GDBAccessObj.Transaction, out VerificationResult));
+                PPublicationAccess.SubmitChanges(PublicationTable, DBAccess.GDBAccessObj.Transaction);
             }
 
             // make sure that "reason subscription given" exists
@@ -412,7 +412,7 @@ namespace Tests.MPartner.Server.PartnerEdit
                 ReasonRow.Description = "Free Subscription";
                 ReasonTable.Rows.Add(ReasonRow);
 
-                Assert.IsTrue(PReasonSubscriptionGivenAccess.SubmitChanges(ReasonTable, DBAccess.GDBAccessObj.Transaction, out VerificationResult));
+                PReasonSubscriptionGivenAccess.SubmitChanges(ReasonTable, DBAccess.GDBAccessObj.Transaction);
             }
 
             // now add the publication "TESTPUBLICATION" to the first family record and indicate it was a gift from newly created family record
@@ -507,7 +507,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "create unit to be used in commitment");
-            Assert.IsTrue(PmStaffDataAccess.SubmitChanges(CommitmentTable, DBAccess.GDBAccessObj.Transaction, out VerificationResult));
+            PmStaffDataAccess.SubmitChanges(CommitmentTable, DBAccess.GDBAccessObj.Transaction);
 
             // this should now not be allowed since person record has a commitment linked to it
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(PersonRow.PartnerKey, out TextMessage);
@@ -752,7 +752,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             BankingDetailsRow.BankingDetailsKey = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_bank_details));
             BankingDetailsTable.Rows.Add(BankingDetailsRow);
 
-            Assert.IsTrue(PBankingDetailsAccess.SubmitChanges(BankingDetailsTable, DBAccess.GDBAccessObj.Transaction, out VerificationResult));
+            PBankingDetailsAccess.SubmitChanges(BankingDetailsTable, DBAccess.GDBAccessObj.Transaction);
 
             // now deletion must not be possible since a bank account is set up for the bank
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(BankPartnerRow.PartnerKey, out TextMessage);
@@ -816,7 +816,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             BuildingRow.BuildingCode = "Test";
             BuildingTable.Rows.Add(BuildingRow);
 
-            PcBuildingAccess.SubmitChanges(BuildingTable, DBAccess.GDBAccessObj.Transaction, out VerificationResult);
+            PcBuildingAccess.SubmitChanges(BuildingTable, DBAccess.GDBAccessObj.Transaction);
 
             // now deletion must not be possible since a building is linked to the venue
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(VenuePartnerRow.PartnerKey, out TextMessage);

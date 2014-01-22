@@ -66,23 +66,18 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
         /// <param name="AExtractDescription">Description of the extract to be created</param>
         /// <param name="AExtractID">Extract Id of the new created extract. -1 if not successfull</param>
         /// <param name="AExtractAlreadyExists">True if there is already an extract with the given name. Otherwise false</param>
-        /// <param name="AVerificationResults">Nil if all verifications are OK and all DB calls
-        /// succeded, otherwise filled with 1..n TVerificationResult objects
-        /// (can also contain DB call exceptions)</param>
         /// <returns>true if the new extract was created. Otherwise false</returns>
         public bool CreateNewExtract(String AExtractName,
             String AExtractDescription,
             out Int32 AExtractID,
-            out Boolean AExtractAlreadyExists,
-            out TVerificationResultCollection AVerificationResults)
+            out Boolean AExtractAlreadyExists)
         {
             bool Success;
 
             Success = TExtractsHandling.CreateNewExtract(AExtractName,
                 AExtractDescription,
                 out AExtractID,
-                out AExtractAlreadyExists,
-                out AVerificationResults);
+                out AExtractAlreadyExists);
 
             if (Success)
             {

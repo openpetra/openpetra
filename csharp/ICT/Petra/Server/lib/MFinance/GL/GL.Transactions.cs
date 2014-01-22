@@ -30,6 +30,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using Ict.Common.Exceptions;
 using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
@@ -1855,15 +1856,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// including journals, transactions and attributes
         /// </summary>
         /// <param name="requestParams">HashTable with many parameters</param>
-        /// <param name="AMessages">Output structure for user error messages</param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Boolean SubmitRecurringGLBatch(Hashtable requestParams, out TVerificationResultCollection AMessages)
+        public static void SubmitRecurringGLBatch(Hashtable requestParams)
         {
-            Boolean NewTransaction = false;
-            Boolean success = false;
-
-            AMessages = new TVerificationResultCollection();
+            Boolean NewTransaction = false;            
             GLBatchTDS GLMainDS = new GLBatchTDS();
             ABatchRow BatchRow;
             Int32 ALedgerNumber = (Int32)requestParams["ALedgerNumber"];
@@ -2002,40 +1998,34 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     }
                 }
 
-                if (ABatchAccess.SubmitChanges(GLMainDS.ABatch, Transaction, out AMessages))
-                {
-                    if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out AMessages))
-                    {
-                        if (AJournalAccess.SubmitChanges(GLMainDS.AJournal, Transaction, out AMessages))
-                        {
-                            if (ATransactionAccess.SubmitChanges(GLMainDS.ATransaction, Transaction, out AMessages))
-                            {
-                                if (ATransAnalAttribAccess.SubmitChanges(GLMainDS.ATransAnalAttrib, Transaction, out AMessages))
-                                {
-                                    success = true;
-                                }
-                            }
-                        }
-                    }
-                }
+                ABatchAccess.SubmitChanges(GLMainDS.ABatch, Transaction);
+                
+                ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
+                
+                AJournalAccess.SubmitChanges(GLMainDS.AJournal, Transaction);
+                
+                ATransactionAccess.SubmitChanges(GLMainDS.ATransaction, Transaction);
+                
+                ATransAnalAttribAccess.SubmitChanges(GLMainDS.ATransAnalAttrib, Transaction);
 
-                if (success)
-                {
+                if (NewTransaction)
+                {                                
                     DBAccess.GDBAccessObj.CommitTransaction();
-                    GLMainDS.AcceptChanges();
                 }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    GLMainDS.RejectChanges();
-                }
+                
+                GLMainDS.AcceptChanges();
             }
-            catch (Exception ex)
+            catch (Exception Exc)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                throw new Exception("Error in SubmitRecurringGLBatch", ex);
+                TLogging.Log("An Exception occured during the submission of a Recurring GL Batch:" + Environment.NewLine + Exc.ToString());
+                
+                if (NewTransaction)
+                {                
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+                
+                throw new EOPAppException("Error in SubmitRecurringGLBatch", Exc);
             }
-            return success;
         }
 
         /// <summary>

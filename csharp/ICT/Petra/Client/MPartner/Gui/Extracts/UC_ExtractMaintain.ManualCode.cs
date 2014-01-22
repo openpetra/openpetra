@@ -140,7 +140,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     this.Cursor = Cursors.WaitCursor;
 
                     TSubmitChangesResult SubmissionResult;
-                    TVerificationResultCollection VerificationResult;
 
                     //Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.MExtract.GetChangesTyped();
                     MExtractTable SubmitDT = new MExtractTable();
@@ -163,7 +162,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     try
                     {
                         SubmissionResult = TRemote.MPartner.Partner.WebConnectors.SaveExtract
-                                               (FExtractId, ref SubmitDT, out VerificationResult);
+                                               (FExtractId, ref SubmitDT);
                     }
                     catch (System.Net.Sockets.SocketException)
                     {

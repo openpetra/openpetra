@@ -26,6 +26,7 @@ using System.Data;
 using Ict.Common.DB;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
@@ -235,8 +236,6 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             TDBTransaction SubmitChangesTransaction;
-            TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-            TVerificationResultCollection SingleVerificationResultCollection;
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
             AVerificationResult = null;
@@ -246,241 +245,99 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
             if (ASubmitTable != null)
             {
                 AVerificationResult = new TVerificationResultCollection();
+                
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                
                 try
                 {
                     if (ATablename == AAccountingPeriodTable.GetTableDBName())
                     {
-                        if (AAccountingPeriodAccess.SubmitChanges((AAccountingPeriodTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                                TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
-
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        AAccountingPeriodAccess.SubmitChanges((AAccountingPeriodTable)ASubmitTable, SubmitChangesTransaction);
+                        
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
                     }
                     else if (ATablename == ACurrencyTable.GetTableDBName())
                     {
-                        if (ACurrencyAccess.SubmitChanges((ACurrencyTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        ACurrencyAccess.SubmitChanges((ACurrencyTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == ADailyExchangeRateTable.GetTableDBName())
                     {
-                        if (ADailyExchangeRateAccess.SubmitChanges((ADailyExchangeRateTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        ADailyExchangeRateAccess.SubmitChanges((ADailyExchangeRateTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == ACorporateExchangeRateTable.GetTableDBName())
                     {
-                        if (ACorporateExchangeRateAccess.SubmitChanges((ACorporateExchangeRateTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        ACorporateExchangeRateAccess.SubmitChanges((ACorporateExchangeRateTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == ACurrencyLanguageTable.GetTableDBName())
                     {
-                        if (ACurrencyLanguageAccess.SubmitChanges((ACurrencyLanguageTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        ACurrencyLanguageAccess.SubmitChanges((ACurrencyLanguageTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == AFeesPayableTable.GetTableDBName())
                     {
-                        if (AFeesPayableAccess.SubmitChanges((AFeesPayableTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                                TCacheableFinanceTablesEnum.FeesPayableList.ToString());
-
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        AFeesPayableAccess.SubmitChanges((AFeesPayableTable)ASubmitTable, SubmitChangesTransaction);
+                        
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheableFinanceTablesEnum.FeesPayableList.ToString());
                     }
                     else if (ATablename == AFeesReceivableTable.GetTableDBName())
                     {
-                        if (AFeesReceivableAccess.SubmitChanges((AFeesReceivableTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                                TCacheableFinanceTablesEnum.FeesReceivableList.ToString());
-
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        AFeesReceivableAccess.SubmitChanges((AFeesReceivableTable)ASubmitTable, SubmitChangesTransaction);
+                        
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheableFinanceTablesEnum.FeesReceivableList.ToString());
                     }
                     else if (ATablename == AGiftBatchTable.GetTableDBName())
                     {
                         // This method is called from ADailyExchangeRate Setup - please do not remove
                         // The method is not required for changes made to the gift batch screens, which use a TDS
-                        if (AGiftBatchAccess.SubmitChanges((AGiftBatchTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        AGiftBatchAccess.SubmitChanges((AGiftBatchTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == AJournalTable.GetTableDBName())
                     {
                         // This method is called from ADailyExchangeRate Setup - please do not remove
                         // The method is not required for changes made to the journal screens, which use a TDS
-                        if (AJournalAccess.SubmitChanges((AJournalTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        AJournalAccess.SubmitChanges((AJournalTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == ALedgerTable.GetTableDBName())
                     {
                         // This method is called from ADailyExchangeRate Testing - please do not remove
-                        if (ALedgerAccess.SubmitChanges((ALedgerTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        ALedgerAccess.SubmitChanges((ALedgerTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == AAnalysisTypeTable.GetTableDBName())
                     {
-                        if (AAnalysisTypeAccess.SubmitChanges((AAnalysisTypeTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        AAnalysisTypeAccess.SubmitChanges((AAnalysisTypeTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == ASuspenseAccountTable.GetTableDBName())
                     {
-                        if (ASuspenseAccountAccess.SubmitChanges((ASuspenseAccountTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                                TCacheableFinanceTablesEnum.SuspenseAccountList.ToString());
-
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        ASuspenseAccountAccess.SubmitChanges((ASuspenseAccountTable)ASubmitTable, SubmitChangesTransaction);
+                        
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheableFinanceTablesEnum.SuspenseAccountList.ToString());
                     }
                     else if (ATablename == PcAttendeeTable.GetTableDBName())
                     {
-                        if (PcAttendeeAccess.SubmitChanges((PcAttendeeTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        PcAttendeeAccess.SubmitChanges((PcAttendeeTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == PcConferenceTable.GetTableDBName())
                     {
-                        if (PcConferenceAccess.SubmitChanges((PcConferenceTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        PcConferenceAccess.SubmitChanges((PcConferenceTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == PcConferenceCostTable.GetTableDBName())
                     {
-                        if (PcConferenceCostAccess.SubmitChanges((PcConferenceCostTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        PcConferenceCostAccess.SubmitChanges((PcConferenceCostTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == PcEarlyLateTable.GetTableDBName())
                     {
-                        if (PcEarlyLateAccess.SubmitChanges((PcEarlyLateTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        PcEarlyLateAccess.SubmitChanges((PcEarlyLateTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == PcSupplementTable.GetTableDBName())
                     {
-                        if (PcSupplementAccess.SubmitChanges((PcSupplementTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        PcSupplementAccess.SubmitChanges((PcSupplementTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == PcDiscountTable.GetTableDBName())
                     {
-                        if (PcDiscountAccess.SubmitChanges((PcDiscountTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        PcDiscountAccess.SubmitChanges((PcDiscountTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == PInternationalPostalTypeTable.GetTableDBName())
                     {
@@ -489,84 +346,37 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
 
                         if (TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                         {
-                            if (PInternationalPostalTypeAccess.SubmitChanges((PInternationalPostalTypeTable)ASubmitTable, SubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
-                            {
-                                SubmissionResult = TSubmitChangesResult.scrOK;
-                            }
-                            else
-                            {
-                                SubmissionResult = TSubmitChangesResult.scrError;
-                            }
+                            PInternationalPostalTypeAccess.SubmitChanges((PInternationalPostalTypeTable)ASubmitTable, SubmitChangesTransaction);
                         }
                     }
                     else if (ATablename == PtApplicationTypeTable.GetTableDBName())
                     {
-                        if (PtApplicationTypeAccess.SubmitChanges((PtApplicationTypeTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            // mark dependent lists for needing to be refreshed since there was a change in base list
-                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                                TCacheablePersonTablesEnum.EventApplicationTypeList.ToString());
-                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                                TCacheablePersonTablesEnum.FieldApplicationTypeList.ToString());
-
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        PtApplicationTypeAccess.SubmitChanges((PtApplicationTypeTable)ASubmitTable, SubmitChangesTransaction);
+                        
+                        // mark dependent lists for needing to be refreshed since there was a change in base list
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.EventApplicationTypeList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.FieldApplicationTypeList.ToString());
                     }
                     else if (ATablename == PMailingTable.GetTableDBName())
                     {
-                        if (PMailingAccess.SubmitChanges((PMailingTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        PMailingAccess.SubmitChanges((PMailingTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == PmDocumentTypeTable.GetTableDBName())
                     {
-                        if (PmDocumentTypeAccess.SubmitChanges((PmDocumentTypeTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        PmDocumentTypeAccess.SubmitChanges((PmDocumentTypeTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == SGroupTable.GetTableDBName())
                     {
-                        if (SGroupAccess.SubmitChanges((SGroupTable)ASubmitTable, SubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrOK;
-                        }
-                        else
-                        {
-                            SubmissionResult = TSubmitChangesResult.scrError;
-                        }
+                        SGroupAccess.SubmitChanges((SGroupTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else
                     {
-                        throw new Exception("TCommonDataReader.SaveData: unknown table " + ATablename);
+                        throw new EOPAppException("TCommonDataReader.SaveData: unknown table '" + ATablename + "'");
                     }
 
-                    if (SubmissionResult == TSubmitChangesResult.scrOK)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                    }
-                    else
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
+                    DBAccess.GDBAccessObj.CommitTransaction();
                 }
                 catch (Exception e)
                 {
@@ -574,18 +384,21 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
 
                     DBAccess.GDBAccessObj.RollbackTransaction();
 
-                    throw new Exception(e.ToString() + " " + e.Message);
+                    throw;
                 }
             }
 
-            if (AVerificationResult.Count > 0)
+            if ((AVerificationResult != null) && 
+                (AVerificationResult.Count > 0))
             {
                 // Downgrade TScreenVerificationResults to TVerificationResults in order to allow
                 // Serialisation (needed for .NET Remoting).
                 TVerificationResultCollection.DowngradeScreenVerificationResults(AVerificationResult);
+                
+                return AVerificationResult.HasCriticalErrors ? TSubmitChangesResult.scrError : TSubmitChangesResult.scrOK;
             }
 
-            return SubmissionResult;
+            return TSubmitChangesResult.scrOK;
         }
 
         #region Data Validation

@@ -142,13 +142,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             PartnerEditTDSAccess.SubmitChanges(MainDS);
 
-            TVerificationResultCollection VerificationResult;
-            AApSupplierAccess.SubmitChanges(supplierTable, null, out VerificationResult);
-
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
-            {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
-            }
+            AApSupplierAccess.SubmitChanges(supplierTable, null);
         }
     }
 }

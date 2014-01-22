@@ -178,18 +178,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 //New batch so set total amount of Batch for previous batch
                                 giftBatch.BatchTotal = totalBatchAmount;
 
-                                TVerificationResultCollection Messages2;
-                                
-                                if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out Messages2))
-                                {
-                                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                        Catalog.GetString("Database I/O Failure"),
-                                        0);
-                                    
-                                    AMessages.AddCollection(Messages2);
-                                    
-                                    return false;
-                                }
+                                AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction);
 
 //                              FMainDS.AGiftBatch.AcceptChanges();  // changed to use a new TDS for each batch.
                                 FMainDS = new GiftBatchTDS();
@@ -231,18 +220,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftBatch.GiftType = ImportString(Catalog.GetString("gift type"), AGiftBatchTable.GetGiftTypeLength());
                             FImportMessage = Catalog.GetString("Saving gift batch");
 
-                            TVerificationResultCollection Messages3;
-                            
-                            if (!AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out Messages3))
-                            {
-                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    Catalog.GetString("Database I/O Failure"),
-                                    0);
-
-                                AMessages.AddCollection(Messages3);
-                                
-                                return false;
-                            }
+                            AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction);
 
                             FMainDS.AGiftBatch.AcceptChanges();
 
@@ -386,34 +364,12 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                             FImportMessage = Catalog.GetString("Saving gift");
 
-                            TVerificationResultCollection Messages4;
-                            
-                            if (!AGiftAccess.SubmitChanges(FMainDS.AGift, FTransaction, out Messages4))
-                            {
-                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    Catalog.GetString("Database I/O Failure"),
-                                    0);
-
-                                AMessages.AddCollection(Messages4);
-                                
-                                return false;
-                            }
+                            AGiftAccess.SubmitChanges(FMainDS.AGift, FTransaction);
 
                             FMainDS.AGift.AcceptChanges();
                             FImportMessage = Catalog.GetString("Saving giftdetails");
 
-                            TVerificationResultCollection Messages5;
-                            
-                            if (!AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, FTransaction, out Messages5))
-                            {
-                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    Catalog.GetString("Database I/O Failure"),
-                                    0);
-
-                                AMessages.AddCollection(Messages5);
-                                
-                                return false;
-                            }
+                            AGiftDetailAccess.SubmitChanges(FMainDS.AGiftDetail, FTransaction);
 
                             FMainDS.AGiftDetail.AcceptChanges();
 
@@ -441,57 +397,40 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                 FImportMessage = Catalog.GetString("Saving all data into the database");
 
-                TVerificationResultCollection Messages6;
-                
                 //Finally save pending changes (the last number is updated !)
-                if (AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction, out Messages6))
+                AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction);
+                                  
+                ALedgerAccess.SubmitChanges(LedgerTable, FTransaction);
+
+                FMainDS.AGiftBatch.AcceptChanges();
+                FMainDS.ALedger.AcceptChanges();
+
+                if (NewTransaction) 
                 {
-                    TVerificationResultCollection Messages7;
-                    
-                    if (ALedgerAccess.SubmitChanges(LedgerTable, FTransaction, out Messages7))
-                    {
-                        FMainDS.AGiftBatch.AcceptChanges();
-                        FMainDS.ALedger.AcceptChanges();
-
-                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                            Catalog.GetString("Gift batch import successful"),
-                            100);
-
-                        ok = true;
-                    }
-                    else
-                    {
-                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                            Catalog.GetString("Database I/O Failure"),
-                            0);
-    
-                        AMessages.AddCollection(Messages7);
-                        
-                        return false;
-                    }
-                }
-                else
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                        Catalog.GetString("Database I/O Failure"),
-                        0);
-
-                    AMessages.AddCollection(Messages6);
-                    
-                    return false;                   
+                    DBAccess.GDBAccessObj.CommitTransaction();
                 }
 
-                sr.Close();
+                ok = true;
             }
             catch (Exception ex)
             {
-                TLogging.Log(ex.ToString());
                 String speakingExceptionText = SpeakingExceptionMessage(ex);
+                
+                if (AMessages == null)
+                {
+                    AMessages = new TVerificationResultCollection();
+                }
+                                        
                 AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
                         String.Format(Catalog.GetString("There is a problem parsing the file in row {0}:"), RowNumber) +
                         FNewLine +
                         Catalog.GetString(FImportMessage) + FNewLine + speakingExceptionText,
                         TResultSeverity.Resv_Critical));
+
+                if (NewTransaction) 
+                {                
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
 
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                     Catalog.GetString("Exception Occurred"),
@@ -505,21 +444,41 @@ namespace Ict.Petra.Server.MFinance.Gift
                 {
                     sr.Close();
                 }
-                catch
+                catch (Exception Exc)
                 {
-                };
+                    TLogging.Log("An Exception occured while closing the Import File:" + Environment.NewLine + Exc.ToString());
+                                        
+                    if (AMessages == null)
+                    {
+                        AMessages = new TVerificationResultCollection();
+                    }
+                                            
+                    AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
+                            Catalog.GetString("A problem was encountered while closing the Import File:"),
+                            TResultSeverity.Resv_Critical));
+                    
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Exception Occurred"),
+                        0);
 
-                if (ok && NewTransaction)
+                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                    
+                    throw;                    
+                }
+
+                if (ok)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Gift batch import successful"),
+                        100);
                 }
                 else
                 {
-                    if (NewTransaction)
+                    if (AMessages == null)
                     {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        AMessages = new TVerificationResultCollection();
                     }
-
+                                           
                     AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
                             Catalog.GetString("Data could not be saved."),
                             TResultSeverity.Resv_Critical));
@@ -608,6 +567,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                 return Catalog.GetString("Invalid cost centre");
             }
 
+            TLogging.Log("Importing Gift batch: " + ex.ToString());
+            
             return ex.Message;
         }
 

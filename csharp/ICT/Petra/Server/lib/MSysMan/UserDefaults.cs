@@ -449,24 +449,17 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
         /// <param name="AUserName">User name for which the User Defaults should be saved.</param>
         /// <param name="AUserDefaultsDataTable">The Typed DataTable that contains changed
         /// and/or added User Defaults.</param>
-        /// <param name="AVerificationResult">Nil if DB calls succeded, otherwise filled with
-        /// 1..n TVerificationResult objects (contain DB call exceptions).</param>
         /// <returns>true if the User Defaults could be saved successfully or if there
         /// were no DataRows in the AUserDefaultsDataTable. false indicates that a DB
         /// call resulted in an error. Inspect AVerificationResult to retrieve the
         /// error.
         /// </returns>
         [RequireModulePermission("NONE")]
-        public static Boolean SaveUserDefaults(String AUserName,
-            ref SUserDefaultsTable AUserDefaultsDataTable,
-            out TVerificationResultCollection AVerificationResult)
+        public static void SaveUserDefaults(String AUserName,
+            ref SUserDefaultsTable AUserDefaultsDataTable)
         {
-            Boolean SubmissionOK;
             Int16 Counter;
             SUserDefaultsRow UserDefaultServerSideRow;
-
-            AVerificationResult = null;
-            SubmissionOK = true;
 
             if ((AUserDefaultsDataTable != null) && (AUserDefaultsDataTable.Rows.Count > 0))
             {
@@ -539,32 +532,30 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                             TLogging.LogAtLevel(
                                 7,
                                 "TUserDefaults.SaveUserDefaultsFromClientSide: merged changed data from the Client side into the Server-side UserDefaults cache; saving the Server-side UserDefaults cache now.");
-                            SubmissionOK = SaveUserDefaultsFromServerSide(out AVerificationResult, false);
+                            SaveUserDefaultsFromServerSide(false);
 
-                            if (SubmissionOK)
+                            /*
+                             * Take over changed ModificationIDs (they get changed when existing
+                             * UserDefaults are saved. They need to be communicated back to the Client
+                             * to allow the Client to update a previously changed UserDefault again!).
+                             * This is done by taking them over from the server-side DT into the DT
+                             * that got passed in from the Client.
+                             */
+                            for (Counter = 0; Counter <= AUserDefaultsDataTable.Rows.Count - 1; Counter += 1)
                             {
-                                /*
-                                 * Take over changed ModificationIDs (they get changed when existing
-                                 * UserDefaults are saved. They need to be communicated back to the Client
-                                 * to allow the Client to update a previously changed UserDefault again!).
-                                 * This is done by taking them over from the server-side DT into the DT
-                                 * that got passed in from the Client.
-                                 */
-                                for (Counter = 0; Counter <= AUserDefaultsDataTable.Rows.Count - 1; Counter += 1)
-                                {
-                                    UserDefaultServerSideRow =
-                                        (SUserDefaultsRow)UUserDefaultsDT.Rows.Find(new object[] { AUserDefaultsDataTable[Counter].UserId,
-                                                                                                   AUserDefaultsDataTable[Counter].DefaultCode });
+                                UserDefaultServerSideRow =
+                                    (SUserDefaultsRow)UUserDefaultsDT.Rows.Find(new object[] { AUserDefaultsDataTable[Counter].UserId,
+                                                                                               AUserDefaultsDataTable[Counter].DefaultCode });
 
-                                    if (UserDefaultServerSideRow != null)
+                                if (UserDefaultServerSideRow != null)
+                                {
+                                    if (!AUserDefaultsDataTable[Counter].IsModificationIdNull())
                                     {
-                                        if (!AUserDefaultsDataTable[Counter].IsModificationIdNull())
-                                        {
-                                            AUserDefaultsDataTable[Counter].ModificationId = UserDefaultServerSideRow.ModificationId;
-                                        }
+                                        AUserDefaultsDataTable[Counter].ModificationId = UserDefaultServerSideRow.ModificationId;
                                     }
                                 }
                             }
+                        
                         }
                         catch (Exception Exp)
                         {
@@ -582,17 +573,14 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                 else
                 {
                     // User Defaults were submitted from the Client side for any user but the current user
-                    SubmissionOK = TUserDefaults.SaveUserDefaultsTable(AUserName,
+                    TUserDefaults.SaveUserDefaultsTable(AUserName,
                         ref AUserDefaultsDataTable,
-                        null,
-                        ref AVerificationResult);
+                        null);
                 }
             }
             else
             {
             }
-
-            return SubmissionOK;
         }
 
         /// <summary>
@@ -610,8 +598,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
         /// <param name="AUserDefaultsDataTable">The Typed DataTable that contains changed
         /// and/or added User Defaults for a User.</param>
         /// <param name="AWriteTransaction">Current Odbc Transaction</param>
-        /// <param name="AVerificationResult">Nil if DB calls succeded, otherwise filled with
-        /// 1..n TVerificationResult objects (contain DB call exceptions).</param>
         /// <param name="ASendUpdateInfoToClient">If true, the PetraClient is informed about the
         /// change to the UserDefault (by means of sending a ClientTask)</param>
         /// <returns>true if the User Defaults could be saved successfully or if there
@@ -620,15 +606,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
         /// error.
         /// </returns>
         [NoRemoting]
-        public static Boolean SaveUserDefaultsTable(String AUserName,
+        public static void SaveUserDefaultsTable(String AUserName,
             ref SUserDefaultsTable AUserDefaultsDataTable,
             TDBTransaction AWriteTransaction,
-            ref TVerificationResultCollection AVerificationResult,
             Boolean ASendUpdateInfoToClient)
         {
-            Boolean ReturnValue;
             Boolean NewTransaction = false;
-            Boolean SubmissionOK = false;
             TDBTransaction WriteTransaction;
             Int32 SavingAttempts = 0;
             SUserDefaultsTable ChangedUserDefaultsDT;
@@ -666,7 +649,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                         {
                             try
                             {
-                                SubmissionOK = SUserDefaultsAccess.SubmitChanges(AUserDefaultsDataTable, WriteTransaction, out AVerificationResult);
+                                SUserDefaultsAccess.SubmitChanges(AUserDefaultsDataTable, WriteTransaction);
                                 SavingAttempts = SavingAttempts + 1;
                             }
                             catch (EDBConcurrencyException)
@@ -695,7 +678,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
 
                                 throw;
                             }
-                        } while (!((SavingAttempts > 1) || SubmissionOK));
+                        } while (!(SavingAttempts > 1));
 
                         TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: after saving.");
                         TLogging.LogAtLevel(
@@ -703,85 +686,75 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                             "TMaintenanceUserDefaults.SaveUserDefaultsTable: ChangedUserDefaultsDT.Rows.Count: " +
                             ChangedUserDefaultsDT.Rows.Count.ToString());
 
-                        if (SubmissionOK)
-                        {
-                            ChangedUserDefaults2DT = AUserDefaultsDataTable.GetChangesTyped();
+                        ChangedUserDefaults2DT = AUserDefaultsDataTable.GetChangesTyped();
 
-                            // Tell the Client the updated UserDefaults (needed for the ModificationIDs)
+                        // Tell the Client the updated UserDefaults (needed for the ModificationIDs)
+                        if (ASendUpdateInfoToClient)
+                        {
+                            TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: ASendUpdateInfoToClient = true");
+                            UpdateUserDefaultsOnClient(AUserName, ChangedUserDefaults2DT);
+                        }
+                        else
+                        {
+                            foreach (DataRow ChangedUDDR in ChangedUserDefaults2DT.Rows)
+                            {
+                                // If a new UserDefault has been INSERTed into the DB Table, inform other Clients about that
+                                if (ChangedUDDR.RowState == DataRowState.Added)
+                                {
+                                    TLogging.LogAtLevel(
+                                        8,
+                                        "TMaintenanceUserDefaults.SaveUserDefaultsTable: new UserDefault has been INSERTed - inform other Clients..");
+                                    ASendUpdateInfoToClient = true;
+                                    break;
+                                }
+                            }
+
                             if (ASendUpdateInfoToClient)
                             {
-                                TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: ASendUpdateInfoToClient = true");
+                                // CopyModificationIDsOver(ChangedUserDefaultsDT, AUserDefaultsDataTable);
+                                TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: informing other Clients!");
                                 UpdateUserDefaultsOnClient(AUserName, ChangedUserDefaults2DT);
                             }
-                            else
-                            {
-                                foreach (DataRow ChangedUDDR in ChangedUserDefaults2DT.Rows)
-                                {
-                                    // If a new UserDefault has been INSERTed into the DB Table, inform other Clients about that
-                                    if (ChangedUDDR.RowState == DataRowState.Added)
-                                    {
-                                        TLogging.LogAtLevel(
-                                            8,
-                                            "TMaintenanceUserDefaults.SaveUserDefaultsTable: new UserDefault has been INSERTed - inform other Clients..");
-                                        ASendUpdateInfoToClient = true;
-                                        break;
-                                    }
-                                }
-
-                                if (ASendUpdateInfoToClient)
-                                {
-                                    // CopyModificationIDsOver(ChangedUserDefaultsDT, AUserDefaultsDataTable);
-                                    TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: informing other Clients!");
-                                    UpdateUserDefaultsOnClient(AUserName, ChangedUserDefaults2DT);
-                                }
-                            }
-
-                            // We have no unsaved changes anymore
-                            AUserDefaultsDataTable.AcceptChanges();
                         }
 
+                        // We have no unsaved changes anymore
+                        AUserDefaultsDataTable.AcceptChanges();
+
                         TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: after AcceptChanges.");
+                        
+                        if (NewTransaction)
+                        {
+                            DBAccess.GDBAccessObj.CommitTransaction();
+                        }
+                        
+                        TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: committed own transaction.");
                     }
                     catch (Exception Exp)
                     {
                         TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: Exception occured: " + Exp.ToString());
-                        throw;
-                    }
-                    finally
-                    {
+                        
                         if (NewTransaction)
-                        {
-                            if (SubmissionOK)
-                            {
-                                DBAccess.GDBAccessObj.CommitTransaction();
-                                TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: committed own transaction.");
-                            }
-                            else
-                            {
-                                DBAccess.GDBAccessObj.RollbackTransaction();
-                                TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: rolled back own transaction.");
-                            }
+                        {                        
+                            DBAccess.GDBAccessObj.RollbackTransaction();
+                            TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: rolled back own transaction.");
                         }
+                        
+                        throw;
                     }
 
                     TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: Done!");
-                    ReturnValue = SubmissionOK;
                 }
                 else
                 {
 // nothing to save!
                     TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: nothing to save: no changes!");
-                    ReturnValue = true;
                 }
             }
             else
             {
                 // nothing to save!
                 TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: nothing to save: no UserDefaults in memory!");
-                ReturnValue = true;
             }
-
-            return ReturnValue;
         }
 
         /// <summary>
@@ -790,15 +763,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
         /// <param name="AUserName"></param>
         /// <param name="AUserDefaultsDataTable"></param>
         /// <param name="AWriteTransaction"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
         [NoRemoting]
-        public static Boolean SaveUserDefaultsTable(String AUserName,
+        public static void SaveUserDefaultsTable(String AUserName,
             ref SUserDefaultsTable AUserDefaultsDataTable,
-            TDBTransaction AWriteTransaction,
-            ref TVerificationResultCollection AVerificationResult)
+            TDBTransaction AWriteTransaction)
         {
-            return SaveUserDefaultsTable(AUserName, ref AUserDefaultsDataTable, AWriteTransaction, ref AVerificationResult, true);
+            SaveUserDefaultsTable(AUserName, ref AUserDefaultsDataTable, AWriteTransaction, true);
         }
 
         /// <summary>
@@ -807,23 +777,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
         /// DB Table: s_user_defaults
         ///
         /// </summary>
-        /// <param name="AVerificationResult">Nil if DB calls succeded, otherwise filled with
-        /// 1..n TVerificationResult objects (contain DB call exceptions).</param>
         /// <param name="ASendUpdateInfoToClient">If true, the PetraClient is informed about the
         /// change to the UserDefault (by means of sending a ClientTask)</param>
-        /// <returns>true if the User Defaults could be saved successfully or if there
-        /// was nothing to save. false indicates that a DB call resulted in an error.
-        /// Inspect AVerificationResult to retrieve the error.
-        /// </returns>
         [NoRemoting]
-        public static Boolean SaveUserDefaultsFromServerSide(
-            out TVerificationResultCollection AVerificationResult,
+        public static void SaveUserDefaultsFromServerSide(
             Boolean ASendUpdateInfoToClient = true)
         {
-            Boolean ReturnValue;
-            Boolean SubmissionOK;
-
-            AVerificationResult = null;
             TLogging.LogAtLevel(7, "TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide waiting for a ReaderLock...");
 
             // Prevent other threads from obtaining a read lock on the cache table while we are reading values from the cache table!
@@ -834,25 +793,18 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
             {
                 if (UUserDefaultsDT.Rows.Count > 0)
                 {
-                    SubmissionOK = TUserDefaults.SaveUserDefaultsTable(UserInfo.GUserInfo.UserID,
+                    TUserDefaults.SaveUserDefaultsTable(UserInfo.GUserInfo.UserID,
                         ref UUserDefaultsDT,
                         null,
-                        ref AVerificationResult,
                         ASendUpdateInfoToClient);
 
-                    if (SubmissionOK)
-                    {
-                        // we don't have any unsaved changes anymore in the cache table.
-                        UUserDefaultsDT.AcceptChanges();
-                    }
-
-                    ReturnValue = SubmissionOK;
+                    // we don't have any unsaved changes anymore in the cache table.
+                    UUserDefaultsDT.AcceptChanges();                
                 }
                 else
                 {
                     // nothing to save!
                     TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide: nothing to save.");
-                    ReturnValue = true;
                 }
             }
             finally
@@ -861,8 +813,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                 UReadWriteLock.ReleaseReaderLock();
                 TLogging.LogAtLevel(7, "TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide released the ReaderLock.");
             }
+            
             TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide: Done!");
-            return ReturnValue;
         }
 
         /// <summary>

@@ -125,15 +125,13 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         /// <param name="AValue"></param>
         /// <returns>true if I believe the System Default was saved successfully</returns>
         [RequireModulePermission("NONE")]
-        public static Boolean SetSystemDefault(String AKey, String AValue)
+        public static void SetSystemDefault(String AKey, String AValue)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            Boolean TransactionIsOk = false;
 
             try
             {
                 SSystemDefaultsTable tbl = SSystemDefaultsAccess.LoadByPrimaryKey(AKey, Transaction);
-                TVerificationResultCollection Results;
 
                 if (tbl.Rows.Count > 0) // I already have this. (I expect this is the case usually!)
                 {
@@ -149,20 +147,18 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
                     tbl.Rows.Add(Row);
                 }
 
-                TransactionIsOk = SSystemDefaultsAccess.SubmitChanges(tbl, Transaction, out Results);
+                SSystemDefaultsAccess.SubmitChanges(tbl, Transaction);
+                
+                DBAccess.GDBAccessObj.CommitTransaction();
             }
-            finally
+            catch (Exception Exc)
             {
-                if (TransactionIsOk)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                TLogging.Log("An Exception occured during the saving of a single System Default:" + Environment.NewLine + Exc.ToString());
+                
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                
+                throw;
             }
-            return TransactionIsOk;
         }
     }
 }

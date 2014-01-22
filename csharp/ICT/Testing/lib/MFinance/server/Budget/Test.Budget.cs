@@ -135,12 +135,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
 
             // consolidate the budget
             TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(FLedgerNumber);
-            bool consolidated = TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, true, out VerificationResult);
-
-            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult, 
-                "ConsolidateBudget has critical errors:");
-
-            Assert.AreEqual(true, consolidated, "consolidating the budgets");
+            TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, true);
 
             // check for correct value in glmperiod budget
             string sqlQueryConsolidatedBudget =
@@ -175,12 +170,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
 
             // post all budgets again
             TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(FLedgerNumber);
-            consolidated = TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, true, out VerificationResult);
-
-            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult, 
-                "2nd ConsolidateBudget has critical errors:");
-
-            Assert.AreEqual(true, consolidated, "consolidating the budgets for the second time");
+            TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, true);
 
             consolidatedBudgetValue =
                 Convert.ToDecimal(DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryConsolidatedBudget, IsolationLevel.ReadCommitted));
@@ -211,12 +201,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
 
             // post only modified budget again
             TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(FLedgerNumber);
-            consolidated = TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, false, out VerificationResult);
-
-            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult, 
-                "3rd ConsolidateBudget has critical errors:");
-
-            Assert.AreEqual(true, consolidated, "consolidating the budgets for the third time");
+            TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, false);
 
             consolidatedBudgetValue =
                 Convert.ToDecimal(DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryConsolidatedBudget, IsolationLevel.ReadCommitted));

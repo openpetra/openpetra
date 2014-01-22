@@ -189,23 +189,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 requestParams.Add("ABatchNumber", FBatchNumber);
                 requestParams.Add("AExchangeRateToBase", Convert.ToDecimal(txtExchangeRateToBase.Text));
                 requestParams.Add("AEffectiveDate", dtpEffectiveDate.Date.Value);
-                TVerificationResultCollection AMessages;
 
-                Boolean submitOK = TRemote.MFinance.Gift.WebConnectors.SubmitRecurringGiftBatch(requestParams, out AMessages);
+                TRemote.MFinance.Gift.WebConnectors.SubmitRecurringGiftBatch(requestParams);
 
-                if (submitOK)
-                {
-                    MessageBox.Show(Catalog.GetString("Your recurring batch was submitted successfully!"),
-                        Catalog.GetString("Success"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show(Messages.BuildMessageFromVerificationResult(Catalog.GetString("Submitting the batch failed!") +
-                            Environment.NewLine +
-                            Catalog.GetString("Reasons:"), AMessages));
-                }
+                MessageBox.Show(Catalog.GetString("Your recurring batch was submitted successfully!"),
+                    Catalog.GetString("Success"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
 
                 Close();
             }

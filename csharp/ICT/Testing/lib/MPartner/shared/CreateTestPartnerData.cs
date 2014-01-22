@@ -161,8 +161,6 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
         /// create a new church
         public static PPartnerRow CreateNewChurchPartner(PartnerEditTDS AMainDS)
         {
-            TVerificationResultCollection VerificationResult;
-
             PPartnerRow PartnerRow = CreateNewPartner(AMainDS);
 
             // make sure denomation "UNKNOWN" exists as this is the default value
@@ -173,7 +171,7 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
                 DenominationRow.DenominationCode = "UNKNOWN";
                 DenominationRow.DenominationName = "Unknown";
                 DenominationTable.Rows.Add(DenominationRow);
-                PDenominationAccess.SubmitChanges(DenominationTable, DBAccess.GDBAccessObj.Transaction, out VerificationResult);
+                PDenominationAccess.SubmitChanges(DenominationTable, DBAccess.GDBAccessObj.Transaction);
             }
 
             PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_CHURCH;

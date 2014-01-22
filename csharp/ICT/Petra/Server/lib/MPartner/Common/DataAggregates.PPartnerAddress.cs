@@ -130,8 +130,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             PartnerAddressAggregateTDSChangePromotionParametersTable ChangePromotionParametersDT;
             PLocationTable NewLocationTable;
             PLocationRow NewLocationRowSaved;
-
-            TVerificationResultCollection SingleVerificationResultCollection;
             Int32 NewLocationLocationKey;
             PPartnerLocationRow PartnerLocationRowForChangedLocation;
 
@@ -213,11 +211,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         NewLocationTable.Rows.Add(NewLocationRowSaved);
 
                         // Submit the NEW Location to the DB
-                        if (!PLocationAccess.SubmitChanges(NewLocationTable, ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                        {
-                            AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                            return TSubmitChangesResult.scrError;
-                        }
+                        PLocationAccess.SubmitChanges(NewLocationTable, ASubmitChangesTransaction);
 
                         // The DB gives us a LocationKey from a Sequence. Remember this one.
                         NewLocationLocationKey = (Int32)NewLocationRowSaved.LocationKey;
@@ -298,12 +292,8 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                             }
 
                             // Submit the changes to those PartnerLocations to the DB
-                            if (!PPartnerLocationAccess.SubmitChanges((PPartnerLocationTable)PartnerLocationModifyDS.Tables[0],
-                                    ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                            {
-                                AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                                return TSubmitChangesResult.scrError;
-                            }
+                            PPartnerLocationAccess.SubmitChanges((PPartnerLocationTable)PartnerLocationModifyDS.Tables[0],
+                                ASubmitChangesTransaction);
                         }
                         else
                         {
@@ -2268,10 +2258,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 
                         // Any Extract in Petra that references this Location must no longer
                         // reference this Location since it will get deleted
-                        if (!RemoveLocationFromExtracts(ALocationTable[LocationCounter], ASubmitChangesTransaction, ref AVerificationResult))
-                        {
-                            return TSubmitChangesResult.scrError;
-                        }
+                        RemoveLocationFromExtracts(ALocationTable[LocationCounter], ASubmitChangesTransaction);
                     }
                 } // if LocationTable.Rows[LocationCounter].RowState = DataRowState.Deleted
                 else if (ALocationTable.Rows[LocationCounter].RowState != DataRowState.Unchanged)
@@ -2427,14 +2414,8 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                             {
 //                              TLogging.LogAtLevel(8, "SubmitChanges: PartnerLocation of a FAMILY: DateGoodUntil has changed -> promoting change to FAMILY members...");
 
-                                TVerificationResultCollection SingleVerificationResultCollection;
-
-                                if (!PromoteToFamilyMembersDateGoodUntilChange(APartnerKey, PartnerLocationTable[PartnerLocationCounter],
-                                        ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                                {
-                                    AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                                    return TSubmitChangesResult.scrError;
-                                }
+                                PromoteToFamilyMembersDateGoodUntilChange(APartnerKey, PartnerLocationTable[PartnerLocationCounter],
+                                    ASubmitChangesTransaction);
                             }
                         }
 
@@ -3507,7 +3488,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             Int64[, ] UpdatePartnerLocationOtherPersons;
             OdbcParameter[] ParametersArray;
             DataSet PartnerLocationModifyDS;
-            TVerificationResultCollection SingleVerificationResultCollection;
             StringCollection ChangedFieldsColl;
             String[] ChangedFieldsArr;
             Int32 Counter;
@@ -3665,13 +3645,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                             }
 
                             // Submit the changes of the processed Person's PartnerLocation record to the DB
-                            if (!PPartnerLocationAccess.SubmitChanges(PartnerLocationModificationDT, ASubmitChangesTransaction,
-                                    out SingleVerificationResultCollection))
-                            {
-                                AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                                ReturnValue = TSubmitChangesResult.scrError;
-                                return ReturnValue;
-                            }
+                            PPartnerLocationAccess.SubmitChanges(PartnerLocationModificationDT, ASubmitChangesTransaction);
 
                             // Don't keep the Person's PPartnerLocation in memory that we just processed!
                             PartnerLocationModifyDS.Tables[0].Rows.Clear();
@@ -3709,26 +3683,16 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="APartnerLocationDR">PartnerLocation DataRow of the Family</param>
         /// <param name="ASubmitChangesTransaction">Running transaction in which the DB commands
         /// will be enlisted</param>
-        /// <param name="AVerificationResult">Nil if DB update call succeded, otherwise filled
-        /// with 1..n TVerificationResult objects (contains DB call exceptions)</param>
-        /// <returns>true if processing was successful, otherwise false
-        /// </returns>
-        private static Boolean PromoteToFamilyMembersDateGoodUntilChange(Int64 AFamilyPartnerKey,
+        private static void PromoteToFamilyMembersDateGoodUntilChange(Int64 AFamilyPartnerKey,
             PPartnerLocationRow APartnerLocationDR,
-            TDBTransaction ASubmitChangesTransaction,
-            out TVerificationResultCollection AVerificationResult)
+            TDBTransaction ASubmitChangesTransaction)
         {
-            Boolean ReturnValue;
             StringCollection RequiredColumns;
             PPersonTable FamilyPersonsDT;
             PPartnerLocationTable PartnerLocationDT;
             PPartnerLocationTable PartnerLocationSubmitDT;
             PPartnerLocationRow PartnerLocationSubmitDR;
             Int16 Counter;
-            TVerificationResultCollection SingleVerificationResultCollection;
-
-            ReturnValue = true;
-            AVerificationResult = null;
 
             FamilyPersonsDT = GetFamilyMemberPartnerKeys(AFamilyPartnerKey, ASubmitChangesTransaction);
             PartnerLocationSubmitDT = new PPartnerLocationTable();
@@ -3799,15 +3763,8 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             if (PartnerLocationSubmitDT.Rows.Count > 0)
             {
                 // Submit the changes to the DB
-                if (!PPartnerLocationAccess.SubmitChanges(PartnerLocationSubmitDT, ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                {
-                    AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                    ReturnValue = false;
-                    return ReturnValue;
-                }
+                PPartnerLocationAccess.SubmitChanges(PartnerLocationSubmitDT, ASubmitChangesTransaction);
             }
-
-            return ReturnValue;
         }
 
         /// <summary>
@@ -3823,23 +3780,15 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// <param name="ALocationRow">Location DataRow which should be processed</param>
         /// <param name="ASubmitChangesTransaction">Running transaction in which the DB commands
         /// will be enlisted</param>
-        /// <param name="AVerificationResult">Nil if DB update call succeded, otherwise filled
-        /// with 1..n TVerificationResult objects (contains DB call exceptions)</param>
-        /// <returns>true if processing was successful, otherwise false
-        /// </returns>
-        private static Boolean RemoveLocationFromExtracts(PLocationRow ALocationRow,
-            TDBTransaction ASubmitChangesTransaction,
-            ref TVerificationResultCollection AVerificationResult)
+        private static void RemoveLocationFromExtracts(PLocationRow ALocationRow,
+            TDBTransaction ASubmitChangesTransaction)
         {
-            Boolean ReturnValue;
             MExtractTable ExtractsDT;
             Int32 Counter;
             StringCollection RequiredColumns;
-            TVerificationResultCollection SingleVerificationResultCollection;
 
 //          TLogging.LogAtLevel(9, "RemoveLocationFromExtracts for Location " +
 //              Convert.ToInt32(ALocationRow[MExtractTable.GetLocationKeyDBName(), DataRowVersion.Original]).ToString());
-            ReturnValue = true;
             Counter = 0;
 
             // Load all Extracts that contain the Location
@@ -3869,20 +3818,13 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 }
 
                 // Submit the changes to these Extract records to the DB
-                if (!MExtractAccess.SubmitChanges(ExtractsDT, ASubmitChangesTransaction, out SingleVerificationResultCollection))
-                {
-                    AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                    ReturnValue = false;
-                    return ReturnValue;
-                }
+                MExtractAccess.SubmitChanges(ExtractsDT, ASubmitChangesTransaction);
             }
             else
             {
 //              TLogging.LogAtLevel(9, "RemoveLocationFromExtracts: Location with LocationKey " +
 //                  ALocationRow[MExtractTable.GetLocationKeyDBName(), DataRowVersion.Original].ToString() + " was not referenced in any Extract -> nothing to do.");
             }
-
-            return ReturnValue;
         }
     }
 }

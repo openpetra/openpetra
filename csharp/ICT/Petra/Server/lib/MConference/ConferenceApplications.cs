@@ -1546,8 +1546,7 @@ namespace Ict.Petra.Server.MConference.Applications
         /// and avoids that the registration office has to redo all the importing for the next round of applicants.
         /// </summary>
         /// <param name="APartnerKeyFile"></param>
-        /// <returns></returns>
-        public static bool UploadPetraImportResult(string APartnerKeyFile)
+        public static void UploadPetraImportResult(string APartnerKeyFile)
         {
             XmlDocument partnerKeys = TCsv2Xml.ParseCSV2Xml(APartnerKeyFile);
 
@@ -1626,26 +1625,18 @@ namespace Ict.Petra.Server.MConference.Applications
                 }
 
                 // store modified partners
-                TVerificationResultCollection VerificationResult;
-
-                if (PmGeneralApplicationAccess.SubmitChanges(applicationTable, Transaction, out VerificationResult))
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    return true;
-                }
-            }
-            catch (Exception e)
+                PmGeneralApplicationAccess.SubmitChanges(applicationTable, Transaction);
+                
+                DBAccess.GDBAccessObj.CommitTransaction();
+            } 
+            catch (Exception Exc) 
             {
-                TLogging.Log(e.Message);
-                TLogging.Log(e.StackTrace);
-                return false;
-            }
-            finally
-            {
+                TLogging.Log("An Exception occured during the uploading of the Petra Import result:" + Environment.NewLine + Exc.ToString());
+                
                 DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-
-            return true;
+                
+                throw;
+            }           
         }
 
         /// <summary>

@@ -125,9 +125,6 @@ namespace Ict.Petra.Server.MPartner.Mailing.WebConnectors
         /// creation of the Extract was not successful.</param>
         /// <param name="AExtractAlreadyExists">True if there is already an extract with
         /// the given name, otherwise false.</param>
-        /// <param name="AVerificationResults">Nil if all verifications are OK and all DB calls
-        /// succeded, otherwise filled with 1..n TVerificationResult objects
-        /// (can also contain DB call exceptions).</param>
         /// <param name="ABestAddressTable"></param>
         /// <param name="AIncludeNonValidAddresses">you might want to include invalid addresses if an email was sent</param>
         /// <returns>True if the new Extract was created, otherwise false.</returns>
@@ -137,7 +134,6 @@ namespace Ict.Petra.Server.MPartner.Mailing.WebConnectors
             String AExtractDescription,
             out Int32 ANewExtractId,
             out Boolean AExtractAlreadyExists,
-            out TVerificationResultCollection AVerificationResults,
             BestAddressTDSLocationTable ABestAddressTable,
             bool AIncludeNonValidAddresses)
         {
@@ -146,7 +142,6 @@ namespace Ict.Petra.Server.MPartner.Mailing.WebConnectors
                 AExtractDescription,
                 out ANewExtractId,
                 out AExtractAlreadyExists,
-                out AVerificationResults,
                 ABestAddressTable,
                 AIncludeNonValidAddresses);
         }

@@ -2271,7 +2271,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             TDBTransaction ASubmitChangesTransaction,
             out TVerificationResultCollection AVerificationResult)
         {
-            TVerificationResultCollection SingleVerificationResultCollection;
             TOfficeSpecificDataLabelsUIConnector OfficeSpecificDataLabelsUIConnector;
             PartnerEditTDSFamilyMembersTable FamilyMembersTableSubmit;
 
@@ -2350,12 +2349,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         FamilyMembersTableSubmit = AInspectDS.FamilyMembers;
 //                      TLogging.LogAtLevel(7, "FamilyMembersTableSubmit.Rows.Count: " + FamilyMembersTableSubmit.Rows.Count.ToString());
 
-                        if (!SpecialSubmitProcessingFamilyMembers(FamilyMembersTableSubmit, ASubmitChangesTransaction,
-                                out SingleVerificationResultCollection))
-                        {
-                            AllSubmissionsOK = false;
-                            AVerificationResult.AddCollection(SingleVerificationResultCollection);
-                        }
+                        SpecialSubmitProcessingFamilyMembers(FamilyMembersTableSubmit, ASubmitChangesTransaction);
                     }
                 }
 
@@ -2943,14 +2937,11 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return TNewPartnerKey.SubmitNewPartnerKey(AFieldPartnerKey, AOriginalDefaultKey, ref ANewPartnerKey);
         }
 
-        private bool SpecialSubmitProcessingFamilyMembers(
+        private void SpecialSubmitProcessingFamilyMembers(
             PartnerEditTDSFamilyMembersTable AFamilyMembersTable,
-            TDBTransaction ASubmitChangesTransaction,
-            out TVerificationResultCollection AVerificationResult)
+            TDBTransaction ASubmitChangesTransaction)
         {
             Int32 DummyCounter = 100;
-
-            AVerificationResult = null;
 
             /*
              * Load the Persons of a Family
@@ -2971,10 +2962,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
 
             // Save the dummy values
-            if (!PPersonAccess.SubmitChanges(FamilyPersonsDT, ASubmitChangesTransaction, out AVerificationResult))
-            {
-                return false;
-            }
+            PPersonAccess.SubmitChanges(FamilyPersonsDT, ASubmitChangesTransaction);
 
             FamilyPersonsDT.AcceptChanges();
 
@@ -2987,14 +2975,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
 
             // Save the changes
-            if (!PPersonAccess.SubmitChanges(FamilyPersonsDT, ASubmitChangesTransaction, out AVerificationResult))
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            PPersonAccess.SubmitChanges(FamilyPersonsDT, ASubmitChangesTransaction);
         }
 
         #endregion

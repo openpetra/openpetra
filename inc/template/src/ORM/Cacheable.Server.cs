@@ -327,7 +327,6 @@ namespace {#NAMESPACE}
         {
             TDBTransaction SubmitChangesTransaction;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-            TVerificationResultCollection SingleVerificationResultCollection;
             string CacheableDTName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
 
             // Console.WriteLine("Entering {#SUBMODULE}.SaveChangedStandardCacheableTable...");
@@ -543,7 +542,6 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
 {
     TDBTransaction SubmitChangesTransaction;
     TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-    TVerificationResultCollection SingleVerificationResultCollection;
     string CacheableDTName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
     Type TmpType;
 
@@ -665,15 +663,9 @@ case TCacheable{#SUBMODULE}TablesEnum.{#ENUMNAME}:
 
         if (TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
         {
-            if ({#DATATABLENAME}Access.SubmitChanges(({#DATATABLENAME}Table)ASubmitTable, SubmitChangesTransaction,
-                out SingleVerificationResultCollection))
-            {
-                SubmissionResult = TSubmitChangesResult.scrOK;
-            }
-            else
-            {
-                AVerificationResult.AddCollection(SingleVerificationResultCollection);
-            }
+            {#DATATABLENAME}Access.SubmitChanges(({#DATATABLENAME}Table)ASubmitTable, SubmitChangesTransaction);
+
+            SubmissionResult = TSubmitChangesResult.scrOK;
         }
     }
 
