@@ -870,6 +870,34 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 }
             }
 
+            // 'Cancellation date' must not be a future date
+            ValidationColumn = ARow.Table.Columns[PmGeneralApplicationTable.ColumnGenAppCancelledId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = null;
+
+                VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.GenAppCancelled, ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // 'Accepted by sending field date' must not be a future date
+            ValidationColumn = ARow.Table.Columns[PmGeneralApplicationTable.ColumnGenAppSendFldAcceptDateId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = null;
+
+                VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.GenAppSendFldAcceptDate, ValidationControlsData.ValidationControlLabel,
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
             // 'Accepted by receiving field date' must not be a future date
             ValidationColumn = ARow.Table.Columns[PmGeneralApplicationTable.ColumnGenAppRecvgFldAcceptId];
 

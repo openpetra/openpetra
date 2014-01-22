@@ -52,10 +52,10 @@ RootNode:
             ExpandedWidth: 170
             ShowApplyFilterButton: FilterContext.StandardFilterOnly
             ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
-            FilterControls: [chkDetailConfidentialGiftFlag, chkDetailChargeFlag, chkDetailTaxDeductable, cmbDetailMailingCode, cmbDetailMotivationGroupCode, Column:MotivationDetailCode, txtDetailCostCentreCode, txtDetailAccountCode, txtDetailGiftCommentOne]
-            FindControls: [Column:GiftBatchTDSAGiftDetailTable.DonorName, Column:GiftBatchTDSAGiftDetailTable.RecipientDescription, chkDetailConfidentialGiftFlag, chkDetailChargeFlag, chkDetailTaxDeductable, cmbDetailMailingCode, cmbDetailMotivationGroupCode, Column:MotivationDetailCode, txtDetailCostCentreCode, txtDetailAccountCode, txtDetailGiftCommentOne]
+            FilterControls: [chkDetailConfidentialGiftFlag, chkDetailChargeFlag, chkDetailTaxDeductible, cmbDetailMailingCode, cmbDetailMotivationGroupCode, Column:MotivationDetailCode, txtDetailCostCentreCode, txtDetailAccountCode, txtDetailGiftCommentOne]
+            FindControls: [Column:GiftBatchTDSAGiftDetailTable.DonorName, Column:GiftBatchTDSAGiftDetailTable.RecipientDescription, chkDetailConfidentialGiftFlag, chkDetailChargeFlag, chkDetailTaxDeductible, cmbDetailMailingCode, cmbDetailMotivationGroupCode, Column:MotivationDetailCode, txtDetailCostCentreCode, txtDetailAccountCode, txtDetailGiftCommentOne]
             ControlAttributes: 
-                chkDetailTaxDeductable: {Text=Tax deductable}
+                chkDetailTaxDeductible: {Text=Tax deductible}
                 chkDetailConfidentialGiftFlag: {Text=Confidential}
                 chkDetailChargeFlag: {Text=Charges apply}
                 txtRecipientDescription: {Label=Recipient}
@@ -109,13 +109,15 @@ RootNode:
             Controls:
                 Row0: [txtDetailRecipientKey, chkDetailConfidentialGiftFlag]
                 Row1: [txtField, chkDetailChargeFlag]
-                Row2: [cmbMinistry, chkDetailTaxDeductable]
+                Row2: [cmbMinistry, chkDetailTaxDeductible]
                 Row3: [txtDetailGiftTransactionAmount, cmbDetailMailingCode]
                 Row4: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode]         
                 Row5: [txtDetailCostCentreCode, txtDetailAccountCode]
                 Row6: [txtDetailGiftCommentOne, cmbDetailCommentOneType]
                 Row7: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
                 Row8: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
+                Row9: [txtKeyMinistry, txtDetailMotivationDetailDescription]
+                #Row10: [txtDetailMotivationDetailCode]
         #txtDonorName: {ReadOnly=true, PartnerShortNameLookup=AGiftDetail.DonorKey}
         dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Tooltip=This date is used for receipt printing, Unbound=true, Validation=true}
         txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=true, Unbound=true}
@@ -129,14 +131,18 @@ RootNode:
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
         cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=FilterMotivationDetail}
         cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, OnChange=MotivationDetailChanged}
+        #txtDetailMotivationGroupCode: {Label=Motivation Group}
+        #txtDetailMotivationDetailCode: {Label=Motivation Detail}
+        txtDetailMotivationDetailDescription: {Label=Empty, ReadOnly=true, Visible=false}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
         txtField: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
         cmbMinistry: {Label=Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged, Tooltip=Select a key ministry}
+        txtKeyMinistry: {Label=Key Ministry, Unbound=true}
         txtDetailGiftTransactionAmount: {Label=Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?, Tooltip=Check this box if the gift is to remain confidential}
-        chkDetailTaxDeductable: {Label=Tax deductable?}
+        chkDetailTaxDeductible: {Label=Tax deductible?}
         txtDetailGiftCommentOne: {Label=Comment 1,Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
         txtDetailGiftCommentTwo: {Label=Comment 2,Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
         txtDetailGiftCommentThree: {Label=Comment 3,Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}

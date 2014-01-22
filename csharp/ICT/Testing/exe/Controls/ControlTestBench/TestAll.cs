@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -133,7 +133,7 @@ public partial class TestAll : Form
         lines[11] = "        Task5:\n";
         lines[12] = "            Label: &Setup";
         lines[13] = "            Task5a:\n";
-        lines[14] = "                 Label: Gift Receipting";
+        lines[14] = "                 Label: Gift Processing";
         lines[15] = "    Task6:\n";
         lines[16] = "        Label: S&witch Ledger";
         lines[17] = "        Task7:\n";

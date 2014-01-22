@@ -508,7 +508,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     FormValues["MotivationDetail"].Add(DetailRow.MotivationDetailCode);
                     GiftTotal += DetailRow.GiftAmount;
 
-                    if (DetailRow.TaxDeductable)
+                    if (DetailRow.TaxDeductible)
                     {
                         FormValues["GiftTxd"].Add("Y");
                         TxdTotal += DetailRow.GiftAmount;

@@ -99,8 +99,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
             {
                 FMainDS.SUser.DefaultView.AllowNew = false;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.SUser.DefaultView);
-                grdDetails.Selection.SelectRow(1, true);
             }
+
+            SelectRowInGrid(1);
         }
 
         private TSubmitChangesResult StoreManualCode(ref MaintainUsersTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)

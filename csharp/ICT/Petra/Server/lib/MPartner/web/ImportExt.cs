@@ -377,18 +377,48 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// If I'm importing an unknown Language level, use 99 instead
         /// </summary>
         /// <param name="ALanguageLevel"></param>
+        /// <param name="APetraVersion"></param>
         /// <param name="ATransaction"></param>
         /// <returns></returns>
-        private int CheckLanguageLevel(int ALanguageLevel, TDBTransaction ATransaction)
+        private int CheckLanguageLevel(int ALanguageLevel, TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
         {
-            if (PtLanguageLevelAccess.Exists(ALanguageLevel, ATransaction))
+            if (APetraVersion.FileMajorPart < 3)
             {
-                return ALanguageLevel;
+                // cover data conversion from 2.x to 3.x
+                if ((ALanguageLevel >= 0) && (ALanguageLevel <= 3))
+                {
+                    return 1;
+                }
+                else if ((ALanguageLevel >= 4) && (ALanguageLevel <= 7))
+                {
+                    return 2;
+                }
+                else if ((ALanguageLevel >= 8) && (ALanguageLevel <= 9))
+                {
+                    return 3;
+                }
+                else if (ALanguageLevel == 99)
+                {
+                    return ALanguageLevel;
+                }
+                else
+                {
+                    AddVerificationResult("Unknown Language Level " + ALanguageLevel);
+                    return 99;  // "Unknown" code
+                }
             }
             else
             {
-                AddVerificationResult("Unknown Language Level " + ALanguageLevel);
-                return 99;  // "Unknown" code
+                // this applies to all imports from OpenPetra versions
+                if (PtLanguageLevelAccess.Exists(ALanguageLevel, ATransaction))
+                {
+                    return ALanguageLevel;
+                }
+                else
+                {
+                    AddVerificationResult("Unknown Language Level " + ALanguageLevel);
+                    return 99;  // "Unknown" code
+                }
             }
         }
 
@@ -1259,7 +1289,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
 
             PersonLanguageRow.YearsOfExperience = ReadInt32();
-            PersonLanguageRow.LanguageLevel = CheckLanguageLevel(ReadInt32(), ATransaction);
+            PersonLanguageRow.LanguageLevel = CheckLanguageLevel(ReadInt32(), APetraVersion, ATransaction);
             PersonLanguageRow.YearsOfExperienceAsOf = ReadNullableDate();
             PersonLanguageRow.Comment = ReadString();
 

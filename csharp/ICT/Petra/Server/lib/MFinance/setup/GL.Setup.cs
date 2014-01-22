@@ -274,12 +274,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// returns true if gift receipting subsystem is activated for given ledger
+        /// returns true if gift processing subsystem is activated for given ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool IsGiftReceiptingSubsystemActivated(Int32 ALedgerNumber)
+        public static bool IsGiftProcessingSubsystemActivated(Int32 ALedgerNumber)
         {
             return IsSubsystemActivated(ALedgerNumber, CommonAccountingSubSystemsEnum.GR.ToString());
         }
@@ -296,14 +296,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// activate subsystem for gift receipting for given ledger
+        /// activate subsystem for gift processing for given ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AStartingReceiptNumber"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static TSubmitChangesResult ActivateGiftReceiptingSubsystem(Int32 ALedgerNumber,
+        public static TSubmitChangesResult ActivateGiftProcessingSubsystem(Int32 ALedgerNumber,
             Int32 AStartingReceiptNumber,
             out TVerificationResultCollection AVerificationResult)
         {
@@ -316,11 +316,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             // if subsystem already active then no need to go further
-            if (!IsGiftReceiptingSubsystemActivated(ALedgerNumber))
+            if (!IsGiftProcessingSubsystemActivated(ALedgerNumber))
             {
                 // create or update account for Creditor's Control
 
-                // make sure transaction type exists for gift receipting subsystem
+                // make sure transaction type exists for gift processing subsystem
                 ATransactionTypeTable TemplateTransactionTypeTable;
                 ATransactionTypeRow TemplateTransactionTypeRow;
                 StringCollection TemplateTransactionTypeOperators;
@@ -344,7 +344,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     TransactionTypeRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.GR.ToString();
                     TransactionTypeRow.DebitAccountCode = "CASH";
                     TransactionTypeRow.CreditAccountCode = "GIFT";
-                    TransactionTypeRow.TransactionTypeDescription = "Gift Receipting";
+                    TransactionTypeRow.TransactionTypeDescription = "Gift Processing";
                     TransactionTypeRow.SpecialTransactionType = true;
                     TransactionTypeTable.Rows.Add(TransactionTypeRow);
 
@@ -524,7 +524,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             if (ASubsystemCode == CommonAccountingSubSystemsEnum.GR.ToString())
             {
-                // for gift receipting don't allow to deactivate if 'Posted' or 'Unposted' gift batches exist
+                // for gift processing don't allow to deactivate if 'Posted' or 'Unposted' gift batches exist
                 AGiftBatchTable TemplateGiftBatchTable;
                 AGiftBatchRow TemplateGiftBatchRow;
                 StringCollection TemplateGiftBatchOperators;
@@ -593,12 +593,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// returns true if gift receipting subsystem can be deactivated for given ledger
+        /// returns true if gift processing subsystem can be deactivated for given ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool CanGiftReceiptingSubsystemBeDeactivated(Int32 ALedgerNumber)
+        public static bool CanGiftProcessingSubsystemBeDeactivated(Int32 ALedgerNumber)
         {
             return CanSubsystemBeDeactivated(ALedgerNumber, CommonAccountingSubSystemsEnum.GR.ToString());
         }
@@ -652,12 +652,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// deactivate subsystem for gift receipting for given ledger
+        /// deactivate subsystem for gift processing for given ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool DeactivateGiftReceiptingSubsystem(Int32 ALedgerNumber)
+        public static bool DeactivateGiftProcessingSubsystem(Int32 ALedgerNumber)
         {
             return DeactivateSubsystem(ALedgerNumber, CommonAccountingSubSystemsEnum.GR.ToString());
         }
@@ -2360,7 +2360,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Int32 ANumberOfPeriods,
             Int32 ACurrentPeriod,
             Int32 ANumberOfFwdPostingPeriods,
-            bool AActivateGiftReceipting,
+            bool AActivateGiftProcessing,
             Int32 AStartingReceiptNumber,
             bool AActivateAccountsPayable,
             out TVerificationResultCollection AVerificationResult)
@@ -2687,10 +2687,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             TSubmitChangesResult result = GLSetupTDSAccess.SubmitChanges(MainDS, out AVerificationResult);
 
-            // activate gift receipting subsystem
-            if (AActivateGiftReceipting)
+            // activate gift processing subsystem
+            if (AActivateGiftProcessing)
             {
-                ActivateGiftReceiptingSubsystem(ANewLedgerNumber, AStartingReceiptNumber, out AVerificationResult);
+                ActivateGiftProcessingSubsystem(ANewLedgerNumber, AStartingReceiptNumber, out AVerificationResult);
             }
 
             // activate accounts payable subsystem
