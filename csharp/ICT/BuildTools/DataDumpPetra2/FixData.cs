@@ -731,6 +731,28 @@ namespace Ict.Tools.DataDumpPetra2
                 }
             }
 
+            // renaming "Gift Receipting" to "Gift Processing" (Mantis 1930)
+            if (ATableName == "a_sub_system")
+            {
+                string val = GetValue(AColumnNames, ANewRow, "a_sub_system_name_c");
+
+                if (val == "Gift Receipting")
+                {
+                    SetValue(AColumnNames, ref ANewRow, "a_sub_system_name_c", "Gift Processing");
+                }
+            }
+
+            // renaming "Gift Receipting" to "Gift Processing" (Mantis 1930)
+            if (ATableName == "a_transaction_type")
+            {
+                string val = GetValue(AColumnNames, ANewRow, "a_transaction_type_description_c");
+
+                if (val == "Gift Receipting")
+                {
+                    SetValue(AColumnNames, ref ANewRow, "a_transaction_type_description_c", "Gift Processing");
+                }
+            }
+
             // A new password and password salt needs to be generated for every user.
             // Passwords are writed to a file in the fulldump folder.
             if (ATableName == "s_user")

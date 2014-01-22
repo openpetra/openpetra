@@ -1716,6 +1716,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                             btnSearch.Enabled = true;
 
                             this.Cursor = Cursors.Default;
+
+                            // if this was a broadcast search then the search is now finished and bool can be reset
+                            FBroadcastMessageSearch = false;
                         }
                         else
                         {
@@ -1987,7 +1990,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             object[] Args;
             IFormsMessagePartnerInterface FormsMessagePartner;
             TMyUpdateDelegate MyUpdateDelegate;
-            bool KeepRetrying = true;
 
             // Since this procedure is called from a separate (background) Thread, it is
             // necessary to execute this procedure in the Thread of the GUI!
@@ -2021,43 +2023,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 FPagedDataTable = null;
 
-                while (KeepRetrying)
-                {
-                    if (FPagedDataTable == null)
-                    {
-                        // Search operation not finished yet
-                        KeepRetrying = true;
-                    }
-                    else if (FPagedDataTable.Rows.Count == 0) // what if there are no partners in new search?! TODO
-                    {
-                        // Search operation finished, but Partner not found yet
-                        // (due to DataMirroring not having mirrored the Partner yet!)
-                        KeepRetrying = true;
-                    }
-                    else
-                    {
-                        // Newly created Partner Found!
-                        KeepRetrying = false;
-                    }
+                BtnSearch_Click(this, null);
 
-                    if (KeepRetrying)
-                    {
-                        if (!FKeepUpSearchFinishedCheck)
-                        {
-                            // Search operation finished, but Partner not found yet
-                            // (due to DataMirroring not having mirrored the Partner yet!)
-                            // --> Run Search again to try and find the new Partner.
-                            BtnSearch_Click(this, null);
-                        }
-
-                        Thread.Sleep(500);
-                        Application.DoEvents();
-                    }
-                }
+                Application.DoEvents();
 
                 this.Cursor = Cursors.Default;
 
-                FBroadcastMessageSearch = false;
+                //FBroadcastMessageSearch = false;
             }
         }
 

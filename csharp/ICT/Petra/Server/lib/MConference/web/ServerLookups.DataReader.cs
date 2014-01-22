@@ -544,7 +544,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         }
 
         /// <summary>
-        /// Check that a conference exists for a partner key
+        /// populate ConferenceApplicationTDS dataset
         /// </summary>
         /// <param name="AMainDS">Dataset to be populated</param>
         /// <param name="AConferenceKey">match long for conference key</param>
@@ -577,8 +577,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                 {
                     if (AMainDS.PPartner.Rows.Find(new object[] { AttendeeRow.HomeOfficeKey }) == null)
                     {
-                        PPartnerTable ptable = PPartnerAccess.LoadByPrimaryKey(AttendeeRow.HomeOfficeKey, ReadTransaction);
-                        AMainDS.PPartner.Merge(ptable);
+                        PPartnerAccess.LoadByPrimaryKey(AMainDS, AttendeeRow.HomeOfficeKey, ReadTransaction);
                     }
                 }
             }

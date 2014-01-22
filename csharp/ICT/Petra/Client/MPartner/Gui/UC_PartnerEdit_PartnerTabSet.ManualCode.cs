@@ -37,6 +37,7 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MCommon.Gui;
 
@@ -738,6 +739,31 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FUcoPartnerTypes != null)
             {
                 FUcoPartnerTypes.RefreshDataGrid();
+            }
+        }
+
+        /// <summary>
+        /// Refreshes the Family Members list on the Family tab
+        /// </summary>
+        public void RefreshFamilyMembersList(TFormsMessage AFormsMessage)
+        {
+            IFormsMessagePartnerInterface FormsMessagePartner;
+
+            if (FUcoFamilyMembers != null)
+            {
+                FormsMessagePartner = (IFormsMessagePartnerInterface)AFormsMessage.MessageObject;
+
+                // return if the partner that has just been deleted/edited is not a member of this partner's family
+                if (((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcPartnerDeleted)
+                     || (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved))
+                    && (FMainDS.FamilyMembers.Rows.Find(new object[] { FormsMessagePartner.PartnerKey }) == null))
+                {
+                    return;
+                }
+
+                FUcoFamilyMembers.BroadcastRefresh = true;
+                FUcoFamilyMembers.RefreshGrid();
+                FUcoFamilyMembers.BroadcastRefresh = false;
             }
         }
 

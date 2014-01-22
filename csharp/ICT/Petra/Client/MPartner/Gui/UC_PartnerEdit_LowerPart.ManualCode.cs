@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MPartner.Logic;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner;
@@ -517,6 +518,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void RefreshPersonnelDataAfterMerge(bool AAddressesOrRelationsChanged)
         {
             ucoPersonnelTabSet.RefreshPersonnelDataAfterMerge(AAddressesOrRelationsChanged);
+        }
+
+        /// <summary>
+        /// Refreshes the Family Members list on the Family tab
+        /// </summary>
+        public void RefreshFamilyMembersList(TFormsMessage AFormsMessage)
+        {
+            ucoPartnerTabSet.RefreshFamilyMembersList(AFormsMessage);
         }
 
         #endregion

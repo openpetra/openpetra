@@ -110,6 +110,9 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>Edited (already existing) Partner that just got saved to the DB.</summary>
         mcExistingPartnerSaved,
 
+        /// <summary>Existing Partner that just got deleted.</summary>
+        mcPartnerDeleted,
+
         /// <summary>Family Members of an already existing Partner of Partner Class FAMILY
         /// just got changed in the DB.</summary>
         mcFamilyMembersChanged
@@ -223,6 +226,7 @@ namespace Ict.Petra.Client.CommonForms
                 case TFormsMessageClassEnum.mcNewPartnerSaved:
                 case TFormsMessageClassEnum.mcExistingPartnerSaved:
                 case TFormsMessageClassEnum.mcFamilyMembersChanged:
+                case TFormsMessageClassEnum.mcPartnerDeleted:
 
                     FMessageObject = new FormsMessagePartner(APartnerKey,
                     APartnerClass, AShortName, APartnerStatus);

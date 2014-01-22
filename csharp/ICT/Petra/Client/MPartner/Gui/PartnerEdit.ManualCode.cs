@@ -1840,6 +1840,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileDeletePartner(System.Object sender, System.EventArgs e)
         {
+            TFormsMessage BroadcastMessage;
+
             /* Check for new Partner that wasn't saved yet */
             if (IsNewPartner(FMainDS))
             {
@@ -1854,9 +1856,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /* Check for unsaved changes */
                 if (CanClose())
                 {
-                    /* Delete Partner; if OK, close the screen */
+                    /* Delete Partner; if OK, broadcast a message to any listening forms to inform them and then close the screen */
                     if (TPartnerMain.DeletePartner(FPartnerKey))
                     {
+                        BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcPartnerDeleted,
+                            FCallerContext);
+
+                        BroadcastMessage.SetMessageDataPartner(
+                            FPartnerKey,
+                            SharedTypes.PartnerClassStringToEnum(FPartnerClass),
+                            "",
+                            FMainDS.PPartner[0].StatusCode);
+
+                        TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
+
                         this.Close();
                     }
                 }
@@ -3209,6 +3222,40 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void HookupDataChangeEvents()
         {
             HookupPartnerEditDataChangeEvents(TPartnerEditTabPageEnum.petpAddresses);
+        }
+
+        #endregion
+
+        #region Forms Messaging Interface Implementation
+
+        /// <summary>
+        /// Will be called by TFormsList to inform any Form that is registered in TFormsList
+        /// about any 'Forms Messages' that are broadcasted.
+        /// </summary>
+        /// <remarks>The Partner Edit 'listens' to such 'Forms Message' broadcasts by
+        /// implementing this virtual Method. This Method will be called each time a
+        /// 'Forms Message' broadcast occurs.
+        /// </remarks>
+        /// <param name="AFormsMessage">An instance of a 'Forms Message'. This can be
+        /// inspected for parameters in the Method Body and the Form can use those to choose
+        /// to react on the Message, or not.</param>
+        /// <returns>Returns True if the Form reacted on the specific Forms Message,
+        /// otherwise false.</returns>
+        public bool ProcessFormsMessage(TFormsMessage AFormsMessage)
+        {
+            bool MessageProcessed = false;
+
+            if ((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcNewPartnerSaved)
+                || (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved)
+                || (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcPartnerDeleted))
+            {
+                // Refreshes the Family Members list on the Family tab
+                ucoLowerPart.RefreshFamilyMembersList(AFormsMessage);
+
+                MessageProcessed = true;
+            }
+
+            return MessageProcessed;
         }
 
         #endregion
