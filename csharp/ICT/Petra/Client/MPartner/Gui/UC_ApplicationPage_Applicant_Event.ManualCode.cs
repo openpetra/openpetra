@@ -133,7 +133,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             dtpCancellationDate.Enabled = false;
             dtpAcceptanceDate.Enabled = false;
-            
+
             if (ApplicationStatus != "")
             {
                 if (ApplicationStatus.StartsWith("A"))
@@ -141,7 +141,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     dtpAcceptanceDate.Enabled = true;
                     dtpCancellationDate.Enabled = false;
                 }
-                else if (   ApplicationStatus.StartsWith("C") 
+                else if (ApplicationStatus.StartsWith("C")
                          || ApplicationStatus.StartsWith("R"))
                 {
                     dtpAcceptanceDate.Enabled = false;
@@ -149,7 +149,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
         }
-        
+
         private void EnableDisableReceivingFieldAcceptanceDate(Object sender, EventArgs e)
         {
             dtpFieldAcceptance.Enabled = chkAcceptedByReceivingField.Checked;
@@ -158,7 +158,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void ApplicationStatusChanged(object sender, EventArgs e)
         {
             EnableDisableStatusRelatedDateFields(sender, e);
-            
+
             if (dtpCancellationDate.Enabled)
             {
                 if (dtpCancellationDate.TextLength == 0)
@@ -183,11 +183,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 dtpAcceptanceDate.Clear();
             }
         }
-        
+
         private void ReceivingFieldAcceptanceChanged(object sender, EventArgs e)
         {
             EnableDisableReceivingFieldAcceptanceDate(sender, e);
-            
+
             if (!chkAcceptedByReceivingField.Checked)
             {
                 dtpFieldAcceptance.Date = null;
@@ -196,8 +196,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 dtpFieldAcceptance.Date = DateTime.Now.Date;
             }
-        }        
-        
+        }
+
         #endregion
     }
 }
