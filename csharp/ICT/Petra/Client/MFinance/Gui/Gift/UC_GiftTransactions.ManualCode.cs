@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private string FMotivationGroup = string.Empty;
         private string FMotivationDetail = string.Empty;
-        private string FKeyMinistry = string.Empty;
+//        private string FKeyMinistry = string.Empty;
 
         private bool FShowingDetails = false;
         private bool FInEditMode = false;
@@ -474,13 +474,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     cmbMinistry.SelectedIndex = -1;
                     txtKeyMinistry.Text = string.Empty;
-                    FKeyMinistry = string.Empty;
+//                    FKeyMinistry = string.Empty;
                 }
                 else
                 {
                     txtKeyMinistry.Text = cmbMinistry.GetSelectedDescription();
 
-                    FKeyMinistry = txtKeyMinistry.Text;
+//                    FKeyMinistry = txtKeyMinistry.Text;
 
                     Int64 rcp = cmbMinistry.GetSelectedInt64();
                     txtDetailRecipientKey.Text = String.Format("{0:0000000000}", rcp);
@@ -1421,7 +1421,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Record current values for motivation
             FMotivationGroup = ARow.MotivationGroupCode;
             FMotivationDetail = ARow.MotivationDetailCode;
-            FKeyMinistry = ARow.RecipientKeyMinistry;
+//            FKeyMinistry = ARow.RecipientKeyMinistry;
 
             if (ARow.IsRecipientKeyMinistryNull())
             {
