@@ -52,6 +52,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
                 out NewTransaction);
 
             PUnitTable UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
+
             if (UnitTable.Count > 0)
             {
                 ReturnValue = ((PUnitRow)UnitTable.Rows[0]).OutreachCode;

@@ -87,6 +87,8 @@ namespace Tests.MFinance.Server.ICH
             string testFile = TAppSettingsManager.GetValue("GiftBatch.file",
                 CommonNUnitFunctions.rootPath + "/csharp/ICT/Testing/lib/MFinance/SampleData/sampleGiftBatch.csv");
 
+            TLogging.Log(testFile);
+
             StreamReader sr = new StreamReader(testFile);
             string FileContent = sr.ReadToEnd();
 

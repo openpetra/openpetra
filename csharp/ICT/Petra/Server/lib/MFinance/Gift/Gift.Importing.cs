@@ -372,7 +372,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                             giftDetails.GiftCommentOne = ImportString(Catalog.GetString("comment one"), AGiftDetailTable.GetGiftCommentOneLength());
                             giftDetails.CommentOneType = ImportString(Catalog.GetString("comment one type"), AGiftDetailTable.GetCommentOneTypeLength());
 
-
                             giftDetails.MailingCode = ImportString(Catalog.GetString("mailing code"));
 
                             giftDetails.GiftCommentTwo = ImportString(Catalog.GetString("gift comment two"), AGiftDetailTable.GetGiftCommentTwoLength());
