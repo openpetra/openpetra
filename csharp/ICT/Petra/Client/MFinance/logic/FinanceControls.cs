@@ -670,7 +670,11 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="cmbMinistry"></param>
         /// <param name="txtField"></param>
         /// <param name="APartnerKey"></param>
-        public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, ref TtxtAutoPopulatedButtonLabel txtField, System.Int64 APartnerKey, Boolean ARefreshData = false)
+        /// <param name="ARefreshData"></param>
+        public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry,
+            ref TtxtAutoPopulatedButtonLabel txtField,
+            System.Int64 APartnerKey,
+            Boolean ARefreshData = false)
         {
             GetRecipientData(ref cmbMinistry, APartnerKey, out FFieldNumber, ARefreshData);
 
@@ -693,21 +697,25 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="cmbMinistry"></param>
         /// <param name="APartnerKey"></param>
         /// <param name="AFieldNumber"></param>
-        private static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, System.Int64 APartnerKey, out Int64 AFieldNumber, Boolean ARefreshData = false)
+        /// <param name="ARefreshData"></param>
+        private static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry,
+            System.Int64 APartnerKey,
+            out Int64 AFieldNumber,
+            Boolean ARefreshData = false)
         {
             AFieldNumber = 0;
 
-            if (FKeyMinTable != null && !ARefreshData)
+            if ((FKeyMinTable != null) && !ARefreshData)
             {
                 if (FindAndSelect(ref cmbMinistry, APartnerKey))
                 {
                     return;
                 }
             }
-            else if (FKeyMinTable != null && ARefreshData)
+            else if ((FKeyMinTable != null) && ARefreshData)
             {
-            	FKeyMinTable.Clear();
-            	FKeyMinTable = null;
+                FKeyMinTable.Clear();
+                FKeyMinTable = null;
             }
 
             string DisplayMember = PUnitTable.GetUnitNameDBName();

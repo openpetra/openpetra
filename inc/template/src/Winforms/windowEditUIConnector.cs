@@ -199,6 +199,7 @@ namespace {#NAMESPACE}
         object[] beforeEdit = ARow.ItemArray;
         ARow.BeginEdit();
         {#SAVEDATA}
+        {#SAVEDATAEXTRA}
         if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
         {
             ARow.CancelEdit();
@@ -219,6 +220,7 @@ namespace {#NAMESPACE}
     {
 {#IFDEF SAVEDATA}
         {#SAVEDATA}
+        {#SAVEDATAEXTRA}
 {#ENDIF SAVEDATA}
     }
 {#ENDIFN MASTERTABLE}
@@ -232,6 +234,7 @@ namespace {#NAMESPACE}
             object[] beforeEdit = ARow.ItemArray;
             ARow.BeginEdit();
             {#SAVEDETAILS}
+            {#SAVEDETAILSEXTRA}
             if (Ict.Common.Data.DataUtilities.HaveDataRowsIdenticalValues(beforeEdit, ARow.ItemArray))
             {
                 ARow.CancelEdit();

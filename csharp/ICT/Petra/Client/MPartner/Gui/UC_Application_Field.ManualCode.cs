@@ -182,13 +182,16 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>True if data validation succeeded or if there is no current row, otherwise false.</returns>
         public bool ValidateAllData(bool AProcessAnyDataValidationErrors)
         {
-            bool ReturnValue = false;
+            bool ReturnValue = true;
 
-            ReturnValue = ucoField.ValidateAllData(AProcessAnyDataValidationErrors);
-
-            if (ReturnValue)
+            if (!ucoField.ValidateAllData(AProcessAnyDataValidationErrors))
             {
-                ReturnValue = ucoApplicant.ValidateAllData(AProcessAnyDataValidationErrors);
+                ReturnValue = false;
+            }
+
+            if (!ucoApplicant.ValidateAllData(AProcessAnyDataValidationErrors))
+            {
+                ReturnValue = false;
             }
 
             return ReturnValue;

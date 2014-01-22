@@ -1422,16 +1422,17 @@ namespace SourceGrid
 				Selection.MoveActiveCell(-1, 0, resetSelection);
 				e.Handled = true;
 			}
-            //else if (e.KeyCode == Keys.Right && enableArrows)
-            //{
-            //    Selection.MoveActiveCell(0, 1, resetSelection);
-            //    e.Handled = true;
-            //}
-            //else if (e.KeyCode == Keys.Left && enableArrows)
-            //{
-            //    Selection.MoveActiveCell(0, -1, resetSelection);
-            //    e.Handled = true;
-            //}
+            else if (e.KeyCode == Keys.Right && enableArrows && SelectionMode == GridSelectionMode.Column)
+            {
+                // AlanP: Jan 2014 support left and right when in column selection mode only
+                Selection.MoveActiveCell(0, 1, resetSelection);
+                e.Handled = true;
+            }
+            else if (e.KeyCode == Keys.Left && enableArrows && SelectionMode == GridSelectionMode.Column)
+            {
+                Selection.MoveActiveCell(0, -1, resetSelection);
+                e.Handled = true;
+            }
             //else if (e.KeyCode == Keys.Tab && enableTab)
             //{
             //    //If the tab failed I automatically select the next control in the form (SelectNextControl)
@@ -1801,8 +1802,12 @@ namespace SourceGrid
                     }
                     else if (position.Row >= this.FixedRows)
                     {
-                        // always imagine that the click was on the first column
-                        position = new Position(position.Row, this.FixedColumns);
+                        // AlanP: Jan 2014.  Added this test that we are doing full row selection because on some grids we do column selection
+                        if (this.SelectionMode == GridSelectionMode.Row)
+                        {
+                            // always imagine that the click was on the first column
+                            position = new Position(position.Row, this.FixedColumns);
+                        }
                     }
 
 					ChangeMouseDownCell(position, position);
@@ -2090,19 +2095,21 @@ namespace SourceGrid
 			{
 				if (AutoStretchColumnsToFitWidth && AutoStretchRowsToFitHeight)
 				{
-					Rows.AutoSize(false);
-					Columns.AutoSize(false);
+                    // AlanP: Jan 2014 - commented out the AutoSize because it has already happened before this call and 
+                    //  for some reason it takes progressively longer every time you maximize and restore the window
+                    //Rows.AutoSize(false);
+                    //Columns.AutoSize(false);
 					Columns.StretchToFit();
 					Rows.StretchToFit();
 				}
 				else if (AutoStretchColumnsToFitWidth)
 				{
-					Columns.AutoSize(true);
+                    //Columns.AutoSize(true);
 					Columns.StretchToFit();
 				}
 				else if (AutoStretchRowsToFitHeight)
 				{
-					Rows.AutoSize(true);
+                    //Rows.AutoSize(true);
 					Rows.StretchToFit();
 				}
 			}

@@ -66,8 +66,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private string FMotivationGroup = string.Empty;
         private string FMotivationDetail = string.Empty;
-		private string FKeyMinistry = string.Empty;
-        
+        private string FKeyMinistry = string.Empty;
+
         private bool FShowingDetails = false;
         private bool FInEditMode = false;
 
@@ -91,15 +91,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             sptTransactions.TabStop = false;
 
             txtDetailRecipientKey.PartnerClass = "WORKER,UNIT,FAMILY";
-			
+
             //Set initial width of this textbox
             cmbMinistry.ComboBoxWidth = 250;
             cmbMinistry.AttachedLabel.Visible = false;
-            
+
             //Setup hidden text boxes used to speed up reading transactions
             SetupComboTextBoxOverlayControls();
         }
-        
+
         private void SetupComboTextBoxOverlayControls()
         {
             txtKeyMinistry.TabStop = false;
@@ -111,18 +111,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtKeyMinistry.Click += new EventHandler(SetFocusToKeyMinistryCombo);
             txtKeyMinistry.KeyDown += new KeyEventHandler(OverlayTextBox_KeyDown);
             txtKeyMinistry.KeyPress += new KeyPressEventHandler(OverlayTextBox_KeyPress);
-            
+
             pnlDetails.Enter += new EventHandler(BeginEditMode);
             pnlDetails.Leave += new EventHandler(EndEditMode);
 
             cmbMinistry.Enter += new EventHandler(SetKeyMinistryTextBoxInvisible);
             cmbDetailMotivationGroupCode.Enter += new EventHandler(SetKeyMinistryTextBoxInvisible);
             cmbDetailMotivationDetailCode.Enter += new EventHandler(SetKeyMinistryTextBoxInvisible);
-            
+
             SetTextBoxOverlayOnKeyMinistryCombo();
         }
 
-		/// <summary>
+        /// <summary>
         /// load the gifts into the grid
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -141,6 +141,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 InitialiseControls();
             }
+
+            //((FFilterPanelControls.BaseFilter == FCurrentActiveFilter) && !FPetraUtilsObject.DetailProtectedMode && !ViewMode && ABatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus))
@@ -165,14 +167,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     UpdateBaseAmount(false);
                 }
 
-               SetTextBoxOverlayOnKeyMinistryCombo();
+                SetTextBoxOverlayOnKeyMinistryCombo();
 
                 return;
             }
 
-            this.Cursor = Cursors.WaitCursor;
-            Application.DoEvents();
-            SuspendLayout();
+            grdDetails.SuspendLayout();
 
             //Read key fields
             FLedgerNumber = ALedgerNumber;
@@ -200,6 +200,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //TFinanceControls.InitialiseKeyMinList(ref cmbMinistry, (Int64)0);
             }
 
+            // This sets the incomplete filter but does check the panel enabled state
+            ShowData();
+
+            // This sets the main part of the filter but excluding the additional items set by the user GUI
+            // It gets the right sort order
             SetGiftDetailDefaultView();
 
             // only load from server if there are no transactions loaded yet for this batch
@@ -209,17 +214,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
             }
 
-            ShowData();
-
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
+            // Now we set the full filter
+            UpdateRecordNumberDisplay();
+            SetRecordNumberDisplayProperties();
             SelectRowInGrid(1);
 
-            UpdateRecordNumberDisplay();
             UpdateTotals();
             UpdateControlsProtection();
 
-            ResumeLayout();
-            this.Cursor = Cursors.Default;
+            grdDetails.ResumeLayout();
         }
 
         bool FinRecipientKeyChanging = false;
@@ -246,7 +249,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.SuppressChangeDetection = true;
 
-                strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString(); 
+                strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
                 strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
 
                 if (TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(
@@ -360,56 +363,58 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void SetTextBoxOverlayOnKeyMinistryCombo()
         {
-        	ResetMotivationDetailCodeFilter();
+            ResetMotivationDetailCodeFilter();
 
-        	txtKeyMinistry.Visible = true;
+            txtKeyMinistry.Visible = true;
             txtKeyMinistry.BringToFront();
         }
 
         private void OverlayTextBox_KeyDown(object sender, KeyEventArgs e)
-		{
-    	    e.Handled = true;
-		}        
+        {
+            e.Handled = true;
+        }
 
-		private void OverlayTextBox_KeyPress(object sender, KeyPressEventArgs e)
-		{
-    	    e.Handled = true;
-		}        
-		
+        private void OverlayTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.Handled = true;
+        }
+
         private void SetFocusToKeyMinistryCombo(object sender, EventArgs e)
         {
             cmbMinistry.Focus();
         }
-        
+
         private void SetKeyMinistryTextBoxInvisible(object sender, EventArgs e)
         {
-        	if (txtKeyMinistry.Visible)
-        	{
-	        	ApplyMotivationDetailCodeFilter();
-	            
-	        	PopulateKeyMinistry();
-	
-	        	//hide the overlay box during editing
-	        	txtKeyMinistry.Visible = false;
-        	}
+            if (txtKeyMinistry.Visible)
+            {
+                ApplyMotivationDetailCodeFilter();
+
+                PopulateKeyMinistry();
+
+                //hide the overlay box during editing
+                txtKeyMinistry.Visible = false;
+            }
         }
 
         private void BeginEditMode(object sender, EventArgs e)
         {
-        	FInEditMode = true;
-			if (txtKeyMinistry.Visible)
-			{
-				SetKeyMinistryTextBoxInvisible(null, null);
-			}
+            FInEditMode = true;
+
+            if (txtKeyMinistry.Visible)
+            {
+                SetKeyMinistryTextBoxInvisible(null, null);
+            }
         }
 
         private void EndEditMode(object sender, EventArgs e)
         {
-			FInEditMode = false;
-			if (!txtKeyMinistry.Visible)
-			{
-				SetTextBoxOverlayOnKeyMinistryCombo();
-			}
+            FInEditMode = false;
+
+            if (!txtKeyMinistry.Visible)
+            {
+                SetTextBoxOverlayOnKeyMinistryCombo();
+            }
         }
 
         private void DetailCommentTypeChanged(object sender, EventArgs e)
@@ -460,7 +465,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 return;
             }
-            
+
             FInKeyMinistryChanging = true;
 
             try
@@ -473,11 +478,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-                	txtKeyMinistry.Text = cmbMinistry.GetSelectedDescription();
-                	
-                	FKeyMinistry = txtKeyMinistry.Text;
-                	
-                	Int64 rcp = cmbMinistry.GetSelectedInt64();
+                    txtKeyMinistry.Text = cmbMinistry.GetSelectedDescription();
+
+                    FKeyMinistry = txtKeyMinistry.Text;
+
+                    Int64 rcp = cmbMinistry.GetSelectedInt64();
                     txtDetailRecipientKey.Text = String.Format("{0:0000000000}", rcp);
                 }
             }
@@ -489,39 +494,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void FilterMotivationDetail(object sender, EventArgs e)
         {
-        	if (!FBatchUnposted || FPetraUtilsObject.SuppressChangeDetection || !FInEditMode || txtKeyMinistry.Visible)
+            if (!FBatchUnposted || FPetraUtilsObject.SuppressChangeDetection || !FInEditMode || txtKeyMinistry.Visible)
             {
                 return;
             }
-        	
+
             FMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
             FMotivationDetail = string.Empty;
-            
+
             ApplyMotivationDetailCodeFilter();
         }
-        
+
         private void ApplyMotivationDetailCodeFilter()
         {
-        	//FMotivationbDetail will change by next process
-			string motivationDetail = FMotivationDetail;
-			ResetMotivationDetailCodeFilter();
-			TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, FMotivationGroup);
-			FMotivationDetail = motivationDetail;
+            //FMotivationbDetail will change by next process
+            string motivationDetail = FMotivationDetail;
+
+            ResetMotivationDetailCodeFilter();
+            TFinanceControls.ChangeFilterMotivationDetailList(ref cmbDetailMotivationDetailCode, FMotivationGroup);
+            FMotivationDetail = motivationDetail;
 
             if (FMotivationDetail.Length > 0)
             {
-            	cmbDetailMotivationDetailCode.SetSelectedString(FMotivationDetail);
-            	cmbDetailMotivationDetailCode.Text = FMotivationDetail;
+                cmbDetailMotivationDetailCode.SetSelectedString(FMotivationDetail);
+                cmbDetailMotivationDetailCode.Text = FMotivationDetail;
             }
             else if (cmbDetailMotivationDetailCode.Count > 0)
             {
-            	cmbDetailMotivationDetailCode.SelectedIndex = 0;
-            	//FMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
-            	//Force refresh of label
+                cmbDetailMotivationDetailCode.SelectedIndex = 0;
+                //FMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
+                //Force refresh of label
                 MotivationDetailChanged(null, null);
             }
-            
-        	RetrieveMotivationDetailAccountCode();
+
+            RetrieveMotivationDetailAccountCode();
 
             if ((txtDetailRecipientKey.Text == string.Empty) || (Convert.ToInt64(txtDetailRecipientKey.Text) == 0))
             {
@@ -532,9 +538,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ResetMotivationDetailCodeFilter()
         {
-        	FMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
-        	
-        	if (FActiveOnly)
+            FMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
+
+            if (FActiveOnly)
             {
                 cmbDetailMotivationDetailCode.Filter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true";
             }
@@ -542,11 +548,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 cmbDetailMotivationDetailCode.Filter = string.Empty;
             }
-            
+
             cmbDetailMotivationDetailCode.SetSelectedString(FMotivationDetail);
             cmbDetailMotivationDetailCode.RefreshLabel();
         }
-        
+
         /// <summary>
         /// To be called on the display of a new record
         /// </summary>
@@ -582,24 +588,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void MotivationDetailChanged(object sender, EventArgs e)
         {
-        	if (!FBatchUnposted || !FInEditMode || txtKeyMinistry.Visible)
+            if (!FBatchUnposted || !FInEditMode || txtKeyMinistry.Visible)
             {
                 return;
             }
-        	
-        	FMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
-            
+
+            FMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
+
             AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
                 new object[] { FLedgerNumber, FMotivationGroup, FMotivationDetail });
-        	
-        	cmbDetailMotivationDetailCode.RefreshLabel();
+
+            cmbDetailMotivationDetailCode.RefreshLabel();
 
             if (motivationDetail != null)
             {
                 RetrieveMotivationDetailAccountCode();
             }
 
-            long PartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
+            long PartnerKey = 0;
+            Int64.TryParse(txtDetailRecipientKey.Text, out PartnerKey);
 
             if (PartnerKey == 0)
             {
@@ -613,16 +620,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void PopulateKeyMinistry(long APartnerKey = 0)
         {
-           	cmbMinistry.Clear();
+            cmbMinistry.Clear();
 
-           	if (APartnerKey == 0)
+            if (APartnerKey == 0)
             {
                 APartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
             }
 
             if (APartnerKey == 0)
             {
-            	return;
+                return;
             }
 
             TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, APartnerKey, true);
@@ -869,6 +876,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     FBatchRow.BatchTotal = 0;
 
+                    // Be sure to set the last gift number in the parent table before saving all the changes
+                    SetBatchLastGiftNumber();
+
                     FPetraUtilsObject.HasChanges = true;
 
                     // save first, then post
@@ -1017,7 +1027,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             for (int j = 3; j < giftRowToCopyDown.Table.Columns.Count; j++)
                             {
                                 //Update all columns except the pk fields that remain the same
-                                giftRowToReceive[j] = giftRowToCopyDown[j];
+                                if (!giftRowToCopyDown.Table.Columns[j].ColumnName.EndsWith("_text"))
+                                {
+                                    giftRowToReceive[j] = giftRowToCopyDown[j];
+                                }
                             }
                         }
 
@@ -1081,6 +1094,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             finally
             {
                 SetGiftDetailDefaultView();
+                ApplyFilter();
             }
 
             UpdateRecordNumberDisplay();
@@ -1148,6 +1162,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             dv.Sort = String.Format("{0} DESC",
                 AGiftTable.GetGiftTransactionNumberDBName());
 
+            dv.RowStateFilter = DataViewRowState.CurrentRows;
+
             if (dv.Count > 0)
             {
                 AGiftRow transRow = (AGiftRow)dv[0].Row;
@@ -1159,32 +1175,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void ClearGiftDetailDefaultView()
-        {
-            FFilterPanelControls.SetBaseFilter(String.Empty, true);
-        }
-
         private void SetGiftDetailDefaultView()
         {
             if (FBatchNumber != -1)
             {
-                ClearGiftDetailDefaultView();
-
                 string rowFilter = String.Format("{0}={1}",
                     AGiftDetailTable.GetBatchNumberDBName(),
                     FBatchNumber);
                 FFilterPanelControls.SetBaseFilter(rowFilter, true);
+                FMainDS.AGiftDetail.DefaultView.RowFilter = rowFilter;
+                FCurrentActiveFilter = rowFilter;
+                // We don't apply the filter yet!
 
-                FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0} DESC, {1} ASC",
+                FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0}, {1}",
                     AGiftDetailTable.GetGiftTransactionNumberDBName(),
                     AGiftDetailTable.GetDetailNumberDBName());
-
-                if (grdDetails.DataSource != null)
-                {
-                    ApplyFilter();
-                    UpdateRecordNumberDisplay();
-                    SetRecordNumberDisplayProperties();
-                }
             }
         }
 
@@ -1402,7 +1407,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 SetTextBoxOverlayOnKeyMinistryCombo();
             }
-            
+
             if (ARow == null)
             {
                 return;
@@ -1413,11 +1418,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FShowingDetails = true;
             FInEditMode = false;
 
-        	//Record current values for motivation
+            //Record current values for motivation
             FMotivationGroup = ARow.MotivationGroupCode;
-        	FMotivationDetail = ARow.MotivationDetailCode;
-        	FKeyMinistry = ARow.RecipientKeyMinistry;
-        	
+            FMotivationDetail = ARow.MotivationDetailCode;
+            FKeyMinistry = ARow.RecipientKeyMinistry;
+
             if (ARow.IsRecipientKeyMinistryNull())
             {
                 txtKeyMinistry.Text = string.Empty;
@@ -1427,7 +1432,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtKeyMinistry.Text = ARow.RecipientKeyMinistry;
             }
 
-        	//Show gift table values
+            //Show gift table values
             AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
             ShowDetailsForGift(giftRow);
 
@@ -1642,7 +1647,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             pnlDetails.Enabled = !(PnlDetailsProtected);
 
             btnDelete.Enabled = ((grdDetails.Rows.Count > 1) && !PnlDetailsProtected);
-            btnDeleteAll.Enabled = ((grdDetails.Rows.Count > 1) && !PnlDetailsProtected);
+            btnDeleteAll.Enabled = ((FFilterPanelControls.BaseFilter == FCurrentActiveFilter) && (grdDetails.Rows.Count > 1) && !PnlDetailsProtected);
             btnNewDetail.Enabled = !PnlDetailsProtected;
             btnNewGift.Enabled = !PnlDetailsProtected;
         }
@@ -1666,7 +1671,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GetDetailDataFromControlsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
-        	//Handle gift detail level fields
+            //Handle gift detail level fields
             if (txtDetailCostCentreCode.Text.Length == 0)
             {
                 ARow.SetCostCentreCodeNull();
@@ -1753,7 +1758,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-                	giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
+                    giftRow.ReceiptLetterCode = cmbDetailReceiptLetterCode.GetSelectedString();
                 }
             }
         }
@@ -2062,6 +2067,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void RunOnceOnParentActivationManual()
         {
             AutoSizeGrid();
+            grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+        }
+
+        void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
+        {
+            btnDeleteAll.Enabled = (FFilterPanelControls.BaseFilter == FCurrentActiveFilter)
+                                   && (grdDetails.Rows.Count > 1)
+                                   && !FPetraUtilsObject.DetailProtectedMode
+                                   && !ViewMode
+                                   && (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED);
         }
 
         /// <summary>

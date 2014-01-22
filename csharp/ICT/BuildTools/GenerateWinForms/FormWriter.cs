@@ -1570,6 +1570,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("SAVEDATA", "GetDataFromControlsManual(ARow);" + Environment.NewLine);
             }
 
+            if (FCodeStorage.ManualFileExistsAndContains("GetDataFromControlsExtra()"))
+            {
+                FTemplate.AddToCodelet("SAVEDATAEXTRA", "GetDataFromControlsExtra();" + Environment.NewLine);
+            }
+            else if (FCodeStorage.ManualFileExistsAndContains("GetDataFromControlsExtra("))
+            {
+                FTemplate.AddToCodelet("SAVEDATAEXTRA", "GetDataFromControlsExtra(ARow);" + Environment.NewLine);
+            }
+            else
+            {
+                FTemplate.AddToCodelet("SAVEDATAEXTRA", "");
+            }
+
 //            if (FCodeStorage.ManualFileExistsAndContains("ValidateDetailsManual"))
 //            {
 //                ProcessTemplate validateSnippet = FTemplate.GetSnippet("VALIDATEDETAILS");
@@ -1579,6 +1592,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.ManualFileExistsAndContains("GetDetailDataFromControlsManual"))
             {
                 FTemplate.AddToCodelet("SAVEDETAILS", "GetDetailDataFromControlsManual(ARow);" + Environment.NewLine);
+            }
+
+            if (FCodeStorage.ManualFileExistsAndContains("GetDetailDataFromControlsExtra"))
+            {
+                FTemplate.AddToCodelet("SAVEDETAILSEXTRA", "GetDetailDataFromControlsExtra(ARow);" + Environment.NewLine);
+            }
+            else
+            {
+                FTemplate.AddToCodelet("SAVEDETAILSEXTRA", "");
             }
 
             if (FCodeStorage.ManualFileExistsAndContains("void ReadControlsManual"))
