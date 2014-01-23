@@ -201,7 +201,6 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         public static Boolean LoadShortTermApplications(ref ApplicationTDS AMainDS, string AOutreachCode)
         {
             Boolean NewTransaction;
-            PmShortTermApplicationTable ApplicationTable = new PmShortTermApplicationTable();
 
             string QueryShortTermApplication = "";
 

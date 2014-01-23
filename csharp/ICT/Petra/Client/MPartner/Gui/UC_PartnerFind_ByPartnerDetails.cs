@@ -1988,7 +1988,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void SearchForExistingPartnerSavedThread(object AFormsMessagePartner)
         {
             object[] Args;
-            IFormsMessagePartnerInterface FormsMessagePartner;
             TMyUpdateDelegate MyUpdateDelegate;
 
             // Since this procedure is called from a separate (background) Thread, it is
@@ -2010,9 +2009,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                // Cast the Method Argument from an Object to the concrete Type
-                FormsMessagePartner = (IFormsMessagePartnerInterface)AFormsMessagePartner;
-
                 FBroadcastMessageSearch = true;
                 this.Cursor = Cursors.WaitCursor;
 
