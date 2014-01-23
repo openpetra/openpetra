@@ -439,11 +439,14 @@ namespace Ict.Common.Data
                     LastModifiedDate);
             }
 
-            DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateDeleteClause("PUB_" + DBTableName,
+            if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateDeleteClause("PUB_" + DBTableName,
                     Columns,
                     ADataRow,
                     PrimKeyColumnOrdList), ATransaction,
-                GetParametersForDeleteClause(ATableId, ADataRow, PrimKeyColumnOrdList));
+                    GetParametersForDeleteClause(ATableId, ADataRow, PrimKeyColumnOrdList)))
+            {
+                throw new EDBSubmitException("[TTypedDataAccess.DeleteRow] Problems DELETing a row", eSubmitChangesOperations.eDelete);                
+            }
         }
 
         /// <summary>
@@ -1979,9 +1982,12 @@ namespace Ict.Common.Data
         public static void DeleteByPrimaryKey(short ATableId, System.Object[] APrimaryKeyValues, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(ATableId, APrimaryKeyValues);
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+            if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                 GenerateWhereClauseFromPrimaryKey(ATableId),
-                ATransaction, ParametersArray);
+                ATransaction, ParametersArray))
+            {
+                throw new EDBSubmitException("[TTypedDataAccess.DeleteByPrimaryKey] Problems DELETing a row", eSubmitChangesOperations.eDelete);                
+            }
         }
 
         /// <summary>
@@ -2120,10 +2126,13 @@ namespace Ict.Common.Data
         /// <param name="ATransaction"></param>
         public static void DeleteUsingTemplate(short ATableId, DataRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+            if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                 GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ATemplateRow, ATemplateOperators),
                 ATransaction,
-                GetParametersForWhereClause(ATableId, ATemplateRow));
+                GetParametersForWhereClause(ATableId, ATemplateRow)))
+            {
+                throw new EDBSubmitException("[TTypedDataAccess.DeleteUsingTemplate {delete all rows matching the given row}] Problems DELETing a row", eSubmitChangesOperations.eDelete);                
+            }
         }
 
         /// <summary>
@@ -2134,10 +2143,13 @@ namespace Ict.Common.Data
         /// <param name="ATransaction"></param>
         public static void DeleteUsingTemplate(short ATableId, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+            if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                                                    GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ASearchCriteria)),
                 ATransaction,
-                GetParametersForWhereClause(ATableId, ASearchCriteria));
+                GetParametersForWhereClause(ATableId, ASearchCriteria)))
+            {
+                throw new EDBSubmitException("[TTypedDataAccess.DeleteUsingTemplate {delete all rows matching the search criteria}] Problems DELETing a row", eSubmitChangesOperations.eDelete);                                
+            }
         }
 
         /// <summary>
@@ -2258,7 +2270,11 @@ namespace Ict.Common.Data
                 if (InsertParameters.Count > MAX_SQL_PARAMETERS)
                 {
                     // Inserts in one query
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray());
+                    if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray()))
+                    {
+                        throw new EDBSubmitException("[TTypedDataAccess.SubmitChanges] Problems INSERTing a row [#1]", eSubmitChangesOperations.eInsert);                        
+                    }
+                    
                     InsertStatement = new StringBuilder();
                     InsertParameters = new List <OdbcParameter>();
                 }
@@ -2267,7 +2283,10 @@ namespace Ict.Common.Data
             if (InsertStatement.Length > 0)
             {
                 // Inserts in one query
-                DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray());
+                if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray()))
+                {
+                    throw new EDBSubmitException("[TTypedDataAccess.SubmitChanges] Problems INSERTing a row [#2]", eSubmitChangesOperations.eInsert);                    
+                }
             }
         }
 
