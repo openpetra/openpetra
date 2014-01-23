@@ -69,3 +69,4 @@ i18n/template.pot.withallsources
 -*.xml
 csharp/ICT/Testing/lib/Common/IO/TestData/testUnzip
 csharp/ICT/Testing/lib/Common/IO/TestData/test.xlsx
+/db/basedata/clean.sql
