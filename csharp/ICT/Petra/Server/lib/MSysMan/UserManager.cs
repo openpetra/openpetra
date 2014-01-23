@@ -424,9 +424,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             }
 
             // default to SHA1
-            return BitConverter.ToString(
-                SHA1.Create().
-                ComputeHash(Encoding.UTF8.GetBytes(APasswordAndSalt))).Replace("-", "");
+            return PasswordHelper.GetPasswordHash(APasswordAndSalt);
         }
 
         /// <summary>

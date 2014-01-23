@@ -308,6 +308,11 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "You must select a Bank for this bank account")]
         public const String ERR_BANKINGDETAILS_NO_BANK_SELECTED = "PARTN.000017V";
 
+        /// <summary>Account Number and IBAN cannot both be empty</summary>
+        [ErrCodeAttribute("No Account Number or IBAN.",
+             ErrorMessageText = "You must include an Account Number and/or IBAN for this bank account")]
+        public const String ERR_BANKINGDETAILS_MISSING_ACCOUNTNUMBERORIBAN = "PARTN.000019V";
+
         #endregion
 
         /// <summary>Partner Interest: Level needs to be within valid range.</summary>

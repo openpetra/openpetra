@@ -77,8 +77,16 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
                 dtpEndDate.Enabled = true;
             }
 
-            // display currency
-            cmbCurrency.SetSelectedString(((PcConferenceRow)FMainDS.PcConference.Rows[0]).CurrencyCode, -1);
+            // display currency (if currency code in PUnit has changed then use that over the currency code in PcConference)
+            if ((FMainDS.PUnit.Rows.Count == 0)
+                || (((PUnitRow)FMainDS.PUnit.Rows[0]).OutreachCostCurrencyCode == ((PcConferenceRow)FMainDS.PcConference.Rows[0]).CurrencyCode))
+            {
+                cmbCurrency.SetSelectedString(((PcConferenceRow)FMainDS.PcConference.Rows[0]).CurrencyCode, -1);
+            }
+            else
+            {
+                cmbCurrency.SetSelectedString(((PUnitRow)FMainDS.PUnit.Rows[0]).OutreachCostCurrencyCode, -1);
+            }
 
             // set radio buttons and checkbox
             Boolean ChargeCampaign = true;
@@ -116,6 +124,13 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
                 txtSpecialRoleAccommodation.ReadOnly = false;
                 txtVolunteerAccommodation.ReadOnly = false;
                 txtSpecialRoleCampaignAccommodation.ReadOnly = false;
+
+                txtSpecialRolePreAccommodation.TabStop = true;
+                txtVolunteerPreAccommodation.TabStop = true;
+                txtParticipantPreAccommodation.TabStop = true;
+                txtSpecialRoleAccommodation.TabStop = true;
+                txtVolunteerAccommodation.TabStop = true;
+                txtSpecialRoleCampaignAccommodation.TabStop = true;
             }
 
             // display conference discounts
@@ -230,6 +245,13 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             txtSpecialRoleAccommodation.ReadOnly = AccommodationDiscountsReadOnly;
             txtVolunteerAccommodation.ReadOnly = AccommodationDiscountsReadOnly;
             txtSpecialRoleCampaignAccommodation.ReadOnly = AccommodationDiscountsReadOnly;
+
+            txtSpecialRolePreAccommodation.TabStop = !AccommodationDiscountsReadOnly;
+            txtVolunteerPreAccommodation.TabStop = !AccommodationDiscountsReadOnly;
+            txtParticipantPreAccommodation.TabStop = !AccommodationDiscountsReadOnly;
+            txtSpecialRoleAccommodation.TabStop = !AccommodationDiscountsReadOnly;
+            txtVolunteerAccommodation.TabStop = !AccommodationDiscountsReadOnly;
+            txtSpecialRoleCampaignAccommodation.TabStop = !AccommodationDiscountsReadOnly;
         }
 
         // Called with Add button. Adds new venue to conference.
@@ -299,9 +321,11 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
         {
             PcConferenceRow ConferenceData = (PcConferenceRow)FMainDS.PcConference.Rows[0];
             PPartnerLocationRow PartnerLocationData = (PPartnerLocationRow)FMainDS.PPartnerLocation.Rows[0];
+            PUnitRow UnitData = (PUnitRow)FMainDS.PUnit.Rows[0];
             DataRowCollection ConferenceOptionData = FMainDS.PcConferenceOption.Rows;
 
             ConferenceData.CurrencyCode = cmbCurrency.GetSelectedString();
+            UnitData.OutreachCostCurrencyCode = cmbCurrency.GetSelectedString();
             ConferenceData.Start = dtpStartDate.Date;
             ConferenceData.End = dtpEndDate.Date;
             PartnerLocationData.DateEffective = dtpStartDate.Date;

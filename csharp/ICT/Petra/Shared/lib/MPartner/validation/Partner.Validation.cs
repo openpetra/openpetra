@@ -1001,6 +1001,20 @@ namespace Ict.Petra.Shared.MPartner.Validation
                         ValidationControlsData.ValidationControl
                         ));
             }
+
+            // Account Number and IBAN cannot both be empty
+            if (((ARow.BankAccountNumber == null) || (ARow.BankAccountNumber == ""))
+                && ((ARow.Iban == null) || (ARow.Iban == "")))
+            {
+                AVerificationResultCollection.Add(
+                    new TScreenVerificationResult(
+                        new TVerificationResult(
+                            AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKINGDETAILS_MISSING_ACCOUNTNUMBERORIBAN)),
+                        ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnBankAccountNumber,
+                        ValidationControlsData.ValidationControl
+                        ));
+            }
         }
 
         /// <summary>

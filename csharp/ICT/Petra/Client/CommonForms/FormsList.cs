@@ -25,6 +25,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Reflection;
 using System.Windows.Forms;
 
 using Ict.Common;
@@ -464,6 +465,51 @@ namespace Ict.Petra.Client.CommonForms
         {
             // if not (AValue is System.Windows.Forms.Form) then
             // raise ArgumentException.Create('Invalid Type: TFormsList can only store Form Objects');
+        }
+
+        #endregion
+
+
+        #region Forms Messaging Broadcasting
+
+        /// <summary>
+        /// Informs any Form that is registered in TFormsList about a specific 'Forms Message'
+        /// that is being 'broadcasted'.
+        /// </summary>
+        /// <remarks>The individual Form can choose to 'listen' to such 'Forms Message' broadcasts
+        /// by implementing the Method 'ProcessFormsMessage'. Once this is done, the Forms'
+        /// 'ProcessFormsMessage' Method will be called each time a 'Forms Message' broadcast occurs.
+        /// </remarks>
+        /// <param name="AFormsMessage">An instance of a 'Forms Message'. This can be inspected
+        /// for parameters in the Method Body of a Forms' 'ProcessFormsMessage' Method and
+        /// the Form can use those to choose whether to react on the Message, or not.</param>
+        /// <returns>The Number of Forms that reacted on the 'Forms Message'.</returns>
+        public int BroadcastFormMessage(TFormsMessage AFormsMessage)
+        {
+            System.Windows.Forms.Form FormInstance;
+            IDictionaryEnumerator DictEnum;
+            int FormsThatReacted = 0;
+
+            DictEnum = GetEnumerator();
+
+            while (DictEnum.MoveNext())
+            {
+                FormInstance = (System.Windows.Forms.Form)DictEnum.Value;
+
+                var Type = FormInstance.GetType();
+                MethodInfo Method = Type.GetMethod("ProcessFormsMessage");
+
+                // Does form contain the method "ProcessFormsMessage"?
+                // If so, call it.
+                if ((Method != null) && ((bool)Method.Invoke(FormInstance, new object[] { AFormsMessage }) == true))
+                {
+//                    MessageBox.Show("BroadcastFormMessage: FormInstance = " + FormInstance.Name);
+                    FormsThatReacted++;
+                }
+            }
+
+//            MessageBox.Show("FormsThatListened: " + FormsThatListened.ToString());
+            return FormsThatReacted;
         }
 
         #endregion

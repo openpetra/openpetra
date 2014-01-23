@@ -307,6 +307,16 @@
       <CustomField name="ExactPartnerKeyMatch" type="bool" initial="false"/>
       <CustomField name="PhoneNumber" type="string"/>
       <CustomField name="PhoneNumberMatch" type="string" initial="BEGINS"/>
+      <CustomField name="AccountName" type="string"/>
+      <CustomField name="AccountNameMatch" type="string" initial="BEGINS"/>
+      <CustomField name="Iban" type="string"/>
+      <CustomField name="IbanMatch" type="string" initial="BEGINS"/>
+      <CustomField name="AccountNumber" type="string"/>
+      <CustomField name="AccountNumberMatch" type="string" initial="BEGINS"/>
+      <CustomField name="BranchCode" type="string"/>
+      <CustomField name="BranchCodeMatch" type="string" initial="BEGINS"/>
+      <CustomField name="Bic" type="string"/>
+      <CustomField name="BicMatch" type="string" initial="BEGINS"/>
     </CustomTable>
     <CustomTable name="SearchResult">
       <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>
@@ -335,6 +345,13 @@
       <Field sqltable="p_location" sqlfield="p_county_c"/>
       <Field sqltable="p_location" sqlfield="p_country_code_c"/>
       <Field sqltable="p_location" sqlfield="p_location_key_i"/>
+ 
+      <Field sqltable="p_banking_details" sqlfield="p_banking_details_key_i"/>
+      <Field sqltable="p_banking_details" sqlfield="p_account_name_c"/>
+      <Field sqltable="p_banking_details" sqlfield="p_bank_account_number_c"/>
+      <Field sqltable="p_banking_details" sqlfield="p_iban_c"/>
+      <Field sqltable="p_bank" sqlfield="p_branch_code_c"/>
+      <Field sqltable="p_bank" sqlfield="p_bic_c"/>
     </CustomTable>
   </DataSet>
 

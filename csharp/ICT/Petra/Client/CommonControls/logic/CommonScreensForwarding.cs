@@ -34,6 +34,7 @@ namespace Ict.Petra.Client.CommonControls.Logic
     public static class TCommonScreensForwarding
     {
         static TDelegateOpenPartnerFindScreen FOpenPartnerFindScreen;
+        static TDelegateOpenPartnerFindByBankDetailsScreen FOpenPartnerFindByBankDetailsScreen;
         static TDelegateOpenConferenceFindScreen FOpenConferenceFindScreen;
         static TDelegateOpenEventFindScreen FOpenEventFindScreen;
         static TDelegateOpenExtractFindScreen FOpenExtractFindScreen;
@@ -56,6 +57,24 @@ namespace Ict.Petra.Client.CommonControls.Logic
             set
             {
                 FOpenPartnerFindScreen = value;
+            }
+        }
+
+        /// <summary>
+        /// This property is used to provide a function which opens a modal Partner Find screen with only the
+        /// Find By Bank Details tab enabled.
+        /// </summary>
+        /// <description>The Delegate is set up at the start of the application.</description>
+        public static TDelegateOpenPartnerFindByBankDetailsScreen OpenPartnerFindByBankDetailsScreen
+        {
+            get
+            {
+                return FOpenPartnerFindByBankDetailsScreen;
+            }
+
+            set
+            {
+                FOpenPartnerFindByBankDetailsScreen = value;
             }
         }
 
