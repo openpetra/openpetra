@@ -612,6 +612,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
             Boolean ASendUpdateInfoToClient)
         {
             Boolean NewTransaction = false;
+            Boolean SubmissionOK = false;
             TDBTransaction WriteTransaction;
             Int32 SavingAttempts = 0;
             SUserDefaultsTable ChangedUserDefaultsDT;
@@ -650,6 +651,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                             try
                             {
                                 SUserDefaultsAccess.SubmitChanges(AUserDefaultsDataTable, WriteTransaction);
+                                
+                                SubmissionOK = true;
+                                
                                 SavingAttempts = SavingAttempts + 1;
                             }
                             catch (EDBConcurrencyException)
@@ -678,7 +682,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
 
                                 throw;
                             }
-                        } while (!(SavingAttempts > 1));
+                        } while (!((SavingAttempts > 1) || SubmissionOK));
 
                         TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: after saving.");
                         TLogging.LogAtLevel(
