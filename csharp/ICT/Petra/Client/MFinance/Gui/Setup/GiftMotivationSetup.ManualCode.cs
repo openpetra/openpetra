@@ -34,6 +34,7 @@ using Ict.Common.IO;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance;
@@ -220,6 +221,48 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 lblDetailMotivationDetailCode.Text,
                 txtDetailMotivationDetailCode.Text);
             return true;
+        }
+
+        private void ValidateDataDetailsManual(AMotivationDetailRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+            Boolean KeyMinistryActive;
+
+            // Partner Key must be for a Key Ministry and Key Ministry must not be deactivated
+            if (Convert.ToInt64(txtDetailRecipientKey.Text) != 0)
+            {
+                ValidationColumn = FMainDS.AMotivationDetail[0].Table.Columns[AMotivationDetailTable.ColumnRecipientKeyId];
+
+                if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                {
+                    if (TRemote.MFinance.Gift.WebConnectors.KeyMinistryExists(Convert.ToInt64(txtDetailRecipientKey.Text), out KeyMinistryActive))
+                    {
+                        if (!KeyMinistryActive)
+                        {
+                            // Key Ministry is deactivated and therefore can't be used here
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_KEY_MINISTRY_DEACTIVATED)),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+
+                            // Handle addition to/removal from TVerificationResultCollection.
+                            VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                        }
+                    }
+                    else
+                    {
+                        // Partner Key does not refer to Key Ministry
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_NOT_A_KEY_MINISTRY)),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        // Handle addition to/removal from TVerificationResultCollection.
+                        VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn);
+                    }
+                }
+            }
         }
     }
 }

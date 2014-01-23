@@ -266,7 +266,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         detail.RecipientLedgerNumber = recGiftDetail.RecipientLedgerNumber;
                                         detail.ChargeFlag = recGiftDetail.ChargeFlag;
                                         detail.ConfidentialGiftFlag = recGiftDetail.ConfidentialGiftFlag;
-                                        detail.TaxDeductable = recGiftDetail.TaxDeductable;
+                                        detail.TaxDeductible = recGiftDetail.TaxDeductible;
                                         detail.MailingCode = recGiftDetail.MailingCode;
 
                                         if (detail.MailingCode.Length == 0)
@@ -1185,14 +1185,39 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftDetail.RecipientField = GetRecipientLedgerNumber(MainDS, giftDetail.RecipientKey);
                     PPartnerRow RecipientRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
                     giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
+                    PUnitRow RecipientUnitRow = (PUnitRow)MainDS.RecipientUnit.Rows.Find(giftDetail.RecipientKey);
+
+                    if (RecipientUnitRow != null)
+                    {
+                        giftDetail.RecipientKeyMinistry = RecipientUnitRow.UnitName;
+                    }
+                    else
+                    {
+                        giftDetail.SetRecipientKeyMinistryNull();
+                    }
                 }
                 else
                 {
                     giftDetail.SetRecipientFieldNull();
                     giftDetail.RecipientDescription = "INVALID";
+                    giftDetail.SetRecipientKeyMinistryNull();
+                }
+
+                //And account code
+                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(
+                    new object[] { ALedgerNumber, giftDetail.MotivationGroupCode, giftDetail.MotivationDetailCode });
+
+                if (motivationDetail != null)
+                {
+                    giftDetail.AccountCode = motivationDetail.AccountCode.ToString();
+                }
+                else
+                {
+                    giftDetail.SetAccountCodeNull();
                 }
 
                 giftDetail.DateEntered = giftRow.DateEntered;
+                giftDetail.Reference = giftRow.Reference;
             }
 
             AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
@@ -1259,7 +1284,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftDetail.RecipientDescription = "INVALID";
                 }
 
-                //giftDetail.DateEntered = giftRow.DateEntered;
+                //And account code
+                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(
+                    new object[] { ALedgerNumber, giftDetail.MotivationGroupCode, giftDetail.MotivationDetailCode });
+
+                if (motivationDetail != null)
+                {
+                    giftDetail.AccountCode = motivationDetail.AccountCode.ToString();
+                }
+                else
+                {
+                    giftDetail.SetAccountCodeNull();
+                }
             }
 
             AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
@@ -1945,6 +1981,56 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 TLogging.Log("cannot find Recipient LedgerNumber for partner " + partnerKey.ToString());
                 return partnerKey;
             }
+        }
+
+        /// <summary>
+        /// Check if Key Ministry exists
+        /// </summary>
+        /// <param name="APartnerKey">Partner Key </param>
+        /// <param name="AIsActive">return true if Key Ministry is active </param>
+        /// <returns>return true if APartnerKey identifies a Key Ministry</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Boolean KeyMinistryExists(Int64 APartnerKey, out Boolean AIsActive)
+        {
+            Boolean KeyMinistryExists = false;
+            TDBTransaction Transaction = null;
+
+            AIsActive = false;
+
+            try
+            {
+                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+                PUnitTable UnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction);
+
+                if (UnitTable.Rows.Count == 1)
+                {
+                    // this partner is indeed a unit
+                    PUnitRow UnitRow = UnitTable[0];
+
+                    if (UnitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
+                    {
+                        KeyMinistryExists = true;
+
+                        PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction);
+                        PPartnerRow PartnerRow = PartnerTable[0];
+
+                        if (SharedTypes.StdPartnerStatusCodeStringToEnum(PartnerRow.StatusCode) == TStdPartnerStatusCode.spscACTIVE)
+                        {
+                            AIsActive = true;
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                if (Transaction != null)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+
+            return KeyMinistryExists;
         }
 
         /// <summary>

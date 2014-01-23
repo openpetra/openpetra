@@ -1569,7 +1569,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 FTemplate.AddToCodelet("SAVEDATA", "GetDataFromControlsManual(ARow);" + Environment.NewLine);
             }
-            
+
             if (FCodeStorage.ManualFileExistsAndContains("GetDataFromControlsExtra()"))
             {
                 FTemplate.AddToCodelet("SAVEDATAEXTRA", "GetDataFromControlsExtra();" + Environment.NewLine);
@@ -1577,7 +1577,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             else if (FCodeStorage.ManualFileExistsAndContains("GetDataFromControlsExtra("))
             {
                 FTemplate.AddToCodelet("SAVEDATAEXTRA", "GetDataFromControlsExtra(ARow);" + Environment.NewLine);
-            }                        
+            }
             else
             {
                 FTemplate.AddToCodelet("SAVEDATAEXTRA", "");
@@ -1602,7 +1602,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             {
                 FTemplate.AddToCodelet("SAVEDETAILSEXTRA", "");
             }
-            
+
             if (FCodeStorage.ManualFileExistsAndContains("void ReadControlsManual"))
             {
                 FTemplate.AddToCodelet("READCONTROLS", "ReadControlsManual(ACalc, AReportAction);" + Environment.NewLine);

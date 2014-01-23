@@ -61,6 +61,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void ShowDetails(PmGeneralApplicationRow ARow)
         {
             ShowData(ARow);
+            EnableDisableStatusRelatedDateFields(null, null);
             EnableDisableReceivingFieldAcceptanceDate(null, null);
             ApplicationCurrencyChanged(null, null);
         }
@@ -116,26 +117,40 @@ namespace Ict.Petra.Client.MPartner.Gui
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TSharedPersonnelValidation_Personnel.ValidateGeneralApplicationManual(this, ARow, false, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+                FValidationControlsDict);
 
             TSharedPersonnelValidation_Personnel.ValidateFieldApplicationManual(this,
                 FMainDS.PmYearProgramApplication[0],
                 ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict);
+                FValidationControlsDict);
+        }
+
+        private void EnableDisableStatusRelatedDateFields(Object sender, EventArgs e)
+        {
+            String ApplicationStatus = cmbApplicationStatus.GetSelectedString();
+
+            dtpCancellationDate.Enabled = false;
+            dtpAcceptanceDate.Enabled = false;
+
+            if (ApplicationStatus != "")
+            {
+                if (ApplicationStatus.StartsWith("A"))
+                {
+                    dtpAcceptanceDate.Enabled = true;
+                    dtpCancellationDate.Enabled = false;
+                }
+                else if (ApplicationStatus.StartsWith("C")
+                         || ApplicationStatus.StartsWith("R"))
+                {
+                    dtpAcceptanceDate.Enabled = false;
+                    dtpCancellationDate.Enabled = true;
+                }
+            }
         }
 
         private void EnableDisableReceivingFieldAcceptanceDate(Object sender, EventArgs e)
         {
             dtpFieldAcceptance.Enabled = chkAcceptedByReceivingField.Checked;
-
-            if (!chkAcceptedByReceivingField.Checked)
-            {
-                dtpFieldAcceptance.Date = null;
-            }
-            else
-            {
-                dtpFieldAcceptance.Date = DateTime.Now.Date;
-            }
         }
 
         private void ApplicationCurrencyChanged(Object sender, EventArgs e)
@@ -146,6 +161,49 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             txtJoiningCharge.CurrencyCode = Currency;
             txtAgreedSupport.CurrencyCode = Currency;
+        }
+
+        private void ApplicationStatusChanged(object sender, EventArgs e)
+        {
+            EnableDisableStatusRelatedDateFields(sender, e);
+
+            if (dtpCancellationDate.Enabled)
+            {
+                if (dtpCancellationDate.TextLength == 0)
+                {
+                    dtpCancellationDate.Date = DateTime.Now.Date;
+                }
+            }
+            else
+            {
+                dtpCancellationDate.Date = null;
+            }
+
+            if (dtpAcceptanceDate.Enabled)
+            {
+                if (dtpAcceptanceDate.TextLength == 0)
+                {
+                    dtpAcceptanceDate.Date = DateTime.Now.Date;
+                }
+            }
+            else
+            {
+                dtpAcceptanceDate.Date = null;
+            }
+        }
+
+        private void ReceivingFieldAcceptanceChanged(object sender, EventArgs e)
+        {
+            EnableDisableReceivingFieldAcceptanceDate(sender, e);
+
+            if (!chkAcceptedByReceivingField.Checked)
+            {
+                dtpFieldAcceptance.Date = null;
+            }
+            else
+            {
+                dtpFieldAcceptance.Date = DateTime.Now.Date;
+            }
         }
 
         #endregion

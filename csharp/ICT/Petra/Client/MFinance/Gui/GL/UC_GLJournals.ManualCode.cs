@@ -116,9 +116,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS.AJournal.Clear();
                 }
 
-                grdDetails.DataSource = null;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AJournal.DefaultView);
-
                 // This sets the base rowFilter and sort and calls manual code
                 ShowData();
 
