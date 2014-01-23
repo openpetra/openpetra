@@ -68,6 +68,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("param_with_analysis_attributes", false);
         }
 
+        //
+        // This will be called if the Fast Reports Wrapper loaded OK.
+        // Returns True if the data apparently loaded OK and the report should be printed.
         private bool LoadReportData(TRptCalculator ACalc)
         {
             Shared.MReporting.TParameterList pm = ACalc.GetParameters();
@@ -227,7 +230,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     CostCentreFilter,
                     pm.Get("param_start_period_i").ToInt32(),
                     pm.Get("param_end_period_i").ToInt32(),
-                    pm.Get("param_currency").ToString() == "International"
+                    pm.Get("param_currency").ToString().StartsWith("Int")
                     );
                 ReportDs.Merge(Balances);
                 FFastReportsPlugin.RegisterData(Balances, "balances");

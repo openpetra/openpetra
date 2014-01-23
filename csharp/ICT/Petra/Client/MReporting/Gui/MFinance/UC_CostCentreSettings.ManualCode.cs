@@ -122,7 +122,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             ACalculator.AddParameter("param_cost_centre_list_title", CostCentreListTitle);
 
-            ACalculator.AddParameter("param_cost_centre_summary", chkCostCentreBreakdown.Checked);
+            ACalculator.AddParameter("param_cost_centre_summary",   chkCostCentreBreakdown.Checked);
             ACalculator.AddParameter("param_cost_centre_breakdown", chkCostCentreBreakdown.Checked);
             ACalculator.AddParameter("ExcludeInactiveCostCentres", chkExcludeInactiveCostCentres.Checked);
 

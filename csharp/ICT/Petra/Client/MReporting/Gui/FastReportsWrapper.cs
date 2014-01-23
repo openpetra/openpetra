@@ -49,6 +49,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         private Assembly FastReportsDll;
         private object FfastReportInstance;
         Type FFastReportType;
+        public Boolean LoadedOK;
 
         /// <summary>
         /// Instance this object and it changes the behaviour to use FastReports if the DLL is installed.
@@ -59,6 +60,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             try
             {
+                LoadedOK = false;
                 FPetraUtilsObject = PetraUtilsObject;
                 FastReportsDll = Assembly.LoadFrom("FastReport.DLL"); // If there's no FastReports DLL, this will "fall at the first hurdle"!
                 String reportPath = TAppSettingsManager.GetValue("Reporting.PathStandardReports") + "/Finance/" + FPetraUtilsObject.FReportName +
@@ -72,6 +74,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 FPetraUtilsObject.DelegateGenerateReportOverride = GenerateReport;
                 FPetraUtilsObject.DelegateViewReportOverride = DesignReport;
+                LoadedOK = true;
             }
             catch (Exception e) // If there's no FastReports DLL, this object will do nothing.
             {
@@ -107,8 +110,11 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         private void DesignReport(TRptCalculator ACalc)
         {
-            LoadReportParams(ACalc);
-            FFastReportType.GetMethod("Design", new Type[0]).Invoke(FfastReportInstance, null);
+            if (FDataGetter(ACalc))
+            {
+                LoadReportParams(ACalc);
+                FFastReportType.GetMethod("Design", new Type[0]).Invoke(FfastReportInstance, null);
+            }
         }
 
         private void GenerateReport(TRptCalculator ACalc)
