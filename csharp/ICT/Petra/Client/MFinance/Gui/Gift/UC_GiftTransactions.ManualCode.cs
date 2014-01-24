@@ -145,8 +145,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 InitialiseControls();
             }
 
-
-
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus))
             {
