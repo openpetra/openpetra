@@ -1225,7 +1225,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 if (motivationDetail != null)
                 {
-                    giftDetail.AccountCode = motivationDetail.AccountCode.ToString();
+                    giftDetail.AccountCode = motivationDetail.AccountCode;
                 }
                 else
                 {

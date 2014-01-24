@@ -335,29 +335,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             string txtValue = txt.Text;
 
-            if (txtValue == String.Empty)
+            if (txt.Name.Contains("One"))
             {
-                if (txt.Name.Contains("One"))
+	            if (txtValue == String.Empty)
                 {
-                    if (cmbDetailCommentOneType.SelectedIndex >= 0)
-                    {
-                        cmbDetailCommentOneType.SelectedIndex = -1;
-                    }
+                    cmbDetailCommentOneType.SelectedIndex = -1;
                 }
-                else if (txt.Name.Contains("Two"))
+	            else if (cmbDetailCommentOneType.SelectedIndex == -1)
+	            {
+	            	cmbDetailCommentOneType.SetSelectedString("Both");
+	            }
+            }
+            else if (txt.Name.Contains("Two"))
+            {
+	            if (txtValue == String.Empty)
                 {
-                    if (cmbDetailCommentTwoType.SelectedIndex >= 0)
-                    {
-                        cmbDetailCommentTwoType.SelectedIndex = -1;
-                    }
+                    cmbDetailCommentTwoType.SelectedIndex = -1;
                 }
-                else if (txt.Name.Contains("Three"))
+	            else if (cmbDetailCommentTwoType.SelectedIndex == -1)
+	            {
+	            	cmbDetailCommentTwoType.SetSelectedString("Both");
+	            }
+            }
+            else if (txt.Name.Contains("Three"))
+            {
+	            if (txtValue == String.Empty)
                 {
-                    if (cmbDetailCommentThreeType.SelectedIndex >= 0)
-                    {
-                        cmbDetailCommentThreeType.SelectedIndex = -1;
-                    }
+                    cmbDetailCommentThreeType.SelectedIndex = -1;
                 }
+	            else if (cmbDetailCommentThreeType.SelectedIndex == -1)
+	            {
+	            	cmbDetailCommentThreeType.SetSelectedString("Both");
+	            }
             }
         }
 
@@ -1452,6 +1461,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 txtDetailCostCentreCode.Text = ARow.CostCentreCode;
+            }
+
+            if (ARow.IsAccountCodeNull())
+            {
+                txtDetailAccountCode.Text = string.Empty;
+            }
+            else
+            {
+                txtDetailAccountCode.Text = ARow.AccountCode;
             }
 
             if (ARow.IsRecipientKeyNull())
