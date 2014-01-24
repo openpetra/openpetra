@@ -58,7 +58,7 @@ RootNode:
         actMaintainRecipientHistory: {Label=Recipient Histor&y..., ActionClick=MniMaintain_Click}
         actMaintainFinanceReports: {Label=Finance Report&s..., ActionClick=MniMaintain_Click}
         actMaintainBankAccounts: {Label=Ban&k Accounts..., ActionClick=MniMaintain_Click}
-        actMaintainGiftReceipting: {Label=&Gift Receipting..., ActionClick=MniMaintain_Click}
+        actMaintainGiftReceipting: {Label=&Gift Processing..., ActionClick=MniMaintain_Click}
         actMaintainFinanceDetails: {Label=&Finance Details..., ActionClick=MniMaintain_Click, Image: FinanceDetails.ico}        
         
         actMailingGenerateExtract: {Label=&Generate Extract From Found Partners..., ActionClick=MniMailing_Click}
@@ -81,13 +81,19 @@ RootNode:
         tabPartnerFindMethods:
             Dock: Fill
             Controls: [tpgFindPartner, tpgFindBankDetails]
+            ActionClick: TabChanged
         tpgFindPartner:
             Label: Find by Partner Details
             Controls: [ucoFindByPartnerDetails]
         ucoFindByPartnerDetails:
             Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerFind_ByPartnerDetails
             Dock: Fill
-        tpgFindBankDetails: {Label=Find by Bank Details}
+        tpgFindBankDetails:
+            Label: Find by Bank Details
+            Controls: [ucoFindByBankDetails]
+        ucoFindByBankDetails:
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerFind_ByPartnerDetails
+            Dock: Fill
         pnlModalButtons:
             ControlsOrientation: horizontal
             Dock: Bottom

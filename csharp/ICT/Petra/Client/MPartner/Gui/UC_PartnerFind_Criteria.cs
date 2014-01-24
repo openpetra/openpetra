@@ -26,19 +26,20 @@ using System.Collections;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.Reflection;
 using System.Windows.Forms;
 using GNU.Gettext;
+using Ict.Common.Controls;
+using Ict.Common.Controls.Formatting;
+using Ict.Common;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MPartner;
-using System.Globalization;
 using Ict.Petra.Client.App.Gui;
-using Ict.Common.Controls;
-using Ict.Common.Controls.Formatting;
-using Ict.Common;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -73,6 +74,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             "Example: Entering Partner Key '0029000000' will return all Partners whose Partner Key was generated\n\r" +
             "for Unit 0029000000.\n\r" +
             "This is because the 'Exact Partner Key Match' Option is turned off in the Partner Find Options.");
+        private static readonly string StrAccountNameFindHelpText = Catalog.GetString(
+            "Enter the Account Name");
+        private static readonly string StrAccountNumberFindHelpText = Catalog.GetString(
+            "Enter the Account Number");
+        private static readonly string StrIBANFindHelpText = Catalog.GetString(
+            "Enter the IBAN");
+        private static readonly string StrBranchCodeFindHelpText = Catalog.GetString(
+            "Enter a Bank/Branch Code");
+        private static readonly string StrBICCodeFindHelpText = Catalog.GetString(
+            "Enter a BIC/SWIFT Code");
 
         #endregion
 
@@ -102,7 +113,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #region Properties
 
-        private string PartnerStatus
+        /// <summary>todoComment</summary>
+        public string PartnerStatus
         {
             get
             {
@@ -444,6 +456,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblCounty.Text = Catalog.GetString("Co&unty") + ":";
             this.lblCountry.Text = Catalog.GetString("Co&untry") + ":";
             this.lblMailingAddressOnly.Text = Catalog.GetString("Mailin&g Addresses Only") + ":";
+            this.lblAccountName.Text = Catalog.GetString("&Account Name") + ":";
+            this.lblAccountNumber.Text = Catalog.GetString("A&ccount Number") + ":";
+            this.lblIban.Text = Catalog.GetString("&IBAN") + ":";
+            this.lblBic.Text = Catalog.GetString("B&IC/SWIFT Code") + ":";
+            this.lblBranchCode.Text = Catalog.GetString("&Bank/Branch Code") + ":";
             #endregion
         }
 
@@ -1251,6 +1268,59 @@ namespace Ict.Petra.Client.MPartner.Gui
             GeneralLeaveHandler(txtPartnerName, critPartnerName);
         }
 
+        private void TxtBic_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            GeneralKeyHandler(txtBic, critBic, e);
+        }
+
+        private void TxtBic_Leave(System.Object sender, EventArgs e)
+        {
+            // capitalise when leaving control
+            txtBic.Text = txtBic.Text.ToUpper();
+
+            GeneralLeaveHandler(txtBic, critBic);
+        }
+
+        private void TxtBranchCode_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            GeneralKeyHandler(txtBranchCode, critBranchCode, e);
+        }
+
+        private void TxtBranchCode_Leave(System.Object sender, EventArgs e)
+        {
+            GeneralLeaveHandler(txtBranchCode, critBranchCode);
+        }
+
+        private void TxtIban_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            GeneralKeyHandler(txtIban, critIban, e);
+        }
+
+        private void TxtIban_Leave(System.Object sender, EventArgs e)
+        {
+            GeneralLeaveHandler(txtIban, critIban);
+        }
+
+        private void TxtAccountNumber_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            GeneralKeyHandler(txtAccountNumber, critAccountNumber, e);
+        }
+
+        private void TxtAccountNumber_Leave(System.Object sender, EventArgs e)
+        {
+            GeneralLeaveHandler(txtAccountNumber, critAccountNumber);
+        }
+
+        private void TxtAccountName_Leave(System.Object sender, EventArgs e)
+        {
+            GeneralLeaveHandler(txtAccountName, critAccountName);
+        }
+
+        private void TxtAccountName_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            GeneralKeyHandler(txtAccountName, critAccountName, e);
+        }
+
         #endregion
 
         #region KeyPress Events which enable/disable other controls
@@ -1361,6 +1431,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             SingleDataRow["WORKERFAMONLY"] = false;
             SingleDataRow["PhoneNumber"] = "";
             SingleDataRow["ExactPartnerKeyMatch"] = true;
+            SingleDataRow["AccountName"] = "";
+            SingleDataRow["AccountNumber"] = "";
+            SingleDataRow["Iban"] = "";
+            SingleDataRow["BranchCode"] = "";
+            SingleDataRow["Bic"] = "";
             SingleDataRow["PartnerNameMatch"] = "BEGINS";
             SingleDataRow["PersonalNameMatch"] = "BEGINS";
             SingleDataRow["PreviousNameMatch"] = "BEGINS";
@@ -1372,6 +1447,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             SingleDataRow["CountyMatch"] = "BEGINS";
             SingleDataRow["EmailMatch"] = "BEGINS";
             SingleDataRow["PhoneNumberMatch"] = "BEGINS";
+            SingleDataRow["AccountNameMatch"] = "BEGINS";
+            SingleDataRow["AccountNumberMatch"] = "BEGINS";
+            SingleDataRow["IbanMatch"] = "BEGINS";
+            SingleDataRow["BranchCodeMatch"] = "BEGINS";
+            SingleDataRow["BicMatch"] = "BEGINS";
 
             if (cmbPartnerClass.Items.Count > 0)
             {
@@ -1567,6 +1647,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             critCounty.AssociatedTextBox = txtCounty;
             critEmail.AssociatedTextBox = txtEmail;
             critPhoneNumber.AssociatedTextBox = txtPhoneNumber;
+            critAccountName.AssociatedTextBox = txtAccountName;
+            critAccountNumber.AssociatedTextBox = txtAccountNumber;
+            critIban.AssociatedTextBox = txtIban;
+            critBic.AssociatedTextBox = txtBic;
+            critBranchCode.AssociatedTextBox = txtBranchCode;
 
             critPartnerName.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
             critPersonalName.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
@@ -1579,6 +1664,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             critCounty.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
             critEmail.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
             critPhoneNumber.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
+            critAccountName.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
+            critAccountNumber.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
+            critIban.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
+            critBic.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
+            critBranchCode.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
         }
 
         /// <summary>
@@ -1680,6 +1770,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.SetStatusBarText(txtCity, MPartnerResourcestrings.StrCityHelptext);
             FPetraUtilsObject.SetStatusBarText(txtPostCode, MPartnerResourcestrings.StrPostCodeHelpText);
             FPetraUtilsObject.SetStatusBarText(txtCounty, MPartnerResourcestrings.StrCountyHelpText);
+            FPetraUtilsObject.SetStatusBarText(txtAccountName, StrAccountNameFindHelpText);
+            FPetraUtilsObject.SetStatusBarText(txtAccountNumber, StrAccountNumberFindHelpText);
+            FPetraUtilsObject.SetStatusBarText(txtIban, StrIBANFindHelpText);
+            FPetraUtilsObject.SetStatusBarText(txtBranchCode, StrBranchCodeFindHelpText);
+            FPetraUtilsObject.SetStatusBarText(txtBic, StrBICCodeFindHelpText);
             FPetraUtilsObject.SetStatusBarText(cmbPartnerClass, StrPartnerClassFindHelpText);
             FPetraUtilsObject.SetStatusBarText(txtLocationKey,
                 MPartnerResourcestrings.StrLocationKeyHelpText + MPartnerResourcestrings.StrLocationKeyExtraHelpText);
@@ -1725,6 +1820,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     critPostCode.DataBindings.Clear();
                     critCity.DataBindings.Clear();
                     critCounty.DataBindings.Clear();
+                    critAccountName.DataBindings.Clear();
+                    critAccountNumber.DataBindings.Clear();
+                    critIban.DataBindings.Clear();
+                    critBic.DataBindings.Clear();
+                    critBranchCode.DataBindings.Clear();
                 }
             }
 
@@ -2600,6 +2700,81 @@ namespace Ict.Petra.Client.MPartner.Gui
                 txtLocationKey.Text = APassedLocationKey.ToString();
                 txtLocationKey.SelectAll();
             }
+        }
+
+        /// <summary>
+        /// Set the partner key in txtPartnerKey
+        /// </summary>
+        /// <param name="APassedPartnerKey"></param>
+        public void FocusPartnerKey(Int64 APassedPartnerKey)
+        {
+            /* First make sure that the PartnerKey Panel is there... */
+            if (!pnlRightColumn.Controls.Contains(pnlPartnerKey))
+            {
+                pnlRightColumn.Controls.Add(pnlPartnerKey);
+            }
+
+            /* Set Focus on txtPartnerKey */
+            txtPartnerKey.Focus();
+
+            /* Set PartnerKey if APassedPartnerKey is passed in */
+            if (APassedPartnerKey != -1)
+            {
+                txtPartnerKey.Text = APassedPartnerKey.ToString();
+                txtPartnerKey.SelectAll();
+
+                // Make sure that the underlying data is updated
+                // (this is needed when called from a Thread).
+                FFindCriteriaDataTable.Rows[0]["PartnerKey"] = APassedPartnerKey;
+
+                // Disable all other Panels, since the PartnerKey is
+                // an exclusive Search Criteria.
+                DisableAllPanel(pnlPartnerKey);
+            }
+        }
+
+        /// <summary>
+        /// Set the partner status manually
+        /// </summary>
+        /// <param name="APartnerStatus"></param>
+        public void FocusPartnerStatus(string APartnerStatus)
+        {
+//MessageBox.Show("FocusPartnerStatus: APartnerStatus = " + APartnerStatus);
+
+            /* First make sure that the PartnerStatus Panel is there... */
+            if (!pnlRightColumn.Controls.Contains(pnlPartnerStatus))
+            {
+                pnlRightColumn.Controls.Add(pnlPartnerStatus);
+            }
+
+            if (APartnerStatus == SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))
+            {
+                // Check corresponding Radio Button
+                rbtStatusActive.Checked = true;
+
+                // Make sure that the underlying data is updated (this is needed when called from a Thread).
+                FFindCriteriaDataTable.Rows[0]["PartnerStatus"] =
+                    SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE);
+            }
+            else if (APartnerStatus == SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscPRIVATE))
+            {
+                // Check corresponding Radio Button
+                rbtPrivate.Checked = true;
+
+                // Make sure that the underlying data is updated (this is needed when called from a Thread).
+                FFindCriteriaDataTable.Rows[0]["PartnerStatus"] =
+                    SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscPRIVATE);
+            }
+            else
+            {
+                // Check corresponding Radio Button
+                rbtStatusAll.Checked = true;
+
+                // Make sure that the underlying data is updated (this is needed when called from a Thread).
+                FFindCriteriaDataTable.Rows[0]["PartnerStatus"] = "ALL";
+            }
+
+//MessageBox.Show("FocusPartnerStatus: FFindCriteriaDataTable.Rows[0][\"PartnerStatus\"] = " + FFindCriteriaDataTable.Rows[0]["PartnerStatus"]);
         }
 
         /// <summary>

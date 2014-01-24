@@ -208,7 +208,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Same 'Event' must only exist for one application per person
                 ValidationColumn = FMainDS.PmShortTermApplication[0].Table.Columns[PmShortTermApplicationTable.ColumnStConfirmedOptionId];
 
-                if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                if (FValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
                     if (FDelegateCheckEventApplicationDuplicate(ARow.ApplicationKey, ARow.RegistrationOffice,
                             FMainDS.PmShortTermApplication[0].StConfirmedOption))

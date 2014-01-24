@@ -36,6 +36,7 @@
   <include name="ICSharpCode.NRefactory.dll"/> <!-- Winforms Generator -->
   <include name="CustomControl.OrientedTextControls.dll"/>
   <include name="Owf.Controls.A1Panel.dll"/>
+  <include name="PasswordUtilities.dll"/>
 </patternset>
 
 <patternset id="NunitPattern">

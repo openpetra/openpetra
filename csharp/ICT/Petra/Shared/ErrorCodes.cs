@@ -194,6 +194,16 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Current Period cannot be greater than Number of Periods.")]
         public const String ERR_CURRENT_PERIOD_TOO_LATE = "FIN.00007V";
 
+        /// <summary>Partner Key must represent a Key Ministry.</summary>
+        [ErrCodeAttribute("Not a Key Ministry.",
+             ErrorMessageText = "Partner Key in Key Ministry field does not represent a Key Ministry.")]
+        public const String ERR_NOT_A_KEY_MINISTRY = "FIN.00008V";
+
+        /// <summary>Make sure that Key Ministry is active.</summary>
+        [ErrCodeAttribute("Key Ministry not active.",
+             ErrorMessageText = "Key Ministry has been deactivated and cannot be used.")]
+        public const String ERR_KEY_MINISTRY_DEACTIVATED = "FIN.00009V";
+
         #endregion
 
         #region Partner Module-specific error codes
@@ -297,6 +307,11 @@ namespace Ict.Petra.Shared
         [ErrCodeAttribute("No Bank selected.",
              ErrorMessageText = "You must select a Bank for this bank account")]
         public const String ERR_BANKINGDETAILS_NO_BANK_SELECTED = "PARTN.000017V";
+
+        /// <summary>Account Number and IBAN cannot both be empty</summary>
+        [ErrCodeAttribute("No Account Number or IBAN.",
+             ErrorMessageText = "You must include an Account Number and/or IBAN for this bank account")]
+        public const String ERR_BANKINGDETAILS_MISSING_ACCOUNTNUMBERORIBAN = "PARTN.000019V";
 
         #endregion
 

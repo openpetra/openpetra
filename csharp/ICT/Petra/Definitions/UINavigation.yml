@@ -295,6 +295,8 @@ OpenPetra:
                         WorkWithLastPERSON: {Label=Work with Last Person, ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreenPersonnelModule, Description=Open last Person worked with}
                     CreatePartner:
                         AddNewPerson: {ActionClick=TPartnerMain.NewPartner_Person, Description=Create a new Partner of Class PERSON}
+                    Applications: {DontShowNestedTasksAsLinks=true, Namespace=Ict.Petra.Client.MPersonnel.Gui}
+                        BrowseShortTerm: {Label: Short-Term Applications, ActionOpenScreen=TFrmShortTermApplications, Description=Browse Short-Term Applications by Event}
 
                 Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, DontShowNestedTasksAsLinks=true}
                     Administration:

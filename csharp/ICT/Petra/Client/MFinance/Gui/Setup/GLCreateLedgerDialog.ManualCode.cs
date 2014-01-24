@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             cmbIntlCurrency.SetSelectedString("USD");
             cmbCountryCode.SetSelectedString("DE");
 
-            ActivateGiftReceipting_Changed(null, null);
+            ActivateGiftProcessing_Changed(null, null);
 
             nudLedgerNumber.KeyDown += numericUpDown_KeyDown;
             nudNumberOfFwdPostingPeriods.KeyDown += numericUpDown_KeyDown;
@@ -70,9 +70,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             nudCurrentPeriod.KeyDown += numericUpDown_KeyDown;
         }
 
-        private void ActivateGiftReceipting_Changed(System.Object sender, EventArgs e)
+        private void ActivateGiftProcessing_Changed(System.Object sender, EventArgs e)
         {
-            if (chkActivateGiftReceipting.Checked)
+            if (chkActivateGiftProcessing.Checked)
             {
                 lblStartingReceiptNumber.Enabled = true;
                 txtStartingReceiptNumber.Enabled = true;
@@ -110,7 +110,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            if (chkActivateGiftReceipting.Checked
+            if (chkActivateGiftProcessing.Checked
                 && ((txtStartingReceiptNumber.NumberValueInt == null)
                     || (txtStartingReceiptNumber.NumberValueInt <= 0)))
             {
@@ -186,7 +186,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     Convert.ToInt32(nudNumberOfPeriods.Value),
                     Convert.ToInt32(nudCurrentPeriod.Value),
                     Convert.ToInt32(nudNumberOfFwdPostingPeriods.Value),
-                    chkActivateGiftReceipting.Checked,
+                    chkActivateGiftProcessing.Checked,
                     StartingReceiptNumber,
                     chkActivateAccountsPayable.Checked,
                     out VerificationResult))

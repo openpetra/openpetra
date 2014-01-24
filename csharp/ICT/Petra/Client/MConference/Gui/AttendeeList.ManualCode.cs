@@ -63,6 +63,9 @@ namespace Ict.Petra.Client.MConference.Gui
             TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(FPartnerKey, out ConferenceName, out PartnerClass);
             this.Text = this.Text + " [" + ConferenceName + "]";
             txtConferenceName.Text = ConferenceName;
+
+            // open partner edit screen when user double clicks on a row
+            this.grdAttendees.DoubleClick += new System.EventHandler(this.EditPerson);
         }
 
         private void InitGridManually()
