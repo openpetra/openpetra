@@ -23,7 +23,16 @@ RootNode:
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
         pnlDetailGrid:
             Dock: Fill
-            Controls: [pnlDetailButtons, grdDetails]
+            Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            ShowApplyFilterButton: FilterContext.StandardFilterOnly
+            ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
+            FilterControls: [txtDetailBatchDescription, cmbDetailBankCostCentre, cmbDetailBankAccountCode, cmbDetailCurrencyCode, rgrDetailGiftType]
+            FindControls: [Column:BatchNumber, txtDetailBatchDescription, cmbDetailBankCostCentre, cmbDetailBankAccountCode, cmbDetailCurrencyCode, rgrDetailGiftType]
+            ControlAttributes:
+                txtBatchNumber: {Label=Batch Number, FindComparison=StartsWith}
+                rgrDetailGiftType: {CloneToComboBox=true, Label=Gift Type}
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete, btnSubmit]
@@ -36,7 +45,7 @@ RootNode:
             TableName: ARecurringGiftBatch
             Columns: [BatchNumber, BatchDescription, HashTotal, BatchTotal, CurrencyCode, BankCostCentre, BankAccountCode, GiftType, DateModified]
             ActionFocusRow: FocusedRowChanged
-            ActionDoubleClick: ShowTransactionTab
+            #ActionDoubleClickCell: ShowTransactionTab  # the generator does not support this event
             ActionEnterKeyPressed: ShowTransactionTab
             SortOrder: BatchNumber DESC
             EnableMultiSelection: false
@@ -62,7 +71,7 @@ RootNode:
         mnuTabPage:
     Menu:
         mniBatch:
-            Label: &Recurring Gift Batch
+            Label: Recurring Gift &Batch
             mniSubmit: {Action=actSubmit}
     Toolbar:
         tbbSubmitBatch: {Action=actSubmit}
