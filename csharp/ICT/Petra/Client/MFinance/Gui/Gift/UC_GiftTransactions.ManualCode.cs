@@ -1196,7 +1196,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FCurrentActiveFilter = rowFilter;
                 // We don't apply the filter yet!
 
-                FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0}, {1}",
+                FMainDS.AGiftDetail.DefaultView.Sort = string.Format("{0} DESC, {1}",
                     AGiftDetailTable.GetGiftTransactionNumberDBName(),
                     AGiftDetailTable.GetDetailNumberDBName());
             }

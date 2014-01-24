@@ -90,7 +90,7 @@ RootNode:
                 ReceiptPrinted: {Label=Receipt Printed,Type=Boolean} 
             ActionFocusRow: FocusedRowChanged
             EnableMultiSelection: false
-            SortOrder: GiftTransactionNumber ASC
+            #SortOrder: GiftTransactionNumber DESC, DetailNumber ASC
             RowFilter: AGiftDetail.BatchNumber
             SortableHeaders: false
         pnlDetails:
