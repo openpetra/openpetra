@@ -162,6 +162,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ATab"></param>
         public void SelectTab(eGLTabs ATab)
         {
+            this.Cursor = Cursors.WaitCursor;
+
             if (ATab == eGLTabs.RecurringBatches)
             {
                 this.tabRecurringGLBatch.SelectedTab = this.tpgBatches;
@@ -200,6 +202,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (this.tpgTransactions.Enabled)
                 {
+                    // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
+                    // But we need this to be set before calling ucoTransactions.AutoSizeGrid() because that only works once the page is actually loaded.
+                    this.tabRecurringGLBatch.SelectedTab = this.tpgTransactions;
+
                     bool fromBatchTab = false;
 
                     if (FPreviousTab == eGLTabs.RecurringBatches)
@@ -214,21 +220,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             ucoRecurringBatches.GetSelectedDetailRow().BatchStatus);
                     }
 
-                    this.tabRecurringGLBatch.SelectedTab = this.tpgTransactions;
-
-                    this.ucoRecurringTransactions.LoadTransactions(
-                        FLedgerNumber,
-                        ucoRecurringJournals.GetSelectedDetailRow().BatchNumber,
-                        ucoRecurringJournals.GetSelectedDetailRow().JournalNumber,
-                        ucoRecurringJournals.GetSelectedDetailRow().TransactionCurrency,
-                        ucoRecurringBatches.GetSelectedDetailRow().BatchStatus,
-                        ucoRecurringJournals.GetSelectedDetailRow().JournalStatus,
-                        fromBatchTab);
+                    if (this.ucoRecurringTransactions.LoadTransactions(
+                            FLedgerNumber,
+                            ucoRecurringJournals.GetSelectedDetailRow().BatchNumber,
+                            ucoRecurringJournals.GetSelectedDetailRow().JournalNumber,
+                            ucoRecurringJournals.GetSelectedDetailRow().TransactionCurrency,
+                            ucoRecurringBatches.GetSelectedDetailRow().BatchStatus,
+                            ucoRecurringJournals.GetSelectedDetailRow().JournalStatus,
+                            fromBatchTab))
+                    {
+                        ucoRecurringTransactions.AutoSizeGrid();
+                    }
 
                     FPreviousTab = eGLTabs.RecurringTransactions;
                 }
             }
 
+            this.Cursor = Cursors.Default;
             this.Refresh();
         }
 

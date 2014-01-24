@@ -30,6 +30,7 @@ using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -61,6 +62,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         AGiftRow FGift = null;
         string FFilterAllDetailsOfGift = string.Empty;
         DataView FGiftDetailView = null;
+        private bool FSuppressListChanged = false;
 
         private Boolean ViewMode
         {
@@ -90,7 +92,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="ABatchStatus"></param>
-        public void LoadGifts(Int32 ALedgerNumber,
+        /// <returns>True if new gift transactions were loaded, false if transactions had been loaded already.</returns>
+        public bool LoadGifts(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
@@ -136,10 +139,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 Console.WriteLine("LoadGifts - Quick exit  {0} ms", (DateTime.Now - dtStart).TotalMilliseconds);
-                return;
+                return false;
             }
 
             grdDetails.SuspendLayout();
+            FSuppressListChanged = true;
 
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
@@ -193,8 +197,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateTotals();
             UpdateControlsProtection();
 
+            FSuppressListChanged = false;
             grdDetails.ResumeLayout();
             Console.WriteLine("LoadGifts completed  {0}", ((DateTime.Now - dtStart).TotalMilliseconds));
+
+            return true;
         }
 
         bool FinRecipientKeyChanging = false;
@@ -1116,10 +1123,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.SetChangedFlag();
 
-                grdDetails.DataSource = null;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
+                if (!SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1))
+                {
+                    if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
+                    {
+                        MessageBox.Show(
+                            MCommonResourcestrings.StrNewRecordIsFiltered,
+                            MCommonResourcestrings.StrAddNewRecordTitle,
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        FFilterPanelControls.ClearAllDiscretionaryFilters();
 
-                SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+                        if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                        {
+                            ApplyFilter();
+                        }
+
+                        SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+                    }
+                }
+
+                btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
             }
 
             UpdateRecordNumberDisplay();
@@ -1188,10 +1211,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.SetChangedFlag();
 
-                grdDetails.DataSource = null;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
+                if (!SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1))
+                {
+                    if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
+                    {
+                        MessageBox.Show(
+                            MCommonResourcestrings.StrNewRecordIsFiltered,
+                            MCommonResourcestrings.StrAddNewRecordTitle,
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        FFilterPanelControls.ClearAllDiscretionaryFilters();
 
-                SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+                        if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                        {
+                            ApplyFilter();
+                        }
+
+                        SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+                    }
+                }
+
+                btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
 
                 RetrieveMotivationDetailAccountCode();
                 txtDetailRecipientKey.Focus();
@@ -1482,7 +1521,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             pnlDetails.Enabled = !(PnlDetailsProtected);
 
             btnDelete.Enabled = ((grdDetails.Rows.Count > 1) && !PnlDetailsProtected);
-            btnDeleteAll.Enabled = ((FFilterPanelControls.BaseFilter == FCurrentActiveFilter) && (grdDetails.Rows.Count > 1) && !PnlDetailsProtected);
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
         }
 
         private Boolean BatchHasMethodOfPayment()
@@ -1876,17 +1915,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RunOnceOnParentActivationManual()
         {
-            AutoSizeGrid();
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
         }
 
-        void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
+        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
         {
-            btnDeleteAll.Enabled = (FFilterPanelControls.BaseFilter == FCurrentActiveFilter)
-                                   && (grdDetails.Rows.Count > 1)
-                                   && !FPetraUtilsObject.DetailProtectedMode
-                                   && !ViewMode
-                                   && (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+            if (grdDetails.CanFocus && !FSuppressListChanged && (grdDetails.Rows.Count > 1))
+            {
+                AutoSizeGrid();
+            }
+
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
         }
 
         /// <summary>
@@ -1913,6 +1952,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
             grdDetails.AutoSizeCells();
             grdDetails.ShowCell(FPrevRowChangedRow);
+
+            Console.WriteLine("Done AutoSizeGrid() on {0} rows", grdDetails.Rows.Count);
         }
     }
 }
