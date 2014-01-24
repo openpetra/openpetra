@@ -1771,11 +1771,11 @@ namespace Ict.Common.Verification
         /// to guard against a <see cref="NullReferenceException" /> in case the <see cref="TVerificationResultCollection" />
         /// is null --- <see cref="IsNullOrOnlyNonCritical"/> takes care of that!
         /// In the context of Unit Testing this Method can be used for 'Guard Asserts' to check that the 
-        /// <see cref="TVerificationResultCollection " /> that is returned from server calls is null or  
+        /// <see cref="TVerificationResultCollection" /> that is returned from server calls is null or  
         /// holds only non-critical <see cref="TVerificationResult" /> items (see also Method 
         /// 'EnsureNullOrOnlyNonCriticalVerificationResults' of the CommonNUnitFunctions Class for a convenient 'wrapper'!!!)
         /// </remarks>
-        /// <param name="AVerificationResult"><see cref="TVerificationResultCollection " /> reference (can be null!).</param>
+        /// <param name="AVerificationResult"><see cref="TVerificationResultCollection" /> reference (can be null!).</param>
         /// <returns>True if <paramref name="AVerificationResult" /> is null. If isn't null and it contains any <see cref="TVerificationResult" /> 
         /// items that are CriticalErrors then this Method returns false, otherwise true.</returns>
         public static bool IsNullOrOnlyNonCritical(TVerificationResultCollection AVerificationResult)
