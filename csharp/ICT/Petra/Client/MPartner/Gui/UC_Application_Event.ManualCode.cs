@@ -256,7 +256,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 ReturnValue = false;
             }
-            
+
             if (!ucoApplicant.ValidateAllData(AProcessAnyDataValidationErrors))
             {
                 ReturnValue = false;

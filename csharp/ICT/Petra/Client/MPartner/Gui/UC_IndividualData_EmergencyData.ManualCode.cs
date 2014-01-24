@@ -77,6 +77,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             ShowData(FMainDS.PmPersonalData[0]);
+
+            // Set default facial hair text to 'None' if person is female
+            if ((FMainDS.PPerson[0].Gender == "Female") || (FMainDS.PPerson[0].Gender == "FEMALE"))
+            {
+                cmbFacialHair.SelectedText = "None";
+            }
         }
 
         /// <summary>

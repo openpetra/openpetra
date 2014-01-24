@@ -18,7 +18,7 @@ RootNode:
         grpAccountingPeriods: {Label=Accounting Periods, Stretch=horizontally}
             Controls: [dtpCalendarStartDate, nudNumberOfPeriods, nudCurrentPeriod, nudNumberOfFwdPostingPeriods]
         grpSubsystems: {Label=Subsystems, Stretch=horizontally}
-            Controls: [chkActivateGiftReceipting, txtStartingReceiptNumber, chkActivateAccountsPayable]
+            Controls: [chkActivateGiftProcessing, txtStartingReceiptNumber, chkActivateAccountsPayable]
 
         nudLedgerNumber: {OnChange=LedgerNumberChanged}
         txtLedgerName: {Width=300}
@@ -29,7 +29,7 @@ RootNode:
         nudNumberOfPeriods:
         nudCurrentPeriod:
         nudNumberOfFwdPostingPeriods:
-        chkActivateGiftReceipting: {Label=Activate Gift Receipting Subsystem, OnChange=ActivateGiftReceipting_Changed}
+        chkActivateGiftProcessing: {Label=Activate Gift Processing Subsystem, OnChange=ActivateGiftProcessing_Changed}
         txtStartingReceiptNumber: {Width=60, Format=Integer}
         chkActivateAccountsPayable: {Label=Activate Accounts Payable Subsystem}
         btnOK: {Label="C&reate Ledger"}

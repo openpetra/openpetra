@@ -204,15 +204,30 @@ namespace Ict.Petra.Client.MPartner.Gui
             OnHookupDataChange(new THookupPartnerEditDataChangeEventArgs(TPartnerEditTabPageEnum.petpPartnerTypes));
         }
 
+        /// <summary>
+        /// Rebuild internal DataTable that is used for the Grid.
+        /// </summary>
+        public void RefreshDataGrid()
+        {
+            /*
+             * This is needed to reflect the re-ordering of Partner Types that took place
+             * due to the adding/removing of a Partner Type.
+             */
+            FLogic.FillTempPartnerTypesTable();
+
+            // scroll to top of grid
+            grdPartnerTypes.ShowCell(0);
+        }
+
         /// can be called from the hosting window to adjust the size of the control after resizing the window
         public void AdjustAfterResizing()
         {
             SetupDataGridVisualAppearance();
         }
 
-        private void GrdPartnerTypes_DoubleClickCell(System.Object Sender, SourceGrid.CellContextEventArgs e)
+        private void GrdPartnerTypes_Click(System.Object Sender, System.EventArgs e)
         {
-            FLogic.ChangeCheckedStateForRow(e.CellContext.Position.Row);
+            FLogic.ChangeCheckedStateForRow(grdPartnerTypes.MouseCellPosition.Row - 1);
         }
 
         private void GrdPartnerTypes_EnterKeyPressed(System.Object Sender, SourceGrid.RowEventArgs e)

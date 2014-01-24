@@ -299,7 +299,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                          new object[] { FPartnerKey, bd.BankingDetailsKey, MPartnerConstants.BANKINGUSAGETYPE_MAIN }) != null);
             }
 
-            localDS.PBankingDetailsUsage.Clear();
             localDS.RemoveEmptyTables();
 
             return localDS;
@@ -1046,7 +1045,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                  */
                 #region Calculations
 
-                // Determine Gift Receipting settings
+                // Determine Gift Processing settings
                 GiftReceiptingDefaults = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
                     TSystemDefaultsCache.PARTNER_GIFTRECEIPTINGDEFAULTS);
 

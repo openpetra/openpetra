@@ -9,19 +9,19 @@ RootNode:
     WindowHeight: 150
     Controls:
         pnlContent:
-            Controls: [grpGiftReceipting, grpAccountsPayable]
+            Controls: [grpGiftProcessing, grpAccountsPayable]
 
-        grpGiftReceipting: {Label=Gift Receipting Subsystem, Stretch=horizontally}
+        grpGiftProcessing: {Label=Gift Processing Subsystem, Stretch=horizontally}
             Controls: 
-                Row0: [txtGiftReceiptingStatus, btnActivateGiftReceipting, txtStartingReceiptNumber]
+                Row0: [txtGiftProcessingStatus, btnActivateGiftProcessing, txtStartingReceiptNumber]
 
         grpAccountsPayable: {Label=Accounts Payable Subsystem, Stretch=horizontally}
             Controls: 
                 Row0: [txtAccountsPayableStatus, btnActivateAccountsPayable]
 
-        txtGiftReceiptingStatus: {Label=Status, Width=180}
+        txtGiftProcessingStatus: {Label=Status, Width=180}
         txtStartingReceiptNumber: {Label=Starting Receipt Number, Width=60, Format=Integer}
-        btnActivateGiftReceipting: {Label=Activate Gift Receipting, Width=180, ActionClick=BtnActivateGiftReceipting_Click}
+        btnActivateGiftProcessing: {Label=Activate Gift Processing, Width=180, ActionClick=BtnActivateGiftProcessing_Click}
         txtAccountsPayableStatus: {Label=Status, Width=180}
         btnActivateAccountsPayable: {Label=Activate Accounts Payable, Width=180, ActionClick=BtnActivateAccountsPayable_Click}
         

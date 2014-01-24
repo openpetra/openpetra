@@ -34,6 +34,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonControls.Logic;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
@@ -78,6 +79,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean FGridEdited;
 
         private Boolean FDeadlineEditMode;
+
+        // true if the grid is being refreshed because of a broadcast message
+        private Boolean FBroadcastRefresh = false;
 
         #region Public Methods
 
@@ -141,6 +145,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 MessageBox.Show("FGridEdited: was: " + FGridEdited.ToString() + ", getting changed to: " + value.ToString());
                 FGridEdited = value;
+            }
+        }
+
+        /// true if the grid is being refreshed because of a broadcast message
+        public Boolean BroadcastRefresh
+        {
+            set
+            {
+                FBroadcastRefresh = value;
             }
         }
 
@@ -1306,7 +1319,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         ///
         /// </summary>
-        private void RefreshGrid()
+        public void RefreshGrid()
         {
             if (GridEdited)
             {
@@ -1353,8 +1366,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                         /* One or more Family Members present > select first one in Grid */
                         grdFamilyMembers.Selection.SelectRow(1, true);
 
-                        /* Make the Grid respond on updown keys */
-                        grdFamilyMembers.Focus();
+                        // if refresh is the result of a broadcast message we do not want to bring the grid into focus
+                        if (!FBroadcastRefresh)
+                        {
+                            /* Make the Grid respond on updown keys */
+                            grdFamilyMembers.Focus();
+                        }
+
                         btnEditPerson.Enabled = true;
                         btnMovePersonToOtherFamily.Enabled = true;
                         btnEditFamilyID.Enabled = true;

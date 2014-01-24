@@ -48,7 +48,7 @@ RootNode:
             FilterControls: [chkDetailConfidentialGiftFlag, chkDetailChargeFlag, chkDetailTaxDeductable, cmbDetailMailingCode, cmbDetailMotivationGroupCode, Column:MotivationDetailCode, txtDetailAccountCode, txtDetailGiftCommentOne]
             FindControls: [Column:GiftBatchTDSAGiftDetailTable.DonorName, Column:GiftBatchTDSAGiftDetailTable.RecipientDescription, chkDetailConfidentialGiftFlag, chkDetailChargeFlag, chkDetailTaxDeductable, cmbDetailMailingCode, cmbDetailMotivationGroupCode, Column:MotivationDetailCode, txtDetailAccountCode, txtDetailGiftCommentOne]
             ControlAttributes: 
-                chkDetailTaxDeductable: {Text=Tax deductable}
+                chkDetailTaxDeductible: {Text=Tax deductible}
                 chkDetailConfidentialGiftFlag: {Text=Confidential}
                 chkDetailChargeFlag: {Text=Charges apply}
                 txtRecipientDescription: {Label=Recipient}
@@ -95,7 +95,7 @@ RootNode:
             Controls: 
                 Row0: [txtDetailRecipientKey, chkDetailConfidentialGiftFlag]
                 Row1: [txtField,chkDetailChargeFlag]
-                Row2: [cmbMinistry, chkDetailTaxDeductable]
+                Row2: [cmbMinistry, chkDetailTaxDeductible]
                 Row3: [dtpStartDonations, dtpEndDonations]
                 Row4: [txtDetailGiftAmount, cmbDetailMailingCode]
                 Row5: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode]         
@@ -125,7 +125,7 @@ RootNode:
         cmbMinistry: {Label=Key Ministry, Width=250, List=UserDefinedList, OnChange=KeyMinistryChanged}
         txtDetailGiftAmount: {Label=Amount,Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?}
-        chkDetailTaxDeductable: {Label=Tax deductable?}
+        chkDetailTaxDeductible: {Label=Tax deductible?}
         txtDetailGiftCommentOne: {Label=Comment 1, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
         txtDetailGiftCommentTwo: {Label=Comment 2, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
         txtDetailGiftCommentThree: {Label=Comment 3, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
