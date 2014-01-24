@@ -374,6 +374,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             this.CreateNewATransaction();
 
+            ClearControls();
+            ValidateAllData(true, false);
+
             pnlTransAnalysisAttributes.Enabled = true;
             btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
 
@@ -411,16 +414,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FPreviouslySelectedDetailRow != null)
             {
                 ANewRow.CostCentreCode = FPreviouslySelectedDetailRow.CostCentreCode;
-                //FPreviouslySelectedDetailRow = null;
-                ClearControls();
             }
-
-            //FPreviouslySelectedDetailRow = (GLBatchTDSATransactionRow)ANewRow;
-
-            //btnDeleteAll.Enabled = (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
-
-            //ShowDetails(FPreviouslySelectedDetailRow);
-            //cmbDetailCostCentreCode.Focus();
         }
 
         /// <summary>
