@@ -686,7 +686,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtBatchTotal.NumberValueDecimal = 0;
 
                 //If all details have been deleted
-                if ((FLedgerNumber != -1) && (grdDetails.Rows.Count == 1))
+                if ((FLedgerNumber != -1) && (grdDetails.Rows.Count == 1) && FBatchRow != null)
                 {
                     ((TFrmGiftBatch) this.ParentForm).GetBatchControl().UpdateBatchTotal(0, FBatchRow.BatchNumber);
                 }
