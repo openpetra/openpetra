@@ -1024,6 +1024,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             grdDetails.DoubleClickHeaderCell += new TDoubleClickHeaderCellEventHandler(grdDetails_DoubleClickHeaderCell);
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowJournalTab);
+            grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
 
             AutoSizeGrid();
         }
@@ -1042,9 +1043,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void FilterToggledManual(bool AFilterIsOff)
+        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
         {
-            AutoSizeGrid();
+            if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
+            {
+                AutoSizeGrid();
+            }
         }
 
         /// <summary>
