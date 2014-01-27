@@ -370,8 +370,9 @@ namespace Ict.Common.Data
                 }
                 else
                 {
-                    throw new EDBConcurrencyRowDeletedException("[TTypedDataAccess.UpdateRow] Cannot update row of table " + DBTableName + " because the row has been deleted.",
-                        "update",
+                    throw new EDBConcurrencyNoRowToUpdateException("[TTypedDataAccess.UpdateRow] Cannot update row of table " + DBTableName + 
+                        " because the row is not present in the DB. This means that either this row has been deleted from the DB before you tried to update it, or" + 
+                        " that the row wasn't present in the DB at all before you tried to update it.",
                         DBTableName,
                         "",
                         DateTime.MinValue);

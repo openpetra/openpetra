@@ -283,15 +283,15 @@ namespace Ict.Common.Data.Exceptions
 
     /// <summary>
     /// Specialisation of EDBConcurrencyException - this is thrown if a record should
-    /// be updated, but it isn't there anymore in the DB!
+    /// be updated, but it isn't in the DB!
     /// </summary>
     [Serializable()]
-    public class EDBConcurrencyRowDeletedException : EDBConcurrencyException
+    public class EDBConcurrencyNoRowToUpdateException : EDBConcurrencyException
     {
         /// <summary>
         /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public EDBConcurrencyRowDeletedException()
+        public EDBConcurrencyNoRowToUpdateException()
         {
         }
 
@@ -299,7 +299,7 @@ namespace Ict.Common.Data.Exceptions
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
         /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
-        public EDBConcurrencyRowDeletedException(String AMessage) : base(AMessage)
+        public EDBConcurrencyNoRowToUpdateException(String AMessage) : base(AMessage)
         {
         }
 
@@ -308,7 +308,7 @@ namespace Ict.Common.Data.Exceptions
         /// </summary>
         /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
-        public EDBConcurrencyRowDeletedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        public EDBConcurrencyNoRowToUpdateException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
         
@@ -320,11 +320,10 @@ namespace Ict.Common.Data.Exceptions
         /// <param name="ADBTable">Database Table where the problem was encountered.</param>
         /// <param name="ALastModificationUser">The user which has changed the record in question last.</param>
         /// <param name="ALastModification">DateTime when the record in question was changed last.</param>
-        public EDBConcurrencyRowDeletedException(String AMessage,
-            String ADBOperation,
+        public EDBConcurrencyNoRowToUpdateException(String AMessage,
             String ADBTable,
             String ALastModificationUser,
-            DateTime ALastModification) : base(AMessage, ADBOperation, ADBTable, ALastModificationUser, ALastModification)
+            DateTime ALastModification) : base(AMessage, "update", ADBTable, ALastModificationUser, ALastModification)
         {
         }
 
@@ -338,7 +337,7 @@ namespace Ict.Common.Data.Exceptions
         /// </remarks> 
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
-        public EDBConcurrencyRowDeletedException(SerializationInfo AInfo, StreamingContext AContext)
+        public EDBConcurrencyNoRowToUpdateException(SerializationInfo AInfo, StreamingContext AContext)
             : base(AInfo, AContext)
         {
         }
