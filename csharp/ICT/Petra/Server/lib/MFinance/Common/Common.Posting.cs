@@ -1666,6 +1666,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 NewRow.BatchNumber = MainDS.ALedger[0].LastRecurringBatchNumber;
                 MainDS.ARecurringBatch.Rows.Add(NewRow);
 
+                GLBatchTDSAccess.SubmitChanges(MainDS);
+                
                 MainDS.AcceptChanges();
             }
             catch (Exception ex)
