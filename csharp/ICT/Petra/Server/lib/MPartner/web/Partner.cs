@@ -168,8 +168,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                 return newPartner.PartnerKey;
             }
-
-            throw new Exception("problem for GetBankBySortCode, cannot find or create bank");
         }
 
         /// <summary>

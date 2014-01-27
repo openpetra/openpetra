@@ -1767,7 +1767,7 @@ namespace Ict.Common.Verification
         /// </summary>
         /// <remarks>
         /// Prefer using this Method over the use of the <see cref="TVerificationResultCollection.HasCriticalErrors" /> 
-        /// Method as using the latter involves a null check on the <see cref="TVerificationResultCollection" /> 
+        /// Method, as using the latter involves a null check on the <see cref="TVerificationResultCollection" /> 
         /// to guard against a <see cref="NullReferenceException" /> in case the <see cref="TVerificationResultCollection" />
         /// is null --- <see cref="IsNullOrOnlyNonCritical"/> takes care of that!
         /// In the context of Unit Testing this Method can be used for 'Guard Asserts' to check that the 
