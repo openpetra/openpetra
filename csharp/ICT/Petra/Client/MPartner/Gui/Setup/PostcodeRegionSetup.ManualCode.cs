@@ -238,7 +238,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private TSubmitChangesResult StoreManualCode(ref PostcodeRegionsTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = null;
-            
+
             TSubmitChangesResult Result = TRemote.MPartner.Mailroom.WebConnectors.SavePostcodeRegionsTDS(ref ASubmitDS);
 
             if (ASubmitDS.PPostcodeRegion != null)

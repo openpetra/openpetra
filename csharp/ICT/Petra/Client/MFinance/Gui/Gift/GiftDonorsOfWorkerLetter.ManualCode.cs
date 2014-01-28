@@ -189,12 +189,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // No Mailing code, because this is a form letter
             TRemote.MPartner.Partner.WebConnectors.AddContact(partnerKeys,
-                    DateTime.Today,
-                    MPartnerConstants.METHOD_CONTACT_FORMLETTER,
-                    Catalog.GetString("Letter for donors of worker"),
-                    SharedConstants.PETRAMODULE_FINANCE1,
-                    "");
-            
+                DateTime.Today,
+                MPartnerConstants.METHOD_CONTACT_FORMLETTER,
+                Catalog.GetString("Letter for donors of worker"),
+                SharedConstants.PETRAMODULE_FINANCE1,
+                "");
+
             MessageBox.Show(Catalog.GetString("The partner contacts have been updated successfully!"),
                 Catalog.GetString("Success"));
         }

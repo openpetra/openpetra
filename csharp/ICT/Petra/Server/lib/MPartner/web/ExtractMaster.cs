@@ -459,7 +459,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             if (AExtractMasterTable != null)
             {
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                
+
                 try
                 {
                     /* Cascading delete for deleted rows. Once the cascading delete has been done the row
@@ -488,17 +488,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     MExtractMasterAccess.SubmitChanges(AExtractMasterTable, SubmitChangesTransaction);
 
                     DBAccess.GDBAccessObj.CommitTransaction();
-                } 
-                catch (Exception Exc) 
+                }
+                catch (Exception Exc)
                 {
                     TLogging.Log("An Exception occured during the saving of Extract Master:" + Environment.NewLine + Exc.ToString());
-                    
+
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    
+
                     throw;
-                }           
+                }
             }
-            
+
             return TSubmitChangesResult.scrOK;
         }
 
@@ -518,7 +518,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             if (AExtractTable != null)
             {
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                
+
                 try
                 {
                     MExtractAccess.SubmitChanges(AExtractTable, SubmitChangesTransaction);
@@ -536,17 +536,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             MExtractMasterAccess.SubmitChanges(ExtractMasterDT, SubmitChangesTransaction);
                         }
                     }
-                    
+
                     DBAccess.GDBAccessObj.CommitTransaction();
-                } 
-                catch (Exception Exc) 
+                }
+                catch (Exception Exc)
                 {
                     TLogging.Log("An Exception occured during the saving of an Extract:" + Environment.NewLine + Exc.ToString());
-                    
+
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    
+
                     throw;
-                }           
+                }
             }
 
             return TSubmitChangesResult.scrOK;
@@ -627,15 +627,16 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PSubscriptionAccess.SubmitChanges(SubscriptionTable, Transaction);
 
                 DBAccess.GDBAccessObj.CommitTransaction();
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
-                TLogging.Log("An Exception occured during the adding of subscriptions for all Partners in an Extract:" + Environment.NewLine + Exc.ToString());
-                
+                TLogging.Log(
+                    "An Exception occured during the adding of subscriptions for all Partners in an Extract:" + Environment.NewLine + Exc.ToString());
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
-            }           
+            }
         }
 
         /// <summary>
@@ -777,12 +778,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             }
             catch (Exception Exc)
             {
-                TLogging.Log("An Exception occured during the changing of subscriptions for all Partners in an Extract:" + Environment.NewLine + Exc.ToString());
-                
+                TLogging.Log(
+                    "An Exception occured during the changing of subscriptions for all Partners in an Extract:" + Environment.NewLine + Exc.ToString());
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
-            }           
+            }
         }
 
         /// <summary>
@@ -878,9 +880,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the updating of Partner Types:" + Environment.NewLine + Exc.ToString());
-                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
             }
         }
@@ -1089,14 +1091,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             {
                 ResultValue = MPartner.Extracts.TExtractsHandling.CreateNewExtract(ANewExtractName,
                     ANewExtractDescription, out ANewExtractId, out ExtractAlreadyExists);
-    
+
                 if (ResultValue && !ExtractAlreadyExists)
                 {
                     // loop through each extract and combine them
                     foreach (Int32 ExtractId in ACombineExtractIdList)
                     {
                         ExtractTable = MExtractAccess.LoadViaMExtractMaster(ExtractId, WriteTransaction);
-    
+
                         foreach (DataRow ExtractRow in ExtractTable.Rows)
                         {
                             if (CombinedExtractTable.Rows.Find(new object[] { ANewExtractId,
@@ -1109,41 +1111,40 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 TemplateRow.PartnerKey = ((MExtractRow)ExtractRow).PartnerKey;
                                 TemplateRow.SiteKey = ((MExtractRow)ExtractRow).SiteKey;
                                 TemplateRow.LocationKey = ((MExtractRow)ExtractRow).LocationKey;
-    
+
                                 CombinedExtractTable.Rows.Add(TemplateRow);
                             }
                         }
                     }
-    
-    
+
                     // update key count in master table
                     MExtractMasterTable CombinedExtractMaster = MExtractMasterAccess.LoadByPrimaryKey(ANewExtractId, WriteTransaction);
                     CombinedExtractMaster[0].KeyCount = CombinedExtractTable.Rows.Count;
-    
+
                     // submit changes in master and then in extract content table which refers to it
                     MExtractAccess.SubmitChanges(CombinedExtractTable, WriteTransaction);
-                    
-                    MExtractMasterAccess.SubmitChanges(CombinedExtractMaster, WriteTransaction);                    
+
+                    MExtractMasterAccess.SubmitChanges(CombinedExtractMaster, WriteTransaction);
                 }
 
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the combining of Extracts:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
-                throw;
-            }     
 
-            return ResultValue;            
+                throw;
+            }
+
+            return ResultValue;
         }
 
         /// <summary>
@@ -1179,18 +1180,18 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             {
                 ResultValue = MPartner.Extracts.TExtractsHandling.CreateNewExtract(ANewExtractName,
                     ANewExtractDescription, out ANewExtractId, out ExtractAlreadyExists);
-    
+
                 if (ResultValue && !ExtractAlreadyExists)
                 {
                     if (AIntersectExtractIdList.Count > 0)
                     {
                         FirstExtractTable = MExtractAccess.LoadViaMExtractMaster(AIntersectExtractIdList[0], WriteTransaction);
-    
+
                         // iterate through all partners in first extract and check if this record also exists in all other extracts
                         foreach (DataRow ExtractRow in FirstExtractTable.Rows)
                         {
                             PartnerExistsInAllExtracts = true;
-    
+
                             // now check if this partner record exists in all other extracts as well
                             for (ExtractIndex = 1;
                                  ExtractIndex < AIntersectExtractIdList.Count && PartnerExistsInAllExtracts;
@@ -1203,7 +1204,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                     PartnerExistsInAllExtracts = false;
                                 }
                             }
-    
+
                             // create and add row to intersected extract as it exists in all extracts
                             if (PartnerExistsInAllExtracts)
                             {
@@ -1212,40 +1213,40 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 TemplateRow.PartnerKey = ((MExtractRow)ExtractRow).PartnerKey;
                                 TemplateRow.SiteKey = ((MExtractRow)ExtractRow).SiteKey;
                                 TemplateRow.LocationKey = ((MExtractRow)ExtractRow).LocationKey;
-    
+
                                 IntersectedExtractTable.Rows.Add(TemplateRow);
                             }
                         }
                     }
-    
+
                     // update key count in master table
                     MExtractMasterTable IntersectedExtractMaster = MExtractMasterAccess.LoadByPrimaryKey(ANewExtractId, WriteTransaction);
                     IntersectedExtractMaster[0].KeyCount = IntersectedExtractTable.Rows.Count;
-    
+
                     // submit changes in master and then in extract content table which refers to it
                     MExtractAccess.SubmitChanges(IntersectedExtractTable, WriteTransaction);
-                    
+
                     MExtractMasterAccess.SubmitChanges(IntersectedExtractMaster, WriteTransaction);
                 }
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the intersecting of Extracts:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
+
                 throw;
             }
 
-            return ResultValue;            
+            return ResultValue;
         }
 
         /// <summary>
@@ -1273,6 +1274,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             MExtractTable SubtractedExtractTable = new MExtractTable();
             MExtractRow TemplateRow;
             Boolean NewTransaction;
+
             List <Int64>SubtractPartnerKeyList = new List <Int64>();
 
             ANewExtractId = -1;
@@ -1284,14 +1286,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             {
                 ResultValue = MPartner.Extracts.TExtractsHandling.CreateNewExtract(ANewExtractName,
                     ANewExtractDescription, out ANewExtractId, out ExtractAlreadyExists);
-                
+
                 if (ResultValue && !ExtractAlreadyExists)
                 {
                     // first create a table that contains all partners to be subtracted
                     foreach (Int32 ExtractId in ASubtractExtractIdList)
                     {
                         ExtractTable = MExtractAccess.LoadViaMExtractMaster(ExtractId, WriteTransaction);
-    
+
                         foreach (DataRow ExtractRow in ExtractTable.Rows)
                         {
                             if (!SubtractPartnerKeyList.Exists(item => item == ((MExtractRow)ExtractRow).PartnerKey))
@@ -1300,13 +1302,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
                     }
-    
+
                     if (ASubtractExtractIdList.Count > 0)
                     {
                         BaseExtractMasterTable = MExtractMasterAccess.LoadByUniqueKey(ABaseExtractName, WriteTransaction);
                         BaseExtractTable = MExtractAccess.LoadViaMExtractMaster(((MExtractMasterRow)BaseExtractMasterTable.Rows[0]).ExtractId,
                             WriteTransaction);
-    
+
                         // iterate through all partners in base extract and check if this record also exists in extracts to be subtracted
                         foreach (DataRow ExtractRow in BaseExtractTable.Rows)
                         {
@@ -1318,7 +1320,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 TemplateRow.PartnerKey = ((MExtractRow)ExtractRow).PartnerKey;
                                 TemplateRow.SiteKey = ((MExtractRow)ExtractRow).SiteKey;
                                 TemplateRow.LocationKey = ((MExtractRow)ExtractRow).LocationKey;
-    
+
                                 SubtractedExtractTable.Rows.Add(TemplateRow);
                             }
                         }
@@ -1330,30 +1332,30 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                     // submit changes in master and then in extract content table which refers to it
                     MExtractAccess.SubmitChanges(SubtractedExtractTable, WriteTransaction);
-                    
+
                     MExtractMasterAccess.SubmitChanges(IntersectedExtractMaster, WriteTransaction);
-                                        
+
                     ResultValue = true;
                 }
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the subtraction of Extracts:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
+
                 throw;
             }
 
-            return ResultValue;            
+            return ResultValue;
         }
     }
 }

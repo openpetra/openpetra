@@ -578,7 +578,7 @@ namespace Ict.Common
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public EErrorCodeNotRegisteredException(String AMessage) : base(AMessage)
         {
         }

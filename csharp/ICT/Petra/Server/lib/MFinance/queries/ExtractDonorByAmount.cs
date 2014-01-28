@@ -78,10 +78,10 @@ namespace Ict.Petra.Server.MFinance.queries
         {
             Boolean ReturnValue = false;
             Boolean NewTransaction;
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, 
-                                                                                           out NewTransaction);
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                out NewTransaction);
             DataTable giftdetails;
-            
+
             string SqlStmt = TDataBase.ReadSqlFile("Gift.Queries.ExtractDonorByAmount.sql");
 
             List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
@@ -98,7 +98,7 @@ namespace Ict.Petra.Server.MFinance.queries
 
             // Now run the database query. This time it is returning gift detail records.
             TLogging.Log("getting the data from the database", TLoggingType.ToStatusBar);
-            
+
             try
             {
                 giftdetails = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "giftdetails", Transaction,

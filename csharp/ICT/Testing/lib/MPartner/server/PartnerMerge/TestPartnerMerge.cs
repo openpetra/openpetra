@@ -4930,7 +4930,7 @@ namespace Tests.MPartner.Server.PartnerMerge
 
             // Submit the new DataLabel record to the database
             PDataLabelAccess.SubmitChanges(DataLabel, DBAccess.GDBAccessObj.Transaction);
-            
+
             // Submit the new Document record to the database
             MainDS.Merge(IndividualDS);
             Result = TIndividualDataWebConnector.SubmitChangesServerSide(ref IndividualDS,

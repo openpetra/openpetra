@@ -85,7 +85,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 BankImportTDSAccess.SubmitChanges(AStatementAndTransactionsDS);
 
                 SubmissionResult = TSubmitChangesResult.scrOK;
-                
+
                 AFirstStatementKey = -1;
 
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
@@ -161,10 +161,10 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 transactionRow.Delete();
             }
 
-            MainDS.ThrowAwayAfterSubmitChanges = true;            
+            MainDS.ThrowAwayAfterSubmitChanges = true;
 
             BankImportTDSAccess.SubmitChanges(MainDS);
-            
+
             return true;
         }
 
@@ -462,9 +462,9 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         public static bool CommitMatches(BankImportTDS AMainDS)
         {
             AMainDS.ThrowAwayAfterSubmitChanges = true;
-            
+
             BankImportTDSAccess.SubmitChanges(AMainDS);
-            
+
             return true;
         }
 

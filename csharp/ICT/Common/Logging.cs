@@ -425,7 +425,7 @@ namespace Ict.Common
     /// that would write to a Logfile.
     /// </summary>
     public class ENoLoggingToFile_WrongConstructorUsedException : EOPAppException
-    {     
+    {
         /// <summary>
         /// Initializes a new instance of this Exception Class.
         /// </summary>
@@ -436,7 +436,7 @@ namespace Ict.Common
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public ENoLoggingToFile_WrongConstructorUsedException(String AMessage) : base(AMessage)
         {
         }
@@ -448,6 +448,6 @@ namespace Ict.Common
         /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
         public ENoLoggingToFile_WrongConstructorUsedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
-        }        
+        }
     }
 }

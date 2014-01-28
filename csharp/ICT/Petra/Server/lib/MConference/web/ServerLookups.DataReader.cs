@@ -414,18 +414,18 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                 // add new row to database table
                 ConferenceTable.Rows.Add(AddRow);
                 PcConferenceAccess.SubmitChanges(ConferenceTable, Transaction);
-                
+
                 DBAccess.GDBAccessObj.CommitTransaction();
                 TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CreateNewConference: commit own transaction.");
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the creation of a new Conference:" + Environment.NewLine + Exc.ToString());
-                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
-            }           
+            }
         }
 
         /// <summary>

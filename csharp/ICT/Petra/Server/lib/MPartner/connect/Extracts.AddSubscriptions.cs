@@ -266,7 +266,7 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                     {
                         TLogging.LogAtLevel(
                             7,
-                            "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: no Subscriptions were added to Partners because all the Partners in the Extract already had this Subscription.");                        
+                            "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: no Subscriptions were added to Partners because all the Partners in the Extract already had this Subscription.");
                     }
 
                     DBAccess.GDBAccessObj.CommitTransaction();
@@ -274,15 +274,15 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                 catch (Exception Exp)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    
+
                     TLogging.LogAtLevel(7,
                         "TExtractsAddSubscriptionsUIConnector.SubmitChangesInternal: Exception occured, Transaction ROLLED BACK. Exception: " +
                         Exp.ToString());
-                    
+
                     FSubmitResult = TSubmitChangesResult.scrError;
                     FSubmitException = Exp;
                     FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;
-                    
+
                     return;
                 }
             }

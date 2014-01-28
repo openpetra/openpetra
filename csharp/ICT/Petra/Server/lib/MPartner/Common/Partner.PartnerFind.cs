@@ -1104,7 +1104,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                     {
                         TExtractsHandling.AddPartnerToExtract((Int64)DistinctPartners[ExtractAddCounter],
                             AExtractID);
-                        
+
                         AddedPartners++;
                     }
 
@@ -1120,7 +1120,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 catch (Exception Exc)
                 {
                     TLogging.Log("An Exception occured while adding all found Partners to an Extract:" + Environment.NewLine + Exc.ToString());
-                    
+
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.RollbackTransaction();

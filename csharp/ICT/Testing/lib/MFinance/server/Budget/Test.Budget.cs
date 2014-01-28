@@ -102,7 +102,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
 
             Assert.AreNotEqual(0, RowsImported, "expect to import several rows");
 
-            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult, 
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "ImportBudgets has critical errors:");
 
             BudgetTDSAccess.SubmitChanges(ImportDS);

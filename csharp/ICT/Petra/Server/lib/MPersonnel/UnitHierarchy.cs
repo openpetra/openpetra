@@ -155,25 +155,24 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             // I'll delete the whole content before calling SubmitChanges with my new data.
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            
+
             try
             {
-                
                 DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_um_unit_structure", Transaction);
 
                 NewTable.ThrowAwayAfterSubmitChanges = true;  // I'm not interested in this table after this Submit:
                 UmUnitStructureAccess.SubmitChanges(NewTable, Transaction);
 
                 DBAccess.GDBAccessObj.CommitTransaction();
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the saving of the Unit Hierarachy:" + Environment.NewLine + Exc.ToString());
-                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
-            }                           
+            }
         }
     }
 }

@@ -824,13 +824,13 @@ namespace Ict.Petra.Server.MPartner.Partner
                 }
 
                 while ((SubmitRetries < MAX_SUBMIT_RETRIES)
-                    && (!SubmitSuccessful))
+                       && (!SubmitSuccessful))
                 {
                     try
                     {
                         // now submit the changes to the database
                         PRecentPartnersAccess.SubmitChanges(RecentPartnersDT, ReadAndWriteTransaction);
-                        
+
                         SubmitSuccessful = true;
                     }
                     catch (Npgsql.NpgsqlException Exc)
@@ -938,45 +938,45 @@ namespace Ict.Petra.Server.MPartner.Partner
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-            try 
+            try
             {
                 PersonDT = PPersonAccess.LoadByPrimaryKey(APersonKey, Transaction);
-    
+
                 FamilyIDHandling = new TPartnerFamilyIDHandling();
-    
+
                 if (FamilyIDHandling.GetNewFamilyID_FamilyChange(ANewFamilyKey, PersonDT[0].FamilyId, out NewFamilyID,
-                    out AProblemMessage) == TFamilyIDSuccessEnum.fiError)
+                        out AProblemMessage) == TFamilyIDSuccessEnum.fiError)
                 {
                     // this should not really happen  but we cannot continue if it does
                     Result = false;
                 }
-    
+
                 if (Result)
                 {
                     // reset family id and family key for person
                     PersonDT[0].FamilyId = NewFamilyID;
                     PersonDT[0].FamilyKey = ANewFamilyKey;
-                    
+
                     PPersonAccess.SubmitChanges(PersonDT, Transaction);
-    
+
                     // reset family members flag in old family if this person was the last family member
                     if (PPersonAccess.CountViaPFamily(AOldFamilyKey, Transaction) == 0)
                     {
                         OldFamilyDT = PFamilyAccess.LoadByPrimaryKey(AOldFamilyKey, Transaction);
-                        
+
                         OldFamilyDT[0].FamilyMembers = false;
-                        
-                        PFamilyAccess.SubmitChanges(OldFamilyDT, Transaction);    
+
+                        PFamilyAccess.SubmitChanges(OldFamilyDT, Transaction);
                     }
-    
+
                     // remove relationships between person and old family
                     PPartnerRelationshipAccess.DeleteByPrimaryKey(AOldFamilyKey, "FAMILY", APersonKey, Transaction);
-    
+
                     // set family members flag for new family as there is now at least one member
                     NewFamilyDT = PFamilyAccess.LoadByPrimaryKey(ANewFamilyKey, Transaction);
                     NewFamilyDT[0].FamilyMembers = true;
                     PFamilyAccess.SubmitChanges(NewFamilyDT, Transaction);
-    
+
                     // create relationship between person and new family
                     if ((!PPartnerRelationshipAccess.Exists(ANewFamilyKey, "FAMILY", APersonKey, Transaction)))
                     {
@@ -986,9 +986,9 @@ namespace Ict.Petra.Server.MPartner.Partner
                         RelationshipRow.RelationKey = APersonKey;
                         RelationshipRow.RelationName = "FAMILY";
                         RelationshipRow.Comment = "System Generated";
-    
+
                         RelationshipDT.Rows.Add(RelationshipRow);
-                        
+
                         PPartnerRelationshipAccess.SubmitChanges(RelationshipDT, Transaction);
                     }
                 }
@@ -1001,15 +1001,15 @@ namespace Ict.Petra.Server.MPartner.Partner
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during a change of a Family:" + Environment.NewLine + Exc.ToString());
-                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
-            }           
+            }
 
             return Result;
         }

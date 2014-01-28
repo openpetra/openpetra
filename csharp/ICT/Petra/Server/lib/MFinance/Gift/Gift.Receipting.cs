@@ -708,24 +708,24 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             try
             {
                 Tbl.Merge(AGiftAccess.LoadByPrimaryKey(ALedgerNumber, ABatchNumber, ATransactionNumber, Transaction));
-    
+
                 foreach (AGiftRow Row in Tbl.Rows)
                 {
                     Row.ReceiptPrinted = true;
                 }
 
                 AGiftAccess.SubmitChanges(Tbl, Transaction);
-                
+
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
-            catch (Exception Exc) 
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured while marking Receipts as printed:" + Environment.NewLine + Exc.ToString());
-                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
-            }           
+            }
         }
 
         /// <summary>Mark selected gifts as receipted in the AGift table.</summary>
@@ -757,17 +757,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             try
             {
                 AGiftAccess.SubmitChanges(Tbl, Transaction);
-                
+
                 DBAccess.GDBAccessObj.CommitTransaction();
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured while marking Receipts as printed:" + Environment.NewLine + Exc.ToString());
-                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
-            }           
+            }
         }
 
         /// <summary>
@@ -779,21 +779,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             ALedgerTable LedgerTbl;
-            
+
             try
             {
                 LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
-            catch (Exception Exc) 
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the getting of the last Receipt Number:" + Environment.NewLine + Exc.ToString());
-                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
-            }                          
+            }
 
             if (LedgerTbl.Rows.Count > 0)
             {
@@ -814,28 +814,28 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             ALedgerTable LedgerTbl;
-            
+
             try
             {
                 LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadWriteTransaction);
-    
+
                 if (LedgerTbl.Rows.Count > 0)
                 {
                     LedgerTbl[0].LastHeaderRNumber = AReceiptNumber;
-                
+
                     ALedgerAccess.SubmitChanges(LedgerTbl, ReadWriteTransaction);
 
                     DBAccess.GDBAccessObj.CommitTransaction();
-                } 
+                }
             }
-            catch (Exception Exc) 
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the setting of the last Receipt Number:" + Environment.NewLine + Exc.ToString());
-                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
-            }           
+            }
         }
     }
 }

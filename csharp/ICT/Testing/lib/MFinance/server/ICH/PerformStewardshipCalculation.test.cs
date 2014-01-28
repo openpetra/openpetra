@@ -118,8 +118,8 @@ namespace Tests.MFinance.Server.ICH
             if (!TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out VerificationResult))
             {
                 string VerifResStr;
-                
-                if (VerificationResult != null) 
+
+                if (VerificationResult != null)
                 {
                     VerifResStr = ": " + VerificationResult.BuildVerificationResultString();
                 }
@@ -127,7 +127,7 @@ namespace Tests.MFinance.Server.ICH
                 {
                     VerifResStr = String.Empty;
                 }
-                
+
                 Assert.Fail("Gift Batch was not posted" + VerifResStr);
             }
 
@@ -239,7 +239,7 @@ namespace Tests.MFinance.Server.ICH
             // run possibly empty stewardship calculation, to process all gifts that do not belong to this test
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
                 PeriodNumber, out VerificationResults);
-            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,                                                                                
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
                 "Performing initial Stewardship Calculation Failed!");
 
             // make sure we have some admin fees

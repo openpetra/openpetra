@@ -812,10 +812,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             TRemote.MFinance.AP.WebConnectors.DeleteAPDocuments(FLedgerNumber, DeleteTheseDocs);
-            
+
             MessageBox.Show(Catalog.GetString("Document(s) deleted successfully!"));
             DoSearch(null, null);
-        
         }
 
         private void OpenAllTagged(object sender, EventArgs e)

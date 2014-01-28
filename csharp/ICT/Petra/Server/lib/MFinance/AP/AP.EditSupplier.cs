@@ -172,7 +172,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                 }
 
                 SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                
+
                 try
                 {
                     AApSupplierAccess.SubmitChanges(AInspectDS.AApSupplier, SubmitChangesTransaction);
@@ -188,7 +188,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                     throw;
                 }
             }
-            
+
             return TSubmitChangesResult.scrOK;
         }
     }

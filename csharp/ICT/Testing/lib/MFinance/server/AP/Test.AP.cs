@@ -301,10 +301,10 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             }
 
             SubmRes = TAPTransactionWebConnector.SaveAApDocument(ref AMainDS, out VerificationResult);
-            
+
             if (SubmRes != TSubmitChangesResult.scrOK)
             {
-                Assert.Fail(AssertFailMessage + String.Format(" - (SaveAApDocument return value: {0}) - ", SubmRes) + 
+                Assert.Fail(AssertFailMessage + String.Format(" - (SaveAApDocument return value: {0}) - ", SubmRes) +
                     VerificationResult.BuildVerificationResultString());
             }
 
@@ -521,7 +521,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             return PostAPDocument(AApDS, APeriodEndDate, ref ADocumentIds, true);
         }
-        
+
         #endregion
     }
 }

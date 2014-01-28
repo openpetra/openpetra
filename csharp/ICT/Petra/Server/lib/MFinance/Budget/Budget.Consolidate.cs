@@ -168,7 +168,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     {
                         BudgetRow.BudgetStatus = false;
                     }
-    
+
                     foreach (AGeneralLedgerMasterRow GeneralLedgerMasterRow in GLPostingDS.AGeneralLedgerMaster.Rows)
                     {
                         for (int Period = 1; Period <= LedgerRow.NumberOfAccountingPeriods; Period++)
@@ -187,48 +187,48 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         }
                     }
                 }
-    
+
                 foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
                 {
                     if (!BudgetRow.BudgetStatus || AConsolidateAll)
                     {
                         List <ABudgetPeriodRow>budgetPeriods = new List <ABudgetPeriodRow>();
-    
+
                         FBudgetTDS.ABudgetPeriod.DefaultView.RowFilter = ABudgetPeriodTable.GetBudgetSequenceDBName() + " = " +
                                                                          BudgetRow.BudgetSequence.ToString();
-    
+
                         foreach (DataRowView rv in FBudgetTDS.ABudgetPeriod.DefaultView)
                         {
                             budgetPeriods.Add((ABudgetPeriodRow)rv.Row);
                         }
-    
+
                         PostBudget(ALedgerNumber, BudgetRow, budgetPeriods);
                     }
                 }
-    
+
                 FinishConsolidateBudget(SubmitChangesTransaction);
-    
-                
+
+
                 GLPostingDS.ThrowAwayAfterSubmitChanges = true;
                 GLPostingTDSAccess.SubmitChanges(GLPostingDS);
                 GLPostingDS.Clear();
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the consolidation of Budgets:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
+
                 throw;
-            }                        
+            }
         }
 
         /// <summary>

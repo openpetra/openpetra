@@ -148,7 +148,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     }
 
                     TRemote.MFinance.Setup.WebConnectors.
-                             ActivateGiftProcessingSubsystem(FLedgerNumber, Convert.ToInt32(
+                    ActivateGiftProcessingSubsystem(FLedgerNumber, Convert.ToInt32(
                             txtStartingReceiptNumber.NumberValueInt) - 1);
                     FGiftProcessingActivated = true;
 
@@ -186,7 +186,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         MessageBoxIcon.Question) == DialogResult.Yes)
                 {
                     TRemote.MFinance.Setup.WebConnectors.
-                             ActivateAccountsPayableSubsystem(FLedgerNumber);
+                    ActivateAccountsPayableSubsystem(FLedgerNumber);
                     FAccountsPayableActivated = true;
 
                     if (FAccountsPayableActivated)

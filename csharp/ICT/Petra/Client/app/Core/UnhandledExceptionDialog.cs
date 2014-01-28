@@ -114,24 +114,24 @@ namespace Ict.Petra.Client.App.Core
                 FErrorDetails = FException.ToString();
 
                 // To get full details incl. Severity, Error, Position in SQL, etc. of a PostgreSQL Exception we need to
-                // call .ToString() on an Exception of Type Npgsql.NpgsqlException                 
+                // call .ToString() on an Exception of Type Npgsql.NpgsqlException
                 NpgEx = FException as Npgsql.NpgsqlException;
-                
+
                 if (NpgEx == null)
                 {
-                    NpgEx = FException.InnerException as Npgsql.NpgsqlException;    
+                    NpgEx = FException.InnerException as Npgsql.NpgsqlException;
                 }
-                
-                if (NpgEx != null) 
+
+                if (NpgEx != null)
                 {
                     FErrorDetails += Environment.NewLine + "----------------" + Environment.NewLine +
-                        "Npgsql.NpgsqlException Detail Information:" + Environment.NewLine;
+                                     "Npgsql.NpgsqlException Detail Information:" + Environment.NewLine;
 
                     FErrorDetails += NpgEx.ToString();
                 }
-                
+
                 FErrorDetails += Environment.NewLine + "--------------------------------------" +
-                                Environment.NewLine;
+                                 Environment.NewLine;
 
                 if (ApplicationVersion != String.Empty)
                 {
@@ -252,7 +252,7 @@ namespace Ict.Petra.Client.App.Core
             /* TODO: Add any constructor code after InitializeComponent call */
             /*  */
         }
-        
+
         private void BtnSend_Click(System.Object sender, System.EventArgs e)
         {
             // TODO Send content of FErrorDetails via email!

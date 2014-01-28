@@ -114,18 +114,19 @@ namespace Ict.Petra.Server.MPartner.Common
             Boolean NewTransaction2;
             Boolean NewTransaction3;
             PPartnerLedgerTable PartnerLedgerDT;
+
             System.Int64 CurrentDefaultPartnerKey;
 
             if (ANewPartnerKey == AOriginalDefaultKey)
             {
-                // The user has selected the default                
+                // The user has selected the default
                 ReadTransaction1 = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                     TEnforceIsolationLevel.eilMinimum, out NewTransaction1);
 
                 try
                 {
                     // Fetch the partner ledger record to update the last key
-                    
+
                     PartnerLedgerDT = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, ReadTransaction1);
                     CurrentDefaultPartnerKey = PartnerLedgerDT[0].PartnerKey + PartnerLedgerDT[0].LastPartnerId + 1;
 
@@ -154,39 +155,39 @@ namespace Ict.Petra.Server.MPartner.Common
                         }
                     }
                 }
-                
+
                 PartnerLedgerDT[0].LastPartnerId = (int)(ANewPartnerKey - PartnerLedgerDT[0].PartnerKey);
-                
+
                 WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                        TEnforceIsolationLevel.eilMinimum, out NewTransaction2);
-                
+                    TEnforceIsolationLevel.eilMinimum, out NewTransaction2);
+
                 try
                 {
                     PPartnerLedgerAccess.SubmitChanges(PartnerLedgerDT, WriteTransaction);
-                    
+
                     if (NewTransaction2)
-                    {                    
+                    {
                         DBAccess.GDBAccessObj.CommitTransaction();
                     }
-                } 
-                catch (Exception Exc) 
+                }
+                catch (Exception Exc)
                 {
                     TLogging.Log("An Exception occured during the submission of a new PartnerKey:" + Environment.NewLine + Exc.ToString());
-                    
+
                     if (NewTransaction2)
-                    {                    
+                    {
                         DBAccess.GDBAccessObj.RollbackTransaction();
                     }
-                    
+
                     throw;
-                }           
+                }
             }
             // end of: The user has selected the default
             else
             {
                 ReadTransaction2 = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
                     TEnforceIsolationLevel.eilMinimum, out NewTransaction3);
-                
+
                 try
                 {
                     // check if the Partner Key is already being used
@@ -223,7 +224,7 @@ namespace Ict.Petra.Server.MPartner.Common
         public static System.Int64 ReservePartnerKeys(System.Int64 AFieldPartnerKey, ref Int32 ANumberOfKeys)
         {
             Int64 NextPartnerKey = -1;
-            
+
             if (AFieldPartnerKey == -1)
             {
                 AFieldPartnerKey = DomainManager.GSiteKey;
@@ -232,35 +233,35 @@ namespace Ict.Petra.Server.MPartner.Common
             TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             try
-            {            
+            {
                 PPartnerLedgerTable PartnerLedgerDT = PPartnerLedgerAccess.LoadByPrimaryKey(AFieldPartnerKey, ReadWriteTransaction);
-    
+
                 NextPartnerKey = PartnerLedgerDT[0].PartnerKey + PartnerLedgerDT[0].LastPartnerId + 1;
-    
+
                 Int64 NextUsedKey =
                     Convert.ToInt64(DBAccess.GDBAccessObj.ExecuteScalar("SELECT MIN(p_partner_key_n) FROM PUB_p_partner WHERE p_partner_key_n >= " +
                             NextPartnerKey.ToString(), ReadWriteTransaction));
-    
+
                 if (NextUsedKey < NextPartnerKey + ANumberOfKeys)
                 {
                     ANumberOfKeys = Convert.ToInt32(NextUsedKey - NextPartnerKey);
                 }
-    
+
                 PartnerLedgerDT[0].LastPartnerId = Convert.ToInt32((NextPartnerKey + ANumberOfKeys - 1) - PartnerLedgerDT[0].PartnerKey);
-    
+
                 PPartnerLedgerAccess.SubmitChanges(PartnerLedgerDT, ReadWriteTransaction);
-            
+
                 DBAccess.GDBAccessObj.CommitTransaction();
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the reservation of a PartnerKey:" + Environment.NewLine + Exc.ToString());
 
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
-            }           
-            
+            }
+
             return NextPartnerKey;
         }
     }

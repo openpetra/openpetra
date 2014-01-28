@@ -97,7 +97,7 @@ namespace Ict.Petra.Server.App.Core.Security
             // Save DataRow
             WriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-            try 
+            try
             {
                 // especially in the unit tests, we need to allow several logins per minute, without unique key violation
                 while (SLoginAccess.Exists(NewLoginRow.UserId, NewLoginRow.LoginDate, NewLoginRow.LoginTime, WriteTransaction))
@@ -105,18 +105,18 @@ namespace Ict.Petra.Server.App.Core.Security
                     NewLoginRow.LoginTime++;
                 }
 
-                SLoginAccess.SubmitChanges(LoginTable, WriteTransaction);                
-                
+                SLoginAccess.SubmitChanges(LoginTable, WriteTransaction);
+
                 DBAccess.GDBAccessObj.CommitTransaction();
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the saving of the Login Log (#1):" + Environment.NewLine + Exc.ToString());
-                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
-            }           
+            }
 
             // Retrieve ROWID of the SLogin record
 
@@ -129,7 +129,7 @@ namespace Ict.Petra.Server.App.Core.Security
             ParametersArray[2].Value = (System.Object)(NewLoginRow.LoginTime);
             ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 50);
             ParametersArray[3].Value = (System.Object)(ALoginStatus);
-            
+
             ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             try
@@ -142,13 +142,13 @@ namespace Ict.Petra.Server.App.Core.Security
                             "WHERE " + SLoginTable.GetUserIdDBName() + " = ? AND " + SLoginTable.GetLoginDateDBName() + " = ? AND " +
                             SLoginTable.GetLoginTimeDBName() + " = ? AND " + SLoginTable.GetLoginStatusDBName() + " = ?", ReadTransaction,
                             ParametersArray));
-                
+
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the saving of the Login Log (#2):" + Environment.NewLine + Exc.ToString());
-                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
 
                 throw;

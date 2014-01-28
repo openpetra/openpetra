@@ -555,7 +555,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                                     }
                                 }
                             }
-                        
                         }
                         catch (Exception Exp)
                         {
@@ -651,9 +650,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                             try
                             {
                                 SUserDefaultsAccess.SubmitChanges(AUserDefaultsDataTable, WriteTransaction);
-                                
+
                                 SubmissionOK = true;
-                                
+
                                 SavingAttempts = SavingAttempts + 1;
                             }
                             catch (EDBConcurrencyException)
@@ -725,24 +724,24 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                         AUserDefaultsDataTable.AcceptChanges();
 
                         TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: after AcceptChanges.");
-                        
+
                         if (NewTransaction)
                         {
                             DBAccess.GDBAccessObj.CommitTransaction();
                         }
-                        
+
                         TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: committed own transaction.");
                     }
                     catch (Exception Exp)
                     {
                         TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: Exception occured: " + Exp.ToString());
-                        
+
                         if (NewTransaction)
-                        {                        
+                        {
                             DBAccess.GDBAccessObj.RollbackTransaction();
                             TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: rolled back own transaction.");
                         }
-                        
+
                         throw;
                     }
 
@@ -803,7 +802,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                         ASendUpdateInfoToClient);
 
                     // we don't have any unsaved changes anymore in the cache table.
-                    UUserDefaultsDT.AcceptChanges();                
+                    UUserDefaultsDT.AcceptChanges();
                 }
                 else
                 {
@@ -817,7 +816,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                 UReadWriteLock.ReleaseReaderLock();
                 TLogging.LogAtLevel(7, "TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide released the ReaderLock.");
             }
-            
+
             TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide: Done!");
         }
 

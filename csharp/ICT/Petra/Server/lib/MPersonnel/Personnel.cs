@@ -86,7 +86,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             if (AllDataValidationsOK)
             {
                 PersonnelTDSAccess.SubmitChanges(AInspectDS);
-                
+
                 SubmissionResult = TSubmitChangesResult.scrOK;
             }
             else if (AVerificationResult.Count > 0)

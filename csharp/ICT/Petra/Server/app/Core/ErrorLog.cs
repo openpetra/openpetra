@@ -122,27 +122,27 @@ namespace Ict.Petra.Server.App.Core.Security
             WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
-            
-            try 
+
+            try
             {
                 SErrorLogAccess.SubmitChanges(ErrorLogTable, WriteTransaction);
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the saving of the Error Log:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
+
                 throw;
-            }                        
+            }
         }
     }
 }

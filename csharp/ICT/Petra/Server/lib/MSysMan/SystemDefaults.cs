@@ -148,15 +148,15 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
                 }
 
                 SSystemDefaultsAccess.SubmitChanges(tbl, Transaction);
-                
+
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the saving of a single System Default:" + Environment.NewLine + Exc.ToString());
-                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
             }
         }

@@ -148,6 +148,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
              * for which a member matches the specified criteria.*/
 
             bool ReturnValue = false;
+
             // for receiving fields first look at commitments
             ReturnValue = ProcessCommitments(true, AParameters, ATransaction, out AExtractId);
 
@@ -260,7 +261,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 0,
                 AddressFilterAdded,
                 false,
-                false);            
+                false);
 
             // ----------------------------------------------------------------------------------------
             // Now start retrieving families whose worker field is set to given value and that are not
@@ -324,7 +325,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 false);
 
             ReturnValue = true;
-            
+
             // if result was true then commit transaction, otherwise rollback
             TExtractsHandling.FinishExtractFromListOfPartnerKeys(ReturnValue);
 

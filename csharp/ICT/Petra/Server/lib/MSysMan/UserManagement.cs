@@ -125,7 +125,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         {
             TDBTransaction Transaction;
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
-            
+
             if (!CheckPasswordQuality(APassword, out AVerification))
             {
                 return false;
@@ -148,19 +148,19 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         UserDR.PasswordSalt));
 
                 Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                
+
                 try
                 {
                     SUserAccess.SubmitChanges(UserTable, Transaction);
-    
+
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
                 catch (Exception Exc)
                 {
                     TLogging.Log("An Exception occured during the setting of the User Password:" + Environment.NewLine + Exc.ToString());
-                    
+
                     DBAccess.GDBAccessObj.RollbackTransaction();
-    
+
                     throw;
                 }
 
@@ -303,9 +303,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 catch (Exception Exc)
                 {
                     TLogging.Log("An Exception occured while creating a User:" + Environment.NewLine + Exc.ToString());
-                    
+
                     DBAccess.GDBAccessObj.RollbackTransaction();
-    
+
                     throw;
                 }
 
@@ -384,6 +384,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             bool CanCreateUser;
             bool CanChangePassword;
             bool CanChangePermissions;
+
             GetAuthenticationFunctionality(out CanCreateUser, out CanChangePassword, out CanChangePermissions);
 
             // make sure users are not deleted or added if this is not possible
@@ -427,7 +428,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             try
             {
                 MaintainUsersTDSAccess.SubmitChanges(ASubmitDS);
-                
+
                 ReturnValue = TSubmitChangesResult.scrOK;
             }
             catch (Exception e)

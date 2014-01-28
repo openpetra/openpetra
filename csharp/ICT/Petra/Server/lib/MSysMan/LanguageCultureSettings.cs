@@ -50,7 +50,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_UICULTURE, ACultureCode, false);
 
             TUserDefaults.SaveUserDefaultsFromServerSide();
-            
+
             return true;
         }
 

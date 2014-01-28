@@ -72,17 +72,17 @@ namespace Ict.Petra.Server.MCommon.queries
             Boolean ReturnValue = false;
             Boolean NewTransaction;
             TDBTransaction Transaction;
+
             List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
             bool AddressFilterAdded;
 
             AExtractId = -1;
 
             Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-            
+
             // get the partner keys from the database
             try
             {
-
                 if (FSpecialTreatment)
                 {
                     ReturnValue = RunSpecialTreatment(AParameters, Transaction, out AExtractId);
@@ -136,17 +136,17 @@ namespace Ict.Petra.Server.MCommon.queries
 
                 return ReturnValue;
             }
-            catch (Exception Exc) 
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured in CalculateExtractInternal:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
+
                 throw;
-            }                        
+            }
         }
 
         /// <summary>

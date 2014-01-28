@@ -107,7 +107,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private TSubmitChangesResult StoreManualCode(ref MaintainUsersTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = null;
-            
+
             return TRemote.MSysMan.Maintenance.WebConnectors.SaveSUser(ref ASubmitDS);
         }
 

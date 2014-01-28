@@ -299,7 +299,7 @@ namespace Ict.Petra.Server.MPartner.Common
             PPartnerLocationRow PartnerLocationDR;
 
             if (GetPartnersBestLocationData(APartnerKey, out LocationPK, out LocationDR,
-                out PartnerLocationDR))
+                    out PartnerLocationDR))
             {
                 ReturnValue = LocationPK;
             }

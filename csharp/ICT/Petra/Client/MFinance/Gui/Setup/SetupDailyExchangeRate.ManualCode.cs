@@ -1459,7 +1459,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // When we return from this method the standard code will do the validation again and might not allow the save to go ahead
             FPetraUtilsObject.VerificationResultCollection.Clear();
             ValidateAllData(false, false);
-            
+
             if (!TVerificationHelper.IsNullOrOnlyNonCritical(FPetraUtilsObject.VerificationResultCollection))
             {
                 return;

@@ -322,7 +322,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ExportDialog.ShowDialog();
                 }
 
-                if ((AMessages != null) 
+                if ((AMessages != null)
                     && (AMessages.Count > 0))
                 {
                     if (!TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))

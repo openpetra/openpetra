@@ -95,7 +95,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
         private TSubmitChangesResult StoreManualCode(ref GiftBatchTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = null;
-            
+
             TSubmitChangesResult result = TRemote.MFinance.Gift.WebConnectors.SaveMotivationDetails(ref ASubmitChanges);
 
             if (result == TSubmitChangesResult.scrOK)

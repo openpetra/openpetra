@@ -435,7 +435,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
         private TSubmitChangesResult StoreManualCode(ref ConferenceSetupTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = null;
-            
+
             return TRemote.MConference.Conference.WebConnectors.SaveConferenceSetupTDS(ref ASubmitChanges);
         }
 

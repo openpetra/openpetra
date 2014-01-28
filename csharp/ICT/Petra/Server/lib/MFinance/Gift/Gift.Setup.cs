@@ -81,7 +81,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 // TODO make sure new motivation groups are created. at the moment only 1 existing motivation group is supported
                 GiftBatchTDSAccess.SubmitChanges(AInspectDS);
-                
+
                 return TSubmitChangesResult.scrOK;
             }
 

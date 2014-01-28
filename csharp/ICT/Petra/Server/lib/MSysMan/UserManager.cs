@@ -266,7 +266,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                     UserDR.FailedLogins = 4;
 
                     SaveUser(AUserID, (SUserTable)UserDR.Table);
-                    
+
                     throw new EAccessDeniedException(StrUserIsRetired);
                 }
 
@@ -277,7 +277,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
-                
+
                 try
                 {
                     SystemStatusDT = SSystemStatusAccess.LoadAll(ReadTransaction);
@@ -452,19 +452,19 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             if ((AUserDataTable != null) && (AUserDataTable.Rows.Count > 0))
             {
                 TheTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                
+
                 try
                 {
                     SUserAccess.SubmitChanges(AUserDataTable, TheTransaction);
-                    
+
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
                 catch (Exception Exc)
                 {
                     TLogging.Log("An Exception occured during the saving of a User:" + Environment.NewLine + Exc.ToString());
-                
+
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    
+
                     throw;
                 }
             }

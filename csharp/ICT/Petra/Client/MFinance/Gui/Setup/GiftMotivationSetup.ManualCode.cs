@@ -120,7 +120,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
         private TSubmitChangesResult StoreManualCode(ref GiftBatchTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = null;
-            
+
             return TRemote.MFinance.Gift.WebConnectors.SaveMotivationDetails(ref ASubmitChanges);
         }
 

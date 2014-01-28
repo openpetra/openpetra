@@ -78,7 +78,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 // refresh the grid
                 Search(Sender, e);
-
             }
         }
     }

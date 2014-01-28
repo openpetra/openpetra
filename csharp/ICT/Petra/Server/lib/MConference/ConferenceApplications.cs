@@ -1115,7 +1115,7 @@ namespace Ict.Petra.Server.MConference.Applications
 
 
             ConferenceApplicationTDSAccess.SubmitChanges(AMainDS);
-            
+
             TSubmitChangesResult result = TSubmitChangesResult.scrOK;
 
             // this takes 6 seconds!
@@ -1154,7 +1154,7 @@ namespace Ict.Petra.Server.MConference.Applications
             }
 
             ConferenceApplicationTDSAccess.SubmitChanges(MainDS);
-            
+
             TSubmitChangesResult result = TSubmitChangesResult.scrOK;
 
             ARow.AcceptChanges();
@@ -1626,17 +1626,17 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 // store modified partners
                 PmGeneralApplicationAccess.SubmitChanges(applicationTable, Transaction);
-                
+
                 DBAccess.GDBAccessObj.CommitTransaction();
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the uploading of the Petra Import result:" + Environment.NewLine + Exc.ToString());
-                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
-            }           
+            }
         }
 
         /// <summary>
@@ -1665,7 +1665,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 }
 
                 PartnerImportExportTDSAccess.SubmitChanges(MainDS);
-                
+
                 return true;
             }
             catch (Exception e)

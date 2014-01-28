@@ -122,7 +122,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             row.ToCurrencyCode = "GBP";
             row.RateOfExchange = 1.57m;
             dailyrates.Rows.Add(row);
-            
+
             ADailyExchangeRateAccess.SubmitChanges(dailyrates, null);
         }
 

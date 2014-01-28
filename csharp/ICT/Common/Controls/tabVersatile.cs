@@ -1284,7 +1284,7 @@ namespace Ict.Common.Controls
     }
 
     #region ESelectedIndexChangeDisallowedTabPagedIsDisabledException
-    
+
     /// <summary>
     /// Tab page is disabled and therefore cannot be selected.
     /// </summary>
@@ -1300,7 +1300,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public ESelectedIndexChangeDisallowedTabPagedIsDisabledException(String AMessage) : base(AMessage)
         {
         }
@@ -1314,6 +1314,6 @@ namespace Ict.Common.Controls
         {
         }
     }
-    
+
     #endregion
 }

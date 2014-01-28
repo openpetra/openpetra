@@ -337,7 +337,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = null;
-            
+
             if (FWarnings)
             {
                 if (MessageBox.Show(Catalog.GetString("Do you really want to save despite the earlier warnings?"),

@@ -1352,7 +1352,8 @@ namespace Ict.Common.DB
                     }
                     catch (Exception e2)
                     {
-                        LogExceptionAndThrow(e2, "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
+                        LogExceptionAndThrow(e2,
+                            "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
                     }
 
                     return BeginTransaction(ARetryAfterXSecWhenUnsuccessful);
@@ -1471,7 +1472,8 @@ namespace Ict.Common.DB
                     }
                     catch (Exception e2)
                     {
-                        LogExceptionAndThrow(e2, "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
+                        LogExceptionAndThrow(e2,
+                            "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
                     }
 
                     return BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful);
@@ -2572,7 +2574,7 @@ namespace Ict.Common.DB
 
             if (AThrowExceptionAfterLogging)
             {
-                if (!String.IsNullOrEmpty(AContext)) 
+                if (!String.IsNullOrEmpty(AContext))
                 {
                     throw new EOPDBException("[Context: " + AContext + "]", AException);
                 }

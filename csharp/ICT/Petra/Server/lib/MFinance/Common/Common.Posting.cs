@@ -1204,7 +1204,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
 
                 GLBatchTDSAccess.SubmitChanges(MainDS);
-                
+
                 AReversalBatchNumber = NewBatchRow.BatchNumber;
 
                 if (PostGLBatch(ALedgerNumber, AReversalBatchNumber, out AVerifications))
@@ -1216,7 +1216,6 @@ namespace Ict.Petra.Server.MFinance.Common
                         return true;
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -1261,8 +1260,8 @@ namespace Ict.Petra.Server.MFinance.Common
             GLPostingTDS PostingDS;
 
             AVerifications = null;
-            
-            
+
+
             LoadDataForPosting(out PostingDS, ALedgerNumber);
 
             SortedList <string, TAmount>PostingLevel = new SortedList <string, TGLPosting.TAmount>();
@@ -1285,11 +1284,11 @@ namespace Ict.Petra.Server.MFinance.Common
 
             // TODO: release the lock
 
-            if (AVerifications == null) 
+            if (AVerifications == null)
             {
                 AVerifications = new TVerificationResultCollection();
             }
-            
+
             return result;
         }
 
@@ -1486,7 +1485,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 TempTDS.ATransAnalAttrib.Rows.Clear();
 
                 GLBatchTDSAccess.SubmitChanges(TempTDS);
-                
+
                 return true;
             }
         }
@@ -1526,7 +1525,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 MainDS.ABatch.Rows.Add(NewRow);
 
                 GLBatchTDSAccess.SubmitChanges(MainDS);
-                
+
                 MainDS.AcceptChanges();
             }
             catch (Exception ex)
@@ -1538,7 +1537,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 ErrorType = TResultSeverity.Resv_Critical;
                 VerificationResult = new TVerificationResultCollection();
                 VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                
+
                 throw new Exception(VerificationResult.BuildVerificationResultString(), ex);
             }
             finally
@@ -1609,7 +1608,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 MainDS.ABatch.Rows.Add(NewRow);
 
                 GLBatchTDSAccess.SubmitChanges(MainDS);
-                
+
                 MainDS.AcceptChanges();
             }
             catch (Exception ex)
@@ -1621,7 +1620,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 ErrorType = TResultSeverity.Resv_Critical;
                 VerificationResult = new TVerificationResultCollection();
                 VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                
+
                 throw new Exception(VerificationResult.BuildVerificationResultString(), ex);
             }
             finally
@@ -1667,7 +1666,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 MainDS.ARecurringBatch.Rows.Add(NewRow);
 
                 GLBatchTDSAccess.SubmitChanges(MainDS);
-                
+
                 MainDS.AcceptChanges();
             }
             catch (Exception ex)
@@ -1679,7 +1678,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 ErrorType = TResultSeverity.Resv_Critical;
                 VerificationResult = new TVerificationResultCollection();
                 VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                
+
                 throw new Exception(VerificationResult.BuildVerificationResultString(), ex);
             }
             finally

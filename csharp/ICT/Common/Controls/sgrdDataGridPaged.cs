@@ -826,7 +826,7 @@ namespace Ict.Common.Controls
 
 
     #region Exceptions
-    
+
     #region EDataGridPagedNotInitialisedException
 
     /// <summary>
@@ -844,7 +844,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public EDataGridPagedNotInitialisedException(String AMessage) : base(AMessage)
         {
         }
@@ -858,7 +858,7 @@ namespace Ict.Common.Controls
         {
         }
     }
-    
+
     #endregion
 
     #region EDataGridPagedNoDataLoadedYetException
@@ -878,7 +878,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public EDataGridPagedNoDataLoadedYetException(String AMessage) : base(AMessage)
         {
         }
@@ -892,7 +892,7 @@ namespace Ict.Common.Controls
         {
         }
     }
-    
+
     #endregion
 
     #region EDataGridPagedDelegateFunctionNotSpecifiedException
@@ -912,7 +912,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public EDataGridPagedDelegateFunctionNotSpecifiedException(String AMessage) : base(AMessage)
         {
         }
@@ -926,7 +926,7 @@ namespace Ict.Common.Controls
         {
         }
     }
-    
+
     #endregion
 
     #region EDataGridPagedAutoFindNotSupportedException
@@ -946,7 +946,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public EDataGridPagedAutoFindNotSupportedException(String AMessage) : base(AMessage)
         {
         }
@@ -960,9 +960,9 @@ namespace Ict.Common.Controls
         {
         }
     }
-    
+
     #endregion
-    
+
     #endregion
 
 

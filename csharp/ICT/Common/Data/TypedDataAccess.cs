@@ -245,7 +245,7 @@ namespace Ict.Common.Data
             if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(query, ATransaction, parameters.ToArray()))
             {
                 throw new EDBSubmitException("[TTypedDataAccess.InsertRow] Problems INSERTing a row", eSubmitChangesOperations.eInsert);
-            }                
+            }
 
             DateTime LastModificationId;
             string LastModifiedBy;
@@ -344,13 +344,15 @@ namespace Ict.Common.Data
                     if (OriginalModificationID != CurrentModificationID)
                     {
                         throw new EDBSubmitException(
-                            "[TTypedDataAccess.UpdateRow] Developer should fix this: Forgot to call AcceptChanges on table " + DBTableName, eSubmitChangesOperations.eUpdate);
+                            "[TTypedDataAccess.UpdateRow] Developer should fix this: Forgot to call AcceptChanges on table " + DBTableName,
+                            eSubmitChangesOperations.eUpdate);
                     }
 
                     if (LastModificationId != OriginalModificationID)
                     {
                         throw new EDBConcurrencyException(
-                            "[TTypedDataAccess.UpdateRow] Cannot update row of table " + DBTableName + " because the row has been edited by user " + LastModifiedBy,
+                            "[TTypedDataAccess.UpdateRow] Cannot update row of table " + DBTableName + " because the row has been edited by user " +
+                            LastModifiedBy,
                             "update",
                             DBTableName,
                             LastModifiedBy,
@@ -365,13 +367,16 @@ namespace Ict.Common.Data
 
                     if (RowsChanged == 0)
                     {
-                        throw new EDBSubmitException("[TTypedDataAccess.UpdateRow] Cannot UPDATE row due to problems most likely with the timestamp", eSubmitChangesOperations.eUpdate);
+                        throw new EDBSubmitException("[TTypedDataAccess.UpdateRow] Cannot UPDATE row due to problems most likely with the timestamp",
+                            eSubmitChangesOperations.eUpdate);
                     }
                 }
                 else
                 {
-                    throw new EDBConcurrencyNoRowToUpdateException("[TTypedDataAccess.UpdateRow] Cannot update row of table " + DBTableName + 
-                        " because the row is not present in the DB. This means that either this row has been deleted from the DB before you tried to update it, or" + 
+                    throw new EDBConcurrencyNoRowToUpdateException(
+                        "[TTypedDataAccess.UpdateRow] Cannot update row of table " + DBTableName +
+                        " because the row is not present in the DB. This means that either this row has been deleted from the DB before you tried to update it, or"
+                        +
                         " that the row wasn't present in the DB at all before you tried to update it.",
                         DBTableName,
                         "",
@@ -441,12 +446,12 @@ namespace Ict.Common.Data
             }
 
             if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateDeleteClause("PUB_" + DBTableName,
-                    Columns,
-                    ADataRow,
-                    PrimKeyColumnOrdList), ATransaction,
+                        Columns,
+                        ADataRow,
+                        PrimKeyColumnOrdList), ATransaction,
                     GetParametersForDeleteClause(ATableId, ADataRow, PrimKeyColumnOrdList)))
             {
-                throw new EDBSubmitException("[TTypedDataAccess.DeleteRow] Problems DELETing a row", eSubmitChangesOperations.eDelete);                
+                throw new EDBSubmitException("[TTypedDataAccess.DeleteRow] Problems DELETing a row", eSubmitChangesOperations.eDelete);
             }
         }
 
@@ -1983,11 +1988,12 @@ namespace Ict.Common.Data
         public static void DeleteByPrimaryKey(short ATableId, System.Object[] APrimaryKeyValues, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(ATableId, APrimaryKeyValues);
+
             if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
-                GenerateWhereClauseFromPrimaryKey(ATableId),
-                ATransaction, ParametersArray))
+                    GenerateWhereClauseFromPrimaryKey(ATableId),
+                    ATransaction, ParametersArray))
             {
-                throw new EDBSubmitException("[TTypedDataAccess.DeleteByPrimaryKey] Problems DELETing a row", eSubmitChangesOperations.eDelete);                
+                throw new EDBSubmitException("[TTypedDataAccess.DeleteByPrimaryKey] Problems DELETing a row", eSubmitChangesOperations.eDelete);
             }
         }
 
@@ -2128,11 +2134,13 @@ namespace Ict.Common.Data
         public static void DeleteUsingTemplate(short ATableId, DataRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
             if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
-                GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ATemplateRow, ATemplateOperators),
-                ATransaction,
-                GetParametersForWhereClause(ATableId, ATemplateRow)))
+                    GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ATemplateRow, ATemplateOperators),
+                    ATransaction,
+                    GetParametersForWhereClause(ATableId, ATemplateRow)))
             {
-                throw new EDBSubmitException("[TTypedDataAccess.DeleteUsingTemplate {delete all rows matching the given row}] Problems DELETing a row", eSubmitChangesOperations.eDelete);                
+                throw new EDBSubmitException(
+                    "[TTypedDataAccess.DeleteUsingTemplate {delete all rows matching the given row}] Problems DELETing a row",
+                    eSubmitChangesOperations.eDelete);
             }
         }
 
@@ -2145,11 +2153,13 @@ namespace Ict.Common.Data
         public static void DeleteUsingTemplate(short ATableId, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
             if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
-                                                   GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ASearchCriteria)),
-                ATransaction,
-                GetParametersForWhereClause(ATableId, ASearchCriteria)))
+                                                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ASearchCriteria)),
+                    ATransaction,
+                    GetParametersForWhereClause(ATableId, ASearchCriteria)))
             {
-                throw new EDBSubmitException("[TTypedDataAccess.DeleteUsingTemplate {delete all rows matching the search criteria}] Problems DELETing a row", eSubmitChangesOperations.eDelete);                                
+                throw new EDBSubmitException(
+                    "[TTypedDataAccess.DeleteUsingTemplate {delete all rows matching the search criteria}] Problems DELETing a row",
+                    eSubmitChangesOperations.eDelete);
             }
         }
 
@@ -2212,7 +2222,7 @@ namespace Ict.Common.Data
             for (RowCount = 0; (RowCount != ATable.Rows.Count); RowCount++)
             {
                 DataRow TheRow = ATable.Rows[RowCount];
-               
+
                 if ((TheRow.RowState == DataRowState.Added) && ((ASelectedOperations & eSubmitChangesOperations.eInsert) != 0))
                 {
                     bool TreatRowAsAdded = false;
@@ -2247,7 +2257,10 @@ namespace Ict.Common.Data
                     {
                         if (!hasPrimaryKey)
                         {
-                            throw new EDBSubmitException("[TTypedDataAccess.SubmitChanges] NO PRIMARY KEY --- Cannot update record because table " + TTypedDataTable.GetTableName(TableId) + " has no primary key.", eSubmitChangesOperations.eUpdate);
+                            throw new EDBSubmitException(
+                                "[TTypedDataAccess.SubmitChanges] NO PRIMARY KEY --- Cannot update record because table " +
+                                TTypedDataTable.GetTableName(TableId) + " has no primary key.",
+                                eSubmitChangesOperations.eUpdate);
                         }
                         else
                         {
@@ -2259,7 +2272,10 @@ namespace Ict.Common.Data
                     {
                         if (!hasPrimaryKey)
                         {
-                            throw new EDBSubmitException("[TTypedDataAccess.SubmitChanges] NO PRIMARY KEY --- Cannot delete record because table " + TTypedDataTable.GetTableName(TableId) + " has no primary key.", eSubmitChangesOperations.eDelete);
+                            throw new EDBSubmitException(
+                                "[TTypedDataAccess.SubmitChanges] NO PRIMARY KEY --- Cannot delete record because table " +
+                                TTypedDataTable.GetTableName(TableId) + " has no primary key.",
+                                eSubmitChangesOperations.eDelete);
                         }
                         else
                         {
@@ -2273,9 +2289,10 @@ namespace Ict.Common.Data
                     // Inserts in one query
                     if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray()))
                     {
-                        throw new EDBSubmitException("[TTypedDataAccess.SubmitChanges] Problems INSERTing a row [#1]", eSubmitChangesOperations.eInsert);                        
+                        throw new EDBSubmitException("[TTypedDataAccess.SubmitChanges] Problems INSERTing a row [#1]",
+                            eSubmitChangesOperations.eInsert);
                     }
-                    
+
                     InsertStatement = new StringBuilder();
                     InsertParameters = new List <OdbcParameter>();
                 }
@@ -2286,7 +2303,7 @@ namespace Ict.Common.Data
                 // Inserts in one query
                 if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray()))
                 {
-                    throw new EDBSubmitException("[TTypedDataAccess.SubmitChanges] Problems INSERTing a row [#2]", eSubmitChangesOperations.eInsert);                    
+                    throw new EDBSubmitException("[TTypedDataAccess.SubmitChanges] Problems INSERTing a row [#2]", eSubmitChangesOperations.eInsert);
                 }
             }
         }

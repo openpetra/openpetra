@@ -332,7 +332,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         private TSubmitChangesResult StoreManualCode(ref BudgetTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = null;
-            
+
             TSubmitChangesResult TSCR = TRemote.MFinance.Budget.WebConnectors.SaveBudget(ref ASubmitChanges);
 
             //Reset this flag if the save was successful

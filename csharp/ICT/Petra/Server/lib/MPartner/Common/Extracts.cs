@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             AExtractAlreadyExists = false;
 
             TLogging.LogAtLevel(9, "CreateNewExtract called!");
-            
+
             WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
@@ -99,7 +99,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     // Get the Extract Id
                     TemplateRow = (MExtractMasterRow)NewExtractMasterDT.Rows[0];
                     ANewExtractId = TemplateRow.ExtractId;
-                    
+
                     ReturnValue = true;
                 }
                 else
@@ -107,7 +107,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     AExtractAlreadyExists = true;
                     ReturnValue = false;
                 }
-                
+
                 if (ReturnValue && NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
@@ -115,19 +115,19 @@ namespace Ict.Petra.Server.MPartner.Extracts
                 else if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                }                
+                }
             }
-            catch (Exception Exc) 
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the creation of a new Extract:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
+
                 throw;
-            }                        
+            }
 
             return ReturnValue;
         }
@@ -240,23 +240,23 @@ namespace Ict.Petra.Server.MPartner.Extracts
                 {
                     ReturnValue = true;
                 }
-                
+
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
-                    
+
                     TLogging.LogAtLevel(8, "TExtractsHandling.CheckExtractExists: committed own transaction!");
-                }                
+                }
             }
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the checking whether an Extract exists:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
+
                 throw;
             }
 
@@ -354,16 +354,16 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     AVerificationResult.Add(new TVerificationResult(
                             "TExtractsHandling.UpdateExtractCount", "Extract with Extract Id " + AExtractId.ToString() +
                             " doesn't exist!", TResultSeverity.Resv_Critical));
-                    
+
                     Success = false;
                 }
-                
+
                 if (Success)
                 {
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
-                        
+
                         TLogging.LogAtLevel(8, "TExtractsHandling.UpdateExtractCount: committed own transaction!");
                     }
                 }
@@ -372,20 +372,20 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.RollbackTransaction();
-                        
+
                         TLogging.LogAtLevel(8, "TExtractsHandling.UpdateExtractCount: ROLLED BACK own transaction!");
                     }
-                }                
+                }
             }
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the updating of an Extracts' Key Count:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
+
                 throw;
             }
 
@@ -465,7 +465,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                         TemplateTable.Rows.Add(NewRow);
 
                         MExtractAccess.SubmitChanges(TemplateTable, WriteTransaction);
-                        
+
                         ReturnValue = true;
                     }
                     else
@@ -473,7 +473,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                         // Partner is already in that Extract -> Partner does not get added.
                         ReturnValue = false;
                     }
-                    
+
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
@@ -483,12 +483,12 @@ namespace Ict.Petra.Server.MPartner.Extracts
                 catch (Exception Exc)
                 {
                     TLogging.Log("An Exception occured while adding a Partner to an Extract:" + Environment.NewLine + Exc.ToString());
-                    
+
                     if (NewTransaction)
-                    {                
+                    {
                         DBAccess.GDBAccessObj.RollbackTransaction();
                     }
-                    
+
                     throw;
                 }
             }
@@ -497,7 +497,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                 // Invalid PartnerKey -> return false;
                 ReturnValue = false;
             }
-            
+
             return ReturnValue;
         }
 
@@ -535,11 +535,11 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     AExtractDescription,
                     out ANewExtractId,
                     out AExtractAlreadyExists);
-    
+
                 if (ReturnValue)
                 {
                     MExtractTable ExtractTable = new MExtractTable();
-    
+
                     foreach (BestAddressTDSLocationRow row in ABestAddressTable.Rows)
                     {
                         if (AIncludeNonValidAddresses || row.ValidAddress)
@@ -552,34 +552,34 @@ namespace Ict.Petra.Server.MPartner.Extracts
                             ExtractTable.Rows.Add(NewRow);
                         }
                     }
-    
+
                     if (ExtractTable.Rows.Count > 0)
                     {
                         MExtractMasterTable ExtractMaster = MExtractMasterAccess.LoadByPrimaryKey(ANewExtractId, WriteTransaction);
                         ExtractMaster[0].KeyCount = ExtractTable.Rows.Count;
-    
+
                         MExtractAccess.SubmitChanges(ExtractTable, WriteTransaction);
-                        
-                        MExtractMasterAccess.SubmitChanges(ExtractMaster, WriteTransaction);                        
+
+                        MExtractMasterAccess.SubmitChanges(ExtractMaster, WriteTransaction);
                     }
                 }
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured while creating an Extract from the Best Address Table:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
+
                 throw;
-            }                        
+            }
 
             return ReturnValue;
         }
@@ -642,9 +642,9 @@ namespace Ict.Petra.Server.MPartner.Extracts
             Int32 ALocationKeyColumn,
             bool ACommitTransaction)
         {
-            bool ReturnValue = false;           
+            bool ReturnValue = false;
             bool ExtractAlreadyExists;
-            
+
             ANewExtractId = -1;
 
             // create new extract master record
@@ -655,8 +655,8 @@ namespace Ict.Petra.Server.MPartner.Extracts
 
             if (ReturnValue)
             {
-                ExtendExtractFromListOfPartnerKeys(ANewExtractId, APartnerKeysTable, APartnerKeyColumn, 
-                   ASiteKeyColumn, ALocationKeyColumn, true, ACommitTransaction);
+                ExtendExtractFromListOfPartnerKeys(ANewExtractId, APartnerKeysTable, APartnerKeyColumn,
+                    ASiteKeyColumn, ALocationKeyColumn, true, ACommitTransaction);
             }
 
             return ReturnValue;
@@ -765,26 +765,26 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     ExtractTable.ThrowAwayAfterSubmitChanges = true; // no need to keep data as this increases speed significantly
 
                     MExtractAccess.SubmitChanges(ExtractTable, WriteTransaction);
-                    
-                    MExtractMasterAccess.SubmitChanges(ExtractMaster, WriteTransaction);                    
+
+                    MExtractMasterAccess.SubmitChanges(ExtractMaster, WriteTransaction);
                 }
-            
+
                 if (ACommitTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured while extending an Extract from a list of Partner Keys:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
+
                 throw;
-            }                        
+            }
         }
 
         /// <summary>

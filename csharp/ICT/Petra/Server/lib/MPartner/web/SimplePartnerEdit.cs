@@ -141,18 +141,18 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     PAcquisitionAccess.SubmitChanges(AcqTable, Transaction);
 
                     DBAccess.GDBAccessObj.CommitTransaction();
-                } 
-                catch (Exception Exc) 
+                }
+                catch (Exception Exc)
                 {
                     TLogging.Log("An Exception occured during the saving of a Partner's Acquisition:" + Environment.NewLine + Exc.ToString());
-                    
+
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    
+
                     throw;
-                }                               
+                }
             }
 
-            PartnerEditTDSAccess.SubmitChanges(AMainDS);           
+            PartnerEditTDSAccess.SubmitChanges(AMainDS);
         }
     }
 }

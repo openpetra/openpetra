@@ -123,7 +123,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             }
 
             PartnerImportExportTDSAccess.SubmitChanges(PartnerDS);
-            
+
             GLSetupTDSAccess.SubmitChanges(GLSetupDS);
         }
 

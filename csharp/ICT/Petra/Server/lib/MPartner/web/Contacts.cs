@@ -100,21 +100,21 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PPartnerContactAccess.SubmitChanges(contacts, WriteTransaction);
 
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the adding of a Contact:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
+
                 throw;
-            }                        
+            }
         }
 
         /// <summary>
@@ -235,21 +235,21 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 PPartnerContactAccess.SubmitChanges(APartnerContacts, WriteTransaction);
 
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the deletion of Contacts:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
+
                 throw;
-            }                        
+            }
         }
     }
 }

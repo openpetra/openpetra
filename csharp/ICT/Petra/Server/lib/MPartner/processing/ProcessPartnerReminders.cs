@@ -88,7 +88,7 @@ namespace Ict.Petra.Server.MPartner.Processing
 
             UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
 
-            ReadWriteTransaction = DBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, 
+            ReadWriteTransaction = DBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 out NewTransaction);
 
             /*
@@ -209,23 +209,25 @@ namespace Ict.Petra.Server.MPartner.Processing
                 UpdateLastReminderDate(SystemDefaultsDR, ReadWriteTransaction);
 
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
-                
+
                 TLogging.LogAtLevel(1, TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing + " ran succesfully.");
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
-                TLogging.Log(TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing + " encountered an Exception:" + Environment.NewLine + Exc.ToString());                
-                
+                TLogging.Log(
+                    TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing + " encountered an Exception:" + Environment.NewLine +
+                    Exc.ToString());
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
+
                 throw;
-            }                        
+            }
         }
 
         #region Helper Methods
@@ -329,7 +331,7 @@ namespace Ict.Petra.Server.MPartner.Processing
             ASystemDefaultsDR.DefaultValue = String.Format("{0},{1},{2}", DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
 
             try
-            {            
+            {
                 SSystemDefaultsAccess.SubmitChanges((SSystemDefaultsTable)ASystemDefaultsDR.Table, AReadWriteTransaction);
             }
             catch (Exception Exc)
@@ -337,7 +339,7 @@ namespace Ict.Petra.Server.MPartner.Processing
                 TLogging.Log("TProcessPartnerReminders.UpdateLastReminderDate: An Exception occured:" + Environment.NewLine + Exc.ToString());
 
                 throw;
-            }               
+            }
         }
 
         /// <summary>
@@ -484,9 +486,9 @@ namespace Ict.Petra.Server.MPartner.Processing
                 PartnerContactDT = PPartnerContactAccess.LoadByPrimaryKey(AContactID, AReadTransaction);
             }
             catch (Exception Exp)
-            {               
+            {
                 TLogging.Log("TProcessPartnerReminders.GetContactDetails encountered an Exception: " + Exp.ToString());
-                
+
                 throw;
             }
 

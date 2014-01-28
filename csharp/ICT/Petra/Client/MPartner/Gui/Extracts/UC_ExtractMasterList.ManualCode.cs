@@ -392,7 +392,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                     // perform update of extract data on server side
                     TRemote.MPartner.Partner.WebConnectors.AddSubscription
-                            (GetSelectedDetailRow().ExtractId, ref SubscriptionTable, out PartnersWithExistingSubs, out SubscriptionsAdded);
+                        (GetSelectedDetailRow().ExtractId, ref SubscriptionTable, out PartnersWithExistingSubs, out SubscriptionsAdded);
 
                     MessageText =
                         String.Format(Catalog.GetString(
@@ -572,9 +572,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                         // perform update of extract data on server side
                         TRemote.MPartner.Partner.WebConnectors.ChangeSubscription
-                                (GetSelectedDetailRow().ExtractId, ref SubscriptionTable, FieldsToChange, out PartnersWithoutSubs,
-                                out SubscriptionsChanged);
-                    
+                            (GetSelectedDetailRow().ExtractId, ref SubscriptionTable, FieldsToChange, out PartnersWithoutSubs,
+                            out SubscriptionsChanged);
+
                         MessageText =
                             String.Format(Catalog.GetString(
                                     "Subscription {0} successfully changed for {1} out of {2} Partner(s) in Extract {3}."),
@@ -631,14 +631,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         // perform update of extract data on server side
                         TRemote.MPartner.Partner.WebConnectors.UpdatePartnerType
                             (GetSelectedDetailRow().ExtractId, true, TypeCode);
-                        
+
                         Message = String.Format(Catalog.GetString("Partner Type {0} successfully added for all Partners in Extract {1}"),
                             TypeCode, GetSelectedDetailRow().ExtractName);
 
                         MessageBox.Show(Message,
                             Catalog.GetString("Add Partner Type"),
                             MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);                        
+                            MessageBoxIcon.Information);
                     }
                 }
             }
@@ -667,7 +667,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     {
                         // perform update of extract data on server side
                         TRemote.MPartner.Partner.WebConnectors.UpdatePartnerType
-                                (GetSelectedDetailRow().ExtractId, false, TypeCode);
+                            (GetSelectedDetailRow().ExtractId, false, TypeCode);
 
                         Message = String.Format(Catalog.GetString("Partner Type {0} successfully deleted for all Partners in Extract {1}"),
                             TypeCode, GetSelectedDetailRow().ExtractName);

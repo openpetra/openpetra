@@ -139,7 +139,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 {
                     TVerificationResultCollection VerificationResult;
                     TPeriodIntervallConnector.TPeriodMonthEnd(intLedgerNumber, false, out VerificationResult);
-                    CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult, 
+                    CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                         "running the month end should not give critical error");
                 }
             }
@@ -182,12 +182,12 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             // first run in info mode
             TPeriodIntervallConnector.TPeriodYearEnd(intLedgerNumber, true, out verificationResult);
-            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(verificationResult, 
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(verificationResult,
                 "yearend test should not have critical errors");
 
             // now run for real
             TPeriodIntervallConnector.TPeriodYearEnd(intLedgerNumber, false, out verificationResult);
-            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(verificationResult, 
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(verificationResult,
                 "yearend should not have critical errors");
 
             ++intYear;
@@ -267,7 +267,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                         TVerificationResultCollection VerificationResult;
                         TPeriodIntervallConnector.TPeriodMonthEnd(intLedgerNumber, false, out VerificationResult);
                         CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
-                           "running the month end should not give critical error");
+                            "running the month end should not give critical error");
                     }
                 }
 

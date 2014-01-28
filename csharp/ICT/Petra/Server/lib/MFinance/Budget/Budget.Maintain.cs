@@ -100,7 +100,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             if (AInspectDS != null)
             {
                 BudgetTDSAccess.SubmitChanges(AInspectDS);
-                
+
                 return TSubmitChangesResult.scrOK;
             }
 

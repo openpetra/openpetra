@@ -68,7 +68,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                            
+
             try
             {
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadWriteTransaction);
@@ -77,22 +77,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 MainDS.AGiftBatch[0].BatchDescription = ABatchDescription;
 
                 AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, ReadWriteTransaction);
-                
+
                 ALedgerAccess.SubmitChanges(LedgerTable, ReadWriteTransaction);
 
                 MainDS.AGiftBatch.AcceptChanges();
-                
+
                 DBAccess.GDBAccessObj.CommitTransaction();
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the creation of a Gift Batch record:" + Environment.NewLine + Exc.ToString());
-                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
-            }           
-            
+            }
+
             return MainDS;
         }
 
@@ -124,27 +124,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             try
             {
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadWriteTransaction);
-    
+
                 TGiftBatchFunctions.CreateANewRecurringGiftBatchRow(ref MainDS, ref ReadWriteTransaction, ref LedgerTable, ALedgerNumber);
-    
+
                 ARecurringGiftBatchAccess.SubmitChanges(MainDS.ARecurringGiftBatch, ReadWriteTransaction);
-                
+
                 ALedgerAccess.SubmitChanges(LedgerTable, ReadWriteTransaction);
 
                 MainDS.ARecurringGiftBatch.AcceptChanges();
-                
+
                 DBAccess.GDBAccessObj.CommitTransaction();
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the creation of a Recurring Gift Batch record:" + Environment.NewLine + Exc.ToString());
-                
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                
-                throw;
-            }           
 
-            return MainDS;                
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
+            }
+
+            return MainDS;
         }
 
         /// <summary>
@@ -164,6 +164,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS RMainDS = LoadRecurringTransactions(ALedgerNumber, ABatchNumber);
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
             try
             {
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
@@ -298,25 +299,25 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
 
                 AGiftBatchAccess.SubmitChanges(GMainDS.AGiftBatch, Transaction);
-                
+
                 ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
-                
+
                 AGiftAccess.SubmitChanges(GMainDS.AGift, Transaction);
-                
+
                 AGiftDetailAccess.SubmitChanges(GMainDS.AGiftDetail, Transaction);
 
                 DBAccess.GDBAccessObj.CommitTransaction();
-                
+
                 GMainDS.AcceptChanges();
             }
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the submission of a Recurring Gift Batch:" + Environment.NewLine + Exc.ToString());
-                                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 GMainDS.RejectChanges();
-                
+
                 throw;
             }
         }
@@ -722,7 +723,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             if (AllValidationsOK)
             {
                 GiftBatchTDSAccess.SubmitChanges(AInspectDS);
-                
+
                 SubmissionResult = TSubmitChangesResult.scrOK;
 
                 if (giftTableInDataSet)
@@ -767,7 +768,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             }
 
                             GiftBatchTDSAccess.SubmitChanges(AInspectDS);
-                            
+
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                         catch (Exception ex)
@@ -845,7 +846,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             if (AllValidationsOK)
             {
                 GiftBatchTDSAccess.SubmitChanges(AInspectDS);
-                
+
                 SubmissionResult = TSubmitChangesResult.scrOK;
 
                 if (recurrGiftTableInDataSet && (AInspectDS.ARecurringGift.Count > 0))
@@ -895,7 +896,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             }
 
                             GiftBatchTDSAccess.SubmitChanges(AInspectDS);
-                            
+
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                         catch (Exception ex)
@@ -1657,20 +1658,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         && (motivationFeeRow.MotivationGroupCode == motivationRow.MotivationGroupCode))
                     {
                         TVerificationResultCollection Verifications2;
-                        
+
                         decimal FeeAmount = CalculateAdminFee(MainDS,
                             ALedgerNumber,
                             motivationFeeRow.FeeCode,
                             giftDetail.GiftAmount,
                             out Verifications2);
-                        
+
                         if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verifications2))
                         {
                             AVerifications.AddCollection(Verifications2);
-                                
-                            return null;                                    
+
+                            return null;
                         }
-                        
+
                         AddToFeeTotals(MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, GiftBatchRow.BatchPeriod);
                     }
                 }

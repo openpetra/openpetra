@@ -430,7 +430,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
             ArrayList UnitNodes = new ArrayList();
             GetAllChildren(trvUnits.Nodes[0], ref UnitNodes);
-            
+
             TRemote.MPersonnel.WebConnectors.SaveUnitHierarchy(UnitNodes);
 
             if (ReassignEvent != null)

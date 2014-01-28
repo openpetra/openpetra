@@ -116,7 +116,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
                 RecordNode = RecordNode.NextSibling;
             }
-;
+
+            ;
             AccountsPayableTDSAccess.SubmitChanges(MainDS);
         }
 

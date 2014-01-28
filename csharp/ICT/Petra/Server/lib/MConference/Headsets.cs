@@ -85,17 +85,17 @@ namespace Ict.Petra.Server.MConference.Applications
             try
             {
                 SLogonMessageAccess.SubmitChanges(table, Transaction);
-    
+
                 DBAccess.GDBAccessObj.CommitTransaction();
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured while setting the message for Home Office Reps:" + Environment.NewLine + Exc.ToString());
-                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
-            }           
+            }
         }
 
         /// <summary>
@@ -153,15 +153,15 @@ namespace Ict.Petra.Server.MConference.Applications
                 PContactAttributeDetailAccess.SubmitChanges(table, writeTransaction);
 
                 DBAccess.GDBAccessObj.CommitTransaction();
-            } 
-            catch (Exception Exc) 
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the adding of a Session:" + Environment.NewLine + Exc.ToString());
-                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
-            }           
+            }
         }
 
         /// <summary>
@@ -212,9 +212,9 @@ namespace Ict.Petra.Server.MConference.Applications
             }
 
             MainDS.ThrowAwayAfterSubmitChanges = true;
-            
+
             ContactTDSAccess.SubmitChanges(MainDS);
-            
+
             return true;
         }
 

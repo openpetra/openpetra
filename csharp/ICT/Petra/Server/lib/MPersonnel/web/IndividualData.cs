@@ -699,7 +699,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
             AVerificationResult = new TVerificationResultCollection();
 
             if (AInspectDS != null)
-            {                
+            {
                 SubmissionResult = TSubmitChangesResult.scrOK;
 
                 // Job Assignments: make sure that jobs exist for assignments
@@ -763,7 +763,7 @@ namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 
                 // now submit the whole dataset at once
                 IndividualDataTDSAccess.SubmitChanges(AInspectDS);
-                
+
                 // Need to merge tables back into APartnerEditInspectDS so the updated s_modification_id_t is returned
                 // correctly to the Partner Edit.
                 // Unfortunately this can't be done simply by using merge method of the dataset since they are two different

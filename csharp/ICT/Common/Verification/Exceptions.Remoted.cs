@@ -74,7 +74,7 @@ namespace Ict.Common.Verification.Exceptions
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public EVerificationResultsException(String AMessage) : base(AMessage)
         {
         }
@@ -87,7 +87,7 @@ namespace Ict.Common.Verification.Exceptions
         public EVerificationResultsException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
-        
+
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message, access richt and Database Table.
         /// </summary>
@@ -104,19 +104,20 @@ namespace Ict.Common.Verification.Exceptions
         /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         /// <param name="AVerificationResults"><see cref ="TVerificationResultCollection" /> that holds one or more severe TVerificationResult item(s).</param>
         /// /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
-        public EVerificationResultsException(String AMessage, TVerificationResultCollection AVerificationResults, Exception AInnerException) : base(AMessage, AInnerException)
+        public EVerificationResultsException(String AMessage, TVerificationResultCollection AVerificationResults,
+            Exception AInnerException) : base(AMessage, AInnerException)
         {
             FVerificationResults = AVerificationResults;
         }
 
         #region Remoting and serialization
-        
+
         /// <summary>
         /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public EVerificationResultsException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
@@ -129,24 +130,24 @@ namespace Ict.Common.Verification.Exceptions
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
-        {            
+        {
             if (AInfo == null)
             {
                 throw new ArgumentNullException("AInfo");
-            }            
-                        
+            }
+
             AInfo.AddValue("VerificationResults", FVerificationResults);
 
             // We must call through to the base class to let it save its own state!
-            base.GetObjectData(AInfo, AContext);            
+            base.GetObjectData(AInfo, AContext);
         }
-        
-        #endregion        
+
+        #endregion
     }
-    
-    #endregion    
- }
+
+    #endregion
+}

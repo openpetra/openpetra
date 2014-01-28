@@ -400,7 +400,7 @@ namespace Ict.Petra.Client.App.Core
 
                     // MessageBox.Show('Saving single User Default ''' + DesiredUserDefaultsDataTable.Rows[0].Item['s_default_code_c'].ToString + '''');
                     TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
-                            ref DesiredUserDefaultsDataTable);
+                        ref DesiredUserDefaultsDataTable);
 
                     // Copy over ModificationId that was changed on the Server side!
                     UUserDefaults[FoundInRow].Row.ItemArray = DesiredUserDefaultsDataTable.Rows.Find(
@@ -433,8 +433,8 @@ namespace Ict.Petra.Client.App.Core
 
             // MessageBox.Show('Changed/added User Defaults: ' + UserDefaultsDataTableChanges.Rows.Count.ToString);
             TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
-                    ref UserDefaultsDataTableChanges);
-        
+                ref UserDefaultsDataTableChanges);
+
             // TODO 1 oChristianK cUserDefaults / ModificationID : Copy the ModificationID into the Client's DataTable so that the PetraClient's ModificationID's of UserDefaults are the same than the ones of the PetraServer.
             UUserDefaultsDataTable.AcceptChanges();
         }

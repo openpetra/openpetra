@@ -60,13 +60,13 @@ namespace Ict.Petra.Server.MConference.Applications
             ConferenceApplicationTDS MainDS;
 
             Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-            
+
             try
             {
                 ConferenceTable = new PcConferenceTable();
                 UnitTable = new PUnitTable();
                 MainDS = new ConferenceApplicationTDS();
-                
+
                 // get the conference prefix which links all outreaches associated with a conference
                 ConferenceTable = PcConferenceAccess.LoadByPrimaryKey(AConferenceKey, Transaction);
 
@@ -189,16 +189,16 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 TLogging.Log(String.Format(
                         "RefreshAttendees: finished. OutreachPrefix: {0}, {1} Shortterm Applications, {2} Attendees",
-                        OutreachPrefix, shorttermApplicationsCount, attendeeCount));                
-            } 
-            catch (Exception Exc) 
+                        OutreachPrefix, shorttermApplicationsCount, attendeeCount));
+            }
+            catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the refreshing of the Attendees:" + Environment.NewLine + Exc.ToString());
-                
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                
+
                 throw;
-            }           
+            }
         }
 
         /// <summary>

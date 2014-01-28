@@ -96,13 +96,13 @@ namespace Tests.MFinance.Server.Gift
             {
                 return false;
             }
-            
+
             int BatchNumber = importer.GetLastGiftBatchNumber();
 
             if (!TGiftTransactionWebConnector.PostGiftBatch(ALedgerNumber, BatchNumber, out VerificationResult))
             {
                 CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult);
-                
+
                 return false;
             }
 

@@ -107,7 +107,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         public void SaveChanges()
         {
             TRemote.MFinance.Setup.WebConnectors.SaveCostCentrePartnerLinks(
-                FLedgerNumber, FPartnerCostCentreTbl);            
+                FLedgerNumber, FPartnerCostCentreTbl);
         }
 
         /// <summary>

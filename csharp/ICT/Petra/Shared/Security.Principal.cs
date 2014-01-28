@@ -356,11 +356,10 @@ namespace Ict.Petra.Shared.Security
         }
 
         #endregion
-
     }
-    
+
     #region ELoginMessageAlreadySetException
-        
+
     /// <summary>
     /// Thrown by TPetraPrincipal class if the LoginMessage property is written to althought it has already got a value
     /// </summary>
@@ -389,15 +388,15 @@ namespace Ict.Petra.Shared.Security
         public ELoginMessageAlreadySetException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
-        
+
         #region Remoting and serialization
-        
+
         /// <summary>
         /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public ELoginMessageAlreadySetException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
@@ -409,7 +408,7 @@ namespace Ict.Petra.Shared.Security
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
@@ -417,19 +416,19 @@ namespace Ict.Petra.Shared.Security
             if (AInfo == null)
             {
                 throw new ArgumentNullException("AInfo");
-            }            
-                        
+            }
+
             // We must call through to the base class to let it save its own state!
             base.GetObjectData(AInfo, AContext);
         }
-        
+
         #endregion
     }
-    
+
     #endregion
 
     #region EProcessIDAlreadySetException
-    
+
     /// <summary>
     /// Thrown by TPetraPrincipal class if the ProcessID property is written to althought it has already got a value
     /// </summary>
@@ -445,7 +444,7 @@ namespace Ict.Petra.Shared.Security
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public EProcessIDAlreadySetException(String AMessage) : base(AMessage)
         {
         }
@@ -458,15 +457,15 @@ namespace Ict.Petra.Shared.Security
         public EProcessIDAlreadySetException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
-        
+
         #region Remoting and serialization
-        
+
         /// <summary>
         /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public EProcessIDAlreadySetException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
@@ -478,7 +477,7 @@ namespace Ict.Petra.Shared.Security
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
@@ -486,14 +485,14 @@ namespace Ict.Petra.Shared.Security
             if (AInfo == null)
             {
                 throw new ArgumentNullException("AInfo");
-            }            
-                        
+            }
+
             // We must call through to the base class to let it save its own state!
             base.GetObjectData(AInfo, AContext);
         }
-        
+
         #endregion
     }
-    
-    #endregion    
+
+    #endregion
 }

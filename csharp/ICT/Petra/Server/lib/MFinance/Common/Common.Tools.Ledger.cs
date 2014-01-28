@@ -385,21 +385,21 @@ namespace Ict.Petra.Server.MFinance.Common
         ///
         /// </summary>
         public TLedgerLock(int ALedgerNum)
-        {            
+        {
             bool NewTransaction;
-            
+
             intLegerNumber = ALedgerNum;
-            
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-            
+
             ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
                 intLegerNumber, TLedgerInitFlagEnum.LedgerLock.ToString(), Transaction);
-            
+
             ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.NewRow();
             aLedgerInitFlagRow.LedgerNumber = intLegerNumber;
             aLedgerInitFlagRow.InitOptionName = TLedgerInitFlagEnum.LedgerLock.ToString();
-            
-            lock (synchRoot) 
+
+            lock (synchRoot)
             {
                 try
                 {
@@ -415,29 +415,29 @@ namespace Ict.Petra.Server.MFinance.Common
                 catch (System.Data.ConstraintException Exc)
                 {
                     TLogging.Log("A ConstraintException occured during a call to the TLedgerLock constructor:" + Environment.NewLine + Exc.ToString());
-                    
+
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.RollbackTransaction();
                     }
 
-                    blnResult = false;     
+                    blnResult = false;
 
-                    throw;                    
+                    throw;
                 }
                 catch (Exception Exc)
                 {
                     TLogging.Log("An Exception occured during during a call to the TLedgerLock constructor:" + Environment.NewLine + Exc.ToString());
-                    
+
                     if (NewTransaction)
-                    {                
+                    {
                         DBAccess.GDBAccessObj.RollbackTransaction();
                     }
-                    
+
                     blnResult = false;
-                    
+
                     throw;
-                }                
+                }
             }
         }
 
@@ -610,23 +610,24 @@ namespace Ict.Petra.Server.MFinance.Common
         public void SetFlagAndName(string AName)
         {
             bool NewTransaction;
-            
-            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, 
+
+            TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 out NewTransaction);
-            
+
             ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
                 intLedgerNumber, strFlagName, WriteTransaction);
-            
+
             ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.NewRow();
+
             aLedgerInitFlagRow.LedgerNumber = intLedgerNumber;
             aLedgerInitFlagRow.InitOptionName = strFlagName;
-            
+
             aLedgerInitFlagTable.Rows.Add(aLedgerInitFlagRow);
-            
+
             try
             {
                 ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, WriteTransaction);
-    
+
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
@@ -635,14 +636,14 @@ namespace Ict.Petra.Server.MFinance.Common
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured in SetFlagAndName:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
+
                 throw;
-            }                
+            }
         }
 
         private bool FindRecord()
@@ -651,14 +652,14 @@ namespace Ict.Petra.Server.MFinance.Common
             bool NewTransaction;
             TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-            
+
             try
             {
                 ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
                     intLedgerNumber, strFlagName, ReadTransaction);
-    
+
                 boolValue = (aLedgerInitFlagTable.Rows.Count == 1);
-    
+
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
@@ -667,12 +668,12 @@ namespace Ict.Petra.Server.MFinance.Common
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured in FindRecord:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
+
                 throw;
             }
 
@@ -682,21 +683,21 @@ namespace Ict.Petra.Server.MFinance.Common
         private void CreateRecord()
         {
             bool NewTransaction;
-            TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, 
+            TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 out NewTransaction);
-            
+
             try
             {
                 ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
                     intLedgerNumber, strFlagName, ReadWriteTransaction);
-                
+
                 ALedgerInitFlagRow aLedgerInitFlagRow = (ALedgerInitFlagRow)aLedgerInitFlagTable.NewRow();
                 aLedgerInitFlagRow.LedgerNumber = intLedgerNumber;
                 aLedgerInitFlagRow.InitOptionName = strFlagName;
                 aLedgerInitFlagTable.Rows.Add(aLedgerInitFlagRow);
-                
+
                 ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, ReadWriteTransaction);
-    
+
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
@@ -705,34 +706,34 @@ namespace Ict.Petra.Server.MFinance.Common
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured in CreateRecord:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
+
                 throw;
-            }            
+            }
         }
 
         private void DeleteRecord()
         {
             bool NewTransaction;
-            TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, 
+            TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 out NewTransaction);
-            
+
             try
             {
                 ALedgerInitFlagTable aLedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
                     intLedgerNumber, strFlagName, ReadWriteTransaction);
-    
+
                 if (aLedgerInitFlagTable.Rows.Count == 1)
                 {
                     ((ALedgerInitFlagRow)aLedgerInitFlagTable.Rows[0]).Delete();
-                    
+
                     ALedgerInitFlagAccess.SubmitChanges(aLedgerInitFlagTable, ReadWriteTransaction);
                 }
-    
+
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
@@ -741,14 +742,14 @@ namespace Ict.Petra.Server.MFinance.Common
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured in DeleteRecord:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
-                {                
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-                
+
                 throw;
-            }            
+            }
         }
     }
 }

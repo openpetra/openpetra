@@ -145,7 +145,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "There was a critical error when saving:");
-            
+
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "Create a partner with location 0");
 
             TCreateTestPartnerData.CreateNewLocation(PartnerRow.PartnerKey, MainDS);
@@ -172,7 +172,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "There was a critical error when saving:");
-            
+
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "Replace location 0 of partner");
 
             Assert.AreEqual(1, MainDS.PPartnerLocation.Rows.Count, "the partner should only have one location in the dataset");
@@ -204,7 +204,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "There was a critical error when saving:");
-            
+
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "saving the first partner with a location");
 
             Int32 LocationKey = MainDS.PLocation[0].LocationKey;
@@ -252,7 +252,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "There was a critical error when saving:");
-            
+
             // now change on partner location. should ask about everyone else
             // it seems, the change must be to PLocation. In Petra 2.3, changes to the PartnerLocation are not propagated
             // MainDS.PPartnerLocation[0].DateGoodUntil = new DateTime(2011, 01, 01);
@@ -267,7 +267,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "There was a critical error when saving:");
-            
+
             Assert.AreEqual(TSubmitChangesResult.scrInfoNeeded,
                 result,
                 "should ask if the partner locations of the other members of the family should be changed as well");
@@ -648,7 +648,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "There was a critical error when saving:");
-            
+
             // now deletion must not be possible since relationship as SUPPCHURCH exists
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(ChurchPartnerRow.PartnerKey, out TextMessage);
 

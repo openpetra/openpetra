@@ -1524,7 +1524,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             if (CanImport)
             {
                 PartnerImportExportTDSAccess.SubmitChanges(MainDS);
-                
+
                 Res = TSubmitChangesResult.scrOK;
             }
 
@@ -1539,7 +1539,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerClass,
                         ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerShortName,
                         Res == TSubmitChangesResult.scrOK ? "Successful" : "Error"
-                       ),
+                        ),
                     TResultSeverity.Resv_Status);
             }
 

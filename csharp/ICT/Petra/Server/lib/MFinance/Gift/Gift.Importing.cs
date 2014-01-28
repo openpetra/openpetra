@@ -398,13 +398,13 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                 //Finally save pending changes (the last number is updated !)
                 AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, FTransaction);
-                                  
+
                 ALedgerAccess.SubmitChanges(LedgerTable, FTransaction);
 
                 FMainDS.AGiftBatch.AcceptChanges();
                 FMainDS.ALedger.AcceptChanges();
 
-                if (NewTransaction) 
+                if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
@@ -414,20 +414,20 @@ namespace Ict.Petra.Server.MFinance.Gift
             catch (Exception ex)
             {
                 String speakingExceptionText = SpeakingExceptionMessage(ex);
-                
+
                 if (AMessages == null)
                 {
                     AMessages = new TVerificationResultCollection();
                 }
-                                        
+
                 AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
                         String.Format(Catalog.GetString("There is a problem parsing the file in row {0}:"), RowNumber) +
                         FNewLine +
                         Catalog.GetString(FImportMessage) + FNewLine + speakingExceptionText,
                         TResultSeverity.Resv_Critical));
 
-                if (NewTransaction) 
-                {                
+                if (NewTransaction)
+                {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
 
@@ -446,23 +446,23 @@ namespace Ict.Petra.Server.MFinance.Gift
                 catch (Exception Exc)
                 {
                     TLogging.Log("An Exception occured while closing the Import File:" + Environment.NewLine + Exc.ToString());
-                                        
+
                     if (AMessages == null)
                     {
                         AMessages = new TVerificationResultCollection();
                     }
-                                            
+
                     AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
                             Catalog.GetString("A problem was encountered while closing the Import File:"),
                             TResultSeverity.Resv_Critical));
-                    
+
                     TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                         Catalog.GetString("Exception Occurred"),
                         0);
 
                     TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-                    
-                    throw;                    
+
+                    throw;
                 }
 
                 if (ok)
@@ -477,7 +477,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                     {
                         AMessages = new TVerificationResultCollection();
                     }
-                                           
+
                     AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
                             Catalog.GetString("Data could not be saved."),
                             TResultSeverity.Resv_Critical));
@@ -567,7 +567,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             TLogging.Log("Importing Gift batch: " + ex.ToString());
-            
+
             return ex.Message;
         }
 

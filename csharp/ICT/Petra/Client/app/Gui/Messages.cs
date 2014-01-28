@@ -119,7 +119,7 @@ namespace Ict.Petra.Client.App.Gui
             "  * If you were in a screen: please close the screen and re-open it again.\r\n" +
             "  * You will need to repeat your changes and save them again.\r\n" +
             "  * In case the error keeps occuring: please contact your OpenPetra support team.");
-        
+
         /// <summary>Part of a Database Concurrency Message.</summary>
         private static readonly string StrDBConcurrencyWrittenSelfAction = Catalog.GetString("modified");
 
@@ -509,7 +509,8 @@ namespace Ict.Petra.Client.App.Gui
             String OtherUsersAction;
             String DateInfo;
             String MessageString = String.Empty;
-            object[] ReplacePlaceholdersArray = new Object[5];            
+
+            object[] ReplacePlaceholdersArray = new Object[5];
 
             if (AException.DBOperation == "write")
             {
@@ -541,19 +542,20 @@ namespace Ict.Petra.Client.App.Gui
                     OtherUsersAction = StrDBConcurrencyDeleteOthersAction;
                 }
 
-                ReplacePlaceholdersArray[0] = String.Empty;                
-                DateInfo = String.Empty;                
+                ReplacePlaceholdersArray[0] = String.Empty;
+                DateInfo = String.Empty;
             }
-            else if ((AException.DBOperation == "update") 
-                && (AException is EDBConcurrencyNoRowToUpdateException))
+            else if ((AException.DBOperation == "update")
+                     && (AException is EDBConcurrencyNoRowToUpdateException))
             {
-                MessageString = Catalog.GetString("You have tried to update data, but that data is not present in the OpenPetra database.\r\n" +
+                MessageString = Catalog.GetString(
+                    "You have tried to update data, but that data is not present in the OpenPetra database.\r\n" +
                     "This means that either\r\n" +
                     " * this data has been deleted before you tried to update it (presumably by somebody else); or\r\n" +
                     " * that that data wasn't present in the OpenPetra database at all before you tried to update it (this points to a programming error).\r\n\r\n");
-                    
+
                 ReplacePlaceholdersArray = null;
-                
+
                 DateInfo = String.Empty;
                 OtherUsersAction = String.Empty;
                 UsersAction = String.Empty;
@@ -577,7 +579,7 @@ namespace Ict.Petra.Client.App.Gui
                 ReplacePlaceholdersArray[0] = "('" + AException.LastModificationUser + "') ";
             }
 
-            if (ReplacePlaceholdersArray != null) 
+            if (ReplacePlaceholdersArray != null)
             {
                 if (DateInfo != "")
                 {
@@ -591,12 +593,12 @@ namespace Ict.Petra.Client.App.Gui
                         DateInfo = String.Format(DateInfo, StringHelper.DateToLocalizedString(AException.LastModification));
                     }
                 }
-                
+
                 ReplacePlaceholdersArray[1] = OtherUsersAction;
                 ReplacePlaceholdersArray[2] = TableLabelName;
                 ReplacePlaceholdersArray[3] = UsersAction;
                 ReplacePlaceholdersArray[4] = DateInfo;
-    
+
                 // MessageBox.Show('ReplacePlaceholdersArray[0]: ' + ReplacePlaceholdersArray[0].ToString + "\r\n" +
                 // 'ReplacePlaceholdersArray[1]: ' + ReplacePlaceholdersArray[1].ToString + "\r\n" +
                 // 'ReplacePlaceholdersArray[2]: ' + ReplacePlaceholdersArray[2].ToString + "\r\n" +
@@ -610,18 +612,17 @@ namespace Ict.Petra.Client.App.Gui
                 {
                     MessageString = StrDBConcurrencySelf;
                 }
-    
+
                 MessageBox.Show(String.Format(MessageString,
                         ReplacePlaceholdersArray) + StrDBConcurrencyActionsRequired +
                     BuildMessageFooter(PetraErrorCodes.ERR_CONCURRENTCHANGES,
-                        ATypeWhichRaisesError.Name), StrDBConcurrencyTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);                
+                        ATypeWhichRaisesError.Name), StrDBConcurrencyTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             else
             {
                 MessageBox.Show(MessageString + StrDBConcurrencyActionsRequired +
                     BuildMessageFooter(PetraErrorCodes.ERR_CONCURRENTCHANGES,
-                        ATypeWhichRaisesError.Name), StrDBConcurrencyTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);                
-                
+                        ATypeWhichRaisesError.Name), StrDBConcurrencyTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 

@@ -73,6 +73,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             bool NewTransaction;
+
 /*
  *          if (TLogging.DL >= 9)
  *          {
@@ -81,7 +82,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
  */
             AVerificationResult = new TVerificationResultCollection();
 
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, 
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 out NewTransaction);
 
             try
@@ -119,12 +120,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             }
             catch (Exception Exc)
             {
-
                 TLogging.Log("An Exception occured while performing the Stewardship Calculations:" + Environment.NewLine + Exc.ToString());
-                
+
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
+
 /*
  *                  if (TLogging.DL >= 8)
  *                  {
@@ -132,7 +133,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
  *                  }
  */
                 }
-       
+
                 throw;
             }
         }
@@ -658,7 +659,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         AIchStewardshipAccess.SubmitChanges(ICHStewardshipTable, DBTransaction);
 
                         GLBatchTDSAccess.SubmitChanges(MainDS);
-                            
+
                         IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, GLBatchNumber, out AVerificationResult);
                     }
                     else
@@ -682,33 +683,34 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             catch (ArgumentException Exc)
             {
                 TLogging.Log("An ArgumentException occured during the generation of the Stewardship Batch:" + Environment.NewLine + Exc.ToString());
-                
-                if (AVerificationResult == null) 
+
+                if (AVerificationResult == null)
                 {
-                    AVerificationResult = new TVerificationResultCollection();                            
+                    AVerificationResult = new TVerificationResultCollection();
                 }
-                
+
                 AVerificationResult.Add(new TVerificationResult(ErrorContext, Exc.Message, ErrorType));
-                
+
                 throw;
             }
             catch (InvalidOperationException Exc)
             {
-                TLogging.Log("An InvalidOperationException occured during the generation of the Stewardship Batch:" + Environment.NewLine + Exc.ToString());
-                
-                if (AVerificationResult == null) 
+                TLogging.Log(
+                    "An InvalidOperationException occured during the generation of the Stewardship Batch:" + Environment.NewLine + Exc.ToString());
+
+                if (AVerificationResult == null)
                 {
-                    AVerificationResult = new TVerificationResultCollection();                            
+                    AVerificationResult = new TVerificationResultCollection();
                 }
-                
+
                 AVerificationResult.Add(new TVerificationResult(ErrorContext, Exc.Message, ErrorType));
-                
+
                 throw;
             }
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the generation of the Stewardship Batch:" + Environment.NewLine + Exc.ToString());
-                
+
                 ErrorContext = Catalog.GetString("Calculate Admin Fee");
                 ErrorMessage = String.Format(Catalog.GetString("Unknown error while Generating the ICH batch for Ledger: {0} and Period: {1}" +
                         Environment.NewLine + Environment.NewLine + Exc.ToString()),
@@ -716,13 +718,13 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     APeriodNumber);
                 ErrorType = TResultSeverity.Resv_Critical;
 
-                if (AVerificationResult == null) 
+                if (AVerificationResult == null)
                 {
-                    AVerificationResult = new TVerificationResultCollection();                            
+                    AVerificationResult = new TVerificationResultCollection();
                 }
-                
+
                 AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                
+
                 throw;
             }
             finally
@@ -736,8 +738,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
             }
-            
-            return IsSuccessful;            
+
+            return IsSuccessful;
         }
 
         /// <summary>
@@ -1202,7 +1204,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         GLBatchTDSAccess.SubmitChanges(AdminFeeDS);
 
                         IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, BatchRow.BatchNumber, out Verification);
-                        
+
                         if (IsSuccessful)
                         {
                             AProcessedFeeAccess.SubmitChanges(ProcessedFeeDataTable, ADBTransaction);

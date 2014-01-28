@@ -151,7 +151,7 @@ namespace Tests.MFinance.Server.BankImport
 
             Assert.AreEqual(true, TAdjustmentWebConnector.GiftRevertAdjust(requestParams, out VerificationResult), "reversing the gift batch");
 
-            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult, 
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "Gift Batch was not reverted:");
 
             // duplicate the bank import file, for the next month
@@ -180,7 +180,7 @@ namespace Tests.MFinance.Server.BankImport
                 -1,
                 out VerificationResult);
 
-            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult, 
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "cannot create gift batch from bank statement:");
 
             // check if the gift batch is correct

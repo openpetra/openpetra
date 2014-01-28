@@ -110,7 +110,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "There was a critical error when saving:");
-            
+
             Assert.AreEqual(TSubmitChangesResult.scrOK, result, "TPartnerEditUIConnector SubmitChanges return value");
 
             connector = new TPartnerEditUIConnector(PartnerRow.PartnerKey);
@@ -134,7 +134,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "There was a critical error when saving 2:");
-            
+
             foreach (DataTable t in MainDS.Tables)
             {
                 if ((t == MainDS.PBankingDetails)
@@ -204,7 +204,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "There was a critical error when saving 3:");
-            
+
             // now delete the main bank account
             PartnerEditTDSPBankingDetailsRow toDelete = null;
 
@@ -252,7 +252,7 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "There was a critical error when saving 4:");
-            
+
             // now delete the last remaining bank account
             toDelete = MainDS.PBankingDetails[0];
             Assert.AreEqual(true, toDelete.MainAccount);
@@ -264,7 +264,7 @@ namespace Tests.MPartner.Server.PartnerEdit
             MainDS.AcceptChanges();
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
-                "There was a critical error when saving 5:");        
+                "There was a critical error when saving 5:");
         }
     }
 }

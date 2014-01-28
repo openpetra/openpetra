@@ -337,15 +337,15 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                     ALedgerAccess.SubmitChanges(LedgerTable, WriteTransaction);
 
                     DBAccess.GDBAccessObj.CommitTransaction();
-                } 
-                catch (Exception Exc) 
+                }
+                catch (Exception Exc)
                 {
                     TLogging.Log("An Exception occured during the creation of Gift Batches:" + Environment.NewLine + Exc.ToString());
-                    
+
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    
+
                     throw;
-                }                               
+                }
             }
 
             return MainDS;

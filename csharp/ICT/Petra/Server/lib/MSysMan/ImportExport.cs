@@ -592,7 +592,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         public static bool SaveTDS(SampleDataConstructorTDS dataTDS)
         {
             SampleDataConstructorTDSAccess.SubmitChanges(dataTDS);
-            
+
             return true;
         }
     }

@@ -137,7 +137,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             MainDS.ThrowAwayAfterSubmitChanges = true;
 
             PartnerEditTDSAccess.SubmitChanges(MainDS);
-            
+
             TLogging.Log("after saving donors");
         }
     }

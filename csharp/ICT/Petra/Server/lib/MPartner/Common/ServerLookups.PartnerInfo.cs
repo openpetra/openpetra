@@ -152,7 +152,7 @@ namespace Ict.Petra.Server.MPartner.Common
                      * Get the Partner's Address data of its 'Best' Address
                      */
                     if (TMailing.GetPartnersBestLocationData(APartnerKey, out BestLocationPK,
-                                                             out LocationDR, out PartnerLocationDR))
+                            out LocationDR, out PartnerLocationDR))
                     {
                         #region Process Address
 

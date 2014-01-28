@@ -30,7 +30,7 @@ using System.Runtime.Serialization;
 using Ict.Common.Exceptions;
 
 namespace Ict.Common.DB.Exceptions
-{   
+{
     #region EDBConnectionNotEstablishedException
 
     /// <summary>
@@ -50,7 +50,7 @@ namespace Ict.Common.DB.Exceptions
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public EDBConnectionNotEstablishedException(String AMessage) : base(AMessage)
         {
         }
@@ -63,19 +63,19 @@ namespace Ict.Common.DB.Exceptions
         public EDBConnectionNotEstablishedException(string AConnectionString, Exception AInnerException) : base(AConnectionString, AInnerException)
         {
             string ErrorString = (("Error opening Database connection. The connection string is [ " + AConnectionString) + " ].");
-            
+
             Console.WriteLine();
             TLogging.Log(ErrorString);
         }
 
         #region Remoting and serialization
-        
+
         /// <summary>
         /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public EDBConnectionNotEstablishedException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
@@ -87,7 +87,7 @@ namespace Ict.Common.DB.Exceptions
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
@@ -96,14 +96,14 @@ namespace Ict.Common.DB.Exceptions
             {
                 throw new ArgumentNullException("AInfo");
             }
-            
+
             // We must call through to the base class to let it save its own state!
             base.GetObjectData(AInfo, AContext);
         }
-        
+
         #endregion
     }
-    
+
     #endregion
 
     #region EDBConnectionNotAvailableException
@@ -136,19 +136,19 @@ namespace Ict.Common.DB.Exceptions
         /// <param name="AConnectionInfo">ConnectionState (as String) of the Database connection.
         /// </param>
         /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
-        public EDBConnectionNotAvailableException(String AConnectionInfo, Exception AInnerException) 
+        public EDBConnectionNotAvailableException(String AConnectionInfo, Exception AInnerException)
             : base("DB Connection Status: " + AConnectionInfo, AInnerException)
         {
         }
 
         #region Remoting and serialization
-        
+
         /// <summary>
         /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public EDBConnectionNotAvailableException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
@@ -160,7 +160,7 @@ namespace Ict.Common.DB.Exceptions
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
@@ -173,10 +173,10 @@ namespace Ict.Common.DB.Exceptions
             // We must call through to the base class to let it save its own state!
             base.GetObjectData(AInfo, AContext);
         }
-        
+
         #endregion
     }
-    
+
     #endregion
 
     #region EDBExecuteNonQueryBatchException
@@ -198,7 +198,7 @@ namespace Ict.Common.DB.Exceptions
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public EDBExecuteNonQueryBatchException(String AMessage) : base(AMessage)
         {
         }
@@ -213,13 +213,13 @@ namespace Ict.Common.DB.Exceptions
         }
 
         #region Remoting and serialization
-        
+
         /// <summary>
         /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public EDBExecuteNonQueryBatchException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
@@ -231,7 +231,7 @@ namespace Ict.Common.DB.Exceptions
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
@@ -239,15 +239,15 @@ namespace Ict.Common.DB.Exceptions
             if (AInfo == null)
             {
                 throw new ArgumentNullException("AInfo");
-            }            
-                        
+            }
+
             // We must call through to the base class to let it save its own state!
             base.GetObjectData(AInfo, AContext);
         }
-        
+
         #endregion
     }
-    
+
     #endregion
 
     #region EDBParameterisedQueryMissingParameterPlaceholdersException
@@ -269,7 +269,7 @@ namespace Ict.Common.DB.Exceptions
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public EDBParameterisedQueryMissingParameterPlaceholdersException(String AMessage) : base(AMessage)
         {
         }
@@ -279,18 +279,19 @@ namespace Ict.Common.DB.Exceptions
         /// </summary>
         /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
-        public EDBParameterisedQueryMissingParameterPlaceholdersException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        public EDBParameterisedQueryMissingParameterPlaceholdersException(string AMessage, Exception AInnerException) : base(AMessage,
+                                                                                                                            AInnerException)
         {
         }
 
         #region Remoting and serialization
-        
+
         /// <summary>
         /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public EDBParameterisedQueryMissingParameterPlaceholdersException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
@@ -302,7 +303,7 @@ namespace Ict.Common.DB.Exceptions
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
@@ -310,16 +311,15 @@ namespace Ict.Common.DB.Exceptions
             if (AInfo == null)
             {
                 throw new ArgumentNullException("AInfo");
-            }            
-                        
+            }
+
             // We must call through to the base class to let it save its own state!
             base.GetObjectData(AInfo, AContext);
         }
-        
-        #endregion
 
+        #endregion
     }
-    
+
     #endregion
 
     #region EDBTransactionIsolationLevelTooLowException
@@ -342,7 +342,7 @@ namespace Ict.Common.DB.Exceptions
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public EDBTransactionIsolationLevelTooLowException(String AMessage) : base(AMessage)
         {
         }
@@ -355,15 +355,15 @@ namespace Ict.Common.DB.Exceptions
         public EDBTransactionIsolationLevelTooLowException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
-        
+
         #region Remoting and serialization
-        
+
         /// <summary>
         /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public EDBTransactionIsolationLevelTooLowException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
@@ -375,7 +375,7 @@ namespace Ict.Common.DB.Exceptions
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
@@ -383,15 +383,15 @@ namespace Ict.Common.DB.Exceptions
             if (AInfo == null)
             {
                 throw new ArgumentNullException("AInfo");
-            }            
-                        
+            }
+
             // We must call through to the base class to let it save its own state!
             base.GetObjectData(AInfo, AContext);
         }
-        
+
         #endregion
     }
-    
+
     #endregion
 
     #region EDBTransactionIsolationLevelWrongException
@@ -413,7 +413,7 @@ namespace Ict.Common.DB.Exceptions
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public EDBTransactionIsolationLevelWrongException(String AMessage) : base(AMessage)
         {
         }
@@ -428,13 +428,13 @@ namespace Ict.Common.DB.Exceptions
         }
 
         #region Remoting and serialization
-        
+
         /// <summary>
         /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public EDBTransactionIsolationLevelWrongException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
@@ -446,7 +446,7 @@ namespace Ict.Common.DB.Exceptions
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
@@ -454,15 +454,15 @@ namespace Ict.Common.DB.Exceptions
             if (AInfo == null)
             {
                 throw new ArgumentNullException("AInfo");
-            }            
-                        
+            }
+
             // We must call through to the base class to let it save its own state!
             base.GetObjectData(AInfo, AContext);
         }
-        
+
         #endregion
     }
-    
+
     #endregion
 
     #region EDBTransactionMissingException
@@ -485,7 +485,7 @@ namespace Ict.Common.DB.Exceptions
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public EDBTransactionMissingException(String AMessage) : base(AMessage)
         {
         }
@@ -498,15 +498,15 @@ namespace Ict.Common.DB.Exceptions
         public EDBTransactionMissingException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
-        
+
         #region Remoting and serialization
-        
+
         /// <summary>
         /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public EDBTransactionMissingException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
@@ -518,7 +518,7 @@ namespace Ict.Common.DB.Exceptions
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
@@ -526,17 +526,16 @@ namespace Ict.Common.DB.Exceptions
             if (AInfo == null)
             {
                 throw new ArgumentNullException("AInfo");
-            }            
-                        
+            }
+
             // We must call through to the base class to let it save its own state!
             base.GetObjectData(AInfo, AContext);
-
         }
-        
+
         #endregion
     }
     #endregion
-    
+
     #region EDBTransactionBusyException
 
     /// <summary>
@@ -557,7 +556,7 @@ namespace Ict.Common.DB.Exceptions
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public EDBTransactionBusyException(String AMessage) : base(AMessage)
         {
         }
@@ -570,9 +569,9 @@ namespace Ict.Common.DB.Exceptions
         public EDBTransactionBusyException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
-        
+
         #region Remoting and serialization
-        
+
         /// <summary>
         /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
         /// </summary>
@@ -598,21 +597,21 @@ namespace Ict.Common.DB.Exceptions
             if (AInfo == null)
             {
                 throw new ArgumentNullException("AInfo");
-            }            
-                        
+            }
+
             // We must call through to the base class to let it save its own state!
             base.GetObjectData(AInfo, AContext);
         }
-        
+
         #endregion
     }
 
     #endregion
-    
+
     #region EDBSyncUnknownParameterTypeException
 
     /// <summary>
-    /// Thrown during the write to the Sync table, where the ODBC parameters need to be written to a string 
+    /// Thrown during the write to the Sync table, where the ODBC parameters need to be written to a string
     /// for the PostgreSQL database.
     /// </summary>
     [Serializable()]
@@ -628,7 +627,7 @@ namespace Ict.Common.DB.Exceptions
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public EDBSyncUnknownParameterTypeException(String AMessage) : base(AMessage)
         {
         }
@@ -641,9 +640,9 @@ namespace Ict.Common.DB.Exceptions
         public EDBSyncUnknownParameterTypeException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
-        
+
         #region Remoting and serialization
-        
+
         /// <summary>
         /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
         /// </summary>
@@ -661,7 +660,7 @@ namespace Ict.Common.DB.Exceptions
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
@@ -669,15 +668,15 @@ namespace Ict.Common.DB.Exceptions
             if (AInfo == null)
             {
                 throw new ArgumentNullException("AInfo");
-            }            
-                        
+            }
+
             // We must call through to the base class to let it save its own state!
             base.GetObjectData(AInfo, AContext);
         }
-        
+
         #endregion
     }
-    
+
     #endregion
 
     #region EDBUnsupportedDBUpgradeException
@@ -699,9 +698,9 @@ namespace Ict.Common.DB.Exceptions
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <remarks>The string that is passed in <paramref name="AMessage" /> currently needs 
+        /// <remarks>The string that is passed in <paramref name="AMessage" /> currently needs
         /// to contain the exact string "Unsupported upgrade" so that the Client can react properly...</remarks>
-        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         public EDBUnsupportedDBUpgradeException(String AMessage) : base(AMessage)
         {
         }
@@ -709,22 +708,22 @@ namespace Ict.Common.DB.Exceptions
         /// <summary>
         /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <remarks>The string that is passed in <paramref name="AMessage" /> currently needs 
-        /// to contain the exact string "Unsupported upgrade" so that the Client can react properly...</remarks> 
+        /// <remarks>The string that is passed in <paramref name="AMessage" /> currently needs
+        /// to contain the exact string "Unsupported upgrade" so that the Client can react properly...</remarks>
         /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
         public EDBUnsupportedDBUpgradeException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
-        
+
         #region Remoting and serialization
-        
+
         /// <summary>
         /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public EDBUnsupportedDBUpgradeException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
@@ -736,7 +735,7 @@ namespace Ict.Common.DB.Exceptions
         /// </summary>
         /// <remarks>
         /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
-        /// </remarks> 
+        /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
@@ -744,14 +743,14 @@ namespace Ict.Common.DB.Exceptions
             if (AInfo == null)
             {
                 throw new ArgumentNullException("AInfo");
-            }            
-                        
+            }
+
             // We must call through to the base class to let it save its own state!
             base.GetObjectData(AInfo, AContext);
         }
-        
+
         #endregion
     }
 
-    #endregion   
+    #endregion
 }
