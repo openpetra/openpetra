@@ -102,9 +102,9 @@ RootNode:
                 Row3: [txtDebitTotalAmount]
                 Row4: [txtCreditTotalAmount]
         lblTransactionCurrency: {Label=TODOTransactionCurrency}
-        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
-        txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true}
-        txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true}
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true, SuppressChangeDetection=true}
+        txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true, SuppressChangeDetection=true}
+        txtJournalNumber: {ReadOnly=true, Label=Journal, Unbound=true, SuppressChangeDetection=true}
         txtDebitAmount: {Label=Dr Amount, Validation=true, Format=Currency, NullValueAllowed=false}
         txtCreditAmount: {Label=Cr Amount, Validation=true, Format=Currency, NullValueAllowed=false}
         txtDebitTotalAmount: {Label=Debit Total, ReadOnly=true, Format=Currency}

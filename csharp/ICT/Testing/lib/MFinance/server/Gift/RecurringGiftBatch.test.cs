@@ -88,8 +88,6 @@ namespace Tests.MFinance.Server.Gift
             string motivationGroupCode = "GIFT";
             string motivationDetailCode = "SUPPORT";
 
-            TVerificationResultCollection VerficationResults = null;
-
             //Create the recurring gift batch
             FMainDS = TGiftTransactionWebConnector.CreateARecurringGiftBatch(FLedgerNumber);
 
@@ -122,7 +120,7 @@ namespace Tests.MFinance.Server.Gift
             FMainDS.ARecurringGiftDetail.Rows.Add(newDetailRow);
 
             //Save changes
-            GiftBatchTDSAccess.SubmitChanges(FMainDS, out VerficationResults);
+            GiftBatchTDSAccess.SubmitChanges(FMainDS);
 
             FMainDS.AcceptChanges();
 
@@ -154,7 +152,7 @@ namespace Tests.MFinance.Server.Gift
             Assert.AreNotEqual(0, FMainDS.ARecurringGiftBatch.Rows.Count, "after deletion the batch row should still exist");
 
             //Save changes
-            GiftBatchTDSAccess.SubmitChanges(FMainDS, out VerficationResults);
+            GiftBatchTDSAccess.SubmitChanges(FMainDS);
         }
 
         /// <summary>
@@ -170,8 +168,6 @@ namespace Tests.MFinance.Server.Gift
             decimal giftAmount = 100.50M;
             string motivationGroupCode = "GIFT";
             string motivationDetailCode = "SUPPORT";
-
-            TVerificationResultCollection VerficationResults = null;
 
             //Create the recurring gift batch
             FMainDS = TGiftTransactionWebConnector.CreateARecurringGiftBatch(FLedgerNumber);
@@ -236,7 +232,7 @@ namespace Tests.MFinance.Server.Gift
                 "after deletion the batch row will still exist because it has been saved before");
 
             //Now save changes
-            GiftBatchTDSAccess.SubmitChanges(FMainDS, out VerficationResults);
+            GiftBatchTDSAccess.SubmitChanges(FMainDS);
         }
     }
 }

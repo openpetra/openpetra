@@ -148,7 +148,6 @@ namespace Ict.Petra.Server.MPersonnel.queries
              * for which a member matches the specified criteria.*/
 
             bool ReturnValue = false;
-            TVerificationResultCollection VerificationResult;
 
             // for receiving fields first look at commitments
             ReturnValue = ProcessCommitments(true, AParameters, ATransaction, out AExtractId);
@@ -256,21 +255,13 @@ namespace Ict.Petra.Server.MPersonnel.queries
             TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
 
             // create an extract with the given name in the parameters
-            ReturnValue = TExtractsHandling.ExtendExtractFromListOfPartnerKeys(
+            TExtractsHandling.ExtendExtractFromListOfPartnerKeys(
                 AExtractId,
-                out VerificationResult,
                 partnerkeys,
                 0,
                 AddressFilterAdded,
                 false,
                 false);
-
-            if (ReturnValue == false)
-            {
-                // if result was false then rollback transaction
-                TExtractsHandling.FinishExtractFromListOfPartnerKeys(false);
-                return ReturnValue;
-            }
 
             // ----------------------------------------------------------------------------------------
             // Now start retrieving families whose worker field is set to given value and that are not
@@ -325,14 +316,15 @@ namespace Ict.Petra.Server.MPersonnel.queries
             TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
 
             // create an extract with the given name in the parameters
-            ReturnValue = TExtractsHandling.ExtendExtractFromListOfPartnerKeys(
+            TExtractsHandling.ExtendExtractFromListOfPartnerKeys(
                 AExtractId,
-                out VerificationResult,
                 partnerkeys,
                 0,
                 AddressFilterAdded,
                 false,
                 false);
+
+            ReturnValue = true;
 
             // if result was true then commit transaction, otherwise rollback
             TExtractsHandling.FinishExtractFromListOfPartnerKeys(ReturnValue);
@@ -445,14 +437,11 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
             TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
 
-            TVerificationResultCollection VerificationResult;
-
             // create an extract with the given name in the parameters
             ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
                 AParameters.Get("param_extract_name").ToString(),
                 AParameters.Get("param_extract_description").ToString(),
                 out AExtractId,
-                out VerificationResult,
                 partnerkeys,
                 0,
                 AddressFilterAdded,

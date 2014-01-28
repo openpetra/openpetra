@@ -27,6 +27,7 @@ using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
@@ -735,7 +736,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             System.Int64 NewPersonKey = 0;
             System.Int64 OtherFamilyKey = 0;
             String ProblemMessage;
-            TVerificationResultCollection VerificationResult;
 
             if (GridEdited)
             {
@@ -798,8 +798,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 if (TRemote.MPartner.Partner.WebConnectors.ChangeFamily(NewPersonKey,
                                         OtherFamilyKey,
                                         GetFamilyKey(),
-                                        out ProblemMessage,
-                                        out VerificationResult))
+                                        out ProblemMessage))
                                 {
                                     // even in case of success there might still be a warning message that needs display
                                     if (ProblemMessage != "")
@@ -810,8 +809,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 else
                                 {
                                     // can't continue after error
-                                    MessageBox.Show(Messages.BuildMessageFromVerificationResult("Change of family failed!" + Environment.NewLine +
-                                            "Reasons:", VerificationResult));
+                                    MessageBox.Show("Change of family failed!");
                                     MessageBox.Show(ProblemMessage, Catalog.GetString("Change Family"));
                                     return;
                                 }
@@ -843,8 +841,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                         catch (Exception exp)
                         {
-                            throw new ApplicationException("Exception occured while calling PartnerFindScreen Delegate!",
-                                exp);
+                            throw new EOPAppException("Exception occured while calling PartnerFindScreen Delegate!", exp);
                         }
                         // end try
                     }
@@ -882,7 +879,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else
                 {
-                    throw new ApplicationException("Delegate FGetLocationKeyOfCurrentlySelectedAddress is not set up");
+                    throw new EOPAppException("Delegate FGetLocationKeyOfCurrentlySelectedAddress is not set up");
                 }
 
                 TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
@@ -1414,8 +1411,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             System.Int64 NewFamilyKey = 0;
             String ProblemMessage;
-            TVerificationResultCollection VerificationResult;
-
             TLocationPK mResultLocationPK;
 
             if (FDelegateIsNewPartner != null)
@@ -1465,8 +1460,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 if (TRemote.MPartner.Partner.WebConnectors.ChangeFamily(APersonKey,
                                         AOldFamilyKey,
                                         NewFamilyKey,
-                                        out ProblemMessage,
-                                        out VerificationResult))
+                                        out ProblemMessage))
                                 {
                                     // even in case of success there might still be a warning message that needs display
                                     if (ProblemMessage != "")
@@ -1477,8 +1471,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 else
                                 {
                                     // can't continue after error
-                                    MessageBox.Show(Messages.BuildMessageFromVerificationResult("Change of family failed!" + Environment.NewLine +
-                                            "Reasons:", VerificationResult));
+                                    MessageBox.Show("Change of family failed!");
                                     MessageBox.Show(ProblemMessage, Catalog.GetString("Change Family"));
                                     return;
                                 }
@@ -1519,8 +1512,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                         catch (Exception exp)
                         {
-                            throw new ApplicationException("Exception occured while calling PartnerFindScreen Delegate!",
-                                exp);
+                            throw new EOPAppException("Exception occured while calling PartnerFindScreen Delegate!", exp);
                         }
                         // end try
                     }

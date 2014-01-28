@@ -25,8 +25,8 @@ using System;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Reflection;
-
 using Ict.Common;
+using Ict.Common.Exceptions;
 
 namespace Ict.Common
 {
@@ -243,20 +243,29 @@ namespace Ict.Common
     /// <summary>
     /// Thrown if an attempt is made to add a Error Code with a value that already exists in Dictionary <see cref="ErrorCodeInventory.ErrorCodeCatalogue" />.
     /// </summary>
-    public class EDuplicateErrorCodeException : Exception
+    public class EDuplicateErrorCodeException : EOPAppException
     {
         /// <summary>
-        /// Constructor.
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        /// <param name="msg"></param>
-        public EDuplicateErrorCodeException(String msg) : base(msg)
+        public EDuplicateErrorCodeException() : base()
         {
         }
 
         /// <summary>
-        /// Constructor.
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        public EDuplicateErrorCodeException() : base()
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDuplicateErrorCodeException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDuplicateErrorCodeException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }

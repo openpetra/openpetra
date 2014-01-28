@@ -76,7 +76,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                     ValidatePersonnelStaff(ValidationControlsDict, ref AVerificationResult, AInspectDS.PmStaffData);
                     ValidatePersonnelStaffManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.PmStaffData);
 
-                    if (AVerificationResult.HasCriticalErrors)
+                    if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                     {
                         AllDataValidationsOK = false;
                     }
@@ -85,7 +85,9 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
 
             if (AllDataValidationsOK)
             {
-                SubmissionResult = PersonnelTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                PersonnelTDSAccess.SubmitChanges(AInspectDS);
+
+                SubmissionResult = TSubmitChangesResult.scrOK;
             }
             else if (AVerificationResult.Count > 0)
             {

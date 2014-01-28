@@ -1102,17 +1102,10 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                     for (int ExtractAddCounter = 0; ExtractAddCounter < DistinctPartners.Count;
                          ExtractAddCounter++)
                     {
-                        if (TExtractsHandling.AddPartnerToExtract((Int64)DistinctPartners[ExtractAddCounter],
-                                AExtractID, out AVerificationResult))
-                        {
-                            AddedPartners++;
-                        }
-                        else
-                        {
-                            // Partner could not get added to the Extract
-//                          TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Partner with PartnerKey " +
-//                              ((Int64)DistinctPartners[ExtractAddCounter]).ToString() + " did not get added to Extract with ExtractID " + AExtractID.ToString() + ".");
-                        }
+                        TExtractsHandling.AddPartnerToExtract((Int64)DistinctPartners[ExtractAddCounter],
+                            AExtractID);
+
+                        AddedPartners++;
                     }
 
 //                  TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Added " + AddedPartners.ToString() + " Partners to the desired Extract!");
@@ -1124,8 +1117,10 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
                     return AddedPartners;
                 }
-                catch (Exception)
+                catch (Exception Exc)
                 {
+                    TLogging.Log("An Exception occured while adding all found Partners to an Extract:" + Environment.NewLine + Exc.ToString());
+
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.RollbackTransaction();

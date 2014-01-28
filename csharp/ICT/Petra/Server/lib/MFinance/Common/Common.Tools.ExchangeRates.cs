@@ -103,7 +103,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (currencyTable.Rows.Count == 0)
             {
-                TVerificationException terminate = new TVerificationException(
+                EVerificationException terminate = new EVerificationException(
                     Catalog.GetString("The table a_currency is empty!"));
                 terminate.Context = "Common Accounting";
                 terminate.ErrorCode = "TCurrencyInfo01";
@@ -126,7 +126,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
             }
 
-            TVerificationException terminate = new TVerificationException(
+            EVerificationException terminate = new EVerificationException(
                 String.Format(Catalog.GetString(
                         "No Data for currency {0} found"), ACurrencyCode));
             terminate.Context = "Common Accounting";
@@ -265,7 +265,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (matchCollection.Count != 1)
             {
-                TVerificationException terminate = new TVerificationException(
+                EVerificationException terminate = new EVerificationException(
                     String.Format(Catalog.GetString("The regular expression {0} does not fit for a match in {1}"),
                         sRegex, strFormat));
 

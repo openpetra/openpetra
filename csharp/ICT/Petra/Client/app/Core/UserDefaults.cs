@@ -372,7 +372,6 @@ namespace Ict.Petra.Client.App.Core
             SUserDefaultsRow SubmittedUserDefaultRow;
             SUserDefaultsTable DesiredUserDefaultsDataTable;
             Int32 FoundInRow;
-            TVerificationResultCollection VerificationResult;
 
             ReturnValue = false;
             FoundInRow = UUserDefaults.Find(AKey);
@@ -403,25 +402,16 @@ namespace Ict.Petra.Client.App.Core
                     }
 
                     // MessageBox.Show('Saving single User Default ''' + DesiredUserDefaultsDataTable.Rows[0].Item['s_default_code_c'].ToString + '''');
-                    if (TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
-                            ref DesiredUserDefaultsDataTable,
-                            out VerificationResult))
-                    {
-                        // Copy over ModificationId that was changed on the Server side!
-                        UUserDefaults[FoundInRow].Row.ItemArray = DesiredUserDefaultsDataTable.Rows.Find(new Object[] { UUserDefaults[FoundInRow][0],
-                                                                                                                        UUserDefaults[FoundInRow][1] })
-                                                                  .ItemArray;
+                    TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+                        ref DesiredUserDefaultsDataTable);
 
-                        // Mark this User Default as saved (unchanged)
-                        UUserDefaults[FoundInRow].Row.AcceptChanges();
-                        ReturnValue = true;
-                    }
-                    else
-                    {
-                        MessageBox.Show(Messages.BuildMessageFromVerificationResult("Saving of User Defaults failed!" + Environment.NewLine +
-                                "Reasons:", VerificationResult));
-                        ReturnValue = false;
-                    }
+                    // Copy over ModificationId that was changed on the Server side!
+                    UUserDefaults[FoundInRow].Row.ItemArray = DesiredUserDefaultsDataTable.Rows.Find(
+                        new Object[] { UUserDefaults[FoundInRow][0], UUserDefaults[FoundInRow][1] }).ItemArray;
+
+                    // Mark this User Default as saved (unchanged)
+                    UUserDefaults[FoundInRow].Row.AcceptChanges();
+                    ReturnValue = true;
                 }
             }
             else
@@ -438,31 +428,18 @@ namespace Ict.Petra.Client.App.Core
         /// </summary>
         /// <returns>true if successful, false if not.
         /// </returns>
-        public static Boolean SaveChangedUserDefaults()
+        public static void SaveChangedUserDefaults()
         {
-            Boolean ReturnValue;
             SUserDefaultsTable UserDefaultsDataTableChanges;
-            TVerificationResultCollection VerificationResult;
 
             UserDefaultsDataTableChanges = UUserDefaultsDataTable.GetChangesTyped();
 
             // MessageBox.Show('Changed/added User Defaults: ' + UserDefaultsDataTableChanges.Rows.Count.ToString);
-            if (TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
-                    ref UserDefaultsDataTableChanges,
-                    out VerificationResult))
-            {
-                // TODO 1 oChristianK cUserDefaults / ModificationID : Copy the ModificationID into the Client's DataTable so that the PetraClient's ModificationID's of UserDefaults are the same than the ones of the PetraServer.
-                UUserDefaultsDataTable.AcceptChanges();
-                ReturnValue = true;
-            }
-            else
-            {
-                MessageBox.Show(Messages.BuildMessageFromVerificationResult("Saving of User Defaults failed!" + Environment.NewLine + "Reasons:",
-                        VerificationResult));
-                ReturnValue = false;
-            }
+            TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+                ref UserDefaultsDataTableChanges);
 
-            return ReturnValue;
+            // TODO 1 oChristianK cUserDefaults / ModificationID : Copy the ModificationID into the Client's DataTable so that the PetraClient's ModificationID's of UserDefaults are the same than the ones of the PetraServer.
+            UUserDefaultsDataTable.AcceptChanges();
         }
 
         /// <summary>

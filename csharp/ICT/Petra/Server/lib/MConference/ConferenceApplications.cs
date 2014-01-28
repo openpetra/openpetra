@@ -1114,7 +1114,9 @@ namespace Ict.Petra.Server.MConference.Applications
             }
 
 
-            TSubmitChangesResult result = ConferenceApplicationTDSAccess.SubmitChanges(AMainDS, out VerificationResult);
+            ConferenceApplicationTDSAccess.SubmitChanges(AMainDS);
+
+            TSubmitChangesResult result = TSubmitChangesResult.scrOK;
 
             // this takes 6 seconds!
             AMainDS.AcceptChanges();
@@ -1151,7 +1153,9 @@ namespace Ict.Petra.Server.MConference.Applications
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }
 
-            TSubmitChangesResult result = ConferenceApplicationTDSAccess.SubmitChanges(MainDS, out AVerificationResult);
+            ConferenceApplicationTDSAccess.SubmitChanges(MainDS);
+
+            TSubmitChangesResult result = TSubmitChangesResult.scrOK;
 
             ARow.AcceptChanges();
 
@@ -1542,8 +1546,7 @@ namespace Ict.Petra.Server.MConference.Applications
         /// and avoids that the registration office has to redo all the importing for the next round of applicants.
         /// </summary>
         /// <param name="APartnerKeyFile"></param>
-        /// <returns></returns>
-        public static bool UploadPetraImportResult(string APartnerKeyFile)
+        public static void UploadPetraImportResult(string APartnerKeyFile)
         {
             XmlDocument partnerKeys = TCsv2Xml.ParseCSV2Xml(APartnerKeyFile);
 
@@ -1622,26 +1625,18 @@ namespace Ict.Petra.Server.MConference.Applications
                 }
 
                 // store modified partners
-                TVerificationResultCollection VerificationResult;
+                PmGeneralApplicationAccess.SubmitChanges(applicationTable, Transaction);
 
-                if (PmGeneralApplicationAccess.SubmitChanges(applicationTable, Transaction, out VerificationResult))
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    return true;
-                }
+                DBAccess.GDBAccessObj.CommitTransaction();
             }
-            catch (Exception e)
+            catch (Exception Exc)
             {
-                TLogging.Log(e.Message);
-                TLogging.Log(e.StackTrace);
-                return false;
-            }
-            finally
-            {
+                TLogging.Log("An Exception occured during the uploading of the Petra Import result:" + Environment.NewLine + Exc.ToString());
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-            }
 
-            return true;
+                throw;
+            }
         }
 
         /// <summary>
@@ -1664,17 +1659,14 @@ namespace Ict.Petra.Server.MConference.Applications
             {
                 PartnerImportExportTDS MainDS = importer.ImportAllData(lines, AEventCode, true, out AVerificationResult);
 
-                if (AVerificationResult.HasCriticalErrors)
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                 {
                     return false;
                 }
 
-                TVerificationResultCollection VerificationResult;
+                PartnerImportExportTDSAccess.SubmitChanges(MainDS);
 
-                if (TSubmitChangesResult.scrOK == PartnerImportExportTDSAccess.SubmitChanges(MainDS, out VerificationResult))
-                {
-                    return true;
-                }
+                return true;
             }
             catch (Exception e)
             {
@@ -1685,8 +1677,6 @@ namespace Ict.Petra.Server.MConference.Applications
 
                 return false;
             }
-
-            return true;
         }
     }
 }

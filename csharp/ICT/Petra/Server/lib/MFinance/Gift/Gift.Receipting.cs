@@ -700,39 +700,39 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ABatchNumber"></param>
         /// <param name="ATransactionNumber"></param>
         [RequireModulePermission("FINANCE-1")]
-        public static bool MarkReceiptsPrinted(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 ATransactionNumber)
+        public static void MarkReceiptsPrinted(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 ATransactionNumber)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             AGiftTable Tbl = new AGiftTable();
 
-            Tbl.Merge(AGiftAccess.LoadByPrimaryKey(ALedgerNumber, ABatchNumber, ATransactionNumber, Transaction));
-
-            foreach (AGiftRow Row in Tbl.Rows)
+            try
             {
-                Row.ReceiptPrinted = true;
-            }
+                Tbl.Merge(AGiftAccess.LoadByPrimaryKey(ALedgerNumber, ABatchNumber, ATransactionNumber, Transaction));
 
-            TVerificationResultCollection SubmitResults;
+                foreach (AGiftRow Row in Tbl.Rows)
+                {
+                    Row.ReceiptPrinted = true;
+                }
 
-            bool CommitRes = AGiftAccess.SubmitChanges(Tbl, Transaction, out SubmitResults);
+                AGiftAccess.SubmitChanges(Tbl, Transaction);
 
-            if (CommitRes)
-            {
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
-            else
+            catch (Exception Exc)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                TLogging.Log("An Exception occured while marking Receipts as printed:" + Environment.NewLine + Exc.ToString());
 
-            return CommitRes;
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
+            }
         }
 
         /// <summary>Mark selected gifts as receipted in the AGift table.</summary>
         /// <param name="AGiftTbl">Custom DataTable from GetUnreceiptedGifts, above.
         /// For this method, only {bool}Selected, LedgerNumber, BatchNumber and TransactionNumber fields are needed.</param>
         [RequireModulePermission("FINANCE-1")]
-        public static bool MarkReceiptsPrinted(DataTable AGiftTbl)
+        public static void MarkReceiptsPrinted(DataTable AGiftTbl)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
             AGiftTable Tbl = new AGiftTable();
@@ -754,20 +754,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 Row.ReceiptPrinted = true;
             }
 
-            TVerificationResultCollection SubmitResults;
-
-            bool CommitRes = AGiftAccess.SubmitChanges(Tbl, Transaction, out SubmitResults);
-
-            if (CommitRes)
+            try
             {
+                AGiftAccess.SubmitChanges(Tbl, Transaction);
+
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
-            else
+            catch (Exception Exc)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                TLogging.Log("An Exception occured while marking Receipts as printed:" + Environment.NewLine + Exc.ToString());
 
-            return CommitRes;
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -778,9 +778,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         public static Int32 GetLastReceiptNumber(Int32 ALedgerNumber)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            ALedgerTable LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+            ALedgerTable LedgerTbl;
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            try
+            {
+                LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured during the getting of the last Receipt Number:" + Environment.NewLine + Exc.ToString());
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
+            }
 
             if (LedgerTbl.Rows.Count > 0)
             {
@@ -799,17 +812,30 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static void SetLastReceiptNumber(Int32 ALedgerNumber, Int32 AReceiptNumber)
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            ALedgerTable LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-            TVerificationResultCollection Results;
+            TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            ALedgerTable LedgerTbl;
 
-            if (LedgerTbl.Rows.Count > 0)
+            try
             {
-                LedgerTbl[0].LastHeaderRNumber = AReceiptNumber;
-                ALedgerAccess.SubmitChanges(LedgerTbl, Transaction, out Results);
-            }
+                LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadWriteTransaction);
 
-            DBAccess.GDBAccessObj.CommitTransaction();
+                if (LedgerTbl.Rows.Count > 0)
+                {
+                    LedgerTbl[0].LastHeaderRNumber = AReceiptNumber;
+
+                    ALedgerAccess.SubmitChanges(LedgerTbl, ReadWriteTransaction);
+
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured during the setting of the last Receipt Number:" + Environment.NewLine + Exc.ToString());
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
+            }
         }
     }
 }

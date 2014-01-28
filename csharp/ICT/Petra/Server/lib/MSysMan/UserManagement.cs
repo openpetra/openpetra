@@ -72,8 +72,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         UserDR.PasswordSalt), "SHA1");
 
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                TVerificationResultCollection VerificationResult;
-                SUserAccess.SubmitChanges(UserTable, Transaction, out VerificationResult);
+                SUserAccess.SubmitChanges(UserTable, Transaction);
 
                 DBAccess.GDBAccessObj.CommitTransaction();
 
@@ -124,6 +123,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         [RequireModulePermission("NONE")]
         public static bool SetUserPassword(string AUsername, string APassword, string AOldPassword, out TVerificationResultCollection AVerification)
         {
+            TDBTransaction Transaction;
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
 
             if (!CheckPasswordQuality(APassword, out AVerification))
@@ -147,11 +147,22 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 UserDR.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
                         UserDR.PasswordSalt));
 
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                TVerificationResultCollection VerificationResult;
-                SUserAccess.SubmitChanges(UserTable, Transaction, out VerificationResult);
+                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-                DBAccess.GDBAccessObj.CommitTransaction();
+                try
+                {
+                    SUserAccess.SubmitChanges(UserTable, Transaction);
+
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                catch (Exception Exc)
+                {
+                    TLogging.Log("An Exception occured during the setting of the User Password:" + Environment.NewLine + Exc.ToString());
+
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
+                    throw;
+                }
 
                 return true;
             }
@@ -224,15 +235,10 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             if (newUser != null)
             {
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                TVerificationResultCollection VerificationResult;
 
                 try
                 {
-                    if (!SUserAccess.SubmitChanges(userTable, Transaction, out VerificationResult))
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                        return false;
-                    }
+                    SUserAccess.SubmitChanges(userTable, Transaction);
 
                     List <string>modules = new List <string>();
 
@@ -272,11 +278,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         moduleAccessPermissionTable.Rows.Add(moduleAccessPermissionRow);
                     }
 
-                    if (!SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, Transaction, out VerificationResult))
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                        return false;
-                    }
+                    SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, Transaction);
 
                     // TODO: table permissions should be set by the module list
                     string[] tables = new string[] {
@@ -294,20 +296,17 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         tableAccessPermissionTable.Rows.Add(tableAccessPermissionRow);
                     }
 
-                    if (!SUserTableAccessPermissionAccess.SubmitChanges(tableAccessPermissionTable, Transaction, out VerificationResult))
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                        return false;
-                    }
+                    SUserTableAccessPermissionAccess.SubmitChanges(tableAccessPermissionTable, Transaction);
 
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
-                catch (Exception e)
+                catch (Exception Exc)
                 {
-                    TLogging.Log(e.Message);
-                    TLogging.Log(e.StackTrace);
+                    TLogging.Log("An Exception occured while creating a User:" + Environment.NewLine + Exc.ToString());
+
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    return false;
+
+                    throw;
                 }
 
                 return true;
@@ -378,15 +377,14 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// this is called from the MaintainUsers screen, for adding users, retiring users, set the password, etc
         /// </summary>
         [RequireModulePermission("SYSMAN")]
-        public static TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
+        public static TSubmitChangesResult SaveSUser(ref MaintainUsersTDS ASubmitDS)
         {
-            AVerificationResult = null;
-
             TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrError;
 
             bool CanCreateUser;
             bool CanChangePassword;
             bool CanChangePermissions;
+
             GetAuthenticationFunctionality(out CanCreateUser, out CanChangePassword, out CanChangePermissions);
 
             // make sure users are not deleted or added if this is not possible
@@ -429,7 +427,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             try
             {
-                ReturnValue = MaintainUsersTDSAccess.SubmitChanges(ASubmitDS, out AVerificationResult);
+                MaintainUsersTDSAccess.SubmitChanges(ASubmitDS);
+
+                ReturnValue = TSubmitChangesResult.scrOK;
             }
             catch (Exception e)
             {

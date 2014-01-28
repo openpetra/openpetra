@@ -39,6 +39,7 @@ using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.ImportExport;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Testing.NUnitTools;
 
 namespace Tests.MPartner.Server.PartnerExports
 {
@@ -82,10 +83,7 @@ namespace Tests.MPartner.Server.PartnerExports
             TPartnerFileImport importer = new TPartnerFileImport();
             PartnerImportExportTDS MainDS = importer.ImportAllData(lines, SelectedEventCode, false, out VerificationResult);
 
-            if (VerificationResult.HasCriticalErrors)
-            {
-                TLogging.Log(VerificationResult.BuildVerificationResultString());
-            }
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult);
 
             foreach (PPartnerRow PartnerRow in MainDS.PPartner.Rows)
             {
@@ -100,10 +98,7 @@ namespace Tests.MPartner.Server.PartnerExports
 
             try
             {
-                if (TSubmitChangesResult.scrOK == PartnerImportExportTDSAccess.SubmitChanges(MainDS, out VerificationResult))
-                {
-                    //return;
-                }
+                PartnerImportExportTDSAccess.SubmitChanges(MainDS);
             }
             catch (Exception e)
             {

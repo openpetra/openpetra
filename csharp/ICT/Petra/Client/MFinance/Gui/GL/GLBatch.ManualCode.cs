@@ -222,6 +222,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ATab"></param>
         public void SelectTab(eGLTabs ATab)
         {
+            this.Cursor = Cursors.WaitCursor;
+
             if (ATab == eGLTabs.Batches)
             {
                 this.tabGLBatch.SelectedTab = this.tpgBatches;
@@ -261,6 +263,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if (this.tpgTransactions.Enabled)
                 {
+                    // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
+                    // But we need this to be set before calling ucoTransactions.AutoSizeGrid() because that only works once the page is actually loaded.
+                    this.tabGLBatch.SelectedTab = this.tpgTransactions;
+
                     bool fromBatchTab = false;
 
                     if (FPreviousTab == eGLTabs.Batches)
@@ -275,21 +281,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             ucoBatches.GetSelectedDetailRow().BatchStatus);
                     }
 
-                    this.tabGLBatch.SelectedTab = this.tpgTransactions;
-
-                    this.ucoTransactions.LoadTransactions(
-                        FLedgerNumber,
-                        ucoJournals.GetSelectedDetailRow().BatchNumber,
-                        ucoJournals.GetSelectedDetailRow().JournalNumber,
-                        ucoJournals.GetSelectedDetailRow().TransactionCurrency,
-                        ucoBatches.GetSelectedDetailRow().BatchStatus,
-                        ucoJournals.GetSelectedDetailRow().JournalStatus,
-                        fromBatchTab);
+                    if (this.ucoTransactions.LoadTransactions(
+                            FLedgerNumber,
+                            ucoJournals.GetSelectedDetailRow().BatchNumber,
+                            ucoJournals.GetSelectedDetailRow().JournalNumber,
+                            ucoJournals.GetSelectedDetailRow().TransactionCurrency,
+                            ucoBatches.GetSelectedDetailRow().BatchStatus,
+                            ucoJournals.GetSelectedDetailRow().JournalStatus,
+                            fromBatchTab))
+                    {
+                        ucoTransactions.AutoSizeGrid();
+                    }
 
                     FPreviousTab = eGLTabs.Transactions;
                 }
             }
 
+            this.Cursor = Cursors.Default;
             this.Refresh();
         }
 

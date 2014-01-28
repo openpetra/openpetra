@@ -66,8 +66,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static TSubmitChangesResult StoreNewBankStatement(BankImportTDS AStatementAndTransactionsDS,
-            out Int32 AFirstStatementKey,
-            out TVerificationResultCollection AVerificationResult)
+            out Int32 AFirstStatementKey)
         {
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
                 Catalog.GetString("Processing new bank statements"),
@@ -83,21 +82,20 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
             {
                 // Must not throw away the changes because we need the correct statement keys
                 AStatementAndTransactionsDS.DontThrowAwayAfterSubmitChanges = true;
-                SubmissionResult = BankImportTDSAccess.SubmitChanges(AStatementAndTransactionsDS, out AVerificationResult);
+                BankImportTDSAccess.SubmitChanges(AStatementAndTransactionsDS);
+
+                SubmissionResult = TSubmitChangesResult.scrOK;
 
                 AFirstStatementKey = -1;
 
-                if (SubmissionResult == TSubmitChangesResult.scrOK)
-                {
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                        Catalog.GetString("starting to train"),
-                        1);
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("starting to train"),
+                    1);
 
-                    AFirstStatementKey = AStatementAndTransactionsDS.AEpStatement[0].StatementKey;
+                AFirstStatementKey = AStatementAndTransactionsDS.AEpStatement[0].StatementKey;
 
-                    // search for already posted gift batches, and do the matching for these imported statements
-                    TBankImportMatching.Train(AStatementAndTransactionsDS);
-                }
+                // search for already posted gift batches, and do the matching for these imported statements
+                TBankImportMatching.Train(AStatementAndTransactionsDS);
 
                 TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
             }
@@ -163,11 +161,11 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 transactionRow.Delete();
             }
 
-            TVerificationResultCollection VerificationResult;
             MainDS.ThrowAwayAfterSubmitChanges = true;
-            BankImportTDSAccess.SubmitChanges(MainDS, out VerificationResult);
 
-            return !VerificationResult.HasCriticalErrors;
+            BankImportTDSAccess.SubmitChanges(MainDS);
+
+            return true;
         }
 
         private static bool FindDonorByAccountNumber(AEpMatchRow AMatchRow,
@@ -194,8 +192,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static BankImportTDS GetBankStatementTransactionsAndMatches(Int32 AStatementKey, Int32 ALedgerNumber)
         {
-            TVerificationResultCollection VerificationResult;
-
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             BankImportTDS ResultDataset = new BankImportTDS();
@@ -409,7 +405,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
 
                 TempDataset.ThrowAwayAfterSubmitChanges = true;
                 // only store a_ep_transactions and a_ep_matches, but without additional typed fields (ie MatchAction)
-                BankImportTDSAccess.SubmitChanges(TempDataset.GetChangesTyped(true), out VerificationResult);
+                BankImportTDSAccess.SubmitChanges(TempDataset.GetChangesTyped(true));
             }
             catch (Exception e)
             {
@@ -465,10 +461,11 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool CommitMatches(BankImportTDS AMainDS)
         {
-            TVerificationResultCollection VerificationResult;
-
             AMainDS.ThrowAwayAfterSubmitChanges = true;
-            return BankImportTDSAccess.SubmitChanges(AMainDS, out VerificationResult) == TSubmitChangesResult.scrOK;
+
+            BankImportTDSAccess.SubmitChanges(AMainDS);
+
+            return true;
         }
 
         /// <summary>
@@ -701,7 +698,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                 Catalog.GetString("Submit to database"),
                 counter++);
 
-            if (AVerificationResult.HasCriticalErrors)
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
             {
                 return -1;
             }

@@ -34,6 +34,8 @@ using System.Runtime.Remoting.Messaging;
 using System.Runtime.Remoting.Channels;
 using Ict.Common.Remoting.Shared;
 
+using Ict.Common.Exceptions;
+
 namespace Ict.Common.Remoting.Server
 {
     /// <summary>
@@ -216,7 +218,7 @@ namespace Ict.Common.Remoting.Server
                 {
                     // TLogging.Log("SyncProcessMessage: No __ClientID or __ServiceID");
                     return new ReturnMessage(
-                        new ApplicationException("No __ClientID or __ServiceID"),
+                        new EOPAppException("No __ClientID or __ServiceID"),
                         (IMethodCallMessage)msg);
                 }
             }

@@ -345,8 +345,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             CCRow.PostingCostCentreFlag = true;
             CCRow.CostCentreActiveFlag = true;
             CostCentres.Rows.Add(CCRow);
-            TVerificationResultCollection verification;
-            ACostCentreAccess.SubmitChanges(CostCentres, null, out verification);
+
+            ACostCentreAccess.SubmitChanges(CostCentres, null);
 
             System.Diagnostics.Debug.WriteLine("Init: " + this.ToString());
         }
