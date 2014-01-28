@@ -46,7 +46,7 @@ RootNode:
         cmbFacialHair:
             Label: Facial Hair
             Width: 160
-            OptionalValues: [=Unknown, Moustache, Beard, Goatee, Sideburns]
+            OptionalValues: [=Unknown, None, Moustache, Beard, Goatee, Sideburns]
         lblIdentMarks:
             Label:Scars, Marks, Tattoos, Piercings
         txtIdentifyingMarks:

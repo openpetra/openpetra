@@ -75,6 +75,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.grdPartnerTypes.BackColor = System.Drawing.SystemColors.ControlDark;
             this.grdPartnerTypes.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.grdPartnerTypes.DeleteQuestionMessage = "You have chosen to delete t" + "his record.'#13#10#13#10'Dou you really want to delete it?";
+            this.grdPartnerTypes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grdPartnerTypes.FixedRows = 1;
             this.grdPartnerTypes.Location = new System.Drawing.Point(4, 6);
             this.grdPartnerTypes.MinimumHeight = 1;
@@ -88,7 +89,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                                 SourceGrid.GridSpecialKeys.Control) | SourceGrid.GridSpecialKeys.Shift)));
             this.grdPartnerTypes.TabIndex = 0;
             this.grdPartnerTypes.TabStop = true;
-            this.grdPartnerTypes.DoubleClickCell += new TDoubleClickCellEventHandler(this.GrdPartnerTypes_DoubleClickCell);
+            this.grdPartnerTypes.MouseClick += new MouseEventHandler(this.GrdPartnerTypes_Click);
             this.grdPartnerTypes.SpaceKeyPressed += new TKeyPressedEventHandler(this.GrdPartnerTypes_SpaceKeyPressed);
             this.grdPartnerTypes.EnterKeyPressed += new TKeyPressedEventHandler(this.GrdPartnerTypes_EnterKeyPressed);
 

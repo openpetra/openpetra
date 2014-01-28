@@ -218,10 +218,16 @@ namespace Ict.Petra.Client.MPartner
         public static readonly string StrPartnerFindSearchTargetText = Catalog.GetString("Partner+Location combination");
 
         /// <summary>todoComment</summary>
+        public static readonly string StrPartnerFindByBankDetailsSearchTargetText = Catalog.GetString("Partner+Bank Account combination");
+
+        /// <summary>todoComment</summary>
         public static readonly string StrPartnerFindSearchTarget2Text = Catalog.GetString("Partner");
 
         /// <summary>todoComment</summary>
         public static readonly string StrPartnerFindSearchTargetPluralText = Catalog.GetString("Partner+Location combinations");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrPartnerFindByBankDetailsSearchTargetPluralText = Catalog.GetString("Partner+Bank Account combinations");
 
         #endregion
 

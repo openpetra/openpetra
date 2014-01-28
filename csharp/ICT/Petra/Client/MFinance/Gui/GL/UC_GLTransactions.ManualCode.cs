@@ -78,7 +78,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ABatchStatus"></param>
         /// <param name="AJournalStatus"></param>
         /// <param name="AFromBatchTab"></param>
-        public void LoadTransactions(Int32 ALedgerNumber,
+        /// <returns>True if new GL transactions were loaded, false if transactions had been loaded already.</returns>
+        public bool LoadTransactions(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             Int32 AJournalNumber,
             string AForeignCurrencyName,
@@ -86,8 +87,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             string AJournalStatus = MFinanceConstants.BATCH_UNPOSTED,
             bool AFromBatchTab = false)
         {
-            this.Cursor = Cursors.WaitCursor;
+            Console.WriteLine("LoadTransactions");
+            DateTime dtStart = DateTime.Now;
 
+            bool IsNewBatch = false;
             FLoadCompleted = false;
             FBatchRow = GetBatchRow();
             FIsUnposted = (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
@@ -113,11 +116,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
 
                 FLoadCompleted = true;
-                this.Cursor = Cursors.Default;
+                Console.WriteLine("LoadTransactions quick exit  {0}", ((DateTime.Now - dtStart).TotalMilliseconds));
             }
             else
             {
                 // A new ledger/batch
+                IsNewBatch = true;
                 bool requireControlSetup = (FLedgerNumber == -1) || (FTransactionCurrency != AForeignCurrencyName);
 
                 FLedgerNumber = ALedgerNumber;
@@ -194,6 +198,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 UpdateTransactionTotals(false);
                 grdDetails.ResumeLayout();
                 FLoadCompleted = true;
+                Console.WriteLine("LoadTransactions completed  {0}", ((DateTime.Now - dtStart).TotalMilliseconds));
             }
 
             SelectRowInGrid(1);
@@ -202,7 +207,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             UpdateRecordNumberDisplay();
             SetRecordNumberDisplayProperties();
 
-            this.Cursor = Cursors.Default;
+            return IsNewBatch;
         }
 
         /// <summary>
@@ -369,7 +374,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             this.CreateNewATransaction();
 
+            ClearControls();
+            ValidateAllData(true, false);
+
             pnlTransAnalysisAttributes.Enabled = true;
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
 
             //Needs to be called at end of addition process to process Analysis Attributes
             AccountCodeDetailChanged(null, null);
@@ -405,16 +414,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (FPreviouslySelectedDetailRow != null)
             {
                 ANewRow.CostCentreCode = FPreviouslySelectedDetailRow.CostCentreCode;
-                FPreviouslySelectedDetailRow = null;
-                ClearControls();
             }
-
-            FPreviouslySelectedDetailRow = (GLBatchTDSATransactionRow)ANewRow;
-
-            btnDeleteAll.Enabled = true;
-
-            ShowDetails(FPreviouslySelectedDetailRow);
-            cmbDetailCostCentreCode.Focus();
         }
 
         /// <summary>
@@ -1713,8 +1713,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
         {
+            if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
+            {
+                AutoSizeGrid();
+            }
+
             // If the grid list changes we might need to disable the Delete All button
-            btnDeleteAll.Enabled = (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
         }
 
         /// <summary>
@@ -1740,6 +1745,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
             grdDetails.AutoSizeCells();
             grdDetails.ShowCell(FPrevRowChangedRow);
+
+            Console.WriteLine("Done AutoSizeGrid() on {0} rows", grdDetails.Rows.Count);
         }
     }
 }

@@ -299,7 +299,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                          new object[] { FPartnerKey, bd.BankingDetailsKey, MPartnerConstants.BANKINGUSAGETYPE_MAIN }) != null);
             }
 
-            localDS.PBankingDetailsUsage.Clear();
             localDS.RemoveEmptyTables();
 
             return localDS;

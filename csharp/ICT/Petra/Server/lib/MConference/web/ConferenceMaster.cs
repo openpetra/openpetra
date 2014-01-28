@@ -72,6 +72,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             PcConferenceOptionAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
             PcDiscountAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
             PcConferenceVenueAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
+            PUnitAccess.LoadByPrimaryKey(MainDS, AConferenceKey, Transaction);
             AConferenceName = PPartnerAccess.LoadByPrimaryKey(MainDS, AConferenceKey, Transaction).PartnerShortName;
 
             foreach (ConferenceSetupTDSPcConferenceVenueRow VenueRow in MainDS.PcConferenceVenue.Rows)

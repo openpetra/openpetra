@@ -81,13 +81,19 @@ RootNode:
         tabPartnerFindMethods:
             Dock: Fill
             Controls: [tpgFindPartner, tpgFindBankDetails]
+            ActionClick: TabChanged
         tpgFindPartner:
             Label: Find by Partner Details
             Controls: [ucoFindByPartnerDetails]
         ucoFindByPartnerDetails:
             Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerFind_ByPartnerDetails
             Dock: Fill
-        tpgFindBankDetails: {Label=Find by Bank Details}
+        tpgFindBankDetails:
+            Label: Find by Bank Details
+            Controls: [ucoFindByBankDetails]
+        ucoFindByBankDetails:
+            Type: Ict.Petra.Client.MPartner.Gui.TUC_PartnerFind_ByPartnerDetails
+            Dock: Fill
         pnlModalButtons:
             ControlsOrientation: horizontal
             Dock: Bottom

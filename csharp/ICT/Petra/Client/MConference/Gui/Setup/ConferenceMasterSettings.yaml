@@ -39,6 +39,7 @@ RootNode:
         grpDiscounts:
             Stretch: horizontally
             ColWidths: [0=Fixed:250, 1=Fixed:130, 2=Fixed:130]
+            TabOrder: Horizontal
             Controls:
                 Row0: [Empty, lblAttendance, lblAccommodation]
                 Row1: [lblSpecialRolePreTitle, txtSpecialRolePreAttendance, txtSpecialRolePreAccommodation]

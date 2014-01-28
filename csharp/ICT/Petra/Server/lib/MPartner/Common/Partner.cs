@@ -751,26 +751,6 @@ namespace Ict.Petra.Server.MPartner.Partner
                 PartnerClassString = SharedTypes.PartnerClassEnumToString(APartnerClass);
                 RecentPartnersDT = PRecentPartnersAccess.LoadViaSUser(UserInfo.GUserInfo.UserID, ReadAndWriteTransaction);
 
-                // set the given partner key as the last used partner for the given module
-                switch (ALastPartnerUse)
-                {
-                    case TLastPartnerUse.lpuMailroomPartner:
-                        TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPARTNERMAILROOM, (object)APartnerKey, true);
-                        break;
-
-                    case TLastPartnerUse.lpuPersonnelPerson:
-                        TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPERSONPERSONNEL, (object)APartnerKey, true);
-                        break;
-
-                    case TLastPartnerUse.lpuPersonnelUnit:
-                        TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTUNITPERSONNEL, (object)APartnerKey, true);
-                        break;
-
-                    case TLastPartnerUse.lpuConferencePerson:
-                        TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPERSONCONFERENCE, (object)APartnerKey, true);
-                        break;
-                }
-
                 // Check if the recently used partner already exists for the current user.
                 // Add it if not, otherwise just change the timestamp.
                 RecentPartnersRow = (PRecentPartnersRow)RecentPartnersDT.Rows.Find(new System.Object[] { UserInfo.GUserInfo.UserID, APartnerKey });

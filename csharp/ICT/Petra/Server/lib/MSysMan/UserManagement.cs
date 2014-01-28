@@ -210,13 +210,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             {
                 if (APassword.Length > 0)
                 {
-                    const int SALTSIZE = 32;
-                    byte[] saltBytes = new byte[SALTSIZE];
-                    RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-                    rng.GetNonZeroBytes(saltBytes);
-                    newUser.PasswordSalt = Convert.ToBase64String(saltBytes);
-                    newUser.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
-                            newUser.PasswordSalt));
+                    newUser.PasswordSalt = PasswordHelper.GetNewPasswordSalt();
+                    newUser.PasswordHash = PasswordHelper.GetPasswordHash(APassword, newUser.PasswordSalt);
                 }
             }
             else

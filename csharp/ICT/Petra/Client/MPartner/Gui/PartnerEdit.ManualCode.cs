@@ -107,6 +107,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private String FNewPartnerAcquisitionCode;
         private Boolean FNewPartnerPrivatePartner;
         private Boolean FNewPartnerShowNewPartnerDialog;
+        private String FCallerContext = "";
         private TPartnerEditTabPageEnum FShowTabPage;
         private TPartnerEditTabPageEnum FInitiallySelectedTabPage;
         private Boolean FUppperPartInitiallyCollapsed;
@@ -202,6 +203,26 @@ namespace Ict.Petra.Client.MPartner.Gui
             set
             {
                 FShowTabPage = value;
+            }
+        }
+
+        /// <summary>
+        /// Used in the 'Form Messaging' implementation in <see cref="SaveChanges(ref PartnerEditTDS)"></see>.
+        /// </summary>
+        /// <description>
+        /// Several running instances of the same screen (e.g. Partner Find screen)
+        /// can distinguish between messages for certain instances of the screen through that.
+        /// </description>
+        public string CallerContext
+        {
+            get
+            {
+                return FCallerContext;
+            }
+
+            set
+            {
+                FCallerContext = value;
             }
         }
 
@@ -850,8 +871,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             int RowIndex;
             int NumRows;
             Int32 MaxColumn;
+            Boolean SavedPartnerIsNewParter = false;
             bool AddressesOrRelationsChanged = false;
             System.Int32 ChangedColumns;
+            TFormsMessage BroadcastMessage;
+            String PartnerShortNameForBroadcast;
 #if SHOWCHANGES
             String DebugMessage;
 #endif
@@ -1083,9 +1107,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         case TSubmitChangesResult.scrOK:
 
+                            SavedPartnerIsNewParter = IsNewPartner(AInspectDS);
+
                             // MessageBox.Show('DUMMY: ' + (SubmitDS.Tables['Locations'].Rows[0]['DUMMY']).ToString() );
                             if ((SharedTypes.PartnerClassStringToEnum(AInspectDS.PPartner[0].PartnerClass) == TPartnerClass.UNIT)
-                                && (IsNewPartner(AInspectDS)))
+                                && SavedPartnerIsNewParter)
                             {
                                 /*
                                  * A new Partner of PartnerClass UNIT has been created
@@ -1255,7 +1281,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                             ucoUpperPart.UpdateStatusUpdatedDate();  // this is to refresh 'Status Updated' if it has been changed in the ComboBox and then saved...
 
-                            ucoLowerPart.RefreshAddressesAfterMerge();
+                            ucoLowerPart.RefreshRecordsAfterMerge();
                             ucoLowerPart.RefreshPersonnelDataAfterMerge(AddressesOrRelationsChanged);
 
                             // Call AcceptChanges so that we don't have any changed data anymore!
@@ -1440,6 +1466,38 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(false));
+            }
+
+            // if the partner has been saved then broadcast a message to any listening forms to inform them
+            if (ReturnValue)
+            {
+                if (SavedPartnerIsNewParter)
+                {
+                    BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcNewPartnerSaved,
+                        FCallerContext);
+                }
+                else
+                {
+                    BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcExistingPartnerSaved,
+                        FCallerContext);
+                }
+
+                if (!FMainDS.PPartner[0].IsPartnerShortNameNull())
+                {
+                    PartnerShortNameForBroadcast = FMainDS.PPartner[0].PartnerShortName;
+                }
+                else
+                {
+                    PartnerShortNameForBroadcast = String.Empty;
+                }
+
+                BroadcastMessage.SetMessageDataPartner(
+                    FPartnerKey,
+                    SharedTypes.PartnerClassStringToEnum(FPartnerClass),
+                    PartnerShortNameForBroadcast,
+                    FMainDS.PPartner[0].StatusCode);
+
+                TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
             }
 
             return ReturnValue;
@@ -1783,6 +1841,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileDeletePartner(System.Object sender, System.EventArgs e)
         {
+            TFormsMessage BroadcastMessage;
+
             /* Check for new Partner that wasn't saved yet */
             if (IsNewPartner(FMainDS))
             {
@@ -1797,9 +1857,20 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /* Check for unsaved changes */
                 if (CanClose())
                 {
-                    /* Delete Partner; if OK, close the screen */
+                    /* Delete Partner; if OK, broadcast a message to any listening forms to inform them and then close the screen */
                     if (TPartnerMain.DeletePartner(FPartnerKey))
                     {
+                        BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcPartnerDeleted,
+                            FCallerContext);
+
+                        BroadcastMessage.SetMessageDataPartner(
+                            FPartnerKey,
+                            SharedTypes.PartnerClassStringToEnum(FPartnerClass),
+                            "",
+                            FMainDS.PPartner[0].StatusCode);
+
+                        TFormsList.GFormsList.BroadcastFormMessage(BroadcastMessage);
+
                         this.Close();
                     }
                 }
@@ -3152,6 +3223,40 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void HookupDataChangeEvents()
         {
             HookupPartnerEditDataChangeEvents(TPartnerEditTabPageEnum.petpAddresses);
+        }
+
+        #endregion
+
+        #region Forms Messaging Interface Implementation
+
+        /// <summary>
+        /// Will be called by TFormsList to inform any Form that is registered in TFormsList
+        /// about any 'Forms Messages' that are broadcasted.
+        /// </summary>
+        /// <remarks>The Partner Edit 'listens' to such 'Forms Message' broadcasts by
+        /// implementing this virtual Method. This Method will be called each time a
+        /// 'Forms Message' broadcast occurs.
+        /// </remarks>
+        /// <param name="AFormsMessage">An instance of a 'Forms Message'. This can be
+        /// inspected for parameters in the Method Body and the Form can use those to choose
+        /// to react on the Message, or not.</param>
+        /// <returns>Returns True if the Form reacted on the specific Forms Message,
+        /// otherwise false.</returns>
+        public bool ProcessFormsMessage(TFormsMessage AFormsMessage)
+        {
+            bool MessageProcessed = false;
+
+            if ((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcNewPartnerSaved)
+                || (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved)
+                || (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcPartnerDeleted))
+            {
+                // Refreshes the Family Members list on the Family tab
+                ucoLowerPart.RefreshFamilyMembersList(AFormsMessage);
+
+                MessageProcessed = true;
+            }
+
+            return MessageProcessed;
         }
 
         #endregion

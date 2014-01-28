@@ -59,15 +59,14 @@ RootNode:
                 Row0: [txtOutreachCode]
                 Row1: [txtOutreachCost, cmbOutreachCostCurrencyCode]
             ColWidths: [0=Fixed:120]
-            
+
         txtOutreachCode:
             Width: 165
             ColSpan: 2
-            
+
         txtOutreachCost:
             Width: 100
 
         cmbOutreachCostCurrencyCode: {List=CurrencyCodeList}
             Width: 60
-
             NoLabel: true

@@ -110,6 +110,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private Boolean FRunAsModalForm;
 
+        private Ict.Petra.Client.MPartner.Gui.TUC_PartnerFind_ByPartnerDetails FCurrentlySelectedTab;
+
         /// <summary>
         /// initialize (called by the constructor)
         /// </summary>
@@ -153,6 +155,16 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoFindByPartnerDetails.DisableAcceptButton += new EventHandler(ucoFindByPartnerDetails_DisableAcceptButton);
 
             ucoFindByPartnerDetails.SetupPartnerInfoPane();
+
+            ucoFindByBankDetails.PartnerInfoPaneCollapsed += new EventHandler(ucoFindByPartnerDetails_PartnerInfoPaneCollapsed);
+            ucoFindByBankDetails.PartnerInfoPaneExpanded += new EventHandler(ucoFindByPartnerDetails_PartnerInfoPaneExpanded);
+            ucoFindByBankDetails.EnableAcceptButton += new EventHandler(ucoFindByPartnerDetails_EnableAcceptButton);
+            ucoFindByBankDetails.DisableAcceptButton += new EventHandler(ucoFindByPartnerDetails_DisableAcceptButton);
+
+            ucoFindByBankDetails.SetupPartnerInfoPane();
+
+            // FindByPartnerDetails tab is shown first
+            FCurrentlySelectedTab = ucoFindByPartnerDetails;
         }
 
         void ucoFindByPartnerDetails_SearchOperationStateChange(TSearchOperationStateChangeEventArgs e)
@@ -177,7 +189,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (e.KeyCode == Keys.Enter)
             {
-                ucoFindByPartnerDetails.BtnSearch_Click(sender, e);
+                FCurrentlySelectedTab.BtnSearch_Click(sender, e);
                 e.Handled = true;
             }
             else
@@ -192,14 +204,14 @@ namespace Ict.Petra.Client.MPartner.Gui
              * Store the fact that this Partner is the 'Last Partner' that was worked with
              */
 
-            TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(ucoFindByPartnerDetails.PartnerKey, TLastPartnerUse.lpuMailroomPartner);
+            TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(FCurrentlySelectedTab.PartnerKey, TLastPartnerUse.lpuMailroomPartner);
         }
 
         private void MniFile_DropDownOpening(System.Object sender, System.EventArgs e)
         {
             DataRowView[] GridRows;
             int Counter;
-            GridRows = ucoFindByPartnerDetails.SelectedDataRowsAsDataRowView;
+            GridRows = FCurrentlySelectedTab.SelectedDataRowsAsDataRowView;
 
             // Check if a Grid Row is selected
             if (GridRows.Length <= 0)
@@ -231,7 +243,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // check if menu item "Work with last partner" can be enabled
             long LastPartnerKey = TUserDefaults.GetInt64Default(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, 0);
 
-            if (ucoFindByPartnerDetails.CanAccessPartner(LastPartnerKey))
+            if (FCurrentlySelectedTab.CanAccessPartner(LastPartnerKey))
             {
                 mniFileWorkWithLastPartner.Enabled = true;
             }
@@ -254,7 +266,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 if (CurrentMenu.Text == ClickedMenuItemText)
                 {
-                    ucoFindByPartnerDetails.OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpDefault, (long)CurrentMenu.Tag, true);
+                    FCurrentlySelectedTab.OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpDefault, (long)CurrentMenu.Tag, true);
                 }
             }
         }
@@ -264,10 +276,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             DataRowView[] GridRows;
             int Counter;
 
-            GridRows = ucoFindByPartnerDetails.SelectedDataRowsAsDataRowView;
+            GridRows = FCurrentlySelectedTab.SelectedDataRowsAsDataRowView;
 
             // Check if we have access to the currently selected Partner or if we have Find Result
-            if (!(ucoFindByPartnerDetails.CanAccessPartner(-1))
+            if (!(FCurrentlySelectedTab.CanAccessPartner(-1))
                 || (GridRows.Length <= 0))
             {
                 // Currently selected Partner is not accessible or no Find Result
@@ -303,7 +315,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MniMailing_DropDownOpening(System.Object sender, System.EventArgs e)
         {
-            DataRowView[] GridRows = ucoFindByPartnerDetails.SelectedDataRowsAsDataRowView;
+            DataRowView[] GridRows = FCurrentlySelectedTab.SelectedDataRowsAsDataRowView;
 
             // Check if a Grid Row is selected
             if (GridRows.Length <= 0)
@@ -415,7 +427,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 //                SenderIsContextMenu = true;
 //            }
 
-            GridRows = ucoFindByPartnerDetails.SelectedDataRowsAsDataRowView;
+            GridRows = FCurrentlySelectedTab.SelectedDataRowsAsDataRowView;
 
             // Check if a Grid Row is selected
             if (GridRows.Length <= 0)
@@ -681,32 +693,32 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MniFile_Click(System.Object sender, System.EventArgs e)
         {
-            ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniFile, (ToolStripItem)sender, FRunAsModalForm);
+            FCurrentlySelectedTab.HandleMenuItemOrToolBarButton(mniFile, (ToolStripItem)sender, FRunAsModalForm);
         }
 
         private void MniEdit_Click(System.Object sender, System.EventArgs e)
         {
-            ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniEdit, (ToolStripItem)sender, FRunAsModalForm);
+            FCurrentlySelectedTab.HandleMenuItemOrToolBarButton(mniEdit, (ToolStripItem)sender, FRunAsModalForm);
         }
 
         private void MniMaintain_Click(System.Object sender, System.EventArgs e)
         {
-            ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniMaintain, (ToolStripItem)sender, FRunAsModalForm);
+            FCurrentlySelectedTab.HandleMenuItemOrToolBarButton(mniMaintain, (ToolStripItem)sender, FRunAsModalForm);
         }
 
         private void MniMailing_Click(System.Object sender, System.EventArgs e)
         {
-            ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniMailing, (ToolStripItem)sender, FRunAsModalForm);
+            FCurrentlySelectedTab.HandleMenuItemOrToolBarButton(mniMailing, (ToolStripItem)sender, FRunAsModalForm);
         }
 
         private void MniTools_Click(System.Object sender, System.EventArgs e)
         {
-            ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniTools, (ToolStripItem)sender, FRunAsModalForm);
+            FCurrentlySelectedTab.HandleMenuItemOrToolBarButton(mniTools, (ToolStripItem)sender, FRunAsModalForm);
         }
 
         private void MniView_Click(System.Object sender, System.EventArgs e)
         {
-            ucoFindByPartnerDetails.HandleMenuItemOrToolBarButton(mniView, (ToolStripItem)sender, FRunAsModalForm);
+            FCurrentlySelectedTab.HandleMenuItemOrToolBarButton(mniView, (ToolStripItem)sender, FRunAsModalForm);
         }
 
         #endregion
@@ -818,6 +830,27 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // FIRST TIME  do some initialisation
                     FPetraUtilsObject.FormActivatedForFirstTime = true;
                 }
+            }
+        }
+
+        // called when the selected tab is changed
+        private void TabChanged(System.Object sender, System.EventArgs e)
+        {
+            // if FindByBankDetails tab is selected
+            if (tpgFindBankDetails.Visible)
+            {
+                // disable PartnerInfo button in toolbar nad menu
+                tbbPartnerInfo.Enabled = false;
+                mniViewPartnerInfo.Enabled = false;
+
+                FCurrentlySelectedTab = ucoFindByBankDetails;
+            }
+            else
+            {
+                tbbPartnerInfo.Enabled = true;
+                mniViewPartnerInfo.Enabled = true;
+
+                FCurrentlySelectedTab = ucoFindByPartnerDetails;
             }
         }
 
@@ -1053,10 +1086,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// (separated by comma) to restrict the choice in the 'Partner Class' criteria
         /// ComboBox, or empty String '' to not restrict to any Partner Class.
         /// </param>
+        /// <param name="ABankDetailsTabOnly">True if this instance should only display the
+        /// Find By Bank Details tab
+        /// </param>
         /// <returns>void</returns>
-        public void SetParameters(String ARestrictToPartnerClasses)
+        public void SetParameters(String ARestrictToPartnerClasses, bool ABankDetailsTabOnly)
         {
-            SetParameters(ARestrictToPartnerClasses, false, -1);
+            SetParameters(ARestrictToPartnerClasses, ABankDetailsTabOnly, false, -1);
         }
 
         /// <summary>
@@ -1066,17 +1102,35 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// (separated by comma) to restrict the choice in the 'Partner Class' criteria
         /// ComboBox, or empty String '' to not restrict to any Partner Class.
         /// </param>
+        /// <param name="ABankDetailsTabOnly">True if this instance should only display the
+        /// Find By Bank Details tab
+        /// </param>
         /// <param name="AInitiallyFocusLocationKey">True to set the focus on the location key</param>
         /// <param name="APassedLocationKey">location key</param>
-        public void SetParameters(String ARestrictToPartnerClasses, Boolean AInitiallyFocusLocationKey, Int32 APassedLocationKey)
+        public void SetParameters(String ARestrictToPartnerClasses,
+            bool ABankDetailsTabOnly,
+            Boolean AInitiallyFocusLocationKey,
+            Int32 APassedLocationKey)
         {
             FInitiallyFocusLocationKey = AInitiallyFocusLocationKey;
 
             if ((ARestrictToPartnerClasses == null) || (ARestrictToPartnerClasses.Length == 0))
             {
-                ucoFindByPartnerDetails.Init(FInitiallyFocusLocationKey,
-                    FRestrictToPartnerClasses,
-                    APassedLocationKey);
+                ucoFindByBankDetails.InitBankDetailsTab(FRestrictToPartnerClasses);
+
+                if (!ABankDetailsTabOnly)
+                {
+                    ucoFindByPartnerDetails.Init(FInitiallyFocusLocationKey,
+                        FRestrictToPartnerClasses,
+                        APassedLocationKey);
+                }
+                else
+                {
+                    tabPartnerFindMethods.Controls.Remove(this.tpgFindPartner);
+                    tbbPartnerInfo.Visible = false;
+                    FCurrentlySelectedTab = ucoFindByBankDetails;
+                }
+
                 return;
             }
 
@@ -1128,9 +1182,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             btnAccept.Enabled = false;
-            ucoFindByPartnerDetails.Init(FInitiallyFocusLocationKey,
-                FRestrictToPartnerClasses,
-                APassedLocationKey);
+
+            ucoFindByBankDetails.InitBankDetailsTab(FRestrictToPartnerClasses);
+
+            if (!ABankDetailsTabOnly)
+            {
+                ucoFindByPartnerDetails.Init(FInitiallyFocusLocationKey,
+                    FRestrictToPartnerClasses,
+                    APassedLocationKey);
+            }
+            else
+            {
+                tabPartnerFindMethods.Controls.Remove(this.tpgFindPartner);
+                tbbPartnerInfo.Visible = false;
+            }
         }
 
         /// <summary>
@@ -1141,6 +1206,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void SetParameters(Boolean AInitiallyFocusLocationKey, Int32 APassedLocationKey)
         {
             FInitiallyFocusLocationKey = AInitiallyFocusLocationKey;
+            ucoFindByBankDetails.InitBankDetailsTab(FRestrictToPartnerClasses);
             ucoFindByPartnerDetails.Init(FInitiallyFocusLocationKey,
                 FRestrictToPartnerClasses,
                 APassedLocationKey);
@@ -1166,7 +1232,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 #endif
 
             FRunAsModalForm = this.Modal;
-            ucoFindByPartnerDetails.RunnningInsideModalForm = FRunAsModalForm;
+            FCurrentlySelectedTab.RunnningInsideModalForm = FRunAsModalForm;
 
             SetupGridContextMenu();
             SetupFileMenu();
@@ -1213,6 +1279,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FPartnerFindObject = TRemote.MPartner.Partner.UIConnectors.PartnerFind();
             ucoFindByPartnerDetails.PartnerFindObject = FPartnerFindObject;
+            ucoFindByBankDetails.PartnerFindObject = FPartnerFindObject;
 
             // Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd
             TEnsureKeepAlive.Register(FPartnerFindObject);
@@ -1229,7 +1296,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TPartnerFindScreen_Closed(System.Object sender, System.EventArgs e)
         {
-            ucoFindByPartnerDetails.StoreUserDefaults();
+            FCurrentlySelectedTab.StoreUserDefaults();
 
             // Save Window Position and Size
             // TODO? TUserDefaults.NamedDefaults.SetWindowPositionAndSize(this, WINDOWSETTINGSDEFAULT_NAME);
@@ -1237,7 +1304,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ReleaseServerObject();
 
             // Stop the Timer for the fetching of data for the Partner Info Panel (necessary for a Garbage Collection of this Form!)
-            ucoFindByPartnerDetails.StopTimer();
+            FCurrentlySelectedTab.StopTimer();
         }
 
         #endregion
@@ -1292,14 +1359,104 @@ namespace Ict.Petra.Client.MPartner.Gui
             AShortName = "";
             APartnerClass = null;
             ALocationPK = null;
+            int ABankingDetailsKey = -1;
 
             if (FFormSetupFinished)
             {
-                return ucoFindByPartnerDetails.GetReturnedParameters(out APartnerKey, out AShortName,
-                    out APartnerClass, out ALocationPK);
+                return FCurrentlySelectedTab.GetReturnedParameters(out APartnerKey, out AShortName,
+                    out APartnerClass, out ALocationPK, out ABankingDetailsKey);
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Returns the values of the found partner.
+        /// </summary>
+        /// <param name="APartnerKey">Partner key.</param>
+        /// <param name="AShortName">Partner short name.</param>
+        /// <param name="APartnerClass">Partner Class.</param>
+        /// <param name="ABankingDetailsKey">Banking Details key.</param>
+        /// <returns></returns>
+        public Boolean GetReturnedParameters(out Int64 APartnerKey, out String AShortName, out TPartnerClass? APartnerClass,
+            out int ABankingDetailsKey)
+        {
+            APartnerKey = -1;
+            AShortName = "";
+            APartnerClass = null;
+            TLocationPK ALocationPK = null;
+            ABankingDetailsKey = -1;
+
+            if (FFormSetupFinished)
+            {
+                return FCurrentlySelectedTab.GetReturnedParameters(out APartnerKey, out AShortName,
+                    out APartnerClass, out ALocationPK, out ABankingDetailsKey);
+            }
+
+            return false;
+        }
+
+        #endregion
+
+
+        #region Forms Messaging Interface Implementation
+
+        /// <summary>
+        /// Will be called by TFormsList to inform any Form that is registered in TFormsList
+        /// about any 'Forms Messages' that are broadcasted.
+        /// </summary>
+        /// <remarks>The Partner Find 'listens' to such 'Forms Message' broadcasts by
+        /// implementing this virtual Method. This Method will be called each time a
+        /// 'Forms Message' broadcast occurs.
+        /// </remarks>
+        /// <param name="AFormsMessage">An instance of a 'Forms Message'. This can be
+        /// inspected for parameters in the Method Body and the Form can use those to choose
+        /// to react on the Message, or not.</param>
+        /// <returns>Returns True if the Form reacted on the specific Forms Message,
+        /// otherwise false.</returns>
+        public bool ProcessFormsMessage(TFormsMessage AFormsMessage)
+        {
+            IFormsMessagePartnerInterface FormsMessagePartner;
+            bool MessageProcessed = false;
+            Thread FinishedCheckThread;
+
+            if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcNewPartnerSaved)
+            {
+                if ((FRunAsModalForm)
+                    && (AFormsMessage.MessageContext == FCurrentlySelectedTab.NewPartnerContext))
+                {
+                    FormsMessagePartner = (IFormsMessagePartnerInterface)AFormsMessage.MessageObject;
+
+                    // Start a Thread that searches for the newly created Partner.
+                    FinishedCheckThread = new Thread(FCurrentlySelectedTab.SearchForNewlyCreatedPartnerThread);
+                    FinishedCheckThread.SetApartmentState(ApartmentState.STA);
+                    FinishedCheckThread.Start(FormsMessagePartner);
+                }
+
+                MessageProcessed = true;
+            }
+            else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved)
+            {
+                bool FoundRow = false;
+
+                FormsMessagePartner = (IFormsMessagePartnerInterface)AFormsMessage.MessageObject;
+                FoundRow = FPartnerFindObject.CheckIfResultsContainPartnerKey(FormsMessagePartner.PartnerKey);
+
+                // if the results grid contains the partner that has just been edited and saved...
+                if (FoundRow)
+                {
+                    // Start a Thread that runs the search again with updated partner
+                    FinishedCheckThread = new Thread(FCurrentlySelectedTab.SearchForExistingPartnerSavedThread);
+                    FinishedCheckThread.SetApartmentState(ApartmentState.STA);
+                    FinishedCheckThread.Start(FormsMessagePartner);
+
+                    //MessageBox.Show(Catalog.GetString("TPartnerFindScreen.ProcessFormsMessage: Updated Partner was in Find Result!"));
+                }
+
+                MessageProcessed = true;
+            }
+
+            return MessageProcessed;
         }
 
         #endregion
@@ -1398,7 +1555,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ALocationPK = new TLocationPK(-1, -1);
 
             PartnerFindForm = new TPartnerFindScreen(AParentForm);
-            PartnerFindForm.SetParameters(ARestrictToPartnerClasses);
+            PartnerFindForm.SetParameters(ARestrictToPartnerClasses, false);
 
             dlgResult = PartnerFindForm.ShowDialog();
 
@@ -1406,6 +1563,53 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 PartnerFindForm.GetReturnedParameters(out APartnerKey, out AShortName, out APartnerClass,
                     out ALocationPK);
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Opens a Modal instance of the Partner Find screen with only the Find By Bank Details tab enabled
+        /// </summary>
+        /// <param name="ARestrictToPartnerClasses">Pass in one or several PartnerClasses
+        /// (separated by comma) to restrict the choice in the 'Partner Class' criteria
+        /// ComboBox, or empty String '' to not restrict to any Partner Class.
+        /// </param>
+        /// <param name="APartnerKey">PartnerKey of the found Partner.</param>
+        /// <param name="AShortName">Partner ShortName of the found Partner.</param>
+        /// <param name="APartnerClass">Partner Class of the found Partner.</param>
+        /// <param name="ABankingDetailsKey">BankingDetailsKey of the found Partner.</param>
+        /// <param name="AParentForm"></param>
+        /// <returns>True if a Partner was found and accepted by the user,
+        /// otherwise false.</returns>
+        public static bool OpenModalForm(String ARestrictToPartnerClasses,
+            out Int64 APartnerKey,
+            out String AShortName,
+            out TPartnerClass? APartnerClass,
+            out int ABankingDetailsKey,
+            Form AParentForm)
+        {
+            TPartnerFindScreen PartnerFindForm;
+            DialogResult dlgResult;
+
+            APartnerKey = -1;
+            AShortName = String.Empty;
+            APartnerClass = null;
+            ABankingDetailsKey = -1;
+
+            PartnerFindForm = new TPartnerFindScreen(AParentForm);
+            PartnerFindForm.SetParameters(ARestrictToPartnerClasses, true);
+
+            dlgResult = PartnerFindForm.ShowDialog();
+
+            if (dlgResult == System.Windows.Forms.DialogResult.OK)
+            {
+                PartnerFindForm.GetReturnedParameters(out APartnerKey, out AShortName, out APartnerClass,
+                    out ABankingDetailsKey);
 
                 return true;
             }
