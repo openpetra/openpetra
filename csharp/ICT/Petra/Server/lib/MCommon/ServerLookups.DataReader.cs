@@ -378,9 +378,9 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
 
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
-                catch (Exception e)
+                catch (Exception Exc)
                 {
-                    TLogging.Log("after submitchanges: exception " + e.Message);
+                    TLogging.Log("after submitchanges: exception " + Exc.ToString());
 
                     DBAccess.GDBAccessObj.RollbackTransaction();
 

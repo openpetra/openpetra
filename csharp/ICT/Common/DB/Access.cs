@@ -2574,7 +2574,7 @@ namespace Ict.Common.DB
             {
                 if (!String.IsNullOrEmpty(AContext)) 
                 {
-                    throw new EOPDBException(" - Context: " + AContext, AException);
+                    throw new EOPDBException("[Context: " + AContext + "]", AException);
                 }
                 else
                 {
