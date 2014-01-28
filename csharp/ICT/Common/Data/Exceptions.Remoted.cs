@@ -316,7 +316,6 @@ namespace Ict.Common.Data.Exceptions
         /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
         /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
-        /// <param name="ADBOperation">Database Operation: either 'write', 'update' or 'delete'.</param>
         /// <param name="ADBTable">Database Table where the problem was encountered.</param>
         /// <param name="ALastModificationUser">The user which has changed the record in question last.</param>
         /// <param name="ALastModification">DateTime when the record in question was changed last.</param>
