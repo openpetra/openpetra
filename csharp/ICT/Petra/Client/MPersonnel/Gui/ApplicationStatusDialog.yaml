@@ -1,0 +1,46 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraForm.yaml
+    FormTitle: Select the Application Status(es)
+    Namespace: Ict.Petra.Client.MPersonnel.Gui
+    FormType: browse
+    Template: window
+    WindowWidth: 500
+    WindowHeight: 600
+    TemplateParameters:
+        INITUSERCONTROLS: InitUserControlsManually();
+    Actions:
+        actAccept:
+            ActionClick: AcceptSelection
+        actCancel:
+            ActionClick: CancelClick
+        actDeselectAll:
+            ActionClick: DeselectAll
+    Controls:
+        pnlContent:
+            Dock: Fill
+            Controls: [pnlApplicationStatuses, pnlBottom]
+        pnlApplicationStatuses:
+            Label: Events
+            Dock: Fill
+            Controls: [pnlButtonSelection, grdApplicationStatuses]
+        pnlButtonSelection:
+            Dock: Top
+            Controls:
+                Row1: [btnDeselectAll]
+        pnlBottom:
+            Dock: Bottom
+            Controls:
+                Row1: [btnAccept, btnCancel]
+
+        grdApplicationStatuses:
+            Dock: Fill
+
+        btnDeselectAll:
+            Label: Deselect All
+            Action: actDeselectAll
+        btnAccept:
+            Label: Accept
+            Action: actAccept
+        btnCancel:
+            Label: Cancel
+            Action: actCancel

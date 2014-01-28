@@ -41,23 +41,19 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Client.MPersonnel.Gui
 {
-    public partial class TFrmShortTermApplications
+    public partial class TFrmLongTermApplications
     {
-        private long FEventPartnerKey = 0;
-        private string FEventPartnerShortName;
-        private String FOutreachCode;
-
-        // option to show applicants for all outreaches of a conference
-        private bool FShowAllOutreaches = false;
+        private long FTargetFieldKey;
+        private long FPlacementPersonKey;
 
         // The user's default filter from SUserDefaults (if it exists)
         private string FUserDefaultFilter;
 
         private void InitializeManualCode()
         {
-            // initially load all applicants that have no event
-            FOutreachCode = "";
-            txtEventName.Text = Catalog.GetString("Applications with no event filled in");
+            // initially load all applicants
+            FTargetFieldKey = 0;
+            FPlacementPersonKey = 0;
 
             // open partner edit screen when user double clicks on a row
             this.grdApplications.DoubleClick += new System.EventHandler(this.EditApplication);
@@ -135,19 +131,13 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             FMainDS = new ApplicationTDS();
 
             // populate dataset
-            TRemote.MPersonnel.WebConnectors.LoadShortTermApplications(ref FMainDS, FOutreachCode);
+            TRemote.MPersonnel.WebConnectors.LoadLongTermApplications(ref FMainDS, FTargetFieldKey, FPlacementPersonKey);
 
-            FMainDS.PmShortTermApplication.DefaultView.AllowNew = false;
+            FMainDS.PmGeneralApplication.DefaultView.AllowNew = false;
 
             // sort order for grid
-            DataView MyDataView = FMainDS.PmShortTermApplication.DefaultView;
+            DataView MyDataView = FMainDS.PmGeneralApplication.DefaultView;
             MyDataView.Sort = "p_partner_short_name_c ASC";
-
-            if (!chkShowAllOutreaches.Checked && chkShowAllOutreaches.Enabled)
-            {
-                // filter rows so only showing applicants for selected outreach rather than the entire conference
-                MyDataView.RowFilter = PmShortTermApplicationTable.GetConfirmedOptionCodeDBName() + " = " + "'" + FOutreachCode + "'";
-            }
 
             grdApplications.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
         }
@@ -194,35 +184,21 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             TUserDefaults.SetDefault(TUserDefaults.PERSONNEL_APPLICATION_STATUS, DefaultFilter);
         }
 
-        private void SelectEvent_Click(System.Object sender, EventArgs e)
+        private void UpdateApplicationsByField(long APartnerKey, string APartnerShortName, bool AValidSelection)
         {
-            Form MainWindow = FPetraUtilsObject.GetCallerForm();
-
-            // If the delegate is defined, the host form will launch a Modal Partner Find screen for us
-            if (TCommonScreensForwarding.OpenEventFindScreen != null)
+            if (AValidSelection || (APartnerKey == 0))
             {
-                // delegate IS defined
-                try
-                {
-                    TCommonScreensForwarding.OpenEventFindScreen.Invoke
-                        ("",
-                        out FEventPartnerKey,
-                        out FEventPartnerShortName,
-                        out FOutreachCode,
-                        MainWindow);
+                FTargetFieldKey = APartnerKey;
+                InitGridManually();
+            }
+        }
 
-                    if (FEventPartnerKey != -1)
-                    {
-                        txtEventName.Text = FEventPartnerShortName;
-                        chkShowAllOutreaches.Enabled = true;
-
-                        InitGridManually();
-                    }
-                }
-                catch (Exception exp)
-                {
-                    throw new ApplicationException("Exception occured while calling OpenEventFindScreen Delegate!", exp);
-                }
+        private void UpdateApplicationsByPlacementPerson(long APartnerKey, string APartnerShortName, bool AValidSelection)
+        {
+            if (AValidSelection || (APartnerKey == 0))
+            {
+                FPlacementPersonKey = APartnerKey;
+                InitGridManually();
             }
         }
 
@@ -242,27 +218,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             FilterChange(sender, e);
         }
 
-        private void ShowAllOutreaches_CheckBox(System.Object sender, EventArgs e)
-        {
-            FShowAllOutreaches = !FShowAllOutreaches;
-
-            DataView MyDataView = FMainDS.PmShortTermApplication.DefaultView;
-
-            if (!chkShowAllOutreaches.Checked)
-            {
-                // filter rows so only showing applicants for selected outreach rather than the entire conference
-                MyDataView.RowFilter = PmShortTermApplicationTable.GetConfirmedOptionCodeDBName() + " = " + "'" + FOutreachCode + "'";
-            }
-            else
-            {
-                MyDataView.RowFilter = null;
-            }
-
-            grdApplications.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
-
-            UpdateRecordNumberDisplay();
-        }
-
         private void EditApplication(System.Object sender, EventArgs e)
         {
             // Open the selected partner's Partner Edit screen at Personnel Applications
@@ -278,14 +233,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             List <string>Filters = new List <string>();
             string FiltersString = "";
 
-            DataView MyDataView = FMainDS.PmShortTermApplication.DefaultView;
+            DataView MyDataView = FMainDS.PmGeneralApplication.DefaultView;
             MyDataView.RowFilter = null;
-
-            if (chkShowAllOutreaches.Enabled && !chkShowAllOutreaches.Checked)
-            {
-                // filter rows so only showing applicants for selected outreach rather than the entire conference
-                FiltersString = PmShortTermApplicationTable.GetConfirmedOptionCodeDBName() + " = '" + FOutreachCode + "'";
-            }
 
             if (rbtGeneral.Checked)
             {
