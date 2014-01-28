@@ -57,13 +57,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                           "\r\n\r\n" + msg + "\r\n";
                 }
 
-                if (!FverificationResult.HasCriticalErrors)
+                if (TVerificationHelper.IsNullOrOnlyNonCritical(FverificationResult))
                 {
                     msg += Catalog.GetString("Press the button below to close the current period.");
                 }
 
                 tbxMessage.Text = msg;
-                btnPeriodEnd.Enabled = (!FverificationResult.HasCriticalErrors);
+                btnPeriodEnd.Enabled = TVerificationHelper.IsNullOrOnlyNonCritical(FverificationResult);
                 this.OnResizeEnd(new EventArgs());
             }
         }

@@ -220,7 +220,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     MFinanceConstants.IS_CREDIT, 100, 333.33m);
                 Assert.Fail("Exception does not appear!");
             }
-            catch (TVerificationException)
+            catch (EVerificationException)
             {
                 // Exception was thrown, which is expected
                 // Assert.Pass will throw an exception NUnit.Framework.SuccessException and fail the test???

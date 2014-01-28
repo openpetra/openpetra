@@ -430,23 +430,21 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
             ArrayList UnitNodes = new ArrayList();
             GetAllChildren(trvUnits.Nodes[0], ref UnitNodes);
-            Boolean SavedOk = TRemote.MPersonnel.WebConnectors.SaveUnitHierarchy(UnitNodes);
+            
+            TRemote.MPersonnel.WebConnectors.SaveUnitHierarchy(UnitNodes);
 
-            if (SavedOk)
+            if (ReassignEvent != null)
             {
-                if (ReassignEvent != null)
+                foreach (Int64 Child in ChangedParents.Keys)
                 {
-                    foreach (Int64 Child in ChangedParents.Keys)
-                    {
-                        ReassignEvent(Child, ChangedParents[Child]);
-                    }
+                    ReassignEvent(Child, ChangedParents[Child]);
                 }
-
-                FStatus = "";
-                FPetraUtilsObject.HasChanges = false;
             }
 
-            return SavedOk;
+            FStatus = "";
+            FPetraUtilsObject.HasChanges = false;
+
+            return true;
         }
 
         /// <summary>

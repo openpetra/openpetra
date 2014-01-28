@@ -1519,12 +1519,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             DBAccess.GDBAccessObj.CommitTransaction();
 
-            TVerificationResultCollection SubmitResults = new TVerificationResultCollection();
             TSubmitChangesResult Res = TSubmitChangesResult.scrError;
 
             if (CanImport)
             {
-                Res = PartnerImportExportTDSAccess.SubmitChanges(MainDS, out SubmitResults);
+                PartnerImportExportTDSAccess.SubmitChanges(MainDS);
+                
+                Res = TSubmitChangesResult.scrOK;
             }
 
             if (((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerClass == "")
@@ -1537,13 +1538,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 AddVerificationResult(ref ReferenceResults, String.Format("Import of {0} {1}\r\n {2}",
                         ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerClass,
                         ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerShortName,
-                        Res == 0 ? "Successful" : "Error"
-                        ),
+                        Res == TSubmitChangesResult.scrOK ? "Successful" : "Error"
+                       ),
                     TResultSeverity.Resv_Status);
             }
 
             AVerificationResult = ReferenceResults;
-            AVerificationResult.AddCollection(SubmitResults);
 
             return TSubmitChangesResult.scrOK == Res;
         }

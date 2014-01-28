@@ -145,12 +145,9 @@ namespace Ict.Petra.ClientPlugins.BankStatementImport.BankImportFromMT940
 
         private void ProcessStatementsOnServer(BankImportTDS AMainDS)
         {
-            TVerificationResultCollection VerificationResult;
-
             if (TRemote.MFinance.ImportExport.WebConnectors.StoreNewBankStatement(
                     AMainDS,
-                    out FStatementKey,
-                    out VerificationResult) == TSubmitChangesResult.scrOK)
+                    out FStatementKey) == TSubmitChangesResult.scrOK)
             {
             }
         }

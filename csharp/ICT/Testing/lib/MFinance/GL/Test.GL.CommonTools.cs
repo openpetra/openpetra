@@ -105,7 +105,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 new FormatConverter("nonsens");
                 Assert.Fail("No InternalException thrown");
             }
-            catch (TVerificationException internalException)
+            catch (EVerificationException internalException)
             {
                 Assert.AreEqual("TCurrencyInfo03", internalException.ErrorCode, "Wrong Error Code");
             }
@@ -128,12 +128,12 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             Assert.AreEqual(2, new TCurrencyInfo("EUR").digits, "Number of digits: 2");
 
-            Assert.Throws <TVerificationException>(CreateInvalidCurrency, "No InternalException thrown");
+            Assert.Throws <EVerificationException>(CreateInvalidCurrency, "No InternalException thrown");
             try
             {
                 CreateInvalidCurrency();
             }
-            catch (TVerificationException internalException)
+            catch (EVerificationException internalException)
             {
                 Assert.AreEqual("TCurrencyInfo02", internalException.ErrorCode, "Wrong Error Code");
             }

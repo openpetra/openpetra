@@ -277,6 +277,59 @@ namespace Ict.Testing.NUnitTools
                 throw new Exception("Nant did not succeed");
             }
         }
+        
+        /// <summary>
+        /// Checks that a <see cref="TVerificationResultCollection" /> is either null or that it doesn't contain
+        /// any <see cref="TVerificationResult" /> items . If it isn't null and it contains items an Assert.Fail call 
+        /// is issued by this Method!
+        /// </summary>
+        /// <remarks>
+        /// Can be used for 'Guard Asserts' to check that the <see cref="TVerificationResultCollection" />
+        /// that is returned from server calls is null or empty.         
+        /// </remarks>
+        /// <param name="AVerificationResult"><see cref="TVerificationResultCollection" /> reference (can be null!).</param>
+        /// <param name="AMessage">String to append before the Assert message that this Method produces (optional).</param>
+        public static void EnsureNullOrEmptyVerificationResult(TVerificationResultCollection AVerificationResult, string AMessage = "")
+        {
+            if ((AVerificationResult != null) 
+                && (AVerificationResult.Count > 0))
+            {
+                Assert.Fail(AMessage + "*** VerificationResult is NOT EMPTY *** : " +
+                    AVerificationResult.BuildVerificationResultString());
+            }            
+        }
+
+        /// <summary>
+        /// Checks that a <see cref="TVerificationResultCollection" /> is either null or that it doesn't contain
+        /// any <see cref="TVerificationResult" /> items that are CriticalErrors. If it isn't null and it contains such items, an Assert.Fail 
+        /// call is issued by this Method!
+        /// </summary>
+        /// <remarks>
+        /// Can be used for 'Guard Asserts' to check that the <see cref="TVerificationResultCollection" />
+        /// that is returned from server calls is null or holds only non-critical <see cref="TVerificationResult" /> items.         
+        /// </remarks>
+        /// <param name="AVerificationResult"><see cref="TVerificationResultCollection" /> reference (can be null!).</param>
+        /// <param name="AMessage">String to append before the Assert message that this Method produces (optional).</param>
+        public static void EnsureNullOrOnlyNonCriticalVerificationResults(TVerificationResultCollection AVerificationResult, string AMessage = "")
+        {
+            string VerificationResultStr;
+
+            if ((AMessage != String.Empty)
+                && (!AMessage.EndsWith(" ")))
+            {
+                AMessage = AMessage + " ";
+            }
+            
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
+            {
+                VerificationResultStr = AVerificationResult.BuildVerificationResultString();
+                
+                TLogging.Log(VerificationResultStr);
+                
+                Assert.Fail(AMessage + "*** TVerificationResult HAS CRITICAL ERRORS *** : " +
+                    VerificationResultStr);            
+            }
+        }
     }
 
     /// <summary>

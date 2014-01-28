@@ -28,9 +28,9 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Text;
-
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -103,7 +103,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             Int32 RowNumber = 0;
             bool ok = false;
-
+            
             try
             {
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(LedgerNumber, Transaction);
@@ -152,7 +152,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             {
                                 // raise error if empty batch description is imported
                                 FImportMessage = Catalog.GetString("The batch description must not be empty");
-                                throw new Exception();
+                                
+                                throw new EOPAppException();
                             }
 
                             NewBatch.BatchControlTotal = ImportDecimal(Catalog.GetString("batch hash value"));
@@ -175,22 +176,14 @@ namespace Ict.Petra.Server.MFinance.GL
                             {
                                 FImportMessage = Catalog.GetString("The effective date of the imported batch is not in an open period:") + " " +
                                                  StringHelper.DateToLocalizedString(NewBatch.DateEffective);
-                                throw new Exception();
+                                
+                                throw new EOPAppException();
                             }
 
                             FImportMessage = Catalog.GetString("Saving GL batch:");
 
-                            if (!ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction, out AMessages))
-                            {
-                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    Catalog.GetString("Database I/O failure"),
-                                    0);
-
-                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-
-                                return false;
-                            }
-
+                            ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction);
+                                                                        
                             MainDS.ABatch.AcceptChanges();
                         }
                         else if (RowType == "J")
@@ -198,7 +191,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             if (NewBatch == null)
                             {
                                 FImportMessage = Catalog.GetString("Expected a Batch line, but found a Journal");
-                                throw new Exception();
+                                
+                                throw new EOPAppException();
                             }
 
                             NewJournal = MainDS.AJournal.NewRowTyped(true);
@@ -230,7 +224,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             {
                                 // raise error if empty journal description is imported
                                 FImportMessage = Catalog.GetString("The journal description must not be empty");
-                                throw new Exception();
+                                
+                                throw new EOPAppException();
                             }
 
                             NewJournal.SubSystemCode = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString(
@@ -250,7 +245,8 @@ namespace Ict.Petra.Server.MFinance.GL
                                 && (NewJournal.ExchangeRateToBase != 1.0m))
                             {
                                 FImportMessage = Catalog.GetString("Journal in base currency must have exchange rate 1.0");
-                                throw new Exception();
+                                
+                                throw new EOPAppException();
                             }
 
                             //
@@ -268,22 +264,14 @@ namespace Ict.Petra.Server.MFinance.GL
                                 FImportMessage = String.Format(
                                     Catalog.GetString("The journal effective date {0} is not in the same period as the batch date {1}."),
                                     journalDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString());
-                                throw new Exception();
+                                
+                                throw new EOPAppException();
                             }
 
                             FImportMessage = Catalog.GetString("Saving the journal:");
 
-                            if (!AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction, out AMessages))
-                            {
-                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    Catalog.GetString("Database I/O failure"),
-                                    0);
-
-                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-
-                                return false;
-                            }
-
+                            AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction);
+                            
                             MainDS.AJournal.AcceptChanges();
                         }
                         else if (RowType == "T")
@@ -374,7 +362,8 @@ namespace Ict.Petra.Server.MFinance.GL
                                 FImportMessage = String.Format(
                                     Catalog.GetString("The Transaction date {0} is not in the same period as the batch date {1}."),
                                     TransactionDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString());
-                                throw new Exception();
+                                
+                                throw new EOPAppException();
                             }
 
                             NewTransaction.TransactionDate = TransactionDate;
@@ -447,7 +436,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 }
                             }
 
-                            if (AMessages.HasCriticalErrors)
+                            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
                             {
                                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                     Catalog.GetString("Batch has critical errors"),
@@ -464,31 +453,13 @@ namespace Ict.Petra.Server.MFinance.GL
                             FImportMessage = Catalog.GetString("Saving the transaction:");
 
                             // TODO If this is a fund transfer to a foreign cost centre, check whether there are Key Ministries available for it.
-                            if (!ATransactionAccess.SubmitChanges(MainDS.ATransaction, Transaction, out AMessages))
-                            {
-                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    Catalog.GetString("Database I/O failure"),
-                                    0);
-
-                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-
-                                return false;
-                            }
+                            ATransactionAccess.SubmitChanges(MainDS.ATransaction, Transaction);
 
                             MainDS.ATransaction.AcceptChanges();
                             FImportMessage = Catalog.GetString("Saving the attributes:");
 
-                            if (!ATransAnalAttribAccess.SubmitChanges(MainDS.ATransAnalAttrib, Transaction, out AMessages))
-                            {
-                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    Catalog.GetString("Database I/O failure"),
-                                    0);
-
-                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-
-                                return false;
-                            }
-
+                            ATransAnalAttribAccess.SubmitChanges(MainDS.ATransAnalAttrib, Transaction);
+                            
                             MainDS.ATransAnalAttrib.AcceptChanges();
 
                             // Update progress tracker every 40 records
@@ -504,7 +475,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         }
                         else
                         {
-                            throw new Exception();
+                            throw new EOPAppException("Unsuported row type '" + RowType + "'!");
                         }
                     }
                 }
@@ -512,34 +483,36 @@ namespace Ict.Petra.Server.MFinance.GL
                 FImportMessage = Catalog.GetString("Saving counter fields:");
 
                 //Finally save all pending changes (last xxx number is updated)
-                if (ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction, out AMessages))
-                {
-                    if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out AMessages))
-                    {
-                        if (AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction, out AMessages))
-                        {
-                            ok = true;
-                        }
-                    }
-                }
+                ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction);
+                ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
+                AJournalAccess.SubmitChanges(MainDS.AJournal, Transaction);
 
                 MainDS.AcceptChanges();
+                
+                DBAccess.GDBAccessObj.CommitTransaction();
+                
+                ok = true;
             }
             catch (Exception ex)
             {
                 String speakingExceptionText = SpeakingExceptionMessage(ex);
+
+                if (AMessages == null)
+                {
+                    AMessages = new TVerificationResultCollection();
+                }
+                                
                 AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
                         String.Format(Catalog.GetString("There is a problem parsing the file in row {0}:"), RowNumber) +
                         FNewLine +
                         Catalog.GetString(FImportMessage) + FNewLine + speakingExceptionText,
                         TResultSeverity.Resv_Critical));
+                
                 DBAccess.GDBAccessObj.RollbackTransaction();
 
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                     String.Format(Catalog.GetString("Problem parsing the file in row {0}"), RowNumber),
                     0);
-
-                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
                 return false;
             }
@@ -549,24 +522,52 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     sr.Close();
                 }
-                catch
+                catch (Exception Exc)
                 {
-                };
+                    TLogging.Log("An Exception occured while closing the Import File:" + Environment.NewLine + Exc.ToString());
+                                        
+                    if (AMessages == null)
+                    {
+                        AMessages = new TVerificationResultCollection();
+                    }
+                                            
+                    AMessages.Add(new TVerificationResult(Catalog.GetString("Import"),
+                            Catalog.GetString("A problem was encountered while closing the Import File:"),
+                            TResultSeverity.Resv_Critical));
+                    
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Exception Occurred"),
+                        0);
+
+                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                    
+                    throw;                    
+                }
 
                 if (ok)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Gift batch import successful"),
+                        100);
                 }
                 else
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    if (AMessages == null)
+                    {
+                        AMessages = new TVerificationResultCollection();
+                    }
+                                
                     AMessages.Add(new TVerificationResult("Import",
                             Catalog.GetString("Data could not be saved."),
                             TResultSeverity.Resv_Critical));
+                    
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Data could not be saved."),
+                        0);                    
                 }
+                
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
             }
-
-            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             return true;
         }

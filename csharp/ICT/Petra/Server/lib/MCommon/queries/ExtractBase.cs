@@ -69,16 +69,19 @@ namespace Ict.Petra.Server.MCommon.queries
         /// <returns></returns>
         protected bool CalculateExtractInternal(TParameterList AParameters, string ASqlStmt, TResultList AResults, out int AExtractId)
         {
+            Boolean ReturnValue = false;
+            Boolean NewTransaction;
+            TDBTransaction Transaction;
+            List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
+            bool AddressFilterAdded;
+
             AExtractId = -1;
 
+            Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            
             // get the partner keys from the database
             try
             {
-                Boolean ReturnValue = false;
-                Boolean NewTransaction;
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-                List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
-                bool AddressFilterAdded;
 
                 if (FSpecialTreatment)
                 {
@@ -111,14 +114,11 @@ namespace Ict.Petra.Server.MCommon.queries
 
                     TLogging.Log("preparing the extract", TLoggingType.ToStatusBar);
 
-                    TVerificationResultCollection VerificationResult;
-
                     // create an extract with the given name in the parameters
                     ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
                         AParameters.Get("param_extract_name").ToString(),
                         AParameters.Get("param_extract_description").ToString(),
                         out AExtractId,
-                        out VerificationResult,
                         partnerkeys,
                         0,
                         AddressFilterAdded,
@@ -136,12 +136,17 @@ namespace Ict.Petra.Server.MCommon.queries
 
                 return ReturnValue;
             }
-            catch (Exception e)
+            catch (Exception Exc) 
             {
-                TLogging.Log(e.ToString());
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                return false;
-            }
+                TLogging.Log("An Exception occured in CalculateExtractInternal:" + Environment.NewLine + Exc.ToString());
+                
+                if (NewTransaction)
+                {                
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+                
+                throw;
+            }                        
         }
 
         /// <summary>

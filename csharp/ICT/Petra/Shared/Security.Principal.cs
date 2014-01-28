@@ -26,6 +26,7 @@ using System.Data;
 using System.Security.Principal;
 using System.Runtime.Serialization;
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
@@ -355,93 +356,144 @@ namespace Ict.Petra.Shared.Security
         }
 
         #endregion
-    }
 
+    }
+    
+    #region ELoginMessageAlreadySetException
+        
     /// <summary>
     /// Thrown by TPetraPrincipal class if the LoginMessage property is written to althought it has already got a value
     /// </summary>
-    public class ELoginMessageAlreadySetException : ApplicationException
+    public class ELoginMessageAlreadySetException : EOPAppException
     {
-        #region ELoginMessageAlreadySetException
-
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public ELoginMessageAlreadySetException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public ELoginMessageAlreadySetException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public ELoginMessageAlreadySetException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public ELoginMessageAlreadySetException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ELoginMessageAlreadySetException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+        
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public ELoginMessageAlreadySetException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 
         /// <summary>
-        /// needed for remoting, serialization
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
         {
-            base.GetObjectData(info, context);
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
         }
-
+        
         #endregion
     }
+    
+    #endregion
 
+    #region EProcessIDAlreadySetException
+    
     /// <summary>
     /// Thrown by TPetraPrincipal class if the ProcessID property is written to althought it has already got a value
     /// </summary>
-    public class EProcessIDAlreadySetException : ApplicationException
+    public class EProcessIDAlreadySetException : EOPAppException
     {
-        #region EProcessIDAlreadySetException
-
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public EProcessIDAlreadySetException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public EProcessIDAlreadySetException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
+        public EProcessIDAlreadySetException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public EProcessIDAlreadySetException(SerializationInfo info, StreamingContext context) : base(info, context)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EProcessIDAlreadySetException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+        
+        #region Remoting and serialization
+        
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EProcessIDAlreadySetException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 
         /// <summary>
-        /// needed for remoting, serialization
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
         /// </summary>
-        /// <param name="info"></param>
-        /// <param name="context"></param>
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks> 
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
         {
-            base.GetObjectData(info, context);
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }            
+                        
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
         }
-
+        
         #endregion
     }
+    
+    #endregion    
 }

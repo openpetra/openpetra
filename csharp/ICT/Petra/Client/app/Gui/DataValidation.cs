@@ -60,7 +60,7 @@ namespace Ict.Petra.Client.App.Gui
 
             // In case there were only warnings, we return true and record change/saving of data can go ahead,
             // otherwise false is returned to prevent record change/saving of data.
-            if (!AVerificationResultCollection.HasCriticalErrors)
+            if (TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResultCollection))
             {
                 ReturnValue = true;
             }

@@ -27,6 +27,8 @@ using System.Windows.Forms;
 using System.IO;
 using System.Xml;
 
+using Ict.Common.Exceptions;
+
 namespace Ict.Common
 {
     /// <summary>
@@ -163,7 +165,7 @@ namespace Ict.Common
         /// </summary>
         /// <param name="AFailOnMissingConfigFile">if this is true and there is no config file, an exception is raised; otherwise it returns false</param>
         /// <returns>TRUE if reading of the .NET Configuration File succeeded.</returns>
-        /// <exception cref="ApplicationException">Raised when it is not possible to load or
+        /// <exception cref="EOPAppException">Raised when it is not possible to load or
         /// XML-parse the .NET Configuration File.
         /// </exception>
         private bool LoadCustomAppSettingFile(bool AFailOnMissingConfigFile)
@@ -191,12 +193,12 @@ namespace Ict.Common
                 }
                 catch (Exception exp)
                 {
-                    throw new ApplicationException("Could not XML-parse the configuration file '" + FConfigFileName + "'.", exp);
+                    throw new EOPAppException("Could not XML-parse the configuration file '" + FConfigFileName + "'.", exp);
                 }
             }
             else if (AFailOnMissingConfigFile)
             {
-                throw new ApplicationException("Unable to load the configuration file '" + FConfigFileName + "'.");
+                throw new EOPAppException("Unable to load the configuration file '" + FConfigFileName + "'.");
             }
             else
             {
@@ -275,7 +277,7 @@ namespace Ict.Common
                                 "CustomAppSettings: Cannot find " + AKey + " in command line options or in the config file " + FConfigFileName,
                                 TLoggingType.ToConsole | TLoggingType.ToLogfile);
                         }
-                        catch (TNoLoggingToFile_WrongConstructorUsedException)
+                        catch (ENoLoggingToFile_WrongConstructorUsedException)
                         {
                             // ignore this Exception; it is thrown if TLogging was not initialised yet, which means no Log file is specified.
                         }

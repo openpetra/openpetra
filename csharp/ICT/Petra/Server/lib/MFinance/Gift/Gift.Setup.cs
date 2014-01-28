@@ -73,18 +73,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// save modified motivation groups and cost centres
         /// </summary>
         /// <param name="AInspectDS"></param>
-        /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
-        public static TSubmitChangesResult SaveMotivationDetails(ref GiftBatchTDS AInspectDS,
-            out TVerificationResultCollection AVerificationResult)
+        public static TSubmitChangesResult SaveMotivationDetails(ref GiftBatchTDS AInspectDS)
         {
-            AVerificationResult = null;
-
             if (AInspectDS != null)
             {
                 // TODO make sure new motivation groups are created. at the moment only 1 existing motivation group is supported
-                return GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                GiftBatchTDSAccess.SubmitChanges(AInspectDS);
+                
+                return TSubmitChangesResult.scrOK;
             }
 
             return TSubmitChangesResult.scrError;

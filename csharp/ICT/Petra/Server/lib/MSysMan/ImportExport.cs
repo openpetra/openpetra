@@ -587,12 +587,13 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
         /// just in order to add this one line?
         /// </remarks>
         /// <param name="dataTDS"></param>
-        /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("SYSMAN")]
-        public static bool SaveTDS(SampleDataConstructorTDS dataTDS, out TVerificationResultCollection AVerificationResult)
+        public static bool SaveTDS(SampleDataConstructorTDS dataTDS)
         {
-            return SampleDataConstructorTDSAccess.SubmitChanges(dataTDS, out AVerificationResult) == TSubmitChangesResult.scrOK;
+            SampleDataConstructorTDSAccess.SubmitChanges(dataTDS);
+            
+            return true;
         }
     }
 }

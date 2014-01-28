@@ -32,6 +32,7 @@ using System.Data;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.Data.Exceptions;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.IO;
@@ -1458,8 +1459,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // When we return from this method the standard code will do the validation again and might not allow the save to go ahead
             FPetraUtilsObject.VerificationResultCollection.Clear();
             ValidateAllData(false, false);
-
-            if (FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors)
+            
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(FPetraUtilsObject.VerificationResultCollection))
             {
                 return;
             }

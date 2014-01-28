@@ -439,6 +439,9 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         override public void RunEndOfPeriodOperation()
         {
+            bool NewTransaction;
+            TDBTransaction WriteTransaction;
+            
             if (DoExecuteableCode)
             {
                 for (int i = 0; i < FaccountingPeriodTable.Rows.Count; ++i)
@@ -451,22 +454,27 @@ namespace Ict.Petra.Server.MFinance.Common
                         accountingPeriodRow.PeriodEndDate.AddDays(1).AddYears(1).AddDays(-1);
                 }
 
-                bool NewTransaction;
-                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+                
+                WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+                
                 try
                 {
-                    AAccountingPeriodAccess.SubmitChanges(
-                        FaccountingPeriodTable, transaction,
-                        out verificationResults);
+                    AAccountingPeriodAccess.SubmitChanges(FaccountingPeriodTable, WriteTransaction);
 
                     if (NewTransaction)
                     {
                         DBAccess.GDBAccessObj.CommitTransaction();
                     }
                 }
-                catch (Exception)
+                catch (Exception Exc)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    TLogging.Log("An Exception occured during running the End of Period operation:" + Environment.NewLine + Exc.ToString());
+                    
+                    if (NewTransaction)
+                    {                
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+                    
                     throw;
                 }
             }
@@ -630,19 +638,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             if (DoExecuteableCode)
-            {
-                TSubmitChangesResult tSubmitChangesResult =
-                    GLPostingTDSAccess.SubmitChanges(PostingToDS, out verificationResults);
-
-                if (tSubmitChangesResult == TSubmitChangesResult.scrError)
-                {
-                    FHasCriticalErrors = true;
-                }
-
-                if (tSubmitChangesResult == TSubmitChangesResult.scrInfoNeeded)
-                {
-                    FHasCriticalErrors = true;
-                }
+            {                
+                GLPostingTDSAccess.SubmitChanges(PostingToDS);
             }
         }
     }

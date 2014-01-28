@@ -15,6 +15,7 @@ using System.Resources;
 using System.Collections.Specialized;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Data.Exceptions;
 using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;

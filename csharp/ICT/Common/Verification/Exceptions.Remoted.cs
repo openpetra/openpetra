@@ -1,5 +1,5 @@
-// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
 //       christiank
@@ -23,73 +23,51 @@
 //
 using System;
 using System.Runtime.Serialization;
-using Ict.Common.Exceptions;
-using Ict.Petra.Shared.Security;
 
-namespace Ict.Petra.Shared.MPartner
+using Ict.Common.Exceptions;
+
+// This Namespace contains Exceptions that can be passed from the Server to the Client
+// via .NET Remoting.
+//
+// These Exceptions are OpenPetra-specific, but not specific to a certain
+// OpenPetra Module (Partner, Finance, etc).
+//
+// Comment:
+// Put remotable Exceptions which are specific to a certain Petra Module
+// into shared Petra Module DLLs - eg Ict.Petra.Shared.MPartner, Ict.Petra.Shared.MFinance...
+
+namespace Ict.Common.Verification.Exceptions
 {
+    #region EVerificationResultsException
+
     /// <summary>
-    /// Thrown if a Partner cannot be opened for security reasons
+    /// Can be hrown when TVerificationResultCollections hold one or more severe TVerificationResult item(s).
     /// </summary>
     [Serializable()]
-    public class ESecurityPartnerAccessDeniedException : ESecurityAccessDeniedException
+    public class EVerificationResultsException : EOPAppException
     {
-        /// <summary>PartnerKey of Partner to which access is denied.</summary>
-        private Int64 FPartnerKey;
+        /// <summary><see cref ="TVerificationResultCollection" /> that holds one or more severe TVerificationResult item(s).</summary>
+        private TVerificationResultCollection FVerificationResults;
 
-        /// <summary>ShortName of Partner to which access is denied.</summary>
-        private String FPartnerShortName;
 
-        private byte FAccessLevel;
-
-        /// <summary>PartnerKey of Partner to which access is denied.</summary>
-        public Int64 PartnerKey
+        /// <summary><see cref ="TVerificationResultCollection" /> that holds one or more severe TVerificationResult item(s).</summary>
+        public TVerificationResultCollection VerificationResults
         {
             get
             {
-                return FPartnerKey;
+                return FVerificationResults;
             }
 
             set
             {
-                FPartnerKey = value;
-            }
-        }
-
-        /// <summary>ShortName of Partner to which access is denied.</summary>
-        public String PartnerShortName
-        {
-            get
-            {
-                return FPartnerShortName;
-            }
-
-            set
-            {
-                FPartnerShortName = value;
-            }
-        }
-
-        /// <summary>
-        /// level of access that is denied
-        /// </summary>
-        public byte AccessLevel
-        {
-            get
-            {
-                return FAccessLevel;
-            }
-
-            set
-            {
-                FAccessLevel = value;
+                FVerificationResults = value;
             }
         }
 
         /// <summary>
         /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public ESecurityPartnerAccessDeniedException() : base()
+        public EVerificationResultsException() : base()
         {
         }
 
@@ -97,7 +75,7 @@ namespace Ict.Petra.Shared.MPartner
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
         /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param> 
-        public ESecurityPartnerAccessDeniedException(String AMessage) : base(AMessage)
+        public EVerificationResultsException(String AMessage) : base(AMessage)
         {
         }
 
@@ -106,24 +84,29 @@ namespace Ict.Petra.Shared.MPartner
         /// </summary>
         /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
         /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
-        public ESecurityPartnerAccessDeniedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        public EVerificationResultsException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
         
         /// <summary>
-        /// /// Initializes a new instance of this Exception Class with a specified error message and further data.
+        /// Initializes a new instance of this Exception Class with a specified error message, access richt and Database Table.
         /// </summary>
         /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
-        /// <param name="APartnerKey"></param>
-        /// <param name="APartnerShortName"></param>
-        /// <param name="AAccessLevel"></param>
-        public ESecurityPartnerAccessDeniedException(String AMessage, Int64 APartnerKey,
-            string APartnerShortName,
-            TPartnerAccessLevelEnum AAccessLevel) : base(AMessage)
+        /// <param name="AVerificationResults"><see cref ="TVerificationResultCollection" /> that holds one or more severe TVerificationResult item(s).</param>
+        public EVerificationResultsException(String AMessage, TVerificationResultCollection AVerificationResults) : base(AMessage)
         {
-            FPartnerKey = APartnerKey;
-            FPartnerShortName = APartnerShortName;
-            FAccessLevel = (byte)AAccessLevel; // (byte)Enum.Parse(typeof(TPartnerAccessLevelEnum), Enum.GetName(typeof(TPartnerAccessLevelEnum), AAccessLevel));
+            FVerificationResults = AVerificationResults;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message, access richt and Database Table.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AVerificationResults"><see cref ="TVerificationResultCollection" /> that holds one or more severe TVerificationResult item(s).</param>
+        /// /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EVerificationResultsException(String AMessage, TVerificationResultCollection AVerificationResults, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+            FVerificationResults = AVerificationResults;
         }
 
         #region Remoting and serialization
@@ -136,11 +119,9 @@ namespace Ict.Petra.Shared.MPartner
         /// </remarks> 
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
-        public ESecurityPartnerAccessDeniedException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        public EVerificationResultsException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
-            FPartnerKey = AInfo.GetInt64("PartnerKey");
-            FPartnerShortName = AInfo.GetString("PartnerShortName");
-            FAccessLevel = AInfo.GetByte("AccessLevel");
+            FVerificationResults = (TVerificationResultCollection)AInfo.GetValue("VerificationResults", typeof(TVerificationResultCollection));
         }
 
         /// <summary>
@@ -152,20 +133,20 @@ namespace Ict.Petra.Shared.MPartner
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
-        {
+        {            
             if (AInfo == null)
             {
                 throw new ArgumentNullException("AInfo");
-            }
-            
-            AInfo.AddValue("PartnerKey", FPartnerKey);
-            AInfo.AddValue("PartnerShortName", FPartnerShortName);
-            AInfo.AddValue("AccessLevel", FAccessLevel);
+            }            
                         
+            AInfo.AddValue("VerificationResults", FVerificationResults);
+
             // We must call through to the base class to let it save its own state!
-            base.GetObjectData(AInfo, AContext);
+            base.GetObjectData(AInfo, AContext);            
         }
         
-        #endregion
+        #endregion        
     }
-}
+    
+    #endregion    
+ }

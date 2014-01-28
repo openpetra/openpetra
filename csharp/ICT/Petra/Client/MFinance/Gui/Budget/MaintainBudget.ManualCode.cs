@@ -331,7 +331,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private TSubmitChangesResult StoreManualCode(ref BudgetTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
-            TSubmitChangesResult TSCR = TRemote.MFinance.Budget.WebConnectors.SaveBudget(ref ASubmitChanges, out AVerificationResult);
+            AVerificationResult = null;
+            
+            TSubmitChangesResult TSCR = TRemote.MFinance.Budget.WebConnectors.SaveBudget(ref ASubmitChanges);
 
             //Reset this flag if the save was successful
             FRejectYearChange = !(TSCR == TSubmitChangesResult.scrOK);

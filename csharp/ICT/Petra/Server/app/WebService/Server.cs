@@ -295,9 +295,9 @@ public class TOpenPetraOrg : WebService
             // pass the dataset as a JSON string, then deserialize the dataset
             AccountsPayableTDS AInspectDS = (AccountsPayableTDS)Jayrock.Json.Conversion.JsonConvert.Import(typeof(AccountsPayableTDS), DatasetInJSON);
             TSupplierEditUIConnector uiconnector = new TSupplierEditUIConnector();
-            TVerificationResultCollection VerificationResult;
-            TSubmitChangesResult changesResult = uiconnector.SubmitChanges(ref AInspectDS, out VerificationResult);
-            return new TCombinedSubmitChangesResult(changesResult, AInspectDS, VerificationResult).ToJSON();
+
+            TSubmitChangesResult changesResult = uiconnector.SubmitChanges(ref AInspectDS);
+            return new TCombinedSubmitChangesResult(changesResult, AInspectDS, new TVerificationResultCollection()).ToJSON();
         }
 
         return "not enough permissions";
@@ -359,9 +359,9 @@ public class TOpenPetraOrg : WebService
         if (IsUserLoggedIn())
         {
             TSupplierEditUIConnector uiconnector = new TSupplierEditUIConnector();
-            TVerificationResultCollection VerificationResult;
-            TSubmitChangesResult changesResult = uiconnector.SubmitChanges(ref AInspectDS, out VerificationResult);
-            return new TCombinedSubmitChangesResult(changesResult, AInspectDS, VerificationResult);
+            
+            TSubmitChangesResult changesResult = uiconnector.SubmitChanges(ref AInspectDS);
+            return new TCombinedSubmitChangesResult(changesResult, AInspectDS, new TVerificationResultCollection());
         }
 
         return new TCombinedSubmitChangesResult(TSubmitChangesResult.scrError, new DataSet(), new TVerificationResultCollection());

@@ -28,6 +28,7 @@ using System.Collections.Generic;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared;
@@ -67,11 +68,11 @@ namespace Ict.Petra.Server.App.Core
                 {
                     FDailyStartTime24Hrs = DateTime.ParseExact(value, "HH:mm", null, DateTimeStyles.NoCurrentDateDefault);
                 }
-                catch (System.FormatException)
+                catch (System.FormatException Exc)
                 {
-                    throw new ApplicationException(
+                    throw new EOPAppException(
                         "Server Configuration File error: The value supplied for 'Server.Processing.DailyStartTime24Hrs' (" + value +
-                        ") isn't a valid time in 24 hours format (leading zeroes are required for hours and minutes between 0-9)");
+                        ") isn't a valid time in 24 hours format (leading zeroes are required for hours and minutes between 0-9)", Exc);
                 }
             }
         }

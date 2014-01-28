@@ -533,13 +533,13 @@ namespace Ict.Petra.Server.MPartner.Import
                     NewPersonPartnerKey = CreatePerson(ref MainDS, NewFamilyPartnerKey, data);
                     CreateAddress(ref MainDS, data, NewFamilyPartnerKey);
 
-                    TVerificationResultCollection VerificationResult;
-                    PartnerEditTDSAccess.SubmitChanges(MainDS, out VerificationResult);
-
-                    if (VerificationResult.HasCriticalErrors)
+                    try 
                     {
-                        TLogging.Log(VerificationResult.BuildVerificationResultString());
-                        string message = "There is some critical error when saving to the database";
+                       PartnerEditTDSAccess.SubmitChanges(MainDS); 
+                    } 
+                    catch (Exception Exc)
+                    {
+                        string message = "There is some critical error when saving to the database: " + Exc.ToString();
                         return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
                     }
 
@@ -578,13 +578,14 @@ namespace Ict.Petra.Server.MPartner.Import
 
                     // TODO ApplicationForms
 
-                    ConferenceApplicationTDSAccess.SubmitChanges(ConfDS, out VerificationResult);
-
-                    if (VerificationResult.HasCriticalErrors)
+                    try
                     {
-                        TLogging.Log(VerificationResult.BuildVerificationResultString());
-                        string message = "There is some critical error when saving to the database";
-                        return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";
+                       ConferenceApplicationTDSAccess.SubmitChanges(ConfDS); 
+                    }
+                    catch (Exception Exc)
+                    {
+                        string message = "There is some critical error when saving to the database: " + Exc.ToString();
+                        return "{\"failure\":true, \"data\":{\"result\":\"" + message + "\"}}";                        
                     }
 
                     // process Photo

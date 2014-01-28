@@ -122,20 +122,9 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            TVerificationResultCollection VerificationResult;
-            PartnerImportExportTDSAccess.SubmitChanges(PartnerDS, out VerificationResult);
-
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
-            {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
-            }
-
-            GLSetupTDSAccess.SubmitChanges(GLSetupDS, out VerificationResult);
-
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
-            {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
-            }
+            PartnerImportExportTDSAccess.SubmitChanges(PartnerDS);
+            
+            GLSetupTDSAccess.SubmitChanges(GLSetupDS);
         }
 
         /// <summary>
@@ -179,14 +168,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            TVerificationResultCollection VerificationResult;
-
-            GLSetupTDSAccess.SubmitChanges(GLSetupDS, out VerificationResult);
-
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
-            {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
-            }
+            GLSetupTDSAccess.SubmitChanges(GLSetupDS);
         }
 
         /// <summary>
@@ -254,13 +236,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            TVerificationResultCollection VerificationResult;
-            PartnerImportExportTDSAccess.SubmitChanges(PartnerDS, out VerificationResult);
-
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
-            {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
-            }
+            PartnerImportExportTDSAccess.SubmitChanges(PartnerDS);
         }
     }
 }

@@ -167,9 +167,7 @@ namespace Ict.Petra.Server.MConference.Applications
                     }
                 }
 
-                TVerificationResultCollection VerificationResult;
-
-                ConferenceApplicationTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+                ConferenceApplicationTDSAccess.SubmitChanges(MainDS);
             }
             catch (Exception ex)
             {

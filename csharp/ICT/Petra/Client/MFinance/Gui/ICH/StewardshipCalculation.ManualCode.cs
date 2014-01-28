@@ -118,13 +118,15 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                         Cursor = Cursors.WaitCursor;
 
                         retVal = TRemote.MFinance.ICH.WebConnectors.PerformStewardshipCalculation(FLedgerNumber, cmbReportPeriod.GetSelectedInt32(),
-                        out VerificationResult);
+                            out VerificationResult);
 
                         Cursor = Cursors.Default;
                         String ResultMsg =
                             (retVal ? Catalog.GetString("Stewardship Calculation Completed Successfully") : Catalog.GetString(
                                  "UNSUCCESSFUL Stewardship Calculation!"));
+                        
                         MessageBox.Show(Messages.BuildMessageFromVerificationResult(ResultMsg, VerificationResult));
+                        
                         break;
 
                     case TICHReportingPeriodSelectionModeEnum.rpsmICHStatement:

@@ -136,8 +136,7 @@ namespace Tests.MFinance.Server.BankImport
 
             Assert.AreEqual(TSubmitChangesResult.scrOK, TBankImportWebConnector.StoreNewBankStatement(
                     BankImportDS,
-                    out StatementKey,
-                    out VerificationResult), "save statement September");
+                    out StatementKey), "save statement September");
 
             // revert the gift batch, so that the training does not get confused if the test is run again;
             // the training needs only one gift batch for that date
@@ -152,10 +151,8 @@ namespace Tests.MFinance.Server.BankImport
 
             Assert.AreEqual(true, TAdjustmentWebConnector.GiftRevertAdjust(requestParams, out VerificationResult), "reversing the gift batch");
 
-            if (VerificationResult.HasCriticalErrors)
-            {
-                Assert.Fail("Gift Batch was not reverted: " + VerificationResult.BuildVerificationResultString());
-            }
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult, 
+                "Gift Batch was not reverted:");
 
             // duplicate the bank import file, for the next month
             FileContent = FileContent.Replace("30.09." + DateTime.Now.Year.ToString("0000"),
@@ -174,8 +171,7 @@ namespace Tests.MFinance.Server.BankImport
 
             Assert.AreEqual(TSubmitChangesResult.scrOK, TBankImportWebConnector.StoreNewBankStatement(
                     BankImportDS,
-                    out StatementKey,
-                    out VerificationResult), "save statement October");
+                    out StatementKey), "save statement October");
 
             // create gift batch from imported statement
             Int32 GiftBatchNumber = TBankImportWebConnector.CreateGiftBatch(
@@ -184,10 +180,8 @@ namespace Tests.MFinance.Server.BankImport
                 -1,
                 out VerificationResult);
 
-            if (VerificationResult.HasCriticalErrors)
-            {
-                Assert.Fail("cannot create gift batch from bank statement: " + VerificationResult.BuildVerificationResultString());
-            }
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult, 
+                "cannot create gift batch from bank statement:");
 
             // check if the gift batch is correct
             GiftBatchTDS GiftDS = TGiftTransactionWebConnector.LoadGiftBatchData(FLedgerNumber, GiftBatchNumber);

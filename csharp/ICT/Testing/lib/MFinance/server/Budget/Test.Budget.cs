@@ -102,15 +102,10 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
 
             Assert.AreNotEqual(0, RowsImported, "expect to import several rows");
 
-            if (VerificationResult != null)
-            {
-                Assert.AreEqual(false,
-                    VerificationResult.HasCriticalErrors,
-                    "ImportBudgets has critical errors: " + VerificationResult.BuildVerificationResultString());
-            }
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult, 
+                "ImportBudgets has critical errors:");
 
-            Assert.AreEqual(TSubmitChangesResult.scrOK, BudgetTDSAccess.SubmitChanges(ImportDS,
-                    out VerificationResult), "submitchanges of imported budget");
+            BudgetTDSAccess.SubmitChanges(ImportDS);
 
             // check for value in budget table
             string sqlQueryBudget =
@@ -140,16 +135,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
 
             // consolidate the budget
             TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(FLedgerNumber);
-            bool consolidated = TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, true, out VerificationResult);
-
-            if (VerificationResult != null)
-            {
-                Assert.AreEqual(false,
-                    VerificationResult.HasCriticalErrors,
-                    "ConsolidateBudget has critical errors: " + VerificationResult.BuildVerificationResultString());
-            }
-
-            Assert.AreEqual(true, consolidated, "consolidating the budgets");
+            TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, true);
 
             // check for correct value in glmperiod budget
             string sqlQueryConsolidatedBudget =
@@ -184,16 +170,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
 
             // post all budgets again
             TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(FLedgerNumber);
-            consolidated = TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, true, out VerificationResult);
-
-            if (VerificationResult != null)
-            {
-                Assert.AreEqual(false,
-                    VerificationResult.HasCriticalErrors,
-                    "2nd ConsolidateBudget has critical errors: " + VerificationResult.BuildVerificationResultString());
-            }
-
-            Assert.AreEqual(true, consolidated, "consolidating the budgets for the second time");
+            TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, true);
 
             consolidatedBudgetValue =
                 Convert.ToDecimal(DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryConsolidatedBudget, IsolationLevel.ReadCommitted));
@@ -224,16 +201,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
 
             // post only modified budget again
             TBudgetConsolidateWebConnector.LoadBudgetForConsolidate(FLedgerNumber);
-            consolidated = TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, false, out VerificationResult);
-
-            if (VerificationResult != null)
-            {
-                Assert.AreEqual(false,
-                    VerificationResult.HasCriticalErrors,
-                    "3rd ConsolidateBudget has critical errors: " + VerificationResult.BuildVerificationResultString());
-            }
-
-            Assert.AreEqual(true, consolidated, "consolidating the budgets for the third time");
+            TBudgetConsolidateWebConnector.ConsolidateBudgets(FLedgerNumber, false);
 
             consolidatedBudgetValue =
                 Convert.ToDecimal(DBAccess.GDBAccessObj.ExecuteScalar(sqlQueryConsolidatedBudget, IsolationLevel.ReadCommitted));

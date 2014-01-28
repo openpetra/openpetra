@@ -96,8 +96,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 row.PeriodEndDate = new DateTime(row.PeriodEndDate.Year - YearDifference, row.PeriodEndDate.Month, LastDay);
             }
 
-            TVerificationResultCollection VerificationResult;
-            AAccountingPeriodAccess.SubmitChanges(periodTable, null, out VerificationResult);
+            AAccountingPeriodAccess.SubmitChanges(periodTable, null);
         }
 
         /// <summary>
@@ -123,8 +122,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             row.ToCurrencyCode = "GBP";
             row.RateOfExchange = 1.57m;
             dailyrates.Rows.Add(row);
-            TVerificationResultCollection VerificationResult;
-            ADailyExchangeRateAccess.SubmitChanges(dailyrates, null, out VerificationResult);
+            
+            ADailyExchangeRateAccess.SubmitChanges(dailyrates, null);
         }
 
         /// <summary>

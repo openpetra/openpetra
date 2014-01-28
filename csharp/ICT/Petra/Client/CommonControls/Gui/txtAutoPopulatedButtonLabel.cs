@@ -24,6 +24,7 @@
 using System;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Gui;
@@ -1503,8 +1504,7 @@ namespace Ict.Petra.Client.CommonControls
                                 {
                                     TextBoxStringOut = "";
                                     LabelStringOut = "";
-                                    throw new ApplicationException("Exception occured while calling PartnerFindScreen Delegate!",
-                                        exp);
+                                    throw new EOPAppException("Exception occured while calling PartnerFindScreen Delegate!", exp);
                                 }
 
                                 // end try
@@ -1513,7 +1513,7 @@ namespace Ict.Petra.Client.CommonControls
                             else
                             {
                                 // delegate IS NOT defined
-                                throw new ApplicationException(
+                                throw new EOPAppException(
                                     "DEVELOPER ERROR: OpenPartnerFindScreen Delegate must be assigned on this Control to be able to open a Partner Find screen!");
                             }
 
@@ -1557,15 +1557,14 @@ namespace Ict.Petra.Client.CommonControls
                                 {
                                     TextBoxStringOut = "";
                                     LabelStringOut = "";
-                                    throw new ApplicationException("Exception occured while calling OpenExtractFind Delegate!",
-                                        exp);
+                                    throw new EOPAppException("Exception occured while calling OpenExtractFind Delegate!", exp);
                                 }
                             }
                             /* end IS assigned */
                             else
                             {
                                 /* delegate IS NOT defined */
-                                throw new ApplicationException(
+                                throw new EOPAppException(
                                     "DEVELOPER ERROR: OpenExtractFind Delegate must be assigned on this Control to be able to open a Event find dialog!");
                             }
 
@@ -1610,15 +1609,14 @@ namespace Ict.Petra.Client.CommonControls
                                 {
                                     TextBoxStringOut = "";
                                     LabelStringOut = "";
-                                    throw new ApplicationException("Exception occured while calling OpenConferenceFind Delegate!",
-                                        exp);
+                                    throw new EOPAppException("Exception occured while calling OpenConferenceFind Delegate!", exp);
                                 }
                             }
                             /* end IS assigned */
                             else
                             {
                                 /* delegate IS NOT defined */
-                                throw new ApplicationException(
+                                throw new EOPAppException(
                                     "DEVELOPER ERROR: OpenConferenceFind Delegate must be assigned on this Control to be able to open a Conference find dialog!");
                             }
 
@@ -1663,15 +1661,14 @@ namespace Ict.Petra.Client.CommonControls
                                 {
                                     TextBoxStringOut = "";
                                     LabelStringOut = "";
-                                    throw new ApplicationException("Exception occured while calling OpenEventFind Delegate!",
-                                        exp);
+                                    throw new EOPAppException("Exception occured while calling OpenEventFind Delegate!", exp);
                                 }
                             }
                             /* end IS assigned */
                             else
                             {
                                 /* delegate IS NOT defined */
-                                throw new ApplicationException(
+                                throw new EOPAppException(
                                     "DEVELOPER ERROR: OpenEventFind Delegate must be assigned on this Control to be able to open a Event find dialog!");
                             }
 

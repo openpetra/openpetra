@@ -30,6 +30,8 @@ using System.Data;
 using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Data.Exceptions;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 
 namespace Ict.Common.Data
@@ -242,8 +244,8 @@ namespace Ict.Common.Data
 
             if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(query, ATransaction, parameters.ToArray()))
             {
-                throw new Exception("problems inserting a row");
-            }
+                throw new EDBSubmitException("[TTypedDataAccess.InsertRow] Problems INSERTing a row", eSubmitChangesOperations.eInsert);
+            }                
 
             DateTime LastModificationId;
             string LastModifiedBy;
@@ -341,14 +343,14 @@ namespace Ict.Common.Data
                     // check if modification id has been changed and committed to the database, but AcceptChanges has not been applied
                     if (OriginalModificationID != CurrentModificationID)
                     {
-                        throw new Exception(
-                            "Developer should fix this: Forgot to call AcceptChanges on table " + DBTableName);
+                        throw new EDBSubmitException(
+                            "[TTypedDataAccess.UpdateRow] Developer should fix this: Forgot to call AcceptChanges on table " + DBTableName, eSubmitChangesOperations.eUpdate);
                     }
 
                     if (LastModificationId != OriginalModificationID)
                     {
                         throw new EDBConcurrencyException(
-                            "Cannot update row of table " + DBTableName + " because the row has been edited by user " + LastModifiedBy,
+                            "[TTypedDataAccess.UpdateRow] Cannot update row of table " + DBTableName + " because the row has been edited by user " + LastModifiedBy,
                             "update",
                             DBTableName,
                             LastModifiedBy,
@@ -363,13 +365,14 @@ namespace Ict.Common.Data
 
                     if (RowsChanged == 0)
                     {
-                        throw new Exception("cannot UPDATE row due to problems most likely with the timestamp");
+                        throw new EDBSubmitException("[TTypedDataAccess.UpdateRow] Cannot UPDATE row due to problems most likely with the timestamp", eSubmitChangesOperations.eUpdate);
                     }
                 }
                 else
                 {
-                    throw new EDBConcurrencyRowDeletedException("Cannot update row of table " + DBTableName + " because the row has been deleted.",
-                        "update",
+                    throw new EDBConcurrencyNoRowToUpdateException("[TTypedDataAccess.UpdateRow] Cannot update row of table " + DBTableName + 
+                        " because the row is not present in the DB. This means that either this row has been deleted from the DB before you tried to update it, or" + 
+                        " that the row wasn't present in the DB at all before you tried to update it.",
                         DBTableName,
                         "",
                         DateTime.MinValue);
@@ -437,11 +440,14 @@ namespace Ict.Common.Data
                     LastModifiedDate);
             }
 
-            DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateDeleteClause("PUB_" + DBTableName,
+            if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateDeleteClause("PUB_" + DBTableName,
                     Columns,
                     ADataRow,
                     PrimKeyColumnOrdList), ATransaction,
-                GetParametersForDeleteClause(ATableId, ADataRow, PrimKeyColumnOrdList));
+                    GetParametersForDeleteClause(ATableId, ADataRow, PrimKeyColumnOrdList)))
+            {
+                throw new EDBSubmitException("[TTypedDataAccess.DeleteRow] Problems DELETing a row", eSubmitChangesOperations.eDelete);                
+            }
         }
 
         /// <summary>
@@ -1146,8 +1152,8 @@ namespace Ict.Common.Data
                 else
                 {
                     // cannot guarantuee for correct result; probably a bug
-                    throw new Exception(
-                        "TTypedDataAccess.NotEquals: cannot compare types " + OriginalValue.GetType().ToString() + " and " +
+                    throw new EOPDBTypedDataAccessException(
+                        "[TTypedDataAccess.NotEquals]: Cannot compare types " + OriginalValue.GetType().ToString() + " and " +
                         CurrentValue.GetType().ToString());
                 }
             }
@@ -1613,7 +1619,7 @@ namespace Ict.Common.Data
             }
             else
             {
-                throw new ApplicationException(
+                throw new EOPDBTypedDataAccessException(
                     "Cannot generate UPDATE Clause for Table '" + ATableName + "' because the submitted DataTable has more columns (" +
                     Convert.ToString(ADataRow.ItemArray.Length) + ") than the Table in the DB (" + Convert.ToString(AColumnNames.Length) + ")!");
             }
@@ -1977,9 +1983,12 @@ namespace Ict.Common.Data
         public static void DeleteByPrimaryKey(short ATableId, System.Object[] APrimaryKeyValues, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray = CreateOdbcParameterArrayFromPrimaryKey(ATableId, APrimaryKeyValues);
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+            if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                 GenerateWhereClauseFromPrimaryKey(ATableId),
-                ATransaction, ParametersArray);
+                ATransaction, ParametersArray))
+            {
+                throw new EDBSubmitException("[TTypedDataAccess.DeleteByPrimaryKey] Problems DELETing a row", eSubmitChangesOperations.eDelete);                
+            }
         }
 
         /// <summary>
@@ -2118,10 +2127,13 @@ namespace Ict.Common.Data
         /// <param name="ATransaction"></param>
         public static void DeleteUsingTemplate(short ATableId, DataRow ATemplateRow, StringCollection ATemplateOperators, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+            if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                 GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ATemplateRow, ATemplateOperators),
                 ATransaction,
-                GetParametersForWhereClause(ATableId, ATemplateRow));
+                GetParametersForWhereClause(ATableId, ATemplateRow)))
+            {
+                throw new EDBSubmitException("[TTypedDataAccess.DeleteUsingTemplate {delete all rows matching the given row}] Problems DELETing a row", eSubmitChangesOperations.eDelete);                
+            }
         }
 
         /// <summary>
@@ -2132,10 +2144,13 @@ namespace Ict.Common.Data
         /// <param name="ATransaction"></param>
         public static void DeleteUsingTemplate(short ATableId, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
-            DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
+            if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
                                                    GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ASearchCriteria)),
                 ATransaction,
-                GetParametersForWhereClause(ATableId, ASearchCriteria));
+                GetParametersForWhereClause(ATableId, ASearchCriteria)))
+            {
+                throw new EDBSubmitException("[TTypedDataAccess.DeleteUsingTemplate {delete all rows matching the search criteria}] Problems DELETing a row", eSubmitChangesOperations.eDelete);                                
+            }
         }
 
         /// <summary>
@@ -2162,28 +2177,21 @@ namespace Ict.Common.Data
         /// <param name="ATable"></param>
         /// <param name="ATransaction"></param>
         /// <param name="ASelectedOperations"></param>
-        /// <param name="AVerificationResult"></param>
         /// <param name="AUserId">the current user, for auditing</param>
         /// <param name="ASequenceName"></param>
         /// <param name="ASequenceField"></param>
         /// <returns></returns>
-        public static bool SubmitChanges(
+        public static void SubmitChanges(
             TTypedDataTable ATable,
             TDBTransaction ATransaction,
             eSubmitChangesOperations ASelectedOperations,
-            out TVerificationResultCollection AVerificationResult,
             string AUserId,
             string ASequenceName, string ASequenceField)
         {
-            bool ResultValue = true;
-            bool ExceptionReported = false;
-
-            AVerificationResult = new TVerificationResultCollection();
-
             // allow this method to be called with null values, eg. when saving complex TypedDataSets with some removed empty tables
             if (ATable == null)
             {
-                return true;
+                return;
             }
 
             short TableId = Convert.ToInt16(ATable.GetType().GetField("TableId").GetValue(null));
@@ -2204,128 +2212,98 @@ namespace Ict.Common.Data
             for (RowCount = 0; (RowCount != ATable.Rows.Count); RowCount++)
             {
                 DataRow TheRow = ATable.Rows[RowCount];
-                try
+               
+                if ((TheRow.RowState == DataRowState.Added) && ((ASelectedOperations & eSubmitChangesOperations.eInsert) != 0))
                 {
-                    if ((TheRow.RowState == DataRowState.Added) && ((ASelectedOperations & eSubmitChangesOperations.eInsert) != 0))
+                    bool TreatRowAsAdded = false;
+
+                    if (ASequenceField.Length > 0)
                     {
-                        bool TreatRowAsAdded = false;
+                        // only insert next sequence value if the field has negative value.
+                        // this is needed when creating location 0 for a new site/ledger
+                        if (Convert.ToInt64(TheRow[ASequenceField]) < 0)
+                        {
+                            // accept changes for the row, so that we can update the dataset on the client and still know the negative temp sequence number
+                            TheRow.AcceptChanges();
+                            TheRow[ASequenceField] = (System.Object)DBAccess.GDBAccessObj.GetNextSequenceValue(ASequenceName, ATransaction);
+                            TreatRowAsAdded = true;   // setting this variable to 'true' is *vital* for the retrieval of the s_modification_id_t for that record once it is saved!
+                        }
+                    }
 
-                        if (ASequenceField.Length > 0)
-                        {
-                            // only insert next sequence value if the field has negative value.
-                            // this is needed when creating location 0 for a new site/ledger
-                            if (Convert.ToInt64(TheRow[ASequenceField]) < 0)
-                            {
-                                // accept changes for the row, so that we can update the dataset on the client and still know the negative temp sequence number
-                                TheRow.AcceptChanges();
-                                TheRow[ASequenceField] = (System.Object)DBAccess.GDBAccessObj.GetNextSequenceValue(ASequenceName, ATransaction);
-                                TreatRowAsAdded = true;   // setting this variable to 'true' is *vital* for the retrieval of the s_modification_id_t for that record once it is saved!
-                            }
-                        }
-
-                        if (ATable.ThrowAwayAfterSubmitChanges)
-                        {
-                            TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId, InsertStatement, InsertParameters);
-                        }
-                        else
-                        {
-                            TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId, TreatRowAsAdded);
-                        }
+                    if (ATable.ThrowAwayAfterSubmitChanges)
+                    {
+                        TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId, InsertStatement, InsertParameters);
                     }
                     else
                     {
-                        bool hasPrimaryKey = TTypedDataTable.GetPrimaryKeyColumnOrdList(TableId).Length > 0;
-
-                        if ((TheRow.RowState == DataRowState.Modified) && ((ASelectedOperations & eSubmitChangesOperations.eUpdate) != 0))
-                        {
-                            if (!hasPrimaryKey)
-                            {
-                                AVerificationResult.Add(new TVerificationResult(
-                                        "[DB] NO PRIMARY KEY",
-                                        "Cannot update record because table " + TTypedDataTable.GetTableName(TableId) + " has no primary key.",
-                                        "Primary Key missing", TTypedDataTable.GetTableNameSQL(TableId), TResultSeverity.Resv_Critical));
-                            }
-                            else
-                            {
-                                TTypedDataAccess.UpdateRow(TableId, ATable.ThrowAwayAfterSubmitChanges, ref TheRow, ATransaction, AUserId);
-                            }
-                        }
-
-                        if ((TheRow.RowState == DataRowState.Deleted) && ((ASelectedOperations & eSubmitChangesOperations.eDelete) != 0))
-                        {
-                            if (!hasPrimaryKey)
-                            {
-                                AVerificationResult.Add(new TVerificationResult(
-                                        "[DB] NO PRIMARY KEY",
-                                        "Cannot delete record because table " + TTypedDataTable.GetTableName(TableId) + " has no primary key.",
-                                        "Primary Key missing", TTypedDataTable.GetTableNameSQL(TableId), TResultSeverity.Resv_Critical));
-                            }
-                            else
-                            {
-                                TTypedDataAccess.DeleteRow(TableId, TheRow, ATransaction);
-                            }
-                        }
-                    }
-
-                    if (InsertParameters.Count > MAX_SQL_PARAMETERS)
-                    {
-                        // Inserts in one query
-                        DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray());
-                        InsertStatement = new StringBuilder();
-                        InsertParameters = new List <OdbcParameter>();
+                        TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId, TreatRowAsAdded);
                     }
                 }
-                catch (OdbcException ex)
+                else
                 {
-                    ResultValue = false;
-                    ExceptionReported = false;
+                    bool hasPrimaryKey = TTypedDataTable.GetPrimaryKeyColumnOrdList(TableId).Length > 0;
 
-                    if ((ExceptionReported == false))
+                    if ((TheRow.RowState == DataRowState.Modified) && ((ASelectedOperations & eSubmitChangesOperations.eUpdate) != 0))
                     {
-                        AVerificationResult.Add(new TVerificationResult("[ODBC]", ex.Errors[0].Message, "ODBC error for table PLanguage",
-                                ex.Errors[0].NativeError.ToString(), TResultSeverity.Resv_Critical));
+                        if (!hasPrimaryKey)
+                        {
+                            throw new EDBSubmitException("[TTypedDataAccess.SubmitChanges] NO PRIMARY KEY --- Cannot update record because table " + TTypedDataTable.GetTableName(TableId) + " has no primary key.", eSubmitChangesOperations.eUpdate);
+                        }
+                        else
+                        {
+                            TTypedDataAccess.UpdateRow(TableId, ATable.ThrowAwayAfterSubmitChanges, ref TheRow, ATransaction, AUserId);
+                        }
                     }
+
+                    if ((TheRow.RowState == DataRowState.Deleted) && ((ASelectedOperations & eSubmitChangesOperations.eDelete) != 0))
+                    {
+                        if (!hasPrimaryKey)
+                        {
+                            throw new EDBSubmitException("[TTypedDataAccess.SubmitChanges] NO PRIMARY KEY --- Cannot delete record because table " + TTypedDataTable.GetTableName(TableId) + " has no primary key.", eSubmitChangesOperations.eDelete);
+                        }
+                        else
+                        {
+                            TTypedDataAccess.DeleteRow(TableId, TheRow, ATransaction);
+                        }
+                    }
+                }
+
+                if (InsertParameters.Count > MAX_SQL_PARAMETERS)
+                {
+                    // Inserts in one query
+                    if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray()))
+                    {
+                        throw new EDBSubmitException("[TTypedDataAccess.SubmitChanges] Problems INSERTing a row [#1]", eSubmitChangesOperations.eInsert);                        
+                    }
+                    
+                    InsertStatement = new StringBuilder();
+                    InsertParameters = new List <OdbcParameter>();
                 }
             }
 
             if (InsertStatement.Length > 0)
             {
-                try
+                // Inserts in one query
+                if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray()))
                 {
-                    // Inserts in one query
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(InsertStatement.ToString(), ATransaction, InsertParameters.ToArray());
-                }
-                catch (OdbcException ex)
-                {
-                    ResultValue = false;
-                    ExceptionReported = false;
-
-                    if ((ExceptionReported == false))
-                    {
-                        AVerificationResult.Add(new TVerificationResult("[ODBC]", ex.Errors[0].Message, "ODBC error for table PLanguage",
-                                ex.Errors[0].NativeError.ToString(), TResultSeverity.Resv_Critical));
-                    }
+                    throw new EDBSubmitException("[TTypedDataAccess.SubmitChanges] Problems INSERTing a row [#2]", eSubmitChangesOperations.eInsert);                    
                 }
             }
-
-            return ResultValue;
         }
 
         /// <summary>
         /// overloaded version without ASelectedOperations
         /// </summary>
-        public static bool SubmitChanges(
+        public static void SubmitChanges(
             TTypedDataTable ATable,
             TDBTransaction ATransaction,
-            out TVerificationResultCollection AVerificationResult,
             string AUserId,
             string ASequenceName, string ASequenceField)
         {
-            return SubmitChanges(
+            SubmitChanges(
                 ATable,
                 ATransaction,
                 eSubmitChangesOperations.eAll,
-                out AVerificationResult,
                 AUserId,
                 ASequenceName,
                 ASequenceField);
@@ -2334,26 +2312,24 @@ namespace Ict.Common.Data
         /// <summary>
         /// overloaded version without sequence
         /// </summary>
-        public static bool SubmitChanges(
+        public static void SubmitChanges(
             TTypedDataTable ATable,
             TDBTransaction ATransaction,
-            out TVerificationResultCollection AVerificationResult,
             string AUserId)
         {
-            return SubmitChanges(ATable, ATransaction, eSubmitChangesOperations.eAll, out AVerificationResult, AUserId, "", "");
+            SubmitChanges(ATable, ATransaction, eSubmitChangesOperations.eAll, AUserId, "", "");
         }
 
         /// <summary>
         /// overloaded version without sequence, but with ASelectedOperations
         /// </summary>
-        public static bool SubmitChanges(
+        public static void SubmitChanges(
             TTypedDataTable ATable,
             TDBTransaction ATransaction,
             eSubmitChangesOperations ASelectedOperations,
-            out TVerificationResultCollection AVerificationResult,
             string AUserId)
         {
-            return SubmitChanges(ATable, ATransaction, ASelectedOperations, out AVerificationResult, AUserId, "", "");
+            SubmitChanges(ATable, ATransaction, ASelectedOperations, AUserId, "", "");
         }
 
         /// <summary>

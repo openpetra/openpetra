@@ -150,109 +150,93 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AConsolidateAll"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns>false (always!)</returns>
         [RequireModulePermission("FINANCE-3")]
-        public static bool ConsolidateBudgets(Int32 ALedgerNumber, bool AConsolidateAll,
-            out TVerificationResultCollection AVerificationResult)
+        public static void ConsolidateBudgets(Int32 ALedgerNumber, bool AConsolidateAll)
         {
-            bool retVal = true;
-
-            bool newTransaction; // If I create a transaction here, then I need to rollback when I'm done.
+            bool NewTransaction = false;
             TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
-                out newTransaction);
-
-            AVerificationResult = null;
+                out NewTransaction);
 
             ALedgerRow LedgerRow = FBudgetTDS.ALedger[0];
 
-            // first clear the old budget from GLMPeriods
-            if (AConsolidateAll)
+            try
             {
-                foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
+                // first clear the old budget from GLMPeriods
+                if (AConsolidateAll)
                 {
-                    BudgetRow.BudgetStatus = false;
-                }
-
-                foreach (AGeneralLedgerMasterRow GeneralLedgerMasterRow in GLPostingDS.AGeneralLedgerMaster.Rows)
-                {
-                    for (int Period = 1; Period <= LedgerRow.NumberOfAccountingPeriods; Period++)
+                    foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
                     {
-                        ClearAllBudgetValues(GeneralLedgerMasterRow.GlmSequence, Period);
+                        BudgetRow.BudgetStatus = false;
                     }
-                }
-            }
-            else
-            {
-                foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
-                {
-                    if (!BudgetRow.BudgetStatus)
+    
+                    foreach (AGeneralLedgerMasterRow GeneralLedgerMasterRow in GLPostingDS.AGeneralLedgerMaster.Rows)
                     {
-                        UnPostBudget(BudgetRow, ALedgerNumber);
+                        for (int Period = 1; Period <= LedgerRow.NumberOfAccountingPeriods; Period++)
+                        {
+                            ClearAllBudgetValues(GeneralLedgerMasterRow.GlmSequence, Period);
+                        }
                     }
-                }
-            }
-
-            foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
-            {
-                if (!BudgetRow.BudgetStatus || AConsolidateAll)
-                {
-                    List <ABudgetPeriodRow>budgetPeriods = new List <ABudgetPeriodRow>();
-
-                    FBudgetTDS.ABudgetPeriod.DefaultView.RowFilter = ABudgetPeriodTable.GetBudgetSequenceDBName() + " = " +
-                                                                     BudgetRow.BudgetSequence.ToString();
-
-                    foreach (DataRowView rv in FBudgetTDS.ABudgetPeriod.DefaultView)
-                    {
-                        budgetPeriods.Add((ABudgetPeriodRow)rv.Row);
-                    }
-
-                    PostBudget(ALedgerNumber, BudgetRow, budgetPeriods);
-                }
-            }
-
-            FinishConsolidateBudget(SubmitChangesTransaction, out AVerificationResult);
-
-            if (AVerificationResult.HasCriticalErrors)
-            {
-                retVal = false;
-                TLogging.Log(AVerificationResult.BuildVerificationResultString());
-            }
-            else
-            {
-                GLPostingDS.ThrowAwayAfterSubmitChanges = true;
-                GLPostingTDSAccess.SubmitChanges(GLPostingDS, out AVerificationResult);
-                GLPostingDS.Clear();
-
-                if (AVerificationResult.HasCriticalErrors)
-                {
-                    retVal = false;
-                    TLogging.Log(AVerificationResult.BuildVerificationResultString());
-                }
-            }
-
-            if (newTransaction)
-            {
-                if (retVal)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
                 }
                 else
                 {
+                    foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
+                    {
+                        if (!BudgetRow.BudgetStatus)
+                        {
+                            UnPostBudget(BudgetRow, ALedgerNumber);
+                        }
+                    }
+                }
+    
+                foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
+                {
+                    if (!BudgetRow.BudgetStatus || AConsolidateAll)
+                    {
+                        List <ABudgetPeriodRow>budgetPeriods = new List <ABudgetPeriodRow>();
+    
+                        FBudgetTDS.ABudgetPeriod.DefaultView.RowFilter = ABudgetPeriodTable.GetBudgetSequenceDBName() + " = " +
+                                                                         BudgetRow.BudgetSequence.ToString();
+    
+                        foreach (DataRowView rv in FBudgetTDS.ABudgetPeriod.DefaultView)
+                        {
+                            budgetPeriods.Add((ABudgetPeriodRow)rv.Row);
+                        }
+    
+                        PostBudget(ALedgerNumber, BudgetRow, budgetPeriods);
+                    }
+                }
+    
+                FinishConsolidateBudget(SubmitChangesTransaction);
+    
+                
+                GLPostingDS.ThrowAwayAfterSubmitChanges = true;
+                GLPostingTDSAccess.SubmitChanges(GLPostingDS);
+                GLPostingDS.Clear();
+                
+                if (NewTransaction)
+                {                
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            } 
+            catch (Exception Exc) 
+            {
+                TLogging.Log("An Exception occured during the consolidation of Budgets:" + Environment.NewLine + Exc.ToString());
+                
+                if (NewTransaction)
+                {                
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
-            }
-
-            return retVal;
+                
+                throw;
+            }                        
         }
 
         /// <summary>
         /// Complete the Budget consolidation process
         /// </summary>
         /// <param name="ATransaction"></param>
-        /// <param name="AVerificationResult"></param>
         private static void FinishConsolidateBudget(
-            TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
+            TDBTransaction ATransaction)
         {
             /*Consolidate_Budget*/
             foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
@@ -260,7 +244,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 BudgetRow.BudgetStatus = true;
             }
 
-            ABudgetAccess.SubmitChanges(FBudgetTDS.ABudget, ATransaction, out AVerificationResult);
+            ABudgetAccess.SubmitChanges(FBudgetTDS.ABudget, ATransaction);
         }
 
         /// <summary>

@@ -13,6 +13,7 @@ using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Verification;
+using Ict.Common.Verification.Exceptions;
 using Ict.Common.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.MCommon.Data.Cascading;
@@ -299,37 +300,37 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// </summary>
     /// <param name="ATable"></param>
     /// <param name="ATransaction"></param>
-    /// <param name="AVerificationResult"></param>
-    /// <returns>True = Data are written to the data base successfully.</returns>
-    public static bool SubmitChanges({#TABLENAME}Table ATable, TDBTransaction ATransaction, out TVerificationResultCollection AVerificationResult)
+    public static void SubmitChanges({#TABLENAME}Table ATable, TDBTransaction ATransaction)
     {
+        TVerificationResultCollection VerificationResults = null;
         TVerificationResultCollection SingleVerificationResultCollection;
         DataView DeletedRows = new DataView(ATable, string.Empty, String.Empty, DataViewRowState.Deleted);
-
-        AVerificationResult = null;
-
+        
         for (int Counter = 0; Counter < DeletedRows.Count; Counter++) 
         {
             if({#TABLENAME}Cascading.CountByPrimaryKey(DataUtilities.GetPKValuesFromDataRow(DeletedRows[Counter].Row), ATransaction, true, 
                 out SingleVerificationResultCollection) > 0)
             {
-                if (AVerificationResult == null) 
+                if (VerificationResults == null)
                 {
-                    AVerificationResult = new TVerificationResultCollection();
+                    VerificationResults = new TVerificationResultCollection();
                 }
-                
-                AVerificationResult.AddCollection(SingleVerificationResultCollection);
+                    
+                VerificationResults.AddCollection(SingleVerificationResultCollection);
             }
         }
 
-        if (AVerificationResult != null) 
+        if (VerificationResults != null) 
         {
-            return false;
+            throw new EVerificationResultsException(String.Format(
+                "SubmitChanges for {#TABLENAME}Table: cannot delete {0} row(s) because they are referenced by at least one record in at least on other DB Table." +
+                "Check the TVerificationResultCollection stored in this Exceptions' 'VerificationResults' Property for details!", VerificationResults.Count), 
+                VerificationResults);
         }
         else
         {
-            return SubmitChanges(ATable, ATransaction, out AVerificationResult, UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});
-        }
+            SubmitChanges(ATable, ATransaction, UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});
+        }        
     }
 
 {#IFDEF FORMALPARAMETERSPRIMARYKEY}

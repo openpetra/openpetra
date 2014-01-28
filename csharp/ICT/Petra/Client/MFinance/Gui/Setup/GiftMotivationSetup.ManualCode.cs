@@ -119,7 +119,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
         private TSubmitChangesResult StoreManualCode(ref GiftBatchTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
-            return TRemote.MFinance.Gift.WebConnectors.SaveMotivationDetails(ref ASubmitChanges, out AVerificationResult);
+            AVerificationResult = null;
+            
+            return TRemote.MFinance.Gift.WebConnectors.SaveMotivationDetails(ref ASubmitChanges);
         }
 
         private void NewRecord(Object sender, EventArgs e)
