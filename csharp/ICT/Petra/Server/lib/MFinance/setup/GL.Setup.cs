@@ -1261,7 +1261,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
             AVerificationResult = new TVerificationResultCollection();
 
@@ -1361,8 +1360,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             {
                 if (AInspectDS.AAnalysisType.Rows.Count > 0)
                 {
-                    ValidateAAnalysisType(ValidationControlsDict, ref AVerificationResult, AInspectDS.AAnalysisType);
-                    ValidateAAnalysisTypeManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AAnalysisType);
+                    ValidateAAnalysisType(ref AVerificationResult, AInspectDS.AAnalysisType);
+                    ValidateAAnalysisTypeManual(ref AVerificationResult, AInspectDS.AAnalysisType);
 
                     if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                     {
@@ -1478,10 +1477,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
         #region Data Validation
 
-        static partial void ValidateAAnalysisType(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        static partial void ValidateAAnalysisTypeManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateAAnalysisType(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateAAnalysisTypeManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
         #endregion Data Validation
 

@@ -39,8 +39,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         // Put Methods for the validation of AP EditTransaction in this code file.
         //
 
-        static partial void ValidateApDocumentDetailManual(TValidationControlsDict AValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable)
+        static partial void ValidateApDocumentDetailManual(ref TVerificationResultCollection AVerificationResult, 
+            TTypedDataTable ASubmitTable)
         {
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 

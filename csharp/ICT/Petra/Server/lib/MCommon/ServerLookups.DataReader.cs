@@ -236,7 +236,6 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             TDBTransaction SubmitChangesTransaction;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
             AVerificationResult = null;
 
@@ -341,8 +340,8 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                     }
                     else if (ATablename == PInternationalPostalTypeTable.GetTableDBName())
                     {
-                        ValidateInternationalPostalType(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
-                        ValidateInternationalPostalTypeManual(ValidationControlsDict, ref AVerificationResult, ASubmitTable);
+                        ValidateInternationalPostalType(ref AVerificationResult, ASubmitTable);
+                        ValidateInternationalPostalTypeManual(ref AVerificationResult, ASubmitTable);
 
                         if (TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                         {
@@ -403,10 +402,8 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
 
         #region Data Validation
 
-        static partial void ValidateInternationalPostalType(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        static partial void ValidateInternationalPostalTypeManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateInternationalPostalType(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateInternationalPostalTypeManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
         #endregion Data Validation
     }
