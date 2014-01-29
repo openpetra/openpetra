@@ -249,6 +249,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.SuppressChangeDetection = true;
 
+                //Set RecipientLedgerNumber
+                if (APartnerKey > 0)
+                {
+                	FPreviouslySelectedDetailRow.RecipientLedgerNumber =  TRemote.MFinance.Gift.WebConnectors.GetRecipientLedgerNumber(APartnerKey);
+                }
+                else
+                {
+                	FPreviouslySelectedDetailRow.RecipientLedgerNumber =  0;
+                }
+                
                 strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
                 strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
 
@@ -275,6 +285,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     RetrieveMotivationDetailCostCentreCode();
                 }
+                
+                IdentifyCostCentreCode(APartner);
             }
             finally
             {
@@ -595,6 +607,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailCostCentreCode.Text = CostCentreCode;
         }
 
+        private void RetrieveCostCentreCode(Int64 APartner)
+        {
+			if (FInKeyMinistryChanging || FPreviouslySelectedDetailRow == null)
+			{
+				return;
+			}
+			
+        	string CostCentreCode = string.Empty;
+        	Int64 RecipientLedgerNumber = FPreviouslySelectedDetailRow.RecipientLedgerNumber;
+        	Int64 LedgerPartnerKey = FMainDS.ALedger[0].PartnerKey;
+        	bool KeyMinIsActive = false;
+        	
+        	bool KeyMinExists = TRemote.MFinance.Gift.WebConnectors.KeyMinistryExists(APartner, KeyMinIsActive);
+        	
+        	if ((RecipientLedgerNumber != LedgerPartnerKey) && ((FMotivationGroup = "GIFT") || KeyMinExists))
+        	{
+        		
+        		
+        	}
+        	else
+        	{
+        		
+        	}
+        	
+        	
+            AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                new object[] { FLedgerNumber, FMotivationGroup, FMotivationDetail });
+
+            if (motivationDetail != null)
+            {
+                CostCentreCode = motivationDetail.CostCentreCode.ToString();
+            }
+
+            txtDetailCostCentreCode.Text = CostCentreCode;
+        }
+
         private void MotivationDetailChanged(object sender, EventArgs e)
         {
             if (!FBatchUnposted || !FInEditMode || txtKeyMinistry.Visible)
@@ -686,7 +734,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtBatchTotal.NumberValueDecimal = 0;
 
                 //If all details have been deleted
-                if ((FLedgerNumber != -1) && (grdDetails.Rows.Count == 1) && FBatchRow != null)
+                if ((FLedgerNumber != -1) && (grdDetails.Rows.Count == 1) && (FBatchRow != null))
                 {
                     ((TFrmGiftBatch) this.ParentForm).GetBatchControl().UpdateBatchTotal(0, FBatchRow.BatchNumber);
                 }
