@@ -50,9 +50,6 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                 new TValidationControlsData(null, PInternationalPostalTypeTable.GetDescriptionDBName()));
             ValidationControlsDict.Add(ASubmitTable.Columns[(short)PInternationalPostalTypeTable.ColumnDeletableId],
                 new TValidationControlsData(null, PInternationalPostalTypeTable.GetDeletableDBName()));
-                       
-//            ValidationControlsDict.Add(ASubmitTable.Columns[PmStaffDataTable.ColumnReceivingFieldId],
-//                new TValidationControlsData(null, PmStaffDataTable.GetReceivingFieldDBName()));
 
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
