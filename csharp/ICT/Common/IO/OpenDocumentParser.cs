@@ -193,8 +193,6 @@ namespace Ict.Common.IO
 
                 while ((element = zipInputStream.GetNextEntry()) != null)
                 {
-                    Console.WriteLine(element.Name);
-
                     if (element.IsFile && (element.Name.ToLower() == "content.xml"))
                     {
                         break;
