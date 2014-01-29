@@ -27,6 +27,7 @@ using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
@@ -34,6 +35,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonControls.Logic;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
@@ -78,6 +80,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         private Boolean FGridEdited;
 
         private Boolean FDeadlineEditMode;
+
+        // true if the grid is being refreshed because of a broadcast message
+        private Boolean FBroadcastRefresh = false;
 
         #region Public Methods
 
@@ -141,6 +146,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 MessageBox.Show("FGridEdited: was: " + FGridEdited.ToString() + ", getting changed to: " + value.ToString());
                 FGridEdited = value;
+            }
+        }
+
+        /// true if the grid is being refreshed because of a broadcast message
+        public Boolean BroadcastRefresh
+        {
+            set
+            {
+                FBroadcastRefresh = value;
             }
         }
 
@@ -722,7 +736,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             System.Int64 NewPersonKey = 0;
             System.Int64 OtherFamilyKey = 0;
             String ProblemMessage;
-            TVerificationResultCollection VerificationResult;
 
             if (GridEdited)
             {
@@ -785,8 +798,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 if (TRemote.MPartner.Partner.WebConnectors.ChangeFamily(NewPersonKey,
                                         OtherFamilyKey,
                                         GetFamilyKey(),
-                                        out ProblemMessage,
-                                        out VerificationResult))
+                                        out ProblemMessage))
                                 {
                                     // even in case of success there might still be a warning message that needs display
                                     if (ProblemMessage != "")
@@ -797,8 +809,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 else
                                 {
                                     // can't continue after error
-                                    MessageBox.Show(Messages.BuildMessageFromVerificationResult("Change of family failed!" + Environment.NewLine +
-                                            "Reasons:", VerificationResult));
+                                    MessageBox.Show("Change of family failed!");
                                     MessageBox.Show(ProblemMessage, Catalog.GetString("Change Family"));
                                     return;
                                 }
@@ -830,8 +841,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                         catch (Exception exp)
                         {
-                            throw new ApplicationException("Exception occured while calling PartnerFindScreen Delegate!",
-                                exp);
+                            throw new EOPAppException("Exception occured while calling PartnerFindScreen Delegate!", exp);
                         }
                         // end try
                     }
@@ -869,7 +879,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else
                 {
-                    throw new ApplicationException("Delegate FGetLocationKeyOfCurrentlySelectedAddress is not set up");
+                    throw new EOPAppException("Delegate FGetLocationKeyOfCurrentlySelectedAddress is not set up");
                 }
 
                 TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
@@ -1306,7 +1316,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         ///
         /// </summary>
-        private void RefreshGrid()
+        public void RefreshGrid()
         {
             if (GridEdited)
             {
@@ -1353,8 +1363,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                         /* One or more Family Members present > select first one in Grid */
                         grdFamilyMembers.Selection.SelectRow(1, true);
 
-                        /* Make the Grid respond on updown keys */
-                        grdFamilyMembers.Focus();
+                        // if refresh is the result of a broadcast message we do not want to bring the grid into focus
+                        if (!FBroadcastRefresh)
+                        {
+                            /* Make the Grid respond on updown keys */
+                            grdFamilyMembers.Focus();
+                        }
+
                         btnEditPerson.Enabled = true;
                         btnMovePersonToOtherFamily.Enabled = true;
                         btnEditFamilyID.Enabled = true;
@@ -1396,8 +1411,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             System.Int64 NewFamilyKey = 0;
             String ProblemMessage;
-            TVerificationResultCollection VerificationResult;
-
             TLocationPK mResultLocationPK;
 
             if (FDelegateIsNewPartner != null)
@@ -1447,8 +1460,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 if (TRemote.MPartner.Partner.WebConnectors.ChangeFamily(APersonKey,
                                         AOldFamilyKey,
                                         NewFamilyKey,
-                                        out ProblemMessage,
-                                        out VerificationResult))
+                                        out ProblemMessage))
                                 {
                                     // even in case of success there might still be a warning message that needs display
                                     if (ProblemMessage != "")
@@ -1459,8 +1471,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 else
                                 {
                                     // can't continue after error
-                                    MessageBox.Show(Messages.BuildMessageFromVerificationResult("Change of family failed!" + Environment.NewLine +
-                                            "Reasons:", VerificationResult));
+                                    MessageBox.Show("Change of family failed!");
                                     MessageBox.Show(ProblemMessage, Catalog.GetString("Change Family"));
                                     return;
                                 }
@@ -1501,8 +1512,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                         catch (Exception exp)
                         {
-                            throw new ApplicationException("Exception occured while calling PartnerFindScreen Delegate!",
-                                exp);
+                            throw new EOPAppException("Exception occured while calling PartnerFindScreen Delegate!", exp);
                         }
                         // end try
                     }

@@ -818,7 +818,6 @@ namespace Ict.Petra.Server.MFinance.ImportExport
             AMatchDS.AGiftDetail.Clear();
             AMatchDS.AGift.Clear();
 
-            TVerificationResultCollection Verification;
             AMatchDS.ThrowAwayAfterSubmitChanges = true;
 
             if (TLogging.DebugLevel > 0)
@@ -826,7 +825,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport
                 TLogging.Log("before submitchanges");
             }
 
-            BankImportTDSAccess.SubmitChanges(AMatchDS, out Verification);
+            BankImportTDSAccess.SubmitChanges(AMatchDS);
 
             if (TLogging.DebugLevel > 0)
             {

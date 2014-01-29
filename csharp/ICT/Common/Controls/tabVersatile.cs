@@ -32,6 +32,8 @@ using System.Drawing.Text;
 using System.Globalization;
 using Ict.Common;
 
+using Ict.Common.Exceptions;
+
 namespace Ict.Common.Controls
 {
     /// <summary>Event handler declaration</summary>
@@ -138,7 +140,7 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    throw new TSelectedIndexChangeDisallowedTabPagedIsDisabledException(
+                    throw new ESelectedIndexChangeDisallowedTabPagedIsDisabledException(
                         "TabPage with Index " + value.ToString() + " is disabled and therefore cannot be Selected");
                 }
             }
@@ -160,7 +162,7 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    throw new TSelectedIndexChangeDisallowedTabPagedIsDisabledException(
+                    throw new ESelectedIndexChangeDisallowedTabPagedIsDisabledException(
                         "TabPage '" + value.Name + "' is disabled and therefore cannot be Selected");
                 }
             }
@@ -1281,28 +1283,37 @@ namespace Ict.Common.Controls
         #endregion
     }
 
+    #region ESelectedIndexChangeDisallowedTabPagedIsDisabledException
+
     /// <summary>
-    /// tab page is disabled and therefore cannot be selected
+    /// Tab page is disabled and therefore cannot be selected.
     /// </summary>
-    public class TSelectedIndexChangeDisallowedTabPagedIsDisabledException : ApplicationException
+    public class ESelectedIndexChangeDisallowedTabPagedIsDisabledException : EOPAppException
     {
-        #region TSelectedIndexChangeDisallowedTabPagedIsDisabledException
-
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public TSelectedIndexChangeDisallowedTabPagedIsDisabledException() : base()
+        public ESelectedIndexChangeDisallowedTabPagedIsDisabledException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public TSelectedIndexChangeDisallowedTabPagedIsDisabledException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public ESelectedIndexChangeDisallowedTabPagedIsDisabledException(String AMessage) : base(AMessage)
         {
         }
 
-        #endregion
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ESelectedIndexChangeDisallowedTabPagedIsDisabledException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
     }
+
+    #endregion
 }

@@ -759,23 +759,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (!SubmitCancelled)
             {
-                TVerificationResultCollection AMessages;
+                TRemote.MFinance.GL.WebConnectors.SubmitRecurringGLBatch(requestParams);
 
-                Boolean submitOK = TRemote.MFinance.GL.WebConnectors.SubmitRecurringGLBatch(requestParams, out AMessages);
-
-                if (submitOK)
-                {
-                    MessageBox.Show(Catalog.GetString("Your recurring batch was submitted successfully!"),
-                        Catalog.GetString("Success"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-                else
-                {
-                    MessageBox.Show(Messages.BuildMessageFromVerificationResult(Catalog.GetString("Submitting the batch failed!") +
-                            Environment.NewLine +
-                            Catalog.GetString("Reasons:"), AMessages));
-                }
+                MessageBox.Show(Catalog.GetString("Your recurring batch was submitted successfully!"),
+                    Catalog.GetString("Success"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
             }
         }
 
@@ -1024,6 +1013,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             grdDetails.DoubleClickHeaderCell += new TDoubleClickHeaderCellEventHandler(grdDetails_DoubleClickHeaderCell);
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowJournalTab);
+            grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
 
             AutoSizeGrid();
         }
@@ -1042,9 +1032,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void FilterToggledManual(bool AFilterIsOff)
+        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
         {
-            AutoSizeGrid();
+            if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
+            {
+                AutoSizeGrid();
+            }
         }
 
         /// <summary>

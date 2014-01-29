@@ -26,8 +26,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using GNU.Gettext;
-using Ict.Common.Verification;
+
 using Ict.Common;
+using Ict.Common.Exceptions;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner.Gui;
@@ -77,8 +79,16 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
                 dtpEndDate.Enabled = true;
             }
 
-            // display currency
-            cmbCurrency.SetSelectedString(((PcConferenceRow)FMainDS.PcConference.Rows[0]).CurrencyCode, -1);
+            // display currency (if currency code in PUnit has changed then use that over the currency code in PcConference)
+            if ((FMainDS.PUnit.Rows.Count == 0)
+                || (((PUnitRow)FMainDS.PUnit.Rows[0]).OutreachCostCurrencyCode == ((PcConferenceRow)FMainDS.PcConference.Rows[0]).CurrencyCode))
+            {
+                cmbCurrency.SetSelectedString(((PcConferenceRow)FMainDS.PcConference.Rows[0]).CurrencyCode, -1);
+            }
+            else
+            {
+                cmbCurrency.SetSelectedString(((PUnitRow)FMainDS.PUnit.Rows[0]).OutreachCostCurrencyCode, -1);
+            }
 
             // set radio buttons and checkbox
             Boolean ChargeCampaign = true;
@@ -116,6 +126,13 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
                 txtSpecialRoleAccommodation.ReadOnly = false;
                 txtVolunteerAccommodation.ReadOnly = false;
                 txtSpecialRoleCampaignAccommodation.ReadOnly = false;
+
+                txtSpecialRolePreAccommodation.TabStop = true;
+                txtVolunteerPreAccommodation.TabStop = true;
+                txtParticipantPreAccommodation.TabStop = true;
+                txtSpecialRoleAccommodation.TabStop = true;
+                txtVolunteerAccommodation.TabStop = true;
+                txtSpecialRoleCampaignAccommodation.TabStop = true;
             }
 
             // display conference discounts
@@ -230,6 +247,13 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             txtSpecialRoleAccommodation.ReadOnly = AccommodationDiscountsReadOnly;
             txtVolunteerAccommodation.ReadOnly = AccommodationDiscountsReadOnly;
             txtSpecialRoleCampaignAccommodation.ReadOnly = AccommodationDiscountsReadOnly;
+
+            txtSpecialRolePreAccommodation.TabStop = !AccommodationDiscountsReadOnly;
+            txtVolunteerPreAccommodation.TabStop = !AccommodationDiscountsReadOnly;
+            txtParticipantPreAccommodation.TabStop = !AccommodationDiscountsReadOnly;
+            txtSpecialRoleAccommodation.TabStop = !AccommodationDiscountsReadOnly;
+            txtVolunteerAccommodation.TabStop = !AccommodationDiscountsReadOnly;
+            txtSpecialRoleCampaignAccommodation.TabStop = !AccommodationDiscountsReadOnly;
         }
 
         // Called with Add button. Adds new venue to conference.
@@ -275,7 +299,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             }
             catch (Exception exp)
             {
-                throw new ApplicationException("Exception occured while calling VenueFindScreen!", exp);
+                throw new EOPAppException("Exception occured while calling VenueFindScreen!", exp);
             }
         }
 
@@ -299,9 +323,11 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
         {
             PcConferenceRow ConferenceData = (PcConferenceRow)FMainDS.PcConference.Rows[0];
             PPartnerLocationRow PartnerLocationData = (PPartnerLocationRow)FMainDS.PPartnerLocation.Rows[0];
+            PUnitRow UnitData = (PUnitRow)FMainDS.PUnit.Rows[0];
             DataRowCollection ConferenceOptionData = FMainDS.PcConferenceOption.Rows;
 
             ConferenceData.CurrencyCode = cmbCurrency.GetSelectedString();
+            UnitData.OutreachCostCurrencyCode = cmbCurrency.GetSelectedString();
             ConferenceData.Start = dtpStartDate.Date;
             ConferenceData.End = dtpEndDate.Date;
             PartnerLocationData.DateEffective = dtpStartDate.Date;
@@ -408,7 +434,9 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
         // save data
         private TSubmitChangesResult StoreManualCode(ref ConferenceSetupTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
-            return TRemote.MConference.Conference.WebConnectors.SaveConferenceSetupTDS(ref ASubmitChanges, out AVerificationResult);
+            AVerificationResult = null;
+
+            return TRemote.MConference.Conference.WebConnectors.SaveConferenceSetupTDS(ref ASubmitChanges);
         }
 
         private void ValidateDataManual(PcConferenceRow ARow)

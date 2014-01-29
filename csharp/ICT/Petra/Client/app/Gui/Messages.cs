@@ -23,16 +23,17 @@
 //
 using System;
 using System.Windows.Forms;
-using Ict.Common.Verification;
+using System.Diagnostics;
+using Ict.Common;
 using Ict.Common.Exceptions;
+using Ict.Common.Data;
+using Ict.Common.Data.Exceptions;
+using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MPartner;
-using System.Diagnostics;
 using GNU.Gettext;
-using Ict.Common;
-using Ict.Common.Data;
-using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.App.Gui
 {
@@ -114,9 +115,10 @@ namespace Ict.Petra.Client.App.Gui
             "\r\n" + "\r\n");
 
         /// <summary>Part of a Database Concurrency Message.</summary>
-        private static readonly string StrDBConcurrencyActionsRequired = Catalog.GetString("Actions required:" + "\r\n" +
-            "  * If you were in a screen: please close the screen and re-open it again." + "\r\n" +
-            "  * You will need to repeat your changes and save them again.");
+        private static readonly string StrDBConcurrencyActionsRequired = Catalog.GetString("Actions required:\r\n" +
+            "  * If you were in a screen: please close the screen and re-open it again.\r\n" +
+            "  * You will need to repeat your changes and save them again.\r\n" +
+            "  * In case the error keeps occuring: please contact your OpenPetra support team.");
 
         /// <summary>Part of a Database Concurrency Message.</summary>
         private static readonly string StrDBConcurrencyWrittenSelfAction = Catalog.GetString("modified");
@@ -502,15 +504,13 @@ namespace Ict.Petra.Client.App.Gui
         /// <param name="ATypeWhichRaisesError"></param>
         public static void MsgDBConcurrencyException(EDBConcurrencyException AException, System.Type ATypeWhichRaisesError)
         {
-            String TableLabelName;
+            String TableLabelName = StringHelper.UpperCamelCase(AException.DBTable);
             String UsersAction;
             String OtherUsersAction;
             String DateInfo;
-            String MessageString;
+            String MessageString = String.Empty;
 
-            object[] ReplacePlaceholdersArray;
-            TableLabelName = StringHelper.UpperCamelCase(AException.DBTable);
-            ReplacePlaceholdersArray = new Object[5];
+            object[] ReplacePlaceholdersArray = new Object[5];
 
             if (AException.DBOperation == "write")
             {
@@ -542,8 +542,23 @@ namespace Ict.Petra.Client.App.Gui
                     OtherUsersAction = StrDBConcurrencyDeleteOthersAction;
                 }
 
-                ReplacePlaceholdersArray[0] = "";
-                DateInfo = "";
+                ReplacePlaceholdersArray[0] = String.Empty;
+                DateInfo = String.Empty;
+            }
+            else if ((AException.DBOperation == "update")
+                     && (AException is EDBConcurrencyNoRowToUpdateException))
+            {
+                MessageString = Catalog.GetString(
+                    "You have tried to update data, but that data is not present in the OpenPetra database.\r\n" +
+                    "This means that either\r\n" +
+                    " * this data has been deleted before you tried to update it (presumably by somebody else); or\r\n" +
+                    " * that that data wasn't present in the OpenPetra database at all before you tried to update it (this points to a programming error).\r\n\r\n");
+
+                ReplacePlaceholdersArray = null;
+
+                DateInfo = String.Empty;
+                OtherUsersAction = String.Empty;
+                UsersAction = String.Empty;
             }
             else
             {
@@ -564,42 +579,51 @@ namespace Ict.Petra.Client.App.Gui
                 ReplacePlaceholdersArray[0] = "('" + AException.LastModificationUser + "') ";
             }
 
-            if (DateInfo != "")
+            if (ReplacePlaceholdersArray != null)
             {
-                // Format the Date with time only if time isn't 00:00:00
-                if (AException.LastModification.Date.TimeOfDay != DateTime.Now.Date.TimeOfDay)
+                if (DateInfo != "")
                 {
-                    DateInfo = String.Format(DateInfo, StringHelper.DateToLocalizedString(AException.LastModification, true, true));
+                    // Format the Date with time only if time isn't 00:00:00
+                    if (AException.LastModification.Date.TimeOfDay != DateTime.Now.Date.TimeOfDay)
+                    {
+                        DateInfo = String.Format(DateInfo, StringHelper.DateToLocalizedString(AException.LastModification, true, true));
+                    }
+                    else
+                    {
+                        DateInfo = String.Format(DateInfo, StringHelper.DateToLocalizedString(AException.LastModification));
+                    }
+                }
+
+                ReplacePlaceholdersArray[1] = OtherUsersAction;
+                ReplacePlaceholdersArray[2] = TableLabelName;
+                ReplacePlaceholdersArray[3] = UsersAction;
+                ReplacePlaceholdersArray[4] = DateInfo;
+
+                // MessageBox.Show('ReplacePlaceholdersArray[0]: ' + ReplacePlaceholdersArray[0].ToString + "\r\n" +
+                // 'ReplacePlaceholdersArray[1]: ' + ReplacePlaceholdersArray[1].ToString + "\r\n" +
+                // 'ReplacePlaceholdersArray[2]: ' + ReplacePlaceholdersArray[2].ToString + "\r\n" +
+                // 'ReplacePlaceholdersArray[3]: ' + ReplacePlaceholdersArray[3].ToString + "\r\n" +
+                // 'ReplacePlaceholdersArray[4]: ' + ReplacePlaceholdersArray[4].ToString);
+                if (AException.LastModificationUser != UserInfo.GUserInfo.UserID)
+                {
+                    MessageString = StrDBConcurrencyOtherUser;
                 }
                 else
                 {
-                    DateInfo = String.Format(DateInfo, StringHelper.DateToLocalizedString(AException.LastModification));
+                    MessageString = StrDBConcurrencySelf;
                 }
-            }
 
-            ReplacePlaceholdersArray[1] = OtherUsersAction;
-            ReplacePlaceholdersArray[2] = TableLabelName;
-            ReplacePlaceholdersArray[3] = UsersAction;
-            ReplacePlaceholdersArray[4] = DateInfo;
-
-            // MessageBox.Show('ReplacePlaceholdersArray[0]: ' + ReplacePlaceholdersArray[0].ToString + "\r\n" +
-            // 'ReplacePlaceholdersArray[1]: ' + ReplacePlaceholdersArray[1].ToString + "\r\n" +
-            // 'ReplacePlaceholdersArray[2]: ' + ReplacePlaceholdersArray[2].ToString + "\r\n" +
-            // 'ReplacePlaceholdersArray[3]: ' + ReplacePlaceholdersArray[3].ToString + "\r\n" +
-            // 'ReplacePlaceholdersArray[4]: ' + ReplacePlaceholdersArray[4].ToString);
-            if (AException.LastModificationUser != UserInfo.GUserInfo.UserID)
-            {
-                MessageString = StrDBConcurrencyOtherUser;
+                MessageBox.Show(String.Format(MessageString,
+                        ReplacePlaceholdersArray) + StrDBConcurrencyActionsRequired +
+                    BuildMessageFooter(PetraErrorCodes.ERR_CONCURRENTCHANGES,
+                        ATypeWhichRaisesError.Name), StrDBConcurrencyTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             else
             {
-                MessageString = StrDBConcurrencySelf;
+                MessageBox.Show(MessageString + StrDBConcurrencyActionsRequired +
+                    BuildMessageFooter(PetraErrorCodes.ERR_CONCURRENTCHANGES,
+                        ATypeWhichRaisesError.Name), StrDBConcurrencyTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-
-            MessageBox.Show(String.Format(MessageString,
-                    ReplacePlaceholdersArray) + StrDBConcurrencyActionsRequired +
-                BuildMessageFooter(PetraErrorCodes.ERR_CONCURRENTCHANGES,
-                    ATypeWhichRaisesError.Name), StrDBConcurrencyTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         /// <summary>

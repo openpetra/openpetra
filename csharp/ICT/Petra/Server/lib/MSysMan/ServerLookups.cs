@@ -26,6 +26,7 @@ using System.Data;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
@@ -68,7 +69,7 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
 
             if (SystemDefaultsDT.Rows.Count < 1)
             {
-                throw new ApplicationException(
+                throw new EOPAppException(
                     "TSysManServerLookups.GetDBVersion: s_system_defaults DB Table is empty; this is unexpected and can lead to sever malfunction of OpenPetra. Contact your Support Team.");
             }
 
@@ -76,7 +77,7 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
 
             if (sysrow == null)
             {
-                throw new ApplicationException(
+                throw new EOPAppException(
                     "TSysManServerLookups.GetDBVersion: s_system_defaults DB Table is empty; this is unexpected and can lead to sever malfunction of OpenPetra. Contact your Support Team.");
             }
 

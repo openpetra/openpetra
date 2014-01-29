@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Common.Exceptions;
 
 namespace Ict.Common
 {
@@ -565,20 +566,29 @@ namespace Ict.Common
     /// <summary>
     /// Thrown if an attempt is made to inquire an Error Code that doesn't exist in Dictionary <see cref="ErrorCodeInventory.ErrorCodeCatalogue" />.
     /// </summary>
-    public class EErrorCodeNotRegisteredException : Exception
+    public class EErrorCodeNotRegisteredException : EOPAppException
     {
         /// <summary>
-        /// Constructor.
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        /// <param name="msg"></param>
-        public EErrorCodeNotRegisteredException(String msg) : base(msg)
+        public EErrorCodeNotRegisteredException() : base()
         {
         }
 
         /// <summary>
-        /// Constructor.
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        public EErrorCodeNotRegisteredException() : base()
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EErrorCodeNotRegisteredException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EErrorCodeNotRegisteredException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }

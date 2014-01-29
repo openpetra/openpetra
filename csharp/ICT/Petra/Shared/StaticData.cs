@@ -24,6 +24,8 @@
 using System;
 using System.Data;
 
+using Ict.Common.Exceptions;
+
 namespace Ict.Petra.Shared
 {
     /// <summary>
@@ -416,7 +418,7 @@ namespace Ict.Petra.Shared
     /// <summary>
     /// datatable is not available
     /// </summary>
-    public class EStaticDataTableNotImplementedException : ApplicationException
+    public class EStaticDataTableNotImplementedException : EOPAppException
     {
         #region EStaticDataTableNotImplementedException
 

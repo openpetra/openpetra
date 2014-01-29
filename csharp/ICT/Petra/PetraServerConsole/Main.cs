@@ -32,16 +32,14 @@ using System.Runtime.Remoting.Lifetime;
 using System.Runtime.Serialization.Formatters;
 using System.Threading;
 using GNU.Gettext;
-
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Sinks.Encryption;
 using Ict.Petra.Server.App.Core;
-
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
-
 using System.Reflection;
 
 namespace PetraServerConsole
@@ -106,7 +104,7 @@ public class TServer
                 TLogging.Log(ex.Message);
                 TLogging.Log("Please check your OpenPetra.build.config file ...");
                 TLogging.Log("Maybe a nant initConfigFile helps ...");
-                throw new ApplicationException();
+                throw new EOPAppException();
             }
             catch (Exception ex)
             {
@@ -191,7 +189,7 @@ public class TServer
                 {
                     TLogging.Log("A SocketException has been thrown.");
                     TLogging.Log("Most probably problem is that the address port is used twice!");
-                    throw new ApplicationException();
+                    throw new EOPAppException();
                 }
                 else
                 {
@@ -247,7 +245,7 @@ public class TServer
             System.Diagnostics.Debug.WriteLine(exp.ToString());
             TLogging.Log(Environment.NewLine + "Exception occured while setting up Remoting Framework:" + Environment.NewLine + exp.ToString());
         }
-        catch (ApplicationException)
+        catch (EOPAppException)
         {
             // This Exception is used if no more messages shall be done ...
         }

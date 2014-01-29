@@ -65,42 +65,34 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static GiftBatchTDS CreateAGiftBatch(Int32 ALedgerNumber, DateTime ADateEffective, string ABatchDescription)
         {
-            bool success = false;
             GiftBatchTDS MainDS = new GiftBatchTDS();
+
+            TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
             try
             {
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadWriteTransaction);
 
-                ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-
-
-                TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
+                TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref ReadWriteTransaction, ref LedgerTable, ALedgerNumber, ADateEffective);
                 MainDS.AGiftBatch[0].BatchDescription = ABatchDescription;
 
-                TVerificationResultCollection VerificationResult;
+                AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, ReadWriteTransaction);
 
-                if (AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, Transaction, out VerificationResult))
-                {
-                    if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out VerificationResult))
-                    {
-                        success = true;
-                    }
-                }
+                ALedgerAccess.SubmitChanges(LedgerTable, ReadWriteTransaction);
+
+                MainDS.AGiftBatch.AcceptChanges();
+
+                DBAccess.GDBAccessObj.CommitTransaction();
             }
-            finally
+            catch (Exception Exc)
             {
-                if (success)
-                {
-                    MainDS.AGiftBatch.AcceptChanges();
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    throw new Exception("Error in CreateAGiftBatch");
-                }
+                TLogging.Log("An Exception occured during the creation of a Gift Batch record:" + Environment.NewLine + Exc.ToString());
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
             }
+
             return MainDS;
         }
 
@@ -127,34 +119,32 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+            TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-            ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
-
-            TGiftBatchFunctions.CreateANewRecurringGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber);
-
-            TVerificationResultCollection VerificationResult;
-            bool success = false;
-
-            if (ARecurringGiftBatchAccess.SubmitChanges(MainDS.ARecurringGiftBatch, Transaction, out VerificationResult))
+            try
             {
-                if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out VerificationResult))
-                {
-                    success = true;
-                }
-            }
+                ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadWriteTransaction);
 
-            if (success)
-            {
+                TGiftBatchFunctions.CreateANewRecurringGiftBatchRow(ref MainDS, ref ReadWriteTransaction, ref LedgerTable, ALedgerNumber);
+
+                ARecurringGiftBatchAccess.SubmitChanges(MainDS.ARecurringGiftBatch, ReadWriteTransaction);
+
+                ALedgerAccess.SubmitChanges(LedgerTable, ReadWriteTransaction);
+
                 MainDS.ARecurringGiftBatch.AcceptChanges();
+
                 DBAccess.GDBAccessObj.CommitTransaction();
-                return MainDS;
             }
-            else
+            catch (Exception Exc)
             {
+                TLogging.Log("An Exception occured during the creation of a Recurring Gift Batch record:" + Environment.NewLine + Exc.ToString());
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                throw new Exception("Error in CreateAGiftBatch");
+
+                throw;
             }
+
+            return MainDS;
         }
 
         /// <summary>
@@ -162,14 +152,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// including gift and gift detail
         /// </summary>
         /// <param name="requestParams">HashTable with many parameters</param>
-        /// <param name="AMessages">Output structure for user error messages</param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Boolean SubmitRecurringGiftBatch(Hashtable requestParams, out TVerificationResultCollection AMessages)
+        public static void SubmitRecurringGiftBatch(Hashtable requestParams)
         {
-            Boolean success = false;
-
-            AMessages = new TVerificationResultCollection();
             GiftBatchTDS GMainDS = new GiftBatchTDS();
             Int32 ALedgerNumber = (Int32)requestParams["ALedgerNumber"];
             Int32 ABatchNumber = (Int32)requestParams["ABatchNumber"];
@@ -179,6 +164,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS RMainDS = LoadRecurringTransactions(ALedgerNumber, ABatchNumber);
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
             try
             {
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
@@ -312,37 +298,28 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                 }
 
-                if (AGiftBatchAccess.SubmitChanges(GMainDS.AGiftBatch, Transaction, out AMessages))
-                {
-                    if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out AMessages))
-                    {
-                        if (AGiftAccess.SubmitChanges(GMainDS.AGift, Transaction, out AMessages))
-                        {
-                            if (AGiftDetailAccess.SubmitChanges(GMainDS.AGiftDetail, Transaction, out AMessages))
-                            {
-                                success = true;
-                            }
-                        }
-                    }
-                }
+                AGiftBatchAccess.SubmitChanges(GMainDS.AGiftBatch, Transaction);
 
-                if (success)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    GMainDS.AcceptChanges();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    GMainDS.RejectChanges();
-                }
+                ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
+
+                AGiftAccess.SubmitChanges(GMainDS.AGift, Transaction);
+
+                AGiftDetailAccess.SubmitChanges(GMainDS.AGiftDetail, Transaction);
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+
+                GMainDS.AcceptChanges();
             }
-            catch (Exception ex)
+            catch (Exception Exc)
             {
+                TLogging.Log("An Exception occured during the submission of a Recurring Gift Batch:" + Environment.NewLine + Exc.ToString());
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                throw new Exception("Error in SubmitRecurringGiftBatch", ex);
+
+                GMainDS.RejectChanges();
+
+                throw;
             }
-            return success;
         }
 
         /// <summary>
@@ -719,7 +696,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ValidateGiftBatch(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftBatch);
                 ValidateGiftBatchManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftBatch);
 
-                if (AVerificationResult.HasCriticalErrors)
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                 {
                     AllValidationsOK = false;
                 }
@@ -730,7 +707,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ValidateGiftDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftDetail);
                 ValidateGiftDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftDetail);
 
-                if (AVerificationResult.HasCriticalErrors)
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                 {
                     AllValidationsOK = false;
                 }
@@ -745,9 +722,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (AllValidationsOK)
             {
-                SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                GiftBatchTDSAccess.SubmitChanges(AInspectDS);
 
-                if ((SubmissionResult == TSubmitChangesResult.scrOK) && giftTableInDataSet)
+                SubmissionResult = TSubmitChangesResult.scrOK;
+
+                if (giftTableInDataSet)
                 {
                     if (giftDetailTableInDataSet)
                     {
@@ -788,7 +767,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 }
                             }
 
-                            SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                            GiftBatchTDSAccess.SubmitChanges(AInspectDS);
+
+                            SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                         catch (Exception ex)
                         {
@@ -838,7 +819,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ValidateRecurringGiftBatch(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
                 ValidateRecurringGiftBatchManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
 
-                if (AVerificationResult.HasCriticalErrors)
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                 {
                     AllValidationsOK = false;
                 }
@@ -849,7 +830,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ValidateRecurringGiftDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftDetail);
                 ValidateRecurringGiftDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftDetail);
 
-                if (AVerificationResult.HasCriticalErrors)
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                 {
                     AllValidationsOK = false;
                 }
@@ -864,9 +845,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (AllValidationsOK)
             {
-                SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                GiftBatchTDSAccess.SubmitChanges(AInspectDS);
 
-                if ((SubmissionResult == TSubmitChangesResult.scrOK) && recurrGiftTableInDataSet && (AInspectDS.ARecurringGift.Count > 0))
+                SubmissionResult = TSubmitChangesResult.scrOK;
+
+                if (recurrGiftTableInDataSet && (AInspectDS.ARecurringGift.Count > 0))
                 {
                     if (recurrGiftBatchTableInDataSet)
                     {
@@ -912,7 +895,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 }
                             }
 
-                            SubmissionResult = GiftBatchTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                            GiftBatchTDSAccess.SubmitChanges(AInspectDS);
+
+                            SubmissionResult = TSubmitChangesResult.scrOK;
                         }
                         catch (Exception ex)
                         {
@@ -1148,6 +1133,61 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             UmUnitStructureAccess.LoadAll(AGiftDS, ATransaction);
             AGiftDS.UmUnitStructure.DefaultView.Sort = UmUnitStructureTable.GetChildUnitKeyDBName();
+        }
+
+        /// <summary>
+        /// Check if an entry exists in ValidLedgerNumber for the specified ledger number and partner key
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APartnerKey"></param>
+        /// <param name="ACostCentreCode"></param>
+        /// <returns></returns>
+        public static bool ValidLedgerNumberExistsForRecipient(Int32 ALedgerNumber, Int64 APartnerKey, out string ACostCentreCode)
+        {
+            bool PartnerExists = false;
+
+            ACostCentreCode = string.Empty;
+
+            bool NewTransaction;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+
+            string ValidLedgerNumberTable = "ValidLedgerNumber";
+
+            string GetPartnerValidLedgerNumberSQL = String.Format("SELECT DISTINCT vln.a_cost_centre_code_c FROM PUB_a_valid_ledger_number vln " +
+                "WHERE vln.a_ledger_number_i = {0} AND vln.p_partner_key_n = {1}",
+                ALedgerNumber,
+                APartnerKey);
+
+            DataSet tempDataSet = new DataSet();
+
+            try
+            {
+                DBAccess.GDBAccessObj.Select(tempDataSet, GetPartnerValidLedgerNumberSQL, ValidLedgerNumberTable,
+                    Transaction,
+                    0, 0);
+
+                if (tempDataSet.Tables[ValidLedgerNumberTable] != null)
+                {
+                    if (tempDataSet.Tables[ValidLedgerNumberTable].Rows.Count > 0)
+                    {
+                        DataRow row = tempDataSet.Tables[ValidLedgerNumberTable].Rows[0];
+                        ACostCentreCode = row[0].ToString();
+                        PartnerExists = true;
+                    }
+
+                    tempDataSet.Clear();
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
+
+            return PartnerExists;
         }
 
         /// <summary>
@@ -1672,11 +1712,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     if ((motivationFeeRow.MotivationDetailCode == motivationRow.MotivationDetailCode)
                         && (motivationFeeRow.MotivationGroupCode == motivationRow.MotivationGroupCode))
                     {
+                        TVerificationResultCollection Verifications2;
+
                         decimal FeeAmount = CalculateAdminFee(MainDS,
                             ALedgerNumber,
                             motivationFeeRow.FeeCode,
                             giftDetail.GiftAmount,
-                            out AVerifications);
+                            out Verifications2);
+
+                        if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verifications2))
+                        {
+                            AVerifications.AddCollection(Verifications2);
+
+                            return null;
+                        }
+
                         AddToFeeTotals(MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, GiftBatchRow.BatchPeriod);
                     }
                 }
@@ -1773,11 +1823,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         MainDS.ThrowAwayAfterSubmitChanges = true;
 
-                        if (GiftBatchTDSAccess.SubmitChanges(MainDS, out SingleVerificationResultCollection) != TSubmitChangesResult.scrOK)
-                        {
-                            AVerifications.AddCollection(SingleVerificationResultCollection);
-                            return false;
-                        }
+                        GiftBatchTDSAccess.SubmitChanges(MainDS);
                     }
                     else
                     {
@@ -1815,7 +1861,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             {
                 TLogging.Log("In posting Gift batches: exception " + e.Message);
 
-                throw new Exception(e.ToString() + " " + e.Message);
+                throw;
             }
             finally
             {

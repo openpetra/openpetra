@@ -31,6 +31,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -63,6 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         AGiftRow FGift = null;
         string FFilterAllDetailsOfGift = string.Empty;
         DataView FGiftDetailView = null;
+        private bool FSuppressListChanged = false;
 
         private string FMotivationGroup = string.Empty;
         private string FMotivationDetail = string.Empty;
@@ -128,7 +130,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="ABatchStatus"></param>
-        public void LoadGifts(Int32 ALedgerNumber,
+        /// <returns>True if new gift transactions were loaded, false if transactions had been loaded already.</returns>
+        public bool LoadGifts(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
@@ -141,8 +144,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 InitialiseControls();
             }
-
-            //((FFilterPanelControls.BaseFilter == FCurrentActiveFilter) && !FPetraUtilsObject.DetailProtectedMode && !ViewMode && ABatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus))
@@ -169,10 +170,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 SetTextBoxOverlayOnKeyMinistryCombo();
 
-                return;
+                return false;
             }
 
             grdDetails.SuspendLayout();
+            FSuppressListChanged = true;
 
             //Read key fields
             FLedgerNumber = ALedgerNumber;
@@ -215,6 +217,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             // Now we set the full filter
+            ApplyFilter();
             UpdateRecordNumberDisplay();
             SetRecordNumberDisplayProperties();
             SelectRowInGrid(1);
@@ -222,7 +225,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateTotals();
             UpdateControlsProtection();
 
+            FSuppressListChanged = false;
             grdDetails.ResumeLayout();
+
+            return true;
         }
 
         bool FinRecipientKeyChanging = false;
@@ -252,13 +258,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Set RecipientLedgerNumber
                 if (APartnerKey > 0)
                 {
-                	FPreviouslySelectedDetailRow.RecipientLedgerNumber =  TRemote.MFinance.Gift.WebConnectors.GetRecipientLedgerNumber(APartnerKey);
+                    FPreviouslySelectedDetailRow.RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientLedgerNumber(APartnerKey);
                 }
                 else
                 {
-                	FPreviouslySelectedDetailRow.RecipientLedgerNumber =  0;
+                    FPreviouslySelectedDetailRow.RecipientLedgerNumber = 0;
                 }
-                
+
                 strMotivationGroup = cmbDetailMotivationGroupCode.GetSelectedString();
                 strMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
 
@@ -285,8 +291,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     RetrieveMotivationDetailCostCentreCode();
                 }
-                
-                IdentifyCostCentreCode(APartner);
+
+                RetrieveCostCentreCode(APartnerKey);
             }
             finally
             {
@@ -349,36 +355,36 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (txt.Name.Contains("One"))
             {
-	            if (txtValue == String.Empty)
+                if (txtValue == String.Empty)
                 {
                     cmbDetailCommentOneType.SelectedIndex = -1;
                 }
-	            else if (cmbDetailCommentOneType.SelectedIndex == -1)
-	            {
-	            	cmbDetailCommentOneType.SetSelectedString("Both");
-	            }
+                else if (cmbDetailCommentOneType.SelectedIndex == -1)
+                {
+                    cmbDetailCommentOneType.SetSelectedString("Both");
+                }
             }
             else if (txt.Name.Contains("Two"))
             {
-	            if (txtValue == String.Empty)
+                if (txtValue == String.Empty)
                 {
                     cmbDetailCommentTwoType.SelectedIndex = -1;
                 }
-	            else if (cmbDetailCommentTwoType.SelectedIndex == -1)
-	            {
-	            	cmbDetailCommentTwoType.SetSelectedString("Both");
-	            }
+                else if (cmbDetailCommentTwoType.SelectedIndex == -1)
+                {
+                    cmbDetailCommentTwoType.SetSelectedString("Both");
+                }
             }
             else if (txt.Name.Contains("Three"))
             {
-	            if (txtValue == String.Empty)
+                if (txtValue == String.Empty)
                 {
                     cmbDetailCommentThreeType.SelectedIndex = -1;
                 }
-	            else if (cmbDetailCommentThreeType.SelectedIndex == -1)
-	            {
-	            	cmbDetailCommentThreeType.SetSelectedString("Both");
-	            }
+                else if (cmbDetailCommentThreeType.SelectedIndex == -1)
+                {
+                    cmbDetailCommentThreeType.SetSelectedString("Both");
+                }
             }
         }
 
@@ -607,37 +613,66 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtDetailCostCentreCode.Text = CostCentreCode;
         }
 
-        private void RetrieveCostCentreCode(Int64 APartner)
+        private void RetrieveCostCentreCode(Int64 APartnerKey)
         {
-			if (FInKeyMinistryChanging || FPreviouslySelectedDetailRow == null)
-			{
-				return;
-			}
-			
-        	string CostCentreCode = string.Empty;
-        	Int64 RecipientLedgerNumber = FPreviouslySelectedDetailRow.RecipientLedgerNumber;
-        	Int64 LedgerPartnerKey = FMainDS.ALedger[0].PartnerKey;
-        	bool KeyMinIsActive = false;
-        	
-        	bool KeyMinExists = TRemote.MFinance.Gift.WebConnectors.KeyMinistryExists(APartner, KeyMinIsActive);
-        	
-        	if ((RecipientLedgerNumber != LedgerPartnerKey) && ((FMotivationGroup = "GIFT") || KeyMinExists))
-        	{
-        		
-        		
-        	}
-        	else
-        	{
-        		
-        	}
-        	
-        	
-            AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
-                new object[] { FLedgerNumber, FMotivationGroup, FMotivationDetail });
-
-            if (motivationDetail != null)
+            if (FInKeyMinistryChanging || (FPreviouslySelectedDetailRow == null))
             {
-                CostCentreCode = motivationDetail.CostCentreCode.ToString();
+                return;
+            }
+
+            string CostCentreCode = string.Empty;
+
+            Int64 RecipientLedgerNumber = FPreviouslySelectedDetailRow.RecipientLedgerNumber;
+            Int64 LedgerPartnerKey = FMainDS.ALedger[0].PartnerKey;
+
+            bool KeyMinIsActive = false;
+            bool KeyMinExists = TRemote.MFinance.Gift.WebConnectors.KeyMinistryExists(APartnerKey, out KeyMinIsActive);
+
+            string ValidLedgerNumberCostCentreCode;
+            bool ValidLedgerNumberExists = TRemote.MFinance.Gift.WebConnectors.ValidLedgerNumberExistsForRecipient(FLedgerNumber,
+                APartnerKey,
+                out ValidLedgerNumberCostCentreCode);
+
+            if (TRemote.MFinance.Gift.WebConnectors.ValidLedgerNumberExistsForRecipient(FLedgerNumber, APartnerKey,
+                    out ValidLedgerNumberCostCentreCode)
+                || TRemote.MFinance.Gift.WebConnectors.ValidLedgerNumberExistsForRecipient(FLedgerNumber, RecipientLedgerNumber,
+                    out ValidLedgerNumberCostCentreCode))
+            {
+                CostCentreCode = ValidLedgerNumberCostCentreCode;
+            }
+            else if ((RecipientLedgerNumber != LedgerPartnerKey) && ((FMotivationGroup == "GIFT") || KeyMinExists))
+            {
+                MessageBox.Show(String.Format(
+                        "Error in extracting Cost Centre Code for Recipient: {0} in Ledger: {1}.{2}{2}(Recipient Ledger Number: {3}, Ledger Partner Key: {4})",
+                        APartnerKey,
+                        FLedgerNumber,
+                        Environment.NewLine,
+                        RecipientLedgerNumber,
+                        LedgerPartnerKey),
+                    "Cost Centre Code Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+            }
+            else
+            {
+                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                    new object[] { FLedgerNumber, FMotivationGroup, FMotivationDetail });
+
+                if (motivationDetail != null)
+                {
+                    CostCentreCode = motivationDetail.CostCentreCode.ToString();
+                }
+                else
+                {
+                    MessageBox.Show(String.Format(
+                            "Error in extracting Cost Centre Code for Motivation Group: {0} and Motivation Detail: {1} in Ledger: {2}.",
+                            FMotivationGroup,
+                            FMotivationDetail,
+                            FLedgerNumber),
+                        "Cost Centre Code Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+                }
             }
 
             txtDetailCostCentreCode.Text = CostCentreCode;
@@ -1301,10 +1336,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.SetChangedFlag();
 
-                grdDetails.DataSource = null;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
+                if (!SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1))
+                {
+                    if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
+                    {
+                        MessageBox.Show(
+                            MCommonResourcestrings.StrNewRecordIsFiltered,
+                            MCommonResourcestrings.StrAddNewRecordTitle,
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        FFilterPanelControls.ClearAllDiscretionaryFilters();
 
-                SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+                        if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                        {
+                            ApplyFilter();
+                        }
+
+                        SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+                    }
+                }
+
+                btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
             }
 
             UpdateRecordNumberDisplay();
@@ -1373,10 +1424,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.SetChangedFlag();
 
-                grdDetails.DataSource = null;
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AGiftDetail.DefaultView);
+                if (!SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1))
+                {
+                    if (FCurrentActiveFilter != FFilterPanelControls.BaseFilter)
+                    {
+                        MessageBox.Show(
+                            MCommonResourcestrings.StrNewRecordIsFiltered,
+                            MCommonResourcestrings.StrAddNewRecordTitle,
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        FFilterPanelControls.ClearAllDiscretionaryFilters();
 
-                SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+                        if (FucoFilterAndFind.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                        {
+                            ApplyFilter();
+                        }
+
+                        SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+                    }
+                }
+
+                btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
 
                 RetrieveMotivationDetailAccountCode();
                 txtDetailRecipientKey.Focus();
@@ -1713,7 +1780,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             pnlDetails.Enabled = !(PnlDetailsProtected);
 
             btnDelete.Enabled = ((grdDetails.Rows.Count > 1) && !PnlDetailsProtected);
-            btnDeleteAll.Enabled = ((FFilterPanelControls.BaseFilter == FCurrentActiveFilter) && (grdDetails.Rows.Count > 1) && !PnlDetailsProtected);
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
             btnNewDetail.Enabled = !PnlDetailsProtected;
             btnNewGift.Enabled = !PnlDetailsProtected;
         }
@@ -1737,7 +1804,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void GetDetailDataFromControlsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
-            //Handle gift detail level fields
+            RetrieveCostCentreCode(ARow.RecipientKey);
+
             if (txtDetailCostCentreCode.Text.Length == 0)
             {
                 ARow.SetCostCentreCodeNull();
@@ -2132,17 +2200,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RunOnceOnParentActivationManual()
         {
-            AutoSizeGrid();
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
         }
 
-        void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
+        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
         {
-            btnDeleteAll.Enabled = (FFilterPanelControls.BaseFilter == FCurrentActiveFilter)
-                                   && (grdDetails.Rows.Count > 1)
-                                   && !FPetraUtilsObject.DetailProtectedMode
-                                   && !ViewMode
-                                   && (FBatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+            if (grdDetails.CanFocus && !FSuppressListChanged && (grdDetails.Rows.Count > 1))
+            {
+                AutoSizeGrid();
+            }
+
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
         }
 
         /// <summary>
@@ -2169,6 +2237,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
             grdDetails.AutoSizeCells();
             grdDetails.ShowCell(FPrevRowChangedRow);
+
+            Console.WriteLine("Done AutoSizeGrid() on {0} rows", grdDetails.Rows.Count);
         }
     }
 }

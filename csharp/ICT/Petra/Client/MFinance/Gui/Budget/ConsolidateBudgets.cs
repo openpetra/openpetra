@@ -75,7 +75,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                      MessageBoxOptions.DefaultDesktopOnly, false) == DialogResult.Yes);
 
             //TODO: call code on the server. To be completed with Timo.
-            TVerificationResultCollection AVerificationResult = null;
 
             try
             {
@@ -85,7 +84,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                     TRemote.MFinance.Budget.WebConnectors.LoadBudgetForConsolidate(ALedgerNumber);
 
-                    TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(ALedgerNumber, true, out AVerificationResult);
+                    TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(ALedgerNumber, true);
 
                     MessageBox.Show("Budget Consolidation Complete.", "Consolidate Budgets");
 

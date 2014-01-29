@@ -26,10 +26,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
-
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
@@ -279,14 +279,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool ReversedGiftReset(int ALedgerNumber, string AReversalIdentification)
         {
-            bool success = false;
-            bool NewTransaction = false;
-
+            bool NewTransaction;
+            TDBTransaction Transaction;
             int BatchNo;
             int GiftTransNo;
             int DetailNo;
 
-            TVerificationResultCollection messages = new TVerificationResultCollection();
+            TVerificationResultCollection Messages = new TVerificationResultCollection();
 
             int positionFirstNumber = 1;
             int positionSecondBar = AReversalIdentification.IndexOf('|', positionFirstNumber);
@@ -298,24 +297,25 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         positionThirdBar - positionSecondBar - 1), out GiftTransNo)
                 || !Int32.TryParse(AReversalIdentification.Substring(positionThirdBar + 1, lenReversalDetails - positionThirdBar - 1), out DetailNo))
             {
-                messages.Add(new TVerificationResult(
+                Messages.Add(new TVerificationResult(
                         String.Format(Catalog.GetString("Cannot parse the Modified Detail Key: '{0}'"),
                             AReversalIdentification),
                         String.Format(Catalog.GetString("Unexpected error.")),
                         TResultSeverity.Resv_Critical));
-                return success;
+
+                return false;
             }
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
-            TDBTransaction Transaction = null;
+
+            Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             try
             {
-                Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-
                 TLogging.Log(BatchNo.ToString());
                 TLogging.Log(GiftTransNo.ToString());
                 TLogging.Log(DetailNo.ToString());
+
                 AGiftDetailAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, BatchNo, GiftTransNo, DetailNo, Transaction);
 
                 TLogging.Log("Count: " + MainDS.AGiftDetail.Count.ToString());
@@ -324,19 +324,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 //Reset gift to not reversed
                 giftDetailRow.ModifiedDetail = false;
 
-                success = AGiftDetailAccess.SubmitChanges(MainDS.AGiftDetail, Transaction, out messages);
-            }
-            catch
-            {
-                messages.Add(new TVerificationResult(
-                        String.Format(Catalog.GetString("Cannot reset ModifiedDetail for Gift {0} Detail {1} in Batch {2}"),
-                            GiftTransNo, DetailNo, BatchNo),
-                        String.Format(Catalog.GetString("Unexpected error.")),
-                        TResultSeverity.Resv_Critical));
-            }
+                AGiftDetailAccess.SubmitChanges(MainDS.AGiftDetail, Transaction);
 
-            if (success)
-            {
                 MainDS.AGiftBatch.AcceptChanges();
 
                 if (NewTransaction)
@@ -344,15 +333,25 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     DBAccess.GDBAccessObj.CommitTransaction();
                 }
             }
-            else
+            catch (Exception Exc)
             {
+                TLogging.Log("An Exception occured in ReversedGiftReset:" + Environment.NewLine + Exc.ToString());
+
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
                 }
+
+                Messages.Add(new TVerificationResult(
+                        String.Format(Catalog.GetString("Cannot reset ModifiedDetail for Gift {0} Detail {1} in Batch {2}"),
+                            GiftTransNo, DetailNo, BatchNo),
+                        String.Format(Catalog.GetString("Unexpected error.")),
+                        TResultSeverity.Resv_Critical));
+
+                throw;
             }
 
-            return success;
+            return true;
         }
 
         /// <summary>
@@ -364,8 +363,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool GiftRevertAdjust(Hashtable requestParams, out TVerificationResultCollection AMessages)
         {
-            bool success = false;
-
             AMessages = new TVerificationResultCollection();
 
             Int32 ALedgerNumber = (Int32)requestParams["ALedgerNumber"];
@@ -388,16 +385,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
             TDBTransaction Transaction = null;
             DateTime ADateEffective;
+
+            Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
             try
             {
-                Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+
                 AGiftBatchRow giftBatch;
 
                 if (!batchSelected)
                 {
                     ADateEffective = (DateTime)requestParams["GlEffectiveDate"];
+
                     AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
                     AGiftBatchRow oldGiftBatch = MainDS.AGiftBatch[0];
                     TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS, ref Transaction, ref LedgerTable, ALedgerNumber, ADateEffective);
                     giftBatch = MainDS.AGiftBatch[1];
@@ -428,6 +430,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 else
                 {
                     AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ANewBatchNumber, Transaction);
+
                     giftBatch = MainDS.AGiftBatch[0];
                     ADateEffective = giftBatch.GlEffectiveDate;
                     //If into an existing batch, then retrive the existing batch total
@@ -506,7 +509,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                                     oldGiftDetail.GiftTransactionNumber, oldGiftDetail.DetailNumber, oldGiftDetail.BatchNumber),
                                                 String.Format(Catalog.GetString("It was already adjusted or reversed.")),
                                                 TResultSeverity.Resv_Critical));
+
                                         DBAccess.GDBAccessObj.RollbackTransaction();
+
                                         return false;
                                     }
 
@@ -556,40 +561,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
 
                 // save everything at the end
-                if (AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, Transaction, out AMessages))
-                {
-                    if (ALedgerAccess.SubmitChanges(LedgerTable, Transaction, out AMessages))
-                    {
-                        if (AGiftAccess.SubmitChanges(MainDS.AGift, Transaction, out AMessages))
-                        {
-                            if (AGiftDetailAccess.SubmitChanges(MainDS.AGiftDetail, Transaction, out AMessages))
-                            {
-                                success = true;
-                            }
-                        }
-                    }
-                }
+                AGiftBatchAccess.SubmitChanges(MainDS.AGiftBatch, Transaction);
 
-                if (success)
-                {
-                    MainDS.AGiftBatch.AcceptChanges();
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    return success;
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                    return false;
-                }
+                ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
+
+                AGiftAccess.SubmitChanges(MainDS.AGift, Transaction);
+
+                AGiftDetailAccess.SubmitChanges(MainDS.AGiftDetail, Transaction);
+
+                MainDS.AGiftBatch.AcceptChanges();
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+
+                return true;
             }
-            catch (Exception ex)
+            catch (Exception Exc)
             {
-                if (Transaction != null)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                TLogging.Log("An Exception occured while performing Gift Reverse/Adjust:" + Environment.NewLine + Exc.ToString());
 
-                throw new Exception(Catalog.GetString("Gift Reverse/Adjust failed."), ex);
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw new EOPAppException(Catalog.GetString("Gift Reverse/Adjust failed."), Exc);
             }
         }
     }

@@ -70,9 +70,10 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         [RequireModulePermission("FINANCE-3")]
         public static bool PerformStewardshipCalculation(int ALedgerNumber,
             int APeriodNumber,
-            out TVerificationResultCollection AVerificationResult
-            )
+            out TVerificationResultCollection AVerificationResult)
         {
+            bool NewTransaction;
+
 /*
  *          if (TLogging.DL >= 9)
  *          {
@@ -81,10 +82,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
  */
             AVerificationResult = new TVerificationResultCollection();
 
-            //Begin the transaction
-            bool NewTransaction = false;
-
-            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            TDBTransaction DBTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
+                out NewTransaction);
 
             try
             {
@@ -119,18 +118,21 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     return false;
                 }
             }
-            catch (Exception Exp)
+            catch (Exception Exc)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                TLogging.Log("An Exception occured while performing the Stewardship Calculations:" + Environment.NewLine + Exc.ToString());
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
 
 /*
- *              if (TLogging.DL >= 8)
- *              {
- *                  Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation: Transaction ROLLED BACK because an exception occurred!");
- *              }
+ *                  if (TLogging.DL >= 8)
+ *                  {
+ *                      Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation: Transaction ROLLED BACK because an exception occurred!");
+ *                  }
  */
-                TLogging.Log(Exp.Message);
-                TLogging.Log(Exp.StackTrace);
+                }
 
                 throw;
             }
@@ -654,17 +656,11 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     //Post the batch
                     if (PostICHBatch)
                     {
-                        IsSuccessful = AIchStewardshipAccess.SubmitChanges(ICHStewardshipTable, DBTransaction, out AVerificationResult);
+                        AIchStewardshipAccess.SubmitChanges(ICHStewardshipTable, DBTransaction);
 
-                        if (IsSuccessful)
-                        {
-                            IsSuccessful = (TSubmitChangesResult.scrOK == GLBatchTDSAccess.SubmitChanges(MainDS, out AVerificationResult));
+                        GLBatchTDSAccess.SubmitChanges(MainDS);
 
-                            if (IsSuccessful)
-                            {
-                                IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, GLBatchNumber, out AVerificationResult);
-                            }
-                        }
+                        IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, GLBatchNumber, out AVerificationResult);
                     }
                     else
                     {
@@ -684,35 +680,63 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     }
                 }
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException Exc)
             {
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
-                Console.WriteLine(ex.Message);
+                TLogging.Log("An ArgumentException occured during the generation of the Stewardship Batch:" + Environment.NewLine + Exc.ToString());
+
+                if (AVerificationResult == null)
+                {
+                    AVerificationResult = new TVerificationResultCollection();
+                }
+
+                AVerificationResult.Add(new TVerificationResult(ErrorContext, Exc.Message, ErrorType));
+
+                throw;
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidOperationException Exc)
             {
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ex.Message, ErrorType));
-                Console.WriteLine(ex.Message);
+                TLogging.Log(
+                    "An InvalidOperationException occured during the generation of the Stewardship Batch:" + Environment.NewLine + Exc.ToString());
+
+                if (AVerificationResult == null)
+                {
+                    AVerificationResult = new TVerificationResultCollection();
+                }
+
+                AVerificationResult.Add(new TVerificationResult(ErrorContext, Exc.Message, ErrorType));
+
+                throw;
             }
-            catch (Exception ex)
+            catch (Exception Exc)
             {
+                TLogging.Log("An Exception occured during the generation of the Stewardship Batch:" + Environment.NewLine + Exc.ToString());
+
                 ErrorContext = Catalog.GetString("Calculate Admin Fee");
                 ErrorMessage = String.Format(Catalog.GetString("Unknown error while Generating the ICH batch for Ledger: {0} and Period: {1}" +
-                        Environment.NewLine + Environment.NewLine + ex.ToString()),
+                        Environment.NewLine + Environment.NewLine + Exc.ToString()),
                     ALedgerNumber,
                     APeriodNumber);
                 ErrorType = TResultSeverity.Resv_Critical;
-                AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                Console.WriteLine(ex.Message);
-            }
 
-            if (IsSuccessful && NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
+                if (AVerificationResult == null)
+                {
+                    AVerificationResult = new TVerificationResultCollection();
+                }
+
+                AVerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+
+                throw;
             }
-            else if (!IsSuccessful && NewTransaction)
+            finally
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                if (IsSuccessful && NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else if (!IsSuccessful && NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
 
             return IsSuccessful;
@@ -1177,20 +1201,17 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     {
                         //Post the batch just created
 
-                        IsSuccessful = (TSubmitChangesResult.scrOK == GLBatchTDSAccess.SubmitChanges(AdminFeeDS, out Verification));
+                        GLBatchTDSAccess.SubmitChanges(AdminFeeDS);
+
+                        IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, BatchRow.BatchNumber, out Verification);
 
                         if (IsSuccessful)
                         {
-                            IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, BatchRow.BatchNumber, out Verification);
-                        }
-
-                        if (IsSuccessful)
-                        {
-                            AProcessedFeeAccess.SubmitChanges(ProcessedFeeDataTable, ADBTransaction, out Verification);
+                            AProcessedFeeAccess.SubmitChanges(ProcessedFeeDataTable, ADBTransaction);
                         }
                     }
 
-                    if ((Verification == null) || Verification.HasCriticalErrors)
+                    if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verification))
                     {
                         //Petra error: GL0067
                         ErrorContext = Catalog.GetString("Posting Admin Fee Batch");

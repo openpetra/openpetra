@@ -57,6 +57,18 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public const String PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT_DEFAULT =
             "PartnerClass;PartnerKey;OMSSKey;PartnerStatus";
+
+        /// <summary>
+        /// the default fields for the left side when searching by bank details
+        /// </summary>
+        public const String PARTNER_FINDOPTIONSBYBANKDETAILS_CRITERIAFIELDSLEFT_DEFAULT =
+            "PartnerName;AccountName;AccountNumber;Iban;BranchCode;Bic";
+
+        /// <summary>
+        /// the default fields for the right side when searching by bank details
+        /// </summary>
+        public const String PARTNER_FINDOPTIONSBYBANKDETAILS_CRITERIAFIELDSRIGHT_DEFAULT =
+            "PartnerClass;OMSSKey;PartnerStatus";
 #if TODO
         #region Resourcestrings
 

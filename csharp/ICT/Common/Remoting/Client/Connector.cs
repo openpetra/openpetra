@@ -32,6 +32,8 @@ using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Sinks.Encryption;
 
+using Ict.Common.Exceptions;
+
 namespace Ict.Common.Remoting.Client
 {
     /// <summary>
@@ -222,44 +224,45 @@ namespace Ict.Common.Remoting.Client
 
             if (FServerIPAddr.Length == 0)
             {
-                throw new ServerIPAddressNotFoundInConfigurationFileException(
+                throw new EServerIPAddressNotFoundInConfigurationFileException(
                     "The IP Address of the PetraServer could " + "not be extracted from the .NET (Remoting) Configuration File (used '" +
                     CLIENTMANAGERENTRY + "' entry " + "to look for the IP Address)!");
             }
         }
     }
 
+    #region EServerIPAddressNotFoundInConfigurationFileException
+
     /// <summary>
     /// Thrown if the IP Address of the PetraServer could not be extracted from the .NET (Remoting) Configuration File.
     /// </summary>
-    public class ServerIPAddressNotFoundInConfigurationFileException : ApplicationException
+    public class EServerIPAddressNotFoundInConfigurationFileException : EOPAppException
     {
-        #region ServerIPAddressNotFoundInConfigurationFileException
-
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        /// <param name="strConnectionString"></param>
-        /// <param name="inExp"></param>
-        public ServerIPAddressNotFoundInConfigurationFileException(string strConnectionString, Exception inExp) : base(strConnectionString, inExp)
+        public EServerIPAddressNotFoundInConfigurationFileException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        public ServerIPAddressNotFoundInConfigurationFileException() : base()
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EServerIPAddressNotFoundInConfigurationFileException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="AMessage"></param>
-        public ServerIPAddressNotFoundInConfigurationFileException(string AMessage) : base(AMessage)
+        /// <param name="AConnectionString">Connection String.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EServerIPAddressNotFoundInConfigurationFileException(string AConnectionString, Exception AInnerException) : base(AConnectionString,
+                                                                                                                               AInnerException)
         {
         }
-
-        #endregion
     }
+
+    #endregion
 }

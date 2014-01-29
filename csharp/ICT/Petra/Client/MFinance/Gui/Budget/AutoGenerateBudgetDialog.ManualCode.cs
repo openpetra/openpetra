@@ -166,7 +166,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                      MessageBoxOptions.DefaultDesktopOnly, false) == DialogResult.Yes);
 
             //TODO: call code on the server. To be completed with Timo.
-            TVerificationResultCollection VerificationResult = null;
 
             try
             {
@@ -174,7 +173,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                 TRemote.MFinance.Budget.WebConnectors.LoadBudgetForConsolidate(FLedgerNumber);
 
-                TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, consolidateAll, out VerificationResult);
+                TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(FLedgerNumber, consolidateAll);
 
                 string CheckItemsList = clbCostCentreAccountCodes.GetCheckedStringList();
 

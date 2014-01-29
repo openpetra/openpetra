@@ -145,8 +145,8 @@ namespace Tests.MFinance.Server.ICH
                 SendEmail,
                 out VerificationResults);
 
-            Assert.IsFalse(VerificationResults.HasCriticalErrors,
-                "Performing Stewardship File Generation Failed!" + VerificationResults.BuildVerificationResultString());
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
+                "Performing Stewardship File Generation Failed!");
         }
 
         /// <summary>
@@ -205,8 +205,8 @@ namespace Tests.MFinance.Server.ICH
                 SendEmail,
                 out VerificationResults);
 
-            Assert.IsFalse(VerificationResults.HasCriticalErrors,
-                "Performing ICH Email File Generation Failed!" + VerificationResults.BuildVerificationResultString());
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
+                "Performing ICH Email File Generation Failed!");
         }
     }
 }

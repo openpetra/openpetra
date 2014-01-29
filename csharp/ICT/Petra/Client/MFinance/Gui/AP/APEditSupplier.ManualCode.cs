@@ -36,6 +36,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Exceptions;
+using Ict.Common.Data.Exceptions;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
@@ -314,12 +315,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     AccountsPayableTDS SubmitDS = FMainDS.GetChangesTyped(true);
 
                     TSubmitChangesResult SubmissionResult;
-                    TVerificationResultCollection VerificationResult;
+                    TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
 
                     // Submit changes to the PETRAServer
                     try
                     {
-                        SubmissionResult = FUIConnector.SubmitChanges(ref SubmitDS, out VerificationResult);
+                        SubmissionResult = FUIConnector.SubmitChanges(ref SubmitDS);
                     }
                     catch (ESecurityDBTableAccessDeniedException Exp)
                     {

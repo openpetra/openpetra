@@ -72,6 +72,7 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
             PcConferenceOptionAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
             PcDiscountAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
             PcConferenceVenueAccess.LoadViaPcConference(MainDS, AConferenceKey, Transaction);
+            PUnitAccess.LoadByPrimaryKey(MainDS, AConferenceKey, Transaction);
             AConferenceName = PPartnerAccess.LoadByPrimaryKey(MainDS, AConferenceKey, Transaction).PartnerShortName;
 
             foreach (ConferenceSetupTDSPcConferenceVenueRow VenueRow in MainDS.PcConferenceVenue.Rows)
@@ -102,13 +103,13 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         /// this will store ConferenceSetupTDS
         /// </summary>
         /// <param name="AInspectDS"></param>
-        /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("CONFERENCE")]
-        public static TSubmitChangesResult SaveConferenceSetupTDS(ref ConferenceSetupTDS AInspectDS,
-            out TVerificationResultCollection AVerificationResult)
+        public static TSubmitChangesResult SaveConferenceSetupTDS(ref ConferenceSetupTDS AInspectDS)
         {
-            return ConferenceSetupTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+            ConferenceSetupTDSAccess.SubmitChanges(AInspectDS);
+
+            return TSubmitChangesResult.scrOK;
         }
     }
 }

@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Data.Odbc;
 using System.Collections.Specialized;
 using System.Collections;
 using System.Collections.Generic;
@@ -75,7 +76,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                     ValidatePersonnelStaff(ValidationControlsDict, ref AVerificationResult, AInspectDS.PmStaffData);
                     ValidatePersonnelStaffManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.PmStaffData);
 
-                    if (AVerificationResult.HasCriticalErrors)
+                    if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                     {
                         AllDataValidationsOK = false;
                     }
@@ -84,7 +85,9 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
 
             if (AllDataValidationsOK)
             {
-                SubmissionResult = PersonnelTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                PersonnelTDSAccess.SubmitChanges(AInspectDS);
+
+                SubmissionResult = TSubmitChangesResult.scrOK;
             }
             else if (AVerificationResult.Count > 0)
             {
@@ -188,6 +191,68 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             }
 
             return JobKey;
+        }
+
+        /// <summary>
+        /// populate ApplicationTDS dataset with shortterm applications for a given event
+        /// </summary>
+        /// <param name="AMainDS">Dataset to be populated</param>
+        /// <param name="AOutreachCode">match string for event's outreach code</param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean LoadShortTermApplications(ref ApplicationTDS AMainDS, string AOutreachCode)
+        {
+            Boolean NewTransaction;
+
+            string QueryShortTermApplication = "";
+
+            List <OdbcParameter>Parameters = new List <OdbcParameter>();
+            OdbcParameter Parameter = new OdbcParameter("eventcode", OdbcType.VarChar, PmShortTermApplicationTable.GetConfirmedOptionCodeLength());
+
+            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                if (AOutreachCode.Length == 0)
+                {
+                    // load all appicants with no event
+                    QueryShortTermApplication = "SELECT PUB_pm_short_term_application.* " +
+                                                "FROM PUB_pm_short_term_application " +
+                                                "WHERE PUB_pm_short_term_application.pm_confirmed_option_code_c IS NULL";
+                }
+                else if (AOutreachCode.Length > 0)
+                {
+                    Parameter.Value = AOutreachCode.Substring(0, 5);
+                    Parameters.Add(Parameter);
+
+                    QueryShortTermApplication = "SELECT PUB_pm_short_term_application.* " +
+                                                "FROM PUB_pm_short_term_application " +
+                                                "WHERE SUBSTRING(PUB_pm_short_term_application.pm_confirmed_option_code_c, 1, 5) = ? ";
+                }
+
+                DBAccess.GDBAccessObj.Select(AMainDS,
+                    QueryShortTermApplication,
+                    AMainDS.PmShortTermApplication.TableName, ReadTransaction, Parameters.ToArray());
+
+                foreach (PmShortTermApplicationRow Row in AMainDS.PmShortTermApplication.Rows)
+                {
+                    PmGeneralApplicationAccess.LoadByPrimaryKey(AMainDS, Row.PartnerKey, Row.ApplicationKey, Row.RegistrationOffice, ReadTransaction);
+                    PPartnerAccess.LoadByPrimaryKey(AMainDS, Row.PartnerKey, ReadTransaction);
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                    TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.GetConferenceApplications: commit own transaction.");
+                }
+            }
+
+            return true;
         }
 
         #region Data Validation

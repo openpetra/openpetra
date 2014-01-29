@@ -66,15 +66,9 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         {
             GiftBatchTDS MainDS = CreateGiftBatches(GiftsPerDate, APeriodNumber);
 
-            TVerificationResultCollection VerificationResult;
-
             MainDS.ThrowAwayAfterSubmitChanges = true;
-            GiftBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
-            {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
-            }
+            GiftBatchTDSAccess.SubmitChanges(MainDS);
         }
 
         /// <summary>
@@ -338,11 +332,20 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             {
                 TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-                TVerificationResultCollection VerificationResult;
+                try
+                {
+                    ALedgerAccess.SubmitChanges(LedgerTable, WriteTransaction);
 
-                ALedgerAccess.SubmitChanges(LedgerTable, WriteTransaction, out VerificationResult);
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                catch (Exception Exc)
+                {
+                    TLogging.Log("An Exception occured during the creation of Gift Batches:" + Environment.NewLine + Exc.ToString());
 
-                DBAccess.GDBAccessObj.CommitTransaction();
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
+                    throw;
+                }
             }
 
             return MainDS;

@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using DevAge.ComponentModel;
+using Ict.Common.Exceptions;
 using SourceGrid;
 using SourceGrid.Cells;
 using SourceGrid.Cells.Controllers;
@@ -617,7 +618,7 @@ namespace Ict.Common.Controls
                 {
                     if (DesignMode)
                     {
-                        throw new TDataGridAutoFindModeNotImplementedYetException(
+                        throw new EDataGridAutoFindModeNotImplementedYetException(
                             "Sorry, AutoFindMode 'FullString' is not implemented yet! You could implement it, though, if you really need it!");
                     }
                 }
@@ -1789,13 +1790,13 @@ namespace Ict.Common.Controls
                 if ((FAutoFindColumn < 0) || (FAutoFindColumn >= this.Columns.Count))
                 {
                     // GridDataTable.Columns.Count
-                    throw new TDataGridInvalidAutoFindColumnException(
+                    throw new EDataGridInvalidAutoFindColumnException(
                         "The specified AutoFindColumn is out of the range of DataGridColumns that the Grid has");
                 }
 
                 if (this.Columns[FAutoFindColumn].PropertyName == null)
                 {
-                    throw new TDataGridInvalidAutoFindColumnException(
+                    throw new EDataGridInvalidAutoFindColumnException(
                         "The specified AutoFindColumn is not a DataBound DataGridColumn! AutoFind can only be used with DataBound DataGridColumns.");
                 }
                 else
@@ -2086,51 +2087,71 @@ namespace Ict.Common.Controls
     public delegate void TDoubleClickHeaderCellEventHandler(System.Object Sender, ColumnEventArgs e);
 
 
-    #region TDataGridInvalidAutoFindColumnException
+    #region EDataGridInvalidAutoFindColumnException
 
     /// <summary>
-    /// cannot find
+    /// Cannot find.
     /// </summary>
-    public class TDataGridInvalidAutoFindColumnException : ApplicationException
+    public class EDataGridInvalidAutoFindColumnException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public TDataGridInvalidAutoFindColumnException() : base()
+        public EDataGridInvalidAutoFindColumnException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public TDataGridInvalidAutoFindColumnException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDataGridInvalidAutoFindColumnException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDataGridInvalidAutoFindColumnException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }
+
     #endregion
 
-    #region TDataGridAutoFindModeNotImplementedYetException
+    #region EDataGridAutoFindModeNotImplementedYetException
 
     /// <summary>
-    /// Auto Find not implemented yet
+    /// Auto Find not implemented yet.
     /// </summary>
-    public class TDataGridAutoFindModeNotImplementedYetException : ApplicationException
+    public class EDataGridAutoFindModeNotImplementedYetException : EOPAppException
     {
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public TDataGridAutoFindModeNotImplementedYetException() : base()
+        public EDataGridAutoFindModeNotImplementedYetException() : base()
         {
         }
 
         /// <summary>
-        /// constructor
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="msg"></param>
-        public TDataGridAutoFindModeNotImplementedYetException(String msg) : base(msg)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDataGridAutoFindModeNotImplementedYetException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDataGridAutoFindModeNotImplementedYetException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }
+
     #endregion
 }

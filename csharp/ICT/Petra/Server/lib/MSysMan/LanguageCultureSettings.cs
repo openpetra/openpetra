@@ -49,8 +49,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_UILANGUAGE, ALanguageCode, false);
             TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_UICULTURE, ACultureCode, false);
 
-            TVerificationResultCollection VerificationResult;
-            TUserDefaults.SaveUserDefaultsFromServerSide(out VerificationResult);
+            TUserDefaults.SaveUserDefaultsFromServerSide();
+
             return true;
         }
 

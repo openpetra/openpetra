@@ -20,6 +20,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Data;
+using Ict.Common.Data.Exceptions;
 using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
@@ -1585,7 +1586,7 @@ namespace {#NAMESPACE}
 {#INCLUDE findandfilter.cs}
 
 {##SNIPDELETEREFERENCECOUNT}
-if (!FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors)
+if (TVerificationHelper.IsNullOrOnlyNonCritical(FPetraUtilsObject.VerificationResultCollection))
 {
     this.Cursor = Cursors.WaitCursor;
     TRemote.{#CONNECTORNAMESPACE}.ReferenceCount.WebConnectors.GetCacheableRecordReferenceCount(

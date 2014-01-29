@@ -99,6 +99,7 @@
    </DataSet>    
    
     <DataSet name="ApplicationTDS">
+        <Table sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
         <Table sqltable="pm_general_application"/>        <!-- General Application Data -->
         <Table sqltable="pm_short_term_application"/>     <!-- Short Term Application Data -->
         <Table sqltable="pm_year_program_application"/>   <!-- Long Term Application Data -->

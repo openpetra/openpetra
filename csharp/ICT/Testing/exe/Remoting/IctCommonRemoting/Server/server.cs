@@ -28,9 +28,11 @@ using System.Runtime.Remoting;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Channels.Tcp;
 using System.Runtime.Serialization.Formatters;
+
 using Tests.IctCommonRemoting.Interface;
 using Tests.IctCommonRemoting.Server;
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Sinks.Encryption;
 
@@ -89,7 +91,7 @@ namespace Ict.Testing.IctCommonRemoting.Server
                 System.Diagnostics.Debug.WriteLine(exp.ToString());
                 TLogging.Log(Environment.NewLine + "Exception occured while setting up Remoting Framework:" + Environment.NewLine + exp.ToString());
             }
-            catch (ApplicationException exp)
+            catch (EOPAppException exp)
             {
                 // This Exception is used if no more messages shall be done ...
                 TLogging.Log(exp.ToString());
@@ -137,7 +139,7 @@ namespace Ict.Testing.IctCommonRemoting.Server
                 {
                     TLogging.Log("A SocketException has been thrown.");
                     TLogging.Log("Most probably problem is that the address port is used twice!");
-                    throw new ApplicationException();
+                    throw new EOPAppException();
                 }
                 else
                 {

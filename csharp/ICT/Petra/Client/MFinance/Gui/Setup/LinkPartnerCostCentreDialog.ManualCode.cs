@@ -104,18 +104,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         ///
         /// </summary>
         /// <returns></returns>
-        public bool SaveChanges()
+        public void SaveChanges()
         {
-            TVerificationResultCollection VerificationResult;
-            TSubmitChangesResult SaveResult = TRemote.MFinance.Setup.WebConnectors.SaveCostCentrePartnerLinks(
-                FLedgerNumber, FPartnerCostCentreTbl, out VerificationResult);
-
-            if (SaveResult == TSubmitChangesResult.scrOK)
-            {
-                return true;
-            }
-
-            return false;
+            TRemote.MFinance.Setup.WebConnectors.SaveCostCentrePartnerLinks(
+                FLedgerNumber, FPartnerCostCentreTbl);
         }
 
         /// <summary>

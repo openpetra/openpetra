@@ -446,10 +446,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             return true;
         }
 
-        private static bool MergeGiftInfo(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeGiftInfo(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             AGiftTable GiftTable = AGiftAccess.LoadViaPPartner(AFromPartnerKey, ATransaction);
 
             if (GiftTable.Rows.Count > 0)
@@ -461,7 +459,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((AGiftRow)Row).DonorKey = AToPartnerKey;
                 }
 
-                AGiftAccess.SubmitChanges(GiftTable, ATransaction, out Result);
+                AGiftAccess.SubmitChanges(GiftTable, ATransaction);
             }
 
             AGiftDetailTable GiftDetailTable = AGiftDetailAccess.LoadViaPPartnerRecipientKey(AFromPartnerKey, ATransaction);
@@ -473,7 +471,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((AGiftDetailRow)Row).RecipientKey = AToPartnerKey;
                 }
 
-                AGiftDetailAccess.SubmitChanges(GiftDetailTable, ATransaction, out Result);
+                AGiftDetailAccess.SubmitChanges(GiftDetailTable, ATransaction);
             }
 
             GiftDetailTable = AGiftDetailAccess.LoadViaPPartnerRecipientLedgerNumber(AFromPartnerKey, ATransaction);
@@ -485,7 +483,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((AGiftDetailRow)Row).RecipientLedgerNumber = AToPartnerKey;
                 }
 
-                AGiftDetailAccess.SubmitChanges(GiftDetailTable, ATransaction, out Result);
+                AGiftDetailAccess.SubmitChanges(GiftDetailTable, ATransaction);
             }
 
             ARecurringGiftTable RecurringGiftTable = ARecurringGiftAccess.LoadViaPPartner(AFromPartnerKey, ATransaction);
@@ -497,7 +495,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((ARecurringGiftRow)Row).DonorKey = AToPartnerKey;
                 }
 
-                ARecurringGiftAccess.SubmitChanges(RecurringGiftTable, ATransaction, out Result);
+                ARecurringGiftAccess.SubmitChanges(RecurringGiftTable, ATransaction);
             }
 
             ARecurringGiftDetailTable RecurringGiftDetailTable = ARecurringGiftDetailAccess.LoadViaPPartnerRecipientKey(AFromPartnerKey, ATransaction);
@@ -509,7 +507,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((ARecurringGiftDetailRow)Row).RecipientKey = AToPartnerKey;
                 }
 
-                ARecurringGiftDetailAccess.SubmitChanges(RecurringGiftDetailTable, ATransaction, out Result);
+                ARecurringGiftDetailAccess.SubmitChanges(RecurringGiftDetailTable, ATransaction);
             }
 
             RecurringGiftDetailTable = ARecurringGiftDetailAccess.LoadViaPPartnerRecipientLedgerNumber(AFromPartnerKey, ATransaction);
@@ -521,15 +519,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((ARecurringGiftDetailRow)Row).RecipientLedgerNumber = AToPartnerKey;
                 }
 
-                ARecurringGiftDetailAccess.SubmitChanges(RecurringGiftDetailTable, ATransaction, out Result);
+                ARecurringGiftDetailAccess.SubmitChanges(RecurringGiftDetailTable, ATransaction);
             }
-
-            return true;
         }
 
-        private static bool MergeAPInfo(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeAPInfo(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
             bool MoveSupplier = false;
 
             // If the To partner is not a supplier, but the from one is, we need to move the supplier record to the to-partner.
@@ -549,7 +544,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     NewRow.PartnerKey = AToPartnerKey;
 
                     SupplierTable.Rows.Add(NewRow);
-                    AApSupplierAccess.SubmitChanges(SupplierTable, ATransaction, out Result);
+                    AApSupplierAccess.SubmitChanges(SupplierTable, ATransaction);
 
                     MoveSupplier = true;
                 }
@@ -576,12 +571,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        AApDocumentAccess.SubmitChanges(ApDocumentTable2, ATransaction, out Result);
+                        AApDocumentAccess.SubmitChanges(ApDocumentTable2, ATransaction);
                     }
 
                     ((AApDocumentRow)Row).PartnerKey = AToPartnerKey;
 
-                    AApDocumentAccess.SubmitChanges(ApDocumentTable, ATransaction, out Result);
+                    AApDocumentAccess.SubmitChanges(ApDocumentTable, ATransaction);
                 }
             }
 
@@ -594,17 +589,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 {
                     SupplierTable.Rows[0].Delete();
 
-                    AApSupplierAccess.SubmitChanges(SupplierTable, ATransaction, out Result);
+                    AApSupplierAccess.SubmitChanges(SupplierTable, ATransaction);
                 }
             }
-
-            return true;
         }
 
-        private static bool MergeMotivations(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeMotivations(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             AMotivationDetailTable MotivationDetailTable = AMotivationDetailAccess.LoadViaPPartner(AFromPartnerKey, ATransaction);
 
             if (MotivationDetailTable.Rows.Count > 0)
@@ -614,16 +605,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((AMotivationDetailRow)Row).RecipientKey = AToPartnerKey;
                 }
 
-                AMotivationDetailAccess.SubmitChanges(MotivationDetailTable, ATransaction, out Result);
+                AMotivationDetailAccess.SubmitChanges(MotivationDetailTable, ATransaction);
             }
-
-            return true;
         }
 
-        private static bool MergeExtracts(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeExtracts(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             MExtractTable FromExtractTable = MExtractAccess.LoadViaPPartner(AFromPartnerKey, ATransaction);
             MExtractTable ToExtractTable = MExtractAccess.LoadViaPPartner(AToPartnerKey, ATransaction);
 
@@ -643,7 +630,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             {
                                 // Reduce the number of people in the Extract by 1
                                 ((MExtractMasterRow)ExtractMasterTable.Rows[0]).KeyCount -= 1;
-                                MExtractMasterAccess.SubmitChanges(ExtractMasterTable, ATransaction, out Result);
+                                MExtractMasterAccess.SubmitChanges(ExtractMasterTable, ATransaction);
                             }
 
                             Row.Delete();
@@ -655,16 +642,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                MExtractAccess.SubmitChanges(FromExtractTable, ATransaction, out Result);
+                MExtractAccess.SubmitChanges(FromExtractTable, ATransaction);
             }
-
-            return true;
         }
 
-        private static bool MergeGreetings(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeGreetings(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PCustomisedGreetingTable FromCustomisedGreetingTable = PCustomisedGreetingAccess.LoadViaPPartner(AFromPartnerKey, ATransaction);
             PCustomisedGreetingTable ToCustomisedGreetingTable = PCustomisedGreetingAccess.LoadViaPPartner(AToPartnerKey, ATransaction);
 
@@ -683,16 +666,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                PCustomisedGreetingAccess.SubmitChanges(FromCustomisedGreetingTable, ATransaction, out Result);
+                PCustomisedGreetingAccess.SubmitChanges(FromCustomisedGreetingTable, ATransaction);
             }
-
-            return true;
         }
 
-        private static bool MergeContactsAndReminders(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeContactsAndReminders(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PPartnerReminderTable ReminderTable = PPartnerReminderAccess.LoadViaPPartner(AFromPartnerKey, ATransaction);
 
             foreach (DataRow Row in ReminderTable.Rows)
@@ -707,16 +686,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ((PPartnerContactRow)Row).PartnerKey = AToPartnerKey;
             }
 
-            PPartnerReminderAccess.SubmitChanges(ReminderTable, ATransaction, out Result);
-            PPartnerContactAccess.SubmitChanges(ContactTable, ATransaction, out Result);
-
-            return true;
+            PPartnerReminderAccess.SubmitChanges(ReminderTable, ATransaction);
+            PPartnerContactAccess.SubmitChanges(ContactTable, ATransaction);
         }
 
-        private static bool MergeInterests(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeInterests(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PPartnerInterestTable InterestTable = PPartnerInterestAccess.LoadViaPPartner(AFromPartnerKey, ATransaction);
 
             if (InterestTable.Rows.Count > 0)
@@ -726,20 +701,16 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((PPartnerInterestRow)Row).PartnerKey = AToPartnerKey;
                 }
 
-                PPartnerInterestAccess.SubmitChanges(InterestTable, ATransaction, out Result);
+                PPartnerInterestAccess.SubmitChanges(InterestTable, ATransaction);
             }
-
-            return true;
         }
 
-        private static bool MergePartnerLocations(long AFromPartnerKey,
+        private static void MergePartnerLocations(long AFromPartnerKey,
             long AToPartnerKey,
             long[] ASiteKeys,
             int[] ALocationKeys,
             TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PPartnerLocationTable FromLocationTable = PPartnerLocationAccess.LoadViaPPartner(AFromPartnerKey, ATransaction);
             PPartnerLocationTable ToLocationTable = PPartnerLocationAccess.LoadViaPPartner(AToPartnerKey, ATransaction);
 
@@ -903,19 +874,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                PPartnerLocationAccess.SubmitChanges(FromLocationTable, ATransaction, out Result);
-                PPartnerLocationAccess.SubmitChanges(ToLocationTable, ATransaction, out Result);
+                PPartnerLocationAccess.SubmitChanges(FromLocationTable, ATransaction);
+                PPartnerLocationAccess.SubmitChanges(ToLocationTable, ATransaction);
                 LocationTable.ThrowAwayAfterSubmitChanges = true;
-                PLocationAccess.SubmitChanges(LocationTable, ATransaction, out Result);
+                PLocationAccess.SubmitChanges(LocationTable, ATransaction);
             }
-
-            return true;
         }
 
-        private static bool MergePartnerTypes(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergePartnerTypes(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PPartnerTypeTable FromTypeTable = PPartnerTypeAccess.LoadViaPPartner(AFromPartnerKey, ATransaction);
 
             if (FromTypeTable.Rows.Count > 0)
@@ -933,16 +900,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                PPartnerTypeAccess.SubmitChanges(FromTypeTable, ATransaction, out Result);
+                PPartnerTypeAccess.SubmitChanges(FromTypeTable, ATransaction);
             }
-
-            return true;
         }
 
-        private static bool MergeSubscriptions(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeSubscriptions(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PSubscriptionTable FromSubscriptionTable = PSubscriptionAccess.LoadViaPPartnerPartnerKey(AFromPartnerKey, ATransaction);
             PSubscriptionTable ToSubscriptionTable = PSubscriptionAccess.LoadViaPPartnerPartnerKey(AToPartnerKey, ATransaction);
 
@@ -974,17 +937,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                PSubscriptionAccess.SubmitChanges(ToSubscriptionTable, ATransaction, out Result);
-                PSubscriptionAccess.SubmitChanges(FromSubscriptionTable, ATransaction, out Result);
+                PSubscriptionAccess.SubmitChanges(ToSubscriptionTable, ATransaction);
+                PSubscriptionAccess.SubmitChanges(FromSubscriptionTable, ATransaction);
             }
-
-            return true;
         }
 
-        private static bool MergeApplications(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeApplications(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PmGeneralApplicationTable FromApplicationTable = PmGeneralApplicationAccess.LoadViaPPersonPartnerKey(AFromPartnerKey, ATransaction);
             PmGeneralApplicationTable NewApplicationTable = new PmGeneralApplicationTable();
 
@@ -1024,7 +983,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         if (STAppTable.Rows.Count != 0)
                         {
                             ((PmShortTermApplicationRow)STAppTable.Rows[0]).StAppDate = AppDate;
-                            PmShortTermApplicationAccess.SubmitChanges(STAppTable, ATransaction, out Result);
+                            PmShortTermApplicationAccess.SubmitChanges(STAppTable, ATransaction);
                         }
                         else
                         {
@@ -1034,7 +993,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             if (YPAppTable.Rows.Count != 0)
                             {
                                 ((PmYearProgramApplicationRow)YPAppTable.Rows[0]).YpAppDate = AppDate;
-                                PmYearProgramApplicationAccess.SubmitChanges(YPAppTable, ATransaction, out Result);
+                                PmYearProgramApplicationAccess.SubmitChanges(YPAppTable, ATransaction);
                             }
                         }
                     }
@@ -1045,7 +1004,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 }
 
                 // submit new records (will delete old records later)
-                PmGeneralApplicationAccess.SubmitChanges(NewApplicationTable, ATransaction, out Result);
+                PmGeneralApplicationAccess.SubmitChanges(NewApplicationTable, ATransaction);
             }
 
             PmApplicationFileTable FileTable = PmApplicationFileAccess.LoadViaPPerson(AFromPartnerKey, ATransaction);
@@ -1055,7 +1014,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ((PmApplicationFileRow)Row).PartnerKey = AToPartnerKey;
             }
 
-            PmApplicationFileAccess.SubmitChanges(FileTable, ATransaction, out Result);
+            PmApplicationFileAccess.SubmitChanges(FileTable, ATransaction);
 
             PmYearProgramApplicationTable YPApplicationTable = PmYearProgramApplicationAccess.LoadViaPPerson(AFromPartnerKey, ATransaction);
 
@@ -1064,7 +1023,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ((PmYearProgramApplicationRow)Row).PartnerKey = AToPartnerKey;
             }
 
-            PmYearProgramApplicationAccess.SubmitChanges(YPApplicationTable, ATransaction, out Result);
+            PmYearProgramApplicationAccess.SubmitChanges(YPApplicationTable, ATransaction);
 
             PmShortTermApplicationTable STApplicationTable = PmShortTermApplicationAccess.LoadViaPPerson(AFromPartnerKey, ATransaction);
 
@@ -1073,7 +1032,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ((PmShortTermApplicationRow)Row).PartnerKey = AToPartnerKey;
             }
 
-            PmShortTermApplicationAccess.SubmitChanges(STApplicationTable, ATransaction, out Result);
+            PmShortTermApplicationAccess.SubmitChanges(STApplicationTable, ATransaction);
 
             // delete old records
             foreach (DataRow Row in FromApplicationTable.Rows)
@@ -1081,15 +1040,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 Row.Delete();
             }
 
-            PmGeneralApplicationAccess.SubmitChanges(FromApplicationTable, ATransaction, out Result);
-
-            return true;
+            PmGeneralApplicationAccess.SubmitChanges(FromApplicationTable, ATransaction);
         }
 
-        private static bool MergePMData(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergePMData(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             // *** OFFICE SPECIFIC DATA ***
 
             PDataLabelValuePartnerTable DataLabelValuePartnerTable = PDataLabelValuePartnerAccess.LoadViaPPartnerPartnerKey(AFromPartnerKey,
@@ -1109,7 +1064,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                PDataLabelValuePartnerAccess.SubmitChanges(DataLabelValuePartnerTable, ATransaction, out Result);
+                PDataLabelValuePartnerAccess.SubmitChanges(DataLabelValuePartnerTable, ATransaction);
             }
 
             PDataLabelValueApplicationTable DataLabelValueApplicationTable = PDataLabelValueApplicationAccess.LoadViaPPartner(AFromPartnerKey,
@@ -1130,7 +1085,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                PDataLabelValueApplicationAccess.SubmitChanges(DataLabelValueApplicationTable, ATransaction, out Result);
+                PDataLabelValueApplicationAccess.SubmitChanges(DataLabelValueApplicationTable, ATransaction);
             }
 
             // *** PASSPORT ***
@@ -1151,7 +1106,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                PmPassportDetailsAccess.SubmitChanges(PassportDetailsTable, ATransaction, out Result);
+                PmPassportDetailsAccess.SubmitChanges(PassportDetailsTable, ATransaction);
             }
 
             // *** DOCUMENTS ***
@@ -1165,7 +1120,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((PmDocumentRow)Row).PartnerKey = AToPartnerKey;
                 }
 
-                PmDocumentAccess.SubmitChanges(DocumentTable, ATransaction, out Result);
+                PmDocumentAccess.SubmitChanges(DocumentTable, ATransaction);
             }
 
             // *** PAST EXPERIENCE ***
@@ -1204,7 +1159,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                PmPastExperienceAccess.SubmitChanges(PastExperienceTable, ATransaction, out Result);
+                PmPastExperienceAccess.SubmitChanges(PastExperienceTable, ATransaction);
             }
 
             // *** ABILITY ***
@@ -1225,7 +1180,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                PmPersonAbilityAccess.SubmitChanges(PersonAbilityTable, ATransaction, out Result);
+                PmPersonAbilityAccess.SubmitChanges(PersonAbilityTable, ATransaction);
             }
 
             // *** PERSON EVALUATION ***
@@ -1248,7 +1203,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                PmPersonEvaluationAccess.SubmitChanges(PersonEvaluationTable, ATransaction, out Result);
+                PmPersonEvaluationAccess.SubmitChanges(PersonEvaluationTable, ATransaction);
             }
 
             // *** LANGUAGE ***
@@ -1271,7 +1226,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                PmPersonLanguageAccess.SubmitChanges(PersonLanguageTable, ATransaction, out Result);
+                PmPersonLanguageAccess.SubmitChanges(PersonLanguageTable, ATransaction);
             }
 
             // *** QUALIFICATION ***
@@ -1294,7 +1249,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                PmPersonQualificationAccess.SubmitChanges(PersonQualificationTable, ATransaction, out Result);
+                PmPersonQualificationAccess.SubmitChanges(PersonQualificationTable, ATransaction);
             }
 
             // *** PERSONAL DATA ***
@@ -1433,8 +1388,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     FromRow.PartnerKey = AToPartnerKey;
                 }
 
-                PmPersonalDataAccess.SubmitChanges(FromPersonalDataTable, ATransaction, out Result);
-                PmPersonalDataAccess.SubmitChanges(ToPersonalDataTable, ATransaction, out Result);
+                PmPersonalDataAccess.SubmitChanges(FromPersonalDataTable, ATransaction);
+                PmPersonalDataAccess.SubmitChanges(ToPersonalDataTable, ATransaction);
             }
 
             // *** SPECIAL NEED ***
@@ -1478,8 +1433,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     FromRow.PartnerKey = AToPartnerKey;
                 }
 
-                PmSpecialNeedAccess.SubmitChanges(FromSpecialNeedTable, ATransaction, out Result);
-                PmSpecialNeedAccess.SubmitChanges(ToSpecialNeedTable, ATransaction, out Result);
+                PmSpecialNeedAccess.SubmitChanges(FromSpecialNeedTable, ATransaction);
+                PmSpecialNeedAccess.SubmitChanges(ToSpecialNeedTable, ATransaction);
             }
 
             // *** STAFF DATA ***
@@ -1493,16 +1448,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((PmStaffDataRow)Row).PartnerKey = AToPartnerKey;
                 }
 
-                PmStaffDataAccess.SubmitChanges(StaffDataTable, ATransaction, out Result);
+                PmStaffDataAccess.SubmitChanges(StaffDataTable, ATransaction);
             }
-
-            return true;
         }
 
-        private static bool MergeJobs(long AFromPartnerKey, long AToPartnerKey, TPartnerClass AFromPartnerClass, TDBTransaction ATransaction)
+        private static void MergeJobs(long AFromPartnerKey, long AToPartnerKey, TPartnerClass AFromPartnerClass, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             // *** JOB ASSIGNMENT (PERSON) ***
 
             PmJobAssignmentTable FromJobAssignmentTable = PmJobAssignmentAccess.LoadViaPPartner(AFromPartnerKey, ATransaction);
@@ -1539,13 +1490,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                PmJobAssignmentAccess.SubmitChanges(FromJobAssignmentTable, ATransaction, out Result);
+                PmJobAssignmentAccess.SubmitChanges(FromJobAssignmentTable, ATransaction);
             }
 
             // The rest of this method only applies to Unit Partners so return if Partner is not a Unit
             if (AFromPartnerClass != TPartnerClass.UNIT)
             {
-                return true;
+                return;
             }
 
             // *** JOB (UNIT) ***
@@ -1583,7 +1534,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                UmJobAccess.SubmitChanges(FromJobTable, ATransaction, out Result);
+                UmJobAccess.SubmitChanges(FromJobTable, ATransaction);
             }
 
             // *** JOB ABILITY (UNIT) ***
@@ -1622,7 +1573,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                UmJobRequirementAccess.SubmitChanges(FromJobRequirementTable, ATransaction, out Result);
+                UmJobRequirementAccess.SubmitChanges(FromJobRequirementTable, ATransaction);
             }
 
             // *** JOB LANGUAGE (UNIT) ***
@@ -1661,7 +1612,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                UmJobLanguageAccess.SubmitChanges(FromJobLanguageTable, ATransaction, out Result);
+                UmJobLanguageAccess.SubmitChanges(FromJobLanguageTable, ATransaction);
             }
 
             // *** JOB Qualification (UNIT) ***
@@ -1699,16 +1650,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                UmJobQualificationAccess.SubmitChanges(FromJobQualificationTable, ATransaction, out Result);
+                UmJobQualificationAccess.SubmitChanges(FromJobQualificationTable, ATransaction);
             }
-
-            return true;
         }
 
-        private static bool MergeUnit(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeUnit(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PUnitTable FromUnitTable = PUnitAccess.LoadViaPPartnerPartnerKey(AFromPartnerKey, ATransaction);
             PUnitTable ToUnitTable = PUnitAccess.LoadViaPPartnerPartnerKey(AToPartnerKey, ATransaction);
 
@@ -1758,7 +1705,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ToUnitRow.PrimaryOffice = FromUnitRow.PrimaryOffice;
             }
 
-            PUnitAccess.SubmitChanges(ToUnitTable, ATransaction, out Result);
+            PUnitAccess.SubmitChanges(ToUnitTable, ATransaction);
 
             // ** deal with various references to p_unit
 
@@ -1771,7 +1718,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((PmStaffDataRow)Row).OfficeRecruitedBy = AToPartnerKey;
                 }
 
-                PmStaffDataAccess.SubmitChanges(OfficeRecruitedTable, ATransaction, out Result);
+                PmStaffDataAccess.SubmitChanges(OfficeRecruitedTable, ATransaction);
             }
 
             PmStaffDataTable HomeOfficeTable = PmStaffDataAccess.LoadViaPUnitHomeOffice(AFromPartnerKey, ATransaction);
@@ -1783,7 +1730,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((PmStaffDataRow)Row).HomeOffice = AToPartnerKey;
                 }
 
-                PmStaffDataAccess.SubmitChanges(HomeOfficeTable, ATransaction, out Result);
+                PmStaffDataAccess.SubmitChanges(HomeOfficeTable, ATransaction);
             }
 
             PmStaffDataTable ReceivingFieldTable = PmStaffDataAccess.LoadViaPUnitReceivingField(AFromPartnerKey, ATransaction);
@@ -1795,7 +1742,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((PmStaffDataRow)Row).ReceivingField = AToPartnerKey;
                 }
 
-                PmStaffDataAccess.SubmitChanges(ReceivingFieldTable, ATransaction, out Result);
+                PmStaffDataAccess.SubmitChanges(ReceivingFieldTable, ATransaction);
             }
 
             PmStaffDataTable ReceivingFieldOfficeTable = PmStaffDataAccess.LoadViaPUnitReceivingFieldOffice(AFromPartnerKey, ATransaction);
@@ -1807,7 +1754,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((PmStaffDataRow)Row).ReceivingFieldOffice = AToPartnerKey;
                 }
 
-                PmStaffDataAccess.SubmitChanges(ReceivingFieldOfficeTable, ATransaction, out Result);
+                PmStaffDataAccess.SubmitChanges(ReceivingFieldOfficeTable, ATransaction);
             }
 
             PmJobAssignmentTable JobAssignmentTable = PmJobAssignmentAccess.LoadViaPUnit(AFromPartnerKey, ATransaction);
@@ -1819,7 +1766,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((PmJobAssignmentRow)Row).UnitKey = AToPartnerKey;
                 }
 
-                PmJobAssignmentAccess.SubmitChanges(JobAssignmentTable, ATransaction, out Result);
+                PmJobAssignmentAccess.SubmitChanges(JobAssignmentTable, ATransaction);
             }
 
             PFamilyTable FamilyTable = PFamilyAccess.LoadViaPUnit(AFromPartnerKey, ATransaction);
@@ -1831,7 +1778,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((PFamilyRow)Row).FieldKey = AToPartnerKey;
                 }
 
-                PFamilyAccess.SubmitChanges(FamilyTable, ATransaction, out Result);
+                PFamilyAccess.SubmitChanges(FamilyTable, ATransaction);
             }
 
             PPersonTable PersonTable = PPersonAccess.LoadViaPUnit(AFromPartnerKey, ATransaction);
@@ -1843,7 +1790,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((PPersonRow)Row).FieldKey = AToPartnerKey;
                 }
 
-                PPersonAccess.SubmitChanges(PersonTable, ATransaction, out Result);
+                PPersonAccess.SubmitChanges(PersonTable, ATransaction);
             }
 
             PmGeneralApplicationTable GeneralApplicationTable = PmGeneralApplicationAccess.LoadViaPUnitRegistrationOffice(AFromPartnerKey,
@@ -1856,7 +1803,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((PmGeneralApplicationRow)Row).RegistrationOffice = AToPartnerKey;
                 }
 
-                PmGeneralApplicationAccess.SubmitChanges(GeneralApplicationTable, ATransaction, out Result);
+                PmGeneralApplicationAccess.SubmitChanges(GeneralApplicationTable, ATransaction);
             }
 
             PmGeneralApplicationTable GeneralApplication2Table = PmGeneralApplicationAccess.LoadViaPUnitGenAppPossSrvUnitKey(AFromPartnerKey,
@@ -1869,7 +1816,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((PmGeneralApplicationRow)Row).GenAppPossSrvUnitKey = AToPartnerKey;
                 }
 
-                PmGeneralApplicationAccess.SubmitChanges(GeneralApplication2Table, ATransaction, out Result);
+                PmGeneralApplicationAccess.SubmitChanges(GeneralApplication2Table, ATransaction);
             }
 
             PmShortTermApplicationTable ShortTermApplicationTable = PmShortTermApplicationAccess.LoadViaPUnitStConfirmedOption(AFromPartnerKey,
@@ -1882,7 +1829,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((PmShortTermApplicationRow)Row).StConfirmedOption = AToPartnerKey;
                 }
 
-                PmShortTermApplicationAccess.SubmitChanges(ShortTermApplicationTable, ATransaction, out Result);
+                PmShortTermApplicationAccess.SubmitChanges(ShortTermApplicationTable, ATransaction);
             }
 
             PmShortTermApplicationTable ShortTermApplication2Table = PmShortTermApplicationAccess.LoadViaPUnitStCurrentField(AFromPartnerKey,
@@ -1895,7 +1842,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((PmShortTermApplicationRow)Row).StCurrentField = AToPartnerKey;
                 }
 
-                PmShortTermApplicationAccess.SubmitChanges(ShortTermApplication2Table, ATransaction, out Result);
+                PmShortTermApplicationAccess.SubmitChanges(ShortTermApplication2Table, ATransaction);
             }
 
             PmShortTermApplicationTable ShortTermApplication3Table = PmShortTermApplicationAccess.LoadViaPUnitRegistrationOffice(AFromPartnerKey,
@@ -1908,7 +1855,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((PmShortTermApplicationRow)Row).RegistrationOffice = AToPartnerKey;
                 }
 
-                PmShortTermApplicationAccess.SubmitChanges(ShortTermApplication3Table, ATransaction, out Result);
+                PmShortTermApplicationAccess.SubmitChanges(ShortTermApplication3Table, ATransaction);
             }
 
             PmShortTermApplicationTable ShortTermApplication4Table = PmShortTermApplicationAccess.LoadViaPUnitStFieldCharged(AFromPartnerKey,
@@ -1921,7 +1868,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((PmShortTermApplicationRow)Row).StFieldCharged = AToPartnerKey;
                 }
 
-                PmShortTermApplicationAccess.SubmitChanges(ShortTermApplication4Table, ATransaction, out Result);
+                PmShortTermApplicationAccess.SubmitChanges(ShortTermApplication4Table, ATransaction);
             }
 
             PcExtraCostTable ExtraCostTable = PcExtraCostAccess.LoadViaPUnit(AFromPartnerKey, ATransaction);
@@ -1933,7 +1880,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     ((PcExtraCostRow)Row).AuthorisingField = AToPartnerKey;
                 }
 
-                PcExtraCostAccess.SubmitChanges(ExtraCostTable, ATransaction, out Result);
+                PcExtraCostAccess.SubmitChanges(ExtraCostTable, ATransaction);
             }
 
             // *** UNIT ABILITY ***
@@ -1954,7 +1901,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                UmUnitAbilityAccess.SubmitChanges(UnitAbilityTable, ATransaction, out Result);
+                UmUnitAbilityAccess.SubmitChanges(UnitAbilityTable, ATransaction);
             }
 
             // *** UNIT COSTS ***
@@ -1975,7 +1922,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                UmUnitCostAccess.SubmitChanges(UnitCostTable, ATransaction, out Result);
+                UmUnitCostAccess.SubmitChanges(UnitCostTable, ATransaction);
             }
 
             // *** UNIT EVALUATION ***
@@ -1998,7 +1945,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                UmUnitEvaluationAccess.SubmitChanges(UnitEvaluationTable, ATransaction, out Result);
+                UmUnitEvaluationAccess.SubmitChanges(UnitEvaluationTable, ATransaction);
             }
 
             // *** UNIT LANGUAGE ***
@@ -2021,18 +1968,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                UmUnitLanguageAccess.SubmitChanges(UnitLanguageTable, ATransaction, out Result);
+                UmUnitLanguageAccess.SubmitChanges(UnitLanguageTable, ATransaction);
             }
 
             // *** UNIT Structure (Parent) ***
-
-            return true;
         }
 
-        private static bool MergeChurchToOrganisation(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeChurchToOrganisation(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PChurchTable ChurchTable = PChurchAccess.LoadViaPPartnerPartnerKey(AFromPartnerKey, ATransaction);
             POrganisationTable OrganisationTable = POrganisationAccess.LoadViaPPartnerPartnerKey(AToPartnerKey, ATransaction);
 
@@ -2049,15 +1992,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ToRow.ContactPartnerKey = FromRow.ContactPartnerKey;
             }
 
-            POrganisationAccess.SubmitChanges(OrganisationTable, ATransaction, out Result);
-
-            return true;
+            POrganisationAccess.SubmitChanges(OrganisationTable, ATransaction);
         }
 
-        private static bool MergeChurchToFamily(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeChurchToFamily(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PChurchTable ChurchTable = PChurchAccess.LoadViaPPartnerPartnerKey(AFromPartnerKey, ATransaction);
             PFamilyTable FamilyTable = PFamilyAccess.LoadViaPPartner(AToPartnerKey, ATransaction);
 
@@ -2069,15 +2008,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ToRow.FamilyName = FromRow.ChurchName;
             }
 
-            PFamilyAccess.SubmitChanges(FamilyTable, ATransaction, out Result);
-
-            return true;
+            PFamilyAccess.SubmitChanges(FamilyTable, ATransaction);
         }
 
-        private static bool MergeChurch(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeChurch(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PChurchTable FromChurchTable = PChurchAccess.LoadViaPPartnerPartnerKey(AFromPartnerKey, ATransaction);
             PChurchTable ToChurchTable = PChurchAccess.LoadViaPPartnerPartnerKey(AToPartnerKey, ATransaction);
 
@@ -2116,15 +2051,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ToRow.ContactPartnerKey = FromRow.ContactPartnerKey;
             }
 
-            PChurchAccess.SubmitChanges(ToChurchTable, ATransaction, out Result);
-
-            return true;
+            PChurchAccess.SubmitChanges(ToChurchTable, ATransaction);
         }
 
-        private static bool MergeVenue(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeVenue(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PVenueTable FromVenueTable = PVenueAccess.LoadViaPPartnerPartnerKey(AFromPartnerKey, ATransaction);
             PVenueTable ToVenueTable = PVenueAccess.LoadViaPPartnerPartnerKey(AToPartnerKey, ATransaction);
 
@@ -2151,15 +2082,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ToRow.ContactPartnerKey = FromRow.ContactPartnerKey;
             }
 
-            PVenueAccess.SubmitChanges(ToVenueTable, ATransaction, out Result);
-
-            return true;
+            PVenueAccess.SubmitChanges(ToVenueTable, ATransaction);
         }
 
-        private static bool MergeFamilyToOrganisation(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeFamilyToOrganisation(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(AFromPartnerKey, ATransaction);
             POrganisationTable OrganisationTable = POrganisationAccess.LoadViaPPartnerPartnerKey(AToPartnerKey, ATransaction);
 
@@ -2167,16 +2094,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             {
                 ((POrganisationRow)OrganisationTable.Rows[0]).OrganisationName = ((PPartnerRow)PartnerTable.Rows[0]).PartnerShortName;
 
-                POrganisationAccess.SubmitChanges(OrganisationTable, ATransaction, out Result);
+                POrganisationAccess.SubmitChanges(OrganisationTable, ATransaction);
             }
-
-            return true;
         }
 
-        private static bool MergeFamilyToChurch(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeFamilyToChurch(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PPartnerTable PartnerTable = PPartnerAccess.LoadByPrimaryKey(AFromPartnerKey, ATransaction);
             PChurchTable ChurchTable = PChurchAccess.LoadViaPPartnerPartnerKey(AToPartnerKey, ATransaction);
 
@@ -2184,16 +2107,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             {
                 ((PChurchRow)ChurchTable.Rows[0]).ChurchName = ((PPartnerRow)PartnerTable.Rows[0]).PartnerShortName;
 
-                PChurchAccess.SubmitChanges(ChurchTable, ATransaction, out Result);
+                PChurchAccess.SubmitChanges(ChurchTable, ATransaction);
             }
-
-            return true;
         }
 
-        private static bool MergeFamily(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeFamily(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PFamilyTable FromFamilyTable = PFamilyAccess.LoadViaPPartner(AFromPartnerKey, ATransaction);
             PFamilyTable ToFamilyTable = PFamilyAccess.LoadViaPPartner(AToPartnerKey, ATransaction);
 
@@ -2255,7 +2174,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     PersonRow.FamilyKey = AToPartnerKey;
                     PersonRow.FamilyId = FamilyID;
 
-                    PPersonAccess.SubmitChanges(PersonTable, ATransaction, out Result);
+                    PPersonAccess.SubmitChanges(PersonTable, ATransaction);
                 }
 
                 /* The p_family_members_l flag was sometimes not set correctly in the past. For this reason we don't want to copy it over as before,
@@ -2269,16 +2188,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             FromRow.FamilyMembers = false;
 
-            PFamilyAccess.SubmitChanges(ToFamilyTable, ATransaction, out Result);
-            PFamilyAccess.SubmitChanges(FromFamilyTable, ATransaction, out Result);
-
-            return true;
+            PFamilyAccess.SubmitChanges(ToFamilyTable, ATransaction);
+            PFamilyAccess.SubmitChanges(FromFamilyTable, ATransaction);
         }
 
-        private static bool MergePerson(long AFromPartnerKey, long AToPartnerKey, ref bool ADifferentFamilies, TDBTransaction ATransaction)
+        private static void MergePerson(long AFromPartnerKey, long AToPartnerKey, ref bool ADifferentFamilies, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PPersonTable FromPersonTable = PPersonAccess.LoadByPrimaryKey(AFromPartnerKey, ATransaction);
             PPersonTable ToPersonTable = PPersonAccess.LoadByPrimaryKey(AToPartnerKey, ATransaction);
 
@@ -2362,7 +2277,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ToRow.FieldKey = FromRow.FieldKey;
             }
 
-            PPersonAccess.SubmitChanges(ToPersonTable, ATransaction, out Result);
+            PPersonAccess.SubmitChanges(ToPersonTable, ATransaction);
 
             // Handle family assignments and family relationships if From Partner and To Partner are not in the same family
             if (FromRow.FamilyKey != ToRow.FamilyKey)
@@ -2377,7 +2292,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                     ((PFamilyRow)FamilyTable.Rows[0]).FamilyMembers = false;
 
-                    PFamilyAccess.SubmitChanges(FamilyTable, ATransaction, out Result);
+                    PFamilyAccess.SubmitChanges(FamilyTable, ATransaction);
                 }
 
                 // Delete FAMILY relationship records
@@ -2391,22 +2306,18 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         Row.Delete();
                     }
 
-                    PPartnerRelationshipAccess.SubmitChanges(RelationshipTable, ATransaction, out Result);
+                    PPartnerRelationshipAccess.SubmitChanges(RelationshipTable, ATransaction);
                 }
             }
 
             FromRow.SetFamilyKeyNull();
             FromRow.FamilyId = 0;
 
-            PPersonAccess.SubmitChanges(FromPersonTable, ATransaction, out Result);
-
-            return true;
+            PPersonAccess.SubmitChanges(FromPersonTable, ATransaction);
         }
 
-        private static bool MergeOrganisationToChurch(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeOrganisationToChurch(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             POrganisationTable OrganisationTable = POrganisationAccess.LoadByPrimaryKey(AFromPartnerKey, ATransaction);
             PChurchTable ChurchTable = PChurchAccess.LoadViaPPartnerPartnerKey(AToPartnerKey, ATransaction);
 
@@ -2423,15 +2334,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ToRow.ContactPartnerKey = FromRow.ContactPartnerKey;
             }
 
-            PChurchAccess.SubmitChanges(ChurchTable, ATransaction, out Result);
-
-            return true;
+            PChurchAccess.SubmitChanges(ChurchTable, ATransaction);
         }
 
-        private static bool MergeOrganisationToFamily(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeOrganisationToFamily(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             POrganisationTable OrganisationTable = POrganisationAccess.LoadByPrimaryKey(AFromPartnerKey, ATransaction);
             PFamilyTable FamilyTable = PFamilyAccess.LoadByPrimaryKey(AToPartnerKey, ATransaction);
 
@@ -2443,15 +2350,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ToRow.FamilyName = FromRow.OrganisationName;
             }
 
-            PFamilyAccess.SubmitChanges(FamilyTable, ATransaction, out Result);
-
-            return true;
+            PFamilyAccess.SubmitChanges(FamilyTable, ATransaction);
         }
 
-        private static bool MergeOrganisationToBank(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeOrganisationToBank(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             POrganisationTable OrganisationTable = POrganisationAccess.LoadByPrimaryKey(AFromPartnerKey, ATransaction);
             PBankTable BankTable = PBankAccess.LoadViaPPartnerPartnerKey(AToPartnerKey, ATransaction);
 
@@ -2468,15 +2371,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ToRow.ContactPartnerKey = FromRow.ContactPartnerKey;
             }
 
-            PBankAccess.SubmitChanges(BankTable, ATransaction, out Result);
-
-            return true;
+            PBankAccess.SubmitChanges(BankTable, ATransaction);
         }
 
-        private static bool MergeOrganisation(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeOrganisation(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             POrganisationTable FromOrganisationTable = POrganisationAccess.LoadByPrimaryKey(AFromPartnerKey, ATransaction);
             POrganisationTable ToOrganisationTable = POrganisationAccess.LoadByPrimaryKey(AFromPartnerKey, ATransaction);
 
@@ -2503,15 +2402,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ToRow.ContactPartnerKey = FromRow.ContactPartnerKey;
             }
 
-            POrganisationAccess.SubmitChanges(ToOrganisationTable, ATransaction, out Result);
-
-            return true;
+            POrganisationAccess.SubmitChanges(ToOrganisationTable, ATransaction);
         }
 
-        private static bool MergeBankToOrganisation(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeBankToOrganisation(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PBankTable BankTable = PBankAccess.LoadViaPPartnerPartnerKey(AFromPartnerKey, ATransaction);
             POrganisationTable OrganisationTable = POrganisationAccess.LoadByPrimaryKey(AToPartnerKey, ATransaction);
 
@@ -2528,15 +2423,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ToRow.ContactPartnerKey = FromRow.ContactPartnerKey;
             }
 
-            POrganisationAccess.SubmitChanges(OrganisationTable, ATransaction, out Result);
-
-            return true;
+            POrganisationAccess.SubmitChanges(OrganisationTable, ATransaction);
         }
 
-        private static bool MergeBank(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeBank(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PBankTable FromBankTable = PBankAccess.LoadByPrimaryKey(AFromPartnerKey, ATransaction);
             PBankTable ToBankTable = PBankAccess.LoadByPrimaryKey(AToPartnerKey, ATransaction);
 
@@ -2573,7 +2464,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ToRow.CreditCard = FromRow.CreditCard;
             }
 
-            PBankAccess.SubmitChanges(ToBankTable, ATransaction, out Result);
+            PBankAccess.SubmitChanges(ToBankTable, ATransaction);
 
             // Move the banking details where the From Bank is used to the To Partner
             PBankingDetailsTable BankingDetailsTable = PBankingDetailsAccess.LoadViaPBank(AFromPartnerKey, ATransaction);
@@ -2583,15 +2474,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ((PBankingDetailsRow)Row).BankKey = AToPartnerKey;
             }
 
-            PBankingDetailsAccess.SubmitChanges(BankingDetailsTable, ATransaction, out Result);
-
-            return true;
+            PBankingDetailsAccess.SubmitChanges(BankingDetailsTable, ATransaction);
         }
 
-        private static bool MergeRelationships(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeRelationships(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             // Iterate through all relations that the From Partner has got
             PPartnerRelationshipTable RelationshipTable1 = PPartnerRelationshipAccess.LoadViaPPartnerPartnerKey(AFromPartnerKey, ATransaction);
 
@@ -2617,7 +2504,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                PPartnerRelationshipAccess.SubmitChanges(RelationshipTable1, ATransaction, out Result);
+                PPartnerRelationshipAccess.SubmitChanges(RelationshipTable1, ATransaction);
             }
 
             // Iterate through all relations that point to the From Partner
@@ -2646,18 +2533,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                PPartnerRelationshipAccess.SubmitChanges(RelationshipTable2, ATransaction, out Result);
+                PPartnerRelationshipAccess.SubmitChanges(RelationshipTable2, ATransaction);
 
                 // Please note that FAMILY relations are handled specially in merge_p_person!
             }
-
-            return true;
         }
 
-        private static bool MergePartner(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergePartner(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PPartnerTable FromPartnerTable = PPartnerAccess.LoadByPrimaryKey(AFromPartnerKey, ATransaction);
             PPartnerTable ToPartnerTable = PPartnerAccess.LoadByPrimaryKey(AToPartnerKey, ATransaction);
 
@@ -2786,8 +2669,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ToRow.Timezone = FromRow.Timezone;
             }
 
-            PPartnerAccess.SubmitChanges(FromPartnerTable, ATransaction, out Result);
-            PPartnerAccess.SubmitChanges(ToPartnerTable, ATransaction, out Result);
+            PPartnerAccess.SubmitChanges(FromPartnerTable, ATransaction);
+            PPartnerAccess.SubmitChanges(ToPartnerTable, ATransaction);
 
             // create a new PPartnerMerge row for the merged partner
             PPartnerMergeTable MergeTable = PPartnerMergeAccess.LoadAll(ATransaction);
@@ -2808,15 +2691,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             MergeRow.MergedBy = UserInfo.GUserInfo.UserID;
             MergeRow.MergeDate = DateTime.Now;
 
-            PPartnerMergeAccess.SubmitChanges(MergeTable, ATransaction, out Result);
-
-            return true;
+            PPartnerMergeAccess.SubmitChanges(MergeTable, ATransaction);
         }
 
-        private static bool MergeBuildingsAndRooms(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeBuildingsAndRooms(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             // change the links of that venue used as a site for conferences
             PcConferenceVenueTable ConferenceTable = PcConferenceVenueAccess.LoadViaPVenue(AFromPartnerKey, ATransaction);
 
@@ -2834,7 +2713,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 }
             }
 
-            PcConferenceVenueAccess.SubmitChanges(ConferenceTable, ATransaction, out Result);
+            PcConferenceVenueAccess.SubmitChanges(ConferenceTable, ATransaction);
 
             // change links for buildings:
             // if the building code does not yet exist in the new venue, then create a new record,
@@ -2857,7 +2736,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 }
             }
 
-            PcBuildingAccess.SubmitChanges(ToBuildingTable, ATransaction, out Result);
+            PcBuildingAccess.SubmitChanges(ToBuildingTable, ATransaction);
 
             // change links for rooms:
 
@@ -2908,7 +2787,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ToRoomTable.Rows.Add(FromRowClone);
             }
 
-            PcRoomAccess.SubmitChanges(ToRoomTable, ATransaction, out Result);
+            PcRoomAccess.SubmitChanges(ToRoomTable, ATransaction);
 
             // change links for room allocations:
             // if the room number has changed (#M has been added and it will then be in the temporary table for new room numbers) then this new
@@ -2933,7 +2812,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 }
             }
 
-            PcRoomAllocAccess.SubmitChanges(RoomAllocTable, ATransaction, out Result);
+            PcRoomAllocAccess.SubmitChanges(RoomAllocTable, ATransaction);
 
             // delete old room records
             foreach (DataRow Row in FromRoomTable.Rows)
@@ -2941,7 +2820,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 Row.Delete();
             }
 
-            PcRoomAccess.SubmitChanges(FromRoomTable, ATransaction, out Result);
+            PcRoomAccess.SubmitChanges(FromRoomTable, ATransaction);
 
             // delete old building records
             foreach (DataRow Row in FromBuildingTable.Rows)
@@ -2949,15 +2828,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 Row.Delete();
             }
 
-            PcBuildingAccess.SubmitChanges(FromBuildingTable, ATransaction, out Result);
-
-            return true;
+            PcBuildingAccess.SubmitChanges(FromBuildingTable, ATransaction);
         }
 
-        private static bool MergeBankAccounts(long AFromPartnerKey, long AToPartnerKey, int AMainBankingDetailsKey, TDBTransaction ATransaction)
+        private static void MergeBankAccounts(long AFromPartnerKey, long AToPartnerKey, int AMainBankingDetailsKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PPartnerBankingDetailsTable BankingDetailsTable = PPartnerBankingDetailsAccess.LoadViaPPartner(AFromPartnerKey, ATransaction);
 
             // Change all From p_partner_banking_details partner keys
@@ -2972,7 +2847,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 if (BankingDetailsUsageTable.Rows.Count > 0)
                 {
                     BankingDetailsUsageTable.Rows[0].Delete();
-                    PBankingDetailsUsageAccess.SubmitChanges(BankingDetailsUsageTable, ATransaction, out Result);
+                    PBankingDetailsUsageAccess.SubmitChanges(BankingDetailsUsageTable, ATransaction);
                 }
 
                 // if To partner does NOT already have this banking details relation
@@ -2987,7 +2862,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 }
             }
 
-            PPartnerBankingDetailsAccess.SubmitChanges(BankingDetailsTable, ATransaction, out Result);
+            PPartnerBankingDetailsAccess.SubmitChanges(BankingDetailsTable, ATransaction);
 
             // set the 'Main' Bank Account if needed (-1 if not needed)
             if (AMainBankingDetailsKey != -1)
@@ -3023,18 +2898,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     BankingDetailsUsageTable.Rows.Add(NewRow);
                 }
 
-                PBankingDetailsUsageAccess.SubmitChanges(BankingDetailsUsageTable, ATransaction, out Result);
+                PBankingDetailsUsageAccess.SubmitChanges(BankingDetailsUsageTable, ATransaction);
             }
-
-            return true;
         }
 
         //  1) Update recent partner settings for the current user to refer to the To partner.
         //  2) Removes the From partner from the p_recent_partners table.
-        private static bool MergeRecentAndLastPartnerInfo(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeRecentAndLastPartnerInfo(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             // set user user defaults
             TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPARTNERMAILROOM, AToPartnerKey);
             TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_LASTPERSONCONFERENCE, AToPartnerKey);
@@ -3053,16 +2924,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             if (RecentPartnersTable.Rows.Count > 0)
             {
                 RecentPartnersTable.Rows[0].Delete();
-                PRecentPartnersAccess.SubmitChanges(RecentPartnersTable, ATransaction, out Result);
+                PRecentPartnersAccess.SubmitChanges(RecentPartnersTable, ATransaction);
             }
-
-            return true;
         }
 
-        private static bool MergeLinkToCostCentre(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeLinkToCostCentre(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             AValidLedgerNumberTable ValidLedgerNumberTable = AValidLedgerNumberAccess.LoadViaPPartnerPartnerKey(AFromPartnerKey, ATransaction);
 
             if (ValidLedgerNumberTable.Rows.Count > 0)
@@ -3081,16 +2948,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                AValidLedgerNumberAccess.SubmitChanges(ValidLedgerNumberTable, ATransaction, out Result);
+                AValidLedgerNumberAccess.SubmitChanges(ValidLedgerNumberTable, ATransaction);
             }
-
-            return true;
         }
 
-        private static bool MergeGraphic(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
+        private static void MergeGraphic(long AFromPartnerKey, long AToPartnerKey, TDBTransaction ATransaction)
         {
-            TVerificationResultCollection Result;
-
             PPartnerGraphicTable PartnerGraphicTable = PPartnerGraphicAccess.LoadViaPPartner(AFromPartnerKey, ATransaction);
 
             if (PartnerGraphicTable.Rows.Count > 0)
@@ -3102,10 +2965,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     FromRow.PartnerKey = AToPartnerKey;
                 }
 
-                PPartnerGraphicAccess.SubmitChanges(PartnerGraphicTable, ATransaction, out Result);
+                PPartnerGraphicAccess.SubmitChanges(PartnerGraphicTable, ATransaction);
             }
-
-            return true;
         }
     }
 }

@@ -92,12 +92,17 @@ namespace Tests.MFinance.Server.Gift
             parameters.Add("NumberFormat", "American");
             parameters.Add("NewLine", Environment.NewLine);
 
-            importer.ImportGiftBatches(parameters, FileContent, out VerificationResult);
+            if (!importer.ImportGiftBatches(parameters, FileContent, out VerificationResult))
+            {
+                return false;
+            }
 
             int BatchNumber = importer.GetLastGiftBatchNumber();
 
             if (!TGiftTransactionWebConnector.PostGiftBatch(ALedgerNumber, BatchNumber, out VerificationResult))
             {
+                CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult);
+
                 return false;
             }
 
