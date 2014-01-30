@@ -58,21 +58,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="AComment"></param>
         /// <param name="AModuleID"></param>
         /// <param name="AMailingCode">can be empty string</param>
-        /// <param name="AVerificationResults"></param>
-        /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static bool AddContact(List <Int64>APartnerKeys,
+        public static void AddContact(List <Int64>APartnerKeys,
             DateTime AContactDate,
             string AMethodOfContact,
             string AComment,
             string AModuleID,
-            string AMailingCode,
-            out TVerificationResultCollection AVerificationResults)
+            string AMailingCode)
         {
             Boolean NewTransaction;
-            Boolean ResultValue = false;
-
-            AVerificationResults = null;
 
             TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
@@ -103,32 +97,24 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     contacts.Rows.Add(contact);
                 }
 
-                if (!PPartnerContactAccess.SubmitChanges(contacts, WriteTransaction, out AVerificationResults))
+                PPartnerContactAccess.SubmitChanges(contacts, WriteTransaction);
+
+                if (NewTransaction)
                 {
-                    // something went wrong
-                    ResultValue = false;
-                }
-                else
-                {
-                    ResultValue = true;
+                    DBAccess.GDBAccessObj.CommitTransaction();
                 }
             }
-            catch (Exception e)
+            catch (Exception Exc)
             {
-                TLogging.Log(e.Message);
-                TLogging.Log(e.StackTrace);
-            }
+                TLogging.Log("An Exception occured during the adding of a Contact:" + Environment.NewLine + Exc.ToString());
 
-            if (ResultValue && NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            else if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
 
-            return ResultValue;
+                throw;
+            }
         }
 
         /// <summary>
@@ -220,16 +206,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// this should help when something went wrong and needs to be corrected
         /// </summary>
         /// <param name="APartnerContacts">table with deleted rows. edited or untouched rows will not be deleted.</param>
-        /// <param name="AVerificationResults"></param>
         [RequireModulePermission("PTNRUSER")]
-        public static bool DeleteContacts(
-            PPartnerContactTable APartnerContacts,
-            out TVerificationResultCollection AVerificationResults)
+        public static void DeleteContacts(
+            PPartnerContactTable APartnerContacts)
         {
             Boolean NewTransaction;
-            bool ResultValue = false;
-
-            AVerificationResults = null;
 
             TDBTransaction WriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
@@ -251,32 +232,24 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                 }
 
-                if (!PPartnerContactAccess.SubmitChanges(APartnerContacts, WriteTransaction, out AVerificationResults))
+                PPartnerContactAccess.SubmitChanges(APartnerContacts, WriteTransaction);
+
+                if (NewTransaction)
                 {
-                    // something went wrong
-                    ResultValue = false;
-                }
-                else
-                {
-                    ResultValue = true;
+                    DBAccess.GDBAccessObj.CommitTransaction();
                 }
             }
-            catch (Exception e)
+            catch (Exception Exc)
             {
-                TLogging.Log(e.Message);
-                TLogging.Log(e.StackTrace);
-            }
+                TLogging.Log("An Exception occured during the deletion of Contacts:" + Environment.NewLine + Exc.ToString());
 
-            if ((ResultValue == true) && NewTransaction)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            else if (NewTransaction)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
 
-            return ResultValue;
+                throw;
+            }
         }
     }
 }

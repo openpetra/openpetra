@@ -27,6 +27,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Globalization;
 using System.Threading;
+using Ict.Common.Exceptions;
 
 namespace Ict.Common.Controls
 {
@@ -346,7 +347,7 @@ namespace Ict.Common.Controls
 //                {
 //                    if (!DesignMode)
 //                    {
-//                        throw new ApplicationException(
+//                        throw new EOPAppException(
 //                            "The 'NumberValueDecimal' Property can only be set if the 'ControlMode' Property is 'Decimal'!");
 //                    }
 //                }
@@ -407,7 +408,7 @@ namespace Ict.Common.Controls
                 {
                     if (!DesignMode)
                     {
-                        throw new ApplicationException(
+                        throw new EOPAppException(
                             "The 'NumberValueDouble' Property can only be set if the 'ControlMode' Property is 'Decimal'!");
                     }
                 }
@@ -484,7 +485,7 @@ namespace Ict.Common.Controls
                 {
                     if (!DesignMode)
                     {
-                        throw new ApplicationException(
+                        throw new EOPAppException(
                             "The 'NumberValueInt' Property can only be set if the 'ControlMode' Property is 'Integer'!");
                     }
                 }
@@ -563,7 +564,7 @@ namespace Ict.Common.Controls
                 {
                     if (!DesignMode)
                     {
-                        throw new ApplicationException(
+                        throw new EOPAppException(
                             "The 'NumberValueLongInt' Property can only be set if the 'ControlMode' Property is 'LongInteger'!");
                     }
                 }

@@ -33,6 +33,7 @@ using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
+using Ict.Common.Exceptions;
 using Npgsql;
 using NpgsqlTypes;
 using Mono.Data.Sqlite;
@@ -125,18 +126,7 @@ namespace Ict.Common.DB.Testing
         {
             // see http://nunit.net/blogs/?p=63, we expect an exception to be thrown
             // also http://nunit.org/index.php?p=exceptionAsserts&r=2.5
-            if (TAppSettingsManager.GetValue("Server.RDBMSType").ToLower() == "postgresql")
-            {
-                Assert.Throws <Npgsql.NpgsqlException>(new TestDelegate(EnforceForeignKeyConstraint));
-            }
-            else if (TAppSettingsManager.GetValue("Server.RDBMSType").ToLower() == "sqlite")
-            {
-                Assert.Throws <SqliteException>(new TestDelegate(EnforceForeignKeyConstraint));
-            }
-            else
-            {
-                throw new Exception("this test does not support RDBMSType " + TAppSettingsManager.GetValue("Server.RDBMSType"));
-            }
+            Assert.Throws <EOPDBException>(new TestDelegate(EnforceForeignKeyConstraint));
         }
 
         /// <summary>
@@ -186,18 +176,8 @@ namespace Ict.Common.DB.Testing
         {
             // see http://nunit.net/blogs/?p=63, we expect an exception to be thrown
             // also http://nunit.org/index.php?p=exceptionAsserts&r=2.5
-            if (TAppSettingsManager.GetValue("Server.RDBMSType").ToLower() == "postgresql")
-            {
-                Assert.Throws <Npgsql.NpgsqlException>(new TestDelegate(WrongOrderSqlStatements));
-            }
-            else if (TAppSettingsManager.GetValue("Server.RDBMSType").ToLower() == "sqlite")
-            {
-                Assert.Throws <SqliteException>(new TestDelegate(WrongOrderSqlStatements));
-            }
-            else
-            {
-                throw new Exception("this test does not support RDBMSType " + TAppSettingsManager.GetValue("Server.RDBMSType"));
-            }
+
+            Assert.Throws <EOPDBException>(new TestDelegate(WrongOrderSqlStatements));
         }
 
         /// <summary>
@@ -326,15 +306,7 @@ namespace Ict.Common.DB.Testing
                 // Should not get here (as an Exception will be raised by ExecuteNonQuery!)
                 DBAccess.GDBAccessObj.CommitTransaction();
             }
-            catch (Npgsql.NpgsqlException)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-            catch (Mono.Data.Sqlite.SqliteException)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
-            catch (MySql.Data.MySqlClient.MySqlException)
+            catch (EOPDBException)
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
             }

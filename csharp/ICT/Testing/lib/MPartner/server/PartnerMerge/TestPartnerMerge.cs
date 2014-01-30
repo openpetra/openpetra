@@ -4717,10 +4717,10 @@ namespace Tests.MPartner.Server.PartnerMerge
             // Cleanup: Delete test records
             List <int>DocumentID = new List <int>();
             DocumentID.Add(APDocumentID);
-            TAPTransactionWebConnector.DeleteAPDocuments(LedgerNumber, DocumentID, out VerificationResult);
+            TAPTransactionWebConnector.DeleteAPDocuments(LedgerNumber, DocumentID);
             AccountsPayableTDS APDS = TAPTransactionWebConnector.LoadAApSupplier(LedgerNumber, ToPartnerKey);
             APDS.AApSupplier.Rows[0].Delete();
-            AApSupplierAccess.SubmitChanges(APDS.AApSupplier, DBAccess.GDBAccessObj.Transaction, out VerificationResult);
+            AApSupplierAccess.SubmitChanges(APDS.AApSupplier, DBAccess.GDBAccessObj.Transaction);
             TPartnerWebConnector.DeletePartner(FromPartnerKey, out VerificationResult);
             TPartnerWebConnector.DeletePartner(ToPartnerKey, out VerificationResult);
             TPartnerWebConnector.DeletePartner(FamilyPartnerKey, out VerificationResult);
@@ -4774,11 +4774,11 @@ namespace Tests.MPartner.Server.PartnerMerge
 
             // Submit the new Supplier record to the database
             TSupplierEditUIConnector Connector = new TSupplierEditUIConnector();
-            Result = Connector.SubmitChanges(ref APDS, out VerificationResult);
+            Result = Connector.SubmitChanges(ref APDS);
 
             // Guard Assertion
             Assert.That(Result, Is.EqualTo(
-                    TSubmitChangesResult.scrOK), "SubmitChanges for AP Info failed: " + VerificationResult.BuildVerificationResultString());
+                    TSubmitChangesResult.scrOK), "SubmitChanges for AP Info failed");
 
             // Submit the new Document record to the database
             Result = TAPTransactionWebConnector.SaveAApDocument(ref APDS, out VerificationResult);
@@ -4877,7 +4877,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             TPartnerWebConnector.DeletePartner(FamilyPartnerKey, out VerificationResult);
             PDataLabelTable DataLabelTable = PDataLabelAccess.LoadByPrimaryKey(DataLabelKey, DBAccess.GDBAccessObj.Transaction);
             DataLabelTable.Rows[0].Delete();
-            PDataLabelAccess.SubmitChanges(DataLabelTable, DBAccess.GDBAccessObj.Transaction, out VerificationResult);
+            PDataLabelAccess.SubmitChanges(DataLabelTable, DBAccess.GDBAccessObj.Transaction);
         }
 
         /// <summary>
@@ -4929,10 +4929,7 @@ namespace Tests.MPartner.Server.PartnerMerge
                     TSubmitChangesResult.scrOK), "SubmitChanges for two Persons failed: " + VerificationResult.BuildVerificationResultString());
 
             // Submit the new DataLabel record to the database
-            bool BoolResult = PDataLabelAccess.SubmitChanges(DataLabel, DBAccess.GDBAccessObj.Transaction, out VerificationResult);
-
-            // Guard Assertion
-            Assert.IsTrue(BoolResult, "SubmitChanges for DataLabel failed: " + VerificationResult.BuildVerificationResultString());
+            PDataLabelAccess.SubmitChanges(DataLabel, DBAccess.GDBAccessObj.Transaction);
 
             // Submit the new Document record to the database
             MainDS.Merge(IndividualDS);

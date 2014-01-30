@@ -112,14 +112,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            TVerificationResultCollection VerificationResult;
             PartnerDS.ThrowAwayAfterSubmitChanges = true;
-            PartnerImportExportTDSAccess.SubmitChanges(PartnerDS, out VerificationResult);
-
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
-            {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
-            }
+            PartnerImportExportTDSAccess.SubmitChanges(PartnerDS);
 
             TLogging.Log("after saving banks");
         }

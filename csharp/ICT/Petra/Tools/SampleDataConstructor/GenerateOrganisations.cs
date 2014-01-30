@@ -140,20 +140,9 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            TVerificationResultCollection VerificationResult;
-            PartnerEditTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+            PartnerEditTDSAccess.SubmitChanges(MainDS);
 
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
-            {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
-            }
-
-            AApSupplierAccess.SubmitChanges(supplierTable, null, out VerificationResult);
-
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
-            {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
-            }
+            AApSupplierAccess.SubmitChanges(supplierTable, null);
         }
     }
 }

@@ -138,22 +138,12 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            TVerificationResultCollection VerificationResult;
             MainDS.ThrowAwayAfterSubmitChanges = true;
-            PartnerEditTDSAccess.SubmitChanges(MainDS, out VerificationResult);
 
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
-            {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
-            }
+            PartnerEditTDSAccess.SubmitChanges(MainDS);
 
             PersonnelDS.ThrowAwayAfterSubmitChanges = true;
-            PersonnelTDSAccess.SubmitChanges(PersonnelDS, out VerificationResult);
-
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
-            {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
-            }
+            PersonnelTDSAccess.SubmitChanges(PersonnelDS);
 
             TLogging.Log("after saving workers");
         }

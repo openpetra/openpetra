@@ -29,6 +29,7 @@ using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
@@ -1299,7 +1300,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (!FUserControlInitialised)
             {
-                throw new ApplicationException("SelectTabPage must not be called if the UserControl is not yet initialised");
+                throw new EOPAppException("SelectTabPage must not be called if the UserControl is not yet initialised");
             }
 
             OnDataLoadingStarted();
@@ -1375,7 +1376,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         break;
                 }
             }
-            catch (Ict.Common.Controls.TSelectedIndexChangeDisallowedTabPagedIsDisabledException)
+            catch (Ict.Common.Controls.ESelectedIndexChangeDisallowedTabPagedIsDisabledException)
             {
                 // Desired Tab Page isn't selectable because it is disabled; ignoring this Exception to ignore the selection.
             }

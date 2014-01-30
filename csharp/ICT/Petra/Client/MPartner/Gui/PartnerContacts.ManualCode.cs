@@ -64,8 +64,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void DeleteContacts(object Sender, EventArgs e)
         {
-            TVerificationResultCollection VerificationResult;
-
             if (MessageBox.Show(
                     String.Format(Catalog.GetString("Do you really want to delete all {0} contacts?"), FMainDS.PPartnerContact.Count),
                     Catalog.GetString("Confirm deletion"),
@@ -76,15 +74,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     row.Delete();
                 }
 
-                if (!TRemote.MPartner.Partner.WebConnectors.DeleteContacts(FMainDS.PPartnerContact, out VerificationResult))
-                {
-                    MessageBox.Show(Catalog.GetString("There was a problem deleting the contacts"), Catalog.GetString("Failure"));
-                }
-                else
-                {
-                    // refresh the grid
-                    Search(Sender, e);
-                }
+                TRemote.MPartner.Partner.WebConnectors.DeleteContacts(FMainDS.PPartnerContact);
+
+                // refresh the grid
+                Search(Sender, e);
             }
         }
     }

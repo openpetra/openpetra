@@ -26,6 +26,7 @@ using System.Collections;
 using System.IO;
 using System.Diagnostics;
 
+using Ict.Common.Exceptions;
 
 namespace Ict.Common
 {
@@ -323,7 +324,7 @@ namespace Ict.Common
                     ULogFileName = null;
 
                     // now throw an exception, because it is not supposed to work like this
-                    throw new TNoLoggingToFile_WrongConstructorUsedException();
+                    throw new ENoLoggingToFile_WrongConstructorUsedException();
                 }
             }
         }
@@ -419,16 +420,33 @@ namespace Ict.Common
     #endregion
 
     /// <summary>
-    /// Thrown when using the wrong constructor
+    /// This Exception is thrown if the TLogging class was created using the Create()
+    /// constructor (without the FileName parameter) and a logging request is made
+    /// that would write to a Logfile.
     /// </summary>
-    public class TNoLoggingToFile_WrongConstructorUsedException : ApplicationException
+    public class ENoLoggingToFile_WrongConstructorUsedException : EOPAppException
     {
         /// <summary>
-        /// This Exception is thrown if the TLogging class was created using the Create()
-        /// constructor (without the FileName parameter) and a logging request is made
-        /// that would write to a Logfile.
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
-        public TNoLoggingToFile_WrongConstructorUsedException()
+        public ENoLoggingToFile_WrongConstructorUsedException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public ENoLoggingToFile_WrongConstructorUsedException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ENoLoggingToFile_WrongConstructorUsedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }

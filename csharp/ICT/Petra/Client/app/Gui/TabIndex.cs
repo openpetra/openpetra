@@ -25,6 +25,8 @@ using System;
 using System.Windows.Forms;
 using System.Reflection;
 
+using Ict.Common.Exceptions;
+
 namespace Ict.Petra.Client.App.Gui
 {
     /// <summary>
@@ -113,7 +115,7 @@ namespace Ict.Petra.Client.App.Gui
 
                 if (Label1 == null)
                 {
-                    throw new ApplicationException(
+                    throw new EOPAppException(
                         "TTabIndex.ExchangeTabIndex: Associated label '" + Label1Name + "' couldn't be found for Control1 ('" + AControl1.Name + "')");
                 }
 
@@ -131,7 +133,7 @@ namespace Ict.Petra.Client.App.Gui
 
                 if (Label2 == null)
                 {
-                    throw new ApplicationException(
+                    throw new EOPAppException(
                         "TTabIndex.ExchangeTabIndex: Associated label  '" + Label2Name + "' couldn't be found for Control2 ('" + AControl2.Name +
                         "')");
                 }

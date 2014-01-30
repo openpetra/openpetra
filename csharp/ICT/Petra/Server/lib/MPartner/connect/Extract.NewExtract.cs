@@ -23,6 +23,7 @@
 //
 using System;
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
@@ -65,23 +66,18 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
         /// <param name="AExtractDescription">Description of the extract to be created</param>
         /// <param name="AExtractID">Extract Id of the new created extract. -1 if not successfull</param>
         /// <param name="AExtractAlreadyExists">True if there is already an extract with the given name. Otherwise false</param>
-        /// <param name="AVerificationResults">Nil if all verifications are OK and all DB calls
-        /// succeded, otherwise filled with 1..n TVerificationResult objects
-        /// (can also contain DB call exceptions)</param>
         /// <returns>true if the new extract was created. Otherwise false</returns>
         public bool CreateNewExtract(String AExtractName,
             String AExtractDescription,
             out Int32 AExtractID,
-            out Boolean AExtractAlreadyExists,
-            out TVerificationResultCollection AVerificationResults)
+            out Boolean AExtractAlreadyExists)
         {
             bool Success;
 
             Success = TExtractsHandling.CreateNewExtract(AExtractName,
                 AExtractDescription,
                 out AExtractID,
-                out AExtractAlreadyExists,
-                out AVerificationResults);
+                out AExtractAlreadyExists);
 
             if (Success)
             {
@@ -108,17 +104,17 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                 {
                     if (ExtractNotDeletable)
                     {
-                        throw new ApplicationException("Cannot delete Extract because it is not deletable");
+                        throw new EOPAppException("Cannot delete Extract because it is not deletable");
                     }
                     else
                     {
-                        throw new ApplicationException("Cannot delete Extract. Reason: " + VerificationResult.ResultText);
+                        throw new EOPAppException("Cannot delete Extract. Reason: " + VerificationResult.ResultText);
                     }
                 }
             }
             else
             {
-                throw new ApplicationException("Cannot delete Extract that wasn't yet created by " +
+                throw new EOPAppException("Cannot delete Extract that wasn't yet created by " +
                     "this UIConnector!");
             }
         }

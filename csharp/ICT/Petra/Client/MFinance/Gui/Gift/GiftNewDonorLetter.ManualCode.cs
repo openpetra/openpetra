@@ -195,25 +195,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
 
-            TVerificationResultCollection VerificationResult;
-
             // No Mailing code, because this is a form letter
-            if (!TRemote.MPartner.Partner.WebConnectors.AddContact(partnerKeys,
-                    DateTime.Today,
-                    MPartnerConstants.METHOD_CONTACT_FORMLETTER,
-                    Catalog.GetString("Letter for new donors announcing subscription to magazine"),
-                    SharedConstants.PETRAMODULE_FINANCE1,
-                    "",
-                    out VerificationResult))
-            {
-                MessageBox.Show(Catalog.GetString("There was a problem setting the contact for the partners"),
-                    Catalog.GetString("Failure"));
-            }
-            else
-            {
-                MessageBox.Show(Catalog.GetString("The partner contacts have been updated successfully!"),
-                    Catalog.GetString("Success"));
-            }
+            TRemote.MPartner.Partner.WebConnectors.AddContact(partnerKeys,
+                DateTime.Today,
+                MPartnerConstants.METHOD_CONTACT_FORMLETTER,
+                Catalog.GetString("Letter for new donors announcing subscription to magazine"),
+                SharedConstants.PETRAMODULE_FINANCE1,
+                "");
+
+            MessageBox.Show(Catalog.GetString("The partner contacts have been updated successfully!"),
+                Catalog.GetString("Success"));
         }
     }
 }

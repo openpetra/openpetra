@@ -151,7 +151,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FPetraUtilsObject.VerificationResultCollection.Clear();
             ValidateAllData(false, false);
 
-            if (FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors)
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(FPetraUtilsObject.VerificationResultCollection))
             {
                 return;
             }

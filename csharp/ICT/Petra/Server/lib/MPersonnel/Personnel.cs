@@ -62,7 +62,6 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
             bool AllDataValidationsOK = true;
 
             AVerificationResult = new TVerificationResultCollection();
@@ -73,10 +72,10 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             {
                 if (AInspectDS.PmStaffData.Rows.Count > 0)
                 {
-                    ValidatePersonnelStaff(ValidationControlsDict, ref AVerificationResult, AInspectDS.PmStaffData);
-                    ValidatePersonnelStaffManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.PmStaffData);
+                    ValidatePersonnelStaff(ref AVerificationResult, AInspectDS.PmStaffData);
+                    ValidatePersonnelStaffManual(ref AVerificationResult, AInspectDS.PmStaffData);
 
-                    if (AVerificationResult.HasCriticalErrors)
+                    if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                     {
                         AllDataValidationsOK = false;
                     }
@@ -85,7 +84,9 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
 
             if (AllDataValidationsOK)
             {
-                SubmissionResult = PersonnelTDSAccess.SubmitChanges(AInspectDS, out AVerificationResult);
+                PersonnelTDSAccess.SubmitChanges(AInspectDS);
+
+                SubmissionResult = TSubmitChangesResult.scrOK;
             }
             else if (AVerificationResult.Count > 0)
             {
@@ -255,10 +256,8 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
 
         #region Data Validation
 
-        static partial void ValidatePersonnelStaff(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        static partial void ValidatePersonnelStaffManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidatePersonnelStaff(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidatePersonnelStaffManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
         #endregion Data Validation
     }

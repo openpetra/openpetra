@@ -161,7 +161,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         TLedgerInitFlagEnum.Revaluation).Flag = true;
                 }
             }
-            catch (TVerificationException terminate)
+            catch (EVerificationException terminate)
             {
                 verificationCollection = terminate.ResultCollection();
             }
@@ -272,7 +272,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 strStatusContent, strMessage, TResultSeverity.Resv_Noncritical));
                     }
                 }
-                catch (TVerificationException terminate)
+                catch (EVerificationException terminate)
                 {
                     verificationCollection = terminate.ResultCollection();
                 }

@@ -129,11 +129,9 @@ namespace Ict.Petra.Server.MPartner.Common
             PPartnerLocationRow PartnerLocationDR2;
             PLocationTable LocationDT;
             PPartnerLocationTable PartnerLocationDT;
-            TVerificationResultCollection VerificationResult;
 
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
             try
             {
@@ -154,8 +152,7 @@ namespace Ict.Petra.Server.MPartner.Common
                      * Get the Partner's Address data of its 'Best' Address
                      */
                     if (TMailing.GetPartnersBestLocationData(APartnerKey, out BestLocationPK,
-                            out LocationDR, out PartnerLocationDR,
-                            out VerificationResult))
+                            out LocationDR, out PartnerLocationDR))
                     {
                         #region Process Address
 
