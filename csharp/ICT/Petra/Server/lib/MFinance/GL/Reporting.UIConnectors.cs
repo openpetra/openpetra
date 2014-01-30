@@ -40,6 +40,7 @@ using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 using System.Collections;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 {
@@ -443,31 +444,330 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         }
 
         /// <summary>
+        /// Utility function for IncomeExpenseTable.
+        /// Create or update the row that this account reports to.
+        /// USES RECURSION to create or update grandparents, and update AccountLevel and AccountPath.
+        /// </summary>
+        private static Int32 AddTotalsToParentAccountRow(
+            DataTable filteredResults,
+            AAccountHierarchyDetailTable HierarchyTbl,
+            Int32 LedgerNumber,
+            String CostCentreCode,
+            String AccountCode,
+            DataRow NewDataRow,
+            out string ParentAccountPath,
+            TDBTransaction ReadTrans )
+        {
+            Int32 Idx = HierarchyTbl.DefaultView.Find(AccountCode);
+            // If Idx < 0 that's pretty serious. The next line will raise an exception.
+            AAccountHierarchyDetailRow HDRow = (AAccountHierarchyDetailRow)HierarchyTbl.DefaultView[Idx].Row;
+            String ParentAccountCode = HDRow.AccountCodeToReportTo;
+            String MyParentAccountPath;
+
+            if (ParentAccountCode == "RET EARN")
+            {
+                // The calling Row is a "first level" account with no parent.
+                ParentAccountPath = "";
+                return 0;
+            }
+            else
+            {
+                DataRow ParentRow;
+                Int32 AccountLevel = AddTotalsToParentAccountRow( // Update my parent first
+                    filteredResults,
+                    HierarchyTbl,
+                    LedgerNumber,
+                    CostCentreCode,
+                    ParentAccountCode,
+                    NewDataRow,
+                    out MyParentAccountPath,
+                    ReadTrans);
+
+                Idx = filteredResults.DefaultView.Find(new object[] { CostCentreCode, ParentAccountCode });
+                if (Idx < 0)                // This Parent Account Code should have a row in the table - if not I need to create one now.
+                {
+                    ParentRow = filteredResults.NewRow();
+                    DataUtilities.CopyAllColumnValues(NewDataRow, ParentRow);
+                    ParentRow["AccountCode"] = ParentAccountCode;
+                    ParentRow["AccountPath"] = MyParentAccountPath + "/" + ParentAccountCode;
+                    ParentRow["AccountLevel"] = AccountLevel;
+
+                    // I need to find the name of this parent account.
+                    AAccountRow ParentAccountRow = AAccountAccess.LoadByPrimaryKey(LedgerNumber,ParentAccountCode,ReadTrans)[0];
+                    ParentRow["AccountName"] = ParentAccountRow.AccountCodeShortDesc;
+                    ParentRow["AccountType"] = ParentAccountRow.AccountType;
+                    filteredResults.Rows.Add(ParentRow);
+                    //
+                    // If the Parent Account Type is different to my Account Type, all the values need to be negative!
+                    if (ParentRow["AccountType"].ToString() != NewDataRow["AccountType"].ToString())
+                    {
+                        ParentRow["Actual"] = 0 - Convert.ToDecimal(ParentRow["Actual"]);
+                        ParentRow["ActualYTD"] = 0 - Convert.ToDecimal(ParentRow["ActualYTD"]);
+                        ParentRow["ActualLastYear"] = 0 - Convert.ToDecimal(ParentRow["ActualLastYear"]);
+//                      ParentRow["ActualLastYearComplete"] = 0 - Convert.ToDecimal(ParentRow["ActualLastYearComplete"]);
+                    }
+                }
+                else
+                {
+                    ParentRow = filteredResults.DefaultView[Idx].Row;
+                    //
+                    // I need to add or subtract these values depending on the account type I'm summarizing into.
+                    Decimal Sign = 1;
+                    if (ParentRow["AccountType"].ToString() != NewDataRow["AccountType"].ToString())
+                    {
+                        Sign = -1;
+                    }
+                    ParentRow["Actual"] = Convert.ToDecimal(ParentRow["Actual"]) + (Sign * Convert.ToDecimal(NewDataRow["Actual"]));
+                    ParentRow["ActualYTD"] = Convert.ToDecimal(ParentRow["ActualYTD"]) + (Sign * Convert.ToDecimal(NewDataRow["ActualYTD"]));
+                    ParentRow["ActualLastYear"] = Convert.ToDecimal(ParentRow["ActualLastYear"]) + (Sign * Convert.ToDecimal(NewDataRow["ActualLastYear"]));
+//                  ParentRow["ActualLastYearComplete"] = Convert.ToDecimal(ParentRow["ActualLastYearComplete"]) + (Sign * Convert.ToDecimal(NewDataRow["ActualLastYearComplete"]));
+                    ParentRow["Budget"] = Convert.ToDecimal(ParentRow["Budget"]) + (Sign * Convert.ToDecimal(NewDataRow["Budget"]));
+                    ParentRow["BudgetYTD"] = Convert.ToDecimal(ParentRow["BudgetYTD"]) + (Sign * Convert.ToDecimal(NewDataRow["BudgetYTD"]));
+                    ParentRow["BudgetLastYear"] = Convert.ToDecimal(ParentRow["BudgetLastYear"]) + (Sign * Convert.ToDecimal(NewDataRow["BudgetLastYear"]));
+                    ParentRow["WholeYearBudget"] = Convert.ToDecimal(ParentRow["WholeYearBudget"]) + (Sign * Convert.ToDecimal(NewDataRow["WholeYearBudget"]));
+                }
+                ParentAccountPath = ParentRow["AccountPath"].ToString();
+                return 1 + Convert.ToInt32(ParentRow["AccountLevel"]);
+            }
+        }
+
+/*
+        /// <summary>
         /// Returns a DataSet to the client for use in client-side reporting
+        /// This version ignores the summary tables and gets the original data from the ledger entries.
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static DataTable IncomeExpenseTable(Dictionary<String, TVariant> AParameters)
+        public static DataTable IncomeExpenseTableFromTransactions(Dictionary<String, TVariant> AParameters)
         {
-            /* Required columns:
-             *   CostCentreCode
-             *   CostCentreName
-             *   AccountType
-             *   AccountLevel
-             *   AccountPath
-             *   AccountCode
-             *   AccountName
-             *   YearStart
-             *   Actual
-             *   ActualYTD
-             *   ActualLastYear
-             *   ActualLastYearComplete
-             *   Budget
-             *   BudgetYTD
-             *   BudgetLastYear
-             *   BudgetWholeYear
-             */
+            Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+            Int32 AccountingYear = AParameters["param_year_i"].ToInt32();
+            Int32 ReportPeriod = AParameters["param_start_period_i"].ToInt32();
+            String HierarchyName = AParameters["param_account_hierarchy_c"].ToString();
 
+            //
+            // Read different DB fields according to currency setting
+            String ActualFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_amount_in_intl_currency_n" : "a_amount_in_base_currency_n";
+            String BudgetFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_budget_intl_n" : "a_budget_base_n";
 
+            String CostCentreFilter = "";
+            String CostCentreOptions = AParameters["param_costcentreoptions"].ToString();
+            if (CostCentreOptions == "SelectedCostCentres")
+            {
+                String CostCentreList = AParameters["param_cost_centre_codes"].ToString();
+                CostCentreList = CostCentreList.Replace(",", "','");                             // SQL IN List items in single quotes
+                CostCentreFilter = " AND a_transaction.a_cost_centre_code_c in ('" + CostCentreList + "')";
+            }
+
+            if (CostCentreOptions == "AllActiveCostCentres")
+            {
+                CostCentreFilter = " AND a_cost_centre.a_cost_centre_active_flag_l=true";
+            }
+
+            TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            ALedgerTable LdgrTbl = ALedgerAccess.LoadByPrimaryKey(LedgerNumber, ReadTrans);
+            Int32 YearsAgo = LdgrTbl[0].CurrentFinancialYear - AccountingYear;
+
+            AAccountingPeriodTable AcPdTbl = AAccountingPeriodAccess.LoadByPrimaryKey(LedgerNumber, ReportPeriod, ReadTrans);
+            // If the call above returned no row that's a major fault - there's no sensible recovery, and having the next lines crash is as good as anything:
+            DateTime PeriodFirstDay = AcPdTbl[0].PeriodStartDate;
+            DateTime PeriodLastDay = AcPdTbl[0].PeriodEndDate;
+
+            PeriodFirstDay = PeriodFirstDay.AddYears(0 - YearsAgo);
+            PeriodLastDay = PeriodLastDay.AddYears(0 - YearsAgo);
+
+            DateTime LastYearPeriodFirstDay = PeriodFirstDay.AddYears(-1);            // Find the dates for this period last year
+            DateTime LastYearPeriodLastDay = PeriodLastDay.AddYears(-1);
+
+            AcPdTbl = AAccountingPeriodAccess.LoadByPrimaryKey(LedgerNumber, 1, ReadTrans); // Find the date for the start of the year
+            DateTime ThisYearFirstDay = AcPdTbl[0].PeriodStartDate;
+            ThisYearFirstDay = ThisYearFirstDay.AddYears(0 - YearsAgo);
+            DateTime LastYearFirstDay = ThisYearFirstDay.AddYears(-1);
+
+            //
+            // I need to get ALL the rows from the beginning of last year to the end of the requested period - up to 2 years' worth!
+            String strFirstDay = "'" + LastYearFirstDay.ToString("yyyy-MM-dd") + "'";
+            String strLastDay = "'" + PeriodLastDay.ToString("yyyy-MM-dd") + "'";
+
+/*
+// This partial and experimental SQL can be used in Postgres, or another DBMS that supports over(partition by) but not by sqlite.
+// Turns out we don't need to do this totalising anyway, but if we didm this is an alternative, SQL-based approach:
+SELECT DISTINCT
+    a_ledger_number_i,
+    a_account_code_c,
+    a_cost_centre_code_c,
+    sum(case when (a_transaction_date_d >='2011-01-01' AND a_transaction_date_d <'2011-09-01') then 
+        (case when (a_debit_credit_indicator_l =false) then a_amount_in_base_currency_n else (0-a_amount_in_base_currency_n) end) 
+        else 0 end) over(partition by a_cost_centre_code_c, a_account_code_c) as YTD_2011,
+
+    sum(case when (a_transaction_date_d >='2010-01-01' AND a_transaction_date_d <'2011-01-01') then 
+        (case when (a_debit_credit_indicator_l =false) then a_amount_in_base_currency_n else (0-a_amount_in_base_currency_n) end) 
+        else 0 end) over(partition by a_cost_centre_code_c, a_account_code_c) as WHOLE_2010,
+
+    sum(case when (a_transaction_date_d >='2011-08-01' AND a_transaction_date_d <'2011-09-01') then 
+        (case when (a_debit_credit_indicator_l =false) then a_amount_in_base_currency_n else (0-a_amount_in_base_currency_n) end) 
+        else 0 end) over(partition by a_cost_centre_code_c, a_account_code_c) as Sum_2011
+from a_transaction
+WHERE a_ledger_number_i=80 AND a_cost_centre_code_c='8000'
+ORDER BY a_cost_centre_code_c, a_account_code_c
+**
+            String Query = "SELECT DISTINCT a_cost_centre.a_cost_centre_code_c AS CostCentreCode,"
+                    + " a_cost_centre.a_cost_centre_name_c AS CostCentreName,"
+                    + " a_account.a_account_type_c AS AccountType,"
+                    + " a_account.a_account_code_c AS AccountCode,"
+                    + " a_account.a_account_code_short_desc_c AS AccountName,"
+                    + " a_transaction.a_batch_number_i, a_transaction.a_journal_number_i, a_transaction.a_transaction_number_i,"
+                    + " a_transaction.a_transaction_date_d AS TransDate,"
+                    + ActualFieldName + " AS Amount,"
+                    + " a_transaction.a_debit_credit_indicator_l AS Debit"
+                    + " FROM a_transaction, a_account, a_cost_centre"
+                    + " WHERE a_transaction.a_ledger_number_i=" + LedgerNumber
+                    + CostCentreFilter
+                    + " AND a_account.a_ledger_number_i=" + LedgerNumber
+                    + " AND a_account.a_account_type_c in ('Income','Expense')"
+                    + " AND a_cost_centre.a_ledger_number_i=" + LedgerNumber
+                    + " AND a_transaction_date_d >= " + strFirstDay
+                    + " AND a_transaction_date_d <= " + strLastDay
+                    + " AND a_transaction.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c"
+                    + " AND a_transaction.a_account_code_c = a_account.a_account_code_c"
+                    + " ORDER BY CostCentreCode, AccountCode"
+                ;
+
+            DataTable rawTable = DBAccess.GDBAccessObj.SelectDT(Query, "IncomeExpense", ReadTrans);
+            DataTable filteredResults = new DataTable();
+            filteredResults.Columns.Add("CostCentreCode", typeof(System.String));
+            filteredResults.Columns.Add("CostCentreName", typeof(System.String));
+            filteredResults.Columns.Add("AccountType", typeof(System.String));
+            filteredResults.Columns.Add("AccountLevel", typeof(System.Int32));
+            filteredResults.Columns.Add("HasChildren", typeof(System.Boolean));
+            filteredResults.Columns.Add("ParentFooter", typeof(System.Boolean));
+            filteredResults.Columns.Add("AccountPath", typeof(System.String));
+            filteredResults.Columns.Add("AccountCode", typeof(System.String));
+            filteredResults.Columns.Add("AccountName", typeof(System.String));
+            filteredResults.Columns.Add("YearStart", typeof(System.Decimal));
+            filteredResults.Columns.Add("Actual", typeof(System.Decimal));
+            filteredResults.Columns.Add("ActualYTD", typeof(System.Decimal));
+            filteredResults.Columns.Add("ActualLastYear", typeof(System.Decimal));
+            filteredResults.Columns.Add("ActualLastYearComplete", typeof(System.Decimal));
+            filteredResults.Columns.Add("Budget", typeof(System.Decimal));
+            filteredResults.Columns.Add("BudgetYTD", typeof(System.Decimal));
+            filteredResults.Columns.Add("BudgetLastYear", typeof(System.Decimal));
+            filteredResults.Columns.Add("BudgetWholeYear", typeof(System.Decimal));
+            filteredResults.DefaultView.Sort = "CostCentreCode, AccountCode";
+
+            AAccountHierarchyDetailTable HierarchyTbl = AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(LedgerNumber, HierarchyName, ReadTrans);
+            HierarchyTbl.DefaultView.Sort = "a_reporting_account_code_c";
+
+            String CostCentreCode = "";
+            String PrevCostCentreCode = "";
+            String AccountCode = "";
+            String PrevAccountCode = "";
+
+            //
+            // These are the values I want to sum for each CostCentre / Account combination:
+            Decimal SumActual = 0;
+            Decimal SumActualYTD = 0;
+            Decimal SumActualLastYear = 0;
+            Decimal SumActualWholeLastYear = 0;
+
+            for (Int32 Idx = 0; Idx < rawTable.Rows.Count; Idx++)
+            {
+                DataRow Row = rawTable.Rows[Idx];
+                CostCentreCode = Row["CostCentreCode"].ToString();
+                AccountCode = Row["AccountCode"].ToString();
+                if ((Idx > 0)
+                    && ((PrevCostCentreCode != CostCentreCode) || (PrevAccountCode != AccountCode))
+                    )
+                {
+                    //
+                    // I'll only add this new row if it's "interesting" - that is, if something actually happened
+                    // (There must have been transactions, otherwise I wouldn't be here, but if they all added up to 0, I'll not report them.)
+
+                    if ((SumActual != 0) || (SumActualYTD != 0) || (SumActualLastYear != 0) || (SumActualWholeLastYear != 0))
+                    {
+                        String ParentAccountPath;
+                        DataRow PrevRow = rawTable.Rows[Idx - 1];
+
+                        DataRow SumRow = filteredResults.NewRow();
+                        SumRow["CostCentreCode"] = PrevRow["CostCentreCode"];
+                        SumRow["CostCentreName"] = PrevRow["CostCentreName"];
+                        SumRow["AccountType"] = PrevRow["AccountType"];
+                        //SumRow["AccountLevel"] set below
+                        SumRow["HasChildren"] = false;
+                        SumRow["ParentFooter"] = false;
+                        // SumRow["AccountPath"] set below
+                        SumRow["AccountCode"] = PrevRow["AccountCode"];
+                        SumRow["AccountName"] = PrevRow["AccountName"];
+                        SumRow["YearStart"] = 0.0;
+                        SumRow["Actual"] = SumActual;
+                        SumRow["ActualYTD"] = SumActualYTD;
+                        SumRow["ActualLastYear"] = SumActualLastYear;
+                        SumRow["ActualLastYearComplete"] = SumActualWholeLastYear;
+                        SumRow["Budget"] = 0.0;
+                        SumRow["BudgetYTD"] = 0.0;
+                        SumRow["BudgetLastYear"] = 0.0;
+                        SumRow["BudgetWholeYear"] = 0.0;
+                        Int32 AccountLevel = AddTotalsToParentAccountRow(
+                            filteredResults,
+                            HierarchyTbl,
+                            LedgerNumber,
+                            PrevRow["CostCentreCode"].ToString(),
+                            PrevRow["AccountCode"].ToString(),
+                            SumRow,
+                            out ParentAccountPath,
+                            ReadTrans);
+                        SumRow["AccountLevel"] = AccountLevel;
+                        SumRow["AccountPath"] = ParentAccountPath + "/" + SumRow["AccountCode"];
+
+                        filteredResults.Rows.Add(SumRow);
+                        SumActual = 0;
+                        SumActualYTD = 0;
+                        SumActualLastYear = 0;
+                        SumActualWholeLastYear = 0;
+                    }
+                }
+
+                Decimal TransAmount = Convert.ToDecimal(Row["Amount"]);
+                if ((Convert.ToBoolean(Row["Debit"])) ^ (Row["AccountType"].ToString() == "Expense"))   // The amount is a positive number
+                {                                                                                       // and separate fields indicate whether it's + or -
+                    TransAmount = 0 - TransAmount;
+                }
+                //
+                // If the row qualifies for any of my sums, I'll add it here...
+                DateTime TransactionDate = Convert.ToDateTime(Row["TransDate"]);
+
+                if ((TransactionDate >= PeriodFirstDay) && (TransactionDate <= PeriodLastDay))
+                {
+                    SumActual += TransAmount;
+                }
+                if ((TransactionDate >= LastYearPeriodFirstDay) && (TransactionDate <= LastYearPeriodLastDay))
+                {
+                    SumActualLastYear += TransAmount;
+                }
+                if ((TransactionDate >= ThisYearFirstDay) && (TransactionDate <= PeriodLastDay))
+                {
+                    SumActualYTD += TransAmount;
+                }
+                if ((TransactionDate >= LastYearFirstDay) && (TransactionDate < ThisYearFirstDay))
+                {
+                    SumActualWholeLastYear += TransAmount;
+                }
+
+                PrevCostCentreCode = CostCentreCode;
+                PrevAccountCode = AccountCode;
+            }
+//            DataTable resultTable = new DataTable();
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return filteredResults;
+        }
+
+        /// <summary>
+        /// Returns a DataSet to the client for use in client-side reporting
+        /// This (fully working) version relies on the GLM and GLMP tables.
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable IncomeExpenseTableGLM(Dictionary<String, TVariant> AParameters)
+        {
             Int32 LedgerNumber   = AParameters["param_ledger_number_i"].ToInt32();
             Int32 AccountingYear = AParameters["param_year_i"].ToInt32();
             Int32 ReportPeriod   = AParameters["param_start_period_i"].ToInt32();
@@ -651,7 +951,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 }
             }
 
-
             //
             // Finally, to make the hierarchical report possible,
             // I want to include a note to show whether a row has child rows,
@@ -688,7 +987,270 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             }
             return FilteredResults;
         }
+*/
 
+        /// <summary>
+        /// Returns a DataSet to the client for use in client-side reporting
+        /// This version begins with GLM and GLMP tables, but calculates amounts for the summary accounts,
+        /// so it does not rely on the summarisation in GLMP.
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static DataTable IncomeExpenseTable(Dictionary<String, TVariant> AParameters)
+        {
+            /* Required columns:
+             *   CostCentreCode
+             *   CostCentreName
+             *   AccountType
+             *   AccountLevel
+             *   HasChildren
+             *   ParentFooter
+             *   AccountPath
+             *   AccountCode
+             *   AccountName
+             *   YearStart
+             *   Actual
+             *   ActualYTD
+             *   ActualLastYear
+             *   ActualLastYearComplete // not currently supported
+             *   Budget
+             *   BudgetYTD
+             *   BudgetLastYear
+             *   BudgetWholeYear
+             */
+
+
+            Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+            Int32 AccountingYear = AParameters["param_year_i"].ToInt32();
+            Int32 ReportPeriod = AParameters["param_start_period_i"].ToInt32();
+            String HierarchyName = AParameters["param_account_hierarchy_c"].ToString();
+
+            //
+            // Read different DB fields according to currency setting
+            String ActualFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_actual_intl_n" : "a_actual_base_n";
+            String BudgetFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_budget_intl_n" : "a_budget_base_n";
+
+            String CostCentreFilter = "";
+            String CostCentreOptions = AParameters["param_costcentreoptions"].ToString();
+            if (CostCentreOptions == "SelectedCostCentres")
+            {
+                String CostCentreList = AParameters["param_cost_centre_codes"].ToString();
+                CostCentreList = CostCentreList.Replace(",", "','");                             // SQL IN List items in single quotes
+                CostCentreFilter = " AND glm.a_cost_centre_code_c in ('" + CostCentreList + "')";
+            }
+            if (CostCentreOptions == "AllActiveCostCentres")
+            {
+                CostCentreFilter = " AND a_cost_centre.a_cost_centre_active_flag_l=true";
+            }
+
+            TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            // To find the Budget YTD, I need to sum all the budget fields from the start of the year.
+
+            String BudgetYtdQuery = "(CASE WHEN glm.a_year_i=" + AccountingYear
+                + " AND a_period_number_i=" + ReportPeriod
+                + " THEN (SELECT SUM(" + BudgetFieldName + ") FROM a_general_ledger_master_period"
+                + " WHERE a_glm_sequence_i= glm.a_glm_sequence_i AND a_period_number_i <= " + ReportPeriod
+                + " ) ELSE 0 END)";
+
+            String Query = "SELECT DISTINCT"
+                + " 1 AS AccountLevel,"
+                + " false AS HasChildren,"
+                + " false AS ParentFooter,"
+                + " glm.a_glm_sequence_i AS Seq,"
+                + " glm.a_year_i AS Year,"
+                + " glmp.a_period_number_i AS Period,"
+                + " glm.a_cost_centre_code_c AS CostCentreCode,"
+                + " a_cost_centre.a_cost_centre_name_c AS CostCentreName,"
+                + " a_account.a_account_type_c AS AccountType,"
+                + " glm.a_account_code_c AS AccountCode,"
+                + " 'Path' AS AccountPath,"
+                + " a_account.a_account_code_short_desc_c AS AccountName,"
+                + " glm.a_start_balance_base_n AS YearStart,"
+                + " 0.1 AS Actual,"
+                + " glmp." + ActualFieldName + " AS ActualYTD,"
+                + " 0.1 AS ActualLastYear,"
+                + " glmp." + BudgetFieldName + " AS Budget,"
+                + " " + BudgetYtdQuery + " AS BudgetYTD,"
+                + " 0.1 AS BudgetLastYear,"
+                + " 0.1 AS WholeYearBudget"
+
+                + " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre"
+                + " WHERE glm.a_ledger_number_i=" + LedgerNumber
+                + " AND glm.a_year_i>=" + (AccountingYear - 1)
+                + " AND glm.a_year_i<=" + AccountingYear
+                + " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i"
+                + " AND glmp.a_period_number_i>=" + (ReportPeriod - 1)
+                + " AND glmp.a_period_number_i<=" + ReportPeriod
+                + " AND a_account.a_account_code_c = glm.a_account_code_c"
+                + " AND (a_account.a_account_type_c = 'Income' OR a_account.a_account_type_c = 'Expense')"
+                + " AND a_account.a_ledger_number_i = glm.a_ledger_number_i"
+                + " AND a_account.a_posting_status_l = true"
+                + " AND a_cost_centre.a_ledger_number_i = glm.a_ledger_number_i"
+                + " AND a_cost_centre.a_cost_centre_code_c = glm.a_cost_centre_code_c"
+                + CostCentreFilter
+                + " ORDER BY glm.a_cost_centre_code_c, glm.a_account_code_c"
+                ;
+            DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(Query, "IncomeExpense", ReadTrans);
+
+            //
+            // The table includes YTD balances, but I need the balance for the specified period.
+
+            DataView OldPeriod = new DataView(resultTable);
+            DataView ThisMonth = new DataView(resultTable);
+            ThisMonth.RowFilter = "Period=" + ReportPeriod;
+
+            //
+            // If I have rows for the previous month too, I can subtract the previous month's YTD balance..
+            if (ReportPeriod > 1)
+            {
+                foreach (DataRowView rv in ThisMonth)
+                {
+                    DataRow Row = rv.Row;
+                    OldPeriod.RowFilter = String.Format("Year={0} AND Period={1} AND CostCentreCode='{2}' AND AccountCode='{3}'",
+                        Convert.ToInt32(Row["Year"]),
+                        ReportPeriod - 1,
+                        Row["CostCentreCode"].ToString(),
+                        Row["AccountCode"].ToString()
+                        );
+                    DataRow LastMonthRow = OldPeriod[0].Row;
+                    Row["Actual"] = Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(LastMonthRow["ActualYTD"]);
+                }
+            }
+            else
+            {
+                //
+                // For the first period of the year, I can just subtract the YearStart balance, which I already have.
+                foreach (DataRowView rv in ThisMonth)
+                {
+                    DataRow Row = rv.Row;
+                    Row["Actual"] = Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(Row["YearStart"]);
+                }
+            }
+
+            //
+            // Some of these rows are from a year ago. I've updated their "Actual" values;
+            // now I'll copy those into the current period "LastYear" fields.
+            foreach (DataRowView rv in ThisMonth)
+            {
+                DataRow Row = rv.Row;
+                OldPeriod.RowFilter = String.Format("Year={0} AND Period={1} AND CostCentreCode='{2}' AND AccountCode='{3}'",
+                    AccountingYear - 1,
+                    ReportPeriod,
+                    Row["CostCentreCode"].ToString(),
+                    Row["AccountCode"].ToString()
+                    );
+                if (OldPeriod.Count > 0)
+                {
+                    DataRow LastYearRow = OldPeriod[0].Row;
+                    Row["ActualLastYear"] = Convert.ToDecimal(LastYearRow["Actual"]);
+                    Row["BudgetLastYear"] = Convert.ToDecimal(LastYearRow["Budget"]);
+                }
+            }
+
+            //
+            // So now I don't have to look at last year's or last month's rows:
+            ThisMonth.RowFilter = "Year=" + AccountingYear + " AND Period=" + ReportPeriod;  // Only current period
+            DataTable FilteredResults = ThisMonth.ToTable("IncomeExpense");
+
+            //
+            // I need to add in the "whole year budget" field:
+            foreach (DataRow Row in FilteredResults.Rows)
+            {
+                Query = "SELECT SUM(" + BudgetFieldName + ") AS WholeYearBudget FROM a_general_ledger_master_period WHERE a_glm_sequence_i="
+                    + Convert.ToInt32(Row["Seq"]);
+                DataTable YearBudgetTbl = DBAccess.GDBAccessObj.SelectDT(Query, "YearBudget", ReadTrans);
+                if (YearBudgetTbl.Rows.Count > 0)
+                {
+                    Row["WholeYearBudget"] = YearBudgetTbl.Rows[0]["WholeYearBudget"];
+                }
+            }
+
+
+            //
+            // I only have "posting accounts" - I need to add the summary accounts.
+            AAccountHierarchyDetailTable HierarchyTbl = AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(LedgerNumber, HierarchyName, ReadTrans);
+
+            HierarchyTbl.DefaultView.Sort = "a_reporting_account_code_c";       // These two sort orders
+            FilteredResults.DefaultView.Sort = "CostCentreCode, AccountCode";   // Are required by AddTotalsToParentAccountRow, below.
+
+            Int32 PostingAccountRecords = FilteredResults.Rows.Count;
+            for (Int32 Idx = 0; Idx < PostingAccountRecords; Idx++)
+            {
+                DataRow Row = FilteredResults.Rows[Idx];
+                String ParentAccountPath;
+                Int32 AccountLevel = AddTotalsToParentAccountRow(
+                    FilteredResults,
+                    HierarchyTbl,
+                    LedgerNumber,
+                    Row["CostCentreCode"].ToString(),
+                    Row["AccountCode"].ToString(),
+                    Row,
+                    out ParentAccountPath,
+                    ReadTrans);
+                Row["AccountLevel"] = AccountLevel;
+                Row["AccountPath"] = ParentAccountPath + "/" + Row["AccountCode"];
+            }
+
+
+            //
+            // Now if I re-order the result by AccountPath, hide all the old data and empty rows, and rows that are too detailed, it should be what I need!
+
+            String DepthFilter = "";
+            String DepthOption = AParameters["param_depth"].ToString();
+            if (DepthOption == "summary")
+            {
+                DepthFilter = " AND AccountLevel<=1";
+            }
+            if (DepthOption == "standard")
+            {
+                DepthFilter = " AND AccountLevel<=3";
+            }
+
+            FilteredResults.DefaultView.Sort = "CostCentreCode, AccountType DESC, AccountPath ASC";
+
+            FilteredResults.DefaultView.RowFilter = "Year=" + AccountingYear + " AND Period=" + ReportPeriod  // Only current period
+                + " AND (Actual <> 0 OR ActualYTD <> 0 OR Budget <> 0 OR BudgetYTD <> 0)"                     // Only non-zero rows
+                + DepthFilter;                                                                                // Nothing too detailed
+
+            FilteredResults = FilteredResults.DefaultView.ToTable("IncomeExpense");
+
+            //
+            // Finally, to make the hierarchical report possible,
+            // I want to include a note to show whether a row has child rows,
+            // and if it does, I'll copy this row to a new "footer" row, below the children.
+            for (Int32 RowIdx = 0; RowIdx < FilteredResults.Rows.Count - 1; RowIdx++)
+            {
+                Int32 ParentAccountLevel = Convert.ToInt32(FilteredResults.Rows[RowIdx]["AccountLevel"]);
+                Boolean HasChildren = (Convert.ToInt32(FilteredResults.Rows[RowIdx + 1]["AccountLevel"]) > ParentAccountLevel);
+                FilteredResults.Rows[RowIdx]["HasChildren"] = HasChildren;
+                if (HasChildren)
+                {
+                    Int32 NextSiblingPos = -1;
+                    for (Int32 ChildIdx = RowIdx + 2; ChildIdx < FilteredResults.Rows.Count; ChildIdx++)
+                    {
+                        if (Convert.ToInt32(FilteredResults.Rows[ChildIdx]["AccountLevel"]) <= ParentAccountLevel)  // This row is not a child of mine
+                        {                                                                                           // so I insert my footer before here.
+                            NextSiblingPos = ChildIdx;
+                            break;
+                        }
+                    }
+                    DataRow FooterRow = FilteredResults.NewRow();
+                    DataUtilities.CopyAllColumnValues(FilteredResults.Rows[RowIdx], FooterRow);
+                    FooterRow["ParentFooter"] = true;
+                    FooterRow["HasChildren"] = false;
+                    if (NextSiblingPos > 0)
+                    {
+                        FilteredResults.Rows.InsertAt(FooterRow, NextSiblingPos);
+                    }
+                    else
+                    {
+                        FilteredResults.Rows.Add(FooterRow);
+                    }
+                }
+            }
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return FilteredResults;
+        }
 
         /// <summary>
         /// Returns a DataSet to the client for use in client-side reporting
