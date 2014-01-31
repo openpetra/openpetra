@@ -340,7 +340,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void ShowDataManual()
         {
             AccountsPayableTDSAApDocumentRow DocumentRow = FMainDS.AApDocument[0];
-            AApSupplierRow SupplierRow = FMainDS.AApSupplier[0];
 
             FDocumentLedgerNumber = DocumentRow.LedgerNumber;
 

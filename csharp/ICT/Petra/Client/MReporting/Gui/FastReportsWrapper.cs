@@ -49,6 +49,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         private Assembly FastReportsDll;
         private object FfastReportInstance;
         Type FFastReportType;
+        /// <summary>
+        /// Use this to check whether loading the FastReports DLL worked.
+        /// </summary>
         public Boolean LoadedOK;
 
         /// <summary>

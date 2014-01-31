@@ -439,7 +439,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if ((FCurrentNode != null) && (FCurrentNode != treeViewCancelEventArgs.Node))
                 {
                     AccountNodeDetails NodeDetails = (AccountNodeDetails)FCurrentNode.Tag;
-                    String CurrentReportingAccountCode = NodeDetails.DetailRow.ReportingAccountCode;
                     FSelectedAccountRow = (GLSetupTDSAAccountRow)NodeDetails.AccountRow;
                     GetDetailsFromControls(FSelectedAccountRow);
 
