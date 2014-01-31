@@ -3287,8 +3287,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             out bool ACanDelete,
             out String AMsg)
         {
-            ACanBeParent = true;
-            ACanDelete = true;
+            ACanBeParent = false;
+            ACanDelete = false;
             AMsg = "";
             bool DbSuccess = true;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -3302,13 +3302,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             else
             {
                 bool IsParent = CostCentreHasChildren(ALedgerNumber, ACostCentreCode, Transaction);
-                ACostCentreRow AccountRow = TempTbl[0];
-                ACanBeParent = IsParent; // If it's a summary account, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
+                ACostCentreRow CostCentreRow = TempTbl[0];
+                ACanBeParent = !CostCentreRow.PostingCostCentreFlag; // If it's a summary Cost Centre, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
 
                 if (IsParent)
                 {
                     ACanDelete = false;
                     AMsg = Catalog.GetString("Cost Centre has children.");
+                }
+                else
+                {
+                    ACanDelete = true;
                 }
 
                 if (!ACanBeParent || ACanDelete)
@@ -3317,9 +3321,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     if (IsInUse)
                     {
-                        ACanBeParent = false;    // For posting accounts, I can still add children (and change the account to summary) if there's nothing posted to it yet.
+                        ACanBeParent = false;
                         ACanDelete = false;      // Once it has transactions posted, I can't delete it, ever.
                         AMsg = Catalog.GetString("Cost Centre is referenced in transactions.");
+                    }
+                    else
+                    {
+                        ACanBeParent = true;    // For posting Cost Centres, I can still add children (and change the Cost Centre to summary) if there's nothing posted to it yet.
                     }
                 }
 
@@ -3470,14 +3478,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     ALedgerNumber,
                     Transaction,
                     ref AttemptedOperation);
-
-
-/*
- * These tables were previously checked in the 4GL, but they don't exist in Open Petra:
- *
- * "a_previous_year_transaction"
- * "a_ich_stewardship"
- */
 
                 PrevRow.Delete();
 
