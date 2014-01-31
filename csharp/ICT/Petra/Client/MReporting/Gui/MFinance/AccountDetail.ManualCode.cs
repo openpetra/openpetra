@@ -116,20 +116,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             String TranctDateFilter = ""; // Optional Date Filter, as periods or dates
 
-            if (pm.Get("param_period").ToBool() == true)
-            {
-                DataTable AccountingPeriodTbl =
-                    (AAccountingPeriodTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
-                        pm.Get("param_ledger_number_i").ToInt32());
-                AccountingPeriodTbl.DefaultView.RowFilter = LedgerFilter + " AND a_accounting_period_number_i=" +
-                                                            pm.Get("param_start_period_i").ToInt32();
-                pm.Add("param_start_date", Convert.ToDateTime(AccountingPeriodTbl.DefaultView[0].Row["a_period_start_date_d"]));
-
-                AccountingPeriodTbl.DefaultView.RowFilter = LedgerFilter + " AND a_accounting_period_number_i=" +
-                                                            pm.Get("param_end_period_i").ToInt32();
-                pm.Add("param_end_date", Convert.ToDateTime(AccountingPeriodTbl.DefaultView[0].Row["a_period_end_date_d"]));
-            }
-
             TranctDateFilter = "a_transaction_date_d>='" + pm.Get("param_start_date").DateToString("yyyy-MM-dd") +
                                "' AND a_transaction_date_d<='" + pm.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";
 

@@ -472,9 +472,9 @@ namespace Ict.Common.Controls
         /// get the selected string
         /// uses TCmbVersatile.GetSelectedString
         /// </summary>
-        public string GetSelectedString()
+        public string GetSelectedString(Int32 Idx=-1)
         {
-            return this.cmbCombobox.GetSelectedString();
+            return this.cmbCombobox.GetSelectedString(Idx);
         }
 
         /// <summary>

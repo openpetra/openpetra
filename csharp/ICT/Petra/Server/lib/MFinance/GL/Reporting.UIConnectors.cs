@@ -1021,7 +1021,9 @@ ORDER BY a_cost_centre_code_c, a_account_code_c
 
             Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             Int32 AccountingYear = AParameters["param_year_i"].ToInt32();
-            Int32 ReportPeriod = AParameters["param_start_period_i"].ToInt32();
+            Int32 ReportPeriodStart = AParameters["param_start_period_i"].ToInt32();
+            Int32 ReportPeriodEnd = AParameters["param_end_period_i"].ToInt32();
+            Int32 PeriodMonths = 1 + (ReportPeriodEnd - ReportPeriodStart);
             String HierarchyName = AParameters["param_account_hierarchy_c"].ToString();
 
             //
@@ -1046,10 +1048,19 @@ ORDER BY a_cost_centre_code_c, a_account_code_c
 
             // To find the Budget YTD, I need to sum all the budget fields from the start of the year.
 
-            String BudgetYtdQuery = "(CASE WHEN glm.a_year_i=" + AccountingYear
-                + " AND a_period_number_i=" + ReportPeriod
+            String BudgetQuery = (PeriodMonths==1)?"glmp." + BudgetFieldName:       // For one month, the Budget is read directly from the record;
+                "(CASE WHEN glm.a_year_i=" + AccountingYear                         // for multiple months, I need to do a sum.
+                + " AND a_period_number_i=" + ReportPeriodEnd
                 + " THEN (SELECT SUM(" + BudgetFieldName + ") FROM a_general_ledger_master_period"
-                + " WHERE a_glm_sequence_i= glm.a_glm_sequence_i AND a_period_number_i <= " + ReportPeriod
+                + " WHERE a_glm_sequence_i= glm.a_glm_sequence_i "
+                + " AND a_period_number_i >= " + ReportPeriodStart
+                + " AND a_period_number_i <= " + ReportPeriodEnd
+                + " ) ELSE 0 END)";
+
+            String BudgetYtdQuery = "(CASE WHEN glm.a_year_i=" + AccountingYear
+                + " AND a_period_number_i=" + ReportPeriodEnd
+                + " THEN (SELECT SUM(" + BudgetFieldName + ") FROM a_general_ledger_master_period"
+                + " WHERE a_glm_sequence_i= glm.a_glm_sequence_i AND a_period_number_i <= " + ReportPeriodEnd
                 + " ) ELSE 0 END)";
 
             String Query = "SELECT DISTINCT"
@@ -1069,7 +1080,7 @@ ORDER BY a_cost_centre_code_c, a_account_code_c
                 + " 0.1 AS Actual,"
                 + " glmp." + ActualFieldName + " AS ActualYTD,"
                 + " 0.1 AS ActualLastYear,"
-                + " glmp." + BudgetFieldName + " AS Budget,"
+                + " " + BudgetQuery + " AS Budget,"
                 + " " + BudgetYtdQuery + " AS BudgetYTD,"
                 + " 0.1 AS BudgetLastYear,"
                 + " 0.1 AS WholeYearBudget"
@@ -1079,8 +1090,8 @@ ORDER BY a_cost_centre_code_c, a_account_code_c
                 + " AND glm.a_year_i>=" + (AccountingYear - 1)
                 + " AND glm.a_year_i<=" + AccountingYear
                 + " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i"
-                + " AND glmp.a_period_number_i>=" + (ReportPeriod - 1)
-                + " AND glmp.a_period_number_i<=" + ReportPeriod
+                + " AND glmp.a_period_number_i>=" + (ReportPeriodStart - PeriodMonths)
+                + " AND glmp.a_period_number_i<=" + ReportPeriodEnd
                 + " AND a_account.a_account_code_c = glm.a_account_code_c"
                 + " AND (a_account.a_account_type_c = 'Income' OR a_account.a_account_type_c = 'Expense')"
                 + " AND a_account.a_ledger_number_i = glm.a_ledger_number_i"
@@ -1097,23 +1108,23 @@ ORDER BY a_cost_centre_code_c, a_account_code_c
 
             DataView OldPeriod = new DataView(resultTable);
             DataView ThisMonth = new DataView(resultTable);
-            ThisMonth.RowFilter = "Period=" + ReportPeriod;
+            ThisMonth.RowFilter = "Period=" + ReportPeriodEnd;
 
             //
-            // If I have rows for the previous month too, I can subtract the previous month's YTD balance..
-            if (ReportPeriod > 1)
+            // If I have rows for the previous month too, I can subtract the previous month's YTD balance to get my "Actual".
+            if (ReportPeriodEnd > PeriodMonths)
             {
                 foreach (DataRowView rv in ThisMonth)
                 {
                     DataRow Row = rv.Row;
                     OldPeriod.RowFilter = String.Format("Year={0} AND Period={1} AND CostCentreCode='{2}' AND AccountCode='{3}'",
                         Convert.ToInt32(Row["Year"]),
-                        ReportPeriod - 1,
+                        ReportPeriodEnd - PeriodMonths,
                         Row["CostCentreCode"].ToString(),
                         Row["AccountCode"].ToString()
                         );
-                    DataRow LastMonthRow = OldPeriod[0].Row;
-                    Row["Actual"] = Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(LastMonthRow["ActualYTD"]);
+                    DataRow PreviousPeriodRow = OldPeriod[0].Row;
+                    Row["Actual"] = Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(PreviousPeriodRow["ActualYTD"]);
                 }
             }
             else
@@ -1135,7 +1146,7 @@ ORDER BY a_cost_centre_code_c, a_account_code_c
                 DataRow Row = rv.Row;
                 OldPeriod.RowFilter = String.Format("Year={0} AND Period={1} AND CostCentreCode='{2}' AND AccountCode='{3}'",
                     AccountingYear - 1,
-                    ReportPeriod,
+                    ReportPeriodEnd,
                     Row["CostCentreCode"].ToString(),
                     Row["AccountCode"].ToString()
                     );
@@ -1148,8 +1159,8 @@ ORDER BY a_cost_centre_code_c, a_account_code_c
             }
 
             //
-            // So now I don't have to look at last year's or last month's rows:
-            ThisMonth.RowFilter = "Year=" + AccountingYear + " AND Period=" + ReportPeriod;  // Only current period
+            // So now I don't have to look at last year's rows or last month's rows:
+            ThisMonth.RowFilter = "Year=" + AccountingYear + " AND Period=" + ReportPeriodEnd;  // Only current period
             DataTable FilteredResults = ThisMonth.ToTable("IncomeExpense");
 
             //
@@ -1208,9 +1219,9 @@ ORDER BY a_cost_centre_code_c, a_account_code_c
 
             FilteredResults.DefaultView.Sort = "CostCentreCode, AccountType DESC, AccountPath ASC";
 
-            FilteredResults.DefaultView.RowFilter = "Year=" + AccountingYear + " AND Period=" + ReportPeriod  // Only current period
-                + " AND (Actual <> 0 OR ActualYTD <> 0 OR Budget <> 0 OR BudgetYTD <> 0)"                     // Only non-zero rows
-                + DepthFilter;                                                                                // Nothing too detailed
+            FilteredResults.DefaultView.RowFilter = "Year=" + AccountingYear + " AND Period=" + ReportPeriodEnd  // Only current period
+                + " AND (Actual <> 0 OR ActualYTD <> 0 OR Budget <> 0 OR BudgetYTD <> 0)"                        // Only non-zero rows
+                + DepthFilter;                                                                                   // Nothing too detailed
 
             FilteredResults = FilteredResults.DefaultView.ToTable("IncomeExpense");
 
