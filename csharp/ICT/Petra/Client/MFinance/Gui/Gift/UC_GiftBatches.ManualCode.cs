@@ -1138,6 +1138,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            this.Cursor = Cursors.WaitCursor;
+            
             RadioButton rbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
             int currentBatchNo = 0;
 
@@ -1159,7 +1161,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (batchIsEmpty)  // there are no gifts in this batch!
             {
-                MessageBox.Show(Catalog.GetString("Batch is empty!"), Catalog.GetString("Posting failed"),
+                this.Cursor = Cursors.Default;
+            	MessageBox.Show(Catalog.GetString("Batch is empty!"), Catalog.GetString("Posting failed"),
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
@@ -1169,11 +1172,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // save first, then post
             if (!((TFrmGiftBatch)ParentForm).SaveChanges())
             {
+                this.Cursor = Cursors.Default;
                 // saving failed, therefore do not try to post
                 MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
                     Catalog.GetString("Please first save the batch, and then post it!"));
                 return;
             }
+
+            this.Cursor = Cursors.Default;
 
             //Read current rows position ready to reposition after removal of posted row from grid
             int newCurrentRowPos = GetSelectedRowIndex();
@@ -1183,7 +1189,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return; // Oops - there's no selected row.
             }
 
-            // ask if the user really wants to post the batch
+                // ask if the user really wants to post the batch
             if (MessageBox.Show(String.Format(Catalog.GetString("Do you really want to post gift batch {0}?"),
                         FPreviouslySelectedDetailRow.BatchNumber),
                     Catalog.GetString("Confirm posting of Gift Batch"),
