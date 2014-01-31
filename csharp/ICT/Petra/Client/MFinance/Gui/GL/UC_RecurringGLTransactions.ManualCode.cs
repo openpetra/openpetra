@@ -82,7 +82,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ABatchStatus"></param>
         /// <param name="AJournalStatus"></param>
         /// <param name="AFromBatchTab"></param>
-        public void LoadTransactions(Int32 ALedgerNumber,
+        /// <returns>True if new GL transactions were loaded, false if transactions had been loaded already.</returns>
+        public bool LoadTransactions(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             Int32 AJournalNumber,
             string AForeignCurrencyName,
@@ -90,8 +91,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             string AJournalStatus = MFinanceConstants.BATCH_UNPOSTED,
             bool AFromBatchTab = false)
         {
-            this.Cursor = Cursors.WaitCursor;
+            Console.WriteLine("LoadTransactions");
+            DateTime dtStart = DateTime.Now;
 
+            bool IsNewBatch = false;
             FLoadCompleted = false;
             FBatchRow = GetBatchRow();
             FIsUnposted = true;
@@ -117,11 +120,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
 
                 FLoadCompleted = true;
-                this.Cursor = Cursors.Default;
+                Console.WriteLine("LoadTransactions quick exit  {0}", ((DateTime.Now - dtStart).TotalMilliseconds));
             }
             else
             {
                 // Different Transactions
+                IsNewBatch = true;
                 bool requireControlSetup = (FLedgerNumber == -1) || (FTransactionCurrency != AForeignCurrencyName);
 
                 FLedgerNumber = ALedgerNumber;
@@ -198,6 +202,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //This will update transaction headers
                 UpdateTransactionTotals(false);
                 FLoadCompleted = true;
+                Console.WriteLine("LoadTransactions completed  {0}", ((DateTime.Now - dtStart).TotalMilliseconds));
             }
 
             SelectRowInGrid(1);
@@ -206,7 +211,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             UpdateRecordNumberDisplay();
             SetRecordNumberDisplayProperties();
 
-            this.Cursor = Cursors.Default;
+            return IsNewBatch;
         }
 
         /// <summary>
@@ -359,6 +364,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.CreateNewARecurringTransaction();
 
             pnlTransAnalysisAttributes.Enabled = true;
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
 
             //Needs to be called at end of addition process to process Analysis Attributes
             AccountCodeDetailChanged(null, null);
@@ -395,10 +401,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ANewRow.CostCentreCode = FPreviouslySelectedDetailRow.CostCentreCode;
             }
-
-            FPreviouslySelectedDetailRow = (GLBatchTDSARecurringTransactionRow)ANewRow;
-
-            btnDeleteAll.Enabled = true;
         }
 
         /// <summary>
@@ -1576,14 +1578,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RunOnceOnParentActivationManual()
         {
-            AutoSizeGrid();
             grdDetails.DataSource.ListChanged += new ListChangedEventHandler(DataSource_ListChanged);
         }
 
         private void DataSource_ListChanged(object sender, ListChangedEventArgs e)
         {
-            btnDeleteAll.Enabled = (FFilterPanelControls.BaseFilter == FCurrentActiveFilter) && (grdDetails.Rows.Count > 1)
-                                   && !FPetraUtilsObject.DetailProtectedMode;
+            if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
+            {
+                AutoSizeGrid();
+            }
+
+            btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
         }
 
         /// <summary>
@@ -1598,6 +1603,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 column.Width = 100;
                 column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
             }
+
+            grdDetails.Columns[0].Width = 70;
+            grdDetails.Columns[1].Width = 70;
+            grdDetails.Columns[2].Width = 70;
+            grdDetails.Columns[6].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
 
             grdDetails.AutoStretchColumnsToFitWidth = true;
             grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;

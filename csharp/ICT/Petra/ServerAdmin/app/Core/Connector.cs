@@ -140,7 +140,7 @@ namespace Ict.Petra.ServerAdmin.App.Core
 
             if (FServerPort.Length == 0)
             {
-                throw new ServerIPAddressNotFoundInConfigurationFileException(
+                throw new EServerIPAddressNotFoundInConfigurationFileException(
                     "The IP Address of the PetraServer could " + "not be extracted from the .NET (Remoting) Configuration File (used '" +
                     SERVERMANAGERENTRY + "' entry " + "to look for the IP Address)!");
             }

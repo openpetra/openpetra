@@ -336,6 +336,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private TSubmitChangesResult StoreManualCode(ref GLSetupTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
+            AVerificationResult = null;
+
             if (FWarnings)
             {
                 if (MessageBox.Show(Catalog.GetString("Do you really want to save despite the earlier warnings?"),
@@ -352,8 +354,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // (a_ledger_init_flag records are automatically added/removed on server side)
             TSubmitChangesResult res = TRemote.MFinance.Setup.WebConnectors.SaveLedgerSettings(FLedgerNumber,
                 FCalendarStartDate,
-                ref ASubmitChanges,
-                out AVerificationResult);
+                ref ASubmitChanges);
             TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber);
             return res;
         }

@@ -30,6 +30,7 @@ using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.Exceptions;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
@@ -228,7 +229,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 }
                 catch (Exception exp)
                 {
-                    throw new ApplicationException("Exception occured while calling OpenRangeFindScreen Delegate!", exp);
+                    throw new EOPAppException("Exception occured while calling OpenRangeFindScreen Delegate!", exp);
                 }
             }
         }
@@ -236,7 +237,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         // save data
         private TSubmitChangesResult StoreManualCode(ref PostcodeRegionsTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
         {
-            TSubmitChangesResult Result = TRemote.MPartner.Mailroom.WebConnectors.SavePostcodeRegionsTDS(ref ASubmitDS, out AVerificationResult);
+            AVerificationResult = null;
+
+            TSubmitChangesResult Result = TRemote.MPartner.Mailroom.WebConnectors.SavePostcodeRegionsTDS(ref ASubmitDS);
 
             if (ASubmitDS.PPostcodeRegion != null)
             {
@@ -283,7 +286,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 TVerificationResultCollection VerificationResults = null;
 
-                if (!FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors)
+                if (TVerificationHelper.IsNullOrOnlyNonCritical(FPetraUtilsObject.VerificationResultCollection))
                 {
                     this.Cursor = Cursors.WaitCursor;
                     TRemote.MPartner.ReferenceCount.WebConnectors.GetNonCacheableRecordReferenceCount(

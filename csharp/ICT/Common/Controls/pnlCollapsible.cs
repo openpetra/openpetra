@@ -33,9 +33,9 @@ using System.Windows.Forms;
 using System.Xml;
 using GNU.Gettext;
 using CustomControl.OrientAbleTextControls;
-
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Exceptions;
 using Ict.Common.IO;
 
 namespace Ict.Common.Controls
@@ -1581,38 +1581,36 @@ namespace Ict.Common.Controls
         #endregion
     }
 
-    #region Custom Exceptions Defined
+    #region Custom Exceptions
 
     /// <summary>
     /// This Exception is thrown whenever the hosted content is a TaskList, but
     /// a non-TaskList function is used. Or when the hosted content is a custom
     /// UserControl and a non-UserControl funciton is used.
     /// </summary>
-    public class EInsufficientDataSetForHostedControlKindException : Exception
+    public class EInsufficientDataSetForHostedControlKindException : EOPAppException
     {
         /// <summary>
-        /// Constructor with no Arguments
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public EInsufficientDataSetForHostedControlKindException() : base()
         {
         }
 
         /// <summary>
-        /// Constructor with inner Exception
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="innerException"></param>
-        /// <param name="message"></param>
-        public EInsufficientDataSetForHostedControlKindException(Exception innerException, string message)
-            : base(message, innerException)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EInsufficientDataSetForHostedControlKindException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// Constructor without inner Exception
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="message"></param>
-        public EInsufficientDataSetForHostedControlKindException(string message)
-            : base(message)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EInsufficientDataSetForHostedControlKindException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }
@@ -1620,31 +1618,29 @@ namespace Ict.Common.Controls
     /// <summary>
     /// Thrown when instantiating a tasklist, but tasklistnode property not set.
     /// </summary>
-    public class ENoTaskListNodeSpecifiedException : Exception
+    public class ENoTaskListNodeSpecifiedException : EOPAppException
     {
         /// <summary>
-        /// Constructor with no Arguments
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public ENoTaskListNodeSpecifiedException() : base()
         {
         }
 
         /// <summary>
-        /// Constructor with inner Exception
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="innerException"></param>
-        /// <param name="message"></param>
-        public ENoTaskListNodeSpecifiedException(Exception innerException, string message)
-            : base(message, innerException)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public ENoTaskListNodeSpecifiedException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// Constructor without inner Exception
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="message"></param>
-        public ENoTaskListNodeSpecifiedException(string message)
-            : base(message)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public ENoTaskListNodeSpecifiedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }
@@ -1652,31 +1648,29 @@ namespace Ict.Common.Controls
     /// <summary>
     /// Thrown when an Assembly that contains the specified Namespace cannot be loaded.
     /// </summary>
-    public class EUserControlInvalidNamespaceSpecifiedException : Exception
+    public class EUserControlInvalidNamespaceSpecifiedException : EOPAppException
     {
         /// <summary>
-        /// Constructor with no Arguments
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public EUserControlInvalidNamespaceSpecifiedException() : base()
         {
         }
 
         /// <summary>
-        /// Constructor with inner Exception
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="innerException"></param>
-        /// <param name="message"></param>
-        public EUserControlInvalidNamespaceSpecifiedException(Exception innerException, string message)
-            : base(message, innerException)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EUserControlInvalidNamespaceSpecifiedException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// Constructor without inner Exception
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="message"></param>
-        public EUserControlInvalidNamespaceSpecifiedException(string message)
-            : base(message)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EUserControlInvalidNamespaceSpecifiedException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }
@@ -1684,31 +1678,29 @@ namespace Ict.Common.Controls
     /// <summary>
     /// Thrown when an Instance of the specified Class cannot be found in the Assembly of the specified Namespace.
     /// </summary>
-    public class EUserControlCantInstantiateClassException : Exception
+    public class EUserControlCantInstantiateClassException : EOPAppException
     {
         /// <summary>
-        /// Constructor with no Arguments
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public EUserControlCantInstantiateClassException() : base()
         {
         }
 
         /// <summary>
-        /// Constructor with inner Exception
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="innerException"></param>
-        /// <param name="message"></param>
-        public EUserControlCantInstantiateClassException(Exception innerException, string message)
-            : base(message, innerException)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EUserControlCantInstantiateClassException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// Constructor without inner Exception
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="message"></param>
-        public EUserControlCantInstantiateClassException(string message)
-            : base(message)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EUserControlCantInstantiateClassException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }
@@ -1716,31 +1708,29 @@ namespace Ict.Common.Controls
     /// <summary>
     /// there is a mismatch of the visual style and the direction
     /// </summary>
-    public class EVisualStyleAndDirectionMismatchException : Exception
+    public class EVisualStyleAndDirectionMismatchException : EOPAppException
     {
         /// <summary>
-        /// Constructor with no Arguments
+        /// Initializes a new instance of this Exception Class.
         /// </summary>
         public EVisualStyleAndDirectionMismatchException() : base()
         {
         }
 
         /// <summary>
-        /// Constructor with inner Exception
+        /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
-        /// <param name="innerException"></param>
-        /// <param name="message"></param>
-        public EVisualStyleAndDirectionMismatchException(Exception innerException, string message)
-            : base(message, innerException)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EVisualStyleAndDirectionMismatchException(String AMessage) : base(AMessage)
         {
         }
 
         /// <summary>
-        /// Constructor without inner Exception
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
         /// </summary>
-        /// <param name="message"></param>
-        public EVisualStyleAndDirectionMismatchException(string message)
-            : base(message)
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EVisualStyleAndDirectionMismatchException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
         {
         }
     }

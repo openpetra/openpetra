@@ -180,11 +180,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="ABatchStatus"></param>
-        public void LoadTransactions(Int32 ALedgerNumber,
+        /// <returns>True if new transactions were actually loaded, False if transactions have already been loaded for the ledger/batch</returns>
+        public bool LoadTransactions(Int32 ALedgerNumber,
             Int32 ABatchNumber,
             string ABatchStatus = MFinanceConstants.BATCH_UNPOSTED)
         {
-            this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus);
+            return this.ucoTransactions.LoadGifts(ALedgerNumber, ABatchNumber, ABatchStatus);
         }
 
         /// <summary>
@@ -283,6 +284,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 if (this.tpgTransactions.Enabled)
                 {
+                    // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
+                    // But we need this to be set before calling ucoTransactions.AutoSizeGrid() because that only works once the page is actually loaded.
+                    this.tabGiftBatch.SelectedTab = this.tpgTransactions;
+
                     AGiftBatchRow SelectedRow = ucoBatches.GetSelectedDetailRow();
 
                     // If there's only one GiftBatch row, I'll not require that the user has selected it!
@@ -294,13 +299,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if (SelectedRow != null)
                     {
                         this.Cursor = Cursors.WaitCursor;
-                        LoadTransactions(SelectedRow.LedgerNumber,
-                            SelectedRow.BatchNumber,
-                            SelectedRow.BatchStatus);
+
+                        if (LoadTransactions(SelectedRow.LedgerNumber,
+                                SelectedRow.BatchNumber,
+                                SelectedRow.BatchStatus))
+                        {
+                            // We will only call this on the first time through (if we are called twice the second time will not actually load new transactions)
+                            ucoTransactions.AutoSizeGrid();
+                        }
+
                         this.Cursor = Cursors.Default;
                     }
 
-                    this.tabGiftBatch.SelectedTab = this.tpgTransactions;
                     ucoTransactions.FocusGrid();
                 }
             }

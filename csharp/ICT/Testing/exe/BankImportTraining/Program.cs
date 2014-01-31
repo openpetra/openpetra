@@ -72,9 +72,7 @@ namespace Ict.Testing.Finance.Bankimport
                 TAppSettingsManager.GetValue("file"));
 
             Int32 AFirstStatementKey;
-            TVerificationResultCollection AVerificationResult;
-
-            TBankImportWebConnector.StoreNewBankStatement(StatementAndTransactionsDS, out AFirstStatementKey, out AVerificationResult);
+            TBankImportWebConnector.StoreNewBankStatement(StatementAndTransactionsDS, out AFirstStatementKey);
 
             TPetraServerConnector.Disconnect();
         }

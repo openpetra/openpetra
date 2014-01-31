@@ -89,16 +89,12 @@ namespace Ict.Common.Data.Testing
             batch.HashTotal = 83;
             MainDS.AGiftBatch.Rows.Add(batch);
 
-            TVerificationResultCollection VerificationResult;
-            TSubmitChangesResult result = GiftBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult);
-            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "SubmitChanges should be ok");
-            Assert.AreEqual(false, VerificationResult.HasCriticalErrors, "there are critical errors");
+            GiftBatchTDSAccess.SubmitChanges(MainDS);
             MainDS.AcceptChanges();
 
             MainDS.AGiftBatch[0].BatchDescription = "test2";
-            result = GiftBatchTDSAccess.SubmitChanges(MainDS, out VerificationResult);
-            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "SubmitChanges of update should be ok");
-            Assert.AreEqual(false, VerificationResult.HasCriticalErrors, "there are critical errors in UPDATE");
+            GiftBatchTDSAccess.SubmitChanges(MainDS);
+
 
             TDBTransaction transaction = DBAccess.GDBAccessObj.BeginTransaction();
             AGiftBatchTable batches = AGiftBatchAccess.LoadByPrimaryKey(batch.LedgerNumber, batch.BatchNumber, transaction);

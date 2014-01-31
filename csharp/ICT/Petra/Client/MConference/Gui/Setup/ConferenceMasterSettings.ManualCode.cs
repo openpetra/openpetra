@@ -26,8 +26,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using GNU.Gettext;
-using Ict.Common.Verification;
+
 using Ict.Common;
+using Ict.Common.Exceptions;
+using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner.Gui;
@@ -297,7 +299,7 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             }
             catch (Exception exp)
             {
-                throw new ApplicationException("Exception occured while calling VenueFindScreen!", exp);
+                throw new EOPAppException("Exception occured while calling VenueFindScreen!", exp);
             }
         }
 
@@ -432,7 +434,9 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
         // save data
         private TSubmitChangesResult StoreManualCode(ref ConferenceSetupTDS ASubmitChanges, out TVerificationResultCollection AVerificationResult)
         {
-            return TRemote.MConference.Conference.WebConnectors.SaveConferenceSetupTDS(ref ASubmitChanges, out AVerificationResult);
+            AVerificationResult = null;
+
+            return TRemote.MConference.Conference.WebConnectors.SaveConferenceSetupTDS(ref ASubmitChanges);
         }
 
         private void ValidateDataManual(PcConferenceRow ARow)

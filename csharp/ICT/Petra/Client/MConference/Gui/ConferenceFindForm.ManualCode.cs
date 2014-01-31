@@ -31,9 +31,11 @@ using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 using GNU.Gettext;
+
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Controls;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Verification;
@@ -204,7 +206,7 @@ namespace Ict.Petra.Client.MConference.Gui
                 }
                 catch (Exception exp)
                 {
-                    throw new ApplicationException("Exception occured while calling OpenEventFindScreen Delegate!", exp);
+                    throw new EOPAppException("Exception occured while calling OpenEventFindScreen Delegate!", exp);
                 }
             }
         }

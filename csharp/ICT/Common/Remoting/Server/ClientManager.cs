@@ -1057,8 +1057,6 @@ namespace Ict.Common.Remoting.Server
             String AUserID,
             Int32 AProcessID)
         {
-            TVerificationResultCollection VerificationResult;
-
             if (UErrorLog != null)
             {
                 UErrorLog.AddErrorLogEntry(AErrorCode,
@@ -1067,8 +1065,7 @@ namespace Ict.Common.Remoting.Server
                     AMessageLine2,
                     AMessageLine3,
                     AUserID,
-                    AProcessID,
-                    out VerificationResult);
+                    AProcessID);
             }
         }
 

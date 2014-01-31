@@ -82,10 +82,20 @@ namespace Ict.Petra.Server.MConference.Applications
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 
-            TVerificationResultCollection Verification;
-            SLogonMessageAccess.SubmitChanges(table, Transaction, out Verification);
+            try
+            {
+                SLogonMessageAccess.SubmitChanges(table, Transaction);
 
-            DBAccess.GDBAccessObj.CommitTransaction();
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured while setting the message for Home Office Reps:" + Environment.NewLine + Exc.ToString());
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
+            }
         }
 
         /// <summary>
@@ -135,23 +145,22 @@ namespace Ict.Petra.Server.MConference.Applications
             table.Rows.Add(row);
 
             TDBTransaction writeTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-            TVerificationResultCollection VerificationResult;
+
             table.ThrowAwayAfterSubmitChanges = true;
 
             try
             {
-                if (PContactAttributeDetailAccess.SubmitChanges(table, writeTransaction, out VerificationResult))
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                PContactAttributeDetailAccess.SubmitChanges(table, writeTransaction);
+
+                DBAccess.GDBAccessObj.CommitTransaction();
             }
-            catch (Exception)
+            catch (Exception Exc)
             {
+                TLogging.Log("An Exception occured during the adding of a Session:" + Environment.NewLine + Exc.ToString());
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
             }
         }
 
@@ -202,9 +211,11 @@ namespace Ict.Petra.Server.MConference.Applications
                 MainDS.PPartnerContactAttribute.Rows.Add(PartnerContactAttributeRow);
             }
 
-            TVerificationResultCollection VerificationResult;
             MainDS.ThrowAwayAfterSubmitChanges = true;
-            return TSubmitChangesResult.scrOK == ContactTDSAccess.SubmitChanges(MainDS, out VerificationResult);
+
+            ContactTDSAccess.SubmitChanges(MainDS);
+
+            return true;
         }
 
         private static void GetDataForHeadsetReports(string AEventCode,

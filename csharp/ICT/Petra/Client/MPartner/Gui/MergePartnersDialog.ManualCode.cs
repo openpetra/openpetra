@@ -31,6 +31,7 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -267,7 +268,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 catch (Exception exp)
                 {
-                    throw new ApplicationException("Exception occured while calling OpenGetMergeDataDialog Delegate!", exp);
+                    throw new EOPAppException("Exception occured while calling OpenGetMergeDataDialog Delegate!", exp);
                 }
             }
 
@@ -296,7 +297,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 catch (Exception exp)
                 {
-                    throw new ApplicationException("Exception occured while calling OpenGetMergeDataDialog Delegate!", exp);
+                    throw new EOPAppException("Exception occured while calling OpenGetMergeDataDialog Delegate!", exp);
                 }
             }
 

@@ -1494,7 +1494,7 @@ namespace {#NAMESPACE}
 {#INCLUDE findandfilter.cs}
 
 {##SNIPDELETEREFERENCECOUNT}
-if (!FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors)
+if (TVerificationHelper.IsNullOrOnlyNonCritical(FPetraUtilsObject.VerificationResultCollection))
 {
     this.Cursor = Cursors.WaitCursor;
     TRemote.{#CONNECTORNAMESPACE}.ReferenceCount.WebConnectors.GetNonCacheableRecordReferenceCount(

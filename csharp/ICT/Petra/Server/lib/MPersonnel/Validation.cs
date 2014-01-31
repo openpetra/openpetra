@@ -39,8 +39,8 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         // Put Methods for the validation of Personnel Module WebConnectors in this code file.
         //
 
-        static partial void ValidatePersonnelStaffManual(TValidationControlsDict AValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable)
+        static partial void ValidatePersonnelStaffManual(ref TVerificationResultCollection AVerificationResult, 
+            TTypedDataTable ASubmitTable)
         {
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 

@@ -30,6 +30,7 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
+using Ict.Common.Exceptions;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
@@ -757,7 +758,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         /// <param name="AIsFoundation">true if the partner (organisation) is a foundation. Otherwise false</param>
         /// <returns>True, if an entry of the partner was found in table p_organisation.
         /// False, if there is no partner with the partner key or the partner is not an organisation</returns>
-        /// <exception>ApplicationException if we don't find a partner or if the partner is not an organisation</exception>
+        /// <exception>EOPAppException if we don't find a partner or if the partner is not an organisation</exception>
         [RequireModulePermission("PTNRUSER")]
         public static Boolean GetPartnerFoundationStatus(Int64 APartnerKey, out Boolean AIsFoundation)
         {
@@ -799,13 +800,13 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 if (MCommonMain.RetrievePartnerShortName(APartnerKey, out PartnerShortName, out PartnerClass, out PartnerStatus))
                 {
                     // we have a partner but it's not an organisation
-                    throw new ApplicationException(
+                    throw new EOPAppException(
                         "TPartnerServerLookups.GetPartnerFoundationStatus: p_organisation DB Table is empty. The partner key does not refer to an organisation!");
                 }
                 else
                 {
                     // we don't have a valid partner key
-                    throw new ApplicationException(
+                    throw new EOPAppException(
                         "TPartnerServerLookups.GetPartnerFoundationStatus: p_organisation DB Table is empty. The partner key is not valid!");
                 }
             }
@@ -935,7 +936,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         /// Partner must be a person.</param>
         /// <returns>Family partner key of the person. A Person must always have a family that it is related to.
         /// False, if there is no partner with the partner key or the partner is not an organisation</returns>
-        /// <exception>ApplicationException if we don't find a partner or if the partner is not an organisation</exception>
+        /// <exception>EOPAppException if we don't find a partner or if the partner is not an organisation</exception>
         [RequireModulePermission("PTNRUSER")]
         public static Int64 GetFamilyKeyForPerson(Int64 APersonKey)
         {
@@ -968,7 +969,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             else
             {
                 // we don't have a valid partner key
-                throw new ApplicationException(
+                throw new EOPAppException(
                     "TPartnerServerLookups.GetFamilyKeyForPerson: The partner key is not valid!");
             }
 

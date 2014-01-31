@@ -117,13 +117,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 RecordNode = RecordNode.NextSibling;
             }
 
-            TVerificationResultCollection VerificationResult;
-            AccountsPayableTDSAccess.SubmitChanges(MainDS, out VerificationResult);
-
-            if (VerificationResult.HasCriticalOrNonCriticalErrors)
-            {
-                throw new Exception(VerificationResult.BuildVerificationResultString());
-            }
+            ;
+            AccountsPayableTDSAccess.SubmitChanges(MainDS);
         }
 
         /// <summary>

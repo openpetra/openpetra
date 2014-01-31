@@ -10,6 +10,9 @@ RootNode:
 
     Events:
         Load: {class=System.EventHandler, method=TFrmGiftBatch_Load}    
+    Actions:
+        actEditFind: {ActionClick=mniFilterFind_Click}
+        actEditFilter: {ActionClick=mniFilterFind_Click}
 
     Controls:
         pnlContent:

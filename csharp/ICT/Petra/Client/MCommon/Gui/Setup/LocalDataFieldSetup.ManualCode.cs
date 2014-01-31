@@ -30,6 +30,7 @@ using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.Data.Exceptions;
 using Ict.Common.Exceptions;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Gui;
@@ -485,7 +486,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
             DataRowView[] HighlightedRows = grdDetails.SelectedDataRowsAsDataRowView;
 
-            if ((HighlightedRows.Length == 1) && FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors)
+            if ((HighlightedRows.Length == 1) && (!TVerificationHelper.IsNullOrOnlyNonCritical(FPetraUtilsObject.VerificationResultCollection)))
             {
                 // If we only have 1 row highlighted and it has validation errors we can quit because the standard code will work fine
                 return;

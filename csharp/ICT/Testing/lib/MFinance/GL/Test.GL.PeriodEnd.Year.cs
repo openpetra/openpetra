@@ -139,7 +139,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 {
                     TVerificationResultCollection VerificationResult;
                     TPeriodIntervallConnector.TPeriodMonthEnd(intLedgerNumber, false, out VerificationResult);
-                    Assert.AreEqual(false, VerificationResult.HasCriticalErrors, "running the month end should not give critical error");
+                    CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
+                        "running the month end should not give critical error");
                 }
             }
 
@@ -181,11 +182,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             // first run in info mode
             TPeriodIntervallConnector.TPeriodYearEnd(intLedgerNumber, true, out verificationResult);
-            Assert.AreEqual(false, verificationResult.HasCriticalErrors, "yearend test should not have critical errors");
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(verificationResult,
+                "yearend test should not have critical errors");
 
             // now run for real
             TPeriodIntervallConnector.TPeriodYearEnd(intLedgerNumber, false, out verificationResult);
-            Assert.AreEqual(false, verificationResult.HasCriticalErrors, "yearend should not have critical errors");
+            CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(verificationResult,
+                "yearend should not have critical errors");
 
             ++intYear;
             // check after year end that income and expense accounts are 0, bank account remains
@@ -263,7 +266,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     {
                         TVerificationResultCollection VerificationResult;
                         TPeriodIntervallConnector.TPeriodMonthEnd(intLedgerNumber, false, out VerificationResult);
-                        Assert.AreEqual(false, VerificationResult.HasCriticalErrors, "running the month end should not give critical error");
+                        CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
+                            "running the month end should not give critical error");
                     }
                 }
 

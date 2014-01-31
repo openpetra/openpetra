@@ -106,7 +106,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
         private TSubmitChangesResult StoreManualCode(ref MaintainUsersTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
         {
-            return TRemote.MSysMan.Maintenance.WebConnectors.SaveSUser(ref ASubmitDS, out AVerificationResult);
+            AVerificationResult = null;
+
+            return TRemote.MSysMan.Maintenance.WebConnectors.SaveSUser(ref ASubmitDS);
         }
 
         private void ShowDetailsManual(SUserRow ARow)

@@ -30,42 +30,30 @@ public class {#DATASETNAME}Access
 {##SUBMITCHANGESFUNCTION}
 
 /// auto generated
-static public TSubmitChangesResult SubmitChanges({#DATASETNAME} AInspectDS, out TVerificationResultCollection AVerificationResult)
+static public void SubmitChanges({#DATASETNAME} AInspectDS)
 {
-    AVerificationResult = new TVerificationResultCollection();
-
     if (AInspectDS == null)
     {
-        return TSubmitChangesResult.scrOK;
+        return;
     }
 
-    TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
     bool NewTransaction;
     TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
     try
     {
-        SubmissionResult = TSubmitChangesResult.scrOK;
-        
         {#SUBMITCHANGESDELETE}
         {#SUBMITCHANGESINSERT}
         {#SUBMITCHANGESUPDATE}
 
-        if ((SubmissionResult == TSubmitChangesResult.scrOK) && AInspectDS.ThrowAwayAfterSubmitChanges)
+        if (AInspectDS.ThrowAwayAfterSubmitChanges)
         {
             AInspectDS.Clear();
         }
 
         if (NewTransaction)
         {
-            if (SubmissionResult == TSubmitChangesResult.scrOK)
-            {
-                DBAccess.GDBAccessObj.CommitTransaction();
-            }
-            else
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
+            DBAccess.GDBAccessObj.CommitTransaction();
         }
     }
     catch (Exception e)
@@ -79,26 +67,20 @@ static public TSubmitChangesResult SubmitChanges({#DATASETNAME} AInspectDS, out 
 
         throw;
     }
-
-    return SubmissionResult;
 }
 
 {##SUBMITCHANGES}
 {#IFNDEF UPDATESEQUENCEINOTHERTABLES}
-if (SubmissionResult == TSubmitChangesResult.scrOK
-    && !TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
-            TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION},
-            out AVerificationResult,
-            UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD}))
-{
-    SubmissionResult = TSubmitChangesResult.scrError;
-}
+TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
+    TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION},
+    UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});
 {#ENDIFN UPDATESEQUENCEINOTHERTABLES}
 {#IFDEF UPDATESEQUENCEINOTHERTABLES}
-if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.{#TABLEVARIABLENAME} != null)
+if (AInspectDS.{#TABLEVARIABLENAME} != null)
 {
     SortedList<Int64, Int32> OldSequenceValuesRow = new SortedList<Int64, Int32>();
     Int32 rowIndex = 0;
+
     foreach ({#TABLEROWTYPE} origRow in AInspectDS.{#TABLEVARIABLENAME}.Rows)
     {
         if (origRow.RowState != DataRowState.Deleted && origRow.{#SEQUENCEDCOLUMNNAME} < 0)
@@ -108,17 +90,11 @@ if (SubmissionResult == TSubmitChangesResult.scrOK && AInspectDS.{#TABLEVARIABLE
 
         rowIndex++;
     }
-    if (!TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
-            TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION},
-            out AVerificationResult,
-            UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD}))
-    {
-        SubmissionResult = TSubmitChangesResult.scrError;
-    }
-    else
-    {
-        {#UPDATESEQUENCEINOTHERTABLES}
-    }
+
+    TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
+        TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION},
+        UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});
+    {#UPDATESEQUENCEINOTHERTABLES}
 }
 {#ENDIF UPDATESEQUENCEINOTHERTABLES}
 

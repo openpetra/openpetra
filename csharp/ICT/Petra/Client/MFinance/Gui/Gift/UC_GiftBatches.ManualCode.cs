@@ -899,12 +899,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbPeriod.SelectedIndex = 0;
             }
 
-            FPreviouslySelectedDetailRow = null;
-
             pnlDetails.Enabled = true;
             this.CreateNewAGiftBatch();
-
-            FPreviouslySelectedDetailRow = GetSelectedDetailRow();
 
             txtDetailBatchDescription.Focus();
 
@@ -1205,7 +1201,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 dialog.ShowDialog();
             }
 
-            if ((Verifications != null) && Verifications.HasCriticalErrors)
+            if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verifications))
             {
                 string ErrorMessages = String.Empty;
 
@@ -1492,6 +1488,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             grdDetails.DoubleClickHeaderCell += new TDoubleClickHeaderCellEventHandler(grdDetails_DoubleClickHeaderCell);
             grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
+            grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
 
             AutoSizeGrid();
         }
@@ -1518,6 +1515,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 grdDetails.Columns[e.Column].AutoSizeMode |= SourceGrid.AutoSizeMode.EnableAutoSize;
                 grdDetails.AutoSizeCells(new SourceGrid.Range(1, e.Column, grdDetails.Rows.Count - 1, e.Column));
+            }
+        }
+
+        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
+        {
+            if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
+            {
+                AutoSizeGrid();
             }
         }
 

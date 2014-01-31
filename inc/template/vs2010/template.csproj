@@ -18,7 +18,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>Full</DebugType>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;CODE_ANALYSIS</DefineConstants>
     <BaseIntermediateOutputPath>${dir.obj.backslash}\${Namespace}\</BaseIntermediateOutputPath>
     <OutputPath>${dir.bin.backslash}</OutputPath>
     <StartArguments>${DebugStartArguments}</StartArguments>

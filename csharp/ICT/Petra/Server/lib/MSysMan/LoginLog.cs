@@ -42,17 +42,13 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// <param name="AUserID"></param>
         /// <param name="ALoginStatus"></param>
         /// <param name="AProcessID"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
-        public static Boolean AddLoginLogEntry(String AUserID,
+        public static void AddLoginLogEntry(String AUserID,
             String ALoginStatus,
-            out Int32 AProcessID,
-            out TVerificationResultCollection AVerificationResult)
+            out Int32 AProcessID)
         {
-            return Ict.Petra.Server.App.Core.Security.TLoginLog.AddLoginLogEntry(AUserID,
+            Ict.Petra.Server.App.Core.Security.TLoginLog.AddLoginLogEntry(AUserID,
                 ALoginStatus,
-                out AProcessID,
-                out AVerificationResult);
+                out AProcessID);
         }
 
         /// <summary>
@@ -62,19 +58,15 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// <param name="ALoginStatus"></param>
         /// <param name="AImmediateLogout"></param>
         /// <param name="AProcessID"></param>
-        /// <param name="AVerificationResult"></param>
-        /// <returns></returns>
-        public static Boolean AddLoginLogEntry(String AUserID,
+        public static void AddLoginLogEntry(String AUserID,
             String ALoginStatus,
             Boolean AImmediateLogout,
-            out Int32 AProcessID,
-            out TVerificationResultCollection AVerificationResult)
+            out Int32 AProcessID)
         {
-            return Ict.Petra.Server.App.Core.Security.TLoginLog.AddLoginLogEntry(AUserID,
+            Ict.Petra.Server.App.Core.Security.TLoginLog.AddLoginLogEntry(AUserID,
                 ALoginStatus,
                 AImmediateLogout,
-                out AProcessID,
-                out AVerificationResult);
+                out AProcessID);
         }
     }
 }

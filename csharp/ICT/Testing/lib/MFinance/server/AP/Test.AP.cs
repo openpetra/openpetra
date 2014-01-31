@@ -121,7 +121,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             //
             VerificationResult = PayAPDocument(APInfos.ApDS.AApDocument[0].ApDocumentId, Amount,
                 APInfos.BankAccount, APInfos.CurrencyCode, APInfos.PeriodEndDate, out PaymentNumber);
-            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+            CommonNUnitFunctions.EnsureNullOrEmptyVerificationResult(VerificationResult);   // Guard Assert
 
             // Save the current amount on the AP account
             decimal APAccountBalanceAfter = new TGet_GLM_Info(FLedgerNumber,
@@ -189,7 +189,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             // Act: Immediately "un-pay" and "un-post" this invoice!
             //
             VerificationResult = ReversePayment(PaymentNumber, APInfos.PeriodEndDate, DocumentIDs, APInfos.ApDS);
-            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+            CommonNUnitFunctions.EnsureNullOrEmptyVerificationResult(VerificationResult);   // Guard Assert
 
             // Save the current amount on the AP account
             decimal APAccountBalanceAfter = new TGet_GLM_Info(FLedgerNumber,
@@ -227,7 +227,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                 ANarrative,
                 out APInfos.ApDS);
 
-            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+            CommonNUnitFunctions.EnsureNullOrEmptyVerificationResult(VerificationResult);   // Guard Assert
 
             GetLedgerInfo(out APInfos.PeriodStartDate, out APInfos.PeriodEndDate, out APInfos.ForexGainsLossesAccount);
 
@@ -272,6 +272,8 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
         private TVerificationResultCollection CreateAPDocument(Int64 APartnerKey, decimal AAmount, decimal? AExchangeRatePosting,
             string ADocumentCode, string ANarrative, out AccountsPayableTDS AMainDS)
         {
+            string AssertFailMessage = "Problems saving AP document: ";
+            TSubmitChangesResult SubmRes;
             TVerificationResultCollection VerificationResult;
 
             AMainDS = TAPTransactionWebConnector.CreateAApDocument(FLedgerNumber, APartnerKey, false);
@@ -298,14 +300,15 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                 AMainDS.AApDocument[0].ExchangeRateToBase = AExchangeRatePosting.Value;
             }
 
-            if (TAPTransactionWebConnector.SaveAApDocument(ref AMainDS, out VerificationResult)
-                != TSubmitChangesResult.scrOK)
+            SubmRes = TAPTransactionWebConnector.SaveAApDocument(ref AMainDS, out VerificationResult);
+
+            if (SubmRes != TSubmitChangesResult.scrOK)
             {
-                Assert.Fail("Problems saving AP document: " +
+                Assert.Fail(AssertFailMessage + String.Format(" - (SaveAApDocument return value: {0}) - ", SubmRes) +
                     VerificationResult.BuildVerificationResultString());
             }
 
-            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+            CommonNUnitFunctions.EnsureNullOrEmptyVerificationResult(VerificationResult, AssertFailMessage);   // Guard Assert
 
             return VerificationResult;
         }
@@ -330,7 +333,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                     VerificationResult.BuildVerificationResultString());
             }
 
-            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+            CommonNUnitFunctions.EnsureNullOrEmptyVerificationResult(VerificationResult, AssertFailMessage);   // Guard Assert
 
             return VerificationResult;
         }
@@ -356,7 +359,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                 APInfos.CostCentreCode).YtdActual;
 
             VerificationResult = PostAPDocument(APInfos.ApDS, APInfos.PeriodStartDate, ref ADocumentIds);
-            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+            CommonNUnitFunctions.EnsureNullOrEmptyVerificationResult(VerificationResult);   // Guard Assert
 
             //
             // Guard Assert: Posting OK?
@@ -394,7 +397,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                 APInfos.CostCentreCode).YtdActual;
 
             VerificationResult = PostAPDocument(APInfos.ApDS, APInfos.PeriodStartDate, ref ADocumentIds);
-            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+            CommonNUnitFunctions.EnsureNullOrEmptyVerificationResult(VerificationResult);   // Guard Assert
 
             //
             // Guard Assert: Posting OK?
@@ -427,7 +430,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             //
             VerificationResult = PayAPDocument(APInfos.ApDS.AApDocument[0].ApDocumentId, Amount,
                 APInfos.BankAccount, APInfos.CurrencyCode, APInfos.PeriodEndDate, out APaymentNumber, ExchangeRatePayment);
-            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+            CommonNUnitFunctions.EnsureNullOrEmptyVerificationResult(VerificationResult);   // Guard Assert
 
             // Save the current amount on the AP account and Bank Account
             decimal APAccountBalanceAfter = new TGet_GLM_Info(FLedgerNumber,
@@ -456,6 +459,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
         private TVerificationResultCollection PayAPDocument(int AApDocumentId, decimal AAmount, string ABankAccount,
             string ACurrencyCode, DateTime APeriodEndDate, out int APaymentNumber, decimal? AExchangeRatePayment = null)
         {
+            string AssertFailMessage = "Problems paying AP document: ";
             TVerificationResultCollection VerificationResult;
             AccountsPayableTDS MainDS = new AccountsPayableTDS();
 
@@ -483,11 +487,11 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
 
             if (!TAPTransactionWebConnector.PostAPPayments(ref MainDS, APeriodEndDate, out VerificationResult))
             {
-                Assert.Fail("Problems paying AP document: " +
+                Assert.Fail(AssertFailMessage +
                     VerificationResult.BuildVerificationResultString());
             }
 
-            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+            CommonNUnitFunctions.EnsureNullOrEmptyVerificationResult(VerificationResult, AssertFailMessage);   // Guard Assert
 
             APaymentNumber = DocPayment.PaymentNumber;
 
@@ -497,6 +501,7 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
         private TVerificationResultCollection ReversePayment(int APaymentNumber, DateTime APeriodEndDate,
             List <int>ADocumentIds, AccountsPayableTDS AApDS)
         {
+            string AssertFailMessage = "Failed to reverse AP payment: ";
             TVerificationResultCollection VerificationResult;
 
             // "Un-pay" the specified invoice
@@ -505,11 +510,11 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                     APeriodEndDate,
                     out VerificationResult))
             {
-                Assert.Fail("Failed to reverse AP payment: " +
+                Assert.Fail(AssertFailMessage +
                     VerificationResult.BuildVerificationResultString());
             }
 
-            Assert.That(VerificationResult, Is.Empty);  // Guard Assert
+            CommonNUnitFunctions.EnsureNullOrEmptyVerificationResult(VerificationResult, AssertFailMessage);   // Guard Assert
 
             // "Un-post" the specified invoice - returning it to "Approved" status!
             ADocumentIds[0] += 2; // The invoice I posted was reversed, and a duplicate now exists with an Id 2 greater than the original.

@@ -73,7 +73,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
 
             TSubmitChangesResult SubmissionResult;
-            TVerificationResultCollection VerificationResult;
 
             MExtractTable SubmitDT = new MExtractTable();
 
@@ -96,7 +95,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             // Submit changes to the PETRAServer
             SubmissionResult = TRemote.MPartner.Partner.WebConnectors.SaveExtract
-                                   (AExtractId, ref SubmitDT, out VerificationResult);
+                                   (AExtractId, ref SubmitDT);
 
             if (SubmissionResult == TSubmitChangesResult.scrError)
             {
@@ -395,7 +394,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             TFrmExtractCombineIntersectSubtractDialog ExtractCombineDialog = new TFrmExtractCombineIntersectSubtractDialog(this.ParentForm);
 
             List <Int32>ACombineExtractIdList;
-            TVerificationResultCollection VerificationResult;
 
             // initialize dialog
             ExtractCombineDialog.SetMode(TFrmExtractCombineIntersectSubtractDialog.TMode.ecisCombineMode);
@@ -431,7 +429,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                 if (TRemote.MPartner.Partner.WebConnectors.CombineExtracts
                         (NewExtractName, NewExtractDescription, ACombineExtractIdList,
-                        out NewExtractId, out VerificationResult))
+                        out NewExtractId))
                 {
                     ucoExtractMasterList.RefreshExtractList(sender, e);
                 }
@@ -450,7 +448,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             TFrmExtractCombineIntersectSubtractDialog ExtractIntersectDialog = new TFrmExtractCombineIntersectSubtractDialog(this.ParentForm);
 
             List <Int32>AIntersectExtractIdList;
-            TVerificationResultCollection VerificationResult;
 
             // initialize dialog
             ExtractIntersectDialog.SetMode(TFrmExtractCombineIntersectSubtractDialog.TMode.ecisIntersectMode);
@@ -486,7 +483,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                 if (TRemote.MPartner.Partner.WebConnectors.IntersectExtracts
                         (NewExtractName, NewExtractDescription, AIntersectExtractIdList,
-                        out NewExtractId, out VerificationResult))
+                        out NewExtractId))
                 {
                     ucoExtractMasterList.RefreshExtractList(sender, e);
                 }
@@ -506,7 +503,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             String BaseExtractName;
 
             List <Int32>AIntersectExtractIdList;
-            TVerificationResultCollection VerificationResult;
 
             // initialize dialog
             ExtractSubtractDialog.SetMode(TFrmExtractCombineIntersectSubtractDialog.TMode.ecisSubtractMode);
@@ -542,7 +538,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                 if (TRemote.MPartner.Partner.WebConnectors.SubtractExtracts
                         (NewExtractName, NewExtractDescription, BaseExtractName, AIntersectExtractIdList,
-                        out NewExtractId, out VerificationResult))
+                        out NewExtractId))
                 {
                     ucoExtractMasterList.RefreshExtractList(sender, e);
                 }

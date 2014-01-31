@@ -141,7 +141,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         /// <param name="Nodes"></param>
         /// <returns></returns>
         [RequireModulePermission("PERSONNEL")]
-        public static bool SaveUnitHierarchy(ArrayList Nodes)
+        public static void SaveUnitHierarchy(ArrayList Nodes)
         {
             UmUnitStructureTable NewTable = new UmUnitStructureTable();
 
@@ -154,28 +154,25 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             // the existing UmUnitStructure table.
             // I'll delete the whole content before calling SubmitChanges with my new data.
 
-            Boolean CommitOK = false;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
             try
             {
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 DBAccess.GDBAccessObj.ExecuteNonQuery("DELETE FROM PUB_um_unit_structure", Transaction);
 
-                TVerificationResultCollection Results;
                 NewTable.ThrowAwayAfterSubmitChanges = true;  // I'm not interested in this table after this Submit:
-                CommitOK = UmUnitStructureAccess.SubmitChanges(NewTable, Transaction, out Results);
+                UmUnitStructureAccess.SubmitChanges(NewTable, Transaction);
+
+                DBAccess.GDBAccessObj.CommitTransaction();
             }
-            finally
+            catch (Exception Exc)
             {
-                if (CommitOK)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-                else
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                TLogging.Log("An Exception occured during the saving of the Unit Hierarachy:" + Environment.NewLine + Exc.ToString());
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
             }
-            return true;
         }
     }
 }

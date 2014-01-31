@@ -811,18 +811,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return;
             }
 
-            TVerificationResultCollection Verifications;
+            TRemote.MFinance.AP.WebConnectors.DeleteAPDocuments(FLedgerNumber, DeleteTheseDocs);
 
-            if (TRemote.MFinance.AP.WebConnectors.DeleteAPDocuments(FLedgerNumber, DeleteTheseDocs, out Verifications))
-            {
-                MessageBox.Show(Catalog.GetString("Document(s) deleted successfully!"));
-                DoSearch(null, null);
-            }
-            else
-            {
-                string ErrorMessages = Verifications.BuildVerificationResultString();
-                MessageBox.Show(ErrorMessages, Catalog.GetString("Document Deletion"));
-            }
+            MessageBox.Show(Catalog.GetString("Document(s) deleted successfully!"));
+            DoSearch(null, null);
         }
 
         private void OpenAllTagged(object sender, EventArgs e)
