@@ -134,41 +134,52 @@ namespace Ict.Common.IO
                             continue;
                         }
 
-                        // skip empty columns
+                        Int32 NumberColumnsRepeated = 1;
+
+                        // handle columns with same value
                         if (TXMLParser.HasAttribute(cellNode, "table:number-columns-repeated"))
                         {
-                            columnCounter += Convert.ToInt32(TXMLParser.GetAttribute(cellNode, "table:number-columns-repeated"));
-                            continue;
+                            NumberColumnsRepeated = Convert.ToInt32(TXMLParser.GetAttribute(cellNode, "table:number-columns-repeated"));
+
+                            if (!TXMLParser.HasAttribute(cellNode, "office:value-type"))
+                            {
+                                // skip empty columns
+                                columnCounter += NumberColumnsRepeated;
+                                continue;
+                            }
                         }
 
-                        if ((AColumnsToImport != null) && !AColumnsToImport.Contains(ColumnNames[columnCounter]))
+                        while (NumberColumnsRepeated > 0)
                         {
-                            continue;
-                        }
+                            string CellType = TXMLParser.GetAttribute(cellNode, "office:value-type");
 
-                        string CellType = TXMLParser.GetAttribute(cellNode, "office:value-type");
+                            if ((AColumnsToImport != null) && !AColumnsToImport.Contains(ColumnNames[columnCounter]))
+                            {
+                                // skip this column
+                            }
+                            else if (CellType == "float")
+                            {
+                                TVariant variant = new TVariant(TXMLParser.GetAttribute(cellNode, "office:value"));
+                                NewRow[ColumnNames[columnCounter]] = variant.ToObject();
+                            }
+                            else if (CellType == "date")
+                            {
+                                NewRow[ColumnNames[columnCounter]] =
+                                    (new TVariant(TXMLParser.GetAttribute(cellNode, "office:date-value") + " 00:00:00")).ToDate();
+                            }
+                            else if (CellType == "boolean")
+                            {
+                                NewRow[ColumnNames[columnCounter]] =
+                                    (TXMLParser.GetAttribute(cellNode, "office:boolean-value") == "true");
+                            }
+                            else if (CellType == "string")
+                            {
+                                NewRow[ColumnNames[columnCounter]] = cellNode.FirstChild.InnerText;
+                            }
 
-                        if (CellType == "float")
-                        {
-                            TVariant variant = new TVariant(TXMLParser.GetAttribute(cellNode, "office:value"));
-                            NewRow[ColumnNames[columnCounter]] = variant.ToObject();
+                            columnCounter++;
+                            NumberColumnsRepeated--;
                         }
-                        else if (CellType == "date")
-                        {
-                            NewRow[ColumnNames[columnCounter]] =
-                                (new TVariant(TXMLParser.GetAttribute(cellNode, "office:date-value") + " 00:00:00")).ToDate();
-                        }
-                        else if (CellType == "boolean")
-                        {
-                            NewRow[ColumnNames[columnCounter]] =
-                                (TXMLParser.GetAttribute(cellNode, "office:boolean-value") == "true");
-                        }
-                        else if (CellType == "string")
-                        {
-                            NewRow[ColumnNames[columnCounter]] = cellNode.FirstChild.InnerText;
-                        }
-
-                        columnCounter++;
                     }
 
                     result.Rows.Add(NewRow);
