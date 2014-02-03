@@ -149,6 +149,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void RunOnceOnActivationManual()
         {
             FPetraUtilsObject.UnhookControl(pnlDetails, true); // I don't want changes in these values to cause SetChangedFlag - I'll set it myself.
+            FPetraUtilsObject.UnhookControl(txtStatus, false); // This control is not to be spied on!
 
             txtDetailCostCentreCode.Leave += new EventHandler(UpdateOnControlChanged);
             txtDetailCostCentreName.Leave += new EventHandler(UpdateOnControlChanged);
@@ -424,6 +425,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
+        private void SelectNodeByName(String ACcCode)
+        {
+            FMainDS.ACostCentre.DefaultView.RowFilter = String.Format("a_cost_centre_code_c='{0}'", ACcCode);
+
+            if (FMainDS.ACostCentre.DefaultView.Count > 0)
+            {
+                ACostCentreRow Row = (ACostCentreRow)FMainDS.ACostCentre.DefaultView[0].Row;
+                String SearchFor = NodeLabel(Row);
+                TreeNode[] FoundNodes = trvCostCentres.Nodes.Find(SearchFor, true);
+
+                if (FoundNodes.Length > 0)
+                {
+                    FoundNodes[0].EnsureVisible();
+                    trvCostCentres.SelectedNode = FoundNodes[0];
+                    trvCostCentres.Focus();
+                }
+            }
+        }
+
         private static String NodeLabel(String ACostCentreCode, String ACostCentreName)
         {
             string lbl = ACostCentreCode;
@@ -450,7 +470,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             TreeNode newNode = AParentNodes.Add(NodeLabel(ADetailRow));
 
-            newNode.Name = ADetailRow.CostCentreCode;
+            newNode.Name = NodeLabel(ADetailRow);
             CostCentreNodeDetails NewNodeDetails = new CostCentreNodeDetails();
             NewNodeDetails.CostCentreRow = ADetailRow;
             NewNodeDetails.IsNew = false;
@@ -509,7 +529,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     GetDetailsFromControls(currentCostCentre);
                     FCurrentNode.Text = NodeLabel(currentCostCentre);
-                    FCurrentNode.Name = currentCostCentre.CostCentreCode;
+                    FCurrentNode.Name = NodeLabel(currentCostCentre);
                 }
             }
 
@@ -517,9 +537,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             // update detail panel
             FIAmUpdating = true;
+            FPetraUtilsObject.SuppressChangeDetection = true;
             ACostCentreRow TempRow = ((CostCentreNodeDetails)e.Node.Tag).CostCentreRow;
             ShowDetails(TempRow);
             FIAmUpdating = false;
+            FPetraUtilsObject.SuppressChangeDetection = false;
             strOldDetailCostCentreCode = TempRow.CostCentreCode;
         }
 
@@ -530,6 +552,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 MessageBox.Show(Catalog.GetString("You can only add a new cost centre after selecting a parent cost centre"));
                 return;
             }
+
+            txtDetailCostCentreCode.Focus();
 
             if (ValidateAllData(true, true))
             {
@@ -554,7 +578,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         countNewCostCentre++;
                     }
 
-                    FnameForNewCostCentre += countNewCostCentre.ToString();
+                    newCostCentreName += countNewCostCentre.ToString();
                 }
 
                 ACostCentreRow newCostCentre = FMainDS.ACostCentre.NewRowTyped();
@@ -569,6 +593,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ParentRow.PostingCostCentreFlag = false;
                 ParentNodeDetails.CanDelete = false;
 
+                FRecentlyUpdatedDetailCostCentreCode = INTERNAL_UNASSIGNED_DETAIL_COSTCENTRE_CODE;
                 trvCostCentres.BeginUpdate();
                 TreeNode newNode = FCurrentNode.Nodes.Add(newCostCentreName);
 
@@ -576,11 +601,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 NewNodeDetails.CostCentreRow = newCostCentre;
                 NewNodeDetails.IsNew = true;
                 newNode.Tag = NewNodeDetails;
-
                 trvCostCentres.EndUpdate();
 
                 trvCostCentres.SelectedNode = newNode;
-                txtDetailCostCentreCode.Focus();
+                txtDetailCostCentreCode.SelectAll();
                 FPetraUtilsObject.SetChangedFlag();
             }
         }
@@ -760,11 +784,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     {
                         NodeDetails.CostCentreRow.BeginEdit();
                         NodeDetails.CostCentreRow.CostCentreCode = strNewDetailCostCentreCode;
-                        NodeDetails.CostCentreRow.EndEdit();
+                        NodeDetails.CostCentreRow.EndEdit();  // A constraint exception might occur here
 
                         trvCostCentres.BeginUpdate();
-                        trvCostCentres.SelectedNode.Text = strNewDetailCostCentreCode;
-                        trvCostCentres.SelectedNode.Name = strNewDetailCostCentreCode;
+                        trvCostCentres.SelectedNode.Text = NodeLabel(NodeDetails.CostCentreRow);
+                        trvCostCentres.SelectedNode.Name = NodeLabel(NodeDetails.CostCentreRow);
                         trvCostCentres.EndUpdate();
 
                         changeAccepted = true;
@@ -831,31 +855,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 FMainDS = TRemote.MFinance.Setup.WebConnectors.LoadCostCentreHierarchy(FLedgerNumber);
                                 strOldDetailCostCentreCode = "";
                                 FIAmUpdating = true;
+                                FPetraUtilsObject.SuppressChangeDetection = false;
                                 txtDetailCostCentreCode.Text = "";
                                 FIAmUpdating = false;
-                                FPetraUtilsObject.HasChanges = false;
-                                PopulateTreeView();
+                                FPetraUtilsObject.SuppressChangeDetection = false;
                                 FCurrentNode = null;
-
-                                TreeNode[] NewNode = trvCostCentres.Nodes.Find(strNewDetailCostCentreCode, true);
-
-                                if (NewNode.Length > 0) // should be - unless the server is faulty!
-                                {
-                                    trvCostCentres.SelectedNode = NewNode[0];
-                                    ShowDetails(((CostCentreNodeDetails)NewNode[0].Tag).CostCentreRow);
-
-                                    if (NewNode[0].Parent != null)
-                                    {
-                                        NewNode[0].Parent.Expand();
-                                    }
-
-                                    NewNode[0].Expand();
-                                }
+                                PopulateTreeView();
+                                SelectNodeByName(FRecentlyUpdatedDetailCostCentreCode);
 
                                 FStatus = "";
                                 txtStatus.Text = FStatus;
-                                FPetraUtilsObject.HasChanges = false;
-                                FPetraUtilsObject.DisableSaveButton();
                                 changeAccepted = true;
 
                                 FStatus += String.Format("Cost Centre Code changed to '{0}'.\r\n", strNewDetailCostCentreCode);
@@ -923,6 +932,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     return;
                 }  // If not changed, or the rename didn't happen, I can carry on...
 
+                if (Row.CostCentreActiveFlag != chkDetailCostCentreActiveFlag.Checked)
+                {
+                    FPetraUtilsObject.SetChangedFlag();
+                }
+
                 GetDataFromControlsManual();
 
                 if (FCurrentNode != null)
@@ -937,7 +951,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     }
 
                     FCurrentNode.Text = NewNodeName;
-                    FCurrentNode.Name = Row.CostCentreCode;
+                    FCurrentNode.Name = NewNodeName;
                 }
             }
         } // UpdateOnControlChanged

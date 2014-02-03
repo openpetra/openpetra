@@ -8,11 +8,11 @@
   <Parameter id="param_txtAnniversaries" value="eString:" />
   <Parameter id="orderby0" value="eString:Date Of Anniversary" />
   <Parameter id="orderby1" value="eString:Length of Commitment" />
-  <Parameter id="orderby2" value="eString:Partner Name" />
-  <Parameter id="param_sortby_readable" value="eString:Date Of Anniversary, Length of Commitment, Partner Name" />
+  <Parameter id="orderby2" value="eString:Partner Surname" />
+  <Parameter id="param_sortby_readable" value="eString:Date Of Anniversary, Length of Commitment, Partner Surname" />
   <Parameter id="param_calculation" column="4" value="eString:Date Of Anniversary" />
   <Parameter id="param_calculation" column="5" value="eString:Length of Commitment" />
-  <Parameter id="param_calculation" column="6" value="eString:Partner Name" />
+  <Parameter id="param_calculation" column="6" value="eString:Partner Surname" />
   <Parameter id="param_sortby_columns" value="eString:4,5,6" />
   <Parameter id="param_calculation" column="0" value="eString:Partner Surname" />
   <Parameter id="ColumnWidth" column="0" value="eDecimal:4611686018427387904" />
@@ -21,7 +21,7 @@
   <Parameter id="ColumnWidth" column="1" value="eDecimal:4611686018427387904" />
   <Parameter id="param_ytd" column="1" value="eBoolean:false" />
   <Parameter id="param_calculation" column="2" value="eString:Date Of Anniversary" />
-  <Parameter id="ColumnWidth" column="2" value="eDecimal:4611686018427387904" />
+  <Parameter id="ColumnWidth" column="2" value="eDecimal:4616189618054758400" />
   <Parameter id="param_ytd" column="2" value="eBoolean:false" />
   <Parameter id="param_calculation" column="3" value="eString:Length of Commitment" />
   <Parameter id="ColumnWidth" column="3" value="eDecimal:4609434218613702656" />

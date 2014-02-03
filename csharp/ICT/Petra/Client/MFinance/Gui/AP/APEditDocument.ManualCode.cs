@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 AApAnalAttribRow Row = (AApAnalAttribRow)FMainDS.AApAnalAttrib.Rows[RowNum - 1];
 
-                if (Row.AnalysisAttributeValue == "")  // I need to delete empty rows
+                if ((Row.RowState != DataRowState.Deleted) && (Row.AnalysisAttributeValue == ""))  // I need to delete empty rows
                 {
                     Row.Delete();
                 }
@@ -340,7 +340,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void ShowDataManual()
         {
             AccountsPayableTDSAApDocumentRow DocumentRow = FMainDS.AApDocument[0];
-            AApSupplierRow SupplierRow = FMainDS.AApSupplier[0];
 
             FDocumentLedgerNumber = DocumentRow.LedgerNumber;
 

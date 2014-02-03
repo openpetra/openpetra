@@ -777,9 +777,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                         DataRow[] FoundTransRows = BatchDS.ATransaction.Select(WhereClause);
 
+#if TODO
                         foreach (DataRow untypedTransRow in FoundTransRows)
                         {
-#if TODO
                             ATransactionRow TransactionRow = (ATransactionRow)untypedTransRow;
 
                             TransactionExists = true;
@@ -808,9 +808,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                              *                               lv_report_title_c,
                              *                               lv_default_data_c).*/
                             //TODO: call code to produce reports
-#endif
                             break;
                         }
+#endif
 
                         if (TransactionExists)
                         {
