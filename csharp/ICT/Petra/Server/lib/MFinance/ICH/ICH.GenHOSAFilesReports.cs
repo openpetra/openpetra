@@ -775,9 +775,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                       "      OR " + ATransactionTable.GetIchNumberDBName() + " = " + AIchNumber.ToString() +
                                       ")";
 
+#if TODO
                         DataRow[] FoundTransRows = BatchDS.ATransaction.Select(WhereClause);
 
-#if TODO
                         foreach (DataRow untypedTransRow in FoundTransRows)
                         {
                             ATransactionRow TransactionRow = (ATransactionRow)untypedTransRow;
