@@ -65,7 +65,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private bool LoadReportData(TRptCalculator ACalc)
         {
             ArrayList reportParam = ACalc.GetParameters().Elems;
-            Dictionary<String, TVariant> paramsDictionary = new Dictionary<string, TVariant>();
+
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
 
             foreach (Shared.MReporting.TParameter p in reportParam)
             {
@@ -87,12 +88,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
             DataView LedgerView = new DataView(LedgerNameTable);
-            LedgerView.RowFilter = "LedgerNumber="+FLedgerNumber;
+            LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
             String LedgerName = "";
+
             if (LedgerView.Count > 0)
             {
                 LedgerName = LedgerView[0].Row["LedgerName"].ToString();
             }
+
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             return true;
         }
@@ -108,7 +111,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 this.tabReportSettings.Controls.Remove(tpgAdditionalSettings); // These tabs represent settings that are not supported
                 this.tabReportSettings.Controls.Remove(tpgColumnSettings);     // in the FastReports based solution.
-
             }
         }
 

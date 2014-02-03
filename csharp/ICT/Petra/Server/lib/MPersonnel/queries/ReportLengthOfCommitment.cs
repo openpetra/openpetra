@@ -45,18 +45,19 @@ namespace Ict.Petra.Server.MPersonnel.queries
         private static Int32 ElapsedDays(TimeSpan value)
         {
             return Convert.ToInt32(value.TotalDays);
+
             /*
-            DateTime BaseDate = new DateTime(1, 1, 1);
-            DateTime endDate = BaseDate.AddTicks(Math.Abs(value.Ticks));
-
-            if (endDate.AddDays(1).Month != endDate.Month)
-            {
-                // add this full month
-                return ((endDate.Year - 1) * 12) + endDate.Month;
-            }
-
-            // don't include this month
-            return ((endDate.Year - 1) * 12) + endDate.Month - 1;
+             * DateTime BaseDate = new DateTime(1, 1, 1);
+             * DateTime endDate = BaseDate.AddTicks(Math.Abs(value.Ticks));
+             *
+             * if (endDate.AddDays(1).Month != endDate.Month)
+             * {
+             *  // add this full month
+             *  return ((endDate.Year - 1) * 12) + endDate.Month;
+             * }
+             *
+             * // don't include this month
+             * return ((endDate.Year - 1) * 12) + endDate.Month - 1;
              */
         }
 
@@ -105,13 +106,15 @@ namespace Ict.Petra.Server.MPersonnel.queries
             DateTime anniversaryDate = AnniversaryDate(daysServed, ThisWorkerEndDate);
 
             bool doStore = (
-                   (anniversaryDate.DayOfYear >= AReportStartDate.DayOfYear)
+                (anniversaryDate.DayOfYear >= AReportStartDate.DayOfYear)
                 && (anniversaryDate.DayOfYear <= AReportEndDate.DayOfYear));
 
             if (ASpecialAnniversaries.Count > 0)
             {
                 if (!ASpecialAnniversaries.Contains(TotalYears))
+                {
                     doStore = false;
+                }
             }
 
             if (doStore)

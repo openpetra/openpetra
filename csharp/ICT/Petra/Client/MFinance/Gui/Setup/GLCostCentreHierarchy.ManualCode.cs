@@ -428,11 +428,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void SelectNodeByName(String ACcCode)
         {
             FMainDS.ACostCentre.DefaultView.RowFilter = String.Format("a_cost_centre_code_c='{0}'", ACcCode);
+
             if (FMainDS.ACostCentre.DefaultView.Count > 0)
             {
                 ACostCentreRow Row = (ACostCentreRow)FMainDS.ACostCentre.DefaultView[0].Row;
                 String SearchFor = NodeLabel(Row);
                 TreeNode[] FoundNodes = trvCostCentres.Nodes.Find(SearchFor, true);
+
                 if (FoundNodes.Length > 0)
                 {
                     FoundNodes[0].EnsureVisible();
@@ -441,7 +443,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
             }
         }
-
 
         private static String NodeLabel(String ACostCentreCode, String ACostCentreName)
         {
@@ -553,6 +554,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             txtDetailCostCentreCode.Focus();
+
             if (ValidateAllData(true, true))
             {
                 CostCentreNodeDetails ParentNodeDetails = GetCostCentreAttributes(FCurrentNode);

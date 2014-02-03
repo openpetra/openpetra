@@ -811,6 +811,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             break;
                         }
 #endif
+
                         if (TransactionExists)
                         {
                             //only need to run above code once for 1 transaction per cost centre code

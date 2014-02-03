@@ -237,6 +237,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             Boolean notnull = false;
             Decimal assets = 0;
             Decimal liabs = 0;
+
             situation.GetResults().GetChildRows(master, ref list);
 
             foreach (TResult element in list)
@@ -355,6 +356,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
         private string GetCurrency(int ledgernumber, String param_currency)
         {
             string ReturnValue = "";
+
             param_currency = param_currency.ToLower();
 
             if (param_currency == "transaction")
@@ -405,6 +407,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
         private String GetIncExpStmtType(String param_type, String param_currency)
         {
             String ReturnValue = "";
+
             param_type = param_type.ToLower();
             param_currency = param_currency.ToLower();
 
@@ -416,7 +419,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             {
                 ReturnValue = "Standard Report";
             }
-            else if (param_type =="detail")
+            else if (param_type == "detail")
             {
                 ReturnValue = "Detailed Report";
             }
@@ -625,8 +628,8 @@ namespace Ict.Petra.Server.MReporting.MFinance
         private string GetMainCostCentre(int pv_ledger_number_i)
         {
             string ReturnValue = "";
-            string strSql = "SELECT a_cost_centre_code_c FROM PUB_a_cost_centre WHERE a_ledger_number_i = " + pv_ledger_number_i
-                + " AND a_cost_centre_to_report_to_c = \"\"";
+            string strSql = "SELECT a_cost_centre_code_c FROM PUB_a_cost_centre WHERE a_ledger_number_i = " + pv_ledger_number_i +
+                            " AND a_cost_centre_to_report_to_c = \"\"";
             DataTable tab = situation.GetDatabaseConnection().SelectDT(strSql, "table", situation.GetDatabaseConnection().Transaction);
 
             if (tab.Rows.Count > 0)
@@ -647,6 +650,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             if (tab.Rows.Count > 0)
             {
                 pv_currency_select_c = pv_currency_select_c.ToLower();
+
                 if (pv_currency_select_c == "base")
                 {
                     return Convert.ToDecimal(tab.Rows[0]["a_actual_base_n"]);
@@ -685,7 +689,6 @@ namespace Ict.Petra.Server.MReporting.MFinance
             String pv_currency_select_c,
             String accountHierarchy)
         {
-
             // get all the posting accounts that report to this account in the selected account hierarchy
             string accountChildren = GetAllAccountDescendants(periodParent.realGlmSequence.ledger_number,
                 periodParent.realGlmSequence.account_code,
@@ -791,8 +794,9 @@ namespace Ict.Petra.Server.MReporting.MFinance
             if (period.realPeriod == 0)
             {
                 // start balance
-                string strSql = "SELECT a_start_balance_base_n, a_start_balance_intl_n, a_start_balance_foreign_n FROM PUB_a_general_ledger_master " +
-                         "WHERE a_glm_sequence_i = " + period.realGlmSequence.glmSequence;
+                string strSql =
+                    "SELECT a_start_balance_base_n, a_start_balance_intl_n, a_start_balance_foreign_n FROM PUB_a_general_ledger_master " +
+                    "WHERE a_glm_sequence_i = " + period.realGlmSequence.glmSequence;
                 DataTable tab = ActualsCache.GetDataTable(situation.GetDatabaseConnection(), strSql);
 
                 if (tab.Rows.Count > 0)
@@ -1042,8 +1046,8 @@ namespace Ict.Petra.Server.MReporting.MFinance
             }
 
             string strSql = "SELECT SUM(a_budget_base_n) FROM PUB_a_general_ledger_master_period WHERE a_glm_sequence_i = " +
-                     startperiod.realGlmSequence.glmSequence + " AND a_period_number_i >= " + startperiod.realPeriod +
-                     " AND a_period_number_i <= " + endperiod.realPeriod;
+                            startperiod.realGlmSequence.glmSequence + " AND a_period_number_i >= " + startperiod.realPeriod +
+                            " AND a_period_number_i <= " + endperiod.realPeriod;
             DataTable tab = situation.GetDatabaseConnection().SelectDT(strSql, "GetBudget_TempTable", situation.GetDatabaseConnection().Transaction);
 
             if (tab.Rows.Count > 0)
@@ -1137,6 +1141,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
         private string GetAllAccountDescendants(int pv_ledger_number_i, string pv_account_code_c, string pv_account_hierarchy_c)
         {
             string ReturnValue = "";
+
             parameters.Add("param_parentaccountcode", pv_account_code_c);
             TRptCalculation rptCalculation = situation.GetReportStore().GetCalculation(situation.GetCurrentReport(), "Select AllAccountDescendants");
             TRptDataCalcCalculation rptDataCalcCalculation = new TRptDataCalcCalculation(situation);

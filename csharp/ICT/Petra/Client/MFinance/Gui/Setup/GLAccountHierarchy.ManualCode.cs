@@ -546,11 +546,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void SelectNodeByName(String AccountCode)
         {
             FMainDS.AAccount.DefaultView.RowFilter = String.Format("a_account_code_c='{0}'", AccountCode);
+
             if (FMainDS.AAccount.DefaultView.Count > 0)
             {
                 AAccountRow Row = (AAccountRow)FMainDS.AAccount.DefaultView[0].Row;
                 String SearchFor = NodeLabel(Row);
                 TreeNode[] FoundNodes = trvAccounts.Nodes.Find(SearchFor, true);
+
                 if (FoundNodes.Length > 0)
                 {
                     FoundNodes[0].EnsureVisible();
@@ -589,11 +591,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 chkDetailForeignCurrencyFlag.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag);
                 cmbDetailForeignCurrencyCode.Enabled = (!ARow.SystemAccountFlag && ARow.ForeignCurrencyFlag);
+
                 if (!ARow.ForeignCurrencyFlag)
                 {
                     cmbDetailForeignCurrencyCode.SelectedIndex = -1;
                     ARow.ForeignCurrencyCode = "";
                 }
+
                 chkDetailAccountActiveFlag.Enabled = !ARow.SystemAccountFlag;
 
                 // I allow the user to attempt to change the primary key,
@@ -1051,6 +1055,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 strNewDetailAccountCode,
                                 FLedgerNumber,
                                 out VerificationResults);                                                           // This call takes ages..
+
                             if (Success)
                             {
                                 FIAmUpdating = true;

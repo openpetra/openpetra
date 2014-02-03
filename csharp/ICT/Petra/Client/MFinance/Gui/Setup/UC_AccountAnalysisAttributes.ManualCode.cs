@@ -55,9 +55,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         void RemoveUnassignedRecords()
         {
-            for (Int32 i = FMainDS.AAnalysisAttribute.Rows.Count; i>0; i--)
+            for (Int32 i = FMainDS.AAnalysisAttribute.Rows.Count; i > 0; i--)
             {
-                AAnalysisAttributeRow Row = FMainDS.AAnalysisAttribute[i-1];
+                AAnalysisAttributeRow Row = FMainDS.AAnalysisAttribute[i - 1];
+
                 if (Row.RowState != DataRowState.Deleted)
                 {
                     if (Row.AnalysisTypeCode.StartsWith("Unassigned"))
@@ -85,9 +86,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             cmbDetailAnalTypeCode.DisplayMember = "a_analysis_type_code_c";
             cmbDetailAnalTypeCode.ValueMember = "a_analysis_type_code_c";
             String Filter = "";
+
             foreach (DataRowView rv in FMainDS.AAnalysisAttribute.DefaultView)
             {
                 AAnalysisAttributeRow AttrRow = (AAnalysisAttributeRow)rv.Row;
+
                 if (AttrRow.AnalysisTypeCode == AalwaysAllow) // The currently assigned value is always allowed!
                 {
                     continue;
@@ -100,6 +103,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 Filter += "'" + AttrRow.AnalysisTypeCode + "'";
             }
+
             if (Filter != "")
             {
                 FAnalysisTypesForCombo.RowFilter = "a_analysis_type_code_c NOT IN (" + Filter + ")";
@@ -121,12 +125,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FLedgerNumber,
                     AAnalysisAttributeTable.GetAccountCodeDBName(),
                     FAccountCode);
+
 /*
-                FMainDS.AAnalysisAttribute.DefaultView.Sort =
-                    AAnalysisAttributeTable.GetLedgerNumberDBName() + ", " +
-                    AAnalysisAttributeTable.GetAnalysisTypeCodeDBName() + ", " +
-                    AAnalysisAttributeTable.GetAccountCodeDBName();
-*/
+ *              FMainDS.AAnalysisAttribute.DefaultView.Sort =
+ *                  AAnalysisAttributeTable.GetLedgerNumberDBName() + ", " +
+ *                  AAnalysisAttributeTable.GetAnalysisTypeCodeDBName() + ", " +
+ *                  AAnalysisAttributeTable.GetAccountCodeDBName();
+ */
                 pnlDetails.Enabled = false;
                 btnDelete.Enabled = (grdDetails.Rows.Count > 1);
                 UpdateRecordNumberDisplay();
@@ -138,6 +143,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FIamUpdating = true;
             LoadCmbAnalType("");
             FIamUpdating = false;
+
             if (cmbDetailAnalTypeCode.Items.Count == 0)
             {
                 MessageBox.Show(Catalog.GetString("Please create an analysis type first"), Catalog.GetString("Error"),
@@ -155,7 +161,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void ShowDetailsManual(AAnalysisAttributeRow ARow)
         {
-            if (ARow != null && !FIamUpdating)  // How can ARow ever be null!!
+            if ((ARow != null) && !FIamUpdating)  // How can ARow ever be null!!
             {
                 FIamUpdating = true;
                 LoadCmbAnalType(ARow.AnalysisTypeCode);
