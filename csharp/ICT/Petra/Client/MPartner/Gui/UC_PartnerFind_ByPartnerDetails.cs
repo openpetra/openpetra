@@ -1384,7 +1384,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // Set Partner to be the "Last Used Partner"
             TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(APartnerKey, TLastPartnerUse.lpuMailroomPartner);
-            
+
             try
             {
                 TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());

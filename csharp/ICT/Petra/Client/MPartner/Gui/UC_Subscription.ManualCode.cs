@@ -291,6 +291,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /* clear any previously supplied Date Ended */
                 this.dtpPSubscriptionDateCancelled.Enabled = false;
                 this.dtpPSubscriptionDateCancelled.Text = "";
+
                 if (!FSubscriptionDR.IsDateCancelledNull())
                 {
                     FSubscriptionDR.SetDateCancelledNull();
@@ -310,12 +311,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FSubscriptionDR.SetGiftFromKeyNull();
                 }
-                
+
                 // following check prevents save button to be wrongly enabled during initialization of tab
                 if (txtPSubscriptionGiftFromKey.Text != "0000000000")
                 {
                     txtPSubscriptionGiftFromKey.Text = "0";
                 }
+
                 this.txtPSubscriptionGiftFromKey.Enabled = false;
 
                 /* allow them to enter a reason ended */
@@ -331,12 +333,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FSubscriptionDR.SetGiftFromKeyNull();
                 }
-                
+
                 // following check prevents save button to be wrongly enabled during initialization of tab
                 if (txtPSubscriptionGiftFromKey.Text != "0000000000")
                 {
                     txtPSubscriptionGiftFromKey.Text = "0";
                 }
+
                 this.txtPSubscriptionGiftFromKey.Enabled = false;
 
                 /* clear any previously supplied Date Ended */
@@ -344,6 +347,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     FSubscriptionDR.SetDateCancelledNull();
                 }
+
                 this.dtpPSubscriptionDateCancelled.Text = "";
                 this.dtpPSubscriptionDateCancelled.Enabled = false;
 

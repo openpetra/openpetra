@@ -99,13 +99,15 @@ namespace Ict.Petra.Client.App.Core
                 {
                     case TLastPartnerUse.lpuMailroomPartner:
                         TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, (object)APartnerKey);
-                        
+
                         // if partner is person then also set this for personnel module
                         TServerLookup.TMPartner.GetPartnerShortName(APartnerKey, out PartnerName, out PartnerClass);
+
                         if (PartnerClass == TPartnerClass.PERSON)
                         {
                             TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL, (object)APartnerKey);
                         }
+
                         break;
 
                     case TLastPartnerUse.lpuPersonnelPerson:

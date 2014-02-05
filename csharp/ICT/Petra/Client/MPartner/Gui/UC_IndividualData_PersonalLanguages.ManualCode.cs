@@ -282,7 +282,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 SetPrimaryKeyReadOnly(true);
             }
         }
-        
+
         private void ValidateDataDetailsManual(PmPersonLanguageRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;

@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS = AMainDS;
 
             LoadDataOnDemand();
-            
+
             // make sure action can be taken when data is saved successfully
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
         }
@@ -262,7 +262,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 SetPrimaryKeyReadOnly(true);
             }
         }
-        
+
         private void ValidateDataDetailsManual(PmPersonEvaluationRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;

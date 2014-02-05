@@ -380,7 +380,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (AFieldTypeDotNet == null)
             {
-                if(FButtonLabelType != "PartnerKey")
+                if (FButtonLabelType != "PartnerKey")
                 {
                     return ctrl.controlName + ".Text.Length == 0";
                 }

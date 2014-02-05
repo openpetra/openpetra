@@ -316,7 +316,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 SetPrimaryKeyReadOnly(true);
             }
         }
-        
+
         private void ValidateDataDetailsManual(PmPassportDetailsRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
