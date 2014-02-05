@@ -233,7 +233,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
 
         /// <summary>
-        /// Make this account of child of the selected one in the hierarchy (from drag-drop).
+        /// Make this account a child of the selected one in the hierarchy (from drag-drop).
         /// </summary>
         /// <param name="AChild"></param>
         /// <param name="ANewParent"></param>
@@ -270,7 +270,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void RunOnceOnActivationManual()
         {
-            FPetraUtilsObject.UnhookControl(txtDetailAccountCode, true); // I don't want changes in this edit box to cause SetChangedFlag - I'll set it myself.
+            FPetraUtilsObject.UnhookControl(txtDetailAccountCode, false); // I don't want changes in this edit box to cause SetChangedFlag - I'll set it myself.
+            FPetraUtilsObject.UnhookControl(txtStatus, false); // This control is not to be spied on!
             txtDetailAccountCode.TextChanged += new EventHandler(txtDetailAccountCode_TextChanged);
             chkDetailForeignCurrencyFlag.CheckedChanged += new EventHandler(chkDetailForeignCurrencyFlag_CheckedChanged);
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnHierarchySaved);
@@ -438,7 +439,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if ((FCurrentNode != null) && (FCurrentNode != treeViewCancelEventArgs.Node))
                 {
                     AccountNodeDetails NodeDetails = (AccountNodeDetails)FCurrentNode.Tag;
-                    String CurrentReportingAccountCode = NodeDetails.DetailRow.ReportingAccountCode;
                     FSelectedAccountRow = (GLSetupTDSAAccountRow)NodeDetails.AccountRow;
                     GetDetailsFromControls(FSelectedAccountRow);
 
@@ -543,6 +543,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
+        private void SelectNodeByName(String AccountCode)
+        {
+            FMainDS.AAccount.DefaultView.RowFilter = String.Format("a_account_code_c='{0}'", AccountCode);
+
+            if (FMainDS.AAccount.DefaultView.Count > 0)
+            {
+                AAccountRow Row = (AAccountRow)FMainDS.AAccount.DefaultView[0].Row;
+                String SearchFor = NodeLabel(Row);
+                TreeNode[] FoundNodes = trvAccounts.Nodes.Find(SearchFor, true);
+
+                if (FoundNodes.Length > 0)
+                {
+                    FoundNodes[0].EnsureVisible();
+                    trvAccounts.SelectedNode = FoundNodes[0];
+                    trvAccounts.Focus();
+                }
+            }
+        }
+
         private void ValidateDataDetailsManual(GLSetupTDSAAccountRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
@@ -571,7 +590,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ucoAccountAnalysisAttributes.AccountCode = ARow.AccountCode;
 
                 chkDetailForeignCurrencyFlag.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag);
-                cmbDetailForeignCurrencyCode.Enabled = !ARow.SystemAccountFlag;
+                cmbDetailForeignCurrencyCode.Enabled = (!ARow.SystemAccountFlag && ARow.ForeignCurrencyFlag);
+
+                if (!ARow.ForeignCurrencyFlag)
+                {
+                    cmbDetailForeignCurrencyCode.SelectedIndex = -1;
+                    ARow.ForeignCurrencyCode = "";
+                }
+
                 chkDetailAccountActiveFlag.Enabled = !ARow.SystemAccountFlag;
 
                 // I allow the user to attempt to change the primary key,
@@ -931,6 +957,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         public bool ChangeAccountCodeValue()
         {
             String strNewDetailAccountCode = txtDetailAccountCode.Text;
+            String strAccountShortDescr = txtDetailEngAccountCodeShortDesc.Text;
+
             bool changeAccepted = false;
 
             if (strNewDetailAccountCode != FRecentlyUpdatedDetailAccountCode)
@@ -954,7 +982,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     }
 
                     this.Cursor = Cursors.WaitCursor;
-                    this.Refresh();
+                    this.Refresh();  // Just to get the Wait Cursor to display...
 
                     FRecentlyUpdatedDetailAccountCode = strNewDetailAccountCode;
                     AccountNodeDetails NodeDetails = (AccountNodeDetails)trvAccounts.SelectedNode.Tag;
@@ -967,8 +995,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         NodeDetails.AccountRow.EndEdit();
 
                         trvAccounts.BeginUpdate();
-                        trvAccounts.SelectedNode.Text = strNewDetailAccountCode;
-                        trvAccounts.SelectedNode.Name = strNewDetailAccountCode;
+                        trvAccounts.SelectedNode.Text = NodeLabel(strNewDetailAccountCode, strAccountShortDescr);
+                        trvAccounts.SelectedNode.Name = NodeLabel(strNewDetailAccountCode, strAccountShortDescr);
                         trvAccounts.EndUpdate();
 
                         changeAccepted = true;
@@ -1014,6 +1042,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         else
                         {
                             FStatus += Catalog.GetString("Updating Account Code change - please wait.\r\n");
+
                             txtStatus.Text = FStatus;
                             txtStatus.Refresh();
                             TVerificationResultCollection VerificationResults;
@@ -1025,7 +1054,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             bool Success = TRemote.MFinance.Setup.WebConnectors.RenameAccountCode(strOldDetailAccountCode,
                                 strNewDetailAccountCode,
                                 FLedgerNumber,
-                                out VerificationResults);                                                                       // This call takes ages..
+                                out VerificationResults);                                                           // This call takes ages..
 
                             if (Success)
                             {
@@ -1033,14 +1062,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 FMainDS.Clear();
                                 FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));      // and this also takes a while!
                                 strOldDetailAccountCode = "";
-                                FPetraUtilsObject.HasChanges = false;
+                                FPetraUtilsObject.SuppressChangeDetection = true;
                                 PopulateTreeView();
                                 ShowDetailsManual(null);
                                 FStatus = "";
                                 txtStatus.Text = FStatus;
                                 FIAmUpdating = false;
-                                FPetraUtilsObject.HasChanges = false;
-                                FPetraUtilsObject.DisableSaveButton();
+                                FPetraUtilsObject.SuppressChangeDetection = false;
+                                SelectNodeByName(FRecentlyUpdatedDetailAccountCode);
 
                                 FStatus += String.Format(Catalog.GetString("Account Code changed to '{0}'."), strNewDetailAccountCode) + "\r\n";
                                 txtStatus.Text = FStatus;

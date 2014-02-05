@@ -3,7 +3,7 @@
     FormType: report
     FormTitle: Account Detail
     WindowWidth: 650
-    WindowHeight: 600
+    WindowHeight: 630
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
         XMLFILES: [Finance\\\\accountdetail.xml,Finance\\\\accountdetailcommon.xml,Finance\\\\finance.xml,common.xml]

@@ -200,14 +200,12 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// <returns></returns>
         public TFinancialPeriod(TDataBase databaseConnection, int period, int year, TParameterList parameters, int column)
         {
-            int glmSequenceNumber;
-
             diffPeriod = 0;
             FCurrentFinancialYear = parameters.Get("param_current_financial_year_i", column).ToInt();
             FNumberAccountingPeriods = parameters.Get("param_number_of_accounting_periods_i", column).ToInt();
             FCurrentPeriod = parameters.Get("param_current_period_i", column).ToInt();
             FNumberForwardingPeriods = parameters.Get("param_number_fwd_posting_periods_i", column).ToInt();
-            glmSequenceNumber = parameters.Get("glm_sequence_i", column).ToInt();
+            Int32 glmSequenceNumber = parameters.Get("glm_sequence_i", column).ToInt();
             realGlmSequence = LedgerStatus.GlmSequencesCache.GetGlmSequence(glmSequenceNumber);
 
             if ((realGlmSequence != null) && (realGlmSequence.year != year))
@@ -273,14 +271,12 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// the given period should not be changed with diffPeriod
         public TFinancialPeriod(TDataBase databaseConnection, int realPeriod, int year, TParameterList parameters, int column, bool real)
         {
-            int glmSequenceNumber;
-
             diffPeriod = 0;
             FCurrentFinancialYear = parameters.Get("param_current_financial_year_i", column).ToInt();
             FNumberAccountingPeriods = parameters.Get("param_number_of_accounting_periods_i", column).ToInt();
             FCurrentPeriod = parameters.Get("param_current_period_i", column).ToInt();
             FNumberForwardingPeriods = parameters.Get("param_number_of_accounting_periods_i", column).ToInt();
-            glmSequenceNumber = parameters.Get("glm_sequence_i", column).ToInt();
+            Int32 glmSequenceNumber = parameters.Get("glm_sequence_i", column).ToInt();
             realGlmSequence = LedgerStatus.GlmSequencesCache.GetGlmSequence(glmSequenceNumber);
             MainConstructor(databaseConnection,
                 realPeriod,
@@ -308,9 +304,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// <returns></returns>
         public bool RealPeriodExists()
         {
-            bool ReturnValue;
-
-            ReturnValue = true;
+            bool ReturnValue = true;
 
             if ((realYear == FCurrentFinancialYear) && (realPeriod > FCurrentPeriod + FNumberForwardingPeriods))
             {
@@ -453,16 +447,12 @@ namespace Ict.Petra.Server.MReporting.MFinance
             String pv_account_code_c,
             int pv_year_i)
         {
-            int ReturnValue;
-            string strSql;
-            DataTable tab;
-
-            ReturnValue = -1;
-            strSql = "SELECT a_glm_sequence_i " + "FROM PUB_a_general_ledger_master " + "WHERE a_ledger_number_i = " +
-                     pv_ledger_number_i.ToString() + ' ' + "AND a_cost_centre_code_c = \"" + pv_cost_centre_code_c + "\" " +
-                     "AND a_account_code_c = \"" +
-                     pv_account_code_c + "\" " + "AND a_year_i = " + pv_year_i.ToString();
-            tab = databaseConnection.SelectDT(strSql, "GetGlmSequenceFromDB_TempTable", databaseConnection.Transaction);
+            int ReturnValue = -1;
+            String strSql = "SELECT a_glm_sequence_i FROM PUB_a_general_ledger_master WHERE a_ledger_number_i = " +
+                            pv_ledger_number_i + " AND a_cost_centre_code_c = \"" + pv_cost_centre_code_c +
+                            "\" AND a_account_code_c = \"" +
+                            pv_account_code_c + "\" AND a_year_i = " + pv_year_i;
+            DataTable tab = databaseConnection.SelectDT(strSql, "GetGlmSequenceFromDB_TempTable", databaseConnection.Transaction);
 
             if (tab.Rows.Count == 1)
             {
@@ -502,8 +492,9 @@ namespace Ict.Petra.Server.MReporting.MFinance
             param.Value = pv_account_code_c;
             parameters.Add(param);
             postingAccount = false;
-            strSql = "SELECT a_account_type_c, a_posting_status_l, a_debit_credit_indicator_l " + "FROM PUB_a_account " +
-                     "WHERE a_ledger_number_i = " + pv_ledger_number_i.ToString() + ' ' + "AND a_account_code_c = ?";
+            strSql = "SELECT a_account_type_c, a_posting_status_l, a_debit_credit_indicator_l FROM PUB_a_account" +
+                     " WHERE a_ledger_number_i = " + pv_ledger_number_i.ToString() +
+                     " AND a_account_code_c = ?";
             tab =
                 databaseConnection.SelectDT(strSql, "AccountType", databaseConnection.Transaction,
                     parameters.ToArray());
@@ -595,7 +586,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// <param name="databaseConnection"></param>
         /// <param name="glmSequence">The known sequence number of a general_ledger_master year</param>
         /// <param name="year">The year of the required sequence</param>
-        /// <returns>the glm sequence System.Object of the a_general_ledger_master row of the another year; nil if there is no available a_general_ledger_master row
+        /// <returns>the glm sequence System.Object of the a_general_ledger_master row of the another year; null if there is no available a_general_ledger_master row
         /// </returns>
         ///
         public TGlmSequence GetOtherYearGlmSequence(TDataBase databaseConnection, TGlmSequence glmSequence, int year)
@@ -633,7 +624,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
                     // for the summary accounts from alternative account hierarchies,
                     // which don't have glm records.
                     sequenceNumber = NextNegativeSequence;
-                    NextNegativeSequence = NextNegativeSequence - 1;
+                    NextNegativeSequence--;
                 }
 
                 TGlmSequence glmSequenceElement = new TGlmSequence(glmSequence, sequenceNumber, year);
@@ -652,20 +643,15 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// </returns>
         public TGlmSequence GetGlmSequence(int sequenceNumber)
         {
-            TGlmSequence ReturnValue;
-
-            ReturnValue = null;
-
             foreach (TGlmSequence glmSequenceElement in glmSequences)
             {
                 if (glmSequenceElement.glmSequence == sequenceNumber)
                 {
-                    ReturnValue = glmSequenceElement;
-                    break;
+                    return glmSequenceElement;
                 }
             }
 
-            return ReturnValue;
+            return null;
         }
     }
 }

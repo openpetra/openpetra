@@ -23,6 +23,7 @@
 //
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Xml;
 
@@ -115,20 +116,24 @@ public class main
     /// Tells whether the Server is still running.
     /// </summary>
     /// <returns></returns>
+    [SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals",
+         Justification =
+             "We use the following server call ONLY for an 'side effect' but since we are inquiring a Property its value must be assigned to a variable. [christiank]",
+         MessageId = "Tmp")]
     public static bool ServerStillRunning()
     {
         bool ReturnValue = true;
 
         try
         {
-            int Tmp = TRemote.ClientsConnected;
-
-            // CurrentlyConnectedClients := TRemote.ClientsConnected;
+            // We use the following server call ONLY for an 'side effect' - namely when it throws an Exception!
+            int Tmp = TRemote.ClientsConnected;  // Causes: CA1804:RemoveUnusedLocals (but is suppressed for that reason with the SuppressMessage Attribute!)
         }
         catch (Exception exp)
         {
             System.Console.WriteLine("{0}: Exception: {1}", DateTime.Now.ToLongTimeString(), exp.Message);
             System.Console.WriteLine("{0}: Stopping the test", DateTime.Now.ToLongTimeString());
+
             ReturnValue = false;
         }
 

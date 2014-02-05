@@ -143,7 +143,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalculator.AddParameter("param_end_period_i", 0);
 
             ACalculator.AddParameter("param_account_hierarchy_c", this.cmbAccountHierarchy.GetSelectedString());
-            ACalculator.AddParameter("param_currency", this.cmbCurrency.GetSelectedString());
+
+            String CurrencySelection = this.cmbCurrency.GetSelectedString();
+            ACalculator.AddParameter("param_currency", CurrencySelection);
+
+            String CurrencyName = (CurrencySelection == "Base") ? FLedgerRow.BaseCurrency : FLedgerRow.IntlCurrency;
+            ACalculator.AddParameter("param_currency_name", CurrencyName);
 
             ACalculator.AddParameter("param_period", rbtPeriod.Checked);
             ACalculator.AddParameter("param_date_checked", rbtDate.Checked);
@@ -151,6 +156,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             if (rbtQuarter.Checked)
             {
                 Year = cmbQuarterYear.GetSelectedInt32();
+                ACalculator.AddParameter("param_real_year", cmbQuarterYear.GetSelectedString(1));
 
                 int Quarter = (Int32)StringHelper.TryStrToInt(txtQuarter.Text, 1);
                 ACalculator.AddParameter("param_quarter", (System.Object)(Quarter));
@@ -169,6 +175,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             else if (rbtPeriod.Checked)
             {
                 Year = cmbPeriodYear.GetSelectedInt32();
+                ACalculator.AddParameter("param_real_year", cmbPeriodYear.GetSelectedString(1));
 
                 int StartPeriod = (Int32)StringHelper.TryStrToInt(txtStartPeriod.Text, 1);
                 int EndPeriod = (Int32)StringHelper.TryStrToInt(txtEndPeriod.Text, 1);

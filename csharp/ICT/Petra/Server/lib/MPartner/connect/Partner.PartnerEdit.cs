@@ -2274,7 +2274,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             PartnerEditTDSFamilyMembersTable FamilyMembersTableSubmit;
 
             AVerificationResult = null;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
 //          TLogging.LogAtLevel(7, "TPartnerEditUIConnector.SubmitChanges: Instance hash is " + this.GetHashCode().ToString());
             bool AllSubmissionsOK = true;
@@ -2291,8 +2290,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     if (AInspectDS.PPartner.Rows.Count > 0)
                     {
-                        ValidatePPartner(ValidationControlsDict, ref AVerificationResult, AInspectDS.PPartner);
-                        ValidatePPartnerManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.PPartner);
+                        ValidatePPartner(ref AVerificationResult, AInspectDS.PPartner);
+                        ValidatePPartnerManual(ref AVerificationResult, AInspectDS.PPartner);
 
                         if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                         {
@@ -2358,8 +2357,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     {
                         if (AInspectDS.PBank.Rows.Count > 0)
                         {
-                            ValidatePBank(ValidationControlsDict, ref AVerificationResult, AInspectDS.PBank);
-                            ValidatePBankManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.PBank);
+                            ValidatePBank(ref AVerificationResult, AInspectDS.PBank);
+                            ValidatePBankManual(ref AVerificationResult, AInspectDS.PBank);
 
                             if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                             {
@@ -2981,14 +2980,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
         #region Data Validation
 
-        static partial void ValidatePPartner(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        static partial void ValidatePPartnerManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        static partial void ValidatePBank(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        static partial void ValidatePBankManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidatePPartner(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidatePPartnerManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidatePBank(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidatePBankManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
         #endregion Data Validation
     }

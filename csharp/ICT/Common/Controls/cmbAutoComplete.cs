@@ -1200,7 +1200,7 @@ namespace Ict.Common.Controls
         /// <param name="ColumnNumber">The column number of the data source; if -1, then the value column is used</param>
         /// <returns>empty string if nothing is selected
         /// </returns>
-        public string GetSelectedString(int ColumnNumber)
+        public string GetSelectedString(int ColumnNumber = -1)
         {
             string ReturnValue = "";
 
@@ -1231,15 +1231,6 @@ namespace Ict.Common.Controls
             }
 
             return ReturnValue;
-        }
-
-        /// <summary>
-        /// get selected value as a string, from the default column
-        /// </summary>
-        /// <returns>get selected string value</returns>
-        public string GetSelectedString()
-        {
-            return GetSelectedString(-1);
         }
 
         /// <summary>

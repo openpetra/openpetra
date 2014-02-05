@@ -159,7 +159,7 @@ namespace Ict.Common.Controls
                 {
                     if (FTxtNumeric.FNullValueAllowed)
                     {
-                        ((TextBox)FTxtNumeric).Text = String.Empty;
+                        FTxtNumeric.NumberValueDecimal = null;
                         return;
                     }
                     else

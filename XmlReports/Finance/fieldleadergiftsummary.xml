@@ -55,7 +55,6 @@
         <value text="Currency: "/>
         <value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
       </field>
-
     </pageheader>
 
     <calculations>
@@ -373,7 +372,7 @@
         </detail>
       </level>
 
-      <level name="FieldLevel">
+      <level name="FieldLevel" condition="HasChildRows">
         <header>
           <field whichfield="header 1" pos="0cm" width="8cm">
             <value text="Field: "/>
@@ -389,7 +388,7 @@
         </footer>
       </level>
 
-      <level name="YearLevel">
+      <level name="YearLevel" condition="HasChildRows">
         <detail>
           <lowerLevelReport level="PartnerLevel3" condition="eq({param_txtYears}, 4)"></lowerLevelReport>
           <lowerLevelReport level="PartnerLevel2" condition="eq({param_txtYears}, 3)"></lowerLevelReport>
@@ -400,7 +399,7 @@
         </footer>
       </level>
 
-      <level name="PartnerLevel3">
+      <level name="PartnerLevel3" condition="HasChildRows">
         <detail>
           <lowerLevelReport level="PartnerLevel2"></lowerLevelReport>
         </detail>
@@ -418,7 +417,7 @@
         </footer>
       </level>
 
-      <level name="PartnerLevel2">
+      <level name="PartnerLevel2" condition="HasChildRows">
         <detail>
           <lowerLevelReport level="PartnerLevel1"></lowerLevelReport>
         </detail>
@@ -436,7 +435,7 @@
         </footer>
       </level>
 
-      <level name="PartnerLevel1">
+      <level name="PartnerLevel1" condition="HasChildRows">
         <detail>
           <lowerLevelReport level="PartnerLevel0"></lowerLevelReport>
         </detail>
@@ -454,7 +453,7 @@
         </footer>
       </level>
 
-      <level name="PartnerLevel0">
+      <level name="PartnerLevel0" condition="HasChildRows">
         <detail>
           <lowerLevelReport level="PartnerLevel"></lowerLevelReport>
         </detail>
@@ -472,9 +471,7 @@
         </footer>
       </level>
 
-      <level name="PartnerLevel">
-        <header>
-        </header>
+      <level name="PartnerLevel" condition="HasChildRows">
         <detail>
           <lowerLevelReport level="GiftLevel" calculation="SelectPartnerGift"></lowerLevelReport>
         </detail>

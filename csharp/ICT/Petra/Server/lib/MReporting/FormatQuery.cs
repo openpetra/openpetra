@@ -215,7 +215,7 @@ namespace Ict.Petra.Server.MReporting
                         }
                         else if (CountWarning % 20 == 0)
                         {
-                            TLogging.Log("20 times: Variable " + parameter + " could not be found.");
+                            TLogging.Log("20 times: Variable " + parameter + " empty or not found.");
                         }
                     }
                 }
