@@ -6054,8 +6054,7 @@
                 descr=""
                 format="9999999999"
                 label="Gift Given By"
-                help="Who gave this subscription as a gift"
-                initial="0"/>
+                help="Who gave this subscription as a gift"/>
     <!-- Constraints on table p_subscription -->
     <primarykey name="p_subscription_pk"
                 descr=""

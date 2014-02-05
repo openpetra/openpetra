@@ -291,7 +291,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /* clear any previously supplied Date Ended */
                 this.dtpPSubscriptionDateCancelled.Enabled = false;
                 this.dtpPSubscriptionDateCancelled.Text = "";
-                FSubscriptionDR.SetDateCancelledNull();
+                if (!FSubscriptionDR.IsDateCancelledNull())
+                {
+                    FSubscriptionDR.SetDateCancelledNull();
+                }
             }
             else if ((this.cmbPSubscriptionSubscriptionStatus.GetSelectedString() == MPartnerConstants.SUBSCRIPTIONS_STATUS_CANCELLED)
                      || (this.cmbPSubscriptionSubscriptionStatus.GetSelectedString() == MPartnerConstants.SUBSCRIPTIONS_STATUS_EXPIRED))
@@ -303,8 +306,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FSubscriptionDR.DateCancelled = DateTime.Now.Date;
 
                 /* clear any previously supplied partner key */
-                FSubscriptionDR.GiftFromKey = 0;
-                txtPSubscriptionGiftFromKey.Text = "0";
+                if (!FSubscriptionDR.IsGiftFromKeyNull())
+                {
+                    FSubscriptionDR.SetGiftFromKeyNull();
+                }
+                
+                // following check prevents save button to be wrongly enabled during initialization of tab
+                if (txtPSubscriptionGiftFromKey.Text != "0000000000")
+                {
+                    txtPSubscriptionGiftFromKey.Text = "0";
+                }
                 this.txtPSubscriptionGiftFromKey.Enabled = false;
 
                 /* allow them to enter a reason ended */
@@ -316,12 +327,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 /* All other Cases */
                 /* clear any previously supplied partner key */
-                FSubscriptionDR.GiftFromKey = 0;
-                txtPSubscriptionGiftFromKey.Text = "0";
+                if (!FSubscriptionDR.IsGiftFromKeyNull())
+                {
+                    FSubscriptionDR.SetGiftFromKeyNull();
+                }
+                
+                // following check prevents save button to be wrongly enabled during initialization of tab
+                if (txtPSubscriptionGiftFromKey.Text != "0000000000")
+                {
+                    txtPSubscriptionGiftFromKey.Text = "0";
+                }
                 this.txtPSubscriptionGiftFromKey.Enabled = false;
 
                 /* clear any previously supplied Date Ended */
-                FSubscriptionDR.SetDateCancelledNull();
+                if (!FSubscriptionDR.IsDateCancelledNull())
+                {
+                    FSubscriptionDR.SetDateCancelledNull();
+                }
                 this.dtpPSubscriptionDateCancelled.Text = "";
                 this.dtpPSubscriptionDateCancelled.Enabled = false;
 
