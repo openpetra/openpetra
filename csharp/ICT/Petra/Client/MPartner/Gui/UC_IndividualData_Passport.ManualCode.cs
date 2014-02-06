@@ -92,6 +92,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.AddDateColumn("Issue Date", FMainDS.PmPassportDetails.ColumnDateOfIssue);
 
             //FPassportTypeDT = (PtPassportTypeTable)TDataCache.TMPersonnel.GetCacheablePersonnelTable(TCacheablePersonTablesEnum.PassportTypeList);
+
+            // make sure action can be taken when data is saved successfully
+            FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
         }
 
         /// <summary>
@@ -303,6 +306,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             Scd.Dispose();
+        }
+
+        private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
+        {
+            if (!FPetraUtilsObject.HasChanges)
+            {
+                // only set to read only if saving of data was successful
+                SetPrimaryKeyReadOnly(true);
+            }
         }
 
         private void ValidateDataDetailsManual(PmPassportDetailsRow ARow)

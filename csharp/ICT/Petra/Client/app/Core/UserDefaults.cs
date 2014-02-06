@@ -88,40 +88,43 @@ namespace Ict.Petra.Client.App.Core
             /// <returns>void</returns>
             public static void SetLastPartnerWorkedWith(Int64 APartnerKey, TLastPartnerUse ALastPartnerUse)
             {
-                String LastPartnerDefaultCode;
+                String PartnerName;
+                TPartnerClass PartnerClass;
 
                 /*
                  * Store the fact that this Partner is the 'Last Partner' that was worked with
                  */
 
-                // set the given partner key as the last used partner for the given module
-                LastPartnerDefaultCode = "";
-
                 switch (ALastPartnerUse)
                 {
                     case TLastPartnerUse.lpuMailroomPartner:
-                        LastPartnerDefaultCode = TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM;
+                        TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, (object)APartnerKey);
+
+                        // if partner is person then also set this for personnel module
+                        TServerLookup.TMPartner.GetPartnerShortName(APartnerKey, out PartnerName, out PartnerClass);
+
+                        if (PartnerClass == TPartnerClass.PERSON)
+                        {
+                            TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL, (object)APartnerKey);
+                        }
+
                         break;
 
                     case TLastPartnerUse.lpuPersonnelPerson:
-                        LastPartnerDefaultCode = TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL;
+                        TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL, (object)APartnerKey);
                         break;
 
                     case TLastPartnerUse.lpuPersonnelUnit:
-                        LastPartnerDefaultCode = TUserDefaults.USERDEFAULT_LASTUNITPERSONNEL;
+                        TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTUNITPERSONNEL, (object)APartnerKey);
                         break;
 
                     case TLastPartnerUse.lpuConferencePerson:
-                        LastPartnerDefaultCode = TUserDefaults.USERDEFAULT_LASTPERSONCONFERENCE;
+                        TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPERSONCONFERENCE, (object)APartnerKey);
+
+                        // if partner is person then also set this for personnel module
+                        TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL, (object)APartnerKey);
                         break;
                 }
-
-                TUserDefaults.SetDefault(LastPartnerDefaultCode, (object)APartnerKey);
-
-                // This needs to be saved instantaneously because Progress 4GL will read it
-                // (eg. when when 'Partner' > 'Work with Last Partner' is chosen in Partner
-                // Module main screen [mailroom.w])!
-                TUserDefaults.SaveChangedUserDefault(LastPartnerDefaultCode);
             }
 
             #endregion
