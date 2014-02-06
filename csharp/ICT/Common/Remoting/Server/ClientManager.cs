@@ -745,7 +745,6 @@ namespace Ict.Common.Remoting.Server
             return QueueClientTask(AUserID, ATaskGroup, ATaskCode, ATaskPriority);
         }
 
-
         /// <summary>
         /// overload
         /// </summary>

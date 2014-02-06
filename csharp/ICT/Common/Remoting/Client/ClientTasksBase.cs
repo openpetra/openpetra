@@ -55,9 +55,9 @@ namespace Ict.Common.Remoting.Client
         /// </summary>
         /// <param name="AClientID"></param>
         /// <param name="AClientTasksDataTable"></param>
-        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
-            Justification="AClientID is used only for debugging and otherwise its use is commented",
-            MessageId="AClientID")] 
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+             Justification = "AClientID is used only for debugging and otherwise its use is commented",
+             MessageId = "AClientID")]
         public TClientTasksQueue(Int32 AClientID, DataTable AClientTasksDataTable)
         {
             // only needed for debugging

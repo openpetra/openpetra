@@ -163,12 +163,12 @@ namespace Ict.Common
             /// <param name="culture"></param>
             /// <param name="value"></param>
             /// <returns></returns>
-            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
-                Justification="Context is not used (and not relevant) in TTimeConverterInternal.ConvertFrom.",
-                MessageId="context")]
-            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
-                Justification="Culture is not used (and not relevant) in TTimeConverterInternal.ConvertFrom.",
-                MessageId="culture")] 
+            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+                 Justification = "Context is not used (and not relevant) in TTimeConverterInternal.ConvertFrom.",
+                 MessageId = "context")]
+            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+                 Justification = "Culture is not used (and not relevant) in TTimeConverterInternal.ConvertFrom.",
+                 MessageId = "culture")]
             public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
             {
                 return TTimeConverterInternal.ConvertFrom(value, false);
@@ -182,12 +182,12 @@ namespace Ict.Common
             /// <param name="value"></param>
             /// <param name="destinationType"></param>
             /// <returns></returns>
-            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
-                Justification="Context is not used (and not relevant) in TTimeConverterInternal.ConvertTo.",
-                MessageId="context")]
-            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
-                Justification="Culture is not used (and not relevant) in TTimeConverterInternal.ConvertTo.",
-                MessageId="culture")] 
+            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+                 Justification = "Context is not used (and not relevant) in TTimeConverterInternal.ConvertTo.",
+                 MessageId = "context")]
+            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+                 Justification = "Culture is not used (and not relevant) in TTimeConverterInternal.ConvertTo.",
+                 MessageId = "culture")]
             public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
             {
                 return TTimeConverterInternal.ConvertTo(value, destinationType, false);
@@ -236,12 +236,12 @@ namespace Ict.Common
             /// <param name="culture"></param>
             /// <param name="value"></param>
             /// <returns></returns>
-            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
-                Justification="Context is not used (and not relevant) in TTimeConverterInternal.ConvertFrom.",
-                MessageId="context")]
-            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
-                Justification="Culture is not used (and not relevant) in TTimeConverterInternal.ConvertFrom.",
-                MessageId="culture")]
+            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+                 Justification = "Context is not used (and not relevant) in TTimeConverterInternal.ConvertFrom.",
+                 MessageId = "context")]
+            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+                 Justification = "Culture is not used (and not relevant) in TTimeConverterInternal.ConvertFrom.",
+                 MessageId = "culture")]
             public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
             {
                 return TTimeConverterInternal.ConvertFrom(value, true);
@@ -255,12 +255,12 @@ namespace Ict.Common
             /// <param name="value"></param>
             /// <param name="destinationType"></param>
             /// <returns></returns>
-            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
-                Justification="Context is not used (and not relevant) in TTimeConverterInternal.ConvertTo.",
-                MessageId="context")]
-            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
-                Justification="Culture is not used (and not relevant) in TTimeConverterInternal.ConvertTo.",
-                MessageId="culture")]
+            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+                 Justification = "Context is not used (and not relevant) in TTimeConverterInternal.ConvertTo.",
+                 MessageId = "context")]
+            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+                 Justification = "Culture is not used (and not relevant) in TTimeConverterInternal.ConvertTo.",
+                 MessageId = "culture")]
             public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
             {
                 return TTimeConverterInternal.ConvertTo(value, destinationType, true);

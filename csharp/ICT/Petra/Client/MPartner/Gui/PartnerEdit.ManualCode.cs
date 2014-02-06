@@ -1714,7 +1714,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void UcoUpperPart_CollapsingEvent(System.Object sender, CollapsibleEventArgs args)
         {
-#if TODO            
+#if TODO
             if (args.WillCollapse)
             {
                 // is getting collapsed
@@ -1732,7 +1732,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 ucoUpperPart.Caption = "";
                 ucoUpperPart.SubCaption = "";
             }
-#endif            
+#endif
         }
 
         private void UcoPartnerTabSet_EnableDisableOtherScreenParts(System.Object sender, TEnableDisableEventArgs e)

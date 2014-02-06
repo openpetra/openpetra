@@ -85,9 +85,9 @@ namespace Ict.Common.Remoting.Sinks.Encryption
         /// <summary>
         /// Requests message processing from the current sink.
         /// </summary>
-        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
-            Justification="requestMsg is not used in our implementation",
-            MessageId="requestMsg")]  
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+             Justification = "requestMsg is not used in our implementation",
+             MessageId = "requestMsg")]
         public ServerProcessing ProcessMessage(IServerChannelSinkStack sinkStack,
             IMessage requestMsg, ITransportHeaders requestHeaders, Stream requestStream,
             out IMessage responseMsg, out ITransportHeaders responseHeaders,

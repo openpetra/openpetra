@@ -54,10 +54,10 @@ namespace Ict.Common
     ///     }
     ///  }
     ///</example>
-    [SuppressMessage("Gendarme.Rules.Design", "ListsAreStronglyTypedRule", 
-        Justification="Gendarme identifies this Type as a Generic, which is wrong, hence we want to surpress the Gendarme Warning.")]    
-    [SuppressMessage("Gendarme.Rules.Design", "StronglyTypeICollectionMembersRule", 
-        Justification="Gendarme identifies this Type as a Generic, which is wrong, hence we want to surpress the Gendarme Warning.")]    
+    [SuppressMessage("Gendarme.Rules.Design", "ListsAreStronglyTypedRule",
+         Justification = "Gendarme identifies this Type as a Generic, which is wrong, hence we want to surpress the Gendarme Warning.")]
+    [SuppressMessage("Gendarme.Rules.Design", "StronglyTypeICollectionMembersRule",
+         Justification = "Gendarme identifies this Type as a Generic, which is wrong, hence we want to surpress the Gendarme Warning.")]
     public class TSelfExpandingArrayList : System.Collections.ArrayList
     {
         /// <summary>

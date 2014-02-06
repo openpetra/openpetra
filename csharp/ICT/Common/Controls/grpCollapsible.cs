@@ -56,7 +56,7 @@ namespace Ict.Common.Controls
             }
         }
 
-#if TODO        
+#if TODO
         /// the sub caption can be highlighted
         public string SubCaption
         {
@@ -121,7 +121,7 @@ namespace Ict.Common.Controls
     /// </summary>
     public class CollapsibleEventArgs : EventArgs
     {
-#if TODO        
+#if TODO
         /// <summary>
         /// cancel the collapsing
         /// </summary>
@@ -131,7 +131,7 @@ namespace Ict.Common.Controls
             {
                 // TODO
                 return true;
-            }            
+            }
             set
             {
                 // TODO
@@ -149,6 +149,6 @@ namespace Ict.Common.Controls
                 return false;
             }
         }
-#endif        
-    }    
+#endif
+    }
 }

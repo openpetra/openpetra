@@ -47,28 +47,28 @@ namespace Ict.Common.Remoting.Server
 
         #endregion
 
-        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedPrivateFieldsRule", 
-            Justification="Gendarme identifies this Field as unused, which is wrong, hence we want to surpress the Gendarme Warning.")]
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedPrivateFieldsRule",
+             Justification = "Gendarme identifies this Field as unused, which is wrong, hence we want to surpress the Gendarme Warning.")]
         private static TDelegateTearDownAppDomain UTearDownAppDomain;
 
         [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedPrivateFieldsRule",
-            Justification="Gendarme identifies this Field as unused, which is wrong, hence we want to surpress the Gendarme Warning.")]
+             Justification = "Gendarme identifies this Field as unused, which is wrong, hence we want to surpress the Gendarme Warning.")]
         private static String UTearDownAppDomainToken;
 
-        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedPrivateFieldsRule", 
-            Justification="Gendarme identifies this Field as unused, which is wrong, hence we want to surpress the Gendarme Warning.")]
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedPrivateFieldsRule",
+             Justification = "Gendarme identifies this Field as unused, which is wrong, hence we want to surpress the Gendarme Warning.")]
         private static Thread UClientStillAliveCheckThread;
 
-        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedPrivateFieldsRule", 
-            Justification="Gendarme identifies this Field as unused, which is wrong, hence we want to surpress the Gendarme Warning.")]
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedPrivateFieldsRule",
+             Justification = "Gendarme identifies this Field as unused, which is wrong, hence we want to surpress the Gendarme Warning.")]
         private static Boolean UKeepServerAliveCheck;
 
-        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedPrivateFieldsRule", 
-            Justification="Gendarme identifies this Field as unused, which is wrong, hence we want to surpress the Gendarme Warning.")]
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedPrivateFieldsRule",
+             Justification = "Gendarme identifies this Field as unused, which is wrong, hence we want to surpress the Gendarme Warning.")]
         private static Int32 UClientStillAliveTimeout;
 
-        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedPrivateFieldsRule", 
-            Justification="Gendarme identifies this Field as unused, which is wrong, hence we want to surpress the Gendarme Warning.")]
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedPrivateFieldsRule",
+             Justification = "Gendarme identifies this Field as unused, which is wrong, hence we want to surpress the Gendarme Warning.")]
         private static Int32 UClientStillAliveCheckInterval;
 
 

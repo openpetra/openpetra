@@ -1528,9 +1528,9 @@ namespace Ict.Common
         /// <summary>
         /// serialize TVariant as a string. This helps to avoid problems with .net Remoting and DateTime
         /// </summary>
-        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
-            Justification="The StreamingContext (ctx) is not needed in this Constructor overload for Serialization.",
-            MessageId="ctx")]        
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+             Justification = "The StreamingContext (ctx) is not needed in this Constructor overload for Serialization.",
+             MessageId = "ctx")]
         protected TVariant(SerializationInfo info, StreamingContext ctx)
         {
             this.Assign(DecodeFromString(info.GetString("encoded")));
