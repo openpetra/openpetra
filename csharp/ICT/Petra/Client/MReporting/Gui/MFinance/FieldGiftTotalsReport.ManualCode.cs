@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 clbFields.AddCheckBoxColumn("", FFieldTable.Columns[CheckedMember], 17, false);
                 clbFields.AddTextColumn(Catalog.GetString("Field Key"), FFieldTable.Columns[ValueMember], 80);
                 clbFields.AddTextColumn(Catalog.GetString("Field Name"), FFieldTable.Columns[DisplayMember], 200);
-                clbFields.DataBindGrid(FFieldTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+                clbFields.DataBindGrid(FFieldTable, ValueMember, CheckedMember, ValueMember, false, true, false);
             }
         }
 

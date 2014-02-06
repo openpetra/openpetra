@@ -100,7 +100,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             clbAddress.AddTextColumn("Location Type", FDataTable.Columns[LocationType]);
             clbAddress.ValueChanged += new EventHandler(OnCheckboxChange);
 
-            clbAddress.DataBindGrid(FDataTable, Address1, CheckedMember, Address1, LocationType, false, true, false);
+            clbAddress.DataBindGrid(FDataTable, Address1, CheckedMember, Address1, false, true, false);
             clbAddress.SetCheckedStringList("");
         }
 

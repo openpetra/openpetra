@@ -41,7 +41,7 @@ namespace Ict.Common.Remoting.Server
         /// <summary>
         /// create a object that can be remoted to a client
         /// </summary>
-        public static object CreateRemotableObject(Type AInterfaceToImplement, Type ARemotableObject, ICrossDomainService ObjectToRemote)
+        public static object CreateRemotableObject(Type ARemotableObject, ICrossDomainService ObjectToRemote)
         {
             // need to calculate the URI for this object and pass it to the new namespace object
             string ObjectURI = TConfigurableMBRObject.BuildRandomURI(ObjectToRemote.GetType().ToString());

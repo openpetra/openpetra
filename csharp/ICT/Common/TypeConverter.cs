@@ -23,6 +23,7 @@
 //
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace Ict.Common
@@ -162,9 +163,15 @@ namespace Ict.Common
             /// <param name="culture"></param>
             /// <param name="value"></param>
             /// <returns></returns>
+            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
+                Justification="Context is not used (and not relevant) in TTimeConverterInternal.ConvertFrom.",
+                MessageId="context")]
+            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
+                Justification="Culture is not used (and not relevant) in TTimeConverterInternal.ConvertFrom.",
+                MessageId="culture")] 
             public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
             {
-                return TTimeConverterInternal.ConvertFrom(context, culture, value, false);
+                return TTimeConverterInternal.ConvertFrom(value, false);
             }
 
             /// <summary>
@@ -175,9 +182,15 @@ namespace Ict.Common
             /// <param name="value"></param>
             /// <param name="destinationType"></param>
             /// <returns></returns>
+            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
+                Justification="Context is not used (and not relevant) in TTimeConverterInternal.ConvertTo.",
+                MessageId="context")]
+            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
+                Justification="Culture is not used (and not relevant) in TTimeConverterInternal.ConvertTo.",
+                MessageId="culture")] 
             public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
             {
-                return TTimeConverterInternal.ConvertTo(context, culture, value, destinationType, false);
+                return TTimeConverterInternal.ConvertTo(value, destinationType, false);
             }
 
             /// <summary>
@@ -223,9 +236,15 @@ namespace Ict.Common
             /// <param name="culture"></param>
             /// <param name="value"></param>
             /// <returns></returns>
+            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
+                Justification="Context is not used (and not relevant) in TTimeConverterInternal.ConvertFrom.",
+                MessageId="context")]
+            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
+                Justification="Culture is not used (and not relevant) in TTimeConverterInternal.ConvertFrom.",
+                MessageId="culture")]
             public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
             {
-                return TTimeConverterInternal.ConvertFrom(context, culture, value, true);
+                return TTimeConverterInternal.ConvertFrom(value, true);
             }
 
             /// <summary>
@@ -236,9 +255,15 @@ namespace Ict.Common
             /// <param name="value"></param>
             /// <param name="destinationType"></param>
             /// <returns></returns>
+            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
+                Justification="Context is not used (and not relevant) in TTimeConverterInternal.ConvertTo.",
+                MessageId="context")]
+            [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
+                Justification="Culture is not used (and not relevant) in TTimeConverterInternal.ConvertTo.",
+                MessageId="culture")]
             public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
             {
-                return TTimeConverterInternal.ConvertTo(context, culture, value, destinationType, true);
+                return TTimeConverterInternal.ConvertTo(value, destinationType, true);
             }
 
             /// <summary>
@@ -277,12 +302,10 @@ namespace Ict.Common
             /// This private static method is shared by Short and Long time string converters
             /// It converts a given value for time to our string type (short or long)
             /// </summary>
-            /// <param name="context"></param>
-            /// <param name="culture"></param>
             /// <param name="value"></param>
             /// <param name="bAsLongTimeString">If true, the result is a long time string, otherwise a short one</param>
             /// <returns></returns>
-            public static object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value, bool bAsLongTimeString)
+            public static object ConvertFrom(object value, bool bAsLongTimeString)
             {
                 DateTime dt = new DateTime();
 
@@ -325,17 +348,11 @@ namespace Ict.Common
             /// This private static method is shared by Short and Long time string converters
             /// It converts a given value for time to the destination type
             /// </summary>
-            /// <param name="context"></param>
-            /// <param name="culture"></param>
             /// <param name="value"></param>
             /// <param name="destinationType"></param>
             /// <param name="bAsLongTimeString"></param>
             /// <returns></returns>
-            public static object ConvertTo(ITypeDescriptorContext context,
-                CultureInfo culture,
-                object value,
-                Type destinationType,
-                bool bAsLongTimeString)
+            public static object ConvertTo(object value, Type destinationType, bool bAsLongTimeString)
             {
                 if (value == null)
                 {

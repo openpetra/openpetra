@@ -239,7 +239,7 @@ namespace Ict.Petra.Client.MReporting.Logic
                 }
             }
 
-            AddChart(chartSheetName, title, GetRange(1, 1, 13, rowCounter - 1), XlChartType.xlLine, false, false, false);
+            AddChart(chartSheetName, title, GetRange(1, 1, 13, rowCounter - 1), XlChartType.xlLine);
         }
 
         /// <summary>
@@ -302,7 +302,7 @@ namespace Ict.Petra.Client.MReporting.Logic
                 }
             }
 
-            AddChart(chartSheetName, title, GetRange(1, 1, 13, rowCounter - 1), XlChartType.xlLine, false, false, false);
+            AddChart(chartSheetName, title, GetRange(1, 1, 13, rowCounter - 1), XlChartType.xlLine);
         }
 
         /// <summary>

@@ -50,14 +50,6 @@ namespace Ict.Common.Remoting.Sinks.Encryption
             Init();
         }
 
-        /// <summary>
-        /// constructor
-        /// </summary>
-        public EncryptionServerSinkProvider(IDictionary properties, ICollection providerData)
-        {
-            Init();
-        }
-
         private void Init()
         {
             string KeyFile = TAppSettingsManager.GetValue("Server.ChannelEncryption.PrivateKeyfile");

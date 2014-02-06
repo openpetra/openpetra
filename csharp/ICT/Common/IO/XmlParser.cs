@@ -275,9 +275,8 @@ namespace Ict.Common.IO
         /// this would never work for validating xml; therefore all Elements are called XmlElement, with attribute name
         /// </summary>
         /// <param name="ADoc"></param>
-        /// <param name="AMoveElementNamesToAttribute"></param>
         /// <returns></returns>
-        public static string XmlToString(XmlDocument ADoc, bool AMoveElementNamesToAttribute)
+        public static string XmlToString2(XmlDocument ADoc)
         {
             XmlDocument tempDoc = TYml2Xml.CreateXmlDocument();
 

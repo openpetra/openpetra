@@ -234,7 +234,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             else
             {
                 grdInvoiceResult.Columns.Clear();
-                grdInvoiceResult.AddCheckBoxColumn("", FInvoiceTable.Columns["Selected"], 20, false);
+                grdInvoiceResult.AddCheckBoxColumn("", FInvoiceTable.Columns["Selected"], 17, false);
                 grdInvoiceResult.AddTextColumn("AP#", FInvoiceTable.Columns["ApNumber"], 55);
                 grdInvoiceResult.AddTextColumn("Inv#", FInvoiceTable.Columns["DocumentCode"], 90);
                 grdInvoiceResult.AddTextColumn("Supplier", FInvoiceTable.Columns["PartnerShortName"], 150);

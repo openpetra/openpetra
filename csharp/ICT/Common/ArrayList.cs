@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Collections;
 
 namespace Ict.Common
@@ -53,6 +54,10 @@ namespace Ict.Common
     ///     }
     ///  }
     ///</example>
+    [SuppressMessage("Gendarme.Rules.Design", "ListsAreStronglyTypedRule", 
+        Justification="Gendarme identifies this Type as a Generic, which is wrong, hence we want to surpress the Gendarme Warning.")]    
+    [SuppressMessage("Gendarme.Rules.Design", "StronglyTypeICollectionMembersRule", 
+        Justification="Gendarme identifies this Type as a Generic, which is wrong, hence we want to surpress the Gendarme Warning.")]    
     public class TSelfExpandingArrayList : System.Collections.ArrayList
     {
         /// <summary>

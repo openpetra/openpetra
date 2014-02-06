@@ -2035,7 +2035,7 @@ namespace Ict.Common
         /// <returns>the printed date</returns>
         public static String DateToLocalizedString(DateTime ADateTime, Boolean AIncludeTime)
         {
-            return DateToLocalizedString(ADateTime, true, false);
+            return DateToLocalizedString(ADateTime, AIncludeTime, false);
         }
 
         /// <summary>

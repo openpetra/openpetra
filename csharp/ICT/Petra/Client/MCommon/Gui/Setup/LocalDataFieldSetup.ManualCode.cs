@@ -268,9 +268,9 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             }
 
             //Set up our checked list box columns and bind to our DTUsedBy table
-            clbUsedBy.AddCheckBoxColumn(GUIUsedBy, DTUsedBy.Columns[0], 70, false);
-            clbUsedBy.AddTextColumn(GUICol2, DTUsedBy.Columns[2], 125);
-            clbUsedBy.DataBindGrid(DTUsedBy, DBCol3, DBCol1, DBCol2, DBCol2, false, false, false);
+            clbUsedBy.AddCheckBoxColumn(GUIUsedBy, DTUsedBy.Columns[0], 17, false);
+            clbUsedBy.AddTextColumn(GUICol2, DTUsedBy.Columns[2], 169);
+            clbUsedBy.DataBindGrid(DTUsedBy, DBCol3, DBCol1, DBCol2, false, false, false);
             FPetraUtilsObject.SetStatusBarText(clbUsedBy, Catalog.GetString("Choose the screens when this label will be used"));
 
             // Now we have to deal with the form controls that depend on the selection of DataType

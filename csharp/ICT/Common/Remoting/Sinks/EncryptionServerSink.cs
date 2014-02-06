@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.Remoting.Channels;
 using System.Runtime.Remoting.Messaging;
@@ -84,6 +85,9 @@ namespace Ict.Common.Remoting.Sinks.Encryption
         /// <summary>
         /// Requests message processing from the current sink.
         /// </summary>
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
+            Justification="requestMsg is not used in our implementation",
+            MessageId="requestMsg")]  
         public ServerProcessing ProcessMessage(IServerChannelSinkStack sinkStack,
             IMessage requestMsg, ITransportHeaders requestHeaders, Stream requestStream,
             out IMessage responseMsg, out ITransportHeaders responseHeaders,
@@ -92,7 +96,7 @@ namespace Ict.Common.Remoting.Sinks.Encryption
             // process request
             object state = null;
 
-            string ClientGuid = ProcessRequest(requestMsg, requestHeaders, ref requestStream, ref state);
+            string ClientGuid = ProcessRequest(requestHeaders, ref requestStream, ref state);
 
             sinkStack.Push(this, state);
 
@@ -102,7 +106,7 @@ namespace Ict.Common.Remoting.Sinks.Encryption
 
             if (processing == ServerProcessing.Complete)
             {
-                ProcessResponse(responseMsg, responseHeaders, ref responseStream, state, ClientGuid);
+                ProcessResponse(responseHeaders, ref responseStream, state, ClientGuid);
             }
 
             return processing;
@@ -111,7 +115,7 @@ namespace Ict.Common.Remoting.Sinks.Encryption
         /// <summary>
         /// decrypt the request
         /// </summary>
-        protected string ProcessRequest(IMessage message, ITransportHeaders headers, ref Stream stream, ref object state)
+        protected string ProcessRequest(ITransportHeaders headers, ref Stream stream, ref object state)
         {
             if (headers[EncryptionRijndael.GetEncryptionName()] != null)
             {
@@ -151,7 +155,7 @@ namespace Ict.Common.Remoting.Sinks.Encryption
         /// <summary>
         /// encrypt the response
         /// </summary>
-        protected void ProcessResponse(IMessage message, ITransportHeaders headers, ref Stream stream, object state, string AClientGuid)
+        protected void ProcessResponse(ITransportHeaders headers, ref Stream stream, object state, string AClientGuid)
         {
             if (state != null)
             {

@@ -174,7 +174,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             clbLedger.AddCheckBoxColumn("", LedgerTable.Columns["Selection"], 17, false);
             clbLedger.AddTextColumn(Catalog.GetString("Code"), LedgerTable.Columns["LedgerNumber"], 40);
             clbLedger.AddTextColumn(Catalog.GetString("Ledger Name"), LedgerTable.Columns["LedgerName"], 200);
-            clbLedger.DataBindGrid(LedgerTable, "LedgerNumber", "Selection", "LedgerNumber", "LedgerName", false, true, false);
+            clbLedger.DataBindGrid(LedgerTable, "LedgerNumber", "Selection", "LedgerNumber", false, true, false);
         }
 
         /// <summary>

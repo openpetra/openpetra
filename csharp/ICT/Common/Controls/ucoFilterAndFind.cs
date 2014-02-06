@@ -1069,7 +1069,7 @@ namespace Ict.Common.Controls
                 };
 
                 BtnApplyFilter.Click += delegate(object sender, EventArgs e) {
-                    OnApplyFilterClicked(sender, e, FilterIsBeingApplied, FilterApplyingFinished);
+                    OnApplyFilterClicked(sender, FilterIsBeingApplied, FilterApplyingFinished);
                 };
 
                 tipGeneral.SetToolTip(BtnApplyFilter, "Click to filter the data");
@@ -1979,7 +1979,7 @@ namespace Ict.Common.Controls
                 {
                     ControlToClearAsTextBox.Text = String.Empty;
 
-                    OnClearArgumentCtrlButtonClicked(sender, null, ControlToClearAsTextBox);
+                    OnClearArgumentCtrlButtonClicked(sender, ControlToClearAsTextBox);
 
                     return;
                 }
@@ -2009,7 +2009,7 @@ namespace Ict.Common.Controls
                         ControlToClearAsCheckBox.CheckState = CheckState.Indeterminate;
                     }
 
-                    OnClearArgumentCtrlButtonClicked(sender, null, ControlToClearAsCheckBox);
+                    OnClearArgumentCtrlButtonClicked(sender, ControlToClearAsCheckBox);
 
                     return;
                 }
@@ -2034,7 +2034,7 @@ namespace Ict.Common.Controls
                     ControlToClearAsAutoComplete.SelectedIndex = -1;
                     ControlToClearAsAutoComplete.Text = String.Empty;
 
-                    OnClearArgumentCtrlButtonClicked(sender, null, ControlToClearAsAutoComplete);
+                    OnClearArgumentCtrlButtonClicked(sender, ControlToClearAsAutoComplete);
 
                     return;
                 }
@@ -2096,7 +2096,7 @@ namespace Ict.Common.Controls
                         ControlToClearAsCombo.SelectedIndex = 0;
                     }
 
-                    OnClearArgumentCtrlButtonClicked(sender, null, ControlToClearAsCombo);
+                    OnClearArgumentCtrlButtonClicked(sender, ControlToClearAsCombo);
 
                     return;
                 }
@@ -2176,7 +2176,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Raises the 'ApplyFilterClicked' Event.
         /// </summary>
-        private void OnApplyFilterClicked(object sender, EventArgs e, Action <Control>AAction, Action <Control>AResetAction)
+        private void OnApplyFilterClicked(object sender, Action <Control>AAction, Action <Control>AResetAction)
         {
             Button ClickedButton = sender as Button;
             Panel ContainingPanel;
@@ -2328,7 +2328,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Raises the 'ClearArgumentCtrlButtonClicked' Event.
         /// </summary>
-        private void OnClearArgumentCtrlButtonClicked(object sender, EventArgs e, Control AAssociatedArgumentCtrl)
+        private void OnClearArgumentCtrlButtonClicked(object sender, Control AAssociatedArgumentCtrl)
         {
             Button ClickedButton = sender as Button;
             Panel ContainingPanel;

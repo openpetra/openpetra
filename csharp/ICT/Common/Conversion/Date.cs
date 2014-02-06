@@ -56,13 +56,11 @@ namespace Ict.Common.Conversion
         /// used to gather error messages.</param>
         /// <param name="AParsedDate">String that holds the parsed date (if successful)</param>
         /// <param name="AShowVerificationError">true if error message box should be shown if conversion fails</param>
-        /// <param name="ATypeWhichCallsVerification"></param>
         /// <returns>true if successful, otherwise false</returns>
         public static Boolean LongDateStringToDateTimeInternal(String AParseDate,
             String ADescription,
             out object AParsedDate,
-            Boolean AShowVerificationError,
-            System.Type ATypeWhichCallsVerification)
+            Boolean AShowVerificationError)
         {
             Boolean ReturnValue = false;
             Int32 DayOffset;
@@ -322,27 +320,10 @@ namespace Ict.Common.Conversion
         /// <param name="ADescription">String about the conversion type that is performed. This is
         /// used to gather error messages.</param>
         /// <param name="AParsedDate">String that holds the parsed date (if successful)</param>
-        /// <param name="AShowVerificationError">true if error message box should be shown if conversion fails</param>
-        /// <returns></returns>
-        public static Boolean LongDateStringToDateTimeInternal(String AParseDate,
-            String ADescription,
-            out object AParsedDate,
-            Boolean AShowVerificationError)
-        {
-            return LongDateStringToDateTimeInternal(AParseDate, ADescription, out AParsedDate, AShowVerificationError, null);
-        }
-
-        /// <summary>
-        /// Converts a string to a formatted date string.
-        /// </summary>
-        /// <param name="AParseDate">String which contains the date that should be converted</param>
-        /// <param name="ADescription">String about the conversion type that is performed. This is
-        /// used to gather error messages.</param>
-        /// <param name="AParsedDate">String that holds the parsed date (if successful)</param>
         /// <returns>true if successful, otherwise false</returns>
         public static Boolean LongDateStringToDateTimeInternal(String AParseDate, String ADescription, out object AParsedDate)
         {
-            return LongDateStringToDateTimeInternal(AParseDate, ADescription, out AParsedDate, true, null);
+            return LongDateStringToDateTimeInternal(AParseDate, ADescription, out AParsedDate, true);
         }
 
         /// <summary>
@@ -354,14 +335,12 @@ namespace Ict.Common.Conversion
         /// <param name="AVerificationResult">If conversion fails it contains detailed information
         /// about the error. If conversion is successful: null</param>
         /// <param name="AShowVerificationError">True if a error message should be shown if conversion fails.</param>
-        /// <param name="ATypeWhichCallsVerification"></param>
         /// <returns>The converted date. If the conversion didn't succeed than it contains
         /// the Date Min value.</returns>
         public static DateTime LongDateStringToDateTime2(String AParseDate,
             String ADescription,
             out TVerificationResult AVerificationResult,
-            Boolean AShowVerificationError,
-            System.Type ATypeWhichCallsVerification)
+            Boolean AShowVerificationError)
         {
             DateTime ReturnValue;
 
@@ -385,7 +364,7 @@ namespace Ict.Common.Conversion
             /* Conversion was successful > return the Date */
             /* Result := Convert.ToDateTime(DateConvertEventArgs.Value); */
             /* end; */
-            if (LongDateStringToDateTimeInternal(AParseDate, ADescription, out ResultObj, AShowVerificationError, ATypeWhichCallsVerification))
+            if (LongDateStringToDateTimeInternal(AParseDate, ADescription, out ResultObj, AShowVerificationError))
             {
                 // MessageBox.Show('LongDateStringToDateTime2: date is valid: ' + ResultObj.ToString);
                 if (ResultObj != DBNull.Value)
