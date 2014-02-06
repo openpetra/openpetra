@@ -242,7 +242,7 @@ namespace Ict.Common.Data.Exceptions
         /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
-        public EDBConcurrencyException(SerializationInfo AInfo, StreamingContext AContext)
+        public EDBConcurrencyException(SerializationInfo AInfo, StreamingContext AContext) : base (AInfo, AContext)
         {
             FDBTable = AInfo.GetString("DBTable");
             FDBOperation = AInfo.GetString("DBOperation");
@@ -448,7 +448,7 @@ namespace Ict.Common.Data.Exceptions
         /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
-        public EDBSubmitException(SerializationInfo AInfo, StreamingContext AContext)
+        public EDBSubmitException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 

@@ -78,7 +78,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             clbLedger.AddTextColumn(Catalog.GetString("Ledger Name"), NewTable.Columns[DisplayMember], 240);
             clbLedger.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), NewTable.Columns[ValueMember], 100);
 
-            clbLedger.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+            clbLedger.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, false, true, false);
 
             //TODO: only temporarily until settings file exists
             clbLedger.SetCheckedStringList("");

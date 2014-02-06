@@ -99,7 +99,7 @@ namespace Ict.Common.Controls
 
             FVisualStyle = Style;
 
-            ChangeVisualStyle(FVisualStyle);
+            ChangeVisualStyle();
 
             MasterXmlNode = MasterNode;
         }
@@ -140,7 +140,7 @@ namespace Ict.Common.Controls
             {
                 FVisualStyle = value;
 
-                ChangeVisualStyle(value);
+                ChangeVisualStyle();
             }
         }
 
@@ -430,7 +430,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Changes the Visual Style.
         /// </summary>
-        private void ChangeVisualStyle(TVisualStylesEnum AVisualStyle)
+        private void ChangeVisualStyle()
         {
             TVisualStyles VisualStyle = new TVisualStyles(FVisualStyle);
 

@@ -33,6 +33,7 @@
 //
 using System;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -1463,11 +1464,20 @@ namespace Ict.Common.Verification
         /// Type checking events
         /// </summary>
         /// <returns>void</returns>
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
+            Justification="This Method only verifies that the Type is correct and makes no use of the index Argument for that",
+            MessageId="index")]
         private new void OnInsert(int index, object value)
         {
             VerifyType(value);
         }
 
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
+            Justification="This Method only verifies that the Type is correct and makes no use of the index Argument for that",
+            MessageId="index")]
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
+            Justification="This Method only verifies that the Type is correct and makes no use of the oldvalue Argument for that",
+            MessageId="oldvalue")]
         private new void OnSet(int index, object oldValue, object newValue)
         {
             VerifyType(newValue);

@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
@@ -1527,6 +1528,9 @@ namespace Ict.Common
         /// <summary>
         /// serialize TVariant as a string. This helps to avoid problems with .net Remoting and DateTime
         /// </summary>
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule", 
+            Justification="The StreamingContext (ctx) is not needed in this Constructor overload for Serialization.",
+            MessageId="ctx")]        
         protected TVariant(SerializationInfo info, StreamingContext ctx)
         {
             this.Assign(DecodeFromString(info.GetString("encoded")));

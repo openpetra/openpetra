@@ -65,7 +65,7 @@ namespace Ict.Common.Remoting.Sinks.Encryption
             // process request
             object state = null;
 
-            ProcessRequest(msg, headers, ref stream, ref state);
+            ProcessRequest(headers, ref stream);
 
             // push to stack (to get a call to handle response)
             // and forward to the next
@@ -80,7 +80,7 @@ namespace Ict.Common.Remoting.Sinks.Encryption
             ITransportHeaders headers, Stream stream)
         {
             // process response
-            ProcessResponse(null, headers, ref stream, state);
+            ProcessResponse(headers, ref stream);
 
             // forward to the next
             sinkStack.AsyncProcessResponse(headers, stream);
@@ -102,16 +102,14 @@ namespace Ict.Common.Remoting.Sinks.Encryption
             Stream requestStream, out ITransportHeaders responseHeaders, out Stream responseStream)
         {
             // process request
-            object state = null;
-
-            ProcessRequest(msg, requestHeaders, ref requestStream, ref state);
+            ProcessRequest(requestHeaders, ref requestStream);
 
             // forward to the next
             this.FNextSink.ProcessMessage(msg, requestHeaders, requestStream,
                 out responseHeaders, out responseStream);
 
             // process response
-            ProcessResponse(null, responseHeaders, ref responseStream, state);
+            ProcessResponse(responseHeaders, ref responseStream);
         }
 
         public string CurrentClientGuid = Guid.NewGuid().ToString();
@@ -119,7 +117,7 @@ namespace Ict.Common.Remoting.Sinks.Encryption
         /// <summary>
         /// encrypt the request
         /// </summary>
-        protected void ProcessRequest(IMessage message, ITransportHeaders headers, ref Stream stream, ref object state)
+        protected void ProcessRequest(ITransportHeaders headers, ref Stream stream)
         {
             if (FEncryptionKey == null)
             {
@@ -155,7 +153,7 @@ namespace Ict.Common.Remoting.Sinks.Encryption
         /// <summary>
         /// decrypt the response
         /// </summary>
-        protected void ProcessResponse(IMessage message, ITransportHeaders headers, ref Stream stream, object state)
+        protected void ProcessResponse(ITransportHeaders headers, ref Stream stream)
         {
             if (headers[EncryptionRijndael.GetEncryptionName()] != null)
             {

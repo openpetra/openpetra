@@ -111,7 +111,7 @@ namespace Ict.Common.Remoting.Client
                         Hashtable properties = new Hashtable();
                         properties.Add("HttpsPublicKeyXml", TAppSettingsManager.GetValue("OpenPetra.ChannelEncryption.PublicKeyfile"));
 
-                        TCPSink.Next = new EncryptionClientSinkProvider(properties, null);
+                        TCPSink.Next = new EncryptionClientSinkProvider(properties);
 
                         Hashtable ChannelProperties = new Hashtable();
 

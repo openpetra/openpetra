@@ -73,7 +73,6 @@ namespace Ict.Tools.PatchTool.Library
                         TAppSettingsManager.GetValue("OpenPetra.Path") + Path.DirectorySeparatorChar + "bin" + TPatchTools.OPENPETRA_VERSIONPREFIX,
                         TempPath,
                         "",
-                        "",
                         TAppSettingsManager.GetValue("OpenPetra.Path.Patches"),
                         "");
 
@@ -101,7 +100,6 @@ namespace Ict.Tools.PatchTool.Library
                         TAppSettingsManager.GetValue("OpenPetra.Path") + Path.DirectorySeparatorChar + "bin" + TPatchTools.OPENPETRA_VERSIONPREFIX,
                         TempPath,
                         TAppSettingsManager.GetValue("OpenPetra.Path.Dat"),
-                        "",
                         TAppSettingsManager.GetValue("OpenPetra.Path.Patches"),
                         "");
 
@@ -135,7 +133,6 @@ namespace Ict.Tools.PatchTool.Library
                     TPetraPatchTools patchTools = new TPetraPatchTools(TAppSettingsManager.GetValue("OpenPetra.Path"),
                         TAppSettingsManager.GetValue("OpenPetra.Path") + Path.DirectorySeparatorChar + "bin" + TPatchTools.OPENPETRA_VERSIONPREFIX,
                         TempPath,
-                        "",
                         "",
                         TAppSettingsManager.GetValue("DBPatches.Path"),
                         "");
