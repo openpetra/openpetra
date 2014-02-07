@@ -149,19 +149,24 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 return;
             }
 
-            // 'Date of Birth' must not be a future date
+            // 'Date of Birth' must have a sensible value (must not be below 1850 and must not lie in the future)
             ValidationColumn = ARow.Table.Columns[PPersonTable.ColumnDateOfBirthId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.DateOfBirth,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                if (!ARow.IsDateOfBirthNull())
+                {
+                    VerificationResult = TDateChecks.IsDateBetweenDates(
+                        ARow.DateOfBirth, new DateTime(1850, 1, 1), DateTime.Today,
+                        ValidationControlsData.ValidationControlLabel,
+                        TDateBetweenDatesCheckType.dbdctUnrealisticDate, TDateBetweenDatesCheckType.dbdctNoFutureDate,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
             }
-
+            
             // 'MaritalStatusSince' must be valid
             ValidationColumn = ARow.Table.Columns[PPersonTable.ColumnMaritalStatusSinceId];
 
