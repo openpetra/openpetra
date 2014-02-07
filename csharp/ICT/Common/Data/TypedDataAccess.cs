@@ -196,7 +196,6 @@ namespace Ict.Common.Data
         public static void InsertRow(
             short ATableId,
             ref DataRow ADataRow,
-            DB.TDBTransaction ATransaction,
             String ACurrentUser,
             StringBuilder AInsertStatement,
             List <OdbcParameter>AInsertParameters)
@@ -208,7 +207,7 @@ namespace Ict.Common.Data
                 ADataRow,
                 true);
             List <OdbcParameter>parameters =
-                GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ATransaction, ACurrentUser, true);
+                GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ACurrentUser, true);
 
             if (AInsertStatement.Length > 0)
             {
@@ -240,7 +239,7 @@ namespace Ict.Common.Data
                 Columns,
                 ADataRow, false);
             List <OdbcParameter>parameters =
-                GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ATransaction, ACurrentUser, false);
+                GetParametersForInsertClause(ATableId, ref ADataRow, Columns.Length, ACurrentUser, false);
 
             if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(query, ATransaction, parameters.ToArray()))
             {
@@ -289,7 +288,7 @@ namespace Ict.Common.Data
                         Columns,
                         ADataRow,
                         PrimKeyColumnOrdList), ATransaction,
-                    GetParametersForUpdateClause(ATableId, ref ADataRow, PrimKeyColumnOrdList, Columns.Length, ATransaction, ACurrentUser)))
+                    GetParametersForUpdateClause(ATableId, ref ADataRow, PrimKeyColumnOrdList, Columns.Length, ACurrentUser)))
             {
                 // Was not able to update the row,
                 // the database has a different modification id on that row.
@@ -363,7 +362,7 @@ namespace Ict.Common.Data
                             Columns,
                             ADataRow,
                             PrimKeyColumnOrdList), ATransaction,
-                        GetParametersForUpdateClause(ATableId, ref ADataRow, PrimKeyColumnOrdList, Columns.Length, ATransaction, ACurrentUser));
+                        GetParametersForUpdateClause(ATableId, ref ADataRow, PrimKeyColumnOrdList, Columns.Length, ACurrentUser));
 
                     if (RowsChanged == 0)
                     {
@@ -447,7 +446,6 @@ namespace Ict.Common.Data
 
             if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(GenerateDeleteClause("PUB_" + DBTableName,
                         Columns,
-                        ADataRow,
                         PrimKeyColumnOrdList), ATransaction,
                     GetParametersForDeleteClause(ATableId, ADataRow, PrimKeyColumnOrdList)))
             {
@@ -669,12 +667,10 @@ namespace Ict.Common.Data
         /// and search criteria.
         /// It will return a Where clause, using the given values.
         /// </summary>
-        /// <param name="AColumnNames">the column names</param>
         /// <param name="ASearchCriteria"></param>
-        /// <param name="ATemplateOperators">Every template field can have an operator; the default version always used = or LIKE</param>
         /// <returns>the Where Clause
         /// </returns>
-        public static String GenerateWhereClause(string[] AColumnNames, TSearchCriteria[] ASearchCriteria, StringCollection ATemplateOperators)
+        public static String GenerateWhereClause(TSearchCriteria[] ASearchCriteria)
         {
             String ReturnValue = "";
 
@@ -693,18 +689,6 @@ namespace Ict.Common.Data
             }
 
             return ReturnValue;
-        }
-
-        /// <summary>
-        /// This function expects an empty table that contains all existing columns,
-        /// and a datarow that has a string or an empty value for each column.
-        /// It will return a Where clause, using the given values.
-        /// </summary>
-        /// <returns>the Where Clause
-        /// </returns>
-        public static String GenerateWhereClause(string[] AColumnNames, TSearchCriteria[] ASearchCriteria)
-        {
-            return GenerateWhereClause(AColumnNames, ASearchCriteria, null);
         }
 
         /// <summary>
@@ -1326,7 +1310,6 @@ namespace Ict.Common.Data
         /// <param name="ATableId"></param>
         /// <param name="ADataRow">values that are used as parameters</param>
         /// <param name="ANumberDBColumns">the number of columns of this row that should be stored in the database; that allows some columns to be added temporarily, e.g. PPartnerLocation.BestAddress in PartnerEdit Dataset</param>
-        /// <param name="ATransaction">need a transaction for getting the next modification id</param>
         /// <param name="ACurrentUser">for setting modified by</param>
         /// <param name="AIncludeDefaultColumns">only useful when saving many rows in one query</param>
         /// <returns>an array of OdbcParameters
@@ -1335,7 +1318,6 @@ namespace Ict.Common.Data
             short ATableId,
             ref DataRow ADataRow,
             Int32 ANumberDBColumns,
-            DB.TDBTransaction ATransaction,
             String ACurrentUser,
             bool AIncludeDefaultColumns)
         {
@@ -1383,7 +1365,6 @@ namespace Ict.Common.Data
         /// <param name="ADataRow">values that are used as parameters</param>
         /// <param name="APrimaryKeyColumnOrd">can be empty; is needed for the UPDATE WHERE statement; it has the order numbers of the columns that make up the primary key</param>
         /// <param name="ANumberDBColumns">the number of columns of this row that should be stored in the database; that allows some columns to be added temporarily, e.g. PPartnerLocation.BestAddress in PartnerEdit Dataset</param>
-        /// <param name="ATransaction">required for increasing the modification id</param>
         /// <param name="ACurrentUser">for setting modified by</param>
         /// <returns>an array of OdbcParameters
         /// </returns>
@@ -1392,7 +1373,6 @@ namespace Ict.Common.Data
             ref DataRow ADataRow,
             int[] APrimaryKeyColumnOrd,
             Int32 ANumberDBColumns,
-            DB.TDBTransaction ATransaction,
             String ACurrentUser)
         {
             List <OdbcParameter>ReturnValue = new List <OdbcParameter>();
@@ -1637,7 +1617,7 @@ namespace Ict.Common.Data
         /// </summary>
         /// <returns>the DELETE statement
         /// </returns>
-        public static String GenerateDeleteClause(String ATableName, string[] AColumnNames, DataRow ADataRow, int[] APrimKeyColumnOrdList)
+        public static String GenerateDeleteClause(String ATableName, string[] AColumnNames, int[] APrimKeyColumnOrdList)
         {
             String ReturnValue;
             Boolean First;
@@ -2049,7 +2029,7 @@ namespace Ict.Common.Data
         {
             DBAccess.GDBAccessObj.Select(ADataSet, GenerateSelectClause(AFieldList, ATableID) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableID) +
-                GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableID), ASearchCriteria) +
+                GenerateWhereClause(ASearchCriteria) +
                 GenerateOrderByClause(AOrderBy), TTypedDataTable.GetTableName(ATableID), ATransaction,
                 GetParametersForWhereClause(ATableID, ASearchCriteria), AStartRecord, AMaxRecords);
         }
@@ -2078,7 +2058,7 @@ namespace Ict.Common.Data
             ATypedTableToLoad = (TTypedDataTable)
                                 DBAccess.GDBAccessObj.SelectDT(ATypedTableToLoad, GenerateSelectClause(AFieldList, ATableID) +
                 " FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableID) +
-                GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableID), ASearchCriteria) +
+                GenerateWhereClause(ASearchCriteria) +
                 GenerateOrderByClause(AOrderBy), ATransaction,
                 GetParametersForWhereClause(ATableID, ASearchCriteria), AStartRecord, AMaxRecords);
         }
@@ -2153,7 +2133,7 @@ namespace Ict.Common.Data
         public static void DeleteUsingTemplate(short ATableId, TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
         {
             if (0 == DBAccess.GDBAccessObj.ExecuteNonQuery(("DELETE FROM PUB_" + TTypedDataTable.GetTableNameSQL(ATableId) +
-                                                            GenerateWhereClause(TTypedDataTable.GetColumnStringList(ATableId), ASearchCriteria)),
+                                                            GenerateWhereClause(ASearchCriteria)),
                     ATransaction,
                     GetParametersForWhereClause(ATableId, ASearchCriteria)))
             {
@@ -2242,7 +2222,7 @@ namespace Ict.Common.Data
 
                     if (ATable.ThrowAwayAfterSubmitChanges)
                     {
-                        TTypedDataAccess.InsertRow(TableId, ref TheRow, ATransaction, AUserId, InsertStatement, InsertParameters);
+                        TTypedDataAccess.InsertRow(TableId, ref TheRow, AUserId, InsertStatement, InsertParameters);
                     }
                     else
                     {

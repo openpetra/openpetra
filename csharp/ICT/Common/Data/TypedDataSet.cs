@@ -945,7 +945,8 @@ namespace Ict.Common.Data
             /// </summary>
             /// <param name="info">required for serialization</param>
             /// <param name="context">required for serialization</param>
-            public TOtherDataSet(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+            public TOtherDataSet(System.Runtime.Serialization.SerializationInfo info,
+                System.Runtime.Serialization.StreamingContext context) : base(info, context)
             {
             }
         }

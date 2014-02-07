@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,30 +28,34 @@ using System.Windows.Forms;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.MFinance.AP.Data;
-using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MCommon.Validation;
 
-namespace Ict.Petra.Server.MFinance.AP.WebConnectors
+namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
 {
-    public partial class TAPTransactionWebConnector
+    public partial class TCommonDataReader
     {
         //
-        // Put Methods for the validation of AP EditTransaction in this code file.
+        // Put Methods for the validation of Common Module WebConnectors and DataReaders in this code file.
         //
 
-        static partial void ValidateApDocumentDetailManual(ref TVerificationResultCollection AVerificationResult,
+        static partial void ValidateInternationalPostalTypeManual(ref TVerificationResultCollection AVerificationResult,
             TTypedDataTable ASubmitTable)
         {
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
-            ValidationControlsDict.Add(ASubmitTable.Columns[AApDocumentDetailTable.ColumnAmountId],
-                new TValidationControlsData(null, AApDocumentDetailTable.GetAmountDBName()));
+            ValidationControlsDict.Add(ASubmitTable.Columns[(short)PInternationalPostalTypeTable.ColumnInternatPostalTypeCodeId],
+                new TValidationControlsData(null, PInternationalPostalTypeTable.GetInternatPostalTypeCodeDBName()));
+            ValidationControlsDict.Add(ASubmitTable.Columns[(short)PInternationalPostalTypeTable.ColumnDescriptionId],
+                new TValidationControlsData(null, PInternationalPostalTypeTable.GetDescriptionDBName()));
+            ValidationControlsDict.Add(ASubmitTable.Columns[(short)PInternationalPostalTypeTable.ColumnDeletableId],
+                new TValidationControlsData(null, PInternationalPostalTypeTable.GetDeletableDBName()));
 
             for (int Counter = 0; Counter < ASubmitTable.Rows.Count; Counter++)
             {
-                TSharedFinanceValidation_AP.ValidateApDocumentDetailManual("TTransactionWebConnector" +
+                PInternationalPostalTypeValidation.Validate("TCommonDataReader.ValidateInternationalPostalTypeManual" +
                     " (Error in Row #" + Counter.ToString() + ")",  // No translation of message text since the server's messages should be all in English
-                    (AApDocumentDetailRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
+                    (PInternationalPostalTypeRow)ASubmitTable.Rows[Counter], ref AVerificationResult,
                     ValidationControlsDict);
             }
         }

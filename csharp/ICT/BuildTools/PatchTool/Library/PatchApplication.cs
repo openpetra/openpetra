@@ -107,7 +107,6 @@ namespace Ict.Tools.PatchTool.Library
                     TAppSettingsManager.GetValue("OpenPetra.Path") + Path.DirectorySeparatorChar + "bin" + TPatchTools.OPENPETRA_VERSIONPREFIX,
                     TAppSettingsManager.GetValue("OpenPetra.PathTemp"),
                     "",
-                    "",
                     TAppSettingsManager.GetValue("OpenPetra.Path.Patches"),
                     TAppSettingsManager.GetValue("OpenPetra.Path.RemotePatches", false));
 
@@ -191,10 +190,9 @@ namespace Ict.Tools.PatchTool.Library
             String ABinPath,
             String ATmpPath,
             String ADatPath,
-            String ADBPath,
             String APatchesPath,
             String ARemotePatchesPath)
-            : base(AInstallPath, ABinPath, TPatchTools.OPENPETRA_VERSIONPREFIX, ATmpPath, ADatPath, ADBPath, APatchesPath, ARemotePatchesPath)
+            : base(AInstallPath, ABinPath, TPatchTools.OPENPETRA_VERSIONPREFIX, ATmpPath, ADatPath, APatchesPath, ARemotePatchesPath)
         {
         }
 

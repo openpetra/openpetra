@@ -93,7 +93,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             // TODO need to allow to specify an ICH run number
             ACalc.AddParameter("param_ich_number", 0);
 
-            ACalc.AddStringParameter("param_cost_centre_codes", clbCostCentres.GetCheckedStringList());
+            ACalc.AddStringParameter("param_cost_centre_codes", clbCostCentres.GetCheckedStringList(true));
         }
 
         private void chkExcludeCostCentresChanged(System.Object sender, System.EventArgs e)

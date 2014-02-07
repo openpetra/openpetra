@@ -185,7 +185,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
             AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
-            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 
         /// <summary>
@@ -281,7 +281,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
             AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
-            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 
         /// <summary>
@@ -331,7 +331,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
             AControl.AddTextColumn(Catalog.GetString("Account Description"), NewTable.Columns[DisplayMember], 200);
-            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 
         /// <summary>
@@ -1145,7 +1145,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
             AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
-            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 
         /// <summary>
@@ -1171,7 +1171,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             AControl.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             AControl.AddTextColumn(Catalog.GetString("Code"), NewTable.Columns[ValueMember], 60);
             AControl.AddTextColumn(Catalog.GetString("Cost Centre Description"), NewTable.Columns[DisplayMember], 200);
-            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+            AControl.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
         }
     }
 }

@@ -155,7 +155,8 @@ namespace Ict.Petra.Shared.MFinance
         /// IBANs are only issued by the bank where the account it is issued for is held.
         ///
         /// </summary>
-        /// <param name="ABic">String that should be checked</param>
+        /// <param name="AIban">String that should be checked</param>
+        /// <param name="AResult"></param>
         /// <returns>True if AIban is a valid Iban or an empty String or nil, False if it is
         /// not valid.
         /// </returns>

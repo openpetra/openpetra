@@ -348,10 +348,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                 if (AInspectDS.AApDocumentDetail != null) // Document detail lines
                 {
-                    TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
-
-                    ValidateApDocumentDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
-                    ValidateApDocumentDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AApDocumentDetail);
+                    ValidateApDocumentDetail(ref AVerificationResult, AInspectDS.AApDocumentDetail);
+                    ValidateApDocumentDetailManual(ref AVerificationResult, AInspectDS.AApDocumentDetail);
 
                     if (TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                     {
@@ -2073,10 +2071,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
         #region Data Validation
 
-        static partial void ValidateApDocumentDetail(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        static partial void ValidateApDocumentDetailManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateApDocumentDetail(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateApDocumentDetailManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
         #endregion Data Validation
     }

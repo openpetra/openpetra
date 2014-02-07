@@ -655,7 +655,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
             AVerificationResult = new TVerificationResultCollection();
 
@@ -693,8 +692,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (giftBatchTableInDataSet)
             {
-                ValidateGiftBatch(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftBatch);
-                ValidateGiftBatchManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftBatch);
+                ValidateGiftBatch(ref AVerificationResult, AInspectDS.AGiftBatch);
+                ValidateGiftBatchManual(ref AVerificationResult, AInspectDS.AGiftBatch);
 
                 if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                 {
@@ -704,8 +703,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (giftDetailTableInDataSet)
             {
-                ValidateGiftDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftDetail);
-                ValidateGiftDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AGiftDetail);
+                ValidateGiftDetail(ref AVerificationResult, AInspectDS.AGiftDetail);
+                ValidateGiftDetailManual(ref AVerificationResult, AInspectDS.AGiftDetail);
 
                 if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                 {
@@ -806,7 +805,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             ref TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
             bool AllValidationsOK = true;
 
@@ -816,8 +814,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (recurrGiftBatchTableInDataSet)
             {
-                ValidateRecurringGiftBatch(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
-                ValidateRecurringGiftBatchManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
+                ValidateRecurringGiftBatch(ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
+                ValidateRecurringGiftBatchManual(ref AVerificationResult, AInspectDS.ARecurringGiftBatch);
 
                 if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                 {
@@ -827,8 +825,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (recurrGiftDetailTableInDataSet)
             {
-                ValidateRecurringGiftDetail(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftDetail);
-                ValidateRecurringGiftDetailManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.ARecurringGiftDetail);
+                ValidateRecurringGiftDetail(ref AVerificationResult, AInspectDS.ARecurringGiftDetail);
+                ValidateRecurringGiftDetailManual(ref AVerificationResult, AInspectDS.ARecurringGiftDetail);
 
                 if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                 {
@@ -2112,23 +2110,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
         #region Data Validation
 
-        static partial void ValidateGiftBatch(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        static partial void ValidateGiftBatchManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        static partial void ValidateGiftDetail(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        static partial void ValidateGiftDetailManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateGiftBatch(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateGiftBatchManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateGiftDetail(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateGiftDetailManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
-        static partial void ValidateRecurringGiftBatch(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        static partial void ValidateRecurringGiftBatchManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        static partial void ValidateRecurringGiftDetail(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        static partial void ValidateRecurringGiftDetailManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateRecurringGiftBatch(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateRecurringGiftBatchManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateRecurringGiftDetail(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateRecurringGiftDetailManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
         #endregion Data Validation
     }

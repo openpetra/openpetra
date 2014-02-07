@@ -181,7 +181,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.ucoPartnerFind_PersonnelCriteria_CollapsiblePart.Location = new System.Drawing.Point(4, 0);
             this.ucoPartnerFind_PersonnelCriteria_CollapsiblePart.Name = "ucoPartnerFind_PersonnelCriteria_CollapsiblePart";
             this.ucoPartnerFind_PersonnelCriteria_CollapsiblePart.Size = new System.Drawing.Size(302, 126);
-            this.ucoPartnerFind_PersonnelCriteria_CollapsiblePart.SubCaption = null;
+// TODO            this.ucoPartnerFind_PersonnelCriteria_CollapsiblePart.SubCaption = null;
             this.ucoPartnerFind_PersonnelCriteria_CollapsiblePart.TabIndex = 0;
             this.ucoPartnerFind_PersonnelCriteria_CollapsiblePart.Visible = false;
 

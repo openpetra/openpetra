@@ -1714,15 +1714,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void UcoUpperPart_CollapsingEvent(System.Object sender, CollapsibleEventArgs args)
         {
+#if TODO
             if (args.WillCollapse)
             {
                 // is getting collapsed
                 ucoUpperPart.Caption = "  " + ucoUpperPart.PartnerQuickInfo(false);
-                ucoUpperPart.SubCaption = '[' + FPartnerClass + "] ";
+// TODO               ucoUpperPart.SubCaption = '[' + FPartnerClass + "] ";
 
                 if (FPartnerClass == SharedTypes.PartnerClassEnumToString(TPartnerClass.PERSON))
                 {
-                    ucoUpperPart.SubCaptionHighlighted = true;
+// TODO                   ucoUpperPart.SubCaptionHighlighted = true;
                 }
             }
             else
@@ -1731,6 +1732,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 ucoUpperPart.Caption = "";
                 ucoUpperPart.SubCaption = "";
             }
+#endif
         }
 
         private void UcoPartnerTabSet_EnableDisableOtherScreenParts(System.Object sender, TEnableDisableEventArgs e)

@@ -153,7 +153,6 @@ namespace Tests.IctCommonRemoting.Service
         public IMyUIConnector MyUIConnector()
         {
             return (IMyUIConnector)TCreateRemotableObject.CreateRemotableObject(
-                typeof(IMyUIConnector),
                 typeof(TMyUIConnectorRemote),
                 new TMyUIConnector());
         }

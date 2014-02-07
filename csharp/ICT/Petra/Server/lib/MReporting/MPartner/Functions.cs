@@ -339,7 +339,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             else
             {
                 DateEffective = TDate.LongDateStringToDateTime2(DateEffectiveString, "",
-                    out VerificationResult, false, null);
+                    out VerificationResult, false);
             }
 
             if (VerificationResult != null)
@@ -354,7 +354,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             else
             {
                 DateGoodUntil = TDate.LongDateStringToDateTime2(DateGoodUntilString, "",
-                    out VerificationResult, false, null);
+                    out VerificationResult, false);
             }
 
             if (VerificationResult != null)

@@ -103,6 +103,10 @@ namespace Ict.Petra.Server.MPersonnel.queries
             if (paramSelection == "one partner")
             {
                 ADefines.Add("ONEPARTNER", string.Empty);
+                ASqlParameterList.Add(new OdbcParameter("personkey", OdbcType.Decimal)
+                    {
+                        Value = AParameters.Get("param_partnerkey").ToDecimal()
+                    });
                 ASqlParameterList.Add(new OdbcParameter("partnerkey", OdbcType.Decimal)
                     {
                         Value = AParameters.Get("param_partnerkey").ToDecimal()
