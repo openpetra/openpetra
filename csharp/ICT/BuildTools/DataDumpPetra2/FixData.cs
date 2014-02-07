@@ -857,15 +857,55 @@ namespace Ict.Tools.DataDumpPetra2
             if (ATableName == "pt_skill_category")
             {
                 // Default categories that old abilities and qualifications are mapped to. Basedata - pt_skill_category
-                string[] SkillCategories = new string[] {
-                    "COMMUNICATION", "EDUCATION", "FINANCE", "FOOD", "LAW", "MEDICAL", "MINISTRY", "MUSIC", "OFFICE",
-                    "PEOPLE", "PRACTICAL", "SEA", "TECHNICAL"
+                string[, ] SkillCategories = new string[, ] {
+                    {
+                        "COMMUNICATION", "e.g. Graphic Designer, Journalist, Photographer"
+                    },
+                    {
+                        "EDUCATION", "e.g. Teacher, Lecturer"
+                    },
+                    {
+                        "FINANCE", "e.g. Accountant, Auditor, Bookkeeper"
+                    },
+                    {
+                        "FOOD", "e.g. Caterer, Baker, Cook"
+                    },
+                    {
+                        "LAW", "e.g. Solicitor, Lawyer, Judge"
+                    },
+                    {
+                        "MEDICAL", "e.g. Dentist, Doctor, Nurse"
+                    },
+                    {
+                        "MINISTRY", "e.g. Pastor, Evangelist, Counsellor"
+                    },
+                    {
+                        "MUSIC", "e.g. Musician, Singer"
+                    },
+                    {
+                        "OFFICE", "e.g. Manager, Secretary, Computer Programmer"
+                    },
+                    {
+                        "OTHER", ""
+                    },
+                    {
+                        "PEOPLE", "e.g. Personnel Administrator, Social Worker"
+                    },
+                    {
+                        "PRACTICAL", "e.g. Cleaner, Driver, Farmer"
+                    },
+                    {
+                        "SEA", "e.g. Captain, Engineer, Deck Hand"
+                    },
+                    {
+                        "TECHNICAL", "e.g. Engineer, Carpenter, Electrician"
+                    }
                 };
 
-                foreach (string Category in SkillCategories)
+                for (int i = 0; i < SkillCategories.GetLength(0); i++)
                 {
-                    SetValue(AColumnNames, ref ANewRow, "pt_code_c", Category);
-                    SetValue(AColumnNames, ref ANewRow, "pt_description_c", "");
+                    SetValue(AColumnNames, ref ANewRow, "pt_code_c", SkillCategories[i, 0]);
+                    SetValue(AColumnNames, ref ANewRow, "pt_description_c", SkillCategories[i, 1]);
                     SetValue(AColumnNames, ref ANewRow, "pt_unassignable_flag_l", "0");
                     SetValue(AColumnNames, ref ANewRow, "pt_unassignable_date_d", "\\N");
                     SetValue(AColumnNames, ref ANewRow, "pt_deletable_flag_l", "0");

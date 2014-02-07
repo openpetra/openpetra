@@ -260,7 +260,8 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
         /// populate ApplicationTDS dataset with longterm applications
         /// </summary>
         /// <param name="AMainDS">Dataset to be populated</param>
-        /// <param name="AOutreachCode">match string for event's outreach code</param>
+        /// <param name="ATargetFieldKey">match key for application's Target Field</param>
+        /// <param name="APlacementPersonKey">match key for application's Placement Person</param>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
         public static Boolean LoadLongTermApplications(ref ApplicationTDS AMainDS, long ATargetFieldKey, long APlacementPersonKey)

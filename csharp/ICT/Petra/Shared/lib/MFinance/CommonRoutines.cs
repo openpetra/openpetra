@@ -23,6 +23,10 @@
 //
 using System;
 using System.Data;
+using System.Text.RegularExpressions;
+using Ict.Common;
+using Ict.Common.Verification;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Shared.MFinance
 {
@@ -127,6 +131,232 @@ namespace Ict.Petra.Shared.MFinance
             {
                 // Since the length of the Bic is incorrect we exit at once.
                 return false;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Checks whether the submitted IBAN (International Bank Account Number) is valid.
+        ///
+        /// The IBAN is an ISO standard (ISO 13616) designed to ensure that account details are given in a
+        /// standard format (bank plus account). IBAN was introduced to provide an international standard
+        /// for payee account details and to make details more easy to check. IBAN is a standardised
+        /// international format for entering account details which consists of the country code (bank which
+        /// maintains the account), the local bank code (eg. in the UK this is the sortcode), the (payee)
+        /// account number and a two check digits. Please note that IBANs do not start with "IBAN " and do not
+        /// contain spaces when stored in computer systems.
+        /// Here is an example of an IBAN: DE89370400440532013000
+        ///     DE = ISO 3166-1 country code
+        ///         (NOTE: The country code used in an IBAN can deviate from the country code used in a BIC!
+        ///     89 = two check digits
+        ///     37040044 = sortcode
+        ///     0532013000 = account number.
+        /// IBANs are only issued by the bank where the account it is issued for is held.
+        ///
+        /// </summary>
+        /// <param name="ABic">String that should be checked</param>
+        /// <returns>True if AIban is a valid Iban or an empty String or nil, False if it is
+        /// not valid.
+        /// </returns>
+        public static bool CheckIBAN(System.String AIban, out TVerificationResult AResult)
+        {
+            AResult = null;
+
+            int IbanLength;
+            string IbanCountryCode;
+            int IbanCheckDigits;
+            int Index = -1;
+            bool ReturnValue = true;
+
+            // this list was up-to-date as of Jan 2014 (http://www.swift.com/dsp/resources/documents/IBAN_Registry.pdf)
+            string[, ] COUNTRY_DATA =
+            {
+                { "AD", "Andorra", "24" },
+                { "AE", "United Arab Emirates", "23" },
+                { "AL", "Albania", "28" },
+                { "AT", "Austria", "20" },
+                { "AZ", "Azerbaijan", "28" },
+                { "BA", "Bosnia and Herzegovina", "20" },
+                { "BE", "Belgium", "16" },
+                { "BG", "Bulgaria", "22" },
+                { "BH", "Bahrain", "22" },
+                { "BR", "Brazil", "29" },
+                { "CH", "Switzerland", "21" },
+                { "CR", "Costa Rica", "21" },
+                { "CY", "Cyprus", "28" },
+                { "CZ", "Czech Republic", "24" },
+                { "DE", "Germany", "22" },
+                { "DK", "Denmark", "18" },
+                { "DO", "Dominican Republic", "28" },
+                { "EE", "Estonia", "20" },
+                { "ES", "Spain", "24" },
+                { "FI", "Finland", "18" },
+                { "FO", "Faroe Islands", "18" },
+                { "FR", "France", "27" },
+                { "GE", "Georgia", "22" },
+                { "GI", "Gibraltar", "23" },
+                { "GB", "United Kingdom", "22" },
+                { "GL", "Greenland", "18" },
+                { "GR", "Greece", "27" },
+                { "GT", "Guatemala", "28" },
+                { "HR", "Croatia", "21" },
+                { "HU", "Hungary", "28" },
+                { "IE", "Republic of Ireland", "22" },
+                { "IL", "Israel", "23" },
+                { "IS", "Iceland", "26" },
+                { "IT", "Italy", "27" },
+                { "JO", "Jordan", "30" },
+                { "KU", "Kuwait", "30" },
+                { "KZ", "Kazakhstan", "20" },
+                { "LB", "Lebanon", "28" },
+                { "LI", "Lichtenstein", "21" },
+                { "LU", "Luxembourg", "20" },
+                { "LV", "Latvia", "21" },
+                { "LT", "Lithuania", "20" },
+                { "MC", "Monaco", "27" },
+                { "MD", "Moldova", "24" },
+                { "ME", "Montenegro", "22" },
+                { "MK", "Macedonia", "19" },
+                { "MR", "Mauritania", "27" },
+                { "MT", "Malta", "31" },
+                { "MU", "Mauritius", "30" },
+                { "NL", "The Netherlands", "18" },
+                { "NO", "Norway", "15" },
+                { "PK", "Pakistan", "24" },
+                { "PL", "Poland", "28" },
+                { "PS", "Palestine", "29" },
+                { "PT", "Portugal", "25" },
+                { "QA", "Qatar", "29" },
+                { "RO", "Romania", "24" },
+                { "RS", "Serbia", "22" },
+                { "SA", "Saudi Arabia", "24" },
+                { "SE", "Sweden", "24" },
+                { "SI", "Slovenia", "19" },
+                { "SK", "Slovak Republic", "24" },
+                { "SM", "San Marino", "27" },
+                { "TN", "Tunisia", "24" },
+                { "TR", "Turkey", "26" },
+                { "VG", "Virgin Islands", "24" }
+            };
+
+            // remove all spaces
+            AIban = AIban.Replace(" ", "");
+
+            // make string uppercase for ease
+            AIban = AIban.ToUpper();
+
+            // get length
+            IbanLength = AIban.Length;
+
+            // check length (must be less or equal to 34 characters)
+            if (IbanLength > 34)
+            {
+                AResult = new TVerificationResult(
+                    "CommonRoutines.CheckIBAN",
+                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_IBAN_TOO_LONG));
+
+                return false;
+            }
+
+            // check first and second character to be A-Z
+            if ((IbanLength < 2) || !Regex.IsMatch(AIban.Substring(0, 2), @"^[A-Z]+$"))
+            {
+                AResult = new TVerificationResult(
+                    "CommonRoutines.CheckIBAN",
+                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_IBAN_NOTBEGINWITHTWOLETTERS));
+
+                return false;
+            }
+            else
+            {
+                IbanCountryCode = AIban.Substring(0, 2);
+            }
+
+            // check third and fourth character to form a number
+            if ((IbanLength < 4) || !Regex.IsMatch(AIban.Substring(2, 2), @"^[0-9]+$"))
+            {
+                AResult = new TVerificationResult(
+                    "CommonRoutines.CheckIBAN",
+                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_IBAN_THIRDANDFORTHNOTDIGITS));
+
+                return false;
+            }
+            else
+            {
+                IbanCheckDigits = Convert.ToInt32(AIban.Substring(2, 2));
+            }
+
+            // verify check digits (must be within range 02-98)
+            if ((IbanCheckDigits < 2) || (IbanCheckDigits == 99))
+            {
+                AResult = new TVerificationResult(
+                    "CommonRoutines.CheckIBAN",
+                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_IBAN_CHECKDIGITSAREWRONG));
+
+                return false;
+            }
+
+            // find the index of the country code (if it exists)
+            for (int i = 0; i < COUNTRY_DATA.GetLength(0); i++)
+            {
+                if (COUNTRY_DATA[i, 0] == IbanCountryCode)
+                {
+                    Index = i;
+                    break;
+                }
+            }
+
+            if (Index == -1)
+            {
+                AResult = new TVerificationResult(
+                    "CommonRoutines.CheckIBAN",
+                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_IBAN_COUNTRYNOTDEFINIED, IbanCountryCode));
+
+                ReturnValue = false;
+            }
+
+            // check the length of the IBAN for defined countries
+            if ((Index != -1) && (Convert.ToInt32(COUNTRY_DATA[Index, 2]) != IbanLength))
+            {
+                AResult = new TVerificationResult(
+                    "CommonRoutines.CheckIBAN",
+                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_IBAN_WRONGLENGTH, new string[4]
+                        { COUNTRY_DATA[Index, 1], COUNTRY_DATA[Index, 0], COUNTRY_DATA[Index, 2].ToString(), IbanLength.ToString() }));
+
+                return false;
+            }
+
+            /* calculate and check the checksum */
+
+            // put country and check digits to the end
+            AIban = AIban.Substring(4) + AIban.Substring(0, 4);
+
+            //replace each letter by numerical equivalent
+            AIban = Regex.Replace(AIban, @"\D", x => ((int)x.Value[0] - 55).ToString());
+
+            int Remainder = 0;
+
+            // Interpret the IBAN as a decimal integer and compute the remainder of that number on division by 97
+            while (AIban.Length >= 7)
+            {
+                Remainder = Convert.ToInt32(AIban.Substring(0, 7)) % 97;
+                AIban = Remainder.ToString() + AIban.Substring(7);
+            }
+
+            if (AIban.Length > 0)
+            {
+                Remainder = Convert.ToInt32(AIban) % 97;
+            }
+
+            // checksum only valid if Remainder = 1
+            if (Remainder != 1)
+            {
+                AResult = new TVerificationResult(
+                    "CommonRoutines.CheckIBAN",
+                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_IBAN_CHECKSUMMISMATCH));
+
+                ReturnValue = false;
             }
 
             return ReturnValue;

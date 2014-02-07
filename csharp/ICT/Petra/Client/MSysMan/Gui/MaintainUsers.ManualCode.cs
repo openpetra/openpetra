@@ -230,7 +230,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             {
                 string password = input.GetAnswer();
 
-                if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password))
+                if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password, true))
                 {
                     LoadUsers();
                     MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), username));
