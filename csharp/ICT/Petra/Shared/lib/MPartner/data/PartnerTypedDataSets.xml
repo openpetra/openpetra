@@ -514,5 +514,13 @@
       <Field name="To" sqltable="p_postcode_range" sqlfield="p_to_c"/>
     </Table>
   </DataSet>
+
+  <DataSet name="BankTDS">
+    <Table sqltable="p_bank">
+      <Field name="StatusCode" sqltable="p_partner" sqlfield="p_status_code_c"/>
+    </Table>
+    <Table sqltable="p_partner_location"/>
+    <Table sqltable="p_location"/>
+  </DataSet>
   
 </PetraDataSets>

@@ -9,9 +9,10 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
-        actShare: {Label=&Share Existing Bank Account, ActionClick=ShareExistingBankAccount}
+        actShare: {Label=&Share, ActionClick=ShareExistingBankAccount}
         actDelete: {Label=&Delete, SkipReferenceCheck=true, ActionClick=DeleteRecord}
         actSetMainAccount: {ActionClick=SetMainAccount}
+        actFindBank: {ActionClick=OpenFindBankDialog}
         actCopyPartnerName: {Label=<- Partner's Name, ActionClick=CopyPartnerName}
     Controls:
         pnlContent:
@@ -71,7 +72,7 @@ RootNode:
             Stretch: horizontally
             Controls:
                 Row0: [txtBankKey, cmbBankName, cmbBankCode]
-                Row1: [lblBicSwiftCode, lblCountry]
+                Row1: [Empty, lblBicSwiftCode, lblCountry]
         pnlAccountDetailBottom:
             Stretch: horizontally
             Padding: 0,-15,0,0
@@ -88,6 +89,7 @@ RootNode:
                 Row4: [txtComment]
         pnlAccountDetailRight:
             Width: 210
+            Padding: -5,0,0,0
             Controls: [lblAccountSharedWith, grdAccountSharedWith]
             
   
@@ -116,27 +118,27 @@ RootNode:
             ActionDoubleClick: actSetMainAccount
             EnableMultiSelection: false
             
-
         txtBankKey:
-            Label: Bank
-            Type: PartnerKey
-            PartnerClass: BANK
+            NoLabel: true
             OnEnter: CheckIfRowIsShared
             OnChange: PartnerKeyChanged
-            Width: 125
+            Width: 120
+            Type: Bank
         cmbBankName:
             List: UserDefinedList
+            Label: Bank Name
             ClearIfSettingEmpty: true
-            Width: 200
+            Width: 230
             OnEnter: CheckIfRowIsShared
         cmbBankCode:
             List: UserDefinedList
+            Label: Bank Code
             ClearIfSettingEmpty: true
-            Width: 200
+            Width: 210
             OnEnter: CheckIfRowIsShared
         lblBicSwiftCode:
             Label: BIC/SWIFT Code
-            Width: 170
+            Width: 250
         lblCountry:
             Width: 200
         txtAccountName:
@@ -158,11 +160,13 @@ RootNode:
         chkSavingsAccount:
             Text: Savings Account?
             ActionClick: SavingsAccount_Click
+            OnEnter: CheckIfRowIsShared
         txtComment:
             Width: 430
             Height: 34
             Multiline: true
             ScrollBars: Vertical
+            OnEnter: CheckIfRowIsShared
         lblAccountSharedWith:
             Label: Other Partner's using this account
         grdAccountSharedWith:
@@ -173,9 +177,13 @@ RootNode:
  
         btnNew: {Width=80}
             Action: actNew
-        btnShare:
+        btnShare: {Width=95}
             Action: actShare
         btnDelete: {Width=80}
             Action: actDelete
+            Padding: 8,0,0,0
         btnSetMainAccount: {Width=120, StartNewButtonGroup=true, Enabled=false}
             Action: actSetMainAccount
+            Padding: 8,0,0,0
+
+        Empty:

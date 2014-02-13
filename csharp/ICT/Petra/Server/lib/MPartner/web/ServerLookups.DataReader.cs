@@ -491,35 +491,39 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <summary>
         /// Gets all Bank records
         /// </summary>
-        /// <param name="ABankTable"></param>
-        /// <param name="ABankCountry"></param>
+        /// <returns>Dataset containing data for all Bank partners</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static void GetPBankRecords(out PBankTable ABankTable, out List <string>ABankCountry)
+        public static BankTDS GetPBankRecords()
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
 
-            ABankCountry = new List <string>();
-            List <PBankRow>RowsToRemove = new List <PBankRow>();
+            BankTDS ReturnValue = new BankTDS();
 
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
             try
             {
-                ABankTable = PBankAccess.LoadAll(ReadTransaction);
+                string QueryShortTermApplication =
+                    "SELECT PUB_p_bank.*, PUB_p_partner.p_status_code_c " +
+                    "FROM PUB_p_bank, PUB_p_partner " +
+                    "WHERE PUB_p_partner.p_partner_key_n = PUB_p_bank.p_partner_key_n";
 
-                foreach (PBankRow Row in ABankTable.Rows)
+                DBAccess.GDBAccessObj.Select(ReturnValue,
+                    QueryShortTermApplication,
+                    ReturnValue.PBank.TableName, ReadTransaction, null);
+
+                foreach (BankTDSPBankRow Row in ReturnValue.PBank.Rows)
                 {
-                    PPartnerRow PartnerRow = (PPartnerRow)PPartnerAccess.LoadByPrimaryKey(Row.PartnerKey, ReadTransaction).Rows[0];
-
                     // mark inactive bank accounts
-                    if (PartnerRow.StatusCode != SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))
+                    if (Row.StatusCode != SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))
                     {
                         Row.BranchCode = "<" + Catalog.GetString("INACTIVE") + "> " + Row.BranchCode;
                     }
 
-                    PLocationRow LocationRow = (PLocationRow)PLocationAccess.LoadViaPPartner(Row.PartnerKey, ReadTransaction).Rows[0];
-                    ABankCountry.Add(Row.PartnerKey.ToString() + "," + LocationRow.CountryCode);
+                    // load locations for each bank (if they exist)
+                    PPartnerLocationAccess.LoadViaPPartner(ReturnValue, Row.PartnerKey, ReadTransaction);
+                    PLocationAccess.LoadViaPPartner(ReturnValue, Row.PartnerKey, ReadTransaction);
                 }
             }
             finally
@@ -530,6 +534,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetPBankRecords: committed own transaction.");
                 }
             }
+
+            return ReturnValue;
         }
     }
 }

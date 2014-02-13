@@ -32,6 +32,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Shared;
@@ -50,14 +51,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_FinanceDetails
     {
+        #region Properties
+
         /// <summary>Contains a list of all Partners who share the selected bank account</summary>
         private PPartnerTable AccountSharedWith = new PPartnerTable();
 
-        /// <summary>A table containg all PBank records for all banks</summary>
-        private PBankTable BankTable;
-
-        /// <summary>Contains a list of all the banks' partner keys and their corresponing Country</summary>
-        private List <string[]>BankCountry = new List <string[]>();
+        /// <summary>Dataset containg all PBank records for all banks and their locations</summary>
+        private BankTDS BankDataset;
 
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
@@ -79,6 +79,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>an event that will reload the grid after saving</summary>
         public event TRecalculateScreenPartsEventHandler RecalculateScreenParts;
 
+        #endregion
+
+        #region Setup
+
         /// <summary>
         /// load the data for this control
         /// </summary>
@@ -98,9 +102,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void InitializeManualCode()
         {
-            // remove labels from controls
-            txtBankKey.ShowLabel = false;
+            // remove labels from control
             cmbBankCode.RemoveDescriptionLabel();
+
+            // add image to 'Share' button
+            btnShare.Image = btnNew.Image;
+
+            // add event to txtBankKey that is fired when the dataset is changed in the FindBank dialog
+            txtBankKey.DatasetChanged += new TDelegateDatasetChanged(this.DatasetChanged);
 
             // change status bar texts
             FPetraUtilsObject.SetStatusBarText(txtBankKey, Catalog.GetString("Select a Bank."));
@@ -108,55 +117,92 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.SetStatusBarText(cmbBankCode, Catalog.GetString("Select a Bank Code."));
         }
 
+        /// <summary>
+        /// Loads PBankingDetails Data from Petra Server into FMainDS, if not already loaded.
+        /// </summary>
+        /// <returns>true if successful, otherwise false.</returns>
+        private Boolean LoadDataOnDemand()
+        {
+            // Make sure that Typed DataTables are already there at Client side
+            if (FMainDS.PBankingDetails == null)
+            {
+                FMainDS.Tables.Add(new PartnerEditTDSPBankingDetailsTable());
+                FMainDS.Tables.Add(new PPartnerBankingDetailsTable());
+                FMainDS.InitVars();
+            }
+
+            if (TClientSettings.DelayedDataLoading
+                && ((FMainDS.PBankingDetails == null) || (FMainDS.PBankingDetails.Rows.Count == 0)))
+            {
+                FMainDS.Merge(FPartnerEditUIConnector.GetBankingDetails());
+
+                // Make DataRows unchanged
+                if (FMainDS.PBankingDetails.Rows.Count > 0)
+                {
+                    if (FMainDS.PBankingDetails.Rows[0].RowState != DataRowState.Added)
+                    {
+                        FMainDS.PBankingDetails.AcceptChanges();
+                    }
+                }
+            }
+
+            return FMainDS.PBankingDetails.Rows.Count != 0;
+        }
+
         private void PopulateComboBoxes()
         {
-            // load bank records
-            List <string>BankCountryCommas;
-            TRemote.MPartner.Partner.WebConnectors.GetPBankRecords(out BankTable, out BankCountryCommas);
+            // temporily remove events from comboboxes
+            cmbBankName.SelectedValueChanged -= new System.EventHandler(this.BankNameChanged);
+            cmbBankCode.SelectedValueChanged -= new System.EventHandler(this.BankCodeChanged);
 
-            foreach (string SingleCountry in BankCountryCommas)
+            // load bank records
+            if (BankDataset == null)
             {
-                BankCountry.Add(SingleCountry.Split(','));
+                BankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords();
+                txtBankKey.DataSet = BankDataset;
             }
 
             // add empty row
-            DataRow emptyRow = BankTable.NewRow();
-
-            emptyRow[PBankTable.ColumnPartnerKeyId] = -1;
+            DataRow emptyRow = BankDataset.PBank.NewRow();
+            emptyRow[PBankTable.ColumnPartnerKeyId] = 0;
             emptyRow[PBankTable.ColumnBranchNameId] = Catalog.GetString("");
             emptyRow[PBankTable.ColumnBranchCodeId] = Catalog.GetString("");
-            BankTable.Rows.Add(emptyRow);
+            BankDataset.PBank.Rows.Add(emptyRow);
 
             // add inactive row
-            emptyRow = BankTable.NewRow();
-
-            emptyRow[PBankTable.ColumnPartnerKeyId] = -2;
+            emptyRow = BankDataset.PBank.NewRow();
+            emptyRow[PBankTable.ColumnPartnerKeyId] = -1;
             emptyRow[PBankTable.ColumnBranchNameId] = Catalog.GetString("");
-            emptyRow[PBankTable.ColumnBranchCodeId] = Catalog.GetString("<INACTIVE>");
-            BankTable.Rows.Add(emptyRow);
+            emptyRow[PBankTable.ColumnBranchCodeId] = Catalog.GetString("<INACTIVE> ");
+            BankDataset.PBank.Rows.Add(emptyRow);
 
             // populate the bank name combo box
-            cmbBankName.InitialiseUserControl(BankTable,
+            cmbBankName.InitialiseUserControl(BankDataset.PBank,
                 PBankTable.GetPartnerKeyDBName(),
                 PBankTable.GetBranchNameDBName(),
                 PBankTable.GetBranchCodeDBName(),
                 null);
-            cmbBankName.AppearanceSetup(new int[] { 200, 130 }, -1);
+            cmbBankName.AppearanceSetup(new int[] { 230, 160 }, -1);
             cmbBankName.Filter = PBankTable.GetBranchNameDBName() + " <> '' OR " +
                                  PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = ''";
             cmbBankName.SelectedValueChanged += new System.EventHandler(this.BankNameChanged);
 
             // populate the bank code combo box
-            cmbBankCode.InitialiseUserControl(BankTable,
+            cmbBankCode.InitialiseUserControl(BankDataset.PBank,
                 PBankTable.GetBranchCodeDBName(),
                 PBankTable.GetPartnerKeyDBName(),
                 null);
-            cmbBankCode.AppearanceSetup(new int[] { 200 }, -1);
+            cmbBankCode.AppearanceSetup(new int[] { 210 }, -1);
+            // filter rows that are blank or <INACTIVE>
             cmbBankCode.Filter = "(" + PBankTable.GetBranchCodeDBName() + " <> '' AND " + PBankTable.GetBranchCodeDBName() + " <> '<INACTIVE> ') " +
                                  "OR (" + PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = '') " +
                                  "OR (" + PBankTable.GetBranchNameDBName() + " = '' AND " + PBankTable.GetBranchCodeDBName() + " = '<INACTIVE> ')";
             cmbBankCode.SelectedValueChanged += new System.EventHandler(this.BankCodeChanged);
         }
+
+        #endregion
+
+        #region Helper methods
 
         private void ShowDataManual()
         {
@@ -192,7 +238,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else if ((FCurrentBankRow == null) || (ARow.BankKey != FCurrentBankRow.PartnerKey))
                 {
-                    PartnerKeyChanged(ARow.BankKey, null, true);
+                    PartnerKeyChanged(ARow.BankKey, "", true);
                 }
             }
 
@@ -211,7 +257,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             DoRecalculateScreenParts();
         }
 
-        // initialise the grid to display partners who share the selected account
+        // Initialise the grid to display partners who share the selected account
         private void InitAccountSharedWithGrid()
         {
             grdAccountSharedWith.Columns.Clear();
@@ -224,23 +270,84 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdAccountSharedWith.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
         }
 
+        private void DoRecalculateScreenParts()
+        {
+            OnRecalculateScreenParts(new TRecalculateScreenPartsEventArgs() {
+                    ScreenPart = TScreenPartEnum.spCounters
+                });
+        }
+
+        /// <summary>
+        /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
+        /// Since we don't have controls on this UserControl that need adjusting after resizing
+        /// on 'Large Fonts (120 DPI)', we don't need to do anything here.
+        /// </summary>
+        public void AdjustAfterResizing()
+        {
+        }
+
+        /// <summary>
+        /// Performs necessary actions after the Merging of rows that were changed on
+        /// the Server side into the Client-side DataSet.
+        /// New rows with negative id numbers in the primary key have been removed, and replaced with the saved rows.
+        /// </summary>
+        public void RefreshRecordsAfterMerge()
+        {
+            int CurrentSelectedRowIndex = GetSelectedRowIndex();
+
+            FPreviouslySelectedDetailRow = null;
+            grdDetails.Selection.ResetSelection(false);
+            ShowData();
+
+            // reselect the previously selected row
+            SelectRowInGrid(CurrentSelectedRowIndex);
+        }
+
+        private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)
+        {
+            if (RecalculateScreenParts != null)
+            {
+                RecalculateScreenParts(this, e);
+            }
+        }
+
+        /// <summary>
+        /// GetDataFromControls for PPartner table.
+        /// </summary>
+        /// <remarks>This allows PPartner data to be saved even if the partner has no bank accounts.</remarks>
+        /// <returns>True if successful.</returns>
+        public bool GetPartnerDataFromControls()
+        {
+            try
+            {
+                // GetDataFromControls for PPartner table
+                FMainDS.PPartner[0].ReceiptLetterFrequency = cmbReceiptLetterFrequency.GetSelectedString();
+                FMainDS.PPartner[0].ReceiptEachGift = chkReceiptEachGift.Checked;
+                FMainDS.PPartner[0].AnonymousDonor = chkAnonymousDonor.Checked;
+                FMainDS.PPartner[0].EmailGiftStatement = chkEmailGiftStatement.Checked;
+                FMainDS.PPartner[0].FinanceComment = txtFinanceComment.Text;
+            }
+            catch (ConstraintException)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        #endregion
+
+        #region ActionHandling
+
         /// <summary>
         /// The currently selected account's PBank row
         /// </summary>
         private PBankRow FCurrentBankRow;
 
-        private void PartnerKeyChanged(long APartnerKey, string APartnerShortName, bool AValidSelection)
+        // called when FindBank dialog is accepted
+        private void PartnerKeyChanged(long APartnerKey, String APartnerShortName, bool AValidSelection)
         {
-            FCurrentBankRow = (PBankRow)BankTable.Rows.Find(new object[] { APartnerKey });
-
-            // if null, then the bank account is inactive and hence not in BankTable
-            if (FCurrentBankRow == null)
-            {
-                FCurrentBankRow = BankTable.NewRowTyped();
-                FCurrentBankRow.PartnerKey = APartnerKey;
-                FCurrentBankRow.BranchName = "";
-                FCurrentBankRow.BranchCode = "";
-            }
+            FCurrentBankRow = (PBankRow)BankDataset.PBank.Rows.Find(new object[] { APartnerKey });
 
             // change the BankName combo (if it was not the control used to change the bank)
             if (cmbBankName.GetSelectedString() != FCurrentBankRow.PartnerKey.ToString())
@@ -270,15 +377,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             if ((APartnerKey != 0) && (APartnerKey != -1))
             {
                 lblBicSwiftCode.Text = Catalog.GetString("BIC/SWIFT Code: ") + FCurrentBankRow.Bic;
-                lblCountry.Text = Catalog.GetString("Country: ");
+                lblCountry.Text = Catalog.GetString("Country: No Valid Address On File");
 
-                if (BankCountry.FindIndex(x => x[0] == FCurrentBankRow.PartnerKey.ToString()) == -1)
+                foreach (PPartnerLocationRow Row in BankDataset.PPartnerLocation.Rows)
                 {
-                    lblCountry.Text += Catalog.GetString("No Valid Address On File");
-                }
-                else
-                {
-                    lblCountry.Text += BankCountry.Find(x => x[0] == FCurrentBankRow.PartnerKey.ToString())[1];
+                    if ((Row.PartnerKey == FCurrentBankRow.PartnerKey)
+                        && (Row.IsDateGoodUntilNull() || (Row.DateGoodUntil >= DateTime.Today)))
+                    {
+                        lblCountry.Text = "Country: " +
+                                          ((PLocationRow)BankDataset.PLocation.Rows.Find(new object[] { Row.SiteKey, Row.LocationKey })).CountryCode;
+                        break;
+                    }
                 }
             }
             else
@@ -288,12 +397,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private void PartnerKeyChanged(System.Object sender, EventArgs e)
+        {
+            PartnerKeyChanged(Convert.ToInt64(txtBankKey.Text), "", true);
+        }
+
+        // when cmbBankName is changed
         private void BankNameChanged(System.Object sender, EventArgs e)
         {
+            // if a blank name has just been selected
             if ((cmbBankName.GetSelectedString() == "") && (FCurrentBankRow.BranchName != ""))
             {
-                cmbBankName.SetSelectedString("");
-                txtBankKey.Text = "";
+                txtBankKey.Text = "0";
             }
             // cmbBankName.ContainsFocus is needed because the combobox automatically changes the selection
             // to the first row with that name when the focus is left. This was a problem with multiple banks with the same name.
@@ -301,30 +416,31 @@ namespace Ict.Petra.Client.MPartner.Gui
                      && (cmbBankName.GetSelectedString() != "")
                      && cmbBankName.ContainsFocus)
             {
-                FCurrentBankRow = (PBankRow)BankTable.Rows.Find(new object[] { Convert.ToInt64(cmbBankName.GetSelectedString()) });
+                FCurrentBankRow = (PBankRow)BankDataset.PBank.Rows.Find(new object[] { Convert.ToInt64(cmbBankName.GetSelectedString()) });
 
                 // update partner key in txtBankKey
                 txtBankKey.Text = FCurrentBankRow.PartnerKey.ToString();
-                PartnerKeyChanged(FCurrentBankRow.PartnerKey, null, true);
+                PartnerKeyChanged(FCurrentBankRow.PartnerKey, "", true);
             }
         }
 
+        // when cmbBankCode is changed
         private void BankCodeChanged(System.Object sender, EventArgs e)
         {
-            if ((string.IsNullOrEmpty(cmbBankCode.GetSelectedString())
-                 || (cmbBankCode.GetSelectedString() == "<INACTIVE>")) && !string.IsNullOrEmpty(FCurrentBankRow.BranchCode))
+            if ((string.IsNullOrEmpty(cmbBankCode.GetSelectedString()) && !string.IsNullOrEmpty(FCurrentBankRow.BranchCode))
+                || ((cmbBankCode.GetSelectedString() == "<INACTIVE> ") && (FCurrentBankRow.BranchCode != "<INACTIVE> ")))
             {
+                // if "<INACTIVE>" has been selected change it to blank
                 cmbBankCode.SelectedIndex = -1;
-                cmbBankName.SelectedIndex = -1;
-                txtBankKey.Text = "";
+                txtBankKey.Text = "0";
             }
             else if (FCurrentBankRow.BranchCode != cmbBankCode.GetSelectedString())
             {
-                FCurrentBankRow = (PBankRow)BankTable.Rows.Find(new object[] { cmbBankCode.GetSelectedDescription() });
+                FCurrentBankRow = (PBankRow)BankDataset.PBank.Rows.Find(new object[] { cmbBankCode.GetSelectedDescription() });
 
                 // update partner key in txtBankKey
                 txtBankKey.Text = FCurrentBankRow.PartnerKey.ToString();
-                PartnerKeyChanged(FCurrentBankRow.PartnerKey, null, true);
+                PartnerKeyChanged(FCurrentBankRow.PartnerKey, "", true);
             }
         }
 
@@ -368,7 +484,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// share an existing bank account of another partner
+        /// Share an existing bank account of another partner
         /// </summary>
         private void ShareExistingBankAccount(System.Object sender, EventArgs e)
         {
@@ -467,6 +583,156 @@ namespace Ict.Petra.Client.MPartner.Gui
             frm.SetParameters(TScreenMode.smEdit, SharingPartnerKey, TPartnerEditTabPageEnum.petpFinanceDetails);
             frm.Show();
         }
+
+        // Called when the dataset is changed in the FindBank dialog
+        private void DatasetChanged(DataSet ADataset)
+        {
+            BankDataset = (BankTDS)ADataset;
+            PopulateComboBoxes();
+        }
+
+        // set the main account flag, remove that flag from the other accounts (p_banking_details_usage)
+        private void SetMainAccount(System.Object Sender, EventArgs e)
+        {
+            foreach (PartnerEditTDSPBankingDetailsRow r in FMainDS.PBankingDetails.Rows)
+            {
+                if ((r.RowState != DataRowState.Deleted) && (r != FPreviouslySelectedDetailRow) && r.MainAccount)
+                {
+                    r.MainAccount = false;
+                    FPetraUtilsObject.SetChangedFlag();
+                }
+            }
+
+            if (!FPreviouslySelectedDetailRow.MainAccount)
+            {
+                FPreviouslySelectedDetailRow.MainAccount = true;
+                FPetraUtilsObject.SetChangedFlag();
+            }
+
+            // MainAccount PBankingDetailsUsage is processed on the server side!!!
+        }
+
+        // copy the partner's name to the account name
+        private void CopyPartnerName(System.Object Sender, EventArgs e)
+        {
+            if (MessageBox.Show(Catalog.GetString("Be aware that the Account Name field needs to hold the proper name " +
+                        "of the Bank Account as assigned by the bank."),
+                    Catalog.GetString("Account Name vs. Partner Name"),
+                    MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Information) == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            PPartnerRow PartnerRow = (PPartnerRow)FMainDS.PPartner.Rows[0];
+
+            if (PartnerRow.PartnerClass == "PERSON")
+            {
+                PPersonRow PersonRow = (PPersonRow)FMainDS.PPerson.Rows[0];
+                txtAccountName.Text = PersonRow.FirstName;
+
+                if ((PersonRow.MiddleName1 != null) && (PersonRow.MiddleName1.Length > 0)
+                    && (txtAccountName.Text.Length > 0))
+                {
+                    txtAccountName.Text += " " + PersonRow.MiddleName1;
+                }
+                else
+                {
+                    txtAccountName.Text += PersonRow.MiddleName1;
+                }
+
+                if ((PersonRow.FamilyName != null) && (PersonRow.FamilyName.Length > 0)
+                    && (txtAccountName.Text.Length > 0))
+                {
+                    txtAccountName.Text += " " + PersonRow.FamilyName;
+                }
+                else
+                {
+                    txtAccountName.Text += PersonRow.FamilyName;
+                }
+            }
+            else if (PartnerRow.PartnerClass == "FAMILY")
+            {
+                PFamilyRow FamilyRow = (PFamilyRow)FMainDS.PFamily.Rows[0];
+                txtAccountName.Text = FamilyRow.FirstName;
+
+                if (txtAccountName.Text.Length > 0)
+                {
+                    txtAccountName.Text += " " + FamilyRow.FamilyName;
+                }
+                else
+                {
+                    txtAccountName.Text += FamilyRow.FamilyName;
+                }
+            }
+            else
+            {
+                txtAccountName.Text = PartnerRow.PartnerShortName;
+            }
+        }
+
+        private PBankingDetailsRow LastRowChecked = null;
+
+        // When a bank account is edited, check if it is shared with any other partners. If it is, display a message informing the user.
+        private void CheckIfRowIsShared(System.Object Sender, EventArgs e)
+        {
+            if ((FPreviouslySelectedDetailRow != LastRowChecked) && (AccountSharedWith.Rows.Count > 0))
+            {
+                string EditQuestion = "";
+
+                if (AccountSharedWith.Rows.Count == 1)
+                {
+                    EditQuestion = Catalog.GetString("This bank account is currently shared with the following Partner:\n");
+                }
+                else if (AccountSharedWith.Rows.Count > 1)
+                {
+                    EditQuestion = Catalog.GetString("This bank account is currently shared with the following Partners:\n");
+                }
+
+                for (int i = 0; i < AccountSharedWith.Rows.Count; i++)
+                {
+                    // do not allow more than 5 partners to be display. Otherwise message box becomes to long.
+                    if (i == 5)
+                    {
+                        int Remaining = AccountSharedWith.Rows.Count - i;
+
+                        if (Remaining == 1)
+                        {
+                            EditQuestion += "\n..." + Catalog.GetString("and 1 other Partner.");
+                        }
+                        else if (Remaining > 1)
+                        {
+                            EditQuestion += "\n..." + string.Format(Catalog.GetString("and {0} other Partners."), Remaining);
+                        }
+
+                        break;
+                    }
+
+                    PPartnerRow Row = (PPartnerRow)AccountSharedWith.Rows[i];
+                    EditQuestion += "\n" + Row.PartnerShortName + " [" + Row.PartnerKey + "]";
+                }
+
+                if (AccountSharedWith.Rows.Count == 1)
+                {
+                    EditQuestion += Catalog.GetString("\n\nChanges to the Bank Account details here will take effect on the other partner's too.");
+                }
+                else if (AccountSharedWith.Rows.Count > 1)
+                {
+                    EditQuestion += Catalog.GetString("\n\nChanges to the Bank Account details here will take effect on the other partners' too.");
+                }
+
+                MessageBox.Show(EditQuestion,
+                    Catalog.GetString("Bank Account is used by another Partner"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+
+            LastRowChecked = FPreviouslySelectedDetailRow;
+        }
+
+        #endregion
+
+        #region Deletion
 
         private bool PreDeleteManual(PartnerEditTDSPBankingDetailsRow ARowToDelete, ref String ADeletionQuestion)
         {
@@ -592,241 +858,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private void DoRecalculateScreenParts()
-        {
-            OnRecalculateScreenParts(new TRecalculateScreenPartsEventArgs() {
-                    ScreenPart = TScreenPartEnum.spCounters
-                });
-        }
+        #endregion
 
-        /// <summary>
-        /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
-        /// Since we don't have controls on this UserControl that need adjusting after resizing
-        /// on 'Large Fonts (120 DPI)', we don't need to do anything here.
-        /// </summary>
-        public void AdjustAfterResizing()
-        {
-        }
-
-        /// <summary>
-        /// Loads PBankingDetails Data from Petra Server into FMainDS, if not already loaded.
-        /// </summary>
-        /// <returns>true if successful, otherwise false.</returns>
-        private Boolean LoadDataOnDemand()
-        {
-            // Make sure that Typed DataTables are already there at Client side
-            if (FMainDS.PBankingDetails == null)
-            {
-                FMainDS.Tables.Add(new PartnerEditTDSPBankingDetailsTable());
-                FMainDS.Tables.Add(new PPartnerBankingDetailsTable());
-                FMainDS.InitVars();
-            }
-
-            if (TClientSettings.DelayedDataLoading
-                && ((FMainDS.PBankingDetails == null) || (FMainDS.PBankingDetails.Rows.Count == 0)))
-            {
-                FMainDS.Merge(FPartnerEditUIConnector.GetBankingDetails());
-
-                // Make DataRows unchanged
-                if (FMainDS.PBankingDetails.Rows.Count > 0)
-                {
-                    if (FMainDS.PBankingDetails.Rows[0].RowState != DataRowState.Added)
-                    {
-                        FMainDS.PBankingDetails.AcceptChanges();
-                    }
-                }
-            }
-
-            return FMainDS.PBankingDetails.Rows.Count != 0;
-        }
-
-        /// <summary>
-        /// Performs necessary actions after the Merging of rows that were changed on
-        /// the Server side into the Client-side DataSet.
-        /// New rows with negative id numbers in the primary key have been removed, and replaced with the saved rows.
-        /// </summary>
-        public void RefreshRecordsAfterMerge()
-        {
-            int CurrentSelectedRowIndex = GetSelectedRowIndex();
-
-            FPreviouslySelectedDetailRow = null;
-            grdDetails.Selection.ResetSelection(false);
-            ShowData();
-
-            // reselect the previously selected row
-            SelectRowInGrid(CurrentSelectedRowIndex);
-        }
-
-        private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)
-        {
-            if (RecalculateScreenParts != null)
-            {
-                RecalculateScreenParts(this, e);
-            }
-        }
-
-        /// <summary>
-        /// GetDataFromControls for PPartner table.
-        /// </summary>
-        /// <remarks>This allows PPartner data to be saved even if the partner has no bank accounts.</remarks>
-        /// <returns>True if successful.</returns>
-        public bool GetPartnerDataFromControls()
-        {
-            try
-            {
-                // GetDataFromControls for PPartner table
-                FMainDS.PPartner[0].ReceiptLetterFrequency = cmbReceiptLetterFrequency.GetSelectedString();
-                FMainDS.PPartner[0].ReceiptEachGift = chkReceiptEachGift.Checked;
-                FMainDS.PPartner[0].AnonymousDonor = chkAnonymousDonor.Checked;
-                FMainDS.PPartner[0].EmailGiftStatement = chkEmailGiftStatement.Checked;
-                FMainDS.PPartner[0].FinanceComment = txtFinanceComment.Text;
-            }
-            catch (ConstraintException)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private PBankingDetailsRow LastRowChecked = null;
-
-        private void CheckIfRowIsShared(System.Object Sender, EventArgs e)
-        {
-            // When a bank account is edited, check if it is shared with any other partners. If it is, display a message informing the user.
-            if ((FPreviouslySelectedDetailRow != LastRowChecked) && (AccountSharedWith.Rows.Count > 0))
-            {
-                string EditQuestion = "";
-
-                if (AccountSharedWith.Rows.Count == 1)
-                {
-                    EditQuestion = Catalog.GetString("This bank account is currently shared with the following Partner:\n");
-                }
-                else if (AccountSharedWith.Rows.Count > 1)
-                {
-                    EditQuestion = Catalog.GetString("This bank account is currently shared with the following Partners:\n");
-                }
-
-                for (int i = 0; i < AccountSharedWith.Rows.Count; i++)
-                {
-                    // do not allow more than 5 partners to be display. Otherwise message box becomes to long.
-                    if (i == 5)
-                    {
-                        int Remaining = AccountSharedWith.Rows.Count - i;
-
-                        if (Remaining == 1)
-                        {
-                            EditQuestion += "\n..." + Catalog.GetString("and 1 other Partner.");
-                        }
-                        else if (Remaining > 1)
-                        {
-                            EditQuestion += "\n..." + string.Format(Catalog.GetString("and {0} other Partners."), Remaining);
-                        }
-
-                        break;
-                    }
-
-                    PPartnerRow Row = (PPartnerRow)AccountSharedWith.Rows[i];
-                    EditQuestion += "\n" + Row.PartnerShortName + " [" + Row.PartnerKey + "]";
-                }
-
-                if (AccountSharedWith.Rows.Count == 1)
-                {
-                    EditQuestion += Catalog.GetString("\n\nChanges to the Bank Account details here will take effect on the other partner's too.");
-                }
-                else if (AccountSharedWith.Rows.Count > 1)
-                {
-                    EditQuestion += Catalog.GetString("\n\nChanges to the Bank Account details here will take effect on the other partners' too.");
-                }
-
-                MessageBox.Show(EditQuestion,
-                    Catalog.GetString("Bank Account is used by another Partner"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-            }
-
-            LastRowChecked = FPreviouslySelectedDetailRow;
-        }
-
-        // set the main account flag, remove that flag from the other accounts (p_banking_details_usage)
-        private void SetMainAccount(System.Object Sender, EventArgs e)
-        {
-            foreach (PartnerEditTDSPBankingDetailsRow r in FMainDS.PBankingDetails.Rows)
-            {
-                if ((r.RowState != DataRowState.Deleted) && (r != FPreviouslySelectedDetailRow) && r.MainAccount)
-                {
-                    r.MainAccount = false;
-                    FPetraUtilsObject.SetChangedFlag();
-                }
-            }
-
-            if (!FPreviouslySelectedDetailRow.MainAccount)
-            {
-                FPreviouslySelectedDetailRow.MainAccount = true;
-                FPetraUtilsObject.SetChangedFlag();
-            }
-
-            // MainAccount PBankingDetailsUsage is processed on the server side!!!
-        }
-
-        // copy the partner's name to the account name
-        private void CopyPartnerName(System.Object Sender, EventArgs e)
-        {
-            if (MessageBox.Show(Catalog.GetString("Be aware that the Account Name field needs to hold the proper name " +
-                        "of the Bank Account as assigned by the bank."),
-                    Catalog.GetString("Account Name vs. Partner Name"),
-                    MessageBoxButtons.OKCancel,
-                    MessageBoxIcon.Information) == DialogResult.Cancel)
-            {
-                return;
-            }
-
-            PPartnerRow PartnerRow = (PPartnerRow)FMainDS.PPartner.Rows[0];
-
-            if (PartnerRow.PartnerClass == "PERSON")
-            {
-                PPersonRow PersonRow = (PPersonRow)FMainDS.PPerson.Rows[0];
-                txtAccountName.Text = PersonRow.FirstName;
-
-                if ((PersonRow.MiddleName1 != null) && (PersonRow.MiddleName1.Length > 0)
-                    && (txtAccountName.Text.Length > 0))
-                {
-                    txtAccountName.Text += " " + PersonRow.MiddleName1;
-                }
-                else
-                {
-                    txtAccountName.Text += PersonRow.MiddleName1;
-                }
-
-                if ((PersonRow.FamilyName != null) && (PersonRow.FamilyName.Length > 0)
-                    && (txtAccountName.Text.Length > 0))
-                {
-                    txtAccountName.Text += " " + PersonRow.FamilyName;
-                }
-                else
-                {
-                    txtAccountName.Text += PersonRow.FamilyName;
-                }
-            }
-            else if (PartnerRow.PartnerClass == "FAMILY")
-            {
-                PFamilyRow FamilyRow = (PFamilyRow)FMainDS.PFamily.Rows[0];
-                txtAccountName.Text = FamilyRow.FirstName;
-
-                if (txtAccountName.Text.Length > 0)
-                {
-                    txtAccountName.Text += " " + FamilyRow.FamilyName;
-                }
-                else
-                {
-                    txtAccountName.Text += FamilyRow.FamilyName;
-                }
-            }
-            else
-            {
-                txtAccountName.Text = PartnerRow.PartnerShortName;
-            }
-        }
+        #region Validation
 
         private void ValidateDataDetailsManual(PBankingDetailsRow ARow)
         {
@@ -845,5 +879,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 ref VerificationResultCollection,
                 FValidationControlsDict);
         }
+
+        #endregion
     }
 }

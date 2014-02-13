@@ -152,6 +152,7 @@ namespace Ict.Petra.Client.MConference.Gui
                     RowPos++;
                 }
 
+                // automatically select the current conference
                 grdConferences.SelectRowInGrid(RowPos, true);
             }
         }
