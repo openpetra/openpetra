@@ -189,6 +189,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// Check for any errors
+        /// </summary>
+        /// <param name="AShowMessage"></param>
+        public void CheckForTransactionLoadUpdateErrors(bool AShowMessage = true)
+        {
+            //Process update errors
+            if (FMainDS.Tables.Contains("AUpdateErrors"))
+            {
+                if (AShowMessage)
+                {
+                    string loadErrors = FMainDS.Tables["AUpdateErrors"].Rows[0].ItemArray[0].ToString();
+
+                    MessageBox.Show(String.Format("Errors occurred in updating gift data: {0}", loadErrors));
+                }
+
+                FMainDS.Tables.Remove("AUpdateErrors");
+            }
+        }
+
+        /// <summary>
         /// this should be called when all data is reloaded after posting
         /// </summary>
         public void ClearCurrentSelections()

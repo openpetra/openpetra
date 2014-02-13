@@ -214,8 +214,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FMainDS.AGiftDetail.DefaultView.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
-                //Get the latest data
-                UpdateCostCentreCodeForRecipients();
+
+                ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors();
             }
 
             // Now we set the full filter
@@ -235,39 +235,49 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void UpdateCostCentreCodeForRecipients()
         {
-			if (!FBatchUnposted)
-			{
-				return;
-			}
+            string FailedUpdates = string.Empty;
 
-			for (int i = 0; i < FMainDS.AGiftDetail.Count; i++)
-			{
-				AGiftDetailRow giftRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows[i];
-				
-				if (giftRow.BatchNumber == FBatchNumber)
-				{
-					FindCostCentreCodeForRecipient(giftRow);
-				}
-        	}
+            if (!FBatchUnposted)
+            {
+                return;
+            }
+
+            //0 for the last two arguments means for all transactions in the batch
+            TRemote.MFinance.Gift.WebConnectors.UpdateCostCentreCodeForRecipients(ref FMainDS, out FailedUpdates, 0, 0);
+
+            if (FailedUpdates.Length > 0)
+            {
+                MessageBox.Show(String.Format("Errors occurred in retrieving cost centre codes: {0}", FailedUpdates));
+            }
+
+//			for (int i = 0; i < FMainDS.AGiftDetail.Count; i++)
+//			{
+//				AGiftDetailRow giftRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows[i];
+//
+//				if (giftRow.BatchNumber == FBatchNumber)
+//				{
+//					FindCostCentreCodeForRecipient(giftRow);
+//				}
+//              }
         }
 
         private void FindCostCentreCodeForRecipient(AGiftDetailRow ARow, bool AShowError = false)
         {
-			string CurrentCostCentreCode = ARow.CostCentreCode;
+            string CurrentCostCentreCode = ARow.CostCentreCode;
             string NewCostCentreCode = string.Empty;
-            
+
             string MotivationGroup = ARow.MotivationGroupCode;
             string MotivationDetail = ARow.MotivationDetailCode;
 
             Int64 PartnerKey = ARow.RecipientKey;
-        	Int64 RecipientLedgerNumber = ARow.RecipientLedgerNumber;
+            Int64 RecipientLedgerNumber = ARow.RecipientLedgerNumber;
             Int64 LedgerPartnerKey = FMainDS.ALedger[0].PartnerKey;
 
             bool KeyMinIsActive = false;
             bool KeyMinExists = TRemote.MFinance.Gift.WebConnectors.KeyMinistryExists(PartnerKey, out KeyMinIsActive);
 
             string ValidLedgerNumberCostCentreCode;
-            
+
             bool ValidLedgerNumberExists = TRemote.MFinance.Gift.WebConnectors.ValidLedgerNumberExistsForRecipient(FLedgerNumber,
                 PartnerKey,
                 out ValidLedgerNumberCostCentreCode);
@@ -281,26 +291,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 NewCostCentreCode = ValidLedgerNumberCostCentreCode;
             }
-            else if ((RecipientLedgerNumber != LedgerPartnerKey) && (MotivationGroup == "GIFT" || KeyMinExists))
+            else if ((RecipientLedgerNumber != LedgerPartnerKey) && ((MotivationGroup == "GIFT") || KeyMinExists))
             {
-                errMsg = String.Format("Error in extracting Cost Centre Code for Recipient: {0} in Ledger: {1}.{2}{2}(Recipient Ledger Number: {3}, Ledger Partner Key: {4})",
-						                        PartnerKey,
-						                        FLedgerNumber,
-						                        Environment.NewLine,
-						                        RecipientLedgerNumber,
-						                        LedgerPartnerKey);
-            	
-            	if (AShowError)
-            	{
-	            	MessageBox.Show(errMsg,
-	                    "Cost Centre Code Error",
-	                    MessageBoxButtons.OK,
-	                    MessageBoxIcon.Exclamation);
-            	}
-            	else
-            	{
-            		TLogging.Log("Cost Centre Code Error: " + errMsg);
-            	}
+                errMsg = String.Format(
+                    "Error in extracting Cost Centre Code for Recipient: {0} in Ledger: {1}.{2}{2}(Recipient Ledger Number: {3}, Ledger Partner Key: {4})",
+                    PartnerKey,
+                    FLedgerNumber,
+                    Environment.NewLine,
+                    RecipientLedgerNumber,
+                    LedgerPartnerKey);
+
+                if (AShowError)
+                {
+                    MessageBox.Show(errMsg,
+                        "Cost Centre Code Error",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+                }
+                else
+                {
+                    TLogging.Log("Cost Centre Code Error: " + errMsg);
+                }
             }
             else
             {
@@ -313,32 +324,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-	                errMsg = String.Format(
-	                            "Error in extracting Cost Centre Code for Motivation Group: {0} and Motivation Detail: {1} in Ledger: {2}.",
-	                            MotivationGroup,
-	                            MotivationDetail,
-	                            FLedgerNumber);
-                	
-	            	if (AShowError)
-	            	{
-		            	MessageBox.Show(errMsg,
-		                    "Cost Centre Code Error",
-		                    MessageBoxButtons.OK,
-		                    MessageBoxIcon.Exclamation);
-	            	}
-	            	else
-	            	{
-	            		TLogging.Log("Cost Centre Code Error: " + errMsg);
-	            	}
+                    errMsg = String.Format(
+                        "Error in extracting Cost Centre Code for Motivation Group: {0} and Motivation Detail: {1} in Ledger: {2}.",
+                        MotivationGroup,
+                        MotivationDetail,
+                        FLedgerNumber);
+
+                    if (AShowError)
+                    {
+                        MessageBox.Show(errMsg,
+                            "Cost Centre Code Error",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Exclamation);
+                    }
+                    else
+                    {
+                        TLogging.Log("Cost Centre Code Error: " + errMsg);
+                    }
                 }
             }
 
             if (CurrentCostCentreCode != NewCostCentreCode)
             {
-	            //ARow.CostCentreCode = NewCostCentreCode;
+                ARow.CostCentreCode = NewCostCentreCode;
             }
         }
-        
+
         bool FinRecipientKeyChanging = false;
 
         private void RecipientKeyChanged(Int64 APartnerKey,
@@ -390,7 +401,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-                	RetrieveRecipientCostCentreCode(APartnerKey);
+                    RetrieveRecipientCostCentreCode(APartnerKey);
                 }
             }
             finally
@@ -708,12 +719,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RetrieveRecipientCostCentreCode(Int64 APartnerKey)
         {
+            string FailedUpdates = string.Empty;
+
             if (FInKeyMinistryChanging || (FPreviouslySelectedDetailRow == null))
             {
                 return;
             }
 
-            FindCostCentreCodeForRecipient(FPreviouslySelectedDetailRow, true);
+            TRemote.MFinance.Gift.WebConnectors.UpdateCostCentreCodeForRecipients(ref FMainDS,
+                out FailedUpdates,
+                FPreviouslySelectedDetailRow.GiftTransactionNumber,
+                FPreviouslySelectedDetailRow.DetailNumber);
+
+            if (FailedUpdates.Length > 0)
+            {
+                MessageBox.Show(String.Format("Errors occurred in retrieving cost centre code: {0}", FailedUpdates));
+            }
+
+            //FindCostCentreCodeForRecipient(FPreviouslySelectedDetailRow, true);
 
             txtDetailCostCentreCode.Text = FPreviouslySelectedDetailRow.CostCentreCode;
         }
@@ -755,7 +778,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             cmbMinistry.Clear();
 
             TLogging.Log("PopulateKeyMinistry-" + APartnerKey.ToString());
-            
+
             if (APartnerKey == 0)
             {
                 APartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
@@ -998,6 +1021,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     //Load tables afresh
                     FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(FLedgerNumber, FBatchNumber));
 
+                    ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors(false);
+
                     //Delete gift details
                     for (int i = FMainDS.AGiftDetail.Count - 1; i >= 0; i--)
                     {
@@ -1206,6 +1231,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FMainDS.AGift.Clear();
 
                     FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(FLedgerNumber, FBatchNumber));
+
+                    ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors();
                 }
                 else
                 {
@@ -1753,6 +1780,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FMainDS.AGift.Rows.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
+
+                ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors();
             }
             else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {
@@ -2104,6 +2133,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FMainDS.AGift.Rows.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
+
+                ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors();
             }
             else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {
@@ -2181,6 +2212,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FMainDS.AGift.Rows.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
+                ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors();
             }
             else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {

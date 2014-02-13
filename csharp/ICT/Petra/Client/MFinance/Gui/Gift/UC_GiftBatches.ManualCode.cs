@@ -954,6 +954,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Load tables afresh
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber));
 
+                ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors(false);
+
                 //Delete gift details
                 for (int i = FMainDS.AGiftDetail.Count - 1; i >= 0; i--)
                 {
@@ -1139,7 +1141,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             this.Cursor = Cursors.WaitCursor;
-            
+
             RadioButton rbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
             int currentBatchNo = 0;
 
@@ -1162,7 +1164,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (batchIsEmpty)  // there are no gifts in this batch!
             {
                 this.Cursor = Cursors.Default;
-            	MessageBox.Show(Catalog.GetString("Batch is empty!"), Catalog.GetString("Posting failed"),
+                MessageBox.Show(Catalog.GetString("Batch is empty!"), Catalog.GetString("Posting failed"),
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
@@ -1189,7 +1191,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return; // Oops - there's no selected row.
             }
 
-                // ask if the user really wants to post the batch
+            // ask if the user really wants to post the batch
             if (MessageBox.Show(String.Format(Catalog.GetString("Do you really want to post gift batch {0}?"),
                         FPreviouslySelectedDetailRow.BatchNumber),
                     Catalog.GetString("Confirm posting of Gift Batch"),
