@@ -405,7 +405,7 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    CollPanel.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+                    CollPanel.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
                     {
                         OnItemActivation(ATaskList, ATaskListNode, AItemClicked);
                     };
@@ -465,11 +465,11 @@ namespace Ict.Common.Controls
             }
 
             FCollPanelWhereLastItemActivationHappened = GetCollapsiblePanelInstance(ATaskListNode.ParentNode);
-
+            
             // Re-fire Event
             if (ItemActivation != null)
             {
-                ItemActivation(ATaskList, ATaskListNode, AItemClicked);
+                ItemActivation(ATaskList, ATaskListNode, AItemClicked, GetCollapsiblePanelInstance(0));
             }
         }
 

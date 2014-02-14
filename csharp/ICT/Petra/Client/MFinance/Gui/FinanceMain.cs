@@ -25,6 +25,7 @@ using System.Windows.Forms;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Gui.MFinance;
+using Ict.Petra.Client.MFinance.Gui.Setup;
 
 namespace Ict.Petra.Client.MFinance.Gui
 {
