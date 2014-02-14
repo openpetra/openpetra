@@ -39,6 +39,7 @@ using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.CommonControls;
 
 namespace Ict.Petra.Client.CommonForms
 {
@@ -82,6 +83,9 @@ namespace Ict.Petra.Client.CommonForms
         protected System.Windows.Forms.Form FWinForm;
 
         private Form FCallerForm;
+
+        private static SortedList <string, string>FWindowPositions = new SortedList <string, string>();
+        private static bool FWindowPositionsLoaded = false;
 
         /// Tells whether the Form is activated for the first time (after loading the Form) or not
         protected Boolean FFormActivatedForFirstTime;
@@ -482,10 +486,25 @@ namespace Ict.Petra.Client.CommonForms
         {
             if (e.KeyCode == Keys.Escape)
             {
-                ExecuteAction(eActionId.eClose);
+                if (AContainerControlWantsEscape(sender)
+                    || (TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_ESC_CLOSES_SCREEN, true) == false)
+                    || (this.FWinForm.Name == "TFrmMainWindowNew"))
+                {
+                    // Either the user default is NOT to use the ESC key to close screens
+                    // or there is a control on the form that needs to handle the escape key,
+                    // or we are the main window
+                    //  so we do nothing and the keyDown message will get passed to the control - which will do something if it needs to
+                }
+                else
+                {
+                    // No control wants the escape key so we are free to handle the KeyDown message at the Form level
+                    e.Handled = true;
+                    ExecuteAction(eActionId.eClose);
+                }
             }
             else if (e.KeyCode == Keys.F1)
             {
+                e.Handled = true;
                 ExecuteAction(eActionId.eHelp);
             }
         }
@@ -562,13 +581,29 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// add the form to the forms list
+        /// add the form to the forms list and set its window position/size
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         public void TFrmPetra_Load(System.Object sender, System.EventArgs e)
         {
             TFormsList.GFormsList.Add(FWinForm);
+
+            // Are we saving/restoring the window position?  This option is stored in User Defaults.
+            if (TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, true))
+            {
+                // Restore the window positions if we know them
+                if (FWinForm.Name == "TFrmMainWindowNew" || FCallerForm.Name == "TFrmMainWindowNew")
+                {
+                    // Either we are loading the main window or we have been opened by the main window
+                    if (!FWindowPositionsLoaded)
+                    {
+                        LoadWindowPositionsFromFile();
+                    }
+
+                    RestoreWindowPositionProperties();
+                }
+            }
         }
 
         /**
@@ -592,6 +627,71 @@ namespace Ict.Petra.Client.CommonForms
                 // MessageBox.Show('TFrmPetra.TFrmPetra_Closing: GFormsList.Remove(Self as Form)');
                 TFormsList.GFormsList.NotifyWindowClose(this.FWinForm.Handle);
                 TFormsList.GFormsList.Remove(FWinForm);
+
+                // Deal with the window positions which are stored on the local file system
+                string commonSettingsPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                    CommonFormsResourcestrings.StrFolderOrganisationName,
+                    System.Diagnostics.FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName);
+                string settingsFileName = String.Format(CommonFormsResourcestrings.StrScreenPositionsFileName, UserInfo.GUserInfo.UserID);
+                string settingsPath = Path.Combine(commonSettingsPath, settingsFileName);
+
+                if (TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, true))
+                {
+                    // This is where we 'remember' the window position information
+                    if (FWinForm.Name == "TFrmMainWindowNew")
+                    {
+                        // we are closing the main window
+                        // Get our own window position properties
+                        GetWindowPositionProperties();
+
+                        // Now save all the properties for all windows we know about
+                        try
+                        {
+                            if (!Directory.Exists(commonSettingsPath))
+                            {
+                                Directory.CreateDirectory(commonSettingsPath);
+                            }
+
+                            using (StreamWriter sw = new StreamWriter(settingsPath))
+                            {
+                                foreach (string key in FWindowPositions.Keys)
+                                {
+                                    sw.WriteLine("{0}={1}", key, FWindowPositions[key]);
+                                }
+
+                                sw.Close();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            TLogging.Log(String.Format("Exception occurred while saving the window position file '{0}': {1}", settingsPath, ex.Message), TLoggingType.ToLogfile);
+                        }
+                    }
+                    else if ((FCallerForm.Name == "TFrmMainWindowNew") && !FWinForm.Modal)
+                    {
+                        // we were opened by the main window
+                        GetWindowPositionProperties();
+                    }
+                }
+                else
+                {
+                    // We are closing a screen and not saving window positions (or no longer saving them)
+                    FWindowPositions.Clear();
+                    FWindowPositionsLoaded = false;
+
+                    try
+                    {
+                        if (File.Exists(settingsPath))
+                        {
+                            File.Delete(settingsPath);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        TLogging.Log(String.Format("Exception occurred while deleting the window position file '{0}': {1}", settingsPath, ex.Message), TLoggingType.ToLogfile);
+                    }
+                }
             }
         }
 
@@ -655,6 +755,295 @@ namespace Ict.Petra.Client.CommonForms
         virtual public bool CanClose()
         {
             return true;
+        }
+
+        /// <summary>
+        /// Helper function to discover if any control in a specified container wants to handle the Escape key.
+        /// For example, a combo box that is dropped down would want to handle escape so as to close the list.
+        /// </summary>
+        /// <param name="AContainerControl">The container control to recursively search</param>
+        /// <returns>True if any control in the container wants to handle escape</returns>
+        private bool AContainerControlWantsEscape(object AContainerControl)
+        {
+            // Assume that no controls want to handle ESCape
+            bool WantsEscape = false;
+
+            foreach (Control control in ((Control)AContainerControl).Controls)
+            {
+                // The various ComboBox derivatives want ESCape if the list is Dropped Down
+                if (control is ComboBox)
+                {
+                    WantsEscape = ((ComboBox)control).DroppedDown;
+                }
+                else if (control is TUC_CountryComboBox)
+                {
+                    WantsEscape = ((TUC_CountryComboBox)control).DroppedDown;
+                }
+                else if (control is TUC_CountryLabelledComboBox)
+                {
+                    WantsEscape = ((TUC_CountryLabelledComboBox)control).DroppedDown;
+                }
+                else if (control is TCmbAutoPopulated)
+                {
+                    WantsEscape = ((TCmbAutoPopulated)control).cmbCombobox.DroppedDown;
+                }
+                else if (control is TSgrdDataGrid)
+                {
+                    // The grid wants ESCape if a cell is being edited
+                    TSgrdDataGrid grid = (TSgrdDataGrid)control;
+                    SourceGrid.CellContext focusCellContext = new SourceGrid.CellContext(grid, grid.Selection.ActivePosition);
+                    SourceGrid.Cells.ICellVirtual contextCell = focusCellContext.Cell;
+                    WantsEscape = ((contextCell != null) && (contextCell.Editor != null) && (contextCell.Editor.IsEditing));
+                }
+                else if (control.Controls.Count > 0)
+                {
+                    // Recursive call to ourself for the controls in this container
+                    WantsEscape = AContainerControlWantsEscape(control);
+                }
+
+                if (WantsEscape)
+                {
+                    break;
+                }
+            }
+
+            return WantsEscape;
+        }
+
+        /// <summary>
+        /// Recursive method to find one or more splitter bars inside a container control and return the control name(s) and distance properties as a string 
+        /// that can be saved in the screen positions file.  Returns an empty string if there are no splitters.
+        /// </summary>
+        /// <param name="AContainerControl">The container control - typically a Form</param>
+        /// <param name="AResultString">The result string</param>
+        /// <param name="AParentFormOrControlName">This is used in the recursive call.  At the topmost level you should pass String.Empty</param>
+        private void GetSplitterPropertiesAsString(Control AContainerControl, ref string AResultString, string AParentFormOrControlName)
+        {
+            if ((AContainerControl is Form) || (AContainerControl is UserControl))
+            {
+                AParentFormOrControlName = AContainerControl.Name;
+            }
+
+            foreach (Control control in AContainerControl.Controls)
+            {
+                if (control is SplitContainer)
+                {
+                    SplitContainer splitter = (SplitContainer)control;
+                    AResultString += String.Format(";{0}.{1}:SplitterDistance:{2}",
+                        AParentFormOrControlName,
+                        splitter.Name,
+                        splitter.SplitterDistance);
+                }
+                else if (control.Controls.Count > 0)
+                {
+                    GetSplitterPropertiesAsString(control, ref AResultString, AParentFormOrControlName);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Recursive method to find a control in a container based on a string representation such as TFrmBlah.sptBlah or ucoBlah.sptBlah
+        /// </summary>
+        /// <param name="AControlNameToFind">A dot notation string such as ucoBlah.sptBlah</param>
+        /// <param name="AContainerControl">The container control - typically a Form</param>
+        /// <param name="AParentFormOrControlName">This is used in the recursive call.  At the topmost level you should pass String.Empty</param>
+        /// <returns></returns>
+        private Control FindControlByName(string AControlNameToFind, Control AContainerControl, string AParentFormOrControlName)
+        {
+            if ((AContainerControl is Form) || (AContainerControl is UserControl))
+            {
+                AParentFormOrControlName = AContainerControl.Name;
+            }
+
+            Control foundControl = null;
+            string controlName = AControlNameToFind;
+            string parentFormOrControlName = String.Empty;
+
+            if (AControlNameToFind.Contains("."))
+            {
+                string[] items = AControlNameToFind.Split('.');
+                parentFormOrControlName = items[0];
+                controlName = items[1];
+            }
+
+            foreach (Control control in AContainerControl.Controls)
+            {
+                if ((control.Name == controlName) && (AParentFormOrControlName == parentFormOrControlName))
+                {
+                    foundControl = control;
+                }
+                else if (control.Controls.Count > 0)
+                {
+                    foundControl = FindControlByName(AControlNameToFind, control, AParentFormOrControlName);
+                }
+
+                if (foundControl != null)
+                {
+                    break;
+                }
+            }
+
+            return foundControl;
+        }
+
+        /// <summary>
+        /// Saves the window size and position for the current screen in our static sorted list variable
+        /// </summary>
+        private void GetWindowPositionProperties()
+        {
+            string splitterProperties = String.Empty;
+
+            GetSplitterPropertiesAsString(FWinForm, ref splitterProperties, String.Empty);
+
+            string windowProperties;
+
+            if (FWinForm.WindowState == FormWindowState.Normal)
+            {
+                windowProperties = String.Format("{0};{1};{2};{3};{4}{5}",
+                    FWinForm.Left,
+                    FWinForm.Top,
+                    FWinForm.Width,
+                    FWinForm.Height,
+                    "Normal",
+                    splitterProperties);
+            }
+            else
+            {
+                windowProperties = String.Format("{0};{1};{2};{3};{4}{5}",
+                    FWinForm.RestoreBounds.Left,
+                    FWinForm.RestoreBounds.Top,
+                    FWinForm.RestoreBounds.Width,
+                    FWinForm.RestoreBounds.Height,
+                    FWinForm.WindowState.ToString(),
+                    splitterProperties);
+            }
+
+            if (FWindowPositions.ContainsKey(FWinForm.Name))
+            {
+                FWindowPositions[FWinForm.Name] = windowProperties;
+            }
+            else
+            {
+                FWindowPositions.Add(FWinForm.Name, windowProperties);
+            }
+        }
+
+        /// <summary>
+        /// Restores the window size and position for the current screen
+        /// </summary>
+        private void RestoreWindowPositionProperties()
+        {
+            if (FWindowPositions.ContainsKey(FWinForm.Name))
+            {
+                // we can set the positions for this window
+                string[] items = FWindowPositions[FWinForm.Name].Split(';');
+
+                if (items.Length >= 5)
+                {
+                    // parse the left, top, width and height
+                    int l = int.Parse(items[0]);
+                    int t = int.Parse(items[1]);
+                    int w = int.Parse(items[2]);
+                    int h = int.Parse(items[3]);
+
+                    // parse the sindow state
+                    string windowState = items[4];
+
+                    // specify these as Points and Size
+                    Point location = new Point(l, t);
+                    Size size = new Size(w, h);
+                    Point locationBottomRight = new Point(l + w, t + h);
+
+                    // Check the location - just in case it is on a screen that is no longer attached
+                    bool bFound = false;
+
+                    foreach (Screen screen in Screen.AllScreens)
+                    {
+                        // If the whole form is visible on one or more of the available screens we can display it.
+                        // Otherwise we let the OS show the form
+                        if (screen.Bounds.Contains(locationBottomRight))
+                        {
+                            FWinForm.Location = location;
+                            FWinForm.Size = size;
+                            bFound = true;
+                            break;
+                        }
+                    }
+
+                    if (!bFound)
+                    {
+                        // We did not find the previous position, but may be able to display it at its current size on the base screen
+                        if (Screen.AllScreens[0].Bounds.Contains(w - 5, h - 5))
+                        {
+                            FWinForm.Location = new Point(2, 2);
+                            FWinForm.Size = size;
+                        }
+                    }
+
+                    if (windowState == "Maximized")
+                    {
+                        FWinForm.WindowState = FormWindowState.Maximized;
+                    }
+
+                    for (int i = 5; i < items.Length; i++)
+                    {
+                        // we must have additional information
+                        string[] extraItems = items[i].Split(':');
+
+                        if (extraItems[1] == "SplitterDistance")
+                        {
+                            Control splitterControl = FindControlByName(extraItems[0], FWinForm, String.Empty);
+
+                            if (splitterControl != null)
+                            {
+                                ((SplitContainer)splitterControl).SplitterDistance = int.Parse(extraItems[2]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Loads our window positions file for the current user
+        /// </summary>
+        private void LoadWindowPositionsFromFile()
+        {
+            FWindowPositions.Clear();
+
+            string commonSettingsPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                    CommonFormsResourcestrings.StrFolderOrganisationName,
+                    System.Diagnostics.FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName);
+            string settingsFileName = String.Format(CommonFormsResourcestrings.StrScreenPositionsFileName, UserInfo.GUserInfo.UserID);
+            string settingsPath = Path.Combine(commonSettingsPath, settingsFileName);
+
+            try
+            {
+                if (File.Exists(settingsPath))
+                {
+                    using (StreamReader sr = new StreamReader(settingsPath))
+                    {
+                        while (!sr.EndOfStream)
+                        {
+                            string oneLine = sr.ReadLine();
+                            if (oneLine.Contains("="))
+                            {
+                                string[] items = oneLine.Split('=');
+                                FWindowPositions.Add(items[0], items[1]);
+                            }
+                        }
+
+                        sr.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Exception occurred while loading the window position file '{0}': {1}", settingsPath, ex.Message), TLoggingType.ToLogfile);
+            }
+
+            FWindowPositionsLoaded = true;
         }
 
         #endregion

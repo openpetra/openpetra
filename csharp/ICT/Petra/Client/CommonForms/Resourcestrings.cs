@@ -49,5 +49,15 @@ namespace Ict.Petra.Client.CommonForms
         public static readonly string StrFilterSomeRecordsHidden = Catalog.GetString("The current filter may be hiding some relevant records.");
 
         #endregion
+
+        #region Petra Forms Utilities Strings
+
+        /// <summary>Our 'Company Name' in the folder structure</summary>
+        public static readonly string StrFolderOrganisationName = "OpenPetraOrg";
+
+        /// <summary>Our screen positions file name.  The replaceable parameter is the userID</summary>
+        public static readonly string StrScreenPositionsFileName = "{0}.ScreenPositions.cfg";
+
+        #endregion
     }
 }

@@ -1473,6 +1473,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddImageToResource("$this.Icon", iconFileName, "Icon");
             }
 
+            if (FCodeStorage.FEventHandler.Contains("KeyEventHandler(this.Form_KeyDown)"))
+            {
+                // forms that have a KeyDown handler will need KeyPreview
+                FTemplate.AddToCodelet("ADDMAINCONTROLS", "this.KeyPreview = true;" + Environment.NewLine);
+            }
+
             string initialFocusControl = String.Empty;
 
             if (FCodeStorage.FControlList.ContainsKey("grdDetails"))
