@@ -113,6 +113,7 @@ namespace {#NAMESPACE}
       grdDetails.Selection.SelectionChanged += new RangeRegionChangedEventHandler(grdDetails_RowSelected);
       {#GRIDMULTISELECTION}
 {#ENDIF SAVEDETAILS}
+      grdDetails.CancelEditingWithEscapeKey = false;
       
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
 {#IFDEF GRIDSORT}

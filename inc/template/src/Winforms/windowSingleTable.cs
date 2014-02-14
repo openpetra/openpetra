@@ -79,6 +79,7 @@ namespace {#NAMESPACE}
 {#ENDIF GRIDFILTER}
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+      grdDetails.CancelEditingWithEscapeKey = false;
 
       {#INITACTIONSTATE}
 {#IFDEF BUTTONPANEL}

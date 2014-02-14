@@ -97,6 +97,7 @@ namespace {#NAMESPACE}
       myDataView.RowFilter = {#GRIDFILTER};
 {#ENDIF GRIDFILTER}
       myDataView.AllowNew = false;
+      grdDetails.CancelEditingWithEscapeKey = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
 {#ENDIF DETAILTABLE}

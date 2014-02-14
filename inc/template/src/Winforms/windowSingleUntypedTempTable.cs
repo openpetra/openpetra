@@ -74,6 +74,7 @@ namespace {#NAMESPACE}
 {#ENDIF ACTIONENABLING}
       {#INITMANUALCODE}
       {#INITACTIONSTATE}
+      grdDetails.CancelEditingWithEscapeKey = false;
 {#IFDEF BUTTONPANEL}
       FinishButtonPanelSetup();
 {#ENDIF BUTTONPANEL}
