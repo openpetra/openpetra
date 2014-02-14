@@ -585,7 +585,7 @@ namespace Ict.Petra.Client.App.PetraClient
             {
                 UpdateFinanceSubsystemLinkStatus();
             };
-            
+
             TLstTasks.Init(UserInfo.GUserInfo.UserID, HasAccessPermission);
 
             while (DepartmentNode != null)
@@ -902,7 +902,7 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             return FConferenceKey;
         }
-        
+
         private void UpdateFinanceSubsystemLinkStatus()
         {
             // Only necessary to do something here if Finance Module is currently selected
@@ -920,7 +920,7 @@ namespace Ict.Petra.Client.App.PetraClient
             if (APnlCollapsible.TaskListNode.Name == "Finance")
             {
                 XmlNode TempNode = APnlCollapsible.TaskListNode.FirstChild;
-                
+
                 while (TempNode != null)
                 {
                     if (TempNode.Name == "GiftProcessing")
@@ -945,12 +945,10 @@ namespace Ict.Petra.Client.App.PetraClient
                             APnlCollapsible.TaskListInstance.DisableTaskItem(TempNode);
                         }
                     }
-                    
+
                     TempNode = TempNode.NextSibling;
                 }
-                
             }
         }
-        
     }
 }

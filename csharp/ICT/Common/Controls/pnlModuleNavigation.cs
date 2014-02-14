@@ -76,13 +76,13 @@ namespace Ict.Common.Controls
 
         /// <summary>Fired when a Ledger got selected by the user (by clicking on it's LinkLabel).</summary>
         public event LedgerSelected LedgerChanged;
-        
+
         /// <summary>Delegate to update subsystem link status which needs to be updated by caller.</summary>
         public delegate void UpdateSubsystemLinkStatus(int ALedgerNr, TPnlCollapsible APnlCollapsible);
-        
+
         /// <summary>Store Delegate to update subsystem link status</summary>
         private static UpdateSubsystemLinkStatus FSubSystemLinkStatus;
-        
+
         #endregion
 
         #region Properties
@@ -108,7 +108,7 @@ namespace Ict.Common.Controls
                 return FCollapsibleNavigation.TaskListNode.Name;
             }
         }
-        
+
         /// <summary>
         /// Delegate for determinig a help topic for a given Form and Control.
         /// </summary>
@@ -123,7 +123,7 @@ namespace Ict.Common.Controls
                 FSubSystemLinkStatus = value;
             }
         }
-        
+
         #endregion
 
         /// <summary>
@@ -389,10 +389,10 @@ namespace Ict.Common.Controls
         private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
         {
             if (ATaskListNode.Attributes["LedgerNumber"] == null)
-            {               
-                if (   AOtherData != null
-                    && FSubSystemLinkStatus != null
-                    && AOtherData.GetType() == typeof(TPnlCollapsible))
+            {
+                if ((AOtherData != null)
+                    && (FSubSystemLinkStatus != null)
+                    && (AOtherData.GetType() == typeof(TPnlCollapsible)))
                 {
                     FSubSystemLinkStatus(FCurrentLedger, (TPnlCollapsible)AOtherData);
                 }
@@ -404,20 +404,20 @@ namespace Ict.Common.Controls
                 if (!FSuppressLedgerChangedEvent)
                 {
                     OnLedgerChanged(Convert.ToInt32(ATaskListNode.Attributes["LedgerNumber"].Value), ATaskListNode.Attributes["LedgerName"].Value);
-                    
-                    if (   AOtherData != null
-                        && FSubSystemLinkStatus != null
-                        && AOtherData.GetType() == typeof(TPnlCollapsible))
+
+                    if ((AOtherData != null)
+                        && (FSubSystemLinkStatus != null)
+                        && (AOtherData.GetType() == typeof(TPnlCollapsible)))
                     {
                         FSubSystemLinkStatus(FCurrentLedger, (TPnlCollapsible)AOtherData);
                     }
-               }
+                }
             }
 
             // Re-fire Event
             if (ItemActivation != null)
             {
-                ItemActivation(ATaskList, ATaskListNode, AItemClicked, AOtherData );
+                ItemActivation(ATaskList, ATaskListNode, AItemClicked, AOtherData);
             }
         }
 

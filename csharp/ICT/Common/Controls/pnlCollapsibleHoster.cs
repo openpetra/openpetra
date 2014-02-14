@@ -465,7 +465,7 @@ namespace Ict.Common.Controls
             }
 
             FCollPanelWhereLastItemActivationHappened = GetCollapsiblePanelInstance(ATaskListNode.ParentNode);
-            
+
             // Re-fire Event
             if (ItemActivation != null)
             {

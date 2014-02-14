@@ -122,7 +122,7 @@ namespace Ict.Common.Controls
 
         /// <summary>Fired when a Ledger got selected by the user (by clicking on it's LinkLabel).</summary>
         public event TPnlModuleNavigation.LedgerSelected LedgerChanged;
-        
+
         #endregion
 
         #region Properties
@@ -275,23 +275,24 @@ namespace Ict.Common.Controls
             int Index;
             TRbtNavigationButton btn;
             string btnName = "rbt" + AFolderName;
-            
+
             Index = 0;
+
             while (Index < this.sptNavigation.Panel2.Controls.Count)
             {
                 btn = (TRbtNavigationButton) this.sptNavigation.Panel2.Controls[Index];
-                
+
                 if (btn.Name == btnName)
                 {
-                    return (btn.Checked);
+                    return btn.Checked;
                 }
-                
+
                 Index++;
             }
-            
+
             return false;
         }
-        
+
         /// <summary>
         /// Select the given folder and link in the folder
         /// </summary>
@@ -305,6 +306,7 @@ namespace Ict.Common.Controls
                 TPnlModuleNavigation CollPanelHoster;
 
                 Index = 0;
+
                 while (Index < this.sptNavigation.Panel1.Controls.Count)
                 {
                     CollPanelHoster = (TPnlModuleNavigation) this.sptNavigation.Panel1.Controls[Index];
@@ -313,16 +315,14 @@ namespace Ict.Common.Controls
                     {
                         CollPanelHoster.FireSelectedLinkEvent();
                     }
-                    
+
                     Index++;
                 }
-                
-                
             }
 
             return false;
         }
-        
+
         /// <summary>
         /// select the first folder that is available (ie enabled)
         /// </summary>
@@ -511,7 +511,7 @@ namespace Ict.Common.Controls
                 LedgerChanged(ALedgerNr, ALedgerName);
             }
         }
-        
+
         #endregion
     }
 }

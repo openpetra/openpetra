@@ -45,10 +45,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         /// <summary>Delegate to update subsystem link status which needs to be updated by caller.</summary>
         public delegate void UpdateFinanceSubsystemLinkStatus();
-        
+
         /// <summary>Store Delegate to update subsystem link status</summary>
         private static UpdateFinanceSubsystemLinkStatus FFinanceSubSystemLinkStatus;
-        
+
         /// <summary>
         /// The applicable Ledger number
         /// </summary>
@@ -133,7 +133,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 txtAccountsPayableStatus.Text = Catalog.GetString("Not activated yet");
                 btnActivateAccountsPayable.Text = Catalog.GetString("Activate Accounts Payable");
             }
-            
+
             // now update menu links for gift processing and accounts payable in caller window (may need to be enabled/disabled)
             if (FFinanceSubSystemLinkStatus != null)
             {

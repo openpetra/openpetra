@@ -166,7 +166,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
                 }
             }
-            
+
             // 'MaritalStatusSince' must be valid
             ValidationColumn = ARow.Table.Columns[PPersonTable.ColumnMaritalStatusSinceId];
 
