@@ -111,16 +111,16 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Contains data about a Link that got clicked by the user.
         /// </summary>
-        public delegate void TaskLinkClicked(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked);
+        public delegate void TaskLinkClicked(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData);
 
         /// <summary>Fired when a TaskLink got activated (by clicking on it or programmatically).</summary>
         public event TaskLinkClicked ItemActivation;
 
-        private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+        private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
         {
             if (ItemActivation != null)
             {
-                ItemActivation(ATaskList, ATaskListNode, AItemClicked);
+                ItemActivation(ATaskList, ATaskListNode, AItemClicked, AOtherData);
             }
         }
 
@@ -486,7 +486,7 @@ namespace Ict.Common.Controls
             SetCommonActivatedLinkAppearance(ClickedLabel);
 
             // Fire ItemActivation Event
-            OnItemActivation(this, (XmlNode)e.Link.LinkData, (LinkLabel)sender);
+            OnItemActivation(this, (XmlNode)e.Link.LinkData, (LinkLabel)sender, null);
 
             // Repaint all Tasks to reflect their Activated/non-Activated state
             // Note: This re-sets the Link appearance set above to 'Activated' appearance
@@ -851,8 +851,8 @@ namespace Ict.Common.Controls
         {
             LinkLabel FirstLinkLabel = (LinkLabel) this.tPnlGradient1.Controls[0];
 
-            lblTaskItem_LinkClicked(FirstLinkLabel, new LinkLabelLinkClickedEventArgs
-                    (FirstLinkLabel.Links[0]));
+            lblTaskItem_LinkClicked(FirstEnabledLinkLabel, new LinkLabelLinkClickedEventArgs
+                    (FirstEnabledLinkLabel.Links[0]));
         }
 
         /// <summary>

@@ -99,7 +99,7 @@ namespace Ict.Common.Controls
 
             FVisualStyle = Style;
 
-            ChangeVisualStyle(FVisualStyle);
+            ChangeVisualStyle();
 
             MasterXmlNode = MasterNode;
         }
@@ -140,7 +140,7 @@ namespace Ict.Common.Controls
             {
                 FVisualStyle = value;
 
-                ChangeVisualStyle(value);
+                ChangeVisualStyle();
             }
         }
 
@@ -405,7 +405,7 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    CollPanel.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+                    CollPanel.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
                     {
                         OnItemActivation(ATaskList, ATaskListNode, AItemClicked);
                     };
@@ -430,7 +430,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// Changes the Visual Style.
         /// </summary>
-        private void ChangeVisualStyle(TVisualStylesEnum AVisualStyle)
+        private void ChangeVisualStyle()
         {
             TVisualStyles VisualStyle = new TVisualStyles(FVisualStyle);
 
@@ -465,11 +465,11 @@ namespace Ict.Common.Controls
             }
 
             FCollPanelWhereLastItemActivationHappened = GetCollapsiblePanelInstance(ATaskListNode.ParentNode);
-
+            
             // Re-fire Event
             if (ItemActivation != null)
             {
-                ItemActivation(ATaskList, ATaskListNode, AItemClicked);
+                ItemActivation(ATaskList, ATaskListNode, AItemClicked, GetCollapsiblePanelInstance(0));
             }
         }
 

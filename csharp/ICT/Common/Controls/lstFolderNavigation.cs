@@ -122,7 +122,7 @@ namespace Ict.Common.Controls
 
         /// <summary>Fired when a Ledger got selected by the user (by clicking on it's LinkLabel).</summary>
         public event TPnlModuleNavigation.LedgerSelected LedgerChanged;
-
+        
         #endregion
 
         #region Properties
@@ -267,6 +267,64 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// Check if given folder is selected
+        /// </summary>
+        /// <param name="AFolderName"></param>
+        public bool IsFolderSelected(String AFolderName)
+        {
+            int Index;
+            TRbtNavigationButton btn;
+            string btnName = "rbt" + AFolderName;
+            
+            Index = 0;
+            while (Index < this.sptNavigation.Panel2.Controls.Count)
+            {
+                btn = (TRbtNavigationButton) this.sptNavigation.Panel2.Controls[Index];
+                
+                if (btn.Name == btnName)
+                {
+                    return (btn.Checked);
+                }
+                
+                Index++;
+            }
+            
+            return false;
+        }
+        
+        /// <summary>
+        /// Select the given folder and link in the folder
+        /// </summary>
+        /// <param name="AFolderName"></param>
+        /// <param name="ALinkName"></param>
+        public bool FireSelectedLinkEventIfFolderSelected(String AFolderName)
+        {
+            int Index;
+
+            if (IsFolderSelected(AFolderName))
+            {
+                TPnlModuleNavigation CollPanelHoster;
+
+                Index = 0;
+                while (Index < this.sptNavigation.Panel1.Controls.Count)
+                {
+                    CollPanelHoster = (TPnlModuleNavigation) this.sptNavigation.Panel1.Controls[Index];
+
+                    if (CollPanelHoster.TaskListNodeName == AFolderName)
+                    {
+                        CollPanelHoster.FireSelectedLinkEvent();
+                    }
+                    
+                    Index++;
+                }
+                
+                
+            }
+
+            return false;
+        }
+        
+        /// <summary>
         /// select the first folder that is available (ie enabled)
         /// </summary>
         /// <returns></returns>
@@ -320,9 +378,9 @@ namespace Ict.Common.Controls
                 {
                     CollapsibleNavigationExpanded(sender, e);
                 };
-                CollPanelHoster.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+                CollPanelHoster.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
                 {
-                    OnItemActivation(ATaskList, ATaskListNode, AItemClicked);
+                    OnItemActivation(ATaskList, ATaskListNode, AItemClicked, AOtherData);
                 };
                 CollPanelHoster.LedgerChanged += delegate(int ALedgerNr, string ALedgerName)
                 {
@@ -420,13 +478,13 @@ namespace Ict.Common.Controls
 //            sptContent.SplitterDistance = cplFolders.Width;
         }
 
-        private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+        private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
         {
             if (SubmoduleChanged != null)
             {
                 if (ATaskListNode.Attributes["LedgerNumber"] == null)
                 {
-                    SubmoduleChanged(ATaskList, ATaskListNode, AItemClicked);
+                    SubmoduleChanged(ATaskList, ATaskListNode, AItemClicked, AOtherData);
                 }
             }
         }
@@ -454,7 +512,7 @@ namespace Ict.Common.Controls
                 LedgerChanged(ALedgerNr, ALedgerName);
             }
         }
-
+        
         #endregion
     }
 }
