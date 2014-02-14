@@ -204,7 +204,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void InitialiseGrid()
         {
             grdResult.Columns.Clear();
-            grdResult.AddCheckBoxColumn("", FPagedDataTable.Columns["Tagged"], 20, false);
+            grdResult.AddCheckBoxColumn("", FPagedDataTable.Columns["Tagged"], 17, false);
 //          grdResult.AddTextColumn("AP#", FPagedDataTable.Columns["ApNum"], 50);
             grdResult.AddTextColumn("Inv#", FPagedDataTable.Columns["InvNum"], 70);
             grdResult.AddTextColumn("Type", FPagedDataTable.Columns["Type"], 90);

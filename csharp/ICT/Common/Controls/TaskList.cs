@@ -851,8 +851,8 @@ namespace Ict.Common.Controls
         {
             LinkLabel FirstLinkLabel = (LinkLabel) this.tPnlGradient1.Controls[0];
 
-            lblTaskItem_LinkClicked(FirstEnabledLinkLabel, new LinkLabelLinkClickedEventArgs
-                    (FirstEnabledLinkLabel.Links[0]));
+            lblTaskItem_LinkClicked(FirstLinkLabel, new LinkLabelLinkClickedEventArgs
+                    (FirstLinkLabel.Links[0]));
         }
 
         /// <summary>

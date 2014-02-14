@@ -296,7 +296,6 @@ namespace Ict.Common.Controls
         /// Select the given folder and link in the folder
         /// </summary>
         /// <param name="AFolderName"></param>
-        /// <param name="ALinkName"></param>
         public bool FireSelectedLinkEventIfFolderSelected(String AFolderName)
         {
             int Index;

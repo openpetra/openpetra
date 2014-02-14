@@ -920,7 +920,6 @@ namespace Ict.Common.IO
             String AVersionPostFix,
             String ATmpPath,
             String ADatPath,
-            String ADBPath,
             String APatchesPath,
             String ARemotePatchesPath) : base()
         {

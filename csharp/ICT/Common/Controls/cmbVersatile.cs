@@ -427,7 +427,6 @@ namespace Ict.Common.Controls
                     {
                         DrawDropDownEntry(
                             this.FColumnWidth[counter],
-                            mItemIndex,
                             e,
                             SelectedBackGroundBrush,
                             SelectedForeGroundBrush,
@@ -446,7 +445,6 @@ namespace Ict.Common.Controls
                     {
                         DrawDropDownEntry(
                             this.FColumnWidth[counter],
-                            mItemIndex,
                             e,
                             DefaultBackGroundBrush,
                             DefaultForeGroundBrush,
@@ -468,7 +466,6 @@ namespace Ict.Common.Controls
         /// This function draws an entry in the DropDown pane.
         /// </summary>
         /// <param name="AColumnWidth">The width of the current column</param>
-        /// <param name="AnItemIndex">The index for this very row.</param>
         /// <param name="AnEvent">The current DrawItemEventArgs.</param>
         /// <param name="ABackgroundBrush">The brush for the background</param>
         /// <param name="AForegroundBrush">The brush for the foreground</param>
@@ -482,7 +479,6 @@ namespace Ict.Common.Controls
         /// <returns>Zero for success, -1 for failure.
         /// </returns>
         private int DrawDropDownEntry(int AColumnWidth,
-            int AnItemIndex,
             System.Windows.Forms.DrawItemEventArgs AnEvent,
             System.Drawing.SolidBrush ABackgroundBrush,
             System.Drawing.SolidBrush AForegroundBrush,

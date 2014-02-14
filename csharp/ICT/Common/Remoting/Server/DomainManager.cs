@@ -227,7 +227,6 @@ namespace Ict.Common.Remoting.Server
         /// <summary>Random Security Token (to prevent unauthorised AppDomain shutdown)</summary>
         private String FRandomAppDomainTearDownToken;
         private System.Object FTearDownAppDomainMonitor;
-        private TcpChannel FTcpChannel = null;
 
         /// <summary>Tells when the last Client Action occured (the last time when a remoteable object was marshaled (remoted)).
         /// Can be overloaded by a server with database access to see when the last DB action occured</summary>
@@ -391,11 +390,6 @@ namespace Ict.Common.Remoting.Server
             {
                 TLogging.Log("TClientDomainManager.StopClientAppDomain: after UClientManagerCallForwarderRef := nil",
                     TLoggingType.ToConsole | TLoggingType.ToLogfile);
-            }
-
-            if (FTcpChannel != null)
-            {
-                ChannelServices.UnregisterChannel(FTcpChannel);
             }
         }
 

@@ -283,7 +283,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 clbDetails.AddTextColumn("Key Count", FDataTable.Columns[KeyCountMember], 80);
                 clbDetails.AddTextColumn("Description", FDataTable.Columns[DescriptionMember], 300);
 
-                clbDetails.DataBindGrid(FDataTable, NameMember, CheckedMember, NameMember, DescriptionMember, false, true, false);
+                clbDetails.DataBindGrid(FDataTable, NameMember, CheckedMember, NameMember, false, true, false);
                 clbDetails.SetCheckedStringList("");
             }
 

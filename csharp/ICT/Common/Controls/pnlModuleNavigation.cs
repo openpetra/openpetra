@@ -101,7 +101,7 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>Task List Xml Node</summary>
-        public new string TaskListNodeName
+        public string TaskListNodeName
         {
             get
             {

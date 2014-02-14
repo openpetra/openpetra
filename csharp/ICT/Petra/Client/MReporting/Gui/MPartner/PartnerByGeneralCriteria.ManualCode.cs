@@ -89,7 +89,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             clbLocationType.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             clbLocationType.AddTextColumn("", NewTable.Columns[ValueMember], 130);
 
-            clbLocationType.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, ValueMember, false, true, false);
+            clbLocationType.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
 
             //TODO: only temporarily until settings file exists
             clbLocationType.SetCheckedStringList("");

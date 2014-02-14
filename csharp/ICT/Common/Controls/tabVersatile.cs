@@ -23,6 +23,7 @@
 //
 using System;
 using System.Drawing;
+using System.Diagnostics.CodeAnalysis;
 using System.Collections;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -174,6 +175,9 @@ namespace Ict.Common.Controls
         /// parent window), or drawn by the operating system.
         ///
         /// </summary>
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+             Justification = "By ignoring 'value' in the setter we are ensuring that the Tab Control is always owner drawn",
+             MessageId = "value")]
         public new TabDrawMode DrawMode
         {
             get
@@ -194,6 +198,9 @@ namespace Ict.Common.Controls
         /// parent window), or drawn by the operating system.
         ///
         /// </summary>
+        [SuppressMessage("Gendarme.Rules.Performance", "AvoidUnusedParametersRule",
+             Justification = "By ignoring 'value' in the setter we are ensuring that the HotTrack feature is never Enabled for the Tab Control",
+             MessageId = "value")]
         public new Boolean HotTrack
         {
             get
