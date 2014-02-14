@@ -19,7 +19,7 @@ RootNode:
                 Row1: [lblTaskSize, rgrTaskSize]
                 Row2: [chkSingleClickExecution]
             Width: 430
-            Height: 140
+            Height: 145
         grpGridColours:
             Controls:
                 Row0: [pnlGridColoursSettings, pnlExample]
@@ -68,8 +68,9 @@ RootNode:
             BorderVisible: false
             Padding: -120,5,0,0
         chkSingleClickExecution:
-            CheckBoxAttachedLabel: true
+            CheckBoxAttachedLabel: right
             Label: Single-click to open an item
+            Padding: 5,5,0,0
 
         lblBackground: {Label=Grid Background Colour, Align=right}
         btnBackground:

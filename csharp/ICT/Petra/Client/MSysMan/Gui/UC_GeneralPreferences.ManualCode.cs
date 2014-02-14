@@ -92,6 +92,10 @@ namespace Ict.Petra.Client.MSysMan.Gui
             // Get the number of recent partners that the user has set, if not found take 10 as default value.
             nudNumberOfPartners.Value = TUserDefaults.GetInt16Default(MSysManConstants.USERDEFAULT_NUMBEROFRECENTPARTNERS, 10);
             nudNumberOfPartners.Maximum = 10;
+
+            // Other preferences
+            chkEscClosesScreen.Checked = TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_ESC_CLOSES_SCREEN, true);
+            chkSaveWindowProperties.Checked = TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, true);
         }
 
         /// <summary>
@@ -137,6 +141,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
             }
 
             TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_NUMBEROFRECENTPARTNERS, nudNumberOfPartners.Value);
+            TUserDefaults.SetDefault(TUserDefaults.NamedDefaults.USERDEFAULT_ESC_CLOSES_SCREEN, chkEscClosesScreen.Checked);
+            TUserDefaults.SetDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, chkSaveWindowProperties.Checked);
         }
 
         private Boolean ViewMode

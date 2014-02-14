@@ -55,6 +55,12 @@ namespace Ict.Petra.Client.App.Core
             /// <summary>todoComment</summary>
             public const String WINDOW_POSITION_AND_SIZE_PREFIX = "WINDOW_POS_AND_SIZE_";
 
+            /// <summary>Key name for Esc Closes Screen</summary>
+            public const String USERDEFAULT_ESC_CLOSES_SCREEN = "EscClosesScreen";
+
+            /// <summary>Key name for saving window size/state/position</summary>
+            public const String USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE = "SaveWindowPosAndSize";
+
             /// <summary>Colour of the background of all SourceGrid DataGrid instances.</summary>
             public const String COLOUR_GRID_BACKGROUND = "COLOUR_GRID_BACKGROUND";
 
