@@ -265,7 +265,6 @@ namespace Ict.Petra.Client.App.PetraClient
                 TPatchTools.OPENPETRA_VERSIONPREFIX,
                 TClientSettings.PathTemp,
                 "",
-                "",
                 TClientSettings.Petra_Path_Patches,
                 TClientSettings.Petra_Path_RemotePatches);
 

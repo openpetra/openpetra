@@ -45,8 +45,7 @@ namespace Ict.Common.Remoting.Sinks.Encryption
         /// constructor
         /// </summary>
         /// <param name="properties"></param>
-        /// <param name="providerData"></param>
-        public EncryptionClientSinkProvider(IDictionary properties, ICollection providerData)
+        public EncryptionClientSinkProvider(IDictionary properties)
         {
             // do not use property, but create local symmetric key, and send to the server, encrypted with the public key of the server
             try

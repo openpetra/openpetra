@@ -676,7 +676,7 @@ namespace Ict.Common.Exceptions
         /// Initializes a new instance of this Exception Class with a specified error message.
         /// </summary>
         /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
-        public EPartnerKeyOutOfRangeException(String AMessage)
+        public EPartnerKeyOutOfRangeException(String AMessage) : base(AMessage)
         {
         }
 
@@ -699,7 +699,7 @@ namespace Ict.Common.Exceptions
         /// </remarks>
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
-        public EPartnerKeyOutOfRangeException(SerializationInfo AInfo, StreamingContext AContext)
+        public EPartnerKeyOutOfRangeException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 

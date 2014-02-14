@@ -230,10 +230,6 @@ namespace Ict.Common.Controls
             {
                 return base.DelegateFallbackTextBox;
             }
-
-            set
-            {
-            }
         }
 
         #region Windows Form Designer generated code
@@ -290,7 +286,6 @@ namespace Ict.Common.Controls
             //
             this.SetTextBoxDefaultWidth();
             this.SetDefaultFont();
-            this.DelegateFallbackTextBox = false;
             this.txtTextBox.MaxLength = 10;
             this.txtTextBox.KeyPress += new KeyPressEventHandler(this.TxtTextBox_KeyPress);
             this.txtTextBox.KeyUp += new KeyEventHandler(this.TxtTextBox_KeyUp);

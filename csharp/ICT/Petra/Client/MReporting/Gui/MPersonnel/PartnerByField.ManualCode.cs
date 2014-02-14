@@ -90,7 +90,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             clbField.AddTextColumn(Catalog.GetString("Field Name"), NewTable.Columns[DisplayMember], 240);
             clbField.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), NewTable.Columns[ValueMember], 100);
 
-            clbField.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+            clbField.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, false, true, false);
 
             //TODO: only temporarily until settings file exists
             clbField.SetCheckedStringList("");

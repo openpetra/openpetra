@@ -39,7 +39,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         // Put Methods for the validation of Gift Transactions in this code file.
         //
 
-        static partial void ValidateGiftBatchManual(ref TVerificationResultCollection AVerificationResult, 
+        static partial void ValidateGiftBatchManual(ref TVerificationResultCollection AVerificationResult,
             TTypedDataTable ASubmitTable)
         {
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
@@ -58,7 +58,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
         }
 
-        static partial void ValidateGiftDetailManual(ref TVerificationResultCollection AVerificationResult, 
+        static partial void ValidateGiftDetailManual(ref TVerificationResultCollection AVerificationResult,
             TTypedDataTable ASubmitTable)
         {
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
         }
 
-        static partial void ValidateRecurringGiftBatchManual(ref TVerificationResultCollection AVerificationResult, 
+        static partial void ValidateRecurringGiftBatchManual(ref TVerificationResultCollection AVerificationResult,
             TTypedDataTable ASubmitTable)
         {
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
@@ -92,7 +92,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
         }
 
-        static partial void ValidateRecurringGiftDetailManual(ref TVerificationResultCollection AVerificationResult, 
+        static partial void ValidateRecurringGiftDetailManual(ref TVerificationResultCollection AVerificationResult,
             TTypedDataTable ASubmitTable)
         {
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();

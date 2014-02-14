@@ -68,6 +68,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("param_with_analysis_attributes", false);
         }
 
+        //
+        // This will be called if the Fast Reports Wrapper loaded OK.
+        // Returns True if the data apparently loaded OK and the report should be printed.
         private bool LoadReportData(TRptCalculator ACalc)
         {
             Shared.MReporting.TParameterList pm = ACalc.GetParameters();
@@ -112,20 +115,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             String TranctDateFilter = ""; // Optional Date Filter, as periods or dates
-
-            if (pm.Get("param_period").ToBool() == true)
-            {
-                DataTable AccountingPeriodTbl =
-                    (AAccountingPeriodTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountingPeriodList,
-                        pm.Get("param_ledger_number_i").ToInt32());
-                AccountingPeriodTbl.DefaultView.RowFilter = LedgerFilter + " AND a_accounting_period_number_i=" +
-                                                            pm.Get("param_start_period_i").ToInt32();
-                pm.Add("param_start_date", Convert.ToDateTime(AccountingPeriodTbl.DefaultView[0].Row["a_period_start_date_d"]));
-
-                AccountingPeriodTbl.DefaultView.RowFilter = LedgerFilter + " AND a_accounting_period_number_i=" +
-                                                            pm.Get("param_end_period_i").ToInt32();
-                pm.Add("param_end_date", Convert.ToDateTime(AccountingPeriodTbl.DefaultView[0].Row["a_period_end_date_d"]));
-            }
 
             TranctDateFilter = "a_transaction_date_d>='" + pm.Get("param_start_date").DateToString("yyyy-MM-dd") +
                                "' AND a_transaction_date_d<='" + pm.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";
@@ -217,6 +206,22 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             GLReportingTDS ReportDs = TRemote.MFinance.Reporting.WebConnectors.GetReportingDataSet(Csv);
 
             //
+            // If I'm reporting period,
+            // I want to include opening and closing balances for each Cost Centre / Account, in the selected currency:
+            if (pm.Get("param_period").ToBool() == true)
+            {
+                DataTable Balances = TRemote.MFinance.Reporting.WebConnectors.GetPeriodBalances(
+                    LedgerFilter,
+                    AccountCodeFilter,
+                    CostCentreFilter,
+                    pm.Get("param_start_period_i").ToInt32(),
+                    pm.Get("param_end_period_i").ToInt32(),
+                    pm.Get("param_currency").ToString().StartsWith("Int")
+                    );
+                ReportDs.Merge(Balances);
+                FFastReportsPlugin.RegisterData(Balances, "balances");
+            }
+
             // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
             {
                 ALedgerRow Row = ReportDs.ALedger[0];

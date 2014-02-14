@@ -808,10 +808,9 @@ namespace Ict.Common.Controls
         /// shortest item is returned
         /// </summary>
         /// <param name="SearchString">The string which is search for in the ComboBox</param>
-        /// <param name="StartIndex">The index where the comparison should start.</param>
         /// <returns>The index of the item if found or -1 if nothing is found.
         /// </returns>
-        public int FindStringSortedByLength(string SearchString, int StartIndex)
+        public int FindStringSortedByLength(string SearchString)
         {
             if (DataSource == null)
             {
@@ -899,21 +898,6 @@ namespace Ict.Common.Controls
             }
 
             return -1;
-        }
-
-        /// <summary>
-        /// This function returns the index of the combobox items with the following
-        /// characteristics:
-        /// - item starts with the specified string
-        /// - if there are more items which fulfill this criterion the index of the
-        /// shortest item is returned
-        /// </summary>
-        /// <param name="SearchString">The string which is search for in the ComboBox</param>
-        /// <returns>The index of the item if found or -1 if nothing is found.
-        /// </returns>
-        public int FindStringSortedByLength(string SearchString)
-        {
-            return FindStringSortedByLength(SearchString, 0);
         }
 
         /// <summary>
@@ -1200,7 +1184,7 @@ namespace Ict.Common.Controls
         /// <param name="ColumnNumber">The column number of the data source; if -1, then the value column is used</param>
         /// <returns>empty string if nothing is selected
         /// </returns>
-        public string GetSelectedString(int ColumnNumber)
+        public string GetSelectedString(int ColumnNumber = -1)
         {
             string ReturnValue = "";
 
@@ -1231,15 +1215,6 @@ namespace Ict.Common.Controls
             }
 
             return ReturnValue;
-        }
-
-        /// <summary>
-        /// get selected value as a string, from the default column
-        /// </summary>
-        /// <returns>get selected string value</returns>
-        public string GetSelectedString()
-        {
-            return GetSelectedString(-1);
         }
 
         /// <summary>

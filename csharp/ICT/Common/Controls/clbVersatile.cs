@@ -139,7 +139,6 @@ namespace Ict.Common.Controls
             String ASortColumn,
             String ACheckedColumn,
             String AKeyColumn,
-            String ALabelColumn,
             bool AAllowNew,
             bool AAllowEdit,
             bool AAllowDelete)
@@ -147,8 +146,7 @@ namespace Ict.Common.Controls
             List <String>KeyColumns = new List <String>();
             KeyColumns.Add(AKeyColumn);
 
-            DataBindGrid(ATable, ASortColumn, ACheckedColumn, KeyColumns, ALabelColumn,
-                AAllowNew, AAllowEdit, AAllowDelete);
+            DataBindGrid(ATable, ASortColumn, ACheckedColumn, KeyColumns, AAllowNew, AAllowEdit, AAllowDelete);
         }
 
         /// <summary>
@@ -162,7 +160,6 @@ namespace Ict.Common.Controls
             String ASortColumn,
             String ACheckedColumn,
             List <String>AKeyColumns,
-            String ALabelColumn,
             bool AAllowNew,
             bool AAllowEdit,
             bool AAllowDelete)

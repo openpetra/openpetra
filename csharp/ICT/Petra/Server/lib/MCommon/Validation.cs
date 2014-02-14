@@ -39,13 +39,13 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
         // Put Methods for the validation of Common Module WebConnectors and DataReaders in this code file.
         //
 
-        static partial void ValidateInternationalPostalTypeManual(ref TVerificationResultCollection AVerificationResult, 
+        static partial void ValidateInternationalPostalTypeManual(ref TVerificationResultCollection AVerificationResult,
             TTypedDataTable ASubmitTable)
         {
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
             ValidationControlsDict.Add(ASubmitTable.Columns[(short)PInternationalPostalTypeTable.ColumnInternatPostalTypeCodeId],
-                                       new TValidationControlsData(null, PInternationalPostalTypeTable.GetInternatPostalTypeCodeDBName()));
+                new TValidationControlsData(null, PInternationalPostalTypeTable.GetInternatPostalTypeCodeDBName()));
             ValidationControlsDict.Add(ASubmitTable.Columns[(short)PInternationalPostalTypeTable.ColumnDescriptionId],
                 new TValidationControlsData(null, PInternationalPostalTypeTable.GetDescriptionDBName()));
             ValidationControlsDict.Add(ASubmitTable.Columns[(short)PInternationalPostalTypeTable.ColumnDeletableId],

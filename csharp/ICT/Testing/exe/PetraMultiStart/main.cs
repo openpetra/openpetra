@@ -116,16 +116,17 @@ public class main
     /// Tells whether the Server is still running.
     /// </summary>
     /// <returns></returns>
-    [SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", 
-     Justification="We use the following server call ONLY for an 'side effect' but since we are inquiring a Property its value must be assigned to a variable. [christiank]", 
-     MessageId="Tmp")]
+    [SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals",
+         Justification =
+             "We use the following server call ONLY for an 'side effect' but since we are inquiring a Property its value must be assigned to a variable. [christiank]",
+         MessageId = "Tmp")]
     public static bool ServerStillRunning()
     {
         bool ReturnValue = true;
 
         try
         {
-            // We use the following server call ONLY for an 'side effect' - namely when it throws an Exception! 
+            // We use the following server call ONLY for an 'side effect' - namely when it throws an Exception!
             int Tmp = TRemote.ClientsConnected;  // Causes: CA1804:RemoveUnusedLocals (but is suppressed for that reason with the SuppressMessage Attribute!)
         }
         catch (Exception exp)

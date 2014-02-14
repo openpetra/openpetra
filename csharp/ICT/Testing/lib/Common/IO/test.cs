@@ -169,7 +169,7 @@ namespace Ict.Common.IO.Testing
 
             filename = PathToTestData + "test.xml";
             StreamWriter sw = new StreamWriter(filename + ".new");
-            sw.Write(TXMLParser.XmlToString(docFromCSV, true));
+            sw.Write(TXMLParser.XmlToString2(docFromCSV));
             sw.Close();
             Assert.AreEqual(true, TTextFile.SameContent(filename,
                     filename + ".new"), "after importing from csv: the files should be the same: " + filename);
@@ -188,7 +188,7 @@ namespace Ict.Common.IO.Testing
 
             filename = PathToTestData + "testWithInheritedAttributes.xml";
             StreamWriter sw = new StreamWriter(filename + ".new");
-            sw.Write(TXMLParser.XmlToString(docFromYML, true));
+            sw.Write(TXMLParser.XmlToString2(docFromYML));
             sw.Close();
             Assert.AreEqual(true, TTextFile.SameContent(filename,
                     filename + ".new"), "after importing from yml: the files should be the same: " + filename);

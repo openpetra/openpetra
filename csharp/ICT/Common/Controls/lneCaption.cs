@@ -35,8 +35,6 @@ namespace Ict.Common.Controls
     /// </summary>
     public class TLneCaption : System.Windows.Forms.UserControl
     {
-        private System.ComponentModel.Container FComponents = null;
-
         /// <summary>
         /// The colour of the line.
         /// </summary>
@@ -88,22 +86,6 @@ namespace Ict.Common.Controls
                 FCaption = value;
                 this.Invalidate();
             }
-        }
-
-        /// <summary>
-        /// Cleanup of resources.
-        /// </summary>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (FComponents != null)
-                {
-                    FComponents.Dispose();
-                }
-            }
-
-            base.Dispose(disposing);
         }
 
         /// <summary>

@@ -40,7 +40,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         // Put Methods for the validation of Partner Edit screen data in this code file.
         //
 
-        static partial void ValidatePPartnerManual(ref TVerificationResultCollection AVerificationResult, 
+        static partial void ValidatePPartnerManual(ref TVerificationResultCollection AVerificationResult,
             TTypedDataTable ASubmitTable)
         {
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
@@ -57,7 +57,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             }
         }
 
-        static partial void ValidatePBankManual(ref TVerificationResultCollection AVerificationResult, 
+        static partial void ValidatePBankManual(ref TVerificationResultCollection AVerificationResult,
             TTypedDataTable ASubmitTable)
         {
             TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
