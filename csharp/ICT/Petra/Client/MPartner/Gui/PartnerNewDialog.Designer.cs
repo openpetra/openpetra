@@ -299,6 +299,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // TPartnerNewDialogWinForm
             //
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+            this.CancelButton = btnCancel;
             this.ClientSize = new System.Drawing.Size(560, 346);
             this.Controls.Add(this.txtFamilyPartnerBox);
             this.Controls.Add(this.txtPartnerKey);

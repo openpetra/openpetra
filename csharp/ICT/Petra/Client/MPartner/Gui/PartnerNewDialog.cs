@@ -584,6 +584,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // Select Row that contains 'Best Site'
             grdInstalledSites.Selection.SelectRow(BestSiteRowNumber, true);
+
+            grdInstalledSites.CancelEditingWithEscapeKey = false;
         }
 
         #endregion

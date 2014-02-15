@@ -161,6 +161,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 typeof(string)).Width = 200;
 
             grdDetails.SelectionMode = SourceGrid.GridSelectionMode.Row;
+            grdDetails.CancelEditingWithEscapeKey = false;
 
 
             SourceGrid.DataGridColumn gridColumn;
