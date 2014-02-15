@@ -520,6 +520,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             base.SetControlProperties(writer, ctrl);
             writer.SetControlProperty(ctrl, "FixedRows", "1");
+            writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".CancelEditingWithEscapeKey = false;" + Environment.NewLine);
             return writer.FTemplate;
         }
     }
