@@ -83,7 +83,6 @@ namespace {#NAMESPACE}
       grdDetails.Enter += new EventHandler(grdDetails_Enter);
       grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(grdDetails_FocusRowLeaving);
       grdDetails.Selection.SelectionChanged += new RangeRegionChangedEventHandler(grdDetails_RowSelected);
-      grdDetails.CancelEditingWithEscapeKey = false;
       {#GRIDMULTISELECTION}
 {#ENDIF SAVEDETAILS}
 
@@ -164,7 +163,6 @@ namespace {#NAMESPACE}
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
-        // TODO? Save Window position
 
     }
 #endregion

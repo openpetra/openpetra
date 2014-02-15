@@ -175,7 +175,6 @@ namespace {#NAMESPACE}
       grdDetails.Selection.SelectionChanged += new RangeRegionChangedEventHandler(grdDetails_RowSelected);
       {#GRIDMULTISELECTION}
 {#ENDIF SAVEDETAILS}
-      grdDetails.CancelEditingWithEscapeKey = false;
       pnlDetails.Enabled = false;
       
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;

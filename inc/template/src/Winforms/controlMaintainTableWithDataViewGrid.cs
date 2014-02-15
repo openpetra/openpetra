@@ -124,7 +124,6 @@ namespace {#NAMESPACE}
       myDataView.AllowNew = false;
       grdDetails.DataSource = myDataView;
       grdDetails.Columns.AutoSizeMode = Fill;
-      grdDetails.CancelEditingWithEscapeKey = false;
 
 {#IFDEF BUTTONPANEL}
       FinishButtonPanelSetup();

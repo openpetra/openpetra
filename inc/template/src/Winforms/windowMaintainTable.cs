@@ -113,7 +113,6 @@ namespace {#NAMESPACE}
       grdDetails.Selection.SelectionChanged += new RangeRegionChangedEventHandler(grdDetails_RowSelected);
       {#GRIDMULTISELECTION}
 {#ENDIF SAVEDETAILS}
-      grdDetails.CancelEditingWithEscapeKey = false;
       
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
 {#IFDEF GRIDSORT}
@@ -205,7 +204,6 @@ namespace {#NAMESPACE}
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
-        // TODO? Save Window position
 
     }
 #endregion

@@ -62,7 +62,6 @@ namespace {#NAMESPACE}
       {#INITMANUALCODE}
 
       {#INITACTIONSTATE}
-      grdDetails.CancelEditingWithEscapeKey = false;
 {#IFDEF BUTTONPANEL}
       FinishButtonPanelSetup();
 {#ENDIF BUTTONPANEL}
@@ -124,7 +123,6 @@ namespace {#NAMESPACE}
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
-        // TODO? Save Window position
 
     }
 

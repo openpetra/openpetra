@@ -97,7 +97,6 @@ namespace {#NAMESPACE}
       myDataView.RowFilter = {#GRIDFILTER};
 {#ENDIF GRIDFILTER}
       myDataView.AllowNew = false;
-      grdDetails.CancelEditingWithEscapeKey = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
 {#ENDIF DETAILTABLE}
@@ -175,7 +174,6 @@ namespace {#NAMESPACE}
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
-        // TODO? Save Window position
 
     }
 #endregion

@@ -151,7 +151,6 @@ namespace {#NAMESPACE}
         grdDetails.Selection.FocusRowLeaving += new SourceGrid.RowCancelEventHandler(grdDetails_FocusRowLeaving);
         grdDetails.Selection.SelectionChanged += new RangeRegionChangedEventHandler(grdDetails_RowSelected);
 {#ENDIF SHOWDETAILS}
-        grdDetails.CancelEditingWithEscapeKey = false;
         {#GRIDMULTISELECTION}
         pnlDetails.Enabled = false;
       
