@@ -205,7 +205,7 @@ namespace Tests.Common.Controls
             Assert.IsTrue(TVerificationHelper.AreVerificationResultsIdentical(tester.Properties.DateVerificationResult,
                     new TVerificationResult(null, ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOUNDEFINEDDATE,
                             CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            "{0} may not be empty.", new string[] { "'Date'" }))));
+                            "{0} must not be empty.", new string[] { "'Date'" }))));
 
             DialogBoxHandler = null;
         }
