@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop, christiank
+//       timop, christiank, alanP
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -84,8 +84,12 @@ namespace Ict.Petra.Client.CommonForms
 
         private Form FCallerForm;
 
+        /// private static variables that manage the storing of window size and position etc
         private static SortedList <string, string>FWindowPositions = new SortedList <string, string>();
         private static bool FWindowPositionsLoaded = false;
+        
+        /// private class variable that stores the splitter positions that have already been displayed
+        private List<string> FSplittersDisplayed = new List<string>();
 
         /// Tells whether the Form is activated for the first time (after loading the Form) or not
         protected Boolean FFormActivatedForFirstTime;
@@ -196,12 +200,24 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /** used to allow subforms to initialise
+         * Also, now that the form is shown we can set the splitter bar distances
          */
         public void LocalRunOnceOnActivation()
         {
             if (!FNoAutoHookupOfAllControls)
             {
                 HookupAllControls();
+            }
+
+            // Are we saving/restoring the window position?  This option is stored in User Defaults.
+            if (TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, true))
+            {
+                if (FWinForm.Name == "TFrmMainWindowNew" || FCallerForm.Name == "TFrmMainWindowNew")
+                {
+                    // Either we are loading the main window or we have been opened by the main window
+                    // Now that the window has been activated we are ok to restore things like splitter distances
+                    RestoreAdditionalWindowPositionProperties();
+                }
             }
         }
 
@@ -601,7 +617,7 @@ namespace Ict.Petra.Client.CommonForms
                         LoadWindowPositionsFromFile();
                     }
 
-                    RestoreWindowPositionProperties();
+                    RestoreBasicWindowPositionProperties();     // We restore additional properties 'on activation' above
                 }
             }
         }
@@ -821,6 +837,7 @@ namespace Ict.Petra.Client.CommonForms
         {
             if ((AContainerControl is Form) || (AContainerControl is UserControl))
             {
+                // When the control is a form or user control we update the name that will be the parent part of the string
                 AParentFormOrControlName = AContainerControl.Name;
             }
 
@@ -829,52 +846,111 @@ namespace Ict.Petra.Client.CommonForms
                 if (control is SplitContainer)
                 {
                     SplitContainer splitter = (SplitContainer)control;
-                    AResultString += String.Format(";{0}.{1}:SplitterDistance:{2}",
-                        AParentFormOrControlName,
-                        splitter.Name,
-                        splitter.SplitterDistance);
+                    if (AResultString.Contains(String.Format("{0}.{1}", AParentFormOrControlName, splitter.Name)))
+                    {
+                        // the control is used more than once!!  (This does happen on PartnerFind)
+                        // so we need to determine a new suffix that we will store as, e.g., ucoControl(1).
+                        int suffix = 1;
+                        
+                        while (AResultString.Contains(String.Format("{0}({1}).{2}", AParentFormOrControlName, suffix, splitter.Name)))
+                        {
+                            suffix++;
+                        }
+                        
+                        AResultString += String.Format(";{0}({3}).{1}:SplitterDistance:{2}",
+                            AParentFormOrControlName,
+                            splitter.Name,
+                            splitter.SplitterDistance,
+                            suffix);
+                    }
+                    else
+                    {
+                        // We have not saved this form.control before
+                        AResultString += String.Format(";{0}.{1}:SplitterDistance:{2}",
+                            AParentFormOrControlName,
+                            splitter.Name,
+                            splitter.SplitterDistance);
+                    }
+
+                    // Now get the splitter properties inside the two panels of the split container
+                    GetSplitterPropertiesAsString(control, ref AResultString, AParentFormOrControlName);
                 }
                 else if (control.Controls.Count > 0)
                 {
+                    // Get the splitter properties of this container control
                     GetSplitterPropertiesAsString(control, ref AResultString, AParentFormOrControlName);
                 }
             }
         }
 
         /// <summary>
-        /// Recursive method to find a control in a container based on a string representation such as TFrmBlah.sptBlah or ucoBlah.sptBlah
+        /// Top-level method to find a control in a container based on a string representation such as TFrmBlah.sptBlah or ucoBlah.sptBlah
+        /// </summary>
+        /// <param name="AControlNameToFind">A dot notation string such as ucoBlah.sptBlah</param>
+        /// <param name="AContainerControl">The container control - typically a Form</param>
+        /// <returns>The found control or null if no control was found</returns>
+        private Control FindControlByName(string AControlNameToFind, Control AContainerControl)
+        {
+            int ControlsSkipped = 0;
+            return FindControlByName(AControlNameToFind, AContainerControl, String.Empty, ref ControlsSkipped);
+        }
+
+        /// <summary>
+        /// This is the recursive method to find a control in a container based on a string representation such as TFrmBlah.sptBlah or ucoBlah.sptBlah.
+        /// Do not call this method at the top level.  This method is used internally to recurse through contained controls
         /// </summary>
         /// <param name="AControlNameToFind">A dot notation string such as ucoBlah.sptBlah</param>
         /// <param name="AContainerControl">The container control - typically a Form</param>
         /// <param name="AParentFormOrControlName">This is used in the recursive call.  At the topmost level you should pass String.Empty</param>
-        /// <returns></returns>
-        private Control FindControlByName(string AControlNameToFind, Control AContainerControl, string AParentFormOrControlName)
+        /// <param name="AControlsSkippedCount">This is used in the recursive call.  It keeps track of the controls skipped when more than one control has the same name.</param>
+        /// <returns>The found control or null if no control was found</returns>
+        private Control FindControlByName(string AControlNameToFind, Control AContainerControl, string AParentFormOrControlName, ref int AControlsSkippedCount)
         {
             if ((AContainerControl is Form) || (AContainerControl is UserControl))
             {
                 AParentFormOrControlName = AContainerControl.Name;
             }
 
+            // Parse the control name to find - bearing in mind that worst case is parentControl(1).controlName
             Control foundControl = null;
-            string controlName = AControlNameToFind;
             string parentFormOrControlName = String.Empty;
+            string controlName = AControlNameToFind;
+            int controlsToSkipWithSameName = 0;
 
             if (AControlNameToFind.Contains("."))
             {
                 string[] items = AControlNameToFind.Split('.');
                 parentFormOrControlName = items[0];
                 controlName = items[1];
+
+                if (parentFormOrControlName.EndsWith(")"))
+                {
+                    // the parent control is a duplicate
+                    int pos = parentFormOrControlName.LastIndexOf('(');
+                    controlsToSkipWithSameName = Convert.ToInt32(parentFormOrControlName.Substring(pos + 1, parentFormOrControlName.Length - pos - 2));
+                    parentFormOrControlName = parentFormOrControlName.Substring(0, pos);
+                }
             }
 
+            // Now we know what to look for
             foreach (Control control in AContainerControl.Controls)
             {
                 if ((control.Name == controlName) && (AParentFormOrControlName == parentFormOrControlName))
                 {
-                    foundControl = control;
+                    if (controlsToSkipWithSameName == AControlsSkippedCount)
+                    {
+                        foundControl = control;
+                    }
+                    else
+                    {
+                        // carry on a find the next occurrence
+                        AControlsSkippedCount++;
+                    }
                 }
                 else if (control.Controls.Count > 0)
                 {
-                    foundControl = FindControlByName(AControlNameToFind, control, AParentFormOrControlName);
+                    // Recurse into this control's controls
+                    foundControl = FindControlByName(AControlNameToFind, control, AParentFormOrControlName, ref AControlsSkippedCount);
                 }
 
                 if (foundControl != null)
@@ -887,14 +963,48 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// Saves the window size and position for the current screen in our static sorted list variable
+        /// Gets the window size and position (and splitter positions) for the current screen in our static sorted list variable
         /// </summary>
         private void GetWindowPositionProperties()
         {
-            string splitterProperties = String.Empty;
+            // First we remember what the splitter string was before, because we may need parts of it again
+            string prevWinPosString = String.Empty;
+            if (FWindowPositions.ContainsKey(FWinForm.Name))
+            {
+                prevWinPosString = FWindowPositions[FWinForm.Name];
+            }
 
+            // Now get the current splitter properties for all splitters on this form
+            string splitterProperties = String.Empty;
             GetSplitterPropertiesAsString(FWinForm, ref splitterProperties, String.Empty);
 
+            // Now we check to see if we are saving any positions on controls that were not actually displayed this time
+            if (prevWinPosString != String.Empty)
+            {
+                string[] prevItems = prevWinPosString.Split(';');
+                for (int i = 5; i < prevItems.Length; i++)
+                {
+                    string[] prevExtraItems = prevItems[i].Split(':');
+
+                    if (!FSplittersDisplayed.Contains(prevExtraItems[0]))
+                    {
+                        // This is a splitter we know about already and it has not been displayed while the screen was open this time
+                        // So we need to substitute the value we know for the one in splitterProperties, which will be some kind of default YAML value
+                        string[] newItems = splitterProperties.Split(';');
+                        for (int k = 0; k < newItems.Length; k++)
+                        {
+                            string[] newExtraItems = newItems[k].Split(':');
+                            if (newExtraItems[0] == prevExtraItems[0])
+                            {
+                                splitterProperties = splitterProperties.Replace(newItems[k], prevItems[i]);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Now start on the window position and size
             string windowProperties;
 
             if (FWinForm.WindowState == FormWindowState.Normal)
@@ -929,9 +1039,9 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// Restores the window size and position for the current screen
+        /// Restores the window size, position and windowstate for the current screen
         /// </summary>
-        private void RestoreWindowPositionProperties()
+        public void RestoreBasicWindowPositionProperties()
         {
             if (FWindowPositions.ContainsKey(FWinForm.Name))
             {
@@ -984,19 +1094,38 @@ namespace Ict.Petra.Client.CommonForms
                     {
                         FWinForm.WindowState = FormWindowState.Maximized;
                     }
+                }
+            }
+        }
 
-                    for (int i = 5; i < items.Length; i++)
+        /// <summary>
+        /// Restores the additional position properties (such as split container distances) for the current screen
+        /// </summary>
+        public void RestoreAdditionalWindowPositionProperties()
+        {
+            if (FWindowPositions.ContainsKey(FWinForm.Name))
+            {
+                // we can set the positions for this window
+                string[] items = FWindowPositions[FWinForm.Name].Split(';');
+
+                for (int i = 5; i < items.Length; i++)
+                {
+                    // we must have additional information
+                    string[] extraItems = items[i].Split(':');
+
+                    if (extraItems[1] == "SplitterDistance")
                     {
-                        // we must have additional information
-                        string[] extraItems = items[i].Split(':');
-
-                        if (extraItems[1] == "SplitterDistance")
+                        // Have we displayed this splitter already?
+                        if (!FSplittersDisplayed.Contains(extraItems[0]))
                         {
-                            Control splitterControl = FindControlByName(extraItems[0], FWinForm, String.Empty);
+                            Control splitterControl = FindControlByName(extraItems[0], FWinForm);
 
-                            if (splitterControl != null)
+                            // Setting the splitter distance only works if the control is displayed
+                            // If it is not displayed yet we will have another go later
+                            if ((splitterControl != null) && splitterControl.CanFocus)
                             {
                                 ((SplitContainer)splitterControl).SplitterDistance = int.Parse(extraItems[2]);
+                                FSplittersDisplayed.Add(extraItems[0]);
                             }
                         }
                     }
