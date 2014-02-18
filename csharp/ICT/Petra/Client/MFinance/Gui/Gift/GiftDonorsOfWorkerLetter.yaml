@@ -25,6 +25,7 @@
         sptResult:
             Dock: Fill
             SplitterOrientation: Horizontal
+            BackColor: System.Drawing.SystemColors.ControlDark
             Panel1: grdDetails
             Panel2: preLetters
         txtWorkerPartnerKey:
@@ -32,6 +33,7 @@
         grdDetails:
             Dock: Fill
             TableName: AGift
+            BackColor: System.Drawing.SystemColors.Control
             Columns: [DonorKey, DonorShortName, RecipientDescription]
             CustomColumns:
                 DonorShortName: {Label=DonorShortName, Type=String}
@@ -39,6 +41,7 @@
             ActionFocusRow: FocusedRowChanged
         preLetters:
             Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
     Menu:
     Toolbar:
         tbbGenerateLetters:
