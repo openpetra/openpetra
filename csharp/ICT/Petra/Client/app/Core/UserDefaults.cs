@@ -268,18 +268,6 @@ namespace Ict.Petra.Client.App.Core
         public const String PARTNER_FINDOPTIONS_EXACTPARTNERKEYMATCHSEARCH = "findopt_exactpartnerkeymatchsearch";
 
         /// <summary>todoComment</summary>
-        public const String PARTNER_FIND_SPLITPOS_FORM = "partnfindscr_splitpos_form";
-
-        /// <summary>todoComment</summary>
-        public const String PARTNER_FIND_SPLITPOS_CRITERIA = "partnfindscr_splitpos_criteria";
-
-        /// <summary>todoComment</summary>
-        public const String PARTNER_FIND_SPLITPOS_FINDBYDETAILS = "partnfindscr_splitpos_findbydetails";
-
-        /// <summary>todoComment</summary>
-        public const String PARTNER_FIND_SPLITPOS_FINDBYDETAILS_CRIT = "partnfindscr_splitpos_findbydetails_crit";
-
-        /// <summary>todoComment</summary>
         public const String PARTNER_FIND_PARTNERDETAILS_OPEN = "partnfindscr_partnerdetails_open";
 
         /// <summary>todoComment</summary>
