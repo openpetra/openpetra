@@ -313,8 +313,7 @@
       <CustomField name="IbanMatch" type="string" initial="BEGINS"/>
       <CustomField name="AccountNumber" type="string"/>
       <CustomField name="AccountNumberMatch" type="string" initial="BEGINS"/>
-      <CustomField name="BranchCode" type="string"/>
-      <CustomField name="BranchCodeMatch" type="string" initial="BEGINS"/>
+      <CustomField name="BankKey" type="Int64" initial="0"/>
       <CustomField name="Bic" type="string"/>
       <CustomField name="BicMatch" type="string" initial="BEGINS"/>
     </CustomTable>

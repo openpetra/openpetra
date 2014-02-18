@@ -493,7 +493,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <returns>Dataset containing data for all Bank partners</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static BankTDS GetPBankRecords()
+        public static BankTDS GetPBankRecords(bool AIncludeLocations)
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
@@ -504,13 +504,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
             try
             {
-                string QueryShortTermApplication =
+                string QueryBankRecords =
                     "SELECT PUB_p_bank.*, PUB_p_partner.p_status_code_c " +
                     "FROM PUB_p_bank, PUB_p_partner " +
                     "WHERE PUB_p_partner.p_partner_key_n = PUB_p_bank.p_partner_key_n";
 
                 DBAccess.GDBAccessObj.Select(ReturnValue,
-                    QueryShortTermApplication,
+                    QueryBankRecords,
                     ReturnValue.PBank.TableName, ReadTransaction, null);
 
                 foreach (BankTDSPBankRow Row in ReturnValue.PBank.Rows)
@@ -521,16 +521,28 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         Row.BranchCode = "<" + Catalog.GetString("INACTIVE") + "> " + Row.BranchCode;
                     }
 
-                    // load locations for each bank (if they exist)
-                    PPartnerLocationAccess.LoadViaPPartner(ReturnValue, Row.PartnerKey, ReadTransaction);
-                    PLocationAccess.LoadViaPPartner(ReturnValue, Row.PartnerKey, ReadTransaction);
+                    if (AIncludeLocations)
+                    {
+                        // load locations for each bank (if they exist)
+                        PLocationTable LocationTable = PLocationAccess.LoadViaPPartner(Row.PartnerKey, ReadTransaction);
+                        ReturnValue.Merge(LocationTable);
+
+                        foreach (PLocationRow LocationRow in LocationTable.Rows)
+                        {
+                            PPartnerLocationAccess.LoadByPrimaryKey(ReturnValue,
+                                Row.PartnerKey,
+                                LocationRow.SiteKey,
+                                LocationRow.LocationKey,
+                                ReadTransaction);
+                        }
+                    }
                 }
             }
             finally
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    DBAccess.GDBAccessObj.RollbackTransaction();
                     TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetPBankRecords: committed own transaction.");
                 }
             }

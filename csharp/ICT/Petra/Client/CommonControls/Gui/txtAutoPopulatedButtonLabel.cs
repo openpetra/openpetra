@@ -625,6 +625,22 @@ namespace Ict.Petra.Client.CommonControls
             }
         }
 
+        /// <summary>
+        /// This property determines whether the label is visible or not.
+        /// </summary>
+        public bool LabelVisible
+        {
+            get
+            {
+                return this.txtAutoPopulated.lblLabel.Visible;
+            }
+
+            set
+            {
+                this.txtAutoPopulated.lblLabel.Visible = value;
+            }
+        }
+
 
         #region Creation and disposal
 
@@ -794,7 +810,12 @@ namespace Ict.Petra.Client.CommonControls
                     this.FLookUpColumnIndex = -1;
                     this.txtAutoPopulated.txtTextBox.Text = "0000000000";
                     this.txtAutoPopulated.Size = this.Size;
-                    this.txtAutoPopulated.SetLabel += new TDelegateSetLabel(this.TxtAutoPopulated_SetLabel);
+
+                    if (ShowLabel)
+                    {
+                        this.txtAutoPopulated.SetLabel += new TDelegateSetLabel(this.TxtAutoPopulated_SetLabel);
+                    }
+
                     #endregion
                     break;
             }
@@ -1861,15 +1882,15 @@ namespace Ict.Petra.Client.CommonControls
                                 {
                                     mResultIntTxt = Convert.ToInt64(this.Text);
 
-                                    BankTDS BankDataset = (BankTDS) this.DataSet;
+                                    BankTDS FBankDataset = (BankTDS) this.DataSet;
 
-                                    TCommonScreensForwarding.OpenBankFindDialog.Invoke(ref BankDataset,
+                                    TCommonScreensForwarding.OpenBankFindDialog.Invoke(ref FBankDataset,
                                         ref mResultIntTxt,
                                         this.ParentForm);
 
-                                    if (BankDataset != this.DataSet)
+                                    if ((DatasetChanged != null) && (FBankDataset != this.DataSet))
                                     {
-                                        this.DataSet = BankDataset;
+                                        this.DataSet = FBankDataset;
                                         DatasetChanged(DataSet);
                                     }
 
@@ -1878,7 +1899,7 @@ namespace Ict.Petra.Client.CommonControls
                                     {
                                         TextBoxStringOut = StringHelper.PartnerKeyToStr(mResultIntTxt);
 
-                                        if ((ValueChanged != null)) //&& (mTextBoxStringOld != TextBoxStringOut))
+                                        if ((ValueChanged != null) && (mTextBoxStringOld != TextBoxStringOut))
                                         {
                                             bool ValidResult = true;
                                             ValueChanged(mResultIntTxt, "", ValidResult);

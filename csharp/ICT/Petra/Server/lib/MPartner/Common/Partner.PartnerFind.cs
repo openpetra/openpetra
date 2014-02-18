@@ -319,8 +319,12 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             sb.AppendFormat("{0},{1}", "PUB.p_banking_details.p_account_name_c", Environment.NewLine);
             sb.AppendFormat("{0},{1}", "PUB.p_banking_details.p_bank_account_number_c", Environment.NewLine);
             sb.AppendFormat("{0},{1}", "PUB.p_banking_details.p_iban_c", Environment.NewLine);
-            sb.AppendFormat("{0},{1}", "PUB.p_bank.p_branch_code_c", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_banking_details.p_expiry_date_d", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_banking_details.p_comment_c", Environment.NewLine);
             sb.AppendFormat("{0},{1}", "PUB.p_bank.p_bic_c", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_bank.p_partner_key_n", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_bank.p_branch_name_c", Environment.NewLine);
+            sb.AppendFormat("{0},{1}", "PUB.p_bank.p_branch_code_c", Environment.NewLine);
 
             sb.AppendFormat("{0},{1}", "PUB.p_partner.s_date_created_d", Environment.NewLine);
             sb.AppendFormat("{0},{1}", "PUB.p_partner.s_created_by_c", Environment.NewLine);
@@ -895,19 +899,21 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             }
 
             // Searched DB Field: 'p_account_name_c'
-            if (CriteriaRow["BranchCode"].ToString().Length > 0)
-            {
-                new TDynamicSearchHelper(PBankTable.TableId,
-                    PBankTable.ColumnBranchCodeId, CriteriaRow, "BranchCode", "BranchCodeMatch", ref CustomWhereCriteria,
-                    ref InternalParameters);
-            }
-
-            // Searched DB Field: 'p_account_name_c'
             if (CriteriaRow["Bic"].ToString().Length > 0)
             {
                 new TDynamicSearchHelper(PBankTable.TableId,
                     PBankTable.ColumnBicId, CriteriaRow, "Bic", "BicMatch", ref CustomWhereCriteria,
                     ref InternalParameters);
+            }
+
+            // Searched DB Field: 'p_account_name_c'
+            if (Convert.ToInt64(CriteriaRow["BankKey"]) > 0)
+            {
+                CustomWhereCriteria = String.Format("{0} AND {1} = ?", CustomWhereCriteria,
+                    PBankTable.GetTableDBName() + "." + PBankTable.GetPartnerKeyDBName());                                                                                         // CustomWhereCriteria + ' AND p_partner_key_n = ?';
+                OdbcParameter miParam = new OdbcParameter("", OdbcType.BigInt, 10);
+                miParam.Value = (object)(CriteriaRow["BankKey"]);
+                InternalParameters.Add(miParam);
             }
 
             if (((Boolean)(CriteriaRow["WorkerFamOnly"]) == true)

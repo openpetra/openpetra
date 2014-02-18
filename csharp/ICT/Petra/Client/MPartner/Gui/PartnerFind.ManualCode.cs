@@ -156,12 +156,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ucoFindByPartnerDetails.SetupPartnerInfoPane();
 
-            ucoFindByBankDetails.PartnerInfoPaneCollapsed += new EventHandler(ucoFindByPartnerDetails_PartnerInfoPaneCollapsed);
-            ucoFindByBankDetails.PartnerInfoPaneExpanded += new EventHandler(ucoFindByPartnerDetails_PartnerInfoPaneExpanded);
+            ucoFindByBankDetails.PartnerAvailable += new TUC_PartnerFind_ByPartnerDetails.TPartnerAvailableChangeEventHandler(
+                ucoFindByPartnerDetails_PartnerAvailable);
+            ucoFindByBankDetails.SearchOperationStateChange += new TUC_PartnerFind_ByPartnerDetails.TSearchOperationStateChangeEventHandler(
+                ucoFindByPartnerDetails_SearchOperationStateChange);
             ucoFindByBankDetails.EnableAcceptButton += new EventHandler(ucoFindByPartnerDetails_EnableAcceptButton);
             ucoFindByBankDetails.DisableAcceptButton += new EventHandler(ucoFindByPartnerDetails_DisableAcceptButton);
-
-            ucoFindByBankDetails.SetupPartnerInfoPane();
 
             // FindByPartnerDetails tab is shown first
             FCurrentlySelectedTab = ucoFindByPartnerDetails;

@@ -545,7 +545,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //            MessageBox.Show("PartnerKey of newly selected Row: " + FLogic.PartnerKey.ToString());
             //            TLogging.Log("DataGrid_FocusRowEntered: PartnerKey of newly selected Row: " + FLogic.PartnerKey.ToString());
 
-            // Update 'Partner Info' if this Panel is shown
+            // Update 'Partner Info' if this Panel is shown and this is not the 'Bank Details' tab
             UpdatePartnerInfoPanel();
         }
 
@@ -868,7 +868,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TLocationPK CurrentLocationPK;
 
-            if (!ucoPartnerInfo.IsCollapsed)
+            if (!ucoPartnerInfo.IsCollapsed && !FBankDetailsTab)
             {
                 CurrentLocationPK = FLogic.DetermineCurrentLocationPK();
 
@@ -1218,6 +1218,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // Register Event Handler for the OnCriteriaContentChanged event
             ucoPartnerFindCriteria.OnCriteriaContentChanged += new EventHandler(this.UcoPartnerFindCriteria_CriteriaContentChanged);
+
+            if (FBankDetailsTab)
+            {
+                // populate comboboxes (from database)
+                Thread BankDetailThread = new Thread(ucoPartnerFindCriteria.PopulateBankComboBoxes);
+                BankDetailThread.Start();
+            }
         }
 
         private void RestoreSplitterSettings()
@@ -1597,7 +1604,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             Int64 MergedPartnerKey;
 
             // Since this procedure is called from a separate (background) Thread, it is
-            // necessary to executethis procedure in the Thread of the GUI
+            // necessary to execute this procedure in the Thread of the GUI
             if (btnSearch.InvokeRequired)
             {
                 Args = new object[1];
@@ -2140,7 +2147,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             TUserDefaults.SetDefault(TUserDefaults.PARTNER_FIND_SPLITPOS_FINDBYDETAILS, spcPartnerFindByDetails.SplitterDistance);
 
             // Save Partner Info Pane and Partner Task Pane settings
-            TUserDefaults.SetDefault(TUserDefaults.PARTNER_FIND_PARTNERDETAILS_OPEN, FPartnerInfoPaneOpen);
+            if (!FBankDetailsTab)
+            {
+                TUserDefaults.SetDefault(TUserDefaults.PARTNER_FIND_PARTNERDETAILS_OPEN, FPartnerInfoPaneOpen);
+            }
+
             TUserDefaults.SetDefault(TUserDefaults.PARTNER_FIND_PARTNERTASKS_OPEN, FPartnerTasksPaneOpen);
         }
 

@@ -57,7 +57,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private PPartnerTable AccountSharedWith = new PPartnerTable();
 
         /// <summary>Dataset containg all PBank records for all banks and their locations</summary>
-        private BankTDS BankDataset;
+        private BankTDS FBankDataset;
 
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
@@ -156,28 +156,28 @@ namespace Ict.Petra.Client.MPartner.Gui
             cmbBankCode.SelectedValueChanged -= new System.EventHandler(this.BankCodeChanged);
 
             // load bank records
-            if (BankDataset == null)
+            if (FBankDataset == null)
             {
-                BankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords();
-                txtBankKey.DataSet = BankDataset;
+                FBankDataset = TRemote.MPartner.Partner.WebConnectors.GetPBankRecords(true);
+                txtBankKey.DataSet = FBankDataset;
             }
 
             // add empty row
-            DataRow emptyRow = BankDataset.PBank.NewRow();
+            DataRow emptyRow = FBankDataset.PBank.NewRow();
             emptyRow[PBankTable.ColumnPartnerKeyId] = 0;
             emptyRow[PBankTable.ColumnBranchNameId] = Catalog.GetString("");
             emptyRow[PBankTable.ColumnBranchCodeId] = Catalog.GetString("");
-            BankDataset.PBank.Rows.Add(emptyRow);
+            FBankDataset.PBank.Rows.Add(emptyRow);
 
             // add inactive row
-            emptyRow = BankDataset.PBank.NewRow();
+            emptyRow = FBankDataset.PBank.NewRow();
             emptyRow[PBankTable.ColumnPartnerKeyId] = -1;
             emptyRow[PBankTable.ColumnBranchNameId] = Catalog.GetString("");
             emptyRow[PBankTable.ColumnBranchCodeId] = Catalog.GetString("<INACTIVE> ");
-            BankDataset.PBank.Rows.Add(emptyRow);
+            FBankDataset.PBank.Rows.Add(emptyRow);
 
             // populate the bank name combo box
-            cmbBankName.InitialiseUserControl(BankDataset.PBank,
+            cmbBankName.InitialiseUserControl(FBankDataset.PBank,
                 PBankTable.GetPartnerKeyDBName(),
                 PBankTable.GetBranchNameDBName(),
                 PBankTable.GetBranchCodeDBName(),
@@ -188,7 +188,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             cmbBankName.SelectedValueChanged += new System.EventHandler(this.BankNameChanged);
 
             // populate the bank code combo box
-            cmbBankCode.InitialiseUserControl(BankDataset.PBank,
+            cmbBankCode.InitialiseUserControl(FBankDataset.PBank,
                 PBankTable.GetBranchCodeDBName(),
                 PBankTable.GetPartnerKeyDBName(),
                 null);
@@ -347,10 +347,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         // called when FindBank dialog is accepted
         private void PartnerKeyChanged(long APartnerKey, String APartnerShortName, bool AValidSelection)
         {
-            FCurrentBankRow = (PBankRow)BankDataset.PBank.Rows.Find(new object[] { APartnerKey });
+            FCurrentBankRow = (PBankRow)FBankDataset.PBank.Rows.Find(new object[] { APartnerKey });
 
             // change the BankName combo (if it was not the control used to change the bank)
-            if (cmbBankName.GetSelectedString() != FCurrentBankRow.PartnerKey.ToString())
+            if ((FCurrentBankRow != null) && (cmbBankName.GetSelectedString() != FCurrentBankRow.PartnerKey.ToString()))
             {
                 // temporarily remove event
                 cmbBankName.SelectedValueChanged -= BankNameChanged;
@@ -366,26 +366,44 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 cmbBankName.SelectedValueChanged += new System.EventHandler(this.BankNameChanged);
             }
+            else if ((FCurrentBankRow == null) && (cmbBankName.GetSelectedString() != ""))
+            {
+                // temporarily remove event
+                cmbBankName.SelectedValueChanged -= BankNameChanged;
+
+                cmbBankName.SetSelectedString("");
+
+                cmbBankName.SelectedValueChanged += new System.EventHandler(this.BankNameChanged);
+            }
 
             // change the BankCode combo (if it was not the control used to change the bank)
-            if (cmbBankCode.GetSelectedString() != FCurrentBankRow.BranchCode)
+            if ((FCurrentBankRow != null) && (cmbBankCode.GetSelectedString() != FCurrentBankRow.BranchCode))
             {
                 cmbBankCode.SetSelectedString(FCurrentBankRow.BranchCode);
             }
+            else if ((FCurrentBankRow == null) && (cmbBankCode.GetSelectedString() != ""))
+            {
+                // temporarily remove event
+                cmbBankCode.SelectedValueChanged -= BankCodeChanged;
+
+                cmbBankCode.SetSelectedString("");
+
+                cmbBankCode.SelectedValueChanged += new System.EventHandler(this.BankCodeChanged);
+            }
 
             // change the bank info
-            if ((APartnerKey != 0) && (APartnerKey != -1))
+            if ((FCurrentBankRow != null) && (APartnerKey != 0) && (APartnerKey != -1))
             {
                 lblBicSwiftCode.Text = Catalog.GetString("BIC/SWIFT Code: ") + FCurrentBankRow.Bic;
                 lblCountry.Text = Catalog.GetString("Country: No Valid Address On File");
 
-                foreach (PPartnerLocationRow Row in BankDataset.PPartnerLocation.Rows)
+                foreach (PPartnerLocationRow Row in FBankDataset.PPartnerLocation.Rows)
                 {
                     if ((Row.PartnerKey == FCurrentBankRow.PartnerKey)
                         && (Row.IsDateGoodUntilNull() || (Row.DateGoodUntil >= DateTime.Today)))
                     {
                         lblCountry.Text = "Country: " +
-                                          ((PLocationRow)BankDataset.PLocation.Rows.Find(new object[] { Row.SiteKey, Row.LocationKey })).CountryCode;
+                                          ((PLocationRow)FBankDataset.PLocation.Rows.Find(new object[] { Row.SiteKey, Row.LocationKey })).CountryCode;
                         break;
                     }
                 }
@@ -397,9 +415,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        // called when text box is left. Updates comboboxes faster than ValueChanged event
         private void PartnerKeyChanged(System.Object sender, EventArgs e)
         {
-            PartnerKeyChanged(Convert.ToInt64(txtBankKey.Text), "", true);
+            // this if stops a crash when screen is closed causing this event to be fired
+            if (txtBankKey.Text != "")
+            {
+                PartnerKeyChanged(Convert.ToInt64(txtBankKey.Text), "", true);
+            }
         }
 
         // when cmbBankName is changed
@@ -416,7 +439,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                      && (cmbBankName.GetSelectedString() != "")
                      && cmbBankName.ContainsFocus)
             {
-                FCurrentBankRow = (PBankRow)BankDataset.PBank.Rows.Find(new object[] { Convert.ToInt64(cmbBankName.GetSelectedString()) });
+                FCurrentBankRow = (PBankRow)FBankDataset.PBank.Rows.Find(new object[] { Convert.ToInt64(cmbBankName.GetSelectedString()) });
 
                 // update partner key in txtBankKey
                 txtBankKey.Text = FCurrentBankRow.PartnerKey.ToString();
@@ -436,7 +459,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (FCurrentBankRow.BranchCode != cmbBankCode.GetSelectedString())
             {
-                FCurrentBankRow = (PBankRow)BankDataset.PBank.Rows.Find(new object[] { cmbBankCode.GetSelectedDescription() });
+                FCurrentBankRow = (PBankRow)FBankDataset.PBank.Rows.Find(new object[] { cmbBankCode.GetSelectedDescription() });
 
                 // update partner key in txtBankKey
                 txtBankKey.Text = FCurrentBankRow.PartnerKey.ToString();
@@ -587,7 +610,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         // Called when the dataset is changed in the FindBank dialog
         private void DatasetChanged(DataSet ADataset)
         {
-            BankDataset = (BankTDS)ADataset;
+            FBankDataset = (BankTDS)ADataset;
             PopulateComboBoxes();
         }
 

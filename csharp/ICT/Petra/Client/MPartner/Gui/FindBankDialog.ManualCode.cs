@@ -104,7 +104,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             if ((FMainDS == null) || (FMainDS.PBank.Rows.Count == 0))
             {
                 FMainDS = new BankTDS();
-                FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.GetPBankRecords());
+                FMainDS.Merge(TRemote.MPartner.Partner.WebConnectors.GetPBankRecords(true));
             }
 
             FCriteriaData.Clear();
@@ -338,12 +338,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             String Filter = "";
 
-            if (string.IsNullOrEmpty(txtBranchName.Text))
+            if (!string.IsNullOrEmpty(txtBranchName.Text))
             {
                 Filter += FCriteriaData.Columns[PBankTable.GetBranchNameDBName()] + " LIKE '" + txtBranchName.Text + "%'";
             }
 
-            if (string.IsNullOrEmpty(txtBranchCode.Text))
+            if (!string.IsNullOrEmpty(txtBranchCode.Text))
             {
                 if (Filter != "")
                 {
@@ -353,7 +353,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 Filter += FCriteriaData.Columns[PBankTable.GetBranchCodeDBName()] + " LIKE '" + txtBranchCode.Text + "%'";
             }
 
-            if (string.IsNullOrEmpty(txtBicCode.Text))
+            if (!string.IsNullOrEmpty(txtBicCode.Text))
             {
                 if (Filter != "")
                 {
@@ -363,7 +363,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 Filter += FCriteriaData.Columns[PBankTable.GetBicDBName()] + " LIKE '" + txtBicCode.Text + "%'";
             }
 
-            if (string.IsNullOrEmpty(txtCity.Text))
+            if (!string.IsNullOrEmpty(txtCity.Text))
             {
                 if (Filter != "")
                 {
@@ -373,7 +373,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 Filter += FCriteriaData.Columns[PLocationTable.GetCityDBName()] + " LIKE '" + txtCity.Text + "%'";
             }
 
-            if (string.IsNullOrEmpty(txtCountry.Text))
+            if (!string.IsNullOrEmpty(txtCountry.Text))
             {
                 if (Filter != "")
                 {
@@ -404,23 +404,26 @@ namespace Ict.Petra.Client.MPartner.Gui
         // A new row is selected in the grid
         private void FocusedRowChanged(System.Object sender, EventArgs e)
         {
-            DataRowView RowDataRowView = (DataRowView)grdDetails.SelectedDataRows[0];
-
-            if (RowDataRowView.Row[BankTDSPBankTable.GetStatusCodeDBName()].ToString() !=
-                SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))
+            if (grdDetails.SelectedDataRows.Length == 1)
             {
-                chkShowInactive.Enabled = false;
-            }
-            else
-            {
-                chkShowInactive.Enabled = true;
-            }
+                DataRowView RowDataRowView = (DataRowView)grdDetails.SelectedDataRows[0];
 
-            // Update property with a new selected bank's partner key
-            FBankPartnerKey = Convert.ToInt64(RowDataRowView.Row[BankTDSPBankTable.GetPartnerKeyDBName()]);
+                if (RowDataRowView.Row[BankTDSPBankTable.GetStatusCodeDBName()].ToString() !=
+                    SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))
+                {
+                    chkShowInactive.Enabled = false;
+                }
+                else
+                {
+                    chkShowInactive.Enabled = true;
+                }
 
-            btnAccept.Enabled = true;
-            btnEdit.Enabled = true;
+                // Update property with a new selected bank's partner key
+                FBankPartnerKey = Convert.ToInt64(RowDataRowView.Row[BankTDSPBankTable.GetPartnerKeyDBName()]);
+
+                btnAccept.Enabled = true;
+                btnEdit.Enabled = true;
+            }
         }
 
         // clear all data in filter

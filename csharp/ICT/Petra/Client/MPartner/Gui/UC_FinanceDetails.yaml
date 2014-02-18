@@ -122,6 +122,7 @@ RootNode:
             NoLabel: true
             OnEnter: CheckIfRowIsShared
             OnChange: PartnerKeyChanged
+            OnLeave: PartnerKeyChanged
             Width: 120
             Type: Bank
         cmbBankName:
