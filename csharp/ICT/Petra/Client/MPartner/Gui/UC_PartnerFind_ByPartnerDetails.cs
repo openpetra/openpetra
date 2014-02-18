@@ -1092,6 +1092,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.grdResult.AutoFindColumn = ((short)(-1));
             this.grdResult.BackColor = System.Drawing.SystemColors.ControlDark;
             this.grdResult.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.grdResult.CancelEditingWithEscapeKey = false;
             this.grdResult.DeleteQuestionMessage = "You have chosen to delete this record.\'#13#10#13#10\'Dou you really want to delete" +
                                                    " it?";
             this.grdResult.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1218,13 +1219,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // Register Event Handler for the OnCriteriaContentChanged event
             ucoPartnerFindCriteria.OnCriteriaContentChanged += new EventHandler(this.UcoPartnerFindCriteria_CriteriaContentChanged);
-        }
-
-        private void RestoreSplitterSettings()
-        {
-            spcPartnerFindByDetails.SplitterDistance = TUserDefaults.GetInt32Default(
-                TUserDefaults.PARTNER_FIND_SPLITPOS_FINDBYDETAILS, 233);
-            // TODO FSplitterDistFindByDetails = spcPartnerFindByDetails.SplitterDistance;
         }
 
         /// <summary>
@@ -2134,10 +2128,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             // Save Find Criteria Match button settings
             ucoPartnerFindCriteria.SaveMatchButtonSettings();
-
-            // Save SplitContainer settings
-            ucoPartnerFindCriteria.SaveSplitterSetting();
-            TUserDefaults.SetDefault(TUserDefaults.PARTNER_FIND_SPLITPOS_FINDBYDETAILS, spcPartnerFindByDetails.SplitterDistance);
 
             // Save Partner Info Pane and Partner Task Pane settings
             TUserDefaults.SetDefault(TUserDefaults.PARTNER_FIND_PARTNERDETAILS_OPEN, FPartnerInfoPaneOpen);
