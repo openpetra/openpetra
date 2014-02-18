@@ -87,9 +87,9 @@ namespace Ict.Petra.Client.CommonForms
         /// private static variables that manage the storing of window size and position etc
         private static SortedList <string, string>FWindowPositions = new SortedList <string, string>();
         private static bool FWindowPositionsLoaded = false;
-        
+
         /// private class variable that stores the splitter positions that have already been displayed
-        private List<string> FSplittersDisplayed = new List<string>();
+        private List <string>FSplittersDisplayed = new List <string>();
 
         /// Tells whether the Form is activated for the first time (after loading the Form) or not
         protected Boolean FFormActivatedForFirstTime;
@@ -212,7 +212,7 @@ namespace Ict.Petra.Client.CommonForms
             // Are we saving/restoring the window position?  This option is stored in User Defaults.
             if (TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, true))
             {
-                if (FWinForm.Name == "TFrmMainWindowNew" || FCallerForm.Name == "TFrmMainWindowNew")
+                if ((FWinForm.Name == "TFrmMainWindowNew") || (FCallerForm.Name == "TFrmMainWindowNew"))
                 {
                     // Either we are loading the main window or we have been opened by the main window
                     // Now that the window has been activated we are ok to restore things like splitter distances
@@ -609,7 +609,7 @@ namespace Ict.Petra.Client.CommonForms
             if (TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, true))
             {
                 // Restore the window positions if we know them
-                if (FWinForm.Name == "TFrmMainWindowNew" || FCallerForm.Name == "TFrmMainWindowNew")
+                if ((FWinForm.Name == "TFrmMainWindowNew") || (FCallerForm.Name == "TFrmMainWindowNew"))
                 {
                     // Either we are loading the main window or we have been opened by the main window
                     if (!FWindowPositionsLoaded)
@@ -681,7 +681,8 @@ namespace Ict.Petra.Client.CommonForms
                         }
                         catch (Exception ex)
                         {
-                            TLogging.Log(String.Format("Exception occurred while saving the window position file '{0}': {1}", settingsPath, ex.Message), TLoggingType.ToLogfile);
+                            TLogging.Log(String.Format("Exception occurred while saving the window position file '{0}': {1}", settingsPath,
+                                    ex.Message), TLoggingType.ToLogfile);
                         }
                     }
                     else if ((FCallerForm.Name == "TFrmMainWindowNew") && !FWinForm.Modal)
@@ -705,7 +706,9 @@ namespace Ict.Petra.Client.CommonForms
                     }
                     catch (Exception ex)
                     {
-                        TLogging.Log(String.Format("Exception occurred while deleting the window position file '{0}': {1}", settingsPath, ex.Message), TLoggingType.ToLogfile);
+                        TLogging.Log(String.Format("Exception occurred while deleting the window position file '{0}': {1}",
+                                settingsPath,
+                                ex.Message), TLoggingType.ToLogfile);
                     }
                 }
             }
@@ -827,7 +830,7 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// Recursive method to find one or more splitter bars inside a container control and return the control name(s) and distance properties as a string 
+        /// Recursive method to find one or more splitter bars inside a container control and return the control name(s) and distance properties as a string
         /// that can be saved in the screen positions file.  Returns an empty string if there are no splitters.
         /// </summary>
         /// <param name="AContainerControl">The container control - typically a Form</param>
@@ -846,17 +849,18 @@ namespace Ict.Petra.Client.CommonForms
                 if (control is SplitContainer)
                 {
                     SplitContainer splitter = (SplitContainer)control;
+
                     if (AResultString.Contains(String.Format("{0}.{1}", AParentFormOrControlName, splitter.Name)))
                     {
                         // the control is used more than once!!  (This does happen on PartnerFind)
                         // so we need to determine a new suffix that we will store as, e.g., ucoControl(1).
                         int suffix = 1;
-                        
+
                         while (AResultString.Contains(String.Format("{0}({1}).{2}", AParentFormOrControlName, suffix, splitter.Name)))
                         {
                             suffix++;
                         }
-                        
+
                         AResultString += String.Format(";{0}({3}).{1}:SplitterDistance:{2}",
                             AParentFormOrControlName,
                             splitter.Name,
@@ -892,6 +896,7 @@ namespace Ict.Petra.Client.CommonForms
         private Control FindControlByName(string AControlNameToFind, Control AContainerControl)
         {
             int ControlsSkipped = 0;
+
             return FindControlByName(AControlNameToFind, AContainerControl, String.Empty, ref ControlsSkipped);
         }
 
@@ -904,7 +909,10 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="AParentFormOrControlName">This is used in the recursive call.  At the topmost level you should pass String.Empty</param>
         /// <param name="AControlsSkippedCount">This is used in the recursive call.  It keeps track of the controls skipped when more than one control has the same name.</param>
         /// <returns>The found control or null if no control was found</returns>
-        private Control FindControlByName(string AControlNameToFind, Control AContainerControl, string AParentFormOrControlName, ref int AControlsSkippedCount)
+        private Control FindControlByName(string AControlNameToFind,
+            Control AContainerControl,
+            string AParentFormOrControlName,
+            ref int AControlsSkippedCount)
         {
             if ((AContainerControl is Form) || (AContainerControl is UserControl))
             {
@@ -969,6 +977,7 @@ namespace Ict.Petra.Client.CommonForms
         {
             // First we remember what the splitter string was before, because we may need parts of it again
             string prevWinPosString = String.Empty;
+
             if (FWindowPositions.ContainsKey(FWinForm.Name))
             {
                 prevWinPosString = FWindowPositions[FWinForm.Name];
@@ -982,6 +991,7 @@ namespace Ict.Petra.Client.CommonForms
             if (prevWinPosString != String.Empty)
             {
                 string[] prevItems = prevWinPosString.Split(';');
+
                 for (int i = 5; i < prevItems.Length; i++)
                 {
                     string[] prevExtraItems = prevItems[i].Split(':');
@@ -991,9 +1001,11 @@ namespace Ict.Petra.Client.CommonForms
                         // This is a splitter we know about already and it has not been displayed while the screen was open this time
                         // So we need to substitute the value we know for the one in splitterProperties, which will be some kind of default YAML value
                         string[] newItems = splitterProperties.Split(';');
+
                         for (int k = 0; k < newItems.Length; k++)
                         {
                             string[] newExtraItems = newItems[k].Split(':');
+
                             if (newExtraItems[0] == prevExtraItems[0])
                             {
                                 splitterProperties = splitterProperties.Replace(newItems[k], prevItems[i]);
@@ -1141,9 +1153,9 @@ namespace Ict.Petra.Client.CommonForms
             FWindowPositions.Clear();
 
             string commonSettingsPath = Path.Combine(
-                    Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
-                    CommonFormsResourcestrings.StrFolderOrganisationName,
-                    System.Diagnostics.FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName);
+                Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                CommonFormsResourcestrings.StrFolderOrganisationName,
+                System.Diagnostics.FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName);
             string settingsFileName = String.Format(CommonFormsResourcestrings.StrScreenPositionsFileName, UserInfo.GUserInfo.UserID);
             string settingsPath = Path.Combine(commonSettingsPath, settingsFileName);
 
@@ -1156,6 +1168,7 @@ namespace Ict.Petra.Client.CommonForms
                         while (!sr.EndOfStream)
                         {
                             string oneLine = sr.ReadLine();
+
                             if (oneLine.Contains("="))
                             {
                                 string[] items = oneLine.Split('=');
@@ -1169,7 +1182,9 @@ namespace Ict.Petra.Client.CommonForms
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Exception occurred while loading the window position file '{0}': {1}", settingsPath, ex.Message), TLoggingType.ToLogfile);
+                TLogging.Log(String.Format("Exception occurred while loading the window position file '{0}': {1}",
+                        settingsPath,
+                        ex.Message), TLoggingType.ToLogfile);
             }
 
             FWindowPositionsLoaded = true;

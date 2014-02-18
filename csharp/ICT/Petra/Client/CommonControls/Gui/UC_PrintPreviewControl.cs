@@ -54,6 +54,7 @@ namespace Ict.Petra.Client.CommonControls
 
                     // If the control does not want the escape key we can find the top level form and close it.
                     Control control = this;
+
                     while (control.Parent != null)
                     {
                         control = control.Parent;
