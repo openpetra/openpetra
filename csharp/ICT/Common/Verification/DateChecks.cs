@@ -57,9 +57,9 @@ namespace Ict.Common.Verification
     {
         #region Resourcestrings
 
-        private static readonly string StrDateMayNotBeEmpty = Catalog.GetString("{0} may not be empty.");
-        private static readonly string StrDateMayNotBePastDate = Catalog.GetString("{0} may not be a past date.");
-        private static readonly string StrDateMayNotBeFutureDate = Catalog.GetString("{0} may not be a future date.");
+        private static readonly string StrDateMustNotBeEmpty = Catalog.GetString("{0} must not be empty.");
+        private static readonly string StrDateMustNotBePastDate = Catalog.GetString("{0} must not be a past date.");
+        private static readonly string StrDateMustNotBeFutureDate = Catalog.GetString("{0} must not be a future date.");
         private static readonly string StrDateCannotBeLater = Catalog.GetString("{0} cannot be later then {1}.");
         private static readonly string StrDateCannotBeLaterOrEqual = Catalog.GetString("{0} cannot be later than or equal to {1}.");
         private static readonly string StrDateCannotBeEarlier = Catalog.GetString("{0} cannot be earlier than {1}.");
@@ -108,7 +108,7 @@ namespace Ict.Common.Verification
                     ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOUNDEFINEDDATE,
                             CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            StrDateMayNotBeEmpty, new string[] { Description }));
+                            StrDateMustNotBeEmpty, new string[] { Description }));
 
                     if (AResultColumn != null)
                     {
@@ -128,7 +128,7 @@ namespace Ict.Common.Verification
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOUNDEFINEDDATE,
                         CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                        StrDateMayNotBeEmpty, new string[] { Description }));
+                        StrDateMustNotBeEmpty, new string[] { Description }));
 
                 if (AResultColumn != null)
                 {
@@ -218,7 +218,7 @@ namespace Ict.Common.Verification
                 {
                     ReturnValue = new TVerificationResult(AResultContext,
                         ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOPASTDATE, CommonResourcestrings.StrInvalidDateEntered + Environment.NewLine +
-                            StrDateMayNotBePastDate, new string[] { Description }));
+                            StrDateMustNotBePastDate, new string[] { Description }));
 
                     if (AResultColumn != null)
                     {
@@ -271,7 +271,7 @@ namespace Ict.Common.Verification
             {
                 ReturnValue = new TVerificationResult(AResultContext,
                     ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOFUTUREDATE, CommonResourcestrings.StrInvalidDateEntered +
-                        Environment.NewLine + StrDateMayNotBeFutureDate, new string[] { Description }));
+                        Environment.NewLine + StrDateMustNotBeFutureDate, new string[] { Description }));
 
                 if (AResultColumn != null)
                 {
@@ -346,7 +346,7 @@ namespace Ict.Common.Verification
                         ReturnValue = new TVerificationResult(AResultContext,
                             ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOPASTDATE, CommonResourcestrings.StrInvalidDateEntered +
                                 Environment.NewLine +
-                                StrDateMayNotBePastDate, new string[] { Description }));
+                                StrDateMustNotBePastDate, new string[] { Description }));
                     }
                     else if (ALowerRangeCheckType == TDateBetweenDatesCheckType.dbdctUnrealisticDate)
                     {
@@ -370,7 +370,7 @@ namespace Ict.Common.Verification
                         ReturnValue = new TVerificationResult(AResultContext,
                             ErrorCodes.GetErrorInfo(CommonErrorCodes.ERR_NOFUTUREDATE, CommonResourcestrings.StrInvalidDateEntered +
                                 Environment.NewLine +
-                                StrDateMayNotBeFutureDate, new string[] { Description }));
+                                StrDateMustNotBeFutureDate, new string[] { Description }));
                     }
                     else if (AUpperRangeCheckType == TDateBetweenDatesCheckType.dbdctUnrealisticDate)
                     {

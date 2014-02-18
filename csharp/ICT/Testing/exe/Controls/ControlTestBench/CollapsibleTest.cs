@@ -282,7 +282,7 @@ public partial class CollapsibleTest : Form
         this.FPnl.ItemActivation += new TTaskList.TaskLinkClicked(CollPanel_ItemActivation);
     }
 
-    void CollPanel_ItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+    void CollPanel_ItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
     {
         MessageBox.Show(String.Format("Task '{0}' with Label '{1}' got clicked.", ATaskListNode.Name, AItemClicked.Text));
     }
