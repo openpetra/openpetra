@@ -532,7 +532,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     {
         /// <summary>constructor</summary>
         public PrintPreviewGenerator()
-            : base("ppv", typeof(PrintPreviewControl))
+            : base("ppv", "Ict.Petra.Client.CommonControls.TUC_PrintPreviewControl")
         {
             FGenerateLabel = false;
         }
