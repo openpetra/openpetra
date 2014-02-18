@@ -833,6 +833,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         // called when the selected tab is changed
         private void TabChanged(System.Object sender, System.EventArgs e)
         {
+            FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
+
             // if FindByBankDetails tab is selected
             if (tpgFindBankDetails.Visible)
             {
