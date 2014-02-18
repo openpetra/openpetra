@@ -146,6 +146,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.grdInstalledSites.AutoFindColumn = ((short)(-1));
             this.grdInstalledSites.BackColor = System.Drawing.SystemColors.ControlDark;
             this.grdInstalledSites.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.grdInstalledSites.CancelEditingWithEscapeKey = false;
             this.grdInstalledSites.DeleteQuestionMessage = "You have chosen to delete this record.\'#13#10#13#10\'Do you really want to delete " +
                                                            "it?";
             this.grdInstalledSites.EnableSort = false;

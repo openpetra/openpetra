@@ -122,6 +122,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             this.grdRecordList.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
             this.grdRecordList.BackColor = System.Drawing.SystemColors.ControlDark;
             this.grdRecordList.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.grdRecordList.CancelEditingWithEscapeKey = false;
             this.grdRecordList.DeleteQuestionMessage = "You have chosen to delete thi" + "s record.'#13#10#13#10'Do you really want to delete it?";
             this.grdRecordList.FixedRows = 1;
             this.grdRecordList.Location = new System.Drawing.Point(4, 6);
