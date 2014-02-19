@@ -683,7 +683,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return rowPos + 1;
         }
 
-        private void UpdateBatchPeriod(object sender, EventArgs e)
+        /// <summary>
+        /// Update batch period if necessary
+        /// </summary>
+        public void UpdateBatchPeriod()
         {
             if ((FPetraUtilsObject == null) || FPetraUtilsObject.SuppressChangeDetection || (FPreviouslySelectedDetailRow == null))
             {
@@ -729,6 +732,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 //Leave BatchPeriod as it is
             }
+        }
+        
+        private void UpdateBatchPeriod(object sender, EventArgs e)
+        {
+        	UpdateBatchPeriod();
         }
 
         private bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)

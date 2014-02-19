@@ -217,6 +217,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors();
             }
+            
+            //Check if need to update batch period in each gift
+            ((TFrmGiftBatch)ParentForm).GetBatchControl().UpdateBatchPeriod();
 
             // Now we set the full filter
             ApplyFilter();
@@ -1232,7 +1235,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(FLedgerNumber, FBatchNumber));
 
-                    ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors();
+                    ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors(false);
                 }
                 else
                 {
@@ -1781,7 +1784,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
 
-                ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors();
+                ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors(false);
             }
             else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {
@@ -2126,6 +2129,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Int32 batchNumber;
             DateTime batchEffectiveDate;
 
+            if (ABatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+            {
+            	return;
+            }
+            
             ledgerNumber = ABatchRow.LedgerNumber;
             batchNumber = ABatchRow.BatchNumber;
             batchEffectiveDate = ABatchRow.GlEffectiveDate;
@@ -2134,9 +2142,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
 
-                ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors();
+                ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors(false);
             }
-            else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
+			else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {
                 FGLEffectivePeriodChanged = true;
                 //Rows already active in transaction tab. Need to set current row ac code below will not update selected row
@@ -2212,7 +2220,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FMainDS.AGift.Rows.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
-                ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors();
+                ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors(false);
             }
             else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {

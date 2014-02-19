@@ -170,5 +170,30 @@ namespace Tests.MFinance.Server.Gift
                     100m,
                     out VerficationResults), "admin fee fixed 12% of 100 expect 12");
         }
+        
+
+        /// <summary>
+        /// This will test the admin fee processer
+        /// </summary>
+        [Test]
+        public void TestGetRecipientLedgerNumber()
+        {
+            Int64 partnerKey = 73000000;
+            Int64 RecipientLedgerNumber = 0;
+            
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            
+            Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
+            RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientLedgerNumber(partnerKey);
+            
+            DBAccess.GDBAccessObj.RollbackTransaction();
+
+            //TODO If this first one works, try different permatations for Assert.AreEqual
+            // Test also for exception handling
+            Assert.AreEqual(73, RecipientLedgerNumber, String.Format("Expected Recipient Ledger Number: {0} but got {1}", 73, RecipientLedgerNumber));
+        }        
+        
+        
     }
 }
