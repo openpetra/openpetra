@@ -263,6 +263,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 // only set to read only if saving of data was successful
                 SetPrimaryKeyReadOnly(true);
+
+                // the following command sets the button for the unit key field to disabled
+                // (not automatically happening with SetPrimaryKeyReadOnly)
+                txtUnitKey.Enabled = false;
             }
         }
 
