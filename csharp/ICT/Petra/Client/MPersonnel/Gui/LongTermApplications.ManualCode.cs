@@ -32,8 +32,12 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls.Logic;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MPartner.Gui;
+using Ict.Petra.Client.MPartner.Gui.Extracts;
+using Ict.Petra.Client.MReporting.Gui;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.Interfaces.MPersonnel;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -227,6 +231,66 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             frm.Show();
         }
 
+        private void CreateExtract_Click(System.Object sender, EventArgs e)
+        {
+            TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this);
+            IPartnerUIConnectorsPartnerNewExtract PartnerExtractObject = TRemote.MPartner.Extracts.UIConnectors.PartnerNewExtract();
+            int ExtractId = 0;
+            string ExtractName;
+            string ExtractDescription;
+
+            ExtractNameDialog.ShowDialog();
+
+            if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+            {
+                /* Get values from the Dialog */
+                ExtractNameDialog.GetReturnedParameters(out ExtractName, out ExtractDescription);
+            }
+            else
+            {
+                // dialog was cancelled, do not continue with extract generation
+                return;
+            }
+
+            ExtractNameDialog.Dispose();
+
+            this.Cursor = Cursors.WaitCursor;
+
+            DataTable PartnerKeysTable = ((DevAge.ComponentModel.BoundDataView)grdApplications.DataSource).DataView.ToTable();
+
+            // create empty extract with given name and description and store it in db
+            if (PartnerExtractObject.CreateExtractFromListOfPartnerKeys(ExtractName, ExtractDescription, out ExtractId, PartnerKeysTable, 0, false,
+                    true))
+            {
+                this.Cursor = Cursors.Default;
+
+                if (MessageBox.Show(
+                        string.Format(
+                            Catalog.GetString(
+                                "The Extract was successfully created.{0}{0}Do you want to open the 'Maintenance of Extract' screen now?"), "\n"),
+                        Catalog.GetString("Create Extract"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Information) == DialogResult.Yes)
+                {
+                    // now open Screen for new extract so user can add partner records manually
+                    TFrmExtractMaintain frm = new TFrmExtractMaintain(this);
+                    frm.ExtractId = ExtractId;
+                    frm.ExtractName = ExtractName;
+                    frm.Show();
+                }
+            }
+            else
+            {
+                this.Cursor = Cursors.Default;
+
+                MessageBox.Show(Catalog.GetString("Creation of extract failed"),
+                    Catalog.GetString("Generate Manual Extract"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+                return;
+            }
+        }
+
         // update the grid once the filter is changed
         private void FilterChange(System.Object sender, EventArgs e)
         {
@@ -336,6 +400,15 @@ namespace Ict.Petra.Client.MPersonnel.Gui
                     Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
                         true),
                     RecordCount);
+
+                if (RecordCount > 0)
+                {
+                    btnCreateExtract.Enabled = true;
+                }
+                else
+                {
+                    btnCreateExtract.Enabled = false;
+                }
             }
         }
     }

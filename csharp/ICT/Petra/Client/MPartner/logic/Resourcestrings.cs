@@ -210,6 +210,18 @@ namespace Ict.Petra.Client.MPartner
         /// <summary>todoComment</summary>
         public static readonly string StrSearchMenuItemStopText = Catalog.GetString("&Stop Search");
 
+        /// <summary>todoComment</summary>
+        public static readonly string StrPartnersAddedToExtractText = Catalog.GetString(
+            "{0} Partner was added to the new Extract.");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrPartnersAddedToExtractPluralText = Catalog.GetString(
+            "{0} Partners were added to the new Extract.");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrPartnersAddedToExtractTitle = Catalog.GetString(
+            "Generate Extract From Found Partners");
+
         #endregion
 
         #region Partner Find resourcestrings (shared across several Classes)

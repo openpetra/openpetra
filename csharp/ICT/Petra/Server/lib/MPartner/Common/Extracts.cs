@@ -855,6 +855,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
                 for (int ii = NumberOfPartnerRows - 1; ii >= 0; ii--)
                 {
                     partnerRow = APartnerKeysTable.Rows[ii];
+
                     PartnerKey = Convert.ToInt64(partnerRow[APartnerKeyColumn]);
 
                     if ((PartnerKey != PreviousPartnerKey)
@@ -975,7 +976,14 @@ namespace Ict.Petra.Server.MPartner.Extracts
                 PartnerLocationKeyRow[PPartnerLocationTable.GetPartnerKeyDBName()] = APartnerKey;
                 PartnerLocationKeyRow[PPartnerLocationTable.GetSiteKeyDBName()] = BestLocationPK.SiteKey;
                 PartnerLocationKeyRow[PPartnerLocationTable.GetLocationKeyDBName()] = BestLocationPK.LocationKey;
-                APartnerLocationKeysTable.Rows.Add(PartnerLocationKeyRow);
+
+                // only add row if it does not already exist
+                if (!APartnerLocationKeysTable.Rows.Contains(
+                        new object[] { PartnerLocationKeyRow.PartnerKey, PartnerLocationKeyRow.SiteKey, PartnerLocationKeyRow.LocationKey }))
+                {
+                    APartnerLocationKeysTable.Rows.Add(PartnerLocationKeyRow);
+                }
+
                 return true;
             }
             else

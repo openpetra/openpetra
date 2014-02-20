@@ -34,19 +34,22 @@ using SourceGrid.Selection;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
-using Ict.Petra.Client.App.Core;
-using Ict.Petra.Client.MPartner;
-using Ict.Petra.Client.MPartner.Logic;
-using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.CommonControls;
-using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Gui.Gift;
+using Ict.Petra.Client.MPartner;
+using Ict.Petra.Client.MPartner.Logic;
+using Ict.Petra.Client.MReporting.Gui;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -776,6 +779,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TCommonScreensForwarding.OpenExtractMasterScreen.Invoke(this.ParentForm);
                 }
             }
+            else if (ClickedMenuItemName == "mniMailingGenerateExtract")
+            {
+                CreateNewExtractFromFoundPartners();
+            }
             else
             {
                 throw new NotImplementedException();
@@ -805,10 +812,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             else if (ClickedMenuItemText == mniMailingSubscriptionExpNotice.Text)
             {
                 TMenuFunctions.SubscriptionExpiryNotices();
-            }
-            else if (ClickedMenuItemText == mniMailingGenerateExtract.Text)
-            {
-                CreateNewExtractFromFoundPartners();
             }
 #endif
         }
@@ -1515,6 +1518,80 @@ namespace Ict.Petra.Client.MPartner.Gui
             CriteraFieldArray = "OMSSKey;PartnerClass;PostCode;Status;Spacer;MailingAddressOnly".Split(new Char[] { (';') });
             ucoPartnerFindCriteria.CriteriaFieldsRight = new ArrayList(CriteraFieldArray);
             ucoPartnerFindCriteria.DisplayCriteriaFieldControls();
+        }
+
+        private void CreateNewExtractFromFoundPartners()
+        {
+            TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(FPetraUtilsObject.GetForm());
+            int ExtractId = 0;
+            string ExtractName;
+            string ExtractDescription;
+            TVerificationResultCollection VerificationResult;
+
+            ExtractNameDialog.ShowDialog();
+
+            if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+            {
+                // Get values from the Dialog
+                ExtractNameDialog.GetReturnedParameters(out ExtractName, out ExtractDescription);
+            }
+            else
+            {
+                // dialog was cancelled, do not continue with extract generation
+                return;
+            }
+
+            ExtractNameDialog.Dispose();
+
+            this.Cursor = Cursors.WaitCursor;
+
+            /* Make Server call to add all found Partners to the new Extract.
+             * Note: Partners will not be included more than once in the extract.
+             * If a partner is included more than once then the 'best location' location key is used.
+             * Otherwise the location key that is found by Partner Find is the one that is used.
+             */
+            try
+            {
+                int ExtractPartners = FPartnerFindObject.AddAllFoundPartnersToExtract(
+                    ExtractName, ExtractDescription, ExtractId, out VerificationResult);
+
+                if (ExtractPartners != -1)
+                {
+                    string MessageText;
+
+                    if (ExtractPartners == 1)
+                    {
+                        MessageText = MPartnerResourcestrings.StrPartnersAddedToExtractText;
+                    }
+                    else
+                    {
+                        MessageText = MPartnerResourcestrings.StrPartnersAddedToExtractPluralText;
+                    }
+
+                    MessageBox.Show(String.Format(MessageText, ExtractPartners),
+                        MPartnerResourcestrings.StrPartnersAddedToExtractTitle, MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+                else
+                {
+                    if (VerificationResult != null)
+                    {
+                        MessageBox.Show(Messages.BuildMessageFromVerificationResult(null, VerificationResult));
+                    }
+                    else
+                    {
+                        MessageBox.Show(Catalog.GetString("Creation of extract failed"),
+                            MPartnerResourcestrings.StrPartnersAddedToExtractTitle,
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
+                    }
+                }
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+                Application.DoEvents();
+            }
         }
 
         #endregion

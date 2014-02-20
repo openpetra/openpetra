@@ -279,7 +279,6 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             String FromClause;
             String WhereClause;
             System.Text.StringBuilder sb;
-            DataRow CriteriaRow;
             TLogging.LogAtLevel(7, "TPartnerFind.PerformSearchByBankDetails called.");
 
             FAsyncExecProgress = new TAsynchronousExecutionProgress();
@@ -299,7 +298,6 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             // Set up find parameters
             //
             ColumnNameMapping = new Hashtable();
-            CriteriaRow = ACriteriaData.Rows[0];
 
             // Create Field List
             sb = new System.Text.StringBuilder();
@@ -1043,19 +1041,16 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         /// <summary>
         /// Adds all Partners that were last found to an Extract.
         /// </summary>
+        /// <param name="AExtractName">Name of the Extract to add the Partners to.</param>
+        /// <param name="AExtractDescription">Description of the Extract to add the Partners to.</param>
         /// <param name="AExtractID">ExtractID of the Extract to add the Partners to.</param>
         /// <param name="AVerificationResult">Contains DB call exceptions, if there are any.</param>
         /// <returns>The number of Partners that were added to the Extract, or -1
         /// if DB call exeptions occured.</returns>
-        public Int32 AddAllFoundPartnersToExtract(int AExtractID,
+        public Int32 AddAllFoundPartnersToExtract(string AExtractName, string AExtractDescription, int AExtractID,
             out TVerificationResultCollection AVerificationResult)
         {
             DataTable FullFindResultDT;
-            DataView SortedFindResultDV;
-            ArrayList DistinctPartners;
-            int PartnerKeyColumnIndex;
-            Int64 CurrentPartnerKey = -1;
-            Int64 LastPartnerKey = -2;
             int AddedPartners = 0;
             bool NewTransaction;
 
@@ -1065,35 +1060,34 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             // Request all found Partners from FPagedDataSetObject
             FullFindResultDT = FPagedDataSetObject.GetAllData();
 
-            PartnerKeyColumnIndex = FullFindResultDT.Columns.IndexOf(
-                PPartnerTable.GetPartnerKeyDBName());
+            // Create a new table containing only the required data.
+            // (Site Key and Location Key must be in columns 2 and 3 respectively for some reason.)
+
+            DataTable PartnerKeysTable = new DataTable();
+            PartnerKeysTable.Columns.Add("index", Type.GetType("System.Int32"));
+            PartnerKeysTable.Columns.Add("p_partner_key_n", Type.GetType("System.Int64"));
+            PartnerKeysTable.Columns.Add("p_site_key_n", Type.GetType("System.Int64"));
+            PartnerKeysTable.Columns.Add("p_location_key_i", Type.GetType("System.Int64"));
+
+            int i = 0;
+
+            foreach (DataRow Row in FullFindResultDT.Rows)
+            {
+                DataRow NewRow = PartnerKeysTable.NewRow();
+                NewRow[0] = i;
+                NewRow[1] = Row["p_partner_key_n"];
+                NewRow[2] = Row["p_site_key_n"];
+                NewRow[3] = Row["p_location_key_i"];
+                PartnerKeysTable.Rows.Add(NewRow);
+
+                i++;
+            }
+
+            PartnerKeysTable.DefaultView.Sort = PPartnerTable.GetPartnerKeyDBName() + " ASC";
 
             if (FullFindResultDT.Rows.Count > 0)
             {
-                /*
-                 * Build a list of distinct PartnerKeys
-                 */
-                SortedFindResultDV = new DataView(FullFindResultDT,
-                    "", PPartnerTable.GetPartnerKeyDBName() + " ASC",
-                    DataViewRowState.CurrentRows);
-
-                DistinctPartners = new ArrayList();
-                TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: building distinct list of Partners");
-
-                for (int DistinctPartnerCounter = 0; DistinctPartnerCounter < SortedFindResultDV.Count;
-                     DistinctPartnerCounter++)
-                {
-                    CurrentPartnerKey = Convert.ToInt64(SortedFindResultDV[DistinctPartnerCounter].Row[PartnerKeyColumnIndex]);
-
-                    if (CurrentPartnerKey != LastPartnerKey)
-                    {
-                        DistinctPartners.Add(CurrentPartnerKey);
-                    }
-
-                    LastPartnerKey = CurrentPartnerKey;
-                }
-
-                TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Add all Partners to the desired Extract");
+//              TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Add all Partners to the desired Extract");
 
                 /*
                  * Add all Partners to the desired Extract
@@ -1105,21 +1099,18 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
                 try
                 {
-                    for (int ExtractAddCounter = 0; ExtractAddCounter < DistinctPartners.Count;
-                         ExtractAddCounter++)
-                    {
-                        TExtractsHandling.AddPartnerToExtract((Int64)DistinctPartners[ExtractAddCounter],
-                            AExtractID);
-
-                        AddedPartners++;
-                    }
+                    TExtractsHandling.CreateExtractFromListOfPartnerKeys(
+                        AExtractName,
+                        AExtractDescription,
+                        out AExtractID,
+                        PartnerKeysTable,
+                        1,
+                        true,
+                        true);
 
 //                  TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Added " + AddedPartners.ToString() + " Partners to the desired Extract!");
 
-                    if (!TExtractsHandling.UpdateExtractKeyCount(AExtractID, AddedPartners, out AVerificationResult))
-                    {
-                        AddedPartners = -1;
-                    }
+                    AddedPartners = TExtractsHandling.GetExtractKeyCount(AExtractID);
 
                     return AddedPartners;
                 }
