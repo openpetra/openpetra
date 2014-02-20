@@ -194,7 +194,7 @@ OpenPetra:
                         ExportBudget: {ActionOpenScreen=TFrmExportBudget}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
-                        IncomeExpenseStatementMultiPeriod: {Label=Multi Period Statement, ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
+                      # IncomeExpenseStatementMultiPeriod: {Label=Multi Period Statement, ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
                         IncomeExpenseStatementMultiLedger: {Label=Multi Ledger Statement, ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
                 GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL, DontShowNestedTasksAsLinks=true}
                     SearchBoxes: [Transaction, Batch]
@@ -231,7 +231,7 @@ OpenPetra:
                             #RepeatLastReport:
                             #MyFancyBalanceSheetWithCoolGraph:
                         IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
-                        IncomeExpenseStatementMultiPeriod: {Label=Multi Period Statement, ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
+                      # IncomeExpenseStatementMultiPeriod: {Label=Multi Period Statement, ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
                         IncomeExpenseStatementMultiLedger: {Label=Multi Ledger Statement, ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
                 #Reports:
                 Setup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup, DontShowNestedTasksAsLinks=true}

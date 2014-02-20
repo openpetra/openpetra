@@ -54,7 +54,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
 
                 FPetraUtilsObject.LoadDefaultSettings();
-                uco_GeneralSettings.DisableToPeriod();
                 FFastReportsPlugin = new FastReportsWrapper(FPetraUtilsObject, LoadReportData);
             }
         }
@@ -76,9 +75,24 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
             }
 
+            Int32 ParamNestingDepth = 99;
+            String DepthOption = paramsDictionary["param_depth"].ToString();
+
+            if (DepthOption == "summary")
+            {
+                ParamNestingDepth = 1;
+            }
+
+            if (DepthOption == "standard")
+            {
+                ParamNestingDepth = 3;
+            }
+            paramsDictionary.Add("param_nesting_depth", new TVariant(ParamNestingDepth));
+
+
             //
             // The table contains Actual and Budget figures, both this period and YTD, also last year and budget last year.
-            // It does not contain any variance (acutal / budget) figures - these are calculated in the report.
+            // It does not contain any variance (actual / budget) figures - these are calculated in the report.
 
             DataTable ReportTable = TRemote.MFinance.Reporting.WebConnectors.IncomeExpenseTable(paramsDictionary);
             FFastReportsPlugin.RegisterData(ReportTable, "IncomeExpense");

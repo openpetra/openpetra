@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="01/31/2014 12:44:40" ReportInfo.CreatorVersion="2013.4.4.0">
+<Report ScriptLanguage="CSharp" DoublePass="true" ReportInfo.Created="11/05/2013 15:46:27" ReportInfo.Modified="02/20/2014 15:04:02" ReportInfo.CreatorVersion="2013.4.4.0">
   <ScriptText>using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -59,6 +59,11 @@ namespace FastReport
           TransactionBand.Visible = true;
           AccountCodeField.Left = Units.Millimeters * (AccountLevel * 4);
           AccountNameField.Left = Units.Millimeters * (15 + (AccountLevel * 4));
+          if ((Boolean)Report.GetColumnValue(&quot;IncomeExpense.breakdown&quot;))
+          {
+            AccountCodeField.Left += Units.Millimeters * 8;
+            AccountNameField.Left += Units.Millimeters * 5;
+          }
         }
       }
     }
@@ -87,6 +92,8 @@ namespace FastReport
       <Column Name="haschildren" DataType="System.Boolean" BindableControl="CheckBox"/>
       <Column Name="parentfooter" DataType="System.Boolean" BindableControl="CheckBox"/>
       <Column Name="wholeyearbudget" DataType="System.Decimal"/>
+      <Column Name="accountissummary" DataType="System.Boolean" BindableControl="CheckBox"/>
+      <Column Name="breakdown" DataType="System.Boolean" BindableControl="CheckBox"/>
     </TableDataSource>
     <Parameter Name="param_diff_period_i" DataType="System.Int32"/>
     <Parameter Name="param_start_period_i" DataType="System.Int32"/>
@@ -100,7 +107,7 @@ namespace FastReport
     <Parameter Name="param_end_date" DataType="System.DateTime"/>
     <Parameter Name="param_costcentreoptions" DataType="System.String"/>
     <Parameter Name="param_cost_centre_codes" DataType="System.String"/>
-    <Parameter Name="param_cost_centre_list_title" DataType="System.Int32"/>
+    <Parameter Name="param_cost_centre_list_title" DataType="System.String"/>
     <Parameter Name="param_cost_centre_summary" DataType="System.Boolean"/>
     <Parameter Name="param_cost_centre_breakdown" DataType="System.Boolean"/>
     <Parameter Name="param_depth" DataType="System.String"/>
@@ -117,17 +124,19 @@ namespace FastReport
       <TextObject Name="Text1" Left="368.55" Width="283.5" Height="18.9" Text="Income Expense Statement" HorzAlign="Center" Font="Arial, 14pt, style=Bold"/>
       <TextObject Name="Text9" Left="831.6" Width="85.05" Height="18.9" Text="Printed :" HorzAlign="Right"/>
       <TextObject Name="Text8" Left="916.65" Width="122.85" Height="18.9" Text="[OmDate([Date])]"/>
-      <TextObject Name="Text20" Width="75.6" Height="18.9" Text="Ledger :" HorzAlign="Right"/>
-      <TextObject Name="Text10" Left="75.6" Width="113.4" Height="18.9" Text="[param_ledger_number_i] [param_ledger_name]"/>
-      <TextObject Name="Text21" Top="18.9" Width="75.6" Height="18.9" Text="Currency :" HorzAlign="Right"/>
-      <TextObject Name="Text18" Left="75.6" Top="18.9" Width="170.1" Height="18.9" Text="[param_currency_name]"/>
+      <TextObject Name="Text20" Width="94.5" Height="18.9" Text="Ledger :" HorzAlign="Right"/>
+      <TextObject Name="Text10" Left="94.5" Width="113.4" Height="18.9" Text="[param_ledger_number_i] [param_ledger_name]"/>
+      <TextObject Name="Text21" Top="18.9" Width="94.5" Height="18.9" Text="Currency :" HorzAlign="Right"/>
+      <TextObject Name="Text18" Left="94.5" Top="18.9" Width="170.1" Height="18.9" Text="[param_currency_name]"/>
       <TextObject Name="Text22" Left="793.8" Top="18.9" Width="122.85" Height="18.9" Text="[IIf([param_period],&quot; Period :&quot;,&quot; Quarter:&quot;)]" HorzAlign="Right"/>
-      <TextObject Name="Text19" Left="916.65" Top="18.9" Width="122.85" Height="18.9" Text="[[param_real_year]+&quot;-&quot;+IIf([param_period],[param_end_period_i],[param_quarter])]&#13;&#10;" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
+      <TextObject Name="Text19" Left="916.65" Top="18.9" Width="122.85" Height="18.9" Text="[[param_real_year]+&quot;:&quot;+IIf([param_period],IIf([param_end_period_i]&gt;[param_start_period_i],[param_start_period_i]+&quot;-&quot;+[param_end_period_i],[param_end_period_i]),[param_quarter])]&#13;&#10;" AutoShrink="FontSize" AutoShrinkMinSize="5" WordWrap="false"/>
       <TextObject Name="Text42" Left="368.55" Top="18.9" Width="283.5" Height="18.9" Text="[param_ledger_name]" HorzAlign="Center"/>
       <LineObject Name="Line1" Left="1039.5" Top="56.7" Width="-1039.5"/>
       <TextObject Name="Text50" Left="831.6" Top="37.8" Width="207.9" Height="18.9" Text="[OmDate([param_start_date])] - [OmDate([param_end_date])]" HorzAlign="Right"/>
+      <TextObject Name="Text2" Left="94.5" Top="37.8" Width="557.55" Height="18.9" Text="[param_cost_centre_list_title][IIf([param_cost_centre_breakdown], &quot; with Cost Centre Breakdown&quot;,&quot;&quot;)]"/>
+      <TextObject Name="Text51" Top="37.8" Width="94.5" Height="18.9" Text="Cost Centre :" HorzAlign="Right"/>
     </ReportTitleBand>
-    <PageHeaderBand Name="PageHeader1" Top="70.86" Width="1047.06" Height="18.9">
+    <PageHeaderBand Name="PageHeader1" Top="70.64" Width="1047.06" Height="18.9">
       <TextObject Name="Text3" Left="113.4" Width="151.2" Height="18.9" Text="Description" Font="Arial, 10pt, style=Bold, Italic"/>
       <TextObject Name="Text5" Left="274.05" Width="94.5" Height="18.9" Text="Actual" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
       <TextObject Name="Text23" Left="368.55" Width="94.5" Height="18.9" Text="Budget" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
@@ -138,10 +147,14 @@ namespace FastReport
       <TextObject Name="Text48" Left="699.3" Width="56.7" Height="18.9" Exportable="false" Text="Var.%" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
       <TextObject Name="Text49" Left="604.8" Width="94.5" Height="18.9" Text="Budget YTD" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
     </PageHeaderBand>
-    <GroupHeaderBand Name="CostCentreGroup" Top="94.46" Width="1047.06" Height="18.9" StartNewPage="true" Condition="[IncomeExpense.costcentrecode]" SortOrder="None">
-      <TextObject Name="Text13" Width="245.7" Height="18.9" Border.Lines="Bottom" Border.Color="DarkBlue" Text="[IncomeExpense.costcentrecode] [IncomeExpense.costcentrename]" Font="Arial, 10pt, style=Bold" TextFill.Color="DarkBlue"/>
-      <GroupHeaderBand Name="AccountTypeGroup" Top="118.07" Width="1047.06" KeepChild="true" KeepWithData="true" Condition="[IncomeExpense.accounttype]" SortOrder="None">
-        <DataBand Name="TransactionBand" Top="122.77" Width="1047.06" Height="18.9" BeforePrintEvent="Data_BeforePrint" KeepChild="true" DataSource="IncomeExpense">
+    <GroupHeaderBand Name="CostCentreGroup" Top="94.04" Width="1047.06" Height="18.9" StartNewPage="true" Condition="IIf([param_cost_centre_breakdown],0,[IncomeExpense.costcentrecode])" SortOrder="None">
+      <TextObject Name="Text13" Width="245.7" Height="18.9" Border.Lines="Bottom" Border.Color="DarkBlue" Text="[IncomeExpense.costcentrecode] - [IncomeExpense.costcentrename]" Font="Arial, 10pt, style=Bold" TextFill.Color="DarkBlue">
+        <Highlight>
+          <Condition Expression="[param_cost_centre_breakdown]" Visible="false"/>
+        </Highlight>
+      </TextObject>
+      <GroupHeaderBand Name="AccountTypeGroup" Top="117.43" Width="1047.06" KeepChild="true" KeepWithData="true" Condition="[IncomeExpense.accounttype]" SortOrder="None">
+        <DataBand Name="TransactionBand" Top="121.93" Width="1047.06" Height="18.9" BeforePrintEvent="Data_BeforePrint" KeepChild="true" DataSource="IncomeExpense">
           <TextObject Name="ActualField" Left="274.05" Width="94.5" Height="18.9" Text="[IncomeExpense.actual]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt" Trimming="EllipsisCharacter"/>
           <TextObject Name="BudgetField" Left="368.55" Width="94.5" Height="18.9" Text="[IncomeExpense.budget]" HideZeros="true" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt" Trimming="EllipsisCharacter"/>
           <TextObject Name="ActualYTDField" Left="510.3" Width="94.5" Height="18.9" Text="[IncomeExpense.actualytd]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt" Trimming="EllipsisCharacter"/>
@@ -149,11 +162,11 @@ namespace FastReport
           <TextObject Name="VarianceField" Left="463.05" Width="47.25" Height="18.9" Exportable="false" Text="[variance([IncomeExpense.actual],[IncomeExpense.budget])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt"/>
           <TextObject Name="VarianceYTDField" Left="699.3" Width="56.7" Height="18.9" Exportable="false" Text="[variance([IncomeExpense.actualytd],[IncomeExpense.budgetytd])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt"/>
           <TextObject Name="YearBudgetField" Left="756" Width="94.5" Height="18.9" Text="[IncomeExpense.wholeyearbudget]" HideZeros="true" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt" Trimming="EllipsisCharacter"/>
-          <TextObject Name="AccountCodeField" Width="56.7" Height="18.9" Text="[IncomeExpense.accountcode]" Padding="0, 0, 0, 0" AutoShrink="FontSize" AutoShrinkMinSize="7" WordWrap="false" Font="Arial, 9pt"/>
-          <TextObject Name="AccountNameField" Left="56.7" Width="207.9" Height="18.9" Text="[IncomeExpense.accountname]" Padding="0, 0, 2, 0" Font="Arial, 9pt"/>
-          <ChildBand Name="HeaderBand" Top="146.38" Width="1047.06" Height="18.9">
-            <TextObject Name="HeaderAccountNameField" Width="217.35" Height="18.9" Text="[IncomeExpense.accountname]:" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
-            <ChildBand Name="FooterBand" Top="169.99" Width="1047.06" Height="18.9">
+          <TextObject Name="AccountCodeField" Left="45.36" Width="56.7" Height="18.9" Text="[IIf([param_cost_centre_breakdown],[IncomeExpense.costcentrecode],[IncomeExpense.accountcode])]" Padding="0, 0, 0, 0" AutoShrink="FontSize" AutoShrinkMinSize="7" WordWrap="false" Font="Arial, 9pt"/>
+          <TextObject Name="AccountNameField" Left="102.06" Width="207.9" Height="18.9" Text="[IIf([param_cost_centre_breakdown],[IncomeExpense.costcentrename],[IncomeExpense.accountname])]" Padding="0, 0, 2, 0" Font="Arial, 9pt"/>
+          <ChildBand Name="HeaderBand" Top="145.32" Width="1047.06" Height="18.9" Visible="false">
+            <TextObject Name="HeaderAccountNameField" Left="30.24" Width="217.35" Height="18.9" Text="[IncomeExpense.accountname]:" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
+            <ChildBand Name="FooterBand" Top="168.72" Width="1047.06" Height="18.9" Visible="false">
               <TextObject Name="FooterActualField" Left="274.05" Width="94.5" Height="18.9" Text="[IncomeExpense.actual]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray" Trimming="EllipsisCharacter"/>
               <TextObject Name="FooterBudgetField" Left="368.55" Width="94.5" Height="18.9" Text="[IncomeExpense.budget]" HideZeros="true" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray" Trimming="EllipsisCharacter"/>
               <TextObject Name="FooterActualYTDField" Left="510.3" Width="94.5" Height="18.9" Text="[IncomeExpense.actualytd]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray" Trimming="EllipsisCharacter"/>
@@ -163,7 +176,7 @@ namespace FastReport
               <TextObject Name="FooterYearBudgetField" Left="756" Width="94.5" Height="18.9" Text="[IncomeExpense.wholeyearbudget]" HideZeros="true" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray" Trimming="EllipsisCharacter"/>
               <TextObject Name="FooterAccountNameField" Left="56.7" Width="207.9" Height="18.9" Text="Total [IncomeExpense.accountname]" Padding="0, 0, 2, 0" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray" Trimming="EllipsisCharacter"/>
               <TextObject Name="FooterAccountCodeField" Width="56.7" Height="18.9" Text="[IncomeExpense.accountcode]" Padding="0, 0, 0, 0" AutoShrink="FontSize" AutoShrinkMinSize="7" WordWrap="false" Font="Arial, 9pt" TextFill.Color="DarkGray"/>
-              <ChildBand Name="FooterLevel1" Top="193.59" Width="1047.06" Height="28.35">
+              <ChildBand Name="FooterLevel1" Top="192.11" Width="1047.06" Height="28.35">
                 <TextObject Name="Level1ActualField" Left="274.05" Width="94.5" Height="18.9" Text="[IncomeExpense.actual]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
                 <TextObject Name="Level1BudgetField" Left="368.55" Width="94.5" Height="18.9" Text="[IncomeExpense.budget]" HideZeros="true" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
                 <TextObject Name="Level1ActualYTDField" Left="510.3" Width="94.5" Height="18.9" Text="[IncomeExpense.actualytd]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
@@ -177,11 +190,11 @@ namespace FastReport
             </ChildBand>
           </ChildBand>
         </DataBand>
-        <GroupFooterBand Name="GroupFooter1" Top="226.65" Width="1047.06" Height="9.45" KeepChild="true" KeepWithData="true"/>
+        <GroupFooterBand Name="GroupFooter1" Top="224.96" Width="1047.06" Height="9.45" KeepChild="true" KeepWithData="true"/>
       </GroupHeaderBand>
-      <GroupFooterBand Name="GroupFooter3" Top="240.8" Width="1047.06"/>
+      <GroupFooterBand Name="GroupFooter3" Top="238.9" Width="1047.06"/>
     </GroupHeaderBand>
-    <PageFooterBand Name="PageFooter1" Top="245.51" Width="1047.06" Height="18.9">
+    <PageFooterBand Name="PageFooter1" Top="243.39" Width="1047.06" Height="18.9">
       <TextObject Name="Text17" Left="878.85" Width="170.1" Height="18.9" Text="[PageNofM]" HorzAlign="Right" Font="Arial, 9pt, style=Bold"/>
     </PageFooterBand>
   </ReportPage>
