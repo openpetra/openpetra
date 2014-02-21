@@ -120,8 +120,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
             }
 
-            grdAnalAttributes.Columns[0].Width = 90; // for some reason, doing this to early doesn't work.
+            grdAnalAttributes.Columns[0].Width = 90; // for some reason, doing this too early doesn't work.
             grdAnalAttributes.Columns[1].Width = 120;
+
+            mniEdit.DropDownItems.Remove(mniEditFilter); // These items are provided by windowEditWebConnectorMasterDetail
+            mniEdit.DropDownItems.Remove(mniEditFind);   // but are not needed in this application.
         }
 
         private void AnalysisAttributesGrid_RowSelected(System.Object sender, RangeRegionChangedEventArgs e)
