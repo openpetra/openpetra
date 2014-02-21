@@ -618,6 +618,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void ExportHierarchy(object sender, EventArgs e)
         {
+            if (FPetraUtilsObject.HasChanges)
+            {
+                MessageBox.Show(Catalog.GetString("Save changes before exporting."),Catalog.GetString("Export Hierarchy"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                return;
+            }
+
             XmlDocument doc = new XmlDocument();
 
             doc.LoadXml(TRemote.MFinance.Setup.WebConnectors.ExportCostCentreHierarchy(FLedgerNumber));
