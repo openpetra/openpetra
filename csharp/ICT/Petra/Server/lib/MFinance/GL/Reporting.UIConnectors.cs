@@ -753,16 +753,31 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DataRow NewDataRow,
             TDBTransaction ReadTrans)
         {
+
             //
-            // If the AccountLevel of this row is too low, I'm completely ignoring it:
-            if ((Convert.ToInt32(NewDataRow["AccountLevel"]) < DetailLevel)
-                || (Convert.ToBoolean(NewDataRow["AccountIsSummary"]) == true)
-                )
+            // If "detail" level has been selected, I'm only looking to summarise posting accounts:
+            if (DetailLevel == 99)
             {
-                return;
+                if (Convert.ToBoolean(NewDataRow["AccountIsSummary"]))
+                {
+                    return;
+                }
+                DetailLevel = Convert.ToInt32(NewDataRow["AccountLevel"]);
+            }
+            //
+            // Otherwise, if the AccountLevel of this row is too low, I'm completely ignoring it:
+            else
+            {
+                if ((Convert.ToInt32(NewDataRow["AccountLevel"]) < DetailLevel)
+                    || (Convert.ToBoolean(NewDataRow["AccountIsSummary"]) == true)
+                    )
+                {
+                    return;
+                }
             }
 
-            DataRow SummaryRow;
+            //
+            // I need to crop the AccountPath to before the "Nth Slash" so the transactions get summarised to the right level.
             String SummaryAccountPath = NewDataRow["AccountPath"].ToString();
             Int32 NthSlash = DetailLevel + 2;
             for (Int32 i = 0; i < SummaryAccountPath.Length; i++)
@@ -777,6 +792,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 }
             }
 
+            DataRow SummaryRow;
             Int32 ViewIdx = filteredView.Find(new object[] { NewDataRow["AccountType"], SummaryAccountPath, NewDataRow["CostCentreCode"] });
             if (ViewIdx < 0) // No record yet..
             {
@@ -802,6 +818,51 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 SummaryRow["BudgetLastYear"]  = Convert.ToDecimal(SummaryRow["BudgetLastYear"]) + (Sign * Convert.ToDecimal(NewDataRow["BudgetLastYear"]));
                 SummaryRow["WholeYearBudget"] = Convert.ToDecimal(SummaryRow["WholeYearBudget"]) + (Sign * Convert.ToDecimal(NewDataRow["WholeYearBudget"]));
             }
+        }
+
+        /// <summary>
+        /// For posting accounts in "details" view, the cost centre breakdown rows will be presented after one or more rows with the same account.
+        /// The last account row will become a header, below, and any other rows with the same account will be removed. 
+        /// So I need the values in those rows to accumulate into the last row.
+        /// </summary>
+        /// <param name="DetailRow"></param>
+        /// <param name="AccumulatingRow"></param>
+        private static void AccumulateTotals(DataRow DetailRow, DataRow AccumulatingRow)
+        {
+            if (DetailRow["AccountPath"].ToString() != AccumulatingRow["AccountPath"].ToString())
+            {
+                AccumulatingRow["AccountPath"] = DetailRow["AccountPath"].ToString();
+                AccumulatingRow["Actual"] = Convert.ToDecimal(DetailRow["Actual"]);
+                AccumulatingRow["ActualYTD"] = Convert.ToDecimal(DetailRow["ActualYTD"]);
+                AccumulatingRow["ActualLastYear"] = Convert.ToDecimal(DetailRow["ActualLastYear"]);
+                // AccumulatingRow["ActualLastYearComplete"] = Convert.ToDecimal(DetailRow["ActualLastYearComplete"]);
+                AccumulatingRow["Budget"] = Convert.ToDecimal(DetailRow["Budget"]);
+                AccumulatingRow["BudgetYTD"] = Convert.ToDecimal(DetailRow["BudgetYTD"]);
+                AccumulatingRow["BudgetLastYear"] = Convert.ToDecimal(DetailRow["BudgetLastYear"]);
+                AccumulatingRow["WholeYearBudget"] = Convert.ToDecimal(DetailRow["WholeYearBudget"]);
+            }
+            else
+            {
+                AccumulatingRow["Actual"] = Convert.ToDecimal(AccumulatingRow["Actual"]) + Convert.ToDecimal(DetailRow["Actual"]);
+                AccumulatingRow["ActualYTD"] = Convert.ToDecimal(AccumulatingRow["ActualYTD"]) + Convert.ToDecimal(DetailRow["ActualYTD"]);
+                AccumulatingRow["ActualLastYear"] = Convert.ToDecimal(AccumulatingRow["ActualLastYear"]) + Convert.ToDecimal(DetailRow["ActualLastYear"]);
+                // AccumulatingRow["ActualLastYearComplete"] = Convert.ToDecimal(AccumulatingRow["ActualLastYearComplete"]) + Convert.ToDecimal(DetailRow["ActualLastYearComplete"]);
+                AccumulatingRow["Budget"] = Convert.ToDecimal(AccumulatingRow["Budget"]) + Convert.ToDecimal(DetailRow["Budget"]);
+                AccumulatingRow["BudgetYTD"] = Convert.ToDecimal(AccumulatingRow["BudgetYTD"]) + Convert.ToDecimal(DetailRow["BudgetYTD"]);
+                AccumulatingRow["BudgetLastYear"] = Convert.ToDecimal(AccumulatingRow["BudgetLastYear"]) + Convert.ToDecimal(DetailRow["BudgetLastYear"]);
+                AccumulatingRow["WholeYearBudget"] = Convert.ToDecimal(AccumulatingRow["WholeYearBudget"]) + Convert.ToDecimal(DetailRow["WholeYearBudget"]);
+
+                DetailRow["Actual"] = Convert.ToDecimal(AccumulatingRow["Actual"]);
+                DetailRow["ActualYTD"] = Convert.ToDecimal(AccumulatingRow["ActualYTD"]);
+                DetailRow["ActualLastYear"] = Convert.ToDecimal(AccumulatingRow["ActualLastYear"]);
+                // DetailRow["ActualLastYearComplete"] = Convert.ToDecimal(AccumulatingRow["ActualLastYearComplete"]);
+                DetailRow["Budget"] = Convert.ToDecimal(AccumulatingRow["Budget"]);
+                DetailRow["BudgetYTD"] = Convert.ToDecimal(AccumulatingRow["BudgetYTD"]);
+                DetailRow["BudgetLastYear"] = Convert.ToDecimal(AccumulatingRow["BudgetLastYear"]);
+                DetailRow["WholeYearBudget"] = Convert.ToDecimal(AccumulatingRow["WholeYearBudget"]);
+            }
+
+
         }
 
         /// <summary>
@@ -1072,12 +1133,19 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 SummaryView.Sort = "AccountType DESC, AccountPath ASC, CostCentreCode";
                 SummaryView.RowFilter = "Breakdown=true";
 
+                DataRow AccumulatingRow = FilteredResults.NewRow();
                 for (Int32 RowIdx = 0; RowIdx < FilteredResults.DefaultView.Count - 1; RowIdx++)
                 {
                     DataRow DetailRow = FilteredResults.DefaultView[RowIdx].Row;
                     AddToBreakdownSummary(SummaryView, DetailLevel, DetailRow, ReadTrans);
+
+                    //
+                    // For posting accounts in "details" view, the cost centre breakdown rows will be presented after one or more rows with the same account.
+                    // The last account row will become a header, below, and any other rows with the same account will be removed. 
+                    // So I need the values in those rows to accumulate into the last row.
+                    AccumulateTotals(DetailRow, AccumulatingRow);
                 }
-                FilteredResults.DefaultView.Sort = "AccountType DESC, AccountPath ASC, CostCentreCode, Breakdown";
+                FilteredResults.DefaultView.Sort = "AccountType DESC, AccountPath ASC, Breakdown, CostCentreCode";
            }
             else
             {
@@ -1142,13 +1210,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             // For "Cost Centre Breakdown", the only transactions I want to see are the "breakdown" rows I've added.
             // Everything else is removed unless it's a header or footer:
-            /*
+
             if (CostCentreBreakdown)
             {
                 FilteredResults.DefaultView.RowFilter = "Breakdown=true OR HasChildren=true OR ParentFooter=true";
                 FilteredResults = FilteredResults.DefaultView.ToTable("IncomeExpense");
             }
-            */
+
 
             DBAccess.GDBAccessObj.RollbackTransaction();
             return FilteredResults;
