@@ -235,7 +235,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 txtDetailItemRef.Enabled = false;
                 txtDetailAmount.Enabled = false;
                 cmbDetailCostCentreCode.Enabled = false;
-                btnUseTaxAccount.Enabled = false;
                 txtDetailBaseAmount.Enabled = false;
                 cmbDetailAccountCode.Enabled = false;
                 pnlDetails.Enabled = false;
@@ -457,10 +456,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 EnableControls();
             }
-        }
-
-        private void UseTaxAccount(Object sender, EventArgs e)
-        {
         }
 
         private void ValidateDataManual(AccountsPayableTDSAApDocumentRow ARow)
