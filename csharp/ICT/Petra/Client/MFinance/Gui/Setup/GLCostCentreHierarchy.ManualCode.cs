@@ -642,10 +642,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            if (!TRemote.MFinance.Setup.WebConnectors.ImportCostCentreHierarchy(FLedgerNumber, TXMLParser.XmlToString(doc)))
+            TVerificationResultCollection VerificationResultCol;
+            if (!TRemote.MFinance.Setup.WebConnectors.ImportCostCentreHierarchy(FLedgerNumber, TXMLParser.XmlToString(doc), out VerificationResultCol))
             {
-                MessageBox.Show(Catalog.GetString(
-                        "Import of new Cost Centre Hierarchy failed; perhaps there were already balances? Try with a new ledger!"),
+                MessageBox.Show(VerificationResultCol.BuildVerificationResultString(),
                     Catalog.GetString("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else

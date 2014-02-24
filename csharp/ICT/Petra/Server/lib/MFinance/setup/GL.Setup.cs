@@ -1887,12 +1887,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// only works if there are no balances/transactions yet for the cost centres that are deleted
+        /// only works if there are no balances/transactions yet for the cost centres that are deleted.
+        /// Returns false with helpful error message otherwise.
         /// </summary>
         [RequireModulePermission("FINANCE-3")]
-        public static bool ImportCostCentreHierarchy(Int32 ALedgerNumber, string AXmlHierarchy)
+        public static bool ImportCostCentreHierarchy(Int32 ALedgerNumber, string AXmlHierarchy, out TVerificationResultCollection VerificationResult)
         {
             XmlDocument doc = new XmlDocument();
+            VerificationResult = new TVerificationResultCollection();
 
             doc.LoadXml(AXmlHierarchy);
 
@@ -1910,12 +1912,27 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     // TODO: delete costcentres that don't exist anymore in the new hierarchy, or deactivate them?
                     // (check if their balance is empty and no transactions exist, or catch database constraint violation)
                     // TODO: what about system cost centres? probably alright to ignore here
+                    bool CanBeParent;
+                    bool CanDelete;
+                    String ErrorMsg;
+                    GetCostCentreAttributes(ALedgerNumber,
+                        costCentreRow.CostCentreCode,
+                        out CanBeParent,
+                        out CanDelete,
+                        out ErrorMsg);
 
+                    if (!CanDelete)
+                    {
+                        ErrorMsg = String.Format(Catalog.GetString("Unable to delete Cost Centre {0}"), costCentreRow.CostCentreCode)
+                            + "\r\n"
+                            + ErrorMsg;
+                        VerificationResult.Add(new TVerificationResult(Catalog.GetString("Import hierarchy"),ErrorMsg,TResultSeverity.Resv_Critical));
+                        return false;
+                    }
                     costCentreRow.Delete();
                 }
             }
 
-            TVerificationResultCollection VerificationResult;
             return SaveGLSetupTDS(ALedgerNumber, ref MainDS, out VerificationResult) == TSubmitChangesResult.scrOK;
         }
 
