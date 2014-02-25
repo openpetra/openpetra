@@ -590,7 +590,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ucoAccountAnalysisAttributes.AccountCode = ARow.AccountCode;
 
                 chkDetailForeignCurrencyFlag.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag);
-                cmbDetailForeignCurrencyCode.Enabled = (!ARow.SystemAccountFlag && ARow.ForeignCurrencyFlag);
+                cmbDetailForeignCurrencyCode.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag && ARow.ForeignCurrencyFlag);
 
                 if (!ARow.ForeignCurrencyFlag)
                 {
@@ -895,6 +895,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if (AHD_stillInUse.Count == 0)  // No-one now reports to this account, so I can mark it as "Posting"
                 {
                     AccountParent.PostingStatus = true;
+                    chkDetailForeignCurrencyFlag.Enabled = (!AccountParent.SystemAccountFlag);
+                    cmbDetailForeignCurrencyCode.Enabled = (!AccountParent.SystemAccountFlag && AccountParent.ForeignCurrencyFlag);
+
                     // It's possible this account could now be deleted, but the user would need to save and re-load first,
                     // because the server still has it down as a summary account.
                 }
