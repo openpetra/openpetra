@@ -26,6 +26,7 @@ using System.Windows.Forms;
 using System.Reflection;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -41,6 +42,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private Boolean FAccountsPayableActivated;
         private Boolean FCanGiftProcessingBeDeactivated;
         private Boolean FCanAccountsPayableBeDeactivated;
+
+        /// <summary>Delegate to update subsystem link status which needs to be updated by caller.</summary>
+        public delegate void UpdateFinanceSubsystemLinkStatus();
+
+        /// <summary>Store Delegate to update subsystem link status</summary>
+        private static UpdateFinanceSubsystemLinkStatus FFinanceSubSystemLinkStatus;
 
         /// <summary>
         /// The applicable Ledger number
@@ -69,6 +76,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
 
                 UpdateControls();
+            }
+        }
+
+        /// <summary>
+        /// Delegate for determinig a help topic for a given Form and Control.
+        /// </summary>
+        public static UpdateFinanceSubsystemLinkStatus FinanceSubSystemLinkStatus
+        {
+            get
+            {
+                return FFinanceSubSystemLinkStatus;
+            }
+            set
+            {
+                FFinanceSubSystemLinkStatus = value;
             }
         }
 
@@ -110,6 +132,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 txtAccountsPayableStatus.Text = Catalog.GetString("Not activated yet");
                 btnActivateAccountsPayable.Text = Catalog.GetString("Activate Accounts Payable");
+            }
+
+            // now update menu links for gift processing and accounts payable in caller window (may need to be enabled/disabled)
+            if (FFinanceSubSystemLinkStatus != null)
+            {
+                FFinanceSubSystemLinkStatus();
             }
         }
 

@@ -891,11 +891,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        ///
+        /// Refreshes the list of Family Members and the TabHeader counter.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void RefreshFamilyMembersList(System.Object sender, EventArgs e)
+        /// <param name="sender">Not evaluated.</param>
+        /// <param name="e">Not evaluated.</param>
+        public void RefreshFamilyMembersList(System.Object sender, EventArgs e)
         {
             this.RefreshGrid();
 
@@ -1316,7 +1316,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         ///
         /// </summary>
-        public void RefreshGrid()
+        private void RefreshGrid()
         {
             if (GridEdited)
             {
