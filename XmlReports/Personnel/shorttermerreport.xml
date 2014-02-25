@@ -18,6 +18,7 @@
         <reportparameter name="param_print_two_lines"></reportparameter>
         <reportparameter name="param_address_detail"></reportparameter>
         <reportparameter name="param_passport_detail"></reportparameter>
+        <reportparameter name="param_nationalities"></reportparameter>
         <reportparameter name="param_application_status_accepted"></reportparameter>
         <reportparameter name="param_application_status_cancelled"></reportparameter>
         <reportparameter name="param_application_status_enquiry"></reportparameter>
@@ -237,6 +238,9 @@
             </queryDetail>
             <queryDetail condition="eq({param_passport_detail}, true)">
                 <value function="GetPassport({PartnerKey})"/>
+            </queryDetail>
+            <queryDetail condition="eq({param_nationalities}, true)">
+                <value function="assign(Nationalities, GetNationalities({PartnerKey}))"/>
             </queryDetail>
             <queryDetail condition="columnexist(eString:Profession)">
                 <value function="assign(Profession, GetProfession({PartnerKey}))"/>
@@ -783,6 +787,15 @@
         <query>
             <queryDetail>
                 <value variable="PassportNationalityCode"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Nationalities" returns="text" returnsFormat="text">
+        <caption><value text="Nationalities"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Nationalities"></value>
             </queryDetail>
         </query>
     </calculation>

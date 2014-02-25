@@ -262,9 +262,31 @@ namespace Ict.Petra.Client.MConference.Gui
             this.Close();
         }
 
-        private void Search(System.Object sender, EventArgs e)
+        private void Filter(System.Object sender, EventArgs e)
         {
-            LoadDataGrid(false);
+            DataView MyDataView = FMainDS.PcConference.DefaultView;
+
+            String Filter = "";
+
+            if (!string.IsNullOrEmpty(txtConference.Text))
+            {
+                Filter += FMainDS.PcConference.Columns[PPartnerTable.GetPartnerShortNameDBName()] + " LIKE '" + "%" + txtConference.Text + "%'";
+            }
+
+            if (!string.IsNullOrEmpty(txtPrefix.Text))
+            {
+                if (Filter != "")
+                {
+                    Filter += " AND ";
+                }
+
+                Filter += FMainDS.PcConference.Columns[PcConferenceTable.GetOutreachPrefixDBName()] + " LIKE '" + txtPrefix.Text + "%'";
+            }
+
+            MyDataView.RowFilter = Filter;
+            grdConferences.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
+
+            UpdateRecordNumberDisplay();
         }
 
         private void LoadDataGrid(bool AFirstTime)
@@ -272,7 +294,7 @@ namespace Ict.Petra.Client.MConference.Gui
             FMainDS.PcConference.Clear();
             FMainDS.PPartner.Clear();
 
-            FMainDS.Merge(TRemote.MConference.WebConnectors.GetConferences(txtConference.Text, txtPrefix.Text));
+            FMainDS.Merge(TRemote.MConference.WebConnectors.GetConferences("", ""));
 
             if (FMainDS.PcConference.Rows.Count == FMainDS.PPartner.Rows.Count)
             {
@@ -293,6 +315,8 @@ namespace Ict.Petra.Client.MConference.Gui
             DataView MyDataView = FMainDS.PcConference.DefaultView;
             MyDataView.Sort = "p_partner_short_name_c ASC";
             grdConferences.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
+
+            UpdateRecordNumberDisplay();
         }
 
         // Deletes the conference
@@ -304,6 +328,21 @@ namespace Ict.Petra.Client.MConference.Gui
             TDeleteConference.DeleteConference(FPetraUtilsObject.GetCallerForm(), FSelectedConferenceKey, FSelectedConferenceName);
 
             LoadDataGrid(false);
+        }
+
+        // update the record counter
+        private void UpdateRecordNumberDisplay()
+        {
+            int RecordCount;
+
+            if (grdConferences.DataSource != null)
+            {
+                RecordCount = ((DevAge.ComponentModel.BoundDataView)grdConferences.DataSource).Count;
+                lblRecordCounter.Text = String.Format(
+                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
+                        true),
+                    RecordCount);
+            }
         }
     }
 

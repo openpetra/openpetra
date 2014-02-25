@@ -37,9 +37,9 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>
-    /// Description of TFrmFindBankDialog.ManualCode.
+    /// Description of TFrmBankFindDialog.ManualCode.
     /// </summary>
-    public partial class TFrmFindBankDialog
+    public partial class TFrmBankFindDialog
     {
         #region Properties
 
@@ -500,10 +500,10 @@ namespace Ict.Petra.Client.MPartner.Gui
     /// <summary>
     /// Manages the opening of a new/showing of an existing Instance of the Find Partner Dialog.
     /// </summary>
-    public static class TFindBankDialogManager
+    public static class TBankFindDialogManager
     {
         /// <summary>
-        /// Opens a Modal instance of the Find Bank Dialog.
+        /// Opens a Modal instance of the Bank Find Dialog.
         /// </summary>
         /// <param name="ABankDataset">Dataset containing bank data (can be null)</param>
         /// <param name="ABankKey">Matching partner key for selected bank</param>
@@ -517,19 +517,19 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             DialogResult dlgResult;
 
-            TFrmFindBankDialog FindBank = new TFrmFindBankDialog(AParentForm);
+            TFrmBankFindDialog BankFind = new TFrmBankFindDialog(AParentForm);
 
-            FindBank.SetParameters(ABankDataset, ABankKey);
-            FindBank.LoadDataGrid(true);
+            BankFind.SetParameters(ABankDataset, ABankKey);
+            BankFind.LoadDataGrid(true);
 
-            dlgResult = FindBank.ShowDialog();
+            dlgResult = BankFind.ShowDialog();
 
             ABankKey = 0;
 
             if (dlgResult == DialogResult.OK)
             {
-                ABankKey = FindBank.BankPartnerKey;
-                ABankDataset = FindBank.MainDS;
+                ABankKey = BankFind.BankPartnerKey;
+                ABankDataset = BankFind.MainDS;
 
                 return true;
             }

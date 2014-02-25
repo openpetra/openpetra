@@ -263,6 +263,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
             {
                 ACalculator.AddParameter("param_church_detail", "false");
             }
+
+            if (IsPartnerNationalitiesUsed(ACalculator))
+            {
+                ACalculator.AddParameter("param_nationalities", "true");
+            }
+            else
+            {
+                ACalculator.AddParameter("param_nationalities", "false");
+            }
         }
 
         /// <summary>
@@ -388,6 +397,31 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm
             }
 
             return HasAddressDetail;
+        }
+
+        /// <summary>
+        /// Checks if there is one column which needs nationalities of the partner
+        /// </summary>
+        /// <returns></returns>
+        private bool IsPartnerNationalitiesUsed(TRptCalculator ACalculator)
+        {
+            // if one part of an address is used
+            DataTable ColumnParameters = ACalculator.GetParameters().ToDataTable();
+
+            bool HasNationalities = false;
+
+            foreach (DataRow Row in ColumnParameters.Rows)
+            {
+                String ColumnValue = Row[4].ToString();
+
+                if (ColumnValue.Contains("eString:Nationalities"))
+                {
+                    HasNationalities = true;
+                    break;
+                }
+            }
+
+            return HasNationalities;
         }
     }
 }

@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../CommonForms/PetraForm.yaml
-    FormTitle: Find Bank Dialog
+    FormTitle: Bank Find
     Namespace: Ict.Petra.Client.MPartner.Gui
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.BankTDS
     FormType: browse
@@ -18,8 +18,8 @@ RootNode:
     Controls: 
         pnlContent:
             Dock: Fill
-            Controls: [pnlFindBank, pnlBottomButtons]
-        pnlFindBank:
+            Controls: [pnlBankFind, pnlBottomButtons]
+        pnlBankFind:
             Dock: Fill
             Controls: [grpFilter, pnlGrid]
         grpFilter:
@@ -61,6 +61,7 @@ RootNode:
             Label: &New
             Action: actNew
         btnEdit:
+            Width: 80
             Label: &Edit Partner
             Action: actEditPartner
         btnAccept:

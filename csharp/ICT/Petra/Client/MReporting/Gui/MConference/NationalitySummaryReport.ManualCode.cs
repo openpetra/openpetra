@@ -43,7 +43,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
             int ColumnCounter = 0;
 
             // Add the columns to the report
-            ACalc.AddParameter("param_calculation", "Nationality", ColumnCounter);
+            ACalc.AddParameter("param_calculation", "Nationalities", ColumnCounter);
             ACalc.AddParameter("ColumnWidth", "5", ColumnCounter);
             ColumnCounter++;
             ACalc.AddParameter("param_calculation", "Total", ColumnCounter);
