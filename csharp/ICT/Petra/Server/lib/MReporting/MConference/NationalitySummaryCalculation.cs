@@ -92,8 +92,7 @@ namespace Ict.Petra.Server.MReporting.MConference
             string[] NationalitiesArray = Nationalities.Split(',');
 
             // GetPassport(APartnerKey);
-            PmPassportDetailsRow PassportRow = Ict.Petra.Server.MReporting.MPersonnel.TRptUserFunctionsPersonnel.GetLatestPassport(APartnerKey,
-                ASituation);
+            //TODO: is this still needed? PmPassportDetailsRow PassportRow = Ict.Petra.Server.MReporting.MPersonnel.TRptUserFunctionsPersonnel.GetLatestPassport(APartnerKey, ASituation);
             bool FoundNationality = false;
             List <string>PreviousNationalities = new List <string>();
 
