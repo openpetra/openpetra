@@ -156,10 +156,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             txtPublicationCost.ReadOnly = true;
 
-            FInitializationRunning = false;
-
             // make sure initialization happens
             PublicationStatusChanged(null, null);
+
+            FInitializationRunning = false;
         }
 
         /// <summary>
@@ -303,8 +303,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /* CANCELLED or EXPIRED */
                 /* Set the DateEnded field to todays date: */
                 this.dtpPSubscriptionDateCancelled.Enabled = true;
-                dtpPSubscriptionDateCancelled.Text = StringHelper.DateToLocalizedString(DateTime.Now, false);
-                FSubscriptionDR.DateCancelled = DateTime.Now.Date;
+                if (dtpPSubscriptionDateCancelled.Text.Length == 0)
+                {
+                    // only initialize date if value is not set yet
+                    dtpPSubscriptionDateCancelled.Text = StringHelper.DateToLocalizedString(DateTime.Now, false);
+                    FSubscriptionDR.DateCancelled = DateTime.Now.Date;
+                }
 
                 /* clear any previously supplied partner key */
                 if (!FSubscriptionDR.IsGiftFromKeyNull())
@@ -323,7 +327,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /* allow them to enter a reason ended */
                 this.cmbPSubscriptionReasonSubsCancelledCode.Enabled = true;
 
-                this.cmbPSubscriptionReasonSubsCancelledCode.DropDown();
+                // don't open drop down box during initialization
+                if (!FInitializationRunning)
+                {
+                    this.cmbPSubscriptionReasonSubsCancelledCode.DropDown();
+                }
             }
             else
             {
