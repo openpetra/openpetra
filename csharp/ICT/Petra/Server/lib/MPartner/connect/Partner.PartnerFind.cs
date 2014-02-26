@@ -156,14 +156,16 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <summary>
         /// Adds all Partners that were last found to an Extract.
         /// </summary>
+        /// <param name="AExtractName">Name of the Extract to add the Partners to.</param>
+        /// <param name="AExtractDescription">Description of the Extract to add the Partners to.</param>
         /// <param name="AExtractID">ExtractID of the Extract to add the Partners to.</param>
         /// <param name="AVerificationResult">Contains DB call exceptions, if there are any.</param>
         /// <returns>The number of Partners that were added to the Extract, or -1
         /// if DB call exeptions occured.</returns>
-        public Int32 AddAllFoundPartnersToExtract(int AExtractID,
+        public Int32 AddAllFoundPartnersToExtract(string AExtractName, string AExtractDescription, int AExtractID,
             out TVerificationResultCollection AVerificationResult)
         {
-            return AddAllFoundPartnersToExtract(AExtractID, out AVerificationResult);
+            return FPartnerFind.AddAllFoundPartnersToExtract(AExtractName, AExtractDescription, AExtractID, out AVerificationResult);
         }
 
         /// <summary>

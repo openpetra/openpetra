@@ -324,10 +324,18 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             PcConferenceRow ConferenceData = (PcConferenceRow)FMainDS.PcConference.Rows[0];
             PPartnerLocationRow PartnerLocationData = (PPartnerLocationRow)FMainDS.PPartnerLocation.Rows[0];
             PUnitRow UnitData = (PUnitRow)FMainDS.PUnit.Rows[0];
-            DataRowCollection ConferenceOptionData = FMainDS.PcConferenceOption.Rows;
 
-            ConferenceData.CurrencyCode = cmbCurrency.GetSelectedString();
-            UnitData.OutreachCostCurrencyCode = cmbCurrency.GetSelectedString();
+            // do not save currency if it is blank but instead change the combo box to display original value
+            if (cmbCurrency.GetSelectedString() != "")
+            {
+                ConferenceData.CurrencyCode = cmbCurrency.GetSelectedString();
+                UnitData.OutreachCostCurrencyCode = cmbCurrency.GetSelectedString();
+            }
+            else
+            {
+                cmbCurrency.SetSelectedString(ConferenceData.CurrencyCode);
+            }
+
             ConferenceData.Start = dtpStartDate.Date;
             ConferenceData.End = dtpEndDate.Date;
             PartnerLocationData.DateEffective = dtpStartDate.Date;

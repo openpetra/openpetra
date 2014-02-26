@@ -107,9 +107,70 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
         [RequireModulePermission("CONFERENCE")]
         public static TSubmitChangesResult SaveConferenceSetupTDS(ref ConferenceSetupTDS AInspectDS)
         {
+            // check that conference option types exist and if not then create them
+            CreateOptionTypes();
+
             ConferenceSetupTDSAccess.SubmitChanges(AInspectDS);
 
             return TSubmitChangesResult.scrOK;
+        }
+
+        private static void CreateOptionTypes()
+        {
+            TDBTransaction Transaction;
+
+            Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            bool RowsToAdd = false;
+
+            string[, ] OptionTypes = new string[, ]
+            { {
+                  "ADD_ACCOMM_COST_FOR_TOTAL", "Add accommodation costs to get total costs"
+              },
+              {
+                  "COST_PER_DAY", "Calculate conference cost per day"
+              },
+              {
+                  "COST_PER_NIGHT", "Calculate conference cost per night"
+              } };
+
+            try
+            {
+                PcConferenceOptionTypeTable OptionTypeTable = PcConferenceOptionTypeAccess.LoadAll(Transaction);
+
+                for (int i = 0; i < 3; i++)
+                {
+                    if (OptionTypeTable.Rows.Find(new object[] { OptionTypes[i, 0] }) == null)
+                    {
+                        PcConferenceOptionTypeRow NewRow = OptionTypeTable.NewRowTyped(false);
+                        NewRow.OptionTypeCode = OptionTypes[i, 0];
+                        NewRow.OptionTypeDescription = OptionTypes[i, 1];
+                        NewRow.UnassignableFlag = false;
+                        NewRow.DeletableFlag = false;
+
+                        OptionTypeTable.Rows.Add(NewRow);
+
+                        RowsToAdd = true;
+                    }
+                }
+
+                if (RowsToAdd)
+                {
+                    // add any new rows to database
+                    PcConferenceOptionTypeAccess.SubmitChanges(OptionTypeTable, Transaction);
+                }
+
+                DBAccess.GDBAccessObj.CommitTransaction();
+                TLogging.LogAtLevel(7, "TConferenceDataReaderWebConnector.CreateOptionTypes: commit own transaction.");
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured during the creation of option types:" + Environment.NewLine + Exc.ToString());
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                throw;
+            }
         }
     }
 }

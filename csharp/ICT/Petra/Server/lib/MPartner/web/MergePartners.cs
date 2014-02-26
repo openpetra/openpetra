@@ -969,10 +969,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     PmGeneralApplicationTable ToApplicationTable = PmGeneralApplicationAccess.LoadByUniqueKey(AToPartnerKey, AppDate,
                         FromApplicationRow.AppTypeName, FromApplicationRow.OldLink, ATransaction);
 
-                    foreach (DataRow ToRow in ToApplicationTable.Rows)
-                    {
-                        AppDate = AppDate.AddDays(-1);
-                    }
+                    AppDate = AppDate.AddDays(-ToApplicationTable.Rows.Count);
 
                     //  the application date needs to be reset in the short term or long term application as well (depending on the type)
                     if (AppDate != FromApplicationRow.GenAppDate)

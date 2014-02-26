@@ -56,7 +56,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// using an optional authentication plugin dll
         /// </summary>
         [RequireModulePermission("SYSMAN")]
-        public static bool SetUserPassword(string AUsername, string APassword)
+        public static bool SetUserPassword(string AUsername, string APassword, bool APasswordNeedsChanged)
         {
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
 
@@ -70,6 +70,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 UserDR.PasswordSalt = r.Next(1000000000).ToString();
                 UserDR.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
                         UserDR.PasswordSalt), "SHA1");
+                UserDR.PasswordNeedsChange = APasswordNeedsChanged;
 
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
                 SUserAccess.SubmitChanges(UserTable, Transaction);
@@ -121,7 +122,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         /// any user can call this, but they need to know the old password.
         /// </summary>
         [RequireModulePermission("NONE")]
-        public static bool SetUserPassword(string AUsername, string APassword, string AOldPassword, out TVerificationResultCollection AVerification)
+        public static bool SetUserPassword(string AUsername,
+            string APassword,
+            string AOldPassword,
+            bool APasswordNeedsChanged,
+            out TVerificationResultCollection AVerification)
         {
             TDBTransaction Transaction;
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
@@ -146,6 +151,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
                 UserDR.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
                         UserDR.PasswordSalt));
+                UserDR.PasswordNeedsChange = APasswordNeedsChanged;
 
                 Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
 

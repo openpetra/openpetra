@@ -297,6 +297,7 @@ OpenPetra:
                         AddNewPerson: {ActionClick=TPartnerMain.NewPartner_Person, Description=Create a new Partner of Class PERSON}
                     Applications: {DontShowNestedTasksAsLinks=true, Namespace=Ict.Petra.Client.MPersonnel.Gui}
                         BrowseShortTerm: {Label: Short-Term Applications, ActionOpenScreen=TFrmShortTermApplications, Description=Browse Short-Term Applications by Event}
+                        BrowseLongTerm: {Label: Long-Term Applications, ActionOpenScreen=TFrmLongTermApplications, Description=Browse Long-Term Applications}
 
                 Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, DontShowNestedTasksAsLinks=true}
                     Administration:

@@ -124,11 +124,11 @@
 				</query>
 			</calculation> <!-- Select Attendee -->
 			
-			<calculation id="CalculateSingleNationality" returns="text" returnsFormat="internal">
+			<calculation id="CalculateNationalities" returns="text" returnsFormat="internal">
 				<query>
 					<queryDetail>
 						<value text="NO-SQL"/>
-						<value function="CalculateSingleNationality({AttendeeKey}, {Gender}, {LanguageCode})"/>
+						<value function="CalculateNationalities({AttendeeKey}, {Gender}, {LanguageCode})"/>
 					</queryDetail>
 				</query>
 			</calculation>
@@ -151,11 +151,11 @@
 				</query>
 			</calculation>
 			
-			<calculation align="left" id="Nationality" returns="text" returnsFormat="text">
-				<caption><value text="Nationality"></value></caption>
+			<calculation align="left" id="Nationalities" returns="text" returnsFormat="text">
+				<caption><value text="Nationalities"></value></caption>
 				<query>
 					<queryDetail>
-						<value variable="Nationality"></value>
+						<value variable="Nationalities"></value>
 					</queryDetail>
 				</query>
 			</calculation>
@@ -232,7 +232,7 @@
 			
 			<level name="Attendance Level">
 				<header>
-					<field whichfield="left 0" calculation="CalculateSingleNationality"/>
+					<field whichfield="left 0" calculation="CalculateNationalities"/>
 				</header>
 				<detail>
 				</detail>

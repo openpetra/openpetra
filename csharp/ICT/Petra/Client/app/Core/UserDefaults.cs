@@ -306,6 +306,9 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>Name of the last created extract </summary>
         public const String PARTNER_EXTRAC_LAST_EXTRACT_NAME = "Extract";
 
+        /// <summary>todoComment</summary>
+        public const String PERSONNEL_APPLICATION_STATUS = "ApplicationStatus";
+
         /// <summary>
         /// ------------------------------------------------------------------------------
         /// Reporting User Default Constants
@@ -345,7 +348,7 @@ namespace Ict.Petra.Client.App.Core
          * -------------------------------------------------------------------------------*/
 
         /// <summary>todoComment</summary>
-        public const String CONFERENCE_LASTCONFERENCEWORKEDWITH = "LASTCONFERENCEWORKEDWITH";
+        public const String CONFERENCE_LASTCONFERENCEWORKEDWITH = "LastConferenceWorkedWith";
 
 
         /// <summary>

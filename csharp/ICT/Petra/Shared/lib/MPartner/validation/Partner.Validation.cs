@@ -933,12 +933,13 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="ABankingDetails">test if there is only one main account</param>
+        /// <param name="ACountryCode">Country Code for ARow's corresponding Bank's country</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         public static void ValidateBankingDetails(object AContext, PBankingDetailsRow ARow,
-            PBankingDetailsTable ABankingDetails,
+            PBankingDetailsTable ABankingDetails, string ACountryCode,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
             DataColumn ValidationColumn;
@@ -1017,6 +1018,32 @@ namespace Ict.Petra.Shared.MPartner.Validation
                             AContext,
                             ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKINGDETAILS_MISSING_ACCOUNTNUMBERORIBAN)),
                         ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnBankAccountNumber,
+                        ValidationControlsData.ValidationControl
+                        ));
+            }
+
+            // validate the account number (if validation exists for bank's country)
+            CommonRoutines Routines = new CommonRoutines();
+
+            if ((ARow.BankAccountNumber != null) && (Routines.CheckAccountNumber(ARow.BankAccountNumber, ACountryCode) == 0))
+            {
+                AVerificationResultCollection.Add(
+                    new TScreenVerificationResult(
+                        new TVerificationResult(
+                            AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_ACCOUNTNUMBER_INVALID)),
+                        ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnBankAccountNumber,
+                        ValidationControlsData.ValidationControl
+                        ));
+            }
+
+            // validate the IBAN (if it exists)
+            if ((ARow.Iban != "") && (CommonRoutines.CheckIBAN(ARow.Iban, out VerificationResult) == false))
+            {
+                AVerificationResultCollection.Add(
+                    new TScreenVerificationResult(
+                        VerificationResult,
+                        ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnIban,
                         ValidationControlsData.ValidationControl
                         ));
             }
