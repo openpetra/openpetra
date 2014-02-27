@@ -460,6 +460,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             String AccountCode,
             DataRow NewDataRow,
             Boolean SortAccountFirst,
+            Boolean ByPeriod,
             out string ParentAccountPath,
             TDBTransaction ReadTrans)
         {
@@ -468,6 +469,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             AAccountHierarchyDetailRow HDRow = (AAccountHierarchyDetailRow)HierarchyTbl.DefaultView[Idx].Row;
             String ParentAccountCode = HDRow.AccountCodeToReportTo;
             String MyParentAccountPath;
+            Int32 Period = (ByPeriod)?Convert.ToInt32(NewDataRow["Period"]):0;
+            String PeriodField = "P" + Period;
 
             if ((ParentAccountCode == "RET EARN") || (ParentAccountCode == LedgerNumber.ToString()))
             {
@@ -486,8 +489,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     ParentAccountCode,
                     NewDataRow,
                     SortAccountFirst,
+                    ByPeriod,
                     out MyParentAccountPath,
                     ReadTrans);
+
+                Decimal NewRowActual = Convert.ToDecimal(NewDataRow["Actual"]);
 
                 if (CostCentreCode == "")
                 {
@@ -520,14 +526,24 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     ParentRow["AccountIsSummary"] = true;
                     filteredResults.Rows.Add(ParentRow);
 
-                    //
-                    // If the Parent Account Type is different to my Account Type, all the values need to be negative!
-                    if (ParentRow["AccountType"].ToString() != NewDataRow["AccountType"].ToString())
+                    Decimal Sign = (ParentRow["AccountType"].ToString() == NewDataRow["AccountType"].ToString()) ? 1 : -1;
+                    if (ByPeriod)
                     {
-                        ParentRow["Actual"] = 0 - Convert.ToDecimal(ParentRow["Actual"]);
-                        ParentRow["ActualYTD"] = 0 - Convert.ToDecimal(ParentRow["ActualYTD"]);
-                        ParentRow["ActualLastYear"] = 0 - Convert.ToDecimal(ParentRow["ActualLastYear"]);
-//                      ParentRow["ActualLastYearComplete"] = 0 - Convert.ToDecimal(ParentRow["ActualLastYearComplete"]);
+                        ParentRow[PeriodField] = Sign * NewRowActual;
+                        ParentRow["Actual"] = 0;
+                        ParentRow["ActualYTD"] = 0;
+                        ParentRow["Budget"] = 0;
+                        ParentRow["BudgetYTD"] = 0;
+                        ParentRow["Period"] = 0;
+                        ParentRow["ActualLastYear"] = 0;
+//                      ParentRow["ActualLastYearComplete"] = 0;
+                    }
+                    else
+                    {
+                        ParentRow["Actual"] = Sign * NewRowActual;
+                        ParentRow["ActualYTD"] = Sign * Convert.ToDecimal(ParentRow["ActualYTD"]);
+                        ParentRow["ActualLastYear"] = Sign * Convert.ToDecimal(ParentRow["ActualLastYear"]);
+//                      ParentRow["ActualLastYearComplete"] = Sign * Convert.ToDecimal(ParentRow["ActualLastYearComplete"]);
                     }
                 }
                 else
@@ -538,28 +554,29 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     //
                     // This applies when "Income" summarizes into "Expense" or vice versa, but when "equity" summarizes into "liability"?
                     //
-                    Decimal Sign = 1;
-
-                    if (ParentRow["AccountType"].ToString() != NewDataRow["AccountType"].ToString())
+                    Decimal Sign = (ParentRow["AccountType"].ToString() == NewDataRow["AccountType"].ToString()) ? 1 : -1;
+                    if (ByPeriod)
                     {
-                        Sign = -1;
+                        ParentRow[PeriodField] = Convert.ToDecimal(ParentRow[PeriodField]) + (Sign * NewRowActual);
                     }
-
-                    ParentRow["Actual"] = Convert.ToDecimal(ParentRow["Actual"]) + (Sign * Convert.ToDecimal(NewDataRow["Actual"]));
-                    ParentRow["ActualYTD"] = Convert.ToDecimal(ParentRow["ActualYTD"]) + (Sign * Convert.ToDecimal(NewDataRow["ActualYTD"]));
-                    ParentRow["ActualLastYear"] = Convert.ToDecimal(ParentRow["ActualLastYear"]) +
-                                                  (Sign * Convert.ToDecimal(NewDataRow["ActualLastYear"]));
-//                  ParentRow["ActualLastYearComplete"] = Convert.ToDecimal(ParentRow["ActualLastYearComplete"]) + (Sign * Convert.ToDecimal(NewDataRow["ActualLastYearComplete"]));
-                    //
-                    // The Balance Sheet row doesn't have budgets, but the Income Expense does:
-                    if (ParentRow.Table.Columns.Contains("Budget"))
+                    else
                     {
-                        ParentRow["Budget"] = Convert.ToDecimal(ParentRow["Budget"]) + (Sign * Convert.ToDecimal(NewDataRow["Budget"]));
-                        ParentRow["BudgetYTD"] = Convert.ToDecimal(ParentRow["BudgetYTD"]) + (Sign * Convert.ToDecimal(NewDataRow["BudgetYTD"]));
-                        ParentRow["BudgetLastYear"] = Convert.ToDecimal(ParentRow["BudgetLastYear"]) +
-                                                      (Sign * Convert.ToDecimal(NewDataRow["BudgetLastYear"]));
-                        ParentRow["WholeYearBudget"] = Convert.ToDecimal(ParentRow["WholeYearBudget"]) +
-                                                       (Sign * Convert.ToDecimal(NewDataRow["WholeYearBudget"]));
+                        ParentRow["Actual"] = Convert.ToDecimal(ParentRow["Actual"]) + (Sign * NewRowActual);
+                        ParentRow["ActualYTD"] = Convert.ToDecimal(ParentRow["ActualYTD"]) + (Sign * Convert.ToDecimal(NewDataRow["ActualYTD"]));
+                        ParentRow["ActualLastYear"] = Convert.ToDecimal(ParentRow["ActualLastYear"]) +
+                                                      (Sign * Convert.ToDecimal(NewDataRow["ActualLastYear"]));
+                        //                  ParentRow["ActualLastYearComplete"] = Convert.ToDecimal(ParentRow["ActualLastYearComplete"]) + (Sign * Convert.ToDecimal(NewDataRow["ActualLastYearComplete"]));
+                        //
+                        // The Balance Sheet row doesn't have budgets, but the Income Expense does:
+                        if (ParentRow.Table.Columns.Contains("Budget"))
+                        {
+                            ParentRow["Budget"] = Convert.ToDecimal(ParentRow["Budget"]) + (Sign * Convert.ToDecimal(NewDataRow["Budget"]));
+                            ParentRow["BudgetYTD"] = Convert.ToDecimal(ParentRow["BudgetYTD"]) + (Sign * Convert.ToDecimal(NewDataRow["BudgetYTD"]));
+                            ParentRow["BudgetLastYear"] = Convert.ToDecimal(ParentRow["BudgetLastYear"]) +
+                                                          (Sign * Convert.ToDecimal(NewDataRow["BudgetLastYear"]));
+                            ParentRow["WholeYearBudget"] = Convert.ToDecimal(ParentRow["WholeYearBudget"]) +
+                                                           (Sign * Convert.ToDecimal(NewDataRow["WholeYearBudget"]));
+                        }
                     }
                 }
 
@@ -677,6 +694,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     Row["AccountCode"].ToString(),
                     Row,
                     false,
+                    false,
                     out ParentAccountPath,
                     ReadTrans);
                 Row["AccountLevel"] = AccountLevel;
@@ -742,16 +760,15 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
         /// <summary>
         /// For "Cost Centre Breakdown", I need to add records summarising the transactions for Summary Accounts by Cost Centre.
+        /// This method will create the new row if necessary.
         /// </summary>
         /// <param name="filteredView">A view that includes only the breakdown rows.</param>
         /// <param name="DetailLevel">The new summary row should be at this level.</param>
         /// <param name="NewDataRow">This row will be removed - its data should be copied to the new summary row.</param>
-        /// <param name="ReadTrans"></param>
-        private static void AddToBreakdownSummary(
+        private static void AddToCostCentreBreakdownSummary(
             DataView filteredView,
             Int32 DetailLevel,
-            DataRow NewDataRow,
-            TDBTransaction ReadTrans)
+            DataRow NewDataRow)
         {
 
             //
@@ -821,13 +838,51 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         }
 
         /// <summary>
+        /// For "Whole Year Periods Breakdown", I need to add records summarising the transactions by Period.
+        /// This method will create the new row if necessary.
+        /// (It is only used for "posting" accounts. The "summary" accounts have already been calculated by AddTotalsToParentAccountRow.)
+        /// </summary>
+        /// <param name="filteredView">A view that includes only the breakdown rows.</param>
+        /// <param name="NewDataRow">This row will be removed - its "Actual" should be copied to the new summary row.</param>
+        private static void AddToPeriodBreakdownSummary(DataView filteredView, DataRow NewDataRow)
+        {
+            DataRow SummaryRow;
+            Int32 ViewIdx = filteredView.Find(new object[] { NewDataRow["CostCentreCode"], NewDataRow["AccountType"], NewDataRow["AccountPath"] });
+            String PeriodField = "P" + Convert.ToInt32(NewDataRow["Period"]);
+            Decimal Actual = Convert.ToDecimal(NewDataRow["Actual"]);
+
+            if (ViewIdx < 0) // No record yet..
+            {
+                SummaryRow = filteredView.Table.NewRow();
+                DataUtilities.CopyAllColumnValues(NewDataRow, SummaryRow);
+                SummaryRow["Breakdown"] = true;
+                SummaryRow[PeriodField] = Actual;
+                SummaryRow["Actual"] = 0;
+                SummaryRow["ActualYTD"] = 0;
+                SummaryRow["Budget"] = 0;
+                SummaryRow["BudgetYTD"] = 0;
+                SummaryRow["Period"] = 0;
+                SummaryRow["AccountLevel"] = Convert.ToInt32(NewDataRow["AccountLevel"]);
+                SummaryRow["AccountPath"] = NewDataRow["AccountPath"].ToString();
+                filteredView.Table.Rows.Add(SummaryRow);
+            }
+            else
+            {
+                SummaryRow = filteredView[ViewIdx].Row;
+                SummaryRow[PeriodField] = Convert.ToDecimal(SummaryRow[PeriodField]) + Actual;
+            }
+
+        }
+
+
+        /// <summary>
         /// For posting accounts in "details" view, the cost centre breakdown rows will be presented after one or more rows with the same account.
         /// The last account row will become a header, below, and any other rows with the same account will be removed. 
         /// So I need the values in those rows to accumulate into the last row.
         /// </summary>
         /// <param name="DetailRow"></param>
         /// <param name="AccumulatingRow"></param>
-        private static void AccumulateTotals(DataRow DetailRow, DataRow AccumulatingRow)
+        private static void AccumulateTotalsPerCostCentre(DataRow DetailRow, DataRow AccumulatingRow)
         {
             if (DetailRow["AccountPath"].ToString() != AccumulatingRow["AccountPath"].ToString())
             {
@@ -898,19 +953,29 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
 
         /*
-            Cost Centre Breakdown query and process, in English:
-             
+            Cost Centre Breakdown process, in English:
+
             Find all the transactions for this period (and last month, last year) in glmp, sorting by Account, CostCentre
             For each account, re-calculate the summary accounts, generating parent records and AccountPath, using the given hierarchy
-            Summarise to the required detail level by copying into a new table:
+            Summarise to the required detail level by copying into new "breakdown" records:
                 Headers and footers at a lower level are just copied,
                 Accounts at the highest level must be made into header/footer pairs. The totals should be correct.
                 all transactions at the required detail level or higher must be combined by CostCentreCode and listed within the appropriate level account.
-         
+
             The initial query and calculation of previous periods and budget figures is all the same; only the summarisation is different. 
         */
 
-            Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+        /*
+            "Whole year breakdown by period" process, in English:
+
+            Find all the transactions for the whole year (to period 12) in glmp, sorting by CostCentre, Account
+            For each account, summarise into 12 fields of summary accounts, generating parent records and AccountPath, using the given hierarchy
+            Summarise to the required level of detail
+            For each remaining posting account, create a "breakdown" record with 12 fields for the summation
+            Remove all records that are not a summary or a breakdown
+        */
+
+           Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             Int32 AccountingYear = AParameters["param_year_i"].ToInt32();
             Int32 ReportPeriodStart = AParameters["param_start_period_i"].ToInt32();
             Int32 ReportPeriodEnd = AParameters["param_end_period_i"].ToInt32();
@@ -921,6 +986,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // Read different DB fields according to currency setting
             String ActualFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_actual_intl_n" : "a_actual_base_n";
             String BudgetFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_budget_intl_n" : "a_budget_base_n";
+            Boolean CostCentreBreakdown = AParameters["param_cost_centre_breakdown"].ToBool();
+            Boolean WholeYearPeriodsBreakdown = AParameters["param_period_breakdown"].ToBool();
 
             String CostCentreFilter = "";
             String CostCentreOptions = AParameters["param_costcentreoptions"].ToString();
@@ -941,21 +1008,43 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             // To find the Budget YTD, I need to sum all the budget fields from the start of the year.
 
-            String BudgetQuery = (PeriodMonths == 1) ? "glmp." + BudgetFieldName :  // For one month, the Budget is read directly from the record;
-                                 "(CASE WHEN glm.a_year_i=" + AccountingYear +      // for multiple months, I need to do a sum.
+            String BudgetQuery = (PeriodMonths == 1) ? " glmp." + BudgetFieldName +  // For one month, the Budget is read directly from the record;
+                                 " AS Budget," :
+                                 " (CASE WHEN glm.a_year_i=" + AccountingYear +      // for multiple months, I need to do a sum.
                                  " AND a_period_number_i=" + ReportPeriodEnd +
                                  " THEN (SELECT SUM(" + BudgetFieldName + ") FROM a_general_ledger_master_period" +
                                  " WHERE a_glm_sequence_i= glm.a_glm_sequence_i " +
                                  " AND a_period_number_i >= " + ReportPeriodStart +
                                  " AND a_period_number_i <= " + ReportPeriodEnd +
-                                 " ) ELSE 0 END)";
+                                 " ) ELSE 0.0 END) AS Budget,";
 
-            String BudgetYtdQuery = "(CASE WHEN glm.a_year_i=" + AccountingYear +
+            String BudgetYtdQuery = " (CASE WHEN glm.a_year_i=" + AccountingYear +
                                     " AND a_period_number_i=" + ReportPeriodEnd +
                                     " THEN (SELECT SUM(" + BudgetFieldName + ") FROM a_general_ledger_master_period" +
                                     " WHERE a_glm_sequence_i= glm.a_glm_sequence_i AND a_period_number_i <= " + ReportPeriodEnd +
-                                    " ) ELSE 0 END)";
-            Boolean CostCentreBreakdown = AParameters["param_cost_centre_breakdown"].ToBool();
+                                    " ) ELSE 0.0 END) AS BudgetYTD,";
+
+            String YearFilter =
+                           " AND glm.a_year_i>=" + (AccountingYear - 1) +
+                           " AND glm.a_year_i<=" + AccountingYear;
+
+            String PeriodFilter =
+                           " AND glmp.a_period_number_i>=" + (ReportPeriodStart - PeriodMonths) +
+                           " AND glmp.a_period_number_i<=" + ReportPeriodEnd;
+
+            String WholeYearBreakdownFields = 
+                    ", 0.0 AS P1, 0.0 AS P2, 0.0 AS P3, 0.0 AS P4, 0.0 AS P5, 0.0 AS P6 " +
+                    ", 0.0 AS P7, 0.0 AS P8, 0.0 AS P9, 0.0 AS P10, 0.0 AS P11, 0.0 AS P12 ";
+
+            if (WholeYearPeriodsBreakdown)
+            {
+                CostCentreBreakdown = false; // Hopefully the client will have ensured this is false anyway - I'm just asserting it!
+                BudgetQuery = "0.0 AS Budget,";
+                BudgetYtdQuery = "0.0 AS BudgetYTD,";
+                YearFilter = " AND glm.a_year_i=" + AccountingYear;
+                PeriodFilter = " AND glmp.a_period_number_i<=12";
+                PeriodMonths = 12;
+            }
 
             String Query = "SELECT DISTINCT" +
                            " 1 AS AccountLevel," +
@@ -973,21 +1062,20 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                            " 'Path' AS AccountPath," +
                            " a_account.a_account_code_short_desc_c AS AccountName," +
                            " glm.a_start_balance_base_n AS YearStart," +
-                           " 0.1 AS Actual," +
+                           " 0.0 AS Actual," +
                            " glmp." + ActualFieldName + " AS ActualYTD," +
-                           " 0.1 AS ActualLastYear," +
-                           " " + BudgetQuery + " AS Budget," +
-                           " " + BudgetYtdQuery + " AS BudgetYTD," +
-                           " 0.1 AS BudgetLastYear," +
-                           " 0.1 AS WholeYearBudget"
+                           " 0.0 AS ActualLastYear," +
+                           BudgetQuery +
+                           BudgetYtdQuery +
+                           " 0.0 AS BudgetLastYear," +
+                           " 0.0 AS WholeYearBudget" +
+                           WholeYearBreakdownFields +
 
-                           + " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
+                           " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
                            " WHERE glm.a_ledger_number_i=" + LedgerNumber +
-                           " AND glm.a_year_i>=" + (AccountingYear - 1) +
-                           " AND glm.a_year_i<=" + AccountingYear +
+                           YearFilter +
                            " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
-                           " AND glmp.a_period_number_i>=" + (ReportPeriodStart - PeriodMonths) +
-                           " AND glmp.a_period_number_i<=" + ReportPeriodEnd +
+                           PeriodFilter +
                            " AND a_account.a_account_code_c = glm.a_account_code_c" +
                            " AND (a_account.a_account_type_c = 'Income' OR a_account.a_account_type_c = 'Expense')" +
                            " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
@@ -1006,81 +1094,91 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             }
 
             DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(Query, "IncomeExpense", ReadTrans);
+            DataTable FilteredResults;
 
-            //
-            // The table includes YTD balances, but I need the balance for the specified period.
-
-            DataView OldPeriod = new DataView(resultTable);
-            DataView ThisMonth = new DataView(resultTable);
-            ThisMonth.RowFilter = "Period=" + ReportPeriodEnd;
-
-            //
-            // If I have rows for the previous month too, I can subtract the previous month's YTD balance to get my "Actual".
-            if (ReportPeriodEnd > PeriodMonths)
+            if (WholeYearPeriodsBreakdown)
             {
+                FilteredResults = resultTable;
+            }
+            else
+            {
+
+                //
+                // The table includes YTD balances, but I need the balance for the specified period.
+
+                DataView OldPeriod = new DataView(resultTable);
+                DataView ThisMonth = new DataView(resultTable);
+                ThisMonth.RowFilter = "Period=" + ReportPeriodEnd;
+
+                //
+                // If I have rows for the previous month too, I can subtract the previous month's YTD balance to get my "Actual".
+                if (ReportPeriodEnd > PeriodMonths)
+                {
+                    foreach (DataRowView rv in ThisMonth)
+                    {
+                        DataRow Row = rv.Row;
+                        OldPeriod.RowFilter = String.Format("Year={0} AND Period={1} AND CostCentreCode='{2}' AND AccountCode='{3}'",
+                            Convert.ToInt32(Row["Year"]),
+                            ReportPeriodEnd - PeriodMonths,
+                            Row["CostCentreCode"].ToString(),
+                            Row["AccountCode"].ToString()
+                            );
+                        DataRow PreviousPeriodRow = OldPeriod[0].Row;
+                        Row["Actual"] = Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(PreviousPeriodRow["ActualYTD"]);
+                    }
+                }
+                else
+                {
+                    //
+                    // For the first period of the year, I can just subtract the YearStart balance, which I already have just here...
+                    foreach (DataRowView rv in ThisMonth)
+                    {
+                        DataRow Row = rv.Row;
+                        Row["Actual"] = Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(Row["YearStart"]);
+                    }
+                }
+
+                //
+                // Some of these rows are from a year ago. I've updated their "Actual" values;
+                // now I'll copy those into the current period "LastYear" fields.
                 foreach (DataRowView rv in ThisMonth)
                 {
                     DataRow Row = rv.Row;
                     OldPeriod.RowFilter = String.Format("Year={0} AND Period={1} AND CostCentreCode='{2}' AND AccountCode='{3}'",
-                        Convert.ToInt32(Row["Year"]),
-                        ReportPeriodEnd - PeriodMonths,
+                        AccountingYear - 1,
+                        ReportPeriodEnd,
                         Row["CostCentreCode"].ToString(),
                         Row["AccountCode"].ToString()
                         );
-                    DataRow PreviousPeriodRow = OldPeriod[0].Row;
-                    Row["Actual"] = Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(PreviousPeriodRow["ActualYTD"]);
+
+                    if (OldPeriod.Count > 0)
+                    {
+                        DataRow LastYearRow = OldPeriod[0].Row;
+                        Row["ActualLastYear"] = Convert.ToDecimal(LastYearRow["Actual"]);
+                        Row["BudgetLastYear"] = Convert.ToDecimal(LastYearRow["Budget"]);
+                    }
                 }
-            }
-            else
-            {
+
                 //
-                // For the first period of the year, I can just subtract the YearStart balance, which I already have just here...
-                foreach (DataRowView rv in ThisMonth)
+                // So now I don't have to look at last year's rows or last month's rows:
+                ThisMonth.RowFilter = "Year=" + AccountingYear + " AND Period=" + ReportPeriodEnd;  // Only current period
+                FilteredResults = ThisMonth.ToTable("IncomeExpense");
+
+                //
+                // I need to add in the "whole year budget" field:
+                foreach (DataRow Row in FilteredResults.Rows)
                 {
-                    DataRow Row = rv.Row;
-                    Row["Actual"] = Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(Row["YearStart"]);
+                    Query = "SELECT SUM(" + BudgetFieldName + ") AS WholeYearBudget FROM a_general_ledger_master_period WHERE a_glm_sequence_i=" +
+                            Convert.ToInt32(Row["Seq"]);
+                    DataTable YearBudgetTbl = DBAccess.GDBAccessObj.SelectDT(Query, "YearBudget", ReadTrans);
+
+                    if (YearBudgetTbl.Rows.Count > 0)
+                    {
+                        Row["WholeYearBudget"] = YearBudgetTbl.Rows[0]["WholeYearBudget"];
+                    }
                 }
-            }
+            } // If not Whole Year Periods Breakdown
 
-            //
-            // Some of these rows are from a year ago. I've updated their "Actual" values;
-            // now I'll copy those into the current period "LastYear" fields.
-            foreach (DataRowView rv in ThisMonth)
-            {
-                DataRow Row = rv.Row;
-                OldPeriod.RowFilter = String.Format("Year={0} AND Period={1} AND CostCentreCode='{2}' AND AccountCode='{3}'",
-                    AccountingYear - 1,
-                    ReportPeriodEnd,
-                    Row["CostCentreCode"].ToString(),
-                    Row["AccountCode"].ToString()
-                    );
-
-                if (OldPeriod.Count > 0)
-                {
-                    DataRow LastYearRow = OldPeriod[0].Row;
-                    Row["ActualLastYear"] = Convert.ToDecimal(LastYearRow["Actual"]);
-                    Row["BudgetLastYear"] = Convert.ToDecimal(LastYearRow["Budget"]);
-                }
-            }
-
-            //
-            // So now I don't have to look at last year's rows or last month's rows:
-            ThisMonth.RowFilter = "Year=" + AccountingYear + " AND Period=" + ReportPeriodEnd;  // Only current period
-            DataTable FilteredResults = ThisMonth.ToTable("IncomeExpense");
-
-            //
-            // I need to add in the "whole year budget" field:
-            foreach (DataRow Row in FilteredResults.Rows)
-            {
-                Query = "SELECT SUM(" + BudgetFieldName + ") AS WholeYearBudget FROM a_general_ledger_master_period WHERE a_glm_sequence_i=" +
-                        Convert.ToInt32(Row["Seq"]);
-                DataTable YearBudgetTbl = DBAccess.GDBAccessObj.SelectDT(Query, "YearBudget", ReadTrans);
-
-                if (YearBudgetTbl.Rows.Count > 0)
-                {
-                    Row["WholeYearBudget"] = YearBudgetTbl.Rows[0]["WholeYearBudget"];
-                }
-            }
 
             //
             // I only have "posting accounts" - I need to add the summary accounts.
@@ -1093,14 +1191,27 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             }
             else
             {
-                FilteredResults.DefaultView.Sort = "CostCentreCode, AccountCode";   
+                FilteredResults.DefaultView.Sort = "CostCentreCode, AccountCode";
             }
 
             Int32 PostingAccountRecords = FilteredResults.Rows.Count;
-
+            Decimal PreviousActualYTD = 0;
+            String ActualAccountCode = "";
             for (Int32 Idx = 0; Idx < PostingAccountRecords; Idx++)
             {
                 DataRow Row = FilteredResults.Rows[Idx];
+
+                if (WholeYearPeriodsBreakdown)  // Because I missed out a chunk of code above, these rows have no "Actual" - only "ActualYTD".
+                {                               // I need to calculate those Actuals before I go further.
+                    if (Row["AccountCode"].ToString() != ActualAccountCode)
+                    {
+                        ActualAccountCode = Row["AccountCode"].ToString();
+                        PreviousActualYTD = 0;
+                    }
+                    Row["Actual"] = Convert.ToDecimal(Row["ActualYTD"]) - PreviousActualYTD;
+                    PreviousActualYTD = Convert.ToDecimal(Row["ActualYTD"]);
+                }
+
                 String CostCentreParam = (CostCentreBreakdown)?"":Row["CostCentreCode"].ToString();
                 String ParentAccountPath;
                 Int32 AccountLevel = AddTotalsToParentAccountRow(
@@ -1111,6 +1222,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     Row["AccountCode"].ToString(),
                     Row,
                     CostCentreBreakdown,
+                    WholeYearPeriodsBreakdown,
                     out ParentAccountPath,
                     ReadTrans);
                 Row["AccountLevel"] = AccountLevel;
@@ -1118,12 +1230,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             }
 
             //
-            // Now if I re-order the result by AccountPath, and hide any rows that are empty or too detailed, it should be what I need!
+            // Now if I re-order the result, and hide any rows that are empty or too detailed, it should be what I need!
 
             Int32 DetailLevel = AParameters["param_nesting_depth"].ToInt32();
-            String DepthFilter = " AND AccountLevel<=" + DetailLevel.ToString();
+            String DepthFilter = " AccountLevel<=" + DetailLevel.ToString();
 
             if (CostCentreBreakdown)
+                // I'm creating additional "breakdown" records for the per-CostCentre breakdown, and potentially removing
+                // some records that were summed into those "breakdown" records.
             {
                 FilteredResults.DefaultView.Sort = "AccountType DESC, AccountPath ASC, CostCentreCode";
                 FilteredResults.DefaultView.RowFilter = "Breakdown=false";
@@ -1133,29 +1247,57 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 SummaryView.Sort = "AccountType DESC, AccountPath ASC, CostCentreCode";
                 SummaryView.RowFilter = "Breakdown=true";
 
-                DataRow AccumulatingRow = FilteredResults.NewRow();
+                DataRow AccumulatingRow = FilteredResults.NewRow();  // This temporary row is not part of the result set - it's just a line of temporary vars.
                 for (Int32 RowIdx = 0; RowIdx < FilteredResults.DefaultView.Count - 1; RowIdx++)
                 {
                     DataRow DetailRow = FilteredResults.DefaultView[RowIdx].Row;
-                    AddToBreakdownSummary(SummaryView, DetailLevel, DetailRow, ReadTrans);
+                    AddToCostCentreBreakdownSummary(SummaryView, DetailLevel, DetailRow);
 
                     //
                     // For posting accounts in "details" view, the cost centre breakdown rows will be presented after one or more rows with the same account.
                     // The last account row will become a header, below, and any other rows with the same account will be removed. 
                     // So I need the values in those rows to accumulate into the last row.
-                    AccumulateTotals(DetailRow, AccumulatingRow);
+                    AccumulateTotalsPerCostCentre(DetailRow, AccumulatingRow);
                 }
                 FilteredResults.DefaultView.Sort = "AccountType DESC, AccountPath ASC, Breakdown, CostCentreCode";
-           }
+            }
             else
             {
                 FilteredResults.DefaultView.Sort = "CostCentreCode, AccountType DESC, AccountPath ASC";
             }
-            FilteredResults.DefaultView.RowFilter = 
-                "(Actual <> 0 OR ActualYTD <> 0 OR Budget <> 0 OR BudgetYTD <> 0)" + // Only non-zero rows
-                        DepthFilter;                                                 // Nothing too detailed
-
+            if (WholeYearPeriodsBreakdown)
+            {
+                FilteredResults.DefaultView.RowFilter = 
+                    DepthFilter;      // Nothing too detailed
+            }
+            else
+            {
+                FilteredResults.DefaultView.RowFilter = 
+                    "(Actual <> 0 OR ActualYTD <> 0 OR Budget <> 0 OR BudgetYTD <> 0)" + // Only non-zero rows
+                    " AND " + DepthFilter;                                               // Nothing too detailed
+            }
             FilteredResults = FilteredResults.DefaultView.ToTable("IncomeExpense");
+
+            if (WholeYearPeriodsBreakdown)
+            {
+            //
+            // If there are any unsummarised rows left after applying the Depth Filter, 
+            // I need to summarise them into new "per period" rows (with 12 "Actual" fields), and throw the original rows away.
+                FilteredResults.DefaultView.RowFilter = "AccountIsSummary=false";
+                DataView SummaryView = new DataView(FilteredResults);
+                SummaryView.Sort = "CostCentreCode, AccountType DESC, AccountPath ASC";
+                SummaryView.RowFilter = "Breakdown=true";
+                foreach (DataRowView rv in FilteredResults.DefaultView)
+                {
+                    DataRow Row = rv.Row;
+                    AddToPeriodBreakdownSummary(SummaryView, Row);
+                }
+                FilteredResults.DefaultView.RowFilter = "(Breakdown=true OR AccountIsSummary=true) " + // Only the new rows with the calculated summaries
+                    "AND (P1<>0 OR P2<>0 OR P3<>0 OR P4<>0 OR P5<>0 OR P6<>0 " +
+                    "OR P7<>0 OR P8<>0 OR P9<>0 OR P10<>0 OR P11<>0 OR P12<>0) "; // No blank rows
+                FilteredResults.DefaultView.Sort = "CostCentreCode, AccountType DESC, AccountPath ASC";
+                FilteredResults = FilteredResults.DefaultView.ToTable("IncomeExpense");
+            }
 
             //
             // Finally, to make the hierarchical report possible,

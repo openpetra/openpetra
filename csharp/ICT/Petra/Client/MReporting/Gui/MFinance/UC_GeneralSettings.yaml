@@ -29,7 +29,7 @@ RootNode:
             OptionalValues: [Base, International, Transaction]
         grpPeriodRange:
             Width: 600
-            Controls: [rbtPeriod, rbtQuarter, rbtDate]
+            Controls: [rbtPeriod, rbtQuarter, rbtDate, rbtBreakdown]
         rbtPeriod:
             Width:50
             ControlsOrientation: horizontal
@@ -73,3 +73,18 @@ RootNode:
         dtpEndDate:
             NoParameter: true
             Label: to
+        rbtBreakdown:
+            Label: Breakdown by period
+            ControlsOrientation: horizontal
+            Controls: [lblYear, cmbBreakdownYear]
+            NoParameter: true
+        lblYear:     # Added here because otherwise the label from the cmb below curiously migrates into the rbt above!
+            Label: Year
+            width:30
+        cmbBreakdownYear: 
+            NoLabel:true
+            List: UserDefinedList
+            ParameterName: param_year_i
+            NoParameter: true
+            Width:100
+            LabelWidth:100
