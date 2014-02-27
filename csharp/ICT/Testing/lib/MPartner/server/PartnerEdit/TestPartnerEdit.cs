@@ -122,6 +122,7 @@ namespace Tests.MPartner.Server.PartnerEdit
         /// first save the partner with location 0, then add a new location, and save again
         /// </summary>
         [Test]
+        
         public void TestNewPartnerWithLocation0()
         {
             TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
@@ -574,9 +575,9 @@ namespace Tests.MPartner.Server.PartnerEdit
 
             // set unit type to Key Ministry which means it is not allowed to be deleted any longer
             UnitRow = (PUnitRow)MainDS.PUnit.Rows[0];
-            UnitRow.UnitTypeCode = "KEY-MIN";
+            UnitRow.UnitTypeCode = MPartnerConstants.UNIT_TYPE_KEYMIN;
             result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
-            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "set unit type to KEY-MIN");
+            Assert.AreEqual(TSubmitChangesResult.scrOK, result, "set unit type to " + MPartnerConstants.UNIT_TYPE_KEYMIN);
 
             CanDeletePartner = TPartnerWebConnector.CanPartnerBeDeleted(UnitPartnerRow.PartnerKey, out TextMessage);
 
