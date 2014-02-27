@@ -70,7 +70,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             lblParentName.Left = 250;
             btnOrganise.Left = 430;
 
-            if (FMainDS.UmUnitStructure.Rows.Count > 0)
+            if ((FMainDS.UmUnitStructure != null)
+                && (FMainDS.UmUnitStructure.Rows.Count > 0))
             {
                 txtParentKey.Text = FMainDS.UmUnitStructure[0].ParentUnitKey.ToString("D10");
                 SetParentLabel(FMainDS.UmUnitStructure[0].ParentUnitKey);

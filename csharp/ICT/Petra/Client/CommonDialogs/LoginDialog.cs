@@ -45,8 +45,10 @@ using Ict.Common.Controls;
 using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.CommonDialogs
@@ -296,6 +298,18 @@ namespace Ict.Petra.Client.CommonDialogs
                 this.Cursor = Cursors.Default;
                 TLogging.UserNamePrefix = UserInfo.GUserInfo.UserID + '_' +
                                           TConnectionManagement.GConnectionManagement.ClientID.ToString();
+
+                // If the user is required to change their password before using OpenPetra.
+                // (This LoginMessage is set in Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors.TUserManagerWebConnector)
+                if (UserInfo.GUserInfo.LoginMessage == Catalog.GetString("You need to change your password immediately."))
+                {
+                    bool NewPasswordCreated = false;
+
+                    while (NewPasswordCreated == false)
+                    {
+                        NewPasswordCreated = CreateNewPassword(FSelUserName, FSelPassWord, false);
+                    }
+                }
 
                 DialogResult = System.Windows.Forms.DialogResult.OK;
                 Close();
@@ -610,6 +624,59 @@ namespace Ict.Petra.Client.CommonDialogs
         }
 
         #endregion
+
+        /// <summary>
+        /// create a new password for the current user
+        /// </summary>
+        public static bool CreateNewPassword(string AUserName, string AOldPassword, bool APasswordNeedsChanged)
+        {
+            PetraInputBox input = new PetraInputBox(
+                Catalog.GetString("Change your password"),
+                Catalog.GetString("Please enter the new password:"),
+                "", true);
+
+            if (input.ShowDialog() == DialogResult.OK)
+            {
+                string password = input.GetAnswer();
+
+                input = new PetraInputBox(
+                    Catalog.GetString("Change your password"),
+                    Catalog.GetString("Please enter the new password once more:"),
+                    "", true);
+
+                if (input.ShowDialog() == DialogResult.OK)
+                {
+                    if (password == input.GetAnswer())
+                    {
+                        TVerificationResultCollection VerificationResult;
+
+                        if (password == AOldPassword)
+                        {
+                            MessageBox.Show(String.Format(Catalog.GetString(
+                                        "Password not changed as current password entered. Please enter a new password."), AUserName));
+                        }
+                        else if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(AUserName, password, AOldPassword, APasswordNeedsChanged,
+                                     out VerificationResult))
+                        {
+                            MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), AUserName));
+                            return true;
+                        }
+                        else
+                        {
+                            MessageBox.Show(String.Format(Catalog.GetString(
+                                        "There was a problem setting the password for user {0}."), AUserName) +
+                                Environment.NewLine + VerificationResult.BuildVerificationResultString());
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("The new password did not match! Please try again...");
+                    }
+                }
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// todoComment

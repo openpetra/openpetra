@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// the default fields for the left side when searching by bank details
         /// </summary>
         public const String PARTNER_FINDOPTIONSBYBANKDETAILS_CRITERIAFIELDSLEFT_DEFAULT =
-            "PartnerName;AccountName;AccountNumber;Iban;BranchCode;Bic";
+            "PartnerName;AccountName;AccountNumber;Iban;BranchCode;Bic;BankKey;BankName;BankCode";
 
         /// <summary>
         /// the default fields for the right side when searching by bank details

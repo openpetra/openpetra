@@ -312,26 +312,27 @@ namespace Ict.Petra.Client.App.PetraClient
                     if (ConferenceName != String.Empty)
                     {
                         const int BreakPoint = 28;
+                        SpecificConferenceNode.Attributes["Label"].Value = "";
 
-                        // split up the name if it is too long to fit in the navigation panel
-                        if (ConferenceName.Length <= BreakPoint)
-                        {
-                            SpecificConferenceNode.Attributes["Label"].Value = ConferenceName + "\n";
-                        }
-                        else
+                        // splits the name over multiple lines if it too long
+                        while (ConferenceName.Length > BreakPoint)
                         {
                             int IndexOfSpace = ConferenceName.IndexOf(" ", 0);
                             int LastIndexOfSpace = 0;
 
+                            // searches for the last breakpoint for a line
                             while (IndexOfSpace <= BreakPoint && IndexOfSpace != -1)
                             {
                                 LastIndexOfSpace = IndexOfSpace;
                                 IndexOfSpace = ConferenceName.IndexOf(" ", LastIndexOfSpace + 1);
                             }
 
-                            SpecificConferenceNode.Attributes["Label"].Value = ConferenceName.Substring(0, LastIndexOfSpace) +
-                                                                               "\n" + ConferenceName.Substring(LastIndexOfSpace + 1) + "\n";
+                            SpecificConferenceNode.Attributes["Label"].Value += ConferenceName.Substring(0, LastIndexOfSpace) + "\n";
+
+                            ConferenceName = ConferenceName.Remove(0, LastIndexOfSpace + 1);
                         }
+
+                        SpecificConferenceNode.Attributes["Label"].Value += ConferenceName + "\n";
                     }
                     else
                     {

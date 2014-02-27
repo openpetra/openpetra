@@ -658,8 +658,6 @@ namespace Ict.Petra.Client.MPartner
             {
                 base.OnValueChanged(sender, e);
 
-//              MessageBox.Show(sender.Position.ToString());
-
                 FParentClass.ChangedRowEvent(sender.Position.Row - 1);
             }
         }

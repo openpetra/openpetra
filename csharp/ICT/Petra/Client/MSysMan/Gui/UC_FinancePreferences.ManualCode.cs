@@ -32,7 +32,6 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
-//using Ict.Petra.Client.App.PetraClient;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MSysMan;

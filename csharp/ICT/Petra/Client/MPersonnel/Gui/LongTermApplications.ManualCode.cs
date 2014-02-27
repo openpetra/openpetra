@@ -32,8 +32,12 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls.Logic;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MPartner.Gui;
+using Ict.Petra.Client.MPartner.Gui.Extracts;
+using Ict.Petra.Client.MReporting.Gui;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.Interfaces.MPersonnel;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -41,23 +45,19 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 
 namespace Ict.Petra.Client.MPersonnel.Gui
 {
-    public partial class TFrmShortTermApplications
+    public partial class TFrmLongTermApplications
     {
-        private long FEventPartnerKey = 0;
-        private string FEventPartnerShortName;
-        private String FOutreachCode;
-
-        // option to show applicants for all outreaches of a conference
-        private bool FShowAllOutreaches = false;
+        private long FTargetFieldKey;
+        private long FPlacementPersonKey;
 
         // The user's default filter from SUserDefaults (if it exists)
         private string FUserDefaultFilter;
 
         private void InitializeManualCode()
         {
-            // initially load all applicants that have no event
-            FOutreachCode = "";
-            txtEventName.Text = Catalog.GetString("Applications with no event filled in");
+            // initially load all applicants
+            FTargetFieldKey = 0;
+            FPlacementPersonKey = 0;
 
             // open partner edit screen when user double clicks on a row
             this.grdApplications.DoubleClick += new System.EventHandler(this.EditApplication);
@@ -135,19 +135,13 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             FMainDS = new ApplicationTDS();
 
             // populate dataset
-            TRemote.MPersonnel.WebConnectors.LoadShortTermApplications(ref FMainDS, FOutreachCode);
+            TRemote.MPersonnel.WebConnectors.LoadLongTermApplications(ref FMainDS, FTargetFieldKey, FPlacementPersonKey);
 
-            FMainDS.PmShortTermApplication.DefaultView.AllowNew = false;
+            FMainDS.PmGeneralApplication.DefaultView.AllowNew = false;
 
             // sort order for grid
-            DataView MyDataView = FMainDS.PmShortTermApplication.DefaultView;
+            DataView MyDataView = FMainDS.PmGeneralApplication.DefaultView;
             MyDataView.Sort = "p_partner_short_name_c ASC";
-
-            if (!chkShowAllOutreaches.Checked && chkShowAllOutreaches.Enabled)
-            {
-                // filter rows so only showing applicants for selected outreach rather than the entire conference
-                MyDataView.RowFilter = PmShortTermApplicationTable.GetConfirmedOptionCodeDBName() + " = " + "'" + FOutreachCode + "'";
-            }
 
             grdApplications.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
         }
@@ -194,35 +188,21 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             TUserDefaults.SetDefault(TUserDefaults.PERSONNEL_APPLICATION_STATUS, DefaultFilter);
         }
 
-        private void SelectEvent_Click(System.Object sender, EventArgs e)
+        private void UpdateApplicationsByField(long APartnerKey, string APartnerShortName, bool AValidSelection)
         {
-            Form MainWindow = FPetraUtilsObject.GetCallerForm();
-
-            // If the delegate is defined, the host form will launch a Modal Partner Find screen for us
-            if (TCommonScreensForwarding.OpenEventFindScreen != null)
+            if (AValidSelection || (APartnerKey == 0))
             {
-                // delegate IS defined
-                try
-                {
-                    TCommonScreensForwarding.OpenEventFindScreen.Invoke
-                        ("",
-                        out FEventPartnerKey,
-                        out FEventPartnerShortName,
-                        out FOutreachCode,
-                        MainWindow);
+                FTargetFieldKey = APartnerKey;
+                InitGridManually();
+            }
+        }
 
-                    if (FEventPartnerKey != -1)
-                    {
-                        txtEventName.Text = FEventPartnerShortName;
-                        chkShowAllOutreaches.Enabled = true;
-
-                        InitGridManually();
-                    }
-                }
-                catch (Exception exp)
-                {
-                    throw new ApplicationException("Exception occured while calling OpenEventFindScreen Delegate!", exp);
-                }
+        private void UpdateApplicationsByPlacementPerson(long APartnerKey, string APartnerShortName, bool AValidSelection)
+        {
+            if (AValidSelection || (APartnerKey == 0))
+            {
+                FPlacementPersonKey = APartnerKey;
+                InitGridManually();
             }
         }
 
@@ -242,27 +222,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             FilterChange(sender, e);
         }
 
-        private void ShowAllOutreaches_CheckBox(System.Object sender, EventArgs e)
-        {
-            FShowAllOutreaches = !FShowAllOutreaches;
-
-            DataView MyDataView = FMainDS.PmShortTermApplication.DefaultView;
-
-            if (!chkShowAllOutreaches.Checked)
-            {
-                // filter rows so only showing applicants for selected outreach rather than the entire conference
-                MyDataView.RowFilter = PmShortTermApplicationTable.GetConfirmedOptionCodeDBName() + " = " + "'" + FOutreachCode + "'";
-            }
-            else
-            {
-                MyDataView.RowFilter = null;
-            }
-
-            grdApplications.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
-
-            UpdateRecordNumberDisplay();
-        }
-
         private void EditApplication(System.Object sender, EventArgs e)
         {
             // Open the selected partner's Partner Edit screen at Personnel Applications
@@ -272,20 +231,74 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             frm.Show();
         }
 
+        private void CreateExtract_Click(System.Object sender, EventArgs e)
+        {
+            TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this);
+            IPartnerUIConnectorsPartnerNewExtract PartnerExtractObject = TRemote.MPartner.Extracts.UIConnectors.PartnerNewExtract();
+            int ExtractId = 0;
+            string ExtractName;
+            string ExtractDescription;
+
+            ExtractNameDialog.ShowDialog();
+
+            if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+            {
+                /* Get values from the Dialog */
+                ExtractNameDialog.GetReturnedParameters(out ExtractName, out ExtractDescription);
+            }
+            else
+            {
+                // dialog was cancelled, do not continue with extract generation
+                return;
+            }
+
+            ExtractNameDialog.Dispose();
+
+            this.Cursor = Cursors.WaitCursor;
+
+            DataTable PartnerKeysTable = ((DevAge.ComponentModel.BoundDataView)grdApplications.DataSource).DataView.ToTable();
+
+            // create empty extract with given name and description and store it in db
+            if (PartnerExtractObject.CreateExtractFromListOfPartnerKeys(ExtractName, ExtractDescription, out ExtractId, PartnerKeysTable, 0, false,
+                    true))
+            {
+                this.Cursor = Cursors.Default;
+
+                if (MessageBox.Show(
+                        string.Format(
+                            Catalog.GetString(
+                                "The Extract was successfully created.{0}{0}Do you want to open the 'Maintenance of Extract' screen now?"), "\n"),
+                        Catalog.GetString("Create Extract"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Information) == DialogResult.Yes)
+                {
+                    // now open Screen for new extract so user can add partner records manually
+                    TFrmExtractMaintain frm = new TFrmExtractMaintain(this);
+                    frm.ExtractId = ExtractId;
+                    frm.ExtractName = ExtractName;
+                    frm.Show();
+                }
+            }
+            else
+            {
+                this.Cursor = Cursors.Default;
+
+                MessageBox.Show(Catalog.GetString("Creation of extract failed"),
+                    Catalog.GetString("Generate Manual Extract"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+                return;
+            }
+        }
+
         // update the grid once the filter is changed
         private void FilterChange(System.Object sender, EventArgs e)
         {
             List <string>Filters = new List <string>();
             string FiltersString = "";
 
-            DataView MyDataView = FMainDS.PmShortTermApplication.DefaultView;
+            DataView MyDataView = FMainDS.PmGeneralApplication.DefaultView;
             MyDataView.RowFilter = null;
-
-            if (chkShowAllOutreaches.Enabled && !chkShowAllOutreaches.Checked)
-            {
-                // filter rows so only showing applicants for selected outreach rather than the entire conference
-                FiltersString = PmShortTermApplicationTable.GetConfirmedOptionCodeDBName() + " = '" + FOutreachCode + "'";
-            }
 
             if (rbtGeneral.Checked)
             {
@@ -387,6 +400,15 @@ namespace Ict.Petra.Client.MPersonnel.Gui
                     Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
                         true),
                     RecordCount);
+
+                if (RecordCount > 0)
+                {
+                    btnCreateExtract.Enabled = true;
+                }
+                else
+                {
+                    btnCreateExtract.Enabled = false;
+                }
             }
         }
     }

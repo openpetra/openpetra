@@ -10,7 +10,7 @@
   <Parameter id="param_conferencekey" value="eInteger:0" />
   <Parameter id="param_conferencename" value="eString:" />
   <Parameter id="param_extractname" value="eString:" />
-  <Parameter id="param_calculation" column="0" value="eString:Nationality" />
+  <Parameter id="param_calculation" column="0" value="eString:Nationalities" />
   <Parameter id="ColumnWidth" column="0" value="eInteger:5" />
   <Parameter id="param_calculation" column="1" value="eString:Total" />
   <Parameter id="ColumnWidth" column="1" value="eDecimal:4609434218613702656" />
