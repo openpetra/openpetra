@@ -1441,14 +1441,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="AAccountCode"></param>
         /// <param name="ACanBeParent"></param>
         /// <param name="ACanDelete"></param>
+        /// <param name="AMsg"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Boolean GetAccountCodeAttributes(Int32 ALedgerNumber, String AAccountCode, out bool ACanBeParent, out bool ACanDelete)
+        public static Boolean GetAccountCodeAttributes(Int32 ALedgerNumber, String AAccountCode, out bool ACanBeParent, out bool ACanDelete, out String AMsg)
         {
 //        public static Boolean AccountCodeCanHaveChildren(Int32 ALedgerNumber, String AAccountCode)
             ACanBeParent = true;
             ACanDelete = true;
             bool DbSuccess = true;
+            AMsg = "";
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             AAccountTable AccountTbl = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, AAccountCode, Transaction);
 
@@ -1462,12 +1464,31 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 AAccountRow AccountRow = AccountTbl[0];
                 ACanBeParent = IsParent; // If it's a summary account, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
                 ACanDelete = !IsParent;
+                if (!ACanDelete)
+                {
+                    AMsg = Catalog.GetString("Account is a summary account with other accounts reporting into it.");
+                }
 
                 if (!ACanBeParent || ACanDelete)
                 {
                     bool IsInUse = AccountCodeHasBeenUsed(ALedgerNumber, AAccountCode, Transaction);
                     ACanBeParent = !IsInUse;    // For posting accounts, I can still add children (and upgrade the account) if there's nothing posted to it yet.
                     ACanDelete = !IsInUse;      // Once it has transactions posted, I can't delete it, ever.
+                    if (!ACanDelete)
+                    {
+                        AMsg = Catalog.GetString("Account has been used in Transactions.");
+                    }
+
+                }
+                if (ACanDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
+                {                // and do the low-level database check to see if a deletion would succeed:
+                    TVerificationResultCollection ReferenceResults;
+                    Int32 RefCount = AAccountCascading.CountByPrimaryKey(ALedgerNumber, AAccountCode, Transaction, false, out ReferenceResults);
+                    if (RefCount > 0)
+                    {
+                        ACanDelete = false;
+                        AMsg = ReferenceResults.BuildVerificationResultString();
+                    }
                 }
             }
 
@@ -3358,6 +3379,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         ACanDelete = false;
                         AMsg = String.Format(Catalog.GetString("Cost Centre is linked to partner {0}."), VlnTbl[0].PartnerKey);
                     }
+                }
+                if (ACanDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
+                {                // and do the low-level database check to see if a deletion would succeed:
+                    TVerificationResultCollection ReferenceResults;
+                    Int32 RefCount = ACostCentreCascading.CountByPrimaryKey(ALedgerNumber, ACostCentreCode, Transaction, false, out ReferenceResults);
+                    if (RefCount > 0)
+                    {
+                        ACanDelete = false;
+                        AMsg = ReferenceResults.BuildVerificationResultString();
+                    }
+
                 }
             }
 
