@@ -239,8 +239,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             rbtQuarter.Checked = AParameters.Get("param_quarter").ToBool();
             rbtDate.Checked = AParameters.Get("param_date_checked").ToBool();
             rbtPeriod.Checked = AParameters.Get("param_period").ToBool();
+            rbtBreakdown.Checked = AParameters.Get("param_period_breakdown").ToBool();
 
-            if (!rbtPeriod.Checked && !rbtDate.Checked && !rbtQuarter.Checked)
+            if (!rbtPeriod.Checked && !rbtDate.Checked && !rbtQuarter.Checked && !rbtBreakdown.Checked)
             {
                 rbtPeriod.Checked = true;
             }
