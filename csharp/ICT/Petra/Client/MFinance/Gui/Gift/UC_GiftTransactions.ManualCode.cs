@@ -246,7 +246,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //0 for the last two arguments means for all transactions in the batch
-            TRemote.MFinance.Gift.WebConnectors.UpdateCostCentreCodeForRecipients(ref FMainDS, out FailedUpdates, 0, 0);
+            //TODO re-enable this code when the worker field issue is sorted out
+            //TRemote.MFinance.Gift.WebConnectors.UpdateCostCentreCodeForRecipients(ref FMainDS, out FailedUpdates, 0, 0);
 
             if (FailedUpdates.Length > 0)
             {
