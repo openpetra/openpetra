@@ -87,6 +87,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 ParamNestingDepth = 3;
             }
+
             paramsDictionary.Add("param_nesting_depth", new TVariant(ParamNestingDepth));
 
 

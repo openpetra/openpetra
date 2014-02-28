@@ -267,8 +267,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Error);
                         return;
-
                     }
+
                     if ((!dtpDateFrom.ValidDate()) || (!dtpDateTo.ValidDate()))
                     {
                         MessageBox.Show(Catalog.GetString("Date Format invalid"),

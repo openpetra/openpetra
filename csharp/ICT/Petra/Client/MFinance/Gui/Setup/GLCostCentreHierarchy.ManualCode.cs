@@ -234,6 +234,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void treeView_ItemDrag(object sender, ItemDragEventArgs e)
         {
             FDragNode = (TreeNode)e.Item;
+
             if (ValidateAllData(true, true))
             {
                 trvCostCentres.DoDragDrop(FDragNode, DragDropEffects.All);
@@ -420,14 +421,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         void TreeViewBeforeSelect(object sender, TreeViewCancelEventArgs e)
         {
-
             if (!FIAmDeleting && !FIAmValidting)
             {
                 FIAmValidting = true;
+
                 if (!ValidateAllData(true, true))
                 {
                     e.Cancel = true;
                 }
+
                 FIAmValidting = false;
             }
         }
@@ -620,7 +622,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if (FPetraUtilsObject.HasChanges)
             {
-                MessageBox.Show(Catalog.GetString("Save changes before exporting."),Catalog.GetString("Export Hierarchy"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                MessageBox.Show(Catalog.GetString("Save changes before exporting."), Catalog.GetString(
+                        "Export Hierarchy"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 return;
             }
 
@@ -643,6 +646,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             TVerificationResultCollection VerificationResultCol;
+
             if (!TRemote.MFinance.Setup.WebConnectors.ImportCostCentreHierarchy(FLedgerNumber, TXMLParser.XmlToString(doc), out VerificationResultCol))
             {
                 MessageBox.Show(VerificationResultCol.BuildVerificationResultString(),

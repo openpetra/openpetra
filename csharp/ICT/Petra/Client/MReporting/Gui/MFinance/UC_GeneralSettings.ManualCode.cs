@@ -347,12 +347,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         /// Allow Breakdown By Period (in Income Expense Statement only)
         /// </summary>
         /// <param name="AValue"></param>
-        public void EnableBreakdownByPeriod (bool AValue)
+        public void EnableBreakdownByPeriod(bool AValue)
         {
             rbtBreakdown.Visible = AValue;
             lblYear.Visible = AValue;
             cmbBreakdownYear.Visible = AValue;
-            grpPeriodRange.Height = (AValue)?240:164;
+            grpPeriodRange.Height = (AValue) ? 240 : 164;
         }
 
         private void UnselectAll(System.Object sender, System.EventArgs e)

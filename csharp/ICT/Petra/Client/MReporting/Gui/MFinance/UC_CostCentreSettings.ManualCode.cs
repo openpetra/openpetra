@@ -172,7 +172,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             clbCostCentres.ClearSelected();
         }
 
-
         private void rbtSelectedCostCentresChanged(System.Object sender, System.EventArgs e)
         {
             if (!rbtSelectedCostCentres.Checked)

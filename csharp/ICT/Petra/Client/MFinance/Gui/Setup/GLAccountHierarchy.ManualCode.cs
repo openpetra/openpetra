@@ -831,7 +831,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     String.Format(Catalog.GetString(
                             "Account {0} cannot be deleted. You can deactivate the account, but not delete it."),
                         AccountCode) +
-                "\r\n" + NodeDetails.Msg,
+                    "\r\n" + NodeDetails.Msg,
                     Catalog.GetString("Delete Account"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }

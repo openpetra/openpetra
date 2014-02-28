@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             ArrayList reportParam = ACalc.GetParameters().Elems;
 
-            Dictionary<String, TVariant> paramsDictionary = new Dictionary<string, TVariant>();
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
 
             foreach (Shared.MReporting.TParameter p in reportParam)
             {
@@ -84,6 +84,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 ParamNestingDepth = 3;
             }
+
             paramsDictionary.Add("param_nesting_depth", new TVariant(ParamNestingDepth));
 
             //

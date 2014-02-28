@@ -231,7 +231,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             return true;
         }
 
-
         private void RemoveSelectedDocument(Object sender, EventArgs e)
         {
             if (FSelectedDocumentRow != null)
