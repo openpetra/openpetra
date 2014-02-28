@@ -1017,25 +1017,12 @@ namespace Ict.Petra.Shared.MCommon.Validation
                     && (DocumentCategoryRow.IsUnassignableDateNull()
                         || (DocumentCategoryRow.UnassignableDate <= DateTime.Today)))
                 {
-                    // if 'Document Category' is unassignable then check if the value has been changed
-                    if (ARow.RowState == DataRowState.Added)
+                    // if 'Document Category' is unassignable then check if the value has been changed or if it is a new record
+                    if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmDocumentTypeTable.GetDocCategoryDBName()))
                     {
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                                 ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.DocCategory })),
                             ValidationColumn, ValidationControlsData.ValidationControl);
-                    }
-                    else if (ARow.RowState == DataRowState.Modified)
-                    {
-                        if (ARow.HasVersion(DataRowVersion.Original))
-                        {
-                            if ((TTypedDataAccess.GetSafeValue(ARow, PmDocumentTypeTable.GetDocCategoryDBName(), DataRowVersion.Original)).ToString()
-                                != (TTypedDataAccess.GetSafeValue(ARow, PmDocumentTypeTable.GetDocCategoryDBName(), DataRowVersion.Current)).ToString())
-                            {
-                                VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.DocCategory })),
-                                    ValidationColumn, ValidationControlsData.ValidationControl);
-                            }
-                        }
                     }
                 }
 
