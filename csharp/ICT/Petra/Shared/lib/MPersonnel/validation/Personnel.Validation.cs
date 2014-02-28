@@ -230,9 +230,26 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                         && (TypeRow.IsUnassignableDateNull()
                             || (TypeRow.UnassignableDate <= DateTime.Today)))
                     {
-                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.AssignmentTypeCode })),
-                            ValidationColumn, ValidationControlsData.ValidationControl);
+                        // if 'Assignment Type' is unassignable then check if the value has been changed
+                        if (ARow.RowState == DataRowState.Added)
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.AssignmentTypeCode })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                        else if (ARow.RowState == DataRowState.Modified)
+                        {
+                            if (ARow.HasVersion(DataRowVersion.Original))
+                            {
+                                if ((TTypedDataAccess.GetSafeValue(ARow, PmJobAssignmentTable.GetAssignmentTypeCodeDBName(), DataRowVersion.Original)).ToString()
+                                    != (TTypedDataAccess.GetSafeValue(ARow, PmJobAssignmentTable.GetAssignmentTypeCodeDBName(), DataRowVersion.Current)).ToString())
+                                {
+                                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.AssignmentTypeCode })),
+                                        ValidationColumn, ValidationControlsData.ValidationControl);
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -263,9 +280,26 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                         && (PositionRow.IsUnassignableDateNull()
                             || (PositionRow.UnassignableDate <= DateTime.Today)))
                     {
-                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.PositionName })),
-                            ValidationColumn, ValidationControlsData.ValidationControl);
+                        // if 'Position' is unassignable then check if the value has been changed
+                        if (ARow.RowState == DataRowState.Added)
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.PositionName })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                        else if (ARow.RowState == DataRowState.Modified)
+                        {
+                            if (ARow.HasVersion(DataRowVersion.Original))
+                            {
+                                if ((TTypedDataAccess.GetSafeValue(ARow, PmJobAssignmentTable.GetPositionNameDBName(), DataRowVersion.Original)).ToString()
+                                    != (TTypedDataAccess.GetSafeValue(ARow, PmJobAssignmentTable.GetPositionNameDBName(), DataRowVersion.Current)).ToString())
+                                {
+                                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.PositionName })),
+                                        ValidationColumn, ValidationControlsData.ValidationControl);
+                                }
+                            }
+                        }
                     }
                 }
                 else
