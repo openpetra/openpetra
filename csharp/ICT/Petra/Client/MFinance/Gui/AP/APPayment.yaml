@@ -111,5 +111,6 @@ RootNode:
             ReadOnly: true
             Format: Decimal(2)
     Toolbar:
+        tbbRemove: {ActionClick=RemoveSelectedDocument }
         tbbMakePayment:
         tbbPrintReport:
