@@ -157,6 +157,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             btnDelete.Enabled = true;
 
             SelectRowInGrid(grdDetails.Rows.Count);
+            cmbDetailAnalTypeCode.Focus();
         }
 
         private void ShowDetailsManual(AAnalysisAttributeRow ARow)

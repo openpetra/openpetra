@@ -14,7 +14,7 @@
         READCONTROLSLOCALVARS: BLANK
         SETCONTROLSLOCALVARS: BLANK
         #~ show the YTD Checkbox (true) and hide the Ledger selection grid (false)
-        INITUSERCONTROLS: uco_FinanceColumns.SetVisibility(true, false);
+        INITUSERCONTROLS: uco_FinanceColumns.SetVisibility(true, false); uco_GeneralSettings.EnableBreakdownByPeriod(true);
     Security:
         ModulePermissionRequired: [FINANCE-1]
     Controls:
