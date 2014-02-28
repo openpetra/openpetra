@@ -353,9 +353,26 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                         && (TypeRow.IsUnassignableDateNull()
                             || (TypeRow.UnassignableDate <= DateTime.Today)))
                     {
-                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.PassportDetailsType })),
-                            ValidationColumn, ValidationControlsData.ValidationControl);
+                        // if 'Passport Type' is unassignable then check if the value has been changed
+                        if (ARow.RowState == DataRowState.Added)
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.PassportDetailsType })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                        else if (ARow.RowState == DataRowState.Modified)
+                        {
+                            if (ARow.HasVersion(DataRowVersion.Original))
+                            {
+                                if ((TTypedDataAccess.GetSafeValue(ARow, PmPassportDetailsTable.GetPassportDetailsTypeDBName(), DataRowVersion.Original)).ToString()
+                                    != (TTypedDataAccess.GetSafeValue(ARow, PmPassportDetailsTable.GetPassportDetailsTypeDBName(), DataRowVersion.Current)).ToString())
+                                {
+                                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.PassportDetailsType })),
+                                        ValidationColumn, ValidationControlsData.ValidationControl);
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -852,15 +869,24 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
             // following validation only relevant for field applications
             if (!AEventApplication)
             {
-                // Field Application: 'Field' must be a Partner of Class 'UNIT' and must not be 0
+                // Field Application: 'Field' must be a Partner of Class 'UNIT' and must not be 0 and not be null
                 ValidationColumn = ARow.Table.Columns[PmGeneralApplicationTable.ColumnGenAppPossSrvUnitKeyId];
 
                 if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                 {
-                    VerificationResult = TSharedPartnerValidation_Partner.IsValidUNITPartner(
-                        ARow.GenAppPossSrvUnitKey, false, THelper.NiceValueDescription(
-                            ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
-                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    if (ARow.IsGenAppPossSrvUnitKeyNull())
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PARTNERKEY_INVALID_NOTNULL, new string[] { ValidationControlsData.ValidationControlLabel })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
+                    else
+                    {
+                        VerificationResult = TSharedPartnerValidation_Partner.IsValidUNITPartner(
+                            ARow.GenAppPossSrvUnitKey, false, THelper.NiceValueDescription(
+                                ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
+                            AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
 
                     // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
                     // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
@@ -941,10 +967,19 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TSharedPartnerValidation_Partner.IsValidUNITPartner(
-                    ARow.StConfirmedOption, false, THelper.NiceValueDescription(
-                        ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                if (ARow.IsConfirmedOptionCodeNull())
+                {
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PARTNERKEY_INVALID_NOTNULL, new string[] { ValidationControlsData.ValidationControlLabel })),
+                        ValidationColumn, ValidationControlsData.ValidationControl);
+                }
+                else
+                {
+                    VerificationResult = TSharedPartnerValidation_Partner.IsValidUNITPartner(
+                        ARow.StConfirmedOption, false, THelper.NiceValueDescription(
+                            ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                }
 
                 // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
                 // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
