@@ -604,7 +604,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             Int32 AccountingYear = AParameters["param_year_i"].ToInt32();
-            Int32 ReportPeriodStart = AParameters["param_start_period_i"].ToInt32();
             Int32 ReportPeriodEnd = AParameters["param_end_period_i"].ToInt32();
             String HierarchyName = AParameters["param_account_hierarchy_c"].ToString();
 
