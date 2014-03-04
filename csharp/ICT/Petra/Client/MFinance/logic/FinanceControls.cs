@@ -699,7 +699,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AFieldNumber"></param>
         /// <param name="ARefreshData"></param>
         private static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry,
-            System.Int64 APartnerKey,
+            Int64 APartnerKey,
             out Int64 AFieldNumber,
             Boolean ARefreshData = false)
         {

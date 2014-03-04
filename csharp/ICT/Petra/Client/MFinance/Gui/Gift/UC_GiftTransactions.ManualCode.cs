@@ -215,7 +215,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
 
-                ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors();
+                ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
             }
             
             //Check if need to update batch period in each gift
@@ -227,16 +227,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             SetRecordNumberDisplayProperties();
             SelectRowInGrid(1);
 
+            //TODO remove later
+            TLogging.Log("Account Code 1: " + FPreviouslySelectedDetailRow.AccountCode);
+
+
             UpdateTotals();
             UpdateControlsProtection();
 
             FSuppressListChanged = false;
             grdDetails.ResumeLayout();
+            
+            //TODO remove later
+            TLogging.Log("Account Code 2: " + FPreviouslySelectedDetailRow.AccountCode);
 
             return true;
         }
 
-        private void UpdateCostCentreCodeForRecipients()
+        private void UpdateCostCentreCodeForAllRecipients()
         {
             string FailedUpdates = string.Empty;
 
@@ -246,23 +253,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //0 for the last two arguments means for all transactions in the batch
-            //TODO re-enable this code when the worker field issue is sorted out
-            //TRemote.MFinance.Gift.WebConnectors.UpdateCostCentreCodeForRecipients(ref FMainDS, out FailedUpdates, 0, 0);
+            TRemote.MFinance.Gift.WebConnectors.UpdateCostCentreCodeForRecipients(ref FMainDS, out FailedUpdates, 0, 0);
 
-            if (FailedUpdates.Length > 0)
-            {
-                MessageBox.Show(String.Format("Errors occurred in retrieving cost centre codes: {0}", FailedUpdates));
-            }
-
-//			for (int i = 0; i < FMainDS.AGiftDetail.Count; i++)
-//			{
-//				AGiftDetailRow giftRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows[i];
-//
-//				if (giftRow.BatchNumber == FBatchNumber)
-//				{
-//					FindCostCentreCodeForRecipient(giftRow);
-//				}
-//              }
+            ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
         }
 
         private void FindCostCentreCodeForRecipient(AGiftDetailRow ARow, bool AShowError = false)
@@ -396,7 +389,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!FInKeyMinistryChanging)
                 {
-                    TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, APartnerKey, true);
+                    GetRecipientData(APartnerKey);
                 }
 
                 if (APartnerKey == 0)
@@ -735,10 +728,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPreviouslySelectedDetailRow.GiftTransactionNumber,
                 FPreviouslySelectedDetailRow.DetailNumber);
 
-            if (FailedUpdates.Length > 0)
-            {
-                MessageBox.Show(String.Format("Errors occurred in retrieving cost centre code: {0}", FailedUpdates));
-            }
+            ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
 
             //FindCostCentreCodeForRecipient(FPreviouslySelectedDetailRow, true);
 
@@ -786,22 +776,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (APartnerKey == 0)
             {
                 APartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
-            }
 
-            if (APartnerKey == 0)
-            {
-                return;
+                if (APartnerKey == 0)
+                {
+                    return;
+                }
             }
 
             TLogging.Log("PopulateKeyMinistry-" + APartnerKey.ToString());
 
-            TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, APartnerKey, true);
+            GetRecipientData(APartnerKey);
 
-            long FieldNumber = Convert.ToInt64(txtField.Text);
-
+            //long FieldNumber = Convert.ToInt64(txtField.Text);
             //txtDetailCostCentreCode.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
         }
 
+        
+        private void GetRecipientData(long APartnerKey = 0)
+        {
+            if (APartnerKey == 0)
+            {
+                APartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
+            }
+
+            TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, APartnerKey, true);
+        }
+        
         private void GiftDetailAmountChanged(object sender, EventArgs e)
         {
             TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
@@ -1025,7 +1025,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     //Load tables afresh
                     FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(FLedgerNumber, FBatchNumber));
 
-                    ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors(false);
+                    ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
 
                     //Delete gift details
                     for (int i = FMainDS.AGiftDetail.Count - 1; i >= 0; i--)
@@ -1236,7 +1236,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(FLedgerNumber, FBatchNumber));
 
-                    ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors(false);
+                    ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
                 }
                 else
                 {
@@ -1680,8 +1680,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtField.Text = ARow.RecipientField.ToString();
             }
 
-//            }
-
             UpdateControlsProtection(ARow);
 
             FShowingDetails = false;
@@ -1785,7 +1783,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
 
-                ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors(false);
+                ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
             }
             else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {
@@ -2143,7 +2141,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
 
-                ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors(false);
+                ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
             }
 			else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {
@@ -2221,7 +2219,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FMainDS.AGift.Rows.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
-                ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors(false);
+                ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
             }
             else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {

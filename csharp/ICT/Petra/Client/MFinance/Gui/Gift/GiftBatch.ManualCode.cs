@@ -192,7 +192,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Check for any errors
         /// </summary>
         /// <param name="AShowMessage"></param>
-        public void CheckForTransactionLoadUpdateErrors(bool AShowMessage = true)
+        public void ProcessRecipientCostCentreCodeUpdateErrors(bool AShowMessage = true)
         {
             //Process update errors
             if (FMainDS.Tables.Contains("AUpdateErrors"))
@@ -201,9 +201,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     string loadErrors = FMainDS.Tables["AUpdateErrors"].Rows[0].ItemArray[0].ToString();
 
-                    MessageBox.Show(String.Format("Errors occurred in updating gift data:{0}{0}{1}",
-                                                   Environment.NewLine,
-                                                   loadErrors), "Update Gift Details", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    //TODO re-enable this code when the worker field issue is sorted out
+//                    MessageBox.Show(String.Format("Errors occurred in updating gift data:{0}{0}{1}",
+//                                                   Environment.NewLine,
+//                                                   loadErrors), "Update Gift Details", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 FMainDS.Tables.Remove("AUpdateErrors");

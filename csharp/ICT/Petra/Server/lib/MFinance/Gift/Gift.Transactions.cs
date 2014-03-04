@@ -548,6 +548,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 AGiftDetailNumber = 0)
         {
             AFailedUpdates = string.Empty;
+
+            if (AMainDS.AGiftBatch.Count == 0 || AMainDS.AGift.Count == 0)
+            {
+                return true;   
+            }
+            
             int BatchNumber = AMainDS.AGift[0].BatchNumber;
 
             int LedgerNumber = AMainDS.ALedger[0].LedgerNumber;
@@ -669,7 +675,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
 
-            return AFailedUpdates.Length == 0;
+            return (AFailedUpdates.Length == 0);
         }
 
         /// <summary>
@@ -1390,6 +1396,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 out NewTransaction);
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
+            
+            AMotivationDetailAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
 
             AGiftBatchAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, Transaction);
 
@@ -1421,12 +1429,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 //do the same for the Recipient
                 if (giftDetail.RecipientKey > 0)
                 {
+                    TLogging.Log("1. Recipient: " + giftDetail.RecipientKey.ToString());
+
                     giftDetail.RecipientField = GetRecipientLedgerNumber(MainDS, giftDetail.RecipientKey);
+                    
+                    TLogging.Log("2. Recipient: " + giftDetail.RecipientKey.ToString() + " RecipientField: " + giftDetail.RecipientField.ToString());
+                    
                     PPartnerRow RecipientRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
                     giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
                     PUnitRow RecipientUnitRow = (PUnitRow)MainDS.RecipientUnit.Rows.Find(giftDetail.RecipientKey);
 
-                    if (RecipientUnitRow != null)
+                    if (RecipientUnitRow != null  && RecipientUnitRow.UnitTypeCode == MFinanceConstants.UNIT_TYPE_CODE_KEY_MIN)
                     {
                         giftDetail.RecipientKeyMinistry = RecipientUnitRow.UnitName;
                     }
@@ -1454,7 +1467,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     giftDetail.SetAccountCodeNull();
                 }
-
+                
                 giftDetail.DateEntered = giftRow.DateEntered;
                 giftDetail.Reference = giftRow.Reference;
             }
@@ -2156,9 +2169,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             return GetRecipientLedgerNumber(MainDS, partnerKey);
         }
 
-        private static Int64 GetRecipientLedgerNumber(GiftBatchTDS AMainDS, Int64 partnerKey)
+        private static Int64 GetRecipientLedgerNumber(GiftBatchTDS AMainDS, Int64 APartnerKey)
         {
-            if (partnerKey == 0)
+            TLogging.Log("---GetRecipientLedgerNumber---");
+            TLogging.Log("PartnerKey: " + APartnerKey);
+            
+            if (APartnerKey == 0)
             {
                 return 0;
             }
@@ -2168,7 +2184,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             PFamilyRow familyRow;
             PPersonRow personRow;
 
-            if ((familyRow = (PFamilyRow)AMainDS.RecipientFamily.Rows.Find(partnerKey)) != null)
+            if ((familyRow = (PFamilyRow)AMainDS.RecipientFamily.Rows.Find(APartnerKey)) != null)
             {
                 if (familyRow.IsFieldKeyNull())
                 {
@@ -2180,7 +2196,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
 
-            if ((personRow = (PPersonRow)AMainDS.RecipientPerson.Rows.Find(partnerKey)) != null)
+            if ((personRow = (PPersonRow)AMainDS.RecipientPerson.Rows.Find(APartnerKey)) != null)
             {
                 if (personRow.IsFieldKeyNull())
                 {
@@ -2192,15 +2208,21 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
             }
 
-            if (AMainDS.LedgerPartnerTypes.Rows.Find(new object[] { partnerKey, MPartnerConstants.PARTNERTYPE_LEDGER }) != null)
+            //Check that LedgerPartnertypes are already loaded
+            if (AMainDS.LedgerPartnerTypes.Count == 0)
+            {
+                 AMainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, null));
+            }
+
+            if (AMainDS.LedgerPartnerTypes.Rows.Find(new object[] { APartnerKey, MPartnerConstants.PARTNERTYPE_LEDGER }) != null)
             {
                 //TODO Warning on inactive Fund
-                return partnerKey;
+                return APartnerKey;
             }
 
             //This was taken from old Petra - perhaps we should better search for unit type = F in PUnit
 
-            DataRowView[] rows = AMainDS.UmUnitStructure.DefaultView.FindRows(partnerKey);
+            DataRowView[] rows = AMainDS.UmUnitStructure.DefaultView.FindRows(APartnerKey);
 
             if (rows.Length > 0)
             {
@@ -2217,8 +2239,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             else
             {
-                TLogging.Log("cannot find Recipient LedgerNumber for partner " + partnerKey.ToString());
-                return partnerKey;
+                TLogging.Log("cannot find Recipient LedgerNumber for partner " + APartnerKey.ToString());
+                return APartnerKey;
             }
         }
 

@@ -962,7 +962,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Load tables afresh
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(FLedgerNumber, FPreviouslySelectedDetailRow.BatchNumber));
 
-                ((TFrmGiftBatch)ParentForm).CheckForTransactionLoadUpdateErrors(false);
+                ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
 
                 //Delete gift details
                 for (int i = FMainDS.AGiftDetail.Count - 1; i >= 0; i--)
