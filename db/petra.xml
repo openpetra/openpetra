@@ -1249,6 +1249,55 @@
                 otherFields="s_user_id_c"/>
     <!-- Explicit Indexes on table s_patch_log  -->
   </table>
+  <table name="s_report_template"
+        descr="filesystem for storage of XML report templates - those provided initially and also tweaks saved by users."
+        area="Petra Data"
+        label="Report templates"
+        dumpname="reptempl"
+        group="sysman">
+    <tablefield name="s_report_type_c"
+                type="varchar"
+                descr="Report Type"
+                format="X(50)"
+                label="Report Type"
+                notnull="yes"/>
+    <tablefield name="s_report_variant_c"
+                type="varchar"
+                descr="Report Type"
+                format="X(50)"
+                label="Report Type"
+                notnull="yes"/>
+    <tablefield name="s_author_c"
+                type="varchar"
+                descr="Report Type"
+                format="X(50)"
+                label="Report Type"
+                notnull="yes"/>
+    <tablefield name="s_default_l"
+                type="bit"
+                descr="Template will be selected by default"
+                label="Default"
+                notnull="yes"/>
+    <tablefield name="s_public_l"
+                type="bit"
+                descr="Everyone can see this template"
+                label="Public"
+                notnull="yes"/>
+    <tablefield name="s_readonly_l"
+                type="bit"
+                descr="Template cannot be modified"
+                label="Read only"
+                notnull="yes"/>
+    <tablefield name="s_xml_text_c"
+                type="text"
+                descr="Template text"
+                label="Template text"
+                notnull="yes"/>
+    <!-- Constraints on table s_report_template -->
+    <primarykey name="s_report_templates_pk"
+                descr=""
+                thisFields="s_report_type_c,s_report_variant_c,s_author_c"/>
+  </table>
   <table name="s_reports_to_archive"
          descr="Contains the titles of reports that should be archived, not deleted, when Purge Reports is run."
          area="Petra Data"
