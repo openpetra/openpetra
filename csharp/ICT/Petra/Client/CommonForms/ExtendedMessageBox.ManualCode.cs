@@ -53,6 +53,7 @@ namespace Ict.Petra.Client.CommonForms
 
         private PictureBox FIconControl;
         private Bitmap FBitmap;
+        private TDefaultButton FDefaultButton = TDefaultButton.embdDefButton1;
 
         /// <summary>Scope of data that is already available client-side.</summary>
         public enum TButtons
@@ -77,6 +78,28 @@ namespace Ict.Petra.Client.CommonForms
 
             /// <summary>Show buttons for OK and Cancel</summary>
             embbOKCancel
+        }
+
+        /// <summary>Default button index</summary>
+        public enum TDefaultButton
+        {
+            /// <summary>No default Button</summary>
+            embdDefButtonNone = 0,
+
+            /// <summary>First Button</summary>
+            embdDefButton1,
+
+            /// <summary>Second Button</summary>
+            embdDefButton2,
+
+            /// <summary>Third Button</summary>
+            embdDefButton3,
+
+            /// <summary>Fourth Button</summary>
+            embdDefButton4,
+
+            /// <summary>Fifth Button</summary>
+            embdDefButton5
         }
 
         /// <summary>Result returned from message box in GetResult</summary>
@@ -134,7 +157,7 @@ namespace Ict.Petra.Client.CommonForms
         public TFrmExtendedMessageBox.TResult ShowDialog(string AMessage, string ACaption, string AChkOptionText,
             TFrmExtendedMessageBox.TButtons AButtons)
         {
-            return ShowDialog(AMessage, ACaption, AChkOptionText, AButtons, TIcon.embiNone, false);
+            return ShowDialog(AMessage, ACaption, AChkOptionText, AButtons, TDefaultButton.embdDefButton1, TIcon.embiNone, false);
         }
 
         /// <summary>
@@ -150,7 +173,7 @@ namespace Ict.Petra.Client.CommonForms
             TFrmExtendedMessageBox.TButtons AButtons,
             TFrmExtendedMessageBox.TIcon AIcon)
         {
-            return ShowDialog(AMessage, ACaption, AChkOptionText, AButtons, AIcon, false);
+            return ShowDialog(AMessage, ACaption, AChkOptionText, AButtons, TDefaultButton.embdDefButton1, AIcon, false);
         }
 
         /// <summary>
@@ -160,11 +183,31 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="ACaption">Caption of the dialog window</param>
         /// <param name="AChkOptionText">Text to be shown with check box (check box hidden if text empty)</param>
         /// <param name="AButtons">Button set to be displayed</param>
+        /// <param name="ADefaultButton">The button with a default action</param>
+        /// <param name="AIcon">Icon to be displayed</param>
+        /// <returns></returns>
+        public TFrmExtendedMessageBox.TResult ShowDialog(string AMessage, string ACaption, string AChkOptionText,
+            TFrmExtendedMessageBox.TButtons AButtons,
+            TFrmExtendedMessageBox.TDefaultButton ADefaultButton,
+            TFrmExtendedMessageBox.TIcon AIcon)
+        {
+            return ShowDialog(AMessage, ACaption, AChkOptionText, AButtons, ADefaultButton, AIcon, false);
+        }
+
+        /// <summary>
+        /// show form as dialog with given parameters
+        /// </summary>
+        /// <param name="AMessage">Message to be displayed to the user</param>
+        /// <param name="ACaption">Caption of the dialog window</param>
+        /// <param name="AChkOptionText">Text to be shown with check box (check box hidden if text empty)</param>
+        /// <param name="AButtons">Button set to be displayed</param>
+        /// <param name="ADefaultButton">The button with a default action</param>
         /// <param name="AIcon">Icon to be displayed</param>
         /// <param name="AOptionSelected">initial value for option check box</param>
         /// <returns></returns>
         public TFrmExtendedMessageBox.TResult ShowDialog(string AMessage, string ACaption, string AChkOptionText,
             TFrmExtendedMessageBox.TButtons AButtons,
+            TFrmExtendedMessageBox.TDefaultButton ADefaultButton,
             TFrmExtendedMessageBox.TIcon AIcon,
             bool AOptionSelected)
         {
@@ -176,7 +219,12 @@ namespace Ict.Petra.Client.CommonForms
             FOptionSelected = AOptionSelected;
 
             lblMessage.Text = AMessage;
-            this.FindForm().Text = ACaption;
+            lblMessage.BorderStyle = BorderStyle.FixedSingle;
+            lblMessage.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+
+            pnlLeftButtons.MinimumSize = new Size(btnHelp.Width + btnCopy.Width + 10, pnlLeftButtons.Height);
+
+            this.Text = ACaption;
             chkOption.Text = AChkOptionText;
 
             if (AChkOptionText.Length == 0)
@@ -186,12 +234,16 @@ namespace Ict.Petra.Client.CommonForms
 
             chkOption.Checked = AOptionSelected;
 
+            this.MinimumSize = new System.Drawing.Size(pnlLeftButtons.Width + pnlRightButtons.Width, 250);
+
             btnYes.Visible = false;
             btnYesToAll.Visible = false;
             btnNo.Visible = false;
             btnNoToAll.Visible = false;
             btnOK.Visible = false;
             btnCancel.Visible = false;
+
+            FDefaultButton = ADefaultButton;
 
             switch (AButtons)
             {
@@ -327,17 +379,6 @@ namespace Ict.Petra.Client.CommonForms
             return FResult;
         }
 
-        private void Message_Resize(object sender, System.EventArgs e)
-        {
-            // adapt size of form to size of message displayed
-            Control control = (Control)sender;
-
-            if (control == lblMessage)
-            {
-                control.FindForm().Size = new Size(FindForm().Size.Width, control.Size.Height + 180);
-            }
-        }
-
         private void Option_CheckStateChanged(object sender, System.EventArgs e)
         {
             // set member which is needed to return result later
@@ -346,13 +387,89 @@ namespace Ict.Petra.Client.CommonForms
 
         private void InitializeManualCode()
         {
-            // set the maximum width (height still flexible)
-            lblMessage.MaximumSize = new Size(500, 0);
-
-            // make the form resize when the message field resizes
-            lblMessage.Resize += new System.EventHandler(this.Message_Resize);
-
             chkOption.CheckStateChanged += new System.EventHandler(this.Option_CheckStateChanged);
+            this.Shown += new EventHandler(TFrmExtendedMessageBox_Shown);
+        }
+
+        void TFrmExtendedMessageBox_Shown(object sender, EventArgs e)
+        {
+            // Set the button positions based on their visibilty
+            // Note - we have to do this in _Shown because before then we cannot check for Visible
+            // We treat OK Cancel as being in a separate group so they get a bit more space between them and the others.
+            // We rely on the fact that not all the buttons will be visible - true because we do not offer OK at the same time as Yes(ToAll) No(ToAll)
+            int distance = btnYesToAll.Left - btnYes.Left;
+            bool bDoneSmallDistance = false;
+            bool bHasOkOrCancel = (btnOK.Visible || btnCancel.Visible);
+
+            // We ignore btnApply - it was set to invisible at design time so never was placed on the button panel
+            Button[] buttons = { btnYes, btnYesToAll, btnNo, btnNoToAll, btnOK, btnCancel };
+
+            // Go through the buttons starting on the right
+            for (int btnID = 5; btnID >= 0; btnID--)
+            {
+                if (!buttons[btnID].Visible)
+                {
+                    if (bDoneSmallDistance || !bHasOkOrCancel)
+                    {
+                        // Move the button a standard distance to the right
+                        for (int k = 0; k < btnID; k++)
+                        {
+                            Console.WriteLine("{0}:  moving {1} by {2}", btnID, k, distance);
+                            buttons[k].Left += distance;
+                        }
+                    }
+                    else
+                    {
+                        // We need to move the left group of buttons a smaller distance to the right because we want to get a gap between the two groups
+                        for (int k = 0; (k < btnID) && (k < 4); k++)
+                        {
+                            Console.WriteLine("{0}:  moving {1} by {2}", btnID, k, distance - 20);
+                            buttons[k].Left += (distance - 20);
+                        }
+
+                        for (int k = 4; k < btnID; k++)
+                        {
+                            Console.WriteLine("{0}:  moving {1} by {2}", btnID, k, distance);
+                            buttons[k].Left += distance;
+                        }
+
+                        // set the flag because we only want to do this smaller distance once
+                        bDoneSmallDistance = true;
+                    }
+                }
+            }
+
+            // Set up the default button if one was specified.
+            if (FDefaultButton != TDefaultButton.embdDefButtonNone)
+            {
+                // This is a 'counter'
+                TDefaultButton currentDefID = TDefaultButton.embdDefButtonNone;
+                for (int btnID = 0; btnID<buttons.Length; btnID++)
+                {
+                    if (buttons[btnID].Visible)
+                    {
+                        // increment the counter and see if we have reached the one we are looking for
+                        currentDefID++;
+                        if (currentDefID == FDefaultButton)
+                        {
+                            // Set the accept button for the form and focus it.
+                            this.FindForm().AcceptButton = buttons[btnID];
+                            buttons[btnID].Focus();
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Calculate the size required for the message, assuming the width is as it is
+            SizeF size = lblMessage.CreateGraphics().MeasureString(lblMessage.Text, lblMessage.Font, pnlMessage.Width - 20);
+
+            // Now set the height of the form based on allowing enough height for the message
+            this.FindForm().Size = new Size(this.FindForm().Width, Convert.ToInt32(size.Height) + pnlLeftButtons.Height + 150);
+
+            // Now center the message in its panel
+            lblMessage.Size = new Size(pnlMessage.Width - 20, pnlMessage.Height - 20);
+            lblMessage.Location = new Point((pnlMessage.Width - lblMessage.Width) / 2, (pnlMessage.Height - lblMessage.Height) / 2);
         }
 
         private void BtnYes_Click(Object Sender, EventArgs e)
@@ -396,6 +513,13 @@ namespace Ict.Petra.Client.CommonForms
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             FResult = TResult.embrCancel;
             this.Close();
+        }
+
+        private void Message_CopyToClipboard(object sender, EventArgs e)
+        {
+            Clipboard.SetText(lblMessage.Text);
+
+            MessageBox.Show("The message text has been copied to clipboard.", MCommonResourcestrings.StrRecordDeletionTitle);
         }
     }
 }
