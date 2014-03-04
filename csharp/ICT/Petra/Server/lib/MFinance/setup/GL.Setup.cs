@@ -1500,6 +1500,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Int32 RefCount = AAnalysisAttributeCascading.CountByPrimaryKey(ALedgerNumber,
                 AAnalysisTypeCode,
                 AAccountCode,
+                0,
                 Transaction,
                 true,
                 out References);

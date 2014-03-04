@@ -292,6 +292,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                     TRemote.MPartner.ReferenceCount.WebConnectors.GetNonCacheableRecordReferenceCount(
                         FMainDS.PPostcodeRegionRange,
                         DataUtilities.GetPKValuesFromDataRow(FPreviouslySelectedRangeRow),
+                        FPetraUtilsObject.MaxReferenceCountOnDelete,
                         out VerificationResults);
                     this.Cursor = Cursors.Default;
                 }
@@ -391,6 +392,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                         TRemote.MPartner.ReferenceCount.WebConnectors.GetNonCacheableRecordReferenceCount(
                             FMainDS.PPostcodeRegionRange,
                             DataUtilities.GetPKValuesFromDataRow(rowToDelete),
+                            FPetraUtilsObject.MaxReferenceCountOnDelete,
                             out VerificationResults);
 
                         if ((VerificationResults != null) && (VerificationResults.Count > 0))

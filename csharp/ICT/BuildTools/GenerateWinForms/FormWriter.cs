@@ -970,25 +970,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 ProcessTemplate singleSnippet = FTemplate.GetSnippet("SNIPDELETEREFERENCECOUNT");
-                ProcessTemplate multiSnippet = FTemplate.GetSnippet("SNIPMULTIDELETEREFERENCECOUNT");
                 singleSnippet.SetCodelet("CONNECTORNAMESPACE", rootNamespace);
-                multiSnippet.SetCodelet("CONNECTORNAMESPACE", rootNamespace);
 
                 string cacheableTableName = FCodeStorage.GetAttribute("CacheableTable");
 
                 if (cacheableTableName != String.Empty)
                 {
                     singleSnippet.SetCodelet("CACHEABLETABLENAME", cacheableTableName);
-                    multiSnippet.SetCodelet("CACHEABLETABLENAME", cacheableTableName);
                 }
                 else
                 {
                     singleSnippet.SetCodelet("NONCACHEABLETABLENAME", FCodeStorage.GetAttribute("DetailTable"));
-                    multiSnippet.SetCodelet("NONCACHEABLETABLENAME", FCodeStorage.GetAttribute("DetailTable"));
                 }
 
                 FTemplate.InsertSnippet("DELETEREFERENCECOUNT", singleSnippet);
-                FTemplate.InsertSnippet("MULTIDELETEREFERENCECOUNT", multiSnippet);
             }
             catch (KeyNotFoundException)
             {
