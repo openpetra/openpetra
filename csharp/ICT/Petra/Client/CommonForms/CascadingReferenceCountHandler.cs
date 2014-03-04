@@ -32,7 +32,6 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Shared.Interfaces;
 
 namespace Ict.Petra.Client.CommonForms
 {
