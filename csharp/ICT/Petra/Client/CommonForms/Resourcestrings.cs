@@ -58,6 +58,19 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>Our screen positions file name.  The replaceable parameter is the userID</summary>
         public static readonly string StrScreenPositionsFileName = "{0}.ScreenPositions.cfg";
 
+        /// <summary>Dialog message title</summary>
+        public static readonly string StrReuseScreenPositionsTitle = Catalog.GetString("Saving Window Positions");
+
+        /// <summary>First part of the dialog message</summary>
+        public static readonly string StrReuseScreenPositionsMessage1 = Catalog.GetString("You have chosen to start storing window positions and sizes again.  Open Petra has saved this information in the past.  ");
+
+        /// <summary>Second part of the dialog message</summary>
+        public static readonly string StrReuseScreenPositionsMessage2 = Catalog.GetString("Do you want to keep this 'old' information or discard it?");
+
+        /// <summary>Last part of the dialog message</summary>
+        public static readonly string StrReuseScreenPositionsMessage3 = Catalog.GetString("Choose 'Yes' to re-use the sizes and positions that you saved previously.  Choose 'No' to discard this information and start over.");
+
+
         #endregion
     }
 }
