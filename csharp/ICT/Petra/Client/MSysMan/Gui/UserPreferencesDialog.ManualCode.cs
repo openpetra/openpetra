@@ -40,6 +40,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
     public partial class TFrmUserPreferencesDialog
     {
         private Boolean FViewMode = false;
+        private Ict.Petra.Client.MSysMan.Gui.TUC_FinancePreferences ucoFinance;
 
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
         public bool ViewMode {
@@ -61,7 +62,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 return;
             }
 
-            if (ucoAppearance.SaveAppearanceTab() | ucoFinance.SaveFinanceTab())
+            if (ucoAppearance.SaveAppearanceTab() | (tpgFinance.Enabled && ucoFinance.SaveFinanceTab()))
             {
                 Form MainWindow = FPetraUtilsObject.GetCallerForm();
                 MethodInfo method = MainWindow.GetType().GetMethod("LoadNavigationUI");
@@ -89,6 +90,11 @@ namespace Ict.Petra.Client.MSysMan.Gui
             this.AcceptButton = btnOK;
         }
 
+        private void GetDataFromControlsManual()
+        {
+            ucoFinance.GetDataFromControls();
+        }
+
         private void RunOnceOnActivationManual()
         {
             ucoGeneral.Focus();
@@ -101,6 +107,16 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             if (UserInfo.GUserInfo.IsInModule("FINANCE-1"))
             {
+                // only create this object when the user has access to finance (this code would normally be generated)
+                ucoFinance = new Ict.Petra.Client.MSysMan.Gui.TUC_FinancePreferences();
+                ucoFinance.Name = "ucoFinance";
+                ucoFinance.Dock = System.Windows.Forms.DockStyle.Fill;
+                tpgFinance.Controls.Add(this.ucoFinance);
+
+                ucoFinance.PetraUtilsObject = FPetraUtilsObject;
+                ucoFinance.InitUserControl();
+                FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+
                 tpgFinance.Enabled = true;
             }
         }

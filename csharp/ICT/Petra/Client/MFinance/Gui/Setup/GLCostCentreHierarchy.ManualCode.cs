@@ -54,6 +54,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private Int32 FLedgerNumber;
         private bool FIAmDeleting = false;
+        private bool FIAmValidting = false;
         private bool FIAmUpdating;
 
         private String strOldDetailCostCentreCode; // this string is used to detect that the user has renamed an existing Cost Centre.
@@ -233,7 +234,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void treeView_ItemDrag(object sender, ItemDragEventArgs e)
         {
             FDragNode = (TreeNode)e.Item;
-            trvCostCentres.DoDragDrop(FDragNode, DragDropEffects.All);
+
+            if (ValidateAllData(true, true))
+            {
+                trvCostCentres.DoDragDrop(FDragNode, DragDropEffects.All);
+            }
         }
 
         /// <summary>
@@ -416,12 +421,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         void TreeViewBeforeSelect(object sender, TreeViewCancelEventArgs e)
         {
-            if (!FIAmDeleting)
+            if (!FIAmDeleting && !FIAmValidting)
             {
+                FIAmValidting = true;
+
                 if (!ValidateAllData(true, true))
                 {
                     e.Cancel = true;
                 }
+
+                FIAmValidting = false;
             }
         }
 
@@ -611,6 +620,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void ExportHierarchy(object sender, EventArgs e)
         {
+            if (FPetraUtilsObject.HasChanges)
+            {
+                MessageBox.Show(Catalog.GetString("Save changes before exporting."), Catalog.GetString(
+                        "Export Hierarchy"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                return;
+            }
+
             XmlDocument doc = new XmlDocument();
 
             doc.LoadXml(TRemote.MFinance.Setup.WebConnectors.ExportCostCentreHierarchy(FLedgerNumber));
@@ -629,10 +645,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            if (!TRemote.MFinance.Setup.WebConnectors.ImportCostCentreHierarchy(FLedgerNumber, TXMLParser.XmlToString(doc)))
+            TVerificationResultCollection VerificationResultCol;
+
+            if (!TRemote.MFinance.Setup.WebConnectors.ImportCostCentreHierarchy(FLedgerNumber, TXMLParser.XmlToString(doc), out VerificationResultCol))
             {
-                MessageBox.Show(Catalog.GetString(
-                        "Import of new Cost Centre Hierarchy failed; perhaps there were already balances? Try with a new ledger!"),
+                MessageBox.Show(VerificationResultCol.BuildVerificationResultString(),
                     Catalog.GetString("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else

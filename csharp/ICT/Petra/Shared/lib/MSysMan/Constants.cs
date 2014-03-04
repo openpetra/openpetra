@@ -123,7 +123,7 @@ namespace Ict.Petra.Shared.MSysMan
         public const String USER_LAST_AND_FIRST_NAME_COLUMNNAME = "LastAndFirstName";
 
         /// <summary>todoComment</summary>
-        public const String CONFERENCE_LASTCONFERENCEWORKEDWITH = "LASTCONFERENCEWORKEDWITH";
+        public const String CONFERENCE_LASTCONFERENCEWORKEDWITH = "LastConferenceWorkedWith";
 
         /// <summary>
         /// ------------------------------------------------------------------------------

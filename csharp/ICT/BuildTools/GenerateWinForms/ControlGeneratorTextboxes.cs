@@ -135,7 +135,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     || (TYml2Xml.GetAttribute(curNode, "Type") == "Extract")
                     || (TYml2Xml.GetAttribute(curNode, "Type") == "Occupation")
                     || (TYml2Xml.GetAttribute(curNode, "Type") == "Conference")
-                    || (TYml2Xml.GetAttribute(curNode, "Type") == "Event"))
+                    || (TYml2Xml.GetAttribute(curNode, "Type") == "Event")
+                    || (TYml2Xml.GetAttribute(curNode, "Type") == "Bank"))
                 {
                     return false;
                 }
@@ -340,6 +341,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 else if (TYml2Xml.GetAttribute(curNode, "Type") == "Event")
                 {
                     FButtonLabelType = "Event";
+
+                    if (!(TYml2Xml.HasAttribute(curNode,
+                              "ShowLabel") && (TYml2Xml.GetAttribute(curNode, "ShowLabel").ToLower() == "false")))
+                    {
+                        FDefaultWidth = 370;
+                    }
+                    else
+                    {
+                        FDefaultWidth = 80;
+                    }
+
+                    FHasReadOnlyProperty = true;
+
+                    return true;
+                }
+                else if (TYml2Xml.GetAttribute(curNode, "Type") == "Bank")
+                {
+                    FButtonLabelType = "Bank";
 
                     if (!(TYml2Xml.HasAttribute(curNode,
                               "ShowLabel") && (TYml2Xml.GetAttribute(curNode, "ShowLabel").ToLower() == "false")))

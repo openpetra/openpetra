@@ -16,7 +16,6 @@ RootNode:
         actDelete:  {Label=&Remove Detail, ActionClick=DeleteRecord}
         actPostDocument: {Label=Post, ActionClick=PostDocument}
         actPayDocument: {Label=Pay, ActionClick=PayDocument}
-        actUseTaxAccount: {ActionClick=UseTaxAccount}
         actLookupExchangeRate: {ActionClick=LookupExchangeRate}
     Controls:
         pnlContent:
@@ -109,7 +108,6 @@ RootNode:
                 Row1: [cmbDetailCostCentreCode]
                 Row2: [txtDetailBaseAmount]
                 Row3: [cmbDetailAccountCode]
-                Row4: [pnlItemButtons]
         txtDetailNarrative: {ColSpan=2 }
             Width: 365
             Label: Narrati&ve
@@ -132,13 +130,6 @@ RootNode:
 #            ReadOnly: true
         cmbDetailCostCentreCode: {Label=C&ost Centre, List=UserDefinedList}
         cmbDetailAccountCode: {Label=Accou&nt, List=UserDefinedList, OnChange=ShowAnalysisAttributesForAccount}
-        pnlItemButtons: {ControlsOrientation = horizontal}
-            Width: 460
-            AutoButtonMaxWidths: true
-            Controls: [btnUseTaxAccount]
-        btnUseTaxAccount:
-            Label: Use Ta&x Account
-            Action: actUseTaxAccount
         btnAddDetail:
             Width: 120
             Action: actNewDetail

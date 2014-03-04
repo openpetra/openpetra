@@ -22,9 +22,13 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.Windows.Forms;
-using Ict.Petra.Shared.MPartner;
+
+using Ict.Common.Data;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.CommonControls.Logic
 {
@@ -42,6 +46,11 @@ namespace Ict.Petra.Client.CommonControls.Logic
         out String AShortName,
         out TPartnerClass? APartnerClass,
         out int ABankingDetailsKey,
+        Form AParentForm);
+
+    /// <summary>Delegate for a call to open a Modal Bank Find dialog.</summary>
+    public delegate bool TDelegateOpenBankFindDialog(ref BankTDS ABankDataset,
+        ref Int64 ABankKey,
         Form AParentForm);
 
     /// <summary>Delegate for a call to open a Modal Conference Find screen</summary>

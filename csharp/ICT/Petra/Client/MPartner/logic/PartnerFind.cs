@@ -292,9 +292,12 @@ namespace Ict.Petra.Client.MPartner
             FDataGrid.AddTextColumn("Partner Name", ASourceTable.Columns["p_partner_short_name_c"]);
             FDataGrid.AddTextColumn("Account Number", ASourceTable.Columns["p_bank_account_number_c"]);
             FDataGrid.AddTextColumn("Account Name", ASourceTable.Columns["p_account_name_c"]);
+            FDataGrid.AddTextColumn("Bank Name", ASourceTable.Columns["p_branch_name_c"]);
             FDataGrid.AddTextColumn("Bank/Branch Code", ASourceTable.Columns["p_branch_code_c"]);
             FDataGrid.AddTextColumn("BIC/SWIFT Code", ASourceTable.Columns["p_bic_c"]);
             FDataGrid.AddTextColumn("IBAN", ASourceTable.Columns["p_iban_c"]);
+            FDataGrid.AddTextColumn("Expiry Date", ASourceTable.Columns["p_expiry_date_d"]);
+            FDataGrid.AddTextColumn("Comment", ASourceTable.Columns["p_comment_c"]);
         }
 
         #region Helper Functions

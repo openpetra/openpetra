@@ -409,7 +409,16 @@ namespace Ict.Petra.Server.MConference.Conference.WebConnectors
                     AddRow.End = End;
                 }
 
-                AddRow.CurrencyCode = ((PUnitRow)UnitTable.Rows[0]).OutreachCostCurrencyCode;
+                string CurrencyCode = ((PUnitRow)UnitTable.Rows[0]).OutreachCostCurrencyCode;
+
+                if (!string.IsNullOrEmpty(CurrencyCode))
+                {
+                    AddRow.CurrencyCode = CurrencyCode;
+                }
+                else
+                {
+                    AddRow.CurrencyCode = "USD";
+                }
 
                 // add new row to database table
                 ConferenceTable.Rows.Add(AddRow);

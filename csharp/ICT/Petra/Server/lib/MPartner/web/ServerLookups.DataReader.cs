@@ -442,20 +442,18 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
-        /// Finds if a PBankingDetailsRow is used by more than one partner
+        /// Finds any Partners that share ABankingDetailsKey
         /// </summary>
         /// <param name="ABankingDetailsKey"></param>
         /// <param name="APartnerKey">Partner key for current partner</param>
-        /// <param name="ASharedPartnerKeys"></param>
-        /// <returns>True if row is shared, false if it is not.</returns>
+        /// <returns>Table containing records of Partners that share this Bank Account</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static bool IsBankingDetailsRowShared(int ABankingDetailsKey, long APartnerKey, out List <long>ASharedPartnerKeys)
+        public static PPartnerTable SharedBankAccountPartners(int ABankingDetailsKey, long APartnerKey)
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
-            bool ReturnValue = false;
 
-            ASharedPartnerKeys = new List <long>();
+            PPartnerTable PartnerTable = new PPartnerTable();
 
             ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
@@ -469,8 +467,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     // if record exists with a different partner key then the Bank Account is shared
                     if (Row.PartnerKey != APartnerKey)
                     {
-                        ASharedPartnerKeys.Add(Row.PartnerKey);
-                        ReturnValue = true;
+                        PPartnerRow PartnerRow = (PPartnerRow)PPartnerAccess.LoadByPrimaryKey(Row.PartnerKey, ReadTransaction).Rows[0];
+
+                        PPartnerRow NewRow = PartnerTable.NewRowTyped(false);
+                        NewRow.PartnerKey = Row.PartnerKey;
+                        NewRow.PartnerShortName = PartnerRow.PartnerShortName;
+                        PartnerTable.Rows.Add(NewRow);
                     }
                 }
             }
@@ -480,6 +482,68 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 {
                     DBAccess.GDBAccessObj.CommitTransaction();
                     TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.IsBankingDetailsRowShared: committed own transaction.");
+                }
+            }
+
+            return PartnerTable;
+        }
+
+        /// <summary>
+        /// Gets all Bank records
+        /// </summary>
+        /// <returns>Dataset containing data for all Bank partners</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static BankTDS GetPBankRecords(bool AIncludeLocations)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction;
+
+            BankTDS ReturnValue = new BankTDS();
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+            try
+            {
+                string QueryBankRecords =
+                    "SELECT PUB_p_bank.*, PUB_p_partner.p_status_code_c " +
+                    "FROM PUB_p_bank, PUB_p_partner " +
+                    "WHERE PUB_p_partner.p_partner_key_n = PUB_p_bank.p_partner_key_n";
+
+                DBAccess.GDBAccessObj.Select(ReturnValue,
+                    QueryBankRecords,
+                    ReturnValue.PBank.TableName, ReadTransaction, null);
+
+                foreach (BankTDSPBankRow Row in ReturnValue.PBank.Rows)
+                {
+                    // mark inactive bank accounts
+                    if (Row.StatusCode != SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))
+                    {
+                        Row.BranchCode = "<" + Catalog.GetString("INACTIVE") + "> " + Row.BranchCode;
+                    }
+
+                    if (AIncludeLocations)
+                    {
+                        // load locations for each bank (if they exist)
+                        PLocationTable LocationTable = PLocationAccess.LoadViaPPartner(Row.PartnerKey, ReadTransaction);
+                        ReturnValue.Merge(LocationTable);
+
+                        foreach (PLocationRow LocationRow in LocationTable.Rows)
+                        {
+                            PPartnerLocationAccess.LoadByPrimaryKey(ReturnValue,
+                                Row.PartnerKey,
+                                LocationRow.SiteKey,
+                                LocationRow.LocationKey,
+                                ReadTransaction);
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetPBankRecords: committed own transaction.");
                 }
             }
 

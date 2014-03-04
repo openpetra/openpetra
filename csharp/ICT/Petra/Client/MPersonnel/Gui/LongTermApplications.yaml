@@ -1,9 +1,9 @@
 RootNode:
     BaseYaml: ../../CommonForms/PetraForm.yaml
-    FormTitle: Browse Short-Term Applications
+    FormTitle: Browse Long-Term Applications
     Namespace: Ict.Petra.Client.MPersonnel.Gui
     DatasetType: Ict.Petra.Shared.MPersonnel.Personnel.Data.ApplicationTDS
-    MasterTable: PmShortTermApplication
+    MasterTable: PmGeneralApplication
     UsingNamespaces: [Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.MPersonnel.Personnel.Validation]
     FormType: browse
     Template: windowFind
@@ -13,7 +13,7 @@ RootNode:
     WindowHeight: 600
     Actions:
         actEditApplication: {Label=Edit Application, ActionClick=EditApplication}
-        actSelectEvent_Click: {ActionClick=SelectEvent_Click}
+        actCreateExtract: {ActionClick=CreateExtract_Click}
         actSelectStatuses: {ActionClick=SelectStatuses_Click}
     Controls:
         pnlContent:
@@ -21,13 +21,13 @@ RootNode:
             Dock: Fill
         pnlControls:
             Dock: Top
-            Height: 175
-            Controls: [pnlSelectEvent, rgrApplicationStatusFilter]
-        pnlSelectEvent:
+            Height: 170
+            Controls: [pnlApplicationDetails, rgrApplicationStatusFilter]
+        pnlApplicationDetails:
             Dock: Top
             Controls:
-                Row0: [btnSelectEvent, txtEventName]
-                Row1: [Empty, chkShowAllOutreaches]
+                Row0: [txtTargetFieldKey]
+                Row1: [txtPlacementPersonKey]
         rgrApplicationStatusFilter:
             Dock: Fill
             Controls: [rbtAll, rbtGeneral, rbtDetailed]
@@ -38,15 +38,16 @@ RootNode:
             Controls: [pnlButtons, grdApplications]
         pnlButtons:
             Dock: Bottom
-            Controls: [btnEditApplication]
+            Controls: [btnEditApplication, btnCreateExtract]
             ControlsOrientation: horizontal
         grdApplications:
             Dock: Fill
-            Columns: [PPartner.PartnerShortName, PmGeneralApplication.GenApplicationStatus, PmShortTermApplication.StAppDate]
+            Columns: [PPartner.PartnerShortName, PmGeneralApplication.GenApplicationStatus, PmYearProgramApplication.YpAppDate, PmGeneralApplication.GenAppPossSrvUnitKey]
             ActionClick: GridRowSelected
             CustomColumns:
                 PPartner.PartnerShortName: {Label=Attendee Name}
-                PmShortTermApplication.StAppDate: {Label=Date Entered}
+                PmGeneralApplication.GenAppPossSrvUnitKey: {Label=Target Field}
+                PmYearProgramApplication.YpAppDate: {Label=Date Entered}
 
         rbtAll:
             Height: 15
@@ -65,15 +66,16 @@ RootNode:
             Height: 15
             ActionClick: FilterChange
 
-        txtEventName: 
-            ReadOnly: true
-            BorderStyle: None
-            Stretch: horizontally
-        chkShowAllOutreaches:
-            Label: Show all outreaches in conference
-            CheckBoxAttachedLabel: right
-            ActionClick: FilterChange
-            Enabled: false
+        txtTargetFieldKey:
+            Label: Target Field
+            Type: PartnerKey
+            PartnerClass: UNIT
+            OnChange: UpdateApplicationsByField
+        txtPlacementPersonKey:
+            Label: Placement Person
+            Type: PartnerKey
+            PartnerClass: PERSON
+            OnChange: UpdateApplicationsByPlacementPerson
         chkAccepted:
             CheckBoxAttachedLabel: right
             Padding: 0,7,0,0
@@ -104,15 +106,13 @@ RootNode:
             ActionClick: FilterChange
             Width: 300
 
-        btnSelectEvent:
-            Action: actSelectEvent_Click
         btnEditApplication:
             Action: actEditApplication
             Enabled: false
+        btnCreateExtract:
+            Action: actCreateExtract
         btnSelectDetailedStatuses:
             Height: 25
             Padding: 0,-1,0,0
             Label: Select Detailed Statuses...
             Action: actSelectStatuses
-
-        Empty:

@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using Ict.Common;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
@@ -82,6 +83,46 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
             if (Success)
             {
                 FNewExtractID = AExtractID;
+            }
+
+            return Success;
+        }
+
+        /// <summary>
+        /// create an extract from a list of best addresses
+        /// </summary>
+        /// <param name="AExtractName">Name of the Extract to be created.</param>
+        /// <param name="AExtractDescription">Description of the Extract to be created.</param>
+        /// <param name="ANewExtractId">Extract Id of the created Extract, or -1 if the
+        /// creation of the Extract was not successful.</param>
+        /// <param name="APartnerKeysTable"></param>
+        /// <param name="APartnerKeyColumn">number of the column that contains the partner keys</param>
+        /// <param name="AAddressFilterAdded">true if location key fields exist in APartnerKeysTable</param>
+        /// <param name="ACommitTransaction">true if transaction should committed at end of method</param>
+        /// <returns>True if the new Extract was created, otherwise false.</returns>
+        public bool CreateExtractFromListOfPartnerKeys(
+            String AExtractName,
+            String AExtractDescription,
+            out Int32 ANewExtractId,
+            DataTable APartnerKeysTable,
+            Int32 APartnerKeyColumn,
+            bool AAddressFilterAdded,
+            bool ACommitTransaction)
+        {
+            bool Success;
+
+            Success = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
+                AExtractName,
+                AExtractDescription,
+                out ANewExtractId,
+                APartnerKeysTable,
+                APartnerKeyColumn,
+                AAddressFilterAdded,
+                ACommitTransaction);
+
+            if (Success)
+            {
+                FNewExtractID = ANewExtractId;
             }
 
             return Success;

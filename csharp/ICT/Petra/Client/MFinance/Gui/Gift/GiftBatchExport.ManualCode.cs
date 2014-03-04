@@ -260,6 +260,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
+                    if ((dtpDateFrom.Text == "") || (dtpDateTo.Text == ""))
+                    {
+                        MessageBox.Show(Catalog.GetString("Start and end dates must be provided."),
+                            Catalog.GetString("Error"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                        return;
+                    }
+
                     if ((!dtpDateFrom.ValidDate()) || (!dtpDateTo.ValidDate()))
                     {
                         MessageBox.Show(Catalog.GetString("Date Format invalid"),
@@ -350,6 +359,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 sw1.Write(exportString);
+                sw1.Close();
 
                 SaveUserDefaults();
                 MessageBox.Show(Catalog.GetString("Gift Batches Exported successfully."),

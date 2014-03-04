@@ -133,10 +133,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.critBic = new Ict.Petra.Client.CommonControls.SplitButton();
             this.lblBic = new System.Windows.Forms.Label();
             this.txtBic = new System.Windows.Forms.TextBox();
-            this.pnlBranchCode = new System.Windows.Forms.Panel();
-            this.critBranchCode = new Ict.Petra.Client.CommonControls.SplitButton();
-            this.lblBranchCode = new System.Windows.Forms.Label();
-            this.txtBranchCode = new System.Windows.Forms.TextBox();
+            this.pnlBankKey = new System.Windows.Forms.Panel();
+            this.txtBankKey = new Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel();
+            this.lblBankKey = new System.Windows.Forms.Label();
+            this.pnlBankName = new System.Windows.Forms.Panel();
+            this.lblBankName = new System.Windows.Forms.Label();
+            this.cmbBankName = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
+            this.pnlBankCode = new System.Windows.Forms.Panel();
+            this.lblBankCode = new System.Windows.Forms.Label();
+            this.cmbBankCode = new Ict.Petra.Client.CommonControls.TCmbAutoPopulated();
             this.tipUC = new System.Windows.Forms.ToolTip(this.components);
             this.spcCriteria.Panel1.SuspendLayout();
             this.spcCriteria.Panel2.SuspendLayout();
@@ -164,7 +169,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlAccountNumber.SuspendLayout();
             this.pnlIban.SuspendLayout();
             this.pnlBic.SuspendLayout();
-            this.pnlBranchCode.SuspendLayout();
+            this.pnlBankCode.SuspendLayout();
             this.SuspendLayout();
 
             //
@@ -462,7 +467,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlLeftColumn.Controls.Add(this.pnlAccountNumber);
             this.pnlLeftColumn.Controls.Add(this.pnlIban);
             this.pnlLeftColumn.Controls.Add(this.pnlBic);
-            this.pnlLeftColumn.Controls.Add(this.pnlBranchCode);
+            this.pnlLeftColumn.Controls.Add(this.pnlBankCode);
             this.pnlLeftColumn.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlLeftColumn.Location = new System.Drawing.Point(0, 0);
             this.pnlLeftColumn.Margin = new System.Windows.Forms.Padding(0);
@@ -1331,57 +1336,120 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.txtBic.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TxtBic_KeyUp);
 
             //
-            // pnlBranchCode
+            // pnlBankKey
             //
-            this.pnlBranchCode.Controls.Add(this.critBranchCode);
-            this.pnlBranchCode.Controls.Add(this.lblBranchCode);
-            this.pnlBranchCode.Controls.Add(this.txtBranchCode);
-            this.pnlBranchCode.Location = new System.Drawing.Point(2, 100);
-            this.pnlBranchCode.Name = "pnlBranchCode";
-            this.pnlBranchCode.Size = new System.Drawing.Size(304, 21);
-            this.pnlBranchCode.TabIndex = 0;
+            this.pnlBankKey.Controls.Add(this.lblBankKey);
+            this.pnlBankKey.Controls.Add(this.txtBankKey);
+            this.pnlBankKey.Location = new System.Drawing.Point(2, 100);
+            this.pnlBankKey.Name = "pnlBankKey";
+            this.pnlBankKey.Size = new System.Drawing.Size(262, 22);
+            this.pnlBankKey.TabIndex = 0;
 
             //
-            // critBranchCode
+            // lblBankKey
             //
-            this.critBranchCode.Anchor =
-                ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.critBranchCode.BackColor = System.Drawing.SystemColors.Control;
-            this.critBranchCode.ControlMode = Ict.Petra.Client.CommonControls.TControlMode.Matches;
-            this.critBranchCode.DataBindings.Add(new System.Windows.Forms.Binding("SelectedValue", this.FFindCriteriaDataTable, "BranchCodeMatch",
-                    true));
-            this.critBranchCode.Location = new System.Drawing.Point(260, 2);
-            this.critBranchCode.Name = "critBranchCode";
-            this.critBranchCode.SelectedValue = "BEGINS";
-            this.critBranchCode.Size = new System.Drawing.Size(41, 18);
-            this.critBranchCode.TabIndex = 4;
-            this.critBranchCode.TabStop = false;
+            this.lblBankKey.Location = new System.Drawing.Point(2, 2);
+            this.lblBankKey.Name = "lblBankKey";
+            this.lblBankKey.Size = new System.Drawing.Size(142, 23);
+            this.lblBankKey.TabIndex = 0;
+            this.lblBankKey.Text = "Bank Key:";
+            this.lblBankKey.TextAlign = System.Drawing.ContentAlignment.TopRight;
 
             //
-            // lblBranchCode
+            // txtBankKey
             //
-            this.lblBranchCode.Location = new System.Drawing.Point(2, 2);
-            this.lblBranchCode.Name = "lblBranchCode";
-            this.lblBranchCode.Size = new System.Drawing.Size(142, 23);
-            this.lblBranchCode.TabIndex = 0;
-            this.lblBranchCode.Text = "Branch/Bank Code:";
-            this.lblBranchCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
-
-            //
-            // txtBranchCode
-            //
-            this.txtBranchCode.Anchor =
+            this.txtBankKey.Name = "txtBankKey";
+            this.txtBankKey.Location = new System.Drawing.Point(146, 0);
+            this.txtBankKey.ASpecialSetting = true;
+            this.txtBankKey.Anchor =
                 ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
                                                       System.Windows.Forms.AnchorStyles.Right)));
-            this.txtBranchCode.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.FFindCriteriaDataTable, "BranchCode", true));
-            this.txtBranchCode.Font =
+            this.txtBankKey.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.FFindCriteriaDataTable, "BankKey", true));
+            this.txtBankKey.ButtonTextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.txtBankKey.ListTable = TtxtAutoPopulatedButtonLabel.TListTableEnum.Bank;
+            this.txtBankKey.PartnerClass = "BANK";
+            this.txtBankKey.MaxLength = 32767;
+            this.txtBankKey.Tag = "CustomDisableAlthoughInvisible";
+            this.txtBankKey.TextBoxWidth = 80;
+            this.txtBankKey.ButtonWidth = 40;
+            this.txtBankKey.ReadOnly = false;
+            this.txtBankKey.Font =
                 new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.txtBranchCode.Location = new System.Drawing.Point(146, 0);
-            this.txtBranchCode.Name = "txtBranchCode";
-            this.txtBranchCode.Size = new System.Drawing.Size(112, 21);
-            this.txtBranchCode.TabIndex = 1;
-            this.txtBranchCode.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TxtBranchCode_KeyUp);
-            this.txtBranchCode.Leave += new EventHandler(this.TxtBranchCode_Leave);
+            this.txtBankKey.ButtonText = "Find";
+            this.txtBankKey.TabIndex = 1;
+            this.txtBankKey.LabelVisible = false;
+            this.txtBankKey.ValueChanged += new TDelegatePartnerChanged(this.PartnerKeyChanged);
+            this.txtBankKey.Leave += new EventHandler(this.PartnerKeyChanged);
+
+            //
+            // pnlBankName
+            //
+            this.pnlBankName.Controls.Add(this.lblBankName);
+            this.pnlBankName.Controls.Add(this.cmbBankName);
+            this.pnlBankName.Location = new System.Drawing.Point(2, 100);
+            this.pnlBankName.Name = "pnlBankName";
+            this.pnlBankName.Size = new System.Drawing.Size(304, 19);
+            this.pnlBankName.TabIndex = 0;
+
+            //
+            // lblBankName
+            //
+            this.lblBankName.Location = new System.Drawing.Point(2, 2);
+            this.lblBankName.Name = "lblBankName";
+            this.lblBankName.Size = new System.Drawing.Size(142, 23);
+            this.lblBankName.TabIndex = 0;
+            this.lblBankName.Text = "Bank/Branch Name:";
+            this.lblBankName.TextAlign = System.Drawing.ContentAlignment.TopRight;
+
+            //
+            // cmbBankName
+            //
+            this.cmbBankName.Name = "txtBankName";
+            this.cmbBankName.Location = new System.Drawing.Point(146, 0);
+            this.cmbBankName.Size = new System.Drawing.Size(175, 19);
+            this.cmbBankName.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbBankName.ComboBoxWidth = 175;
+            this.cmbBankName.Font =
+                new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbBankName.TabIndex = 1;
+            this.cmbBankName.RemoveDescriptionLabel();
+
+            //
+            // pnlBankCode
+            //
+            this.pnlBankCode.Controls.Add(this.lblBankCode);
+            this.pnlBankCode.Controls.Add(this.cmbBankCode);
+            this.pnlBankCode.Location = new System.Drawing.Point(2, 100);
+            this.pnlBankCode.Name = "pnlBankCode";
+            this.pnlBankCode.Size = new System.Drawing.Size(304, 21);
+            this.pnlBankCode.TabIndex = 0;
+
+            //
+            // lblBankCode
+            //
+            this.lblBankCode.Location = new System.Drawing.Point(2, 2);
+            this.lblBankCode.Name = "lblBankCode";
+            this.lblBankCode.Size = new System.Drawing.Size(142, 23);
+            this.lblBankCode.TabIndex = 0;
+            this.lblBankCode.Text = "Branch/Bank Code:";
+            this.lblBankCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
+
+            //
+            // cmbBankCode
+            //
+            this.cmbBankCode.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
+                                                      System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbBankCode.Font =
+                new System.Drawing.Font("Verdana", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmbBankCode.Location = new System.Drawing.Point(146, 2);
+            this.cmbBankCode.Size = new System.Drawing.Size(175, 19);
+            this.cmbBankCode.Name = "txtBankCode";
+            this.cmbBankCode.ComboBoxWidth = 175;
+            this.cmbBankCode.TabIndex = 1;
+            this.cmbBankCode.RemoveDescriptionLabel();
 
             //
             // TUC_PartnerFindCriteria
@@ -1438,8 +1506,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.pnlIban.PerformLayout();
             this.pnlBic.ResumeLayout(false);
             this.pnlBic.PerformLayout();
-            this.pnlBranchCode.ResumeLayout(false);
-            this.pnlBranchCode.PerformLayout();
+            this.pnlBankCode.ResumeLayout(false);
+            this.pnlBankCode.PerformLayout();
             this.ResumeLayout(false);
         }
 
@@ -1524,16 +1592,21 @@ namespace Ict.Petra.Client.MPartner.Gui
         private System.Windows.Forms.Panel pnlIban;
         private System.Windows.Forms.TextBox txtIban;
         private System.Windows.Forms.Label lblIban;
-        private System.Windows.Forms.Panel pnlBranchCode;
-        private System.Windows.Forms.TextBox txtBranchCode;
-        private System.Windows.Forms.Label lblBranchCode;
+        private System.Windows.Forms.Panel pnlBankKey;
+        private Ict.Petra.Client.CommonControls.TtxtAutoPopulatedButtonLabel txtBankKey;
+        private System.Windows.Forms.Label lblBankKey;
+        private System.Windows.Forms.Panel pnlBankName;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbBankName;
+        private System.Windows.Forms.Label lblBankName;
+        private System.Windows.Forms.Panel pnlBankCode;
+        private Ict.Petra.Client.CommonControls.TCmbAutoPopulated cmbBankCode;
+        private System.Windows.Forms.Label lblBankCode;
         private System.Windows.Forms.Panel pnlBic;
         private System.Windows.Forms.Label lblBic;
         private System.Windows.Forms.TextBox txtBic;
         private SplitButton critAccountName;
         private SplitButton critAccountNumber;
         private SplitButton critIban;
-        private SplitButton critBranchCode;
         private SplitButton critBic;
     }
 }

@@ -763,7 +763,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 FUcoFamilyMembers.BroadcastRefresh = true;
-                FUcoFamilyMembers.RefreshGrid();
+                FUcoFamilyMembers.RefreshFamilyMembersList(null, null);
                 FUcoFamilyMembers.BroadcastRefresh = false;
             }
         }

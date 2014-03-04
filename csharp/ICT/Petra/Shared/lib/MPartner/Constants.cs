@@ -52,6 +52,9 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>Banking Type</summary>
         public const Int16 BANKINGTYPE_BANKACCOUNT = 0;
 
+        /// <summary>Banking Type</summary>
+        public const Int16 BANKINGTYPE_SAVINGSACCOUNT = 2;
+
         /// <summary>Banking Details Usage Type</summary>
         public const String BANKINGUSAGETYPE_MAIN = "MAIN";
 

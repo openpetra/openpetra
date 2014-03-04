@@ -209,8 +209,6 @@ namespace Ict.Petra.Server.MConference.Applications
             string AOutreachPrefix,
             Int64 AAttendeeKey)
         {
-            DataView ShortTermView = AMainDS.PmShortTermApplication.DefaultView;
-
             PmShortTermApplicationRow ShortTermRow = null;
 
             foreach (PmShortTermApplicationRow Row in AMainDS.PmShortTermApplication.Rows)
