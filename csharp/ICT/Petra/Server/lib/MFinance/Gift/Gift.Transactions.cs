@@ -1429,14 +1429,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 //do the same for the Recipient
                 if (giftDetail.RecipientKey > 0)
                 {
-                    TLogging.Log("1. Recipient: " + giftDetail.RecipientKey.ToString());
-
                     giftDetail.RecipientField = GetRecipientLedgerNumber(MainDS, giftDetail.RecipientKey);
-                    
-                    TLogging.Log("2. Recipient: " + giftDetail.RecipientKey.ToString() + " RecipientField: " + giftDetail.RecipientField.ToString());
                     
                     PPartnerRow RecipientRow = (PPartnerRow)MainDS.RecipientPartners.Rows.Find(giftDetail.RecipientKey);
                     giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
+                    
                     PUnitRow RecipientUnitRow = (PUnitRow)MainDS.RecipientUnit.Rows.Find(giftDetail.RecipientKey);
 
                     if (RecipientUnitRow != null  && RecipientUnitRow.UnitTypeCode == MFinanceConstants.UNIT_TYPE_CODE_KEY_MIN)
@@ -2171,9 +2168,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
         private static Int64 GetRecipientLedgerNumber(GiftBatchTDS AMainDS, Int64 APartnerKey)
         {
-            TLogging.Log("---GetRecipientLedgerNumber---");
-            TLogging.Log("PartnerKey: " + APartnerKey);
-            
             if (APartnerKey == 0)
             {
                 return 0;

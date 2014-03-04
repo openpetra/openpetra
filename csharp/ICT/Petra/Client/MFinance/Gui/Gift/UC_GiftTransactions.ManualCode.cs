@@ -227,19 +227,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             SetRecordNumberDisplayProperties();
             SelectRowInGrid(1);
 
-            //TODO remove later
-            TLogging.Log("Account Code 1: " + FPreviouslySelectedDetailRow.AccountCode);
-
-
             UpdateTotals();
             UpdateControlsProtection();
 
             FSuppressListChanged = false;
             grdDetails.ResumeLayout();
             
-            //TODO remove later
-            TLogging.Log("Account Code 2: " + FPreviouslySelectedDetailRow.AccountCode);
-
             return true;
         }
 
@@ -771,8 +764,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             cmbMinistry.Clear();
 
-            TLogging.Log("PopulateKeyMinistry-" + APartnerKey.ToString());
-
             if (APartnerKey == 0)
             {
                 APartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
@@ -782,8 +773,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return;
                 }
             }
-
-            TLogging.Log("PopulateKeyMinistry-" + APartnerKey.ToString());
 
             GetRecipientData(APartnerKey);
 
