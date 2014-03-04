@@ -39,19 +39,19 @@ namespace Ict.Petra.Client.CommonForms
     /// <summary>
     /// This class works alongside TFrmPetraEdit.  It contains the code that handles the saving and loading of window size, position and window state
     /// as well as handling the splitter bar distances.
-    /// 
+    ///
     /// It also contains a method for determining if a control on a screen needs to handle the ESCAPE keypress
-    /// 
+    ///
     /// The class was created so as to keep the TFrmPetraUtils class file smaller and so as to encapsulate this functionality in one file
     /// </summary>
     public class TFrmPetraWindowExtensions
     {
         /// private static variables that manage the storing of window size and position etc
-        private static SortedList<string, string> FWindowPositions = new SortedList<string, string>();
+        private static SortedList <string, string>FWindowPositions = new SortedList <string, string>();
         private static bool FWindowPositionsLoaded = false;
 
         /// private class variable that stores the splitter positions that have already been displayed
-        private List<string> FSplittersDisplayed = new List<string>();
+        private List <string>FSplittersDisplayed = new List <string>();
 
         private Form FWinForm;
         private Form FCallerForm;

@@ -148,7 +148,11 @@ namespace Ict.Petra.Client.MSysMan.Gui
                         Environment.NewLine,
                         Environment.NewLine,
                         CommonFormsResourcestrings.StrReuseScreenPositionsMessage3);
-                    DialogResult result = MessageBox.Show(msg, CommonFormsResourcestrings.StrReuseScreenPositionsTitle, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                    DialogResult result = MessageBox.Show(msg,
+                        CommonFormsResourcestrings.StrReuseScreenPositionsTitle,
+                        MessageBoxButtons.YesNoCancel,
+                        MessageBoxIcon.Question);
+
                     if (result == DialogResult.Cancel)
                     {
                         return result;

@@ -140,7 +140,7 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// The 
+        /// Gets the maximum number of references to find before abandoning the count when deleting a record.
         /// </summary>
         public int MaxReferenceCountOnDelete
         {

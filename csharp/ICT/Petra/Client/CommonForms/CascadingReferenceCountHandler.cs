@@ -41,7 +41,7 @@ namespace Ict.Petra.Client.CommonForms
     /// It deals with single record deletion and contains the code to display the references check results to the user.
     /// The user has several options for what to do if references are found.
     /// The class only has one method and no member variables.
-    /// 
+    ///
     /// The class is NOT used when the user selects multiple records for deletion, because that does not result in additional user options.
     /// </summary>
     public class TCascadingReferenceCountHandler
@@ -54,7 +54,9 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="ALimitedCount">Will be true if the reference count call was a limited check</param>
         /// <returns>A message box result.  Yes implies doing a new unlimited count, Undefined implies there are no references so deletion can proceed.
         /// Any other value implies that references exist</returns>
-        public TFrmExtendedMessageBox.TResult HandleReferences(TFrmPetraEditUtils APetraUtilsObject, TVerificationResultCollection AVerificationResults, bool ALimitedCount)
+        public TFrmExtendedMessageBox.TResult HandleReferences(TFrmPetraEditUtils APetraUtilsObject,
+            TVerificationResultCollection AVerificationResults,
+            bool ALimitedCount)
         {
             Form MyForm = APetraUtilsObject.GetForm();
 
@@ -64,13 +66,14 @@ namespace Ict.Petra.Client.CommonForms
 
             // Build up a message string
             string msgContent = Messages.BuildMessageFromVerificationResult(
-                    MCommonResourcestrings.StrRecordCannotBeDeleted +
-                    Environment.NewLine +
-                    Catalog.GetPluralString(MCommonResourcestrings.StrReasonColon, MCommonResourcestrings.StrReasonsColon, AVerificationResults.Count),
-                    AVerificationResults);
+                MCommonResourcestrings.StrRecordCannotBeDeleted +
+                Environment.NewLine +
+                Catalog.GetPluralString(MCommonResourcestrings.StrReasonColon, MCommonResourcestrings.StrReasonsColon, AVerificationResults.Count),
+                AVerificationResults);
 
             TFrmExtendedMessageBox.TButtons buttons = TFrmExtendedMessageBox.TButtons.embbOK;
             TFrmExtendedMessageBox.TDefaultButton defButton = TFrmExtendedMessageBox.TDefaultButton.embdDefButton1;
+
             if (bIncomplete && ALimitedCount)
             {
                 msgContent += String.Format(MCommonResourcestrings.StrCountTerminatedEarly1,
@@ -96,7 +99,7 @@ namespace Ict.Petra.Client.CommonForms
 
             // Show an Extended Message Box and return the value
             TFrmExtendedMessageBox extendedMsgBox = new TFrmExtendedMessageBox(MyForm);
-            
+
             return extendedMsgBox.ShowDialog(
                 msgContent,
                 MCommonResourcestrings.StrRecordDeletionTitle,

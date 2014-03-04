@@ -402,7 +402,10 @@ namespace Ict.Petra.Client.CommonForms
             bool bHasOkOrCancel = (btnOK.Visible || btnCancel.Visible);
 
             // We ignore btnApply - it was set to invisible at design time so never was placed on the button panel
-            Button[] buttons = { btnYes, btnYesToAll, btnNo, btnNoToAll, btnOK, btnCancel };
+            Button[] buttons =
+            {
+                btnYes, btnYesToAll, btnNo, btnNoToAll, btnOK, btnCancel
+            };
 
             // Go through the buttons starting on the right
             for (int btnID = 5; btnID >= 0; btnID--)
@@ -444,12 +447,14 @@ namespace Ict.Petra.Client.CommonForms
             {
                 // This is a 'counter'
                 TDefaultButton currentDefID = TDefaultButton.embdDefButtonNone;
-                for (int btnID = 0; btnID<buttons.Length; btnID++)
+
+                for (int btnID = 0; btnID < buttons.Length; btnID++)
                 {
                     if (buttons[btnID].Visible)
                     {
                         // increment the counter and see if we have reached the one we are looking for
                         currentDefID++;
+
                         if (currentDefID == FDefaultButton)
                         {
                             // Set the accept button for the form and focus it.

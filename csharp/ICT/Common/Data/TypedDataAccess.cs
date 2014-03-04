@@ -2381,6 +2381,7 @@ namespace Ict.Common.Data
 
             // See if we finished early because we reached our max reference count limit
             bool bEndedEarly = false;
+
             for (int Counter = 0; Counter < ConsolidatedReferences.Count; Counter++)
             {
                 if (ConsolidatedReferences[Counter].Value.CascadingCountEndedEarly)
@@ -2428,8 +2429,9 @@ namespace Ict.Common.Data
             if (bEndedEarly)
             {
                 CompleteMessageDetails += Environment.NewLine;
-                CompleteMessageDetails += String.Format(Catalog.GetString("{0}{1} More references may exist, but the count was terminated after the first {2}!"),
-                    STR_INDENTATION, STR_BULLET, AReferences.Count);
+                CompleteMessageDetails +=
+                    String.Format(Catalog.GetString("{0}{1} More references may exist, but the count was terminated after the first {2}!"),
+                        STR_INDENTATION, STR_BULLET, AReferences.Count);
             }
 
             // Build Keys and values for 'this table'
