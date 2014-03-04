@@ -2379,6 +2379,17 @@ namespace Ict.Common.Data
                 AddOrUpdateConsolidatedReferences(AReferences[Counter], ConsolidatedReferences);
             }
 
+            // See if we finished early because we reached our max reference count limit
+            bool bEndedEarly = false;
+            for (int Counter = 0; Counter < ConsolidatedReferences.Count; Counter++)
+            {
+                if (ConsolidatedReferences[Counter].Value.CascadingCountEndedEarly)
+                {
+                    bEndedEarly = true;
+                    break;
+                }
+            }
+
             MessageDetails = new string[ConsolidatedReferences.Count];
 
             for (int Counter = 0; Counter < ConsolidatedReferences.Count; Counter++)
@@ -2414,6 +2425,13 @@ namespace Ict.Common.Data
 
             CompleteMessageDetails += ".";
 
+            if (bEndedEarly)
+            {
+                CompleteMessageDetails += Environment.NewLine;
+                CompleteMessageDetails += String.Format(Catalog.GetString("{0}{1} More references may exist, but the count was terminated after the first {2}!"),
+                    STR_INDENTATION, STR_BULLET, AReferences.Count);
+            }
+
             // Build Keys and values for 'this table'
             foreach (var element in APKInfo)
             {
@@ -2437,7 +2455,7 @@ namespace Ict.Common.Data
             }
 
             // Strip off trailing Environment.NewLine
-            KeysAndValueInformation = KeysAndValueInformation.Substring(0, KeysAndValueInformation.Length - Environment.NewLine.Length);
+            //KeysAndValueInformation = KeysAndValueInformation.Substring(0, KeysAndValueInformation.Length - Environment.NewLine.Length);
 
             MessageFooter = String.Format(MessageFooter,
                 FirstReferenceInCascade.ReferenceCount ==
@@ -2495,6 +2513,7 @@ namespace Ict.Common.Data
         private Dictionary <string, object>FPKInfo;
         private List <KeyValuePair <string, TRowReferenceInfo>>FOtherTableRefs = null;
         private long FReferenceCount = 0;
+        private bool FCascadingCountEndedEarly = false;
         [NonSerialized]
         private DataRow FDataRow = null;
         private object[] FDataRowContents;
@@ -2519,6 +2538,15 @@ namespace Ict.Common.Data
             FOtherTableRefs = AOtherTableRefs;
             FPKInfo = APKInfo;
             FReferenceCount = 1;
+
+            for (int i = 0; i < FOtherTableRefs.Count; i++)
+            {
+                if (FOtherTableRefs[i].Value.CascadingCountEndedEarly)
+                {
+                    this.FCascadingCountEndedEarly = true;
+                    break;
+                }
+            }
         }
 
         /// <summary>
@@ -2537,6 +2565,21 @@ namespace Ict.Common.Data
             FDataRow = ADataRow;
             FDataRowContents = DataUtilities.GetPKValuesFromDataRow(FDataRow);
             FNestingDepth = ANestingDepth;
+        }
+
+        /// <summary>
+        /// Gets/Sets if the cascading count ended early because the reference count was greater than the MaxReferences specified by the caller
+        /// </summary>
+        public bool CascadingCountEndedEarly
+        {
+            get
+            {
+                return FCascadingCountEndedEarly;
+            }
+            set
+            {
+                FCascadingCountEndedEarly = value;
+            }
         }
 
         /// <summary>
