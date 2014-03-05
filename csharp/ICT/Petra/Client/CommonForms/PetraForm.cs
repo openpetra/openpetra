@@ -227,7 +227,8 @@ namespace Ict.Petra.Client.CommonForms
             // Are we saving/restoring the window position?  This option is stored in User Defaults.
             if (TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, true))
             {
-                if ((FWinForm.Name == "TFrmMainWindowNew") || (FCallerForm.Name == "TFrmMainWindowNew"))
+                // (Note: Nant tests do not have a caller so we need to allow for this possibility)
+                if ((FWinForm.Name == "TFrmMainWindowNew") || ((FCallerForm != null) && (FCallerForm.Name == "TFrmMainWindowNew")))
                 {
                     // Either we are loading the main window or we have been opened by the main window
                     // Now that the window has been activated we are ok to restore things like splitter distances

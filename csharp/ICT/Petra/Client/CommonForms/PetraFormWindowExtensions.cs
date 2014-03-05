@@ -76,7 +76,8 @@ namespace Ict.Petra.Client.CommonForms
             if (TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, true))
             {
                 // Restore the window positions if we know them
-                if ((FWinForm.Name == "TFrmMainWindowNew") || (FCallerForm.Name == "TFrmMainWindowNew"))
+                // (Note: Nant tests do not have a caller so we need to allow for this possibility)
+                if ((FWinForm.Name == "TFrmMainWindowNew") || ((FCallerForm != null) && (FCallerForm.Name == "TFrmMainWindowNew")))
                 {
                     // Either we are loading the main window or we have been opened by the main window
                     if (!FWindowPositionsLoaded)
@@ -135,7 +136,7 @@ namespace Ict.Petra.Client.CommonForms
                                 ex.Message), TLoggingType.ToLogfile);
                     }
                 }
-                else if ((FCallerForm.Name == "TFrmMainWindowNew") && !FWinForm.Modal)
+                else if ((FCallerForm != null) && (FCallerForm.Name == "TFrmMainWindowNew") && !FWinForm.Modal)
                 {
                     // we were opened by the main window
                     GetWindowPositionProperties();
