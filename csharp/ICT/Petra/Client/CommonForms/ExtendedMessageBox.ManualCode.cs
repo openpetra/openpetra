@@ -417,7 +417,6 @@ namespace Ict.Petra.Client.CommonForms
                         // Move the button a standard distance to the right
                         for (int k = 0; k < btnID; k++)
                         {
-                            Console.WriteLine("{0}:  moving {1} by {2}", btnID, k, distance);
                             buttons[k].Left += distance;
                         }
                     }
@@ -426,13 +425,11 @@ namespace Ict.Petra.Client.CommonForms
                         // We need to move the left group of buttons a smaller distance to the right because we want to get a gap between the two groups
                         for (int k = 0; (k < btnID) && (k < 4); k++)
                         {
-                            Console.WriteLine("{0}:  moving {1} by {2}", btnID, k, distance - 20);
                             buttons[k].Left += (distance - 20);
                         }
 
                         for (int k = 4; k < btnID; k++)
                         {
-                            Console.WriteLine("{0}:  moving {1} by {2}", btnID, k, distance);
                             buttons[k].Left += distance;
                         }
 
@@ -470,7 +467,8 @@ namespace Ict.Petra.Client.CommonForms
             SizeF size = lblMessage.CreateGraphics().MeasureString(lblMessage.Text, lblMessage.Font, pnlMessage.Width - 20);
 
             // Now set the height of the form based on allowing enough height for the message
-            this.FindForm().Size = new Size(this.FindForm().Width, Convert.ToInt32(size.Height) + pnlLeftButtons.Height + 150);
+            int checkBoxAllowance = (chkOption.Visible) ? chkOption.Height + 5 : 0;
+            this.FindForm().Size = new Size(this.FindForm().Width, Convert.ToInt32(size.Height) + pnlLeftButtons.Height + 120 + checkBoxAllowance);
 
             // Now center the message in its panel
             lblMessage.Size = new Size(pnlMessage.Width - 20, pnlMessage.Height - 20);
