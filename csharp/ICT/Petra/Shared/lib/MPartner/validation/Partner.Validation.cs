@@ -242,7 +242,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 return;
             }
 
-            // Special check: 'Denominations' must exist!
+            // Special check: 'Denominations' must exist and must not be unassignable!
             ValidationColumn = ARow.Table.Columns[PChurchTable.ColumnDenominationCodeId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
@@ -260,7 +260,38 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+
+                // 'Denomination' must be valid
+                PDenominationTable DenominationTable;
+                PDenominationRow DenominationRow = null;
+
+                VerificationResult = null;
+
+                if (!ARow.IsDenominationCodeNull())
+                {
+                    DenominationTable = (PDenominationTable)TSharedDataCache.TMPartner.GetCacheablePartnerTableDelegate(
+                        TCacheablePartnerTablesEnum.DenominationList);
+                    DenominationRow = (PDenominationRow)DenominationTable.Rows.Find(ARow.DenominationCode);
+
+                    // 'Denomination' must be valid
+                    if (DenominationRow != null
+                        && !DenominationRow.ValidDenomination)
+                    {
+                        // if 'Denomination' is invalid then check if the value has been changed or if it is a new record
+                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PChurchTable.GetDenominationCodeDBName()))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.DenominationCode })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                    }
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
+
+
         }
 
         /// <summary>
