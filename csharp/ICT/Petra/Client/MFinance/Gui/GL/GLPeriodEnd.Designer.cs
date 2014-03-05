@@ -96,6 +96,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
 
             this.ClientSize = new System.Drawing.Size(400, 300);
+            this.CancelButton = btnCancel;
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnPeriodEnd);
             this.Controls.Add(this.tbxMessage);

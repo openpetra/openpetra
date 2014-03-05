@@ -504,6 +504,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 int NumReferences = TRemote.MCommon.ReferenceCount.WebConnectors.GetCacheableRecordReferenceCount(
                     "DataLabelList",
                     DataUtilities.GetPKValuesFromDataRow(rv.Row),
+                    FPetraUtilsObject.MaxReferenceCountOnDelete,
                     out VerificationResults);
                 int NumDataLabelUses = rv.Row[UsedByColumnOrdinal].ToString().Split(new char[] { ',' }).Length;
 

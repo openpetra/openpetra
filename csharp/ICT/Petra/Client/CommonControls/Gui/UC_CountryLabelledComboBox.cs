@@ -68,6 +68,15 @@ namespace Ict.Petra.Client.CommonControls
             }
         }
 
+        /// <summary>returns true if the ComboBox in the user control is DroppedDown</summary>
+        public bool DroppedDown
+        {
+            get
+            {
+                return this.cmbCountry.DroppedDown;
+            }
+        }
+
         /// <summary>
         /// constructor
         /// </summary>

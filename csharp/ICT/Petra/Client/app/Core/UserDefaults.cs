@@ -55,6 +55,12 @@ namespace Ict.Petra.Client.App.Core
             /// <summary>todoComment</summary>
             public const String WINDOW_POSITION_AND_SIZE_PREFIX = "WINDOW_POS_AND_SIZE_";
 
+            /// <summary>Key name for Esc Closes Screen</summary>
+            public const String USERDEFAULT_ESC_CLOSES_SCREEN = "EscClosesScreen";
+
+            /// <summary>Key name for saving window size/state/position</summary>
+            public const String USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE = "SaveWindowPosAndSize";
+
             /// <summary>Colour of the background of all SourceGrid DataGrid instances.</summary>
             public const String COLOUR_GRID_BACKGROUND = "COLOUR_GRID_BACKGROUND";
 
@@ -260,18 +266,6 @@ namespace Ict.Petra.Client.App.Core
 
         /// <summary>todoComment</summary>
         public const String PARTNER_FINDOPTIONS_EXACTPARTNERKEYMATCHSEARCH = "findopt_exactpartnerkeymatchsearch";
-
-        /// <summary>todoComment</summary>
-        public const String PARTNER_FIND_SPLITPOS_FORM = "partnfindscr_splitpos_form";
-
-        /// <summary>todoComment</summary>
-        public const String PARTNER_FIND_SPLITPOS_CRITERIA = "partnfindscr_splitpos_criteria";
-
-        /// <summary>todoComment</summary>
-        public const String PARTNER_FIND_SPLITPOS_FINDBYDETAILS = "partnfindscr_splitpos_findbydetails";
-
-        /// <summary>todoComment</summary>
-        public const String PARTNER_FIND_SPLITPOS_FINDBYDETAILS_CRIT = "partnfindscr_splitpos_findbydetails_crit";
 
         /// <summary>todoComment</summary>
         public const String PARTNER_FIND_PARTNERDETAILS_OPEN = "partnfindscr_partnerdetails_open";

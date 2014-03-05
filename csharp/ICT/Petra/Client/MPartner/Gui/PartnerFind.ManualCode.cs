@@ -112,8 +112,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ArrangeMenuItemsAndToolBarButtons();
 
-            CancelButton = btnCancel;
-
             tbbEditPartner.Enabled = false;
             mniFileEditPartner.Enabled = false;
 
@@ -127,7 +125,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 MPartnerResourcestrings.StrCancelButtonHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
 
             // catch enter on all controls, to trigger search or accept (could use this.AcceptButton, but we have several search buttons etc)
-            this.KeyPreview = true;
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
 
             mniFile.DropDownOpening += new System.EventHandler(MniFile_DropDownOpening);
@@ -749,6 +746,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         // called when the selected tab is changed
         private void TabChanged(System.Object sender, System.EventArgs e)
         {
+            FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
+
             // if FindByBankDetails tab is selected
             if (tpgFindBankDetails.Visible)
             {
@@ -1161,6 +1160,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 this.mnuMain.Visible = false;  // Modal Dialogs don't have menus
+                this.CancelButton = btnCancel;
                 pnlModalButtons.Visible = true;
                 pnlModalButtons.SendToBack();
                 pnlModalButtons.AutoScroll = false;
@@ -1210,9 +1210,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void TPartnerFindScreen_Closed(System.Object sender, System.EventArgs e)
         {
             FCurrentlySelectedTab.StoreUserDefaults();
-
-            // Save Window Position and Size
-            // TODO? TUserDefaults.NamedDefaults.SetWindowPositionAndSize(this, WINDOWSETTINGSDEFAULT_NAME);
 
             ReleaseServerObject();
 

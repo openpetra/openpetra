@@ -1221,6 +1221,7 @@
   </table>
   <table name="s_patch_log"
          descr="Logs each patch procedure that is run"
+         label="Patch Log"
          area="Petra Data"
          dumpname="s_patch_"
          group="sysman">
@@ -1369,6 +1370,7 @@
   </table>
   <table name="s_system_defaults"
          descr="The settings that are system wide (iso per user)"
+         label="System Defaults"
          area="Petra Data"
          dumpname="s_sysdef"
          group="sysman">
@@ -2377,6 +2379,7 @@
   </table>
   <table area="Petra Data"
          descr="All the different Partner attribute types will be stored in here."
+         label="Partner Attribute Type"
          name="p_partner_attribute_type"
          dumpname="p_patrtp"
          group="partner">
@@ -6093,6 +6096,7 @@
   </table>
   <table name="p_contact_attribute"
          descr="Possible attributes for partner contacts.  Gives the description of each attribute code.  An attribute is a type of contact that was made or which occurred with a partner."
+         label="Contact Attribute"
          area="Petra Data"
          dumpname="p_conatt"
          group="mailroom">
@@ -6125,6 +6129,7 @@
   </table>
   <table name="p_contact_attribute_detail"
          descr="Possible attribute details for each contact attribute.  Breaks down the attribute into more specifice information that applies to a contact with a partner."
+         label="Contact Attribute Detail"
          area="Petra Data"
          dumpname="p_conatd"
          group="mailroom">
@@ -6359,6 +6364,7 @@
   </table>
   <table name="p_partner_contact_attribute"
          descr="Associates a p_contact_attribute_detail with a p_partner_contact.  A contact with a partner may have more than one p_contact_attribute_detail associated with it."
+         label="Partner Contact Attribute"
          area="Petra Data"
          dumpname="p_conatp"
          group="mailroom">
@@ -7108,6 +7114,7 @@
   </table>
   <table name="a_ledger_init_flag"
          descr="Ledger Init Flags"
+         label="Ledger Init Flag"
          area="Petra Data"
          dumpname="a_ldinfl"
          group="account">
@@ -7394,6 +7401,7 @@
   </table>
   <table name="a_account_hierarchy"
          descr="hierarchy of accounts; what is the root account of the hierarchy"
+         label="Account Hierarchy"
          area="Petra Data"
          dumpname="a_acchie"
          group="account">
@@ -7428,6 +7436,7 @@
   </table>
   <table name="a_account_hierarchy_detail"
          descr="the elements of the hierarchy of accounts; which account is reporting to which other account"
+         label="Account Hierarchy Detail"
          area="Petra Data"
          dumpname="a_acchid"
          group="account">
@@ -7837,6 +7846,7 @@
   </table>
   <table name="a_budget_period"
          descr="This is the budget data for one period (e.g. a month)"
+         label="Budget Period"
          area="Petra Data"
          dumpname="a_budper"
          group="account">
@@ -9025,6 +9035,7 @@
   </table>
   <table name="a_general_ledger_master_period"
          descr="The General Ledger Master data for one period (e.g. a month)"
+         label="GL Master Period"
          area="Petra Data"
          dumpname="a_genlep"
          group="account">
@@ -9612,6 +9623,7 @@
   </table>
   <table name="a_motivation_detail_fee"
          descr="motivation details can have several fees"
+         label="Motivation Detail Fee"
          area="Petra Data"
          dumpname="a_motdtf"
          group="gift">
@@ -12389,6 +12401,7 @@
   </table>
   <table name="a_ap_supplier"
          descr="This table defines the concept of a supplier in the AP system and is the centre of the AP system."
+         label="AP Supplier"
          area=""
          dumpname="a_apsupp"
          group="ap">
@@ -12480,6 +12493,7 @@
   </table>
   <table name="a_ap_document"
          descr="Either an invoice or a credit note in the Accounts Payable system."
+         label="AP Document"
          area=""
          dumpname="a_apdoc"
          group="ap">
@@ -12623,6 +12637,7 @@
   </table>
   <table name="a_crdt_note_invoice_link"
          descr="This table receives a new entry when a credit note is applied to an invoice. Since the invoices and credit notes share the same table, we need a way to link the two, and this is the role of this table."
+         label="CR Note Invoice Link"
          area=""
          dumpname="a_crdtn"
          group="ap">
@@ -12667,6 +12682,7 @@
   </table>
   <table name="a_ap_document_detail"
          descr="An invoice or credit note consists out of several items, or details. This table contains all these details."
+         label="AP Document Detail"
          area=""
          dumpname="a_apdocd"
          group="ap">
