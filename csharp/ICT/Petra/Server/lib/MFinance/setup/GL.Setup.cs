@@ -3394,7 +3394,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 if (ACanDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
                 {                // and do the low-level database check to see if a deletion would succeed:
                     TVerificationResultCollection ReferenceResults;
-                    Int32 RefCount = ACostCentreCascading.CountByPrimaryKey(ALedgerNumber, ACostCentreCode, 50, Transaction, false, out ReferenceResults);
+                    Int32 RefCount = ACostCentreCascading.CountByPrimaryKey(ALedgerNumber,
+                        ACostCentreCode,
+                        50,
+                        Transaction,
+                        false,
+                        out ReferenceResults);
 
                     if (RefCount > 0)
                     {
