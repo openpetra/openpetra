@@ -27,7 +27,7 @@ RootNode:
                 Row3: [txtDepartureTransportCode, chkDepartureTransportNeeded]
                 Row4: [txtDepartureComment]
                 
-        cmbArrivalTravelMethod: {Label=Travel Method, List=TransportTypeList, DataField=PmShortTermApplication.TravelTypeToCongCode, ColSpan=3}
+        cmbArrivalTravelMethod: {Label=Travel Method, List=TransportTypeList, DataField=PmShortTermApplication.TravelTypeToCongCode, ColSpan=3, Validation=true}
         cmbArrivalPoint: {Label=Arrival Point, List=ArrivalDeparturePointList, DataField=PmShortTermApplication.ArrivalPointCode, ColSpan=3}
         dtpArrival: {Label=Arrival Date, DataField=PmShortTermApplication.Arrival, Validation=true}
         txtArrivalTimeHour: {Label=Time, Width=25, Format=Integer, DataField=PmShortTermApplication.ArrivalHour, Validation=true}
@@ -39,7 +39,7 @@ RootNode:
             Multiline: true
             ScrollBars: Vertical
 
-        cmbDepartureTravelMethod: {Label=Travel Method, List=TransportTypeList, DataField=PmShortTermApplication.TravelTypeFromCongCode,ColSpan=3}
+        cmbDepartureTravelMethod: {Label=Travel Method, List=TransportTypeList, DataField=PmShortTermApplication.TravelTypeFromCongCode,ColSpan=3, Validation=true}
         cmbDeparturePoint: {Label=Departure Point, List=ArrivalDeparturePointList, DataField=PmShortTermApplication.DeparturePointCode, ColSpan=3}
         dtpDeparture: {Label=Departure Date, DataField=PmShortTermApplication.Departure, Validation=Pair(dtpArrival)}
         txtDepartureTimeHour: {Label=Time, Width=25, Format=Integer, DataField=PmShortTermApplication.DepartureHour, Validation=true}

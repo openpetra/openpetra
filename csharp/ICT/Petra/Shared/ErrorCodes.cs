@@ -83,7 +83,7 @@ namespace Ict.Petra.Shared
 
         /// <summary>Value is no longer assignable (just give warning).</summary>
         [ErrCodeAttribute("Value is no longer assignable.",
-             ErrorMessageText = "The code '{0}' is no longer assignable.\r\nIt should no longer be used.",
+             ErrorMessageText = "{0} '{1}' is no longer assignable.\r\nIt should no longer be used.",
              ErrorMessageTitle = "Unassignable Code Used")]
         public const String ERR_VALUEUNASSIGNABLE_WARNING = "GEN.00007V";
 

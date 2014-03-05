@@ -234,7 +234,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                         if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmJobAssignmentTable.GetAssignmentTypeCodeDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.AssignmentTypeCode })),
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.AssignmentTypeCode })),
                                 ValidationColumn, ValidationControlsData.ValidationControl);
                         }
                     }
@@ -271,7 +271,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                         if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmJobAssignmentTable.GetPositionNameDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.PositionName })),
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.PositionName })),
                                 ValidationColumn, ValidationControlsData.ValidationControl);
                         }
                     }
@@ -365,7 +365,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                         if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmPassportDetailsTable.GetPassportDetailsTypeDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.PassportDetailsType })),
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.PassportDetailsType })),
                                 ValidationColumn, ValidationControlsData.ValidationControl);
                         }
                     }
@@ -424,7 +424,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                         if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmDocumentTable.GetDocCodeDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.DocCode })),
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.DocCode })),
                                 ValidationColumn, ValidationControlsData.ValidationControl);
                         }
                     }
@@ -530,7 +530,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                         if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmPersonLanguageTable.GetLanguageLevelDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.LanguageLevel.ToString() })),
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.LanguageLevel.ToString() })),
                                 ValidationColumn, ValidationControlsData.ValidationControl);
                         }
                     }
@@ -590,7 +590,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                         if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmPersonSkillTable.GetSkillCategoryCodeDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.SkillCategoryCode })),
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.SkillCategoryCode })),
                                 ValidationColumn, ValidationControlsData.ValidationControl);
                         }
                     }
@@ -626,7 +626,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                         if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmPersonSkillTable.GetSkillLevelDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.SkillLevel.ToString() })),
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.SkillLevel.ToString() })),
                                 ValidationColumn, ValidationControlsData.ValidationControl);
                         }
                     }
@@ -864,7 +864,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 return;
             }
 
-            // 'Application Type' must have a value
+            // 'Application Type' must have a value and must not be unassignable
             ValidationColumn = ARow.Table.Columns[PmGeneralApplicationTable.ColumnAppTypeNameId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
@@ -874,6 +874,72 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+
+                PtApplicationTypeTable AppTypeTable;
+                PtApplicationTypeRow AppTypeRow = null;
+
+                VerificationResult = null;
+
+                if (!ARow.IsAppTypeNameNull())
+                {
+                    AppTypeTable = (PtApplicationTypeTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTableDelegate(
+                        TCacheablePersonTablesEnum.ApplicationTypeList);
+                    AppTypeRow = (PtApplicationTypeRow)AppTypeTable.Rows.Find(ARow.AppTypeName);
+
+                    // 'Application Type' must not be unassignable
+                    if ((AppTypeRow != null)
+                        && AppTypeRow.UnassignableFlag
+                        && (AppTypeRow.IsUnassignableDateNull()
+                            || (AppTypeRow.UnassignableDate <= DateTime.Today)))
+                    {
+                        // if 'Application Type' is unassignable then check if the value has been changed or if it is a new record
+                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmGeneralApplicationTable.GetAppTypeNameDBName()))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.AppTypeName })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                    }
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // 'Application Status' must not be unassignable
+            ValidationColumn = ARow.Table.Columns[PmGeneralApplicationTable.ColumnGenApplicationStatusId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                PtApplicantStatusTable AppStatusTable;
+                PtApplicantStatusRow AppStatusRow = null;
+
+                VerificationResult = null;
+
+                if (!ARow.IsGenApplicationStatusNull())
+                {
+                    AppStatusTable = (PtApplicantStatusTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTableDelegate(
+                        TCacheablePersonTablesEnum.ApplicantStatusList);
+                    AppStatusRow = (PtApplicantStatusRow)AppStatusTable.Rows.Find(ARow.GenApplicationStatus);
+
+                    // 'Application Status' must not be unassignable
+                    if ((AppStatusRow != null)
+                        && AppStatusRow.UnassignableFlag
+                        && (AppStatusRow.IsUnassignableDateNull()
+                            || (AppStatusRow.UnassignableDate <= DateTime.Today)))
+                    {
+                        // if 'Application Status' is unassignable then check if the value has been changed or if it is a new record
+                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmGeneralApplicationTable.GetGenApplicationStatusDBName()))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.GenApplicationStatus })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                    }
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
 
@@ -978,7 +1044,7 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                if (ARow.IsConfirmedOptionCodeNull())
+                if (ARow.IsStConfirmedOptionNull())
                 {
                     VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                             ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PARTNERKEY_INVALID_NOTNULL, new string[] { ValidationControlsData.ValidationControlLabel })),
@@ -1023,6 +1089,79 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                     AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
                 }
             }
+
+            // 'Arrival Method' must not be unassignable
+            ValidationColumn = ARow.Table.Columns[PmShortTermApplicationTable.ColumnTravelTypeToCongCodeId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                PtTravelTypeTable TravelTypeTable;
+                PtTravelTypeRow TravelTypeRow = null;
+
+                VerificationResult = null;
+
+                if (!ARow.IsTravelTypeToCongCodeNull())
+                {
+                    TravelTypeTable = (PtTravelTypeTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTableDelegate(
+                        TCacheablePersonTablesEnum.TransportTypeList);
+                    TravelTypeRow = (PtTravelTypeRow)TravelTypeTable.Rows.Find(ARow.TravelTypeToCongCode);
+
+                    // 'Arrival Method' must not be unassignable
+                    if ((TravelTypeRow != null)
+                        && TravelTypeRow.UnassignableFlag
+                        && (TravelTypeRow.IsUnassignableDateNull()
+                            || (TravelTypeRow.UnassignableDate <= DateTime.Today)))
+                    {
+                        // if 'Arrival Method' is unassignable then check if the value has been changed or if it is a new record
+                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmShortTermApplicationTable.GetTravelTypeToCongCodeDBName()))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.TravelTypeToCongCode })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                    }
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
+            // 'Departure Method' must not be unassignable
+            ValidationColumn = ARow.Table.Columns[PmShortTermApplicationTable.ColumnTravelTypeFromCongCodeId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                PtTravelTypeTable TravelTypeTable;
+                PtTravelTypeRow TravelTypeRow = null;
+
+                VerificationResult = null;
+
+                if (!ARow.IsTravelTypeFromCongCodeNull())
+                {
+                    TravelTypeTable = (PtTravelTypeTable)TSharedDataCache.TMPersonnel.GetCacheablePersonnelTableDelegate(
+                        TCacheablePersonTablesEnum.TransportTypeList);
+                    TravelTypeRow = (PtTravelTypeRow)TravelTypeTable.Rows.Find(ARow.TravelTypeFromCongCode);
+
+                    // 'Departure Method' must not be unassignable
+                    if ((TravelTypeRow != null)
+                        && TravelTypeRow.UnassignableFlag
+                        && (TravelTypeRow.IsUnassignableDateNull()
+                            || (TravelTypeRow.UnassignableDate <= DateTime.Today)))
+                    {
+                        // if 'Departure Method' is unassignable then check if the value has been changed or if it is a new record
+                        if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmShortTermApplicationTable.GetTravelTypeFromCongCodeDBName()))
+                        {
+                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.TravelTypeFromCongCode })),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                    }
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+
 
             // 'Departure Date' must be later than 'Arrival Date'
             ValidationColumn = ARow.Table.Columns[PmShortTermApplicationTable.ColumnDepartureId];

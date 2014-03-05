@@ -737,7 +737,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                         && !RelationRow.ValidRelation)
                     {
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.RelationName })),
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.RelationName })),
                             ValidationColumn, ValidationControlsData.ValidationControl);
                     }
                 }
