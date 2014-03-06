@@ -290,21 +290,6 @@ namespace Ict.Common.Remoting.Client
                 AError = exp.Message;
                 return false;
             }
-            catch (EUserRetiredException exp)
-            {
-                AError = exp.Message;
-                return false;
-            }
-            catch (EAccessDeniedException exp)
-            {
-                AError = exp.Message;
-                return false;
-            }
-            catch (EUserRecordLockedException exp)
-            {
-                AError = exp.Message;
-                return false;
-            }
             catch (ESystemDisabledException exp)
             {
                 AError = exp.Message;

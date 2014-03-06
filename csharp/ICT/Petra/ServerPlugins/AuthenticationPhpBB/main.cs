@@ -78,7 +78,7 @@ namespace Plugin.AuthenticationPhpBB
                     return false;
                 }
 
-                AMessage = Catalog.GetString("Invalid User ID/Password.");
+                AMessage = Catalog.GetString("Invalid User ID or Password.");
             }
             catch (Exception e)
             {

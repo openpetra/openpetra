@@ -93,7 +93,9 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             SUserRow ReturnValue;
 
             Ict.Petra.Shared.Security.TPetraIdentity PetraIdentity;
+            
             ReturnValue = LoadUser(AUserID, out PetraIdentity);
+            
             APetraPrincipal = new TPetraPrincipal(PetraIdentity, TGroupManager.LoadUserGroups(
                     AUserID), TTableAccessPermissionManager.LoadTableAccessPermissions(
                     AUserID), TModuleAccessManager.LoadUserModules(AUserID));
@@ -254,7 +256,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 // Check if user is retired
                 if (PetraPrincipal.PetraIdentity.Retired)
                 {
-                    throw new EUserRetiredException(StrUserIsRetired);
+                    throw new EUserRetiredException(StrInvalidUserIDPassword);
                 }
 
                 // Console.WriteLine('PetraPrincipal.PetraIdentity.FailedLogins: ' + PetraPrincipal.PetraIdentity.FailedLogins.ToString +
@@ -263,11 +265,11 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 if ((PetraPrincipal.PetraIdentity.FailedLogins >= 5) && ((!PetraPrincipal.PetraIdentity.Retired)))
                 {
                     UserDR.Retired = true;
-                    UserDR.FailedLogins = 4;
+                    UserDR.FailedLogins = 0;
 
                     SaveUser(AUserID, (SUserTable)UserDR.Table);
 
-                    throw new EAccessDeniedException(StrUserIsRetired);
+                    throw new EAccessDeniedException(StrInvalidUserIDPassword);
                 }
 
                 // Check SystemLoginStatus (Petra enabled/disabled) in the SystemStatus table (always holds only one record)
@@ -332,7 +334,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                         UserDR.FailedLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
                         SaveUser(AUserID, (SUserTable)UserDR.Table);
 
-                        throw new EPasswordWrongException(Catalog.GetString("Invalid User ID/Password."));
+                        throw new EPasswordWrongException(StrInvalidUserIDPassword);
                     }
                 }
                 else
@@ -399,9 +401,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 
         private static readonly string StrSystemDisabled2Admin = Catalog.GetString("Proceed with caution.");
 
-        private static readonly string StrUserIsRetired = Catalog.GetString("User is retired.");
-
-        private static readonly string StrInvalidUserIDPassword = Catalog.GetString("Invalid User ID/Password.");
+        private static readonly string StrInvalidUserIDPassword = Catalog.GetString("Invalid User ID or Password.");
 
         #endregion
 
