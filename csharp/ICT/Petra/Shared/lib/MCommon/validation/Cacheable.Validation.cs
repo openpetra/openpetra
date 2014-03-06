@@ -1017,9 +1017,13 @@ namespace Ict.Petra.Shared.MCommon.Validation
                     && (DocumentCategoryRow.IsUnassignableDateNull()
                         || (DocumentCategoryRow.UnassignableDate <= DateTime.Today)))
                 {
-                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ARow.DocCategory })),
-                        ValidationColumn, ValidationControlsData.ValidationControl);
+                    // if 'Document Category' is unassignable then check if the value has been changed or if it is a new record
+                    if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmDocumentTypeTable.GetDocCategoryDBName()))
+                    {
+                        VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.DocCategory })),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+                    }
                 }
 
                 // Handle addition/removal to/from TVerificationResultCollection

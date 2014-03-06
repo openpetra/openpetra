@@ -54,14 +54,14 @@ RootNode:
             Label: Skill Category
             DataField: PmPersonSkill.SkillCategoryCode
             List: SkillCategoryList
-            Width: 200
+            Width: 380
             ColSpan: 2
             Validation: true
         cmbSkillLevel:
             Label: Skill Level
             DataField: PmPersonSkill.SkillLevel
             List: SkillLevelList
-            Width: 200
+            Width: 380
             ColSpan: 2
             Validation: true
         txtDescriptEnglish: {Label=Description, DataField=PmPersonSkill.DescriptionEnglish, Width=380, ColSpan=2}
@@ -69,10 +69,10 @@ RootNode:
             Label: Local Language
             DataField: PmPersonSkill.DescriptionLanguage
             List: LanguageCodeList
-            Width: 200
+            Width: 380
             ColSpan: 2
         txtDescriptInLocalLanguage: {Label=Description in local language, DataField=PmPersonSkill.DescriptionLocal, Width=380, ColSpan=2}
-        txtYearsOfExperience: {DataField=PmPersonSkill.YearsOfExperience, Width=25, Format=Integer}
+        txtYearsOfExperience: {DataField=PmPersonSkill.YearsOfExperience, Width=25, Format=Integer, OnLeave=ProcessYearsOfExperience}
         dtpYearsOfExperienceAsOf: {Label=as of Date, DataField=PmPersonSkill.YearsOfExperienceAsOf}
         chkProfSkill: {Label=Is this a professional skill?, DataField=PmPersonSkill.ProfessionalSkill}
         chkCurrOccupation: {Label=Is person's current occupation?, DataField=PmPersonSkill.CurrentOccupation}

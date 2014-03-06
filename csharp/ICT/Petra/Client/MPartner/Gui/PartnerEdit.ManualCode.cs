@@ -831,7 +831,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoLowerPart.ValidateAllData(false);
 
             ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
-                this.GetType(), null, true);
+                this.GetType(), null, false);
 
             if (ReturnValue)
             {

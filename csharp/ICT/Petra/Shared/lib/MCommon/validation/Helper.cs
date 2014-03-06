@@ -83,5 +83,30 @@ namespace Ict.Petra.Shared.MCommon.Validation
                 throw new InvalidOperationException("Delegate 'TSharedGetData' must be initialised before calling this Method");
             }
         }
+
+        /// <summary>
+        /// checks if row has status "Added" or if field value is modified compared to original value
+        /// </summary>
+        /// <param name="ARow"></param>
+        /// <param name="AFieldDbName">db name of field to be checked</param>
+        /// <returns></returns>
+        public static bool IsRowAddedOrFieldModified(DataRow ARow, string AFieldDbName)
+        {
+            if (ARow.RowState == DataRowState.Added)
+            {
+                return true;
+            }
+
+            if (   ARow.RowState == DataRowState.Modified
+                && ARow.HasVersion(DataRowVersion.Original)
+                && (TTypedDataAccess.GetSafeValue(ARow, AFieldDbName, DataRowVersion.Original)).ToString()
+                    != (TTypedDataAccess.GetSafeValue(ARow, AFieldDbName, DataRowVersion.Current)).ToString())
+            {
+                return true;
+            }
+
+            return false;
+
+        }
     }
 }

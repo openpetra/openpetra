@@ -1344,7 +1344,7 @@ namespace Ict.Petra.Client.CommonControls
 
                 case TListTableEnum.SkillCategoryList:
                     this.ColumnWidthCol1 = 110;
-                    this.ColumnWidthCol2 = 130;
+                    this.ColumnWidthCol2 = 250;
                     break;
 
                 case TListTableEnum.SkillLevelList:

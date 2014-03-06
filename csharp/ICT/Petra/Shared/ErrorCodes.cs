@@ -83,9 +83,9 @@ namespace Ict.Petra.Shared
 
         /// <summary>Value is no longer assignable (just give warning).</summary>
         [ErrCodeAttribute("Value is no longer assignable.",
-             ErrorMessageText = "The code '{0}' is no longer assignable.\r\nIt should no longer be used.",
+             ErrorMessageText = "{0} '{1}' is no longer assignable.\r\nIt should no longer be used.",
              ErrorMessageTitle = "Unassignable Code Used")]
-        public const String ERR_VALUEUNASSIGNABLE_WARNING = "GEN.00007N";
+        public const String ERR_VALUEUNASSIGNABLE_WARNING = "GEN.00007V";
 
         /// <summary>No permission to access DB Table.</summary>
         [ErrCodeAttribute("You don't have permission to access the specified database table.")]
@@ -257,6 +257,11 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "At least one of Interest, Country or Field must be set.",
              ErrorMessageTitle = "Insufficient Data")]
         public const String ERR_INTEREST_NO_DATA_SET_AT_ALL = "PARTN.00017V";
+
+        /// <summary>Partner Key is invalid (must not be null).</summary>
+        [ErrCodeAttribute("Invalid Partner.",
+             ErrorMessageText = "Partner Key for {0} must be set.")]
+        public const String ERR_PARTNERKEY_INVALID_NOTNULL = "PARTN.00019V";
 
         #region Subscriptions
 
