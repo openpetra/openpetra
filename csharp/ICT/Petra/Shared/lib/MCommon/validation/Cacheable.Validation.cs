@@ -1021,7 +1021,8 @@ namespace Ict.Petra.Shared.MCommon.Validation
                     if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PmDocumentTypeTable.GetDocCategoryDBName()))
                     {
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.DocCategory })),
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
+                                    new string[] { ValidationControlsData.ValidationControlLabel, ARow.DocCategory })),
                             ValidationColumn, ValidationControlsData.ValidationControl);
                     }
                 }

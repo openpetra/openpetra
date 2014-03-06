@@ -224,7 +224,7 @@ namespace Tests.MainNavigationScreens
         {
             TestOpenAllWindows();
         }
-        
+
         /// <summary>
         /// Runs the <see cref="TestOpenAllWindows" /> Method under fr_FR Culture.
         /// </summary>

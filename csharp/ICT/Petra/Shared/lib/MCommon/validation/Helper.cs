@@ -97,16 +97,15 @@ namespace Ict.Petra.Shared.MCommon.Validation
                 return true;
             }
 
-            if (   ARow.RowState == DataRowState.Modified
+            if ((ARow.RowState == DataRowState.Modified)
                 && ARow.HasVersion(DataRowVersion.Original)
-                && (TTypedDataAccess.GetSafeValue(ARow, AFieldDbName, DataRowVersion.Original)).ToString()
-                    != (TTypedDataAccess.GetSafeValue(ARow, AFieldDbName, DataRowVersion.Current)).ToString())
+                && ((TTypedDataAccess.GetSafeValue(ARow, AFieldDbName, DataRowVersion.Original)).ToString()
+                    != (TTypedDataAccess.GetSafeValue(ARow, AFieldDbName, DataRowVersion.Current)).ToString()))
             {
                 return true;
             }
 
             return false;
-
         }
     }
 }

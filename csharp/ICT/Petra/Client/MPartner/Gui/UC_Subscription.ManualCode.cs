@@ -303,6 +303,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 /* CANCELLED or EXPIRED */
                 /* Set the DateEnded field to todays date: */
                 this.dtpPSubscriptionDateCancelled.Enabled = true;
+
                 if (dtpPSubscriptionDateCancelled.Text.Length == 0)
                 {
                     // only initialize date if value is not set yet

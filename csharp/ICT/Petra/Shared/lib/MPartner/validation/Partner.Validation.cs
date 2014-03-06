@@ -274,14 +274,15 @@ namespace Ict.Petra.Shared.MPartner.Validation
                     DenominationRow = (PDenominationRow)DenominationTable.Rows.Find(ARow.DenominationCode);
 
                     // 'Denomination' must be valid
-                    if (DenominationRow != null
+                    if ((DenominationRow != null)
                         && !DenominationRow.ValidDenomination)
                     {
                         // if 'Denomination' is invalid then check if the value has been changed or if it is a new record
                         if (TSharedValidationHelper.IsRowAddedOrFieldModified(ARow, PChurchTable.GetDenominationCodeDBName()))
                         {
                             VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.DenominationCode })),
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
+                                        new string[] { ValidationControlsData.ValidationControlLabel, ARow.DenominationCode })),
                                 ValidationColumn, ValidationControlsData.ValidationControl);
                         }
                     }
@@ -290,8 +291,6 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 // Handle addition/removal to/from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
-
-
         }
 
         /// <summary>
@@ -768,7 +767,8 @@ namespace Ict.Petra.Shared.MPartner.Validation
                         && !RelationRow.ValidRelation)
                     {
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
-                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING, new string[] { ValidationControlsData.ValidationControlLabel, ARow.RelationName })),
+                                ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_VALUEUNASSIGNABLE_WARNING,
+                                    new string[] { ValidationControlsData.ValidationControlLabel, ARow.RelationName })),
                             ValidationColumn, ValidationControlsData.ValidationControl);
                     }
                 }

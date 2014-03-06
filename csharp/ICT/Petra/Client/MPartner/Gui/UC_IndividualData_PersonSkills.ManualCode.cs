@@ -278,7 +278,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void ProcessYearsOfExperience(System.Object sender, EventArgs e)
         {
-            // do set date for "Years of Experience as of date" if it is not already set 
+            // do set date for "Years of Experience as of date" if it is not already set
             // and value for "Years of Experience" was changed
             if (txtYearsOfExperience.Text.Length == 0)
             {
@@ -286,8 +286,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
-                if (dtpYearsOfExperienceAsOf.Text.Length == 0
-                    && txtYearsOfExperience.Text != "99")
+                if ((dtpYearsOfExperienceAsOf.Text.Length == 0)
+                    && (txtYearsOfExperience.Text != "99"))
                 {
                     dtpYearsOfExperienceAsOf.Date = DateTime.Today;
                 }
