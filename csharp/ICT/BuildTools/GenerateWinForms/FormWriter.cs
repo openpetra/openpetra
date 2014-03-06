@@ -970,25 +970,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 ProcessTemplate singleSnippet = FTemplate.GetSnippet("SNIPDELETEREFERENCECOUNT");
-                ProcessTemplate multiSnippet = FTemplate.GetSnippet("SNIPMULTIDELETEREFERENCECOUNT");
                 singleSnippet.SetCodelet("CONNECTORNAMESPACE", rootNamespace);
-                multiSnippet.SetCodelet("CONNECTORNAMESPACE", rootNamespace);
 
                 string cacheableTableName = FCodeStorage.GetAttribute("CacheableTable");
 
                 if (cacheableTableName != String.Empty)
                 {
                     singleSnippet.SetCodelet("CACHEABLETABLENAME", cacheableTableName);
-                    multiSnippet.SetCodelet("CACHEABLETABLENAME", cacheableTableName);
                 }
                 else
                 {
                     singleSnippet.SetCodelet("NONCACHEABLETABLENAME", FCodeStorage.GetAttribute("DetailTable"));
-                    multiSnippet.SetCodelet("NONCACHEABLETABLENAME", FCodeStorage.GetAttribute("DetailTable"));
                 }
 
                 FTemplate.InsertSnippet("DELETEREFERENCECOUNT", singleSnippet);
-                FTemplate.InsertSnippet("MULTIDELETEREFERENCECOUNT", multiSnippet);
             }
             catch (KeyNotFoundException)
             {
@@ -1471,6 +1466,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("ADDMAINCONTROLS",
                     "this.Icon = (System.Drawing.Icon)resources.GetObject(\"$this.Icon\");" + Environment.NewLine);
                 AddImageToResource("$this.Icon", iconFileName, "Icon");
+            }
+
+            if (FCodeStorage.FEventHandler.Contains("KeyEventHandler(this.Form_KeyDown)"))
+            {
+                // forms that have a KeyDown handler will need KeyPreview
+                FTemplate.AddToCodelet("ADDMAINCONTROLS", "this.KeyPreview = true;" + Environment.NewLine);
             }
 
             string initialFocusControl = String.Empty;

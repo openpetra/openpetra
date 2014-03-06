@@ -216,6 +216,16 @@ namespace Tests.MainNavigationScreens
         }
 
         /// <summary>
+        /// Runs the <see cref="TestOpenAllWindows" /> Method under de_CH Culture.
+        /// </summary>
+        [Test]
+        [SetCulture("de-CH")]
+        public void TestOpenAllWindows_de_CH()
+        {
+            TestOpenAllWindows();
+        }
+        
+        /// <summary>
         /// Runs the <see cref="TestOpenAllWindows" /> Method under fr_FR Culture.
         /// </summary>
         [Test]

@@ -23,8 +23,8 @@
 //
 using System;
 using System.Data;
+using System.Diagnostics;
 using System.Windows.Forms;
-using System.Collections.Generic;
 using System.Xml;
 using GNU.Gettext;
 using Ict.Common.Verification;
@@ -93,19 +93,25 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
 
         private void ValidateDataDetailsManual(PcConferenceCostRow ARow)
         {
-            // this is used to compare with the row that is being validated
-            DataRowCollection GridData = FMainDS.PcConferenceCost.Rows;
+            StackFrame frame = new StackFrame(2);
 
-            if (txtDetailCharge.Text == "")
+            // only validate when data is being saved
+            if (frame.GetMethod().Name == "SaveChanges")
             {
-                txtDetailCharge.Text = "0.00";
-                ARow.Charge = 0;
+                // this is used to compare with the row that is being validated
+                DataRowCollection GridData = FMainDS.PcConferenceCost.Rows;
+
+                if (txtDetailCharge.Text == "")
+                {
+                    txtDetailCharge.Text = "0.00";
+                    ARow.Charge = 0;
+                }
+
+                TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+                TSharedConferenceValidation_Conference.ValidateConferenceStandardCost(this, ARow, ref VerificationResultCollection,
+                    FPetraUtilsObject.ValidationControlsDict, GridData);
             }
-
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-
-            TSharedConferenceValidation_Conference.ValidateConferenceStandardCost(this, ARow, ref VerificationResultCollection,
-                FPetraUtilsObject.ValidationControlsDict, GridData);
         }
     }
 }

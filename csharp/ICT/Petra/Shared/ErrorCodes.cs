@@ -119,7 +119,7 @@ namespace Ict.Petra.Shared
 
         /// <summary>Standard cost inconsistency</summary>
         [ErrCodeAttribute("Standard cost inconsistency.",
-             ErrorMessageText = "{0} day/s at the conference costs more than {1} days!\r\n" + "Are you sure this is correct?",
+             ErrorMessageText = "{0} day(s) at the conference costs more than {1} days!\r\n" + "Are you sure this is correct?",
              ErrorMessageTitle = "Standard cost inconsistency")]
         public const String ERR_STANDARD_COST_INCONSISTENCY = "CON.00001N";
 
@@ -331,6 +331,56 @@ namespace Ict.Petra.Shared
                  "A Denomination must be assigned, but there are no Denominations set up to choose from. Please set up Denominations and then repeat the process!")
         ]
         public const String ERR_NO_DENOMINATIONS_SET_UP = "PARTN.00018V";
+
+        /// <summary>IBAN must always have 34 or less characters</summary>
+        [ErrCodeAttribute("Invalid IBAN.",
+             ErrorMessageText =
+                 "The IBAN is longer than 34 characters. IBANs must not be longer than 34 characters (spaces are not counted). " +
+                 "This is defined in the European Banking Standard (EBS).\n\n" + "The IBAN could be invalid! Check the IBAN carefully!")
+        ]
+        public const String ERR_IBAN_TOO_LONG = "PARTN.00020V";
+
+        /// <summary>IBAN must begin with two letters</summary>
+        [ErrCodeAttribute("Invalid IBAN.",
+             ErrorMessageText = "The first two characters of an IBAN must be alphabetic.")
+        ]
+        public const String ERR_IBAN_NOTBEGINWITHTWOLETTERS = "PARTN.00021V";
+
+        /// <summary>Third and forth characters of IBAN must be digits</summary>
+        [ErrCodeAttribute("Invalid IBAN.",
+             ErrorMessageText = "The third and fourth characters of an IBAN must be digits.")
+        ]
+        public const String ERR_IBAN_THIRDANDFORTHNOTDIGITS = "PARTN.00022V";
+
+        /// <summary>Check Digits (3rd and 4th characters) must be within range 02-98</summary>
+        [ErrCodeAttribute("Invalid IBAN.",
+             ErrorMessageText = "The check digits of the IBAN are wrong (third and fourth character of the IBAN).")
+        ]
+        public const String ERR_IBAN_CHECKDIGITSAREWRONG = "PARTN.00023V";
+
+        /// <summary>IBAN country is not defined</summary>
+        [ErrCodeAttribute("Invalid IBAN.",
+             ErrorMessageText = "The country {0} is not defined and so IBAN's length can not be checked.")
+        ]
+        public const String ERR_IBAN_COUNTRYNOTDEFINIED = "PARTN.00024N";
+
+        /// <summary>IBAN's length must be equal to a defined length for it's country (if included)</summary>
+        [ErrCodeAttribute("Invalid IBAN.",
+             ErrorMessageText = "The length of the IBAN is wrong. IBANs for {0} ({1}) need to be {2} characters long (spaces not counted), " +
+                                "but this IBAN is {3} characters long.")]
+        public const String ERR_IBAN_WRONGLENGTH = "PARTN.00025V";
+
+        /// <summary>IBAN must pass checksum check</summary>
+        [ErrCodeAttribute("Invalid IBAN.",
+             ErrorMessageText = "The IBAN is incorrect (checksum mismatch).")
+        ]
+        public const String ERR_IBAN_CHECKSUMMISMATCH = "PARTN.00026V";
+
+        /// <summary>IBAN must pass checksum check</summary>
+        [ErrCodeAttribute("Invalid Account Number.",
+             ErrorMessageText = "The Bank Account Number is not valid.")
+        ]
+        public const String ERR_ACCOUNTNUMBER_INVALID = "PARTN.00027V";
 
         #endregion
 

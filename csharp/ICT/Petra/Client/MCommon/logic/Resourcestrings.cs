@@ -133,6 +133,29 @@ namespace Ict.Petra.Client.MCommon
 
         #endregion
 
+        #region Strings associated with deleting data
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrCountTerminatedEarly1 = Catalog.GetString(
+            "{0}{0}The reference count was terminated after {1} records had been found.  ");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrCountTerminatedEarly2 = Catalog.GetString(
+            "There may be other tables that reference the highlighted record that were not scanned.  Choose 'Yes' to re-run the count to completion.  ");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrCountTerminatedEarly3 = Catalog.GetString(
+            "In some cases this may take several minutes.  While the count is taking place the server will be fully loaded.");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrCountTerminatedEarly4 = Catalog.GetString(
+            "{0}{0}Choose 'No' to close this message and return directly to the '{1}' screen.");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrCountTerminatedEarlyOK = Catalog.GetString("{0}{0}Click 'OK' to close this message.");
+
+        #endregion
+
         #region Partner Strings
         /// <summary>todoComment</summary>
         public static readonly string StrErrorOnlyForPerson = Catalog.GetString("This only works for Partners of Partner Class PERSON");

@@ -81,6 +81,15 @@ namespace Ict.Petra.Client.CommonControls
             }
         }
 
+        /// <summary>returns true if the ComboBox portion of the control is DroppedDown</summary>
+        public bool DroppedDown
+        {
+            get
+            {
+                return cmbCountry.cmbCombobox.DroppedDown;
+            }
+        }
+
         /// <summary>
         /// This Event is thrown when the internal ComboBox throws the SelectedValueChanged Event.
         ///

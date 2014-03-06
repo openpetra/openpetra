@@ -308,7 +308,7 @@ public class {#TABLENAME}Access : TTypedDataAccess
         
         for (int Counter = 0; Counter < DeletedRows.Count; Counter++) 
         {
-            if({#TABLENAME}Cascading.CountByPrimaryKey(DataUtilities.GetPKValuesFromDataRow(DeletedRows[Counter].Row), ATransaction, true, 
+            if({#TABLENAME}Cascading.CountByPrimaryKey(DataUtilities.GetPKValuesFromDataRow(DeletedRows[Counter].Row), 50, ATransaction, true, 
                 out SingleVerificationResultCollection) > 0)
             {
                 if (VerificationResults == null)
@@ -323,9 +323,9 @@ public class {#TABLENAME}Access : TTypedDataAccess
         if (VerificationResults != null) 
         {
             throw new EVerificationResultsException(String.Format(
-                "SubmitChanges for {#TABLENAME}Table: cannot delete {0} row(s) because they are referenced by at least one record in at least on other DB Table." +
-                "Check the TVerificationResultCollection stored in this Exceptions' 'VerificationResults' Property for details!", VerificationResults.Count), 
-                VerificationResults);
+                "SubmitChanges for {#TABLENAME}Table: cannot delete {0} row(s) because they are referenced by at least one record in at least one other DB Table." +
+                " Check the TVerificationResultCollection stored in this Exceptions' 'VerificationResults' Property for details! The count has been limited to the first 50.",
+                VerificationResults.Count), VerificationResults);
         }
         else
         {

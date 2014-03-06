@@ -163,7 +163,6 @@ namespace {#NAMESPACE}
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
-        // TODO? Save Window position
 
     }
 #endregion
@@ -666,21 +665,32 @@ namespace {#NAMESPACE}
 
         if (HighlightedRows.Length == 1)
         {
+{#IFDEF DELETEREFERENCECOUNT}
             TVerificationResultCollection VerificationResults = null;
 
-            {#DELETEREFERENCECOUNT}
+            if (TVerificationHelper.IsNullOrOnlyNonCritical(FPetraUtilsObject.VerificationResultCollection))
+            {
+                int RefCountLimit = FPetraUtilsObject.MaxReferenceCountOnDelete;
+                {#DELETEREFERENCECOUNT}
+            }
 
             if ((VerificationResults != null)
                 && (VerificationResults.Count > 0))
             {
-                MessageBox.Show(Messages.BuildMessageFromVerificationResult(
-                        MCommonResourcestrings.StrRecordCannotBeDeleted +
-                        Environment.NewLine +
-                        Catalog.GetPluralString(MCommonResourcestrings.StrReasonColon, MCommonResourcestrings.StrReasonsColon, VerificationResults.Count),
-                        VerificationResults),
-                        MCommonResourcestrings.StrRecordDeletionTitle);
+                TCascadingReferenceCountHandler countHandler = new TCascadingReferenceCountHandler();
+                TFrmExtendedMessageBox.TResult result = countHandler.HandleReferences(FPetraUtilsObject, VerificationResults, true);
+                if (result == TFrmExtendedMessageBox.TResult.embrYes)
+                {
+                    // repeat the count but with no limit to the number of references
+                    int RefCountLimit = 0;
+                    {#DELETEREFERENCECOUNT}
+
+                    countHandler.HandleReferences(FPetraUtilsObject, VerificationResults, false);
+                }
+
                 return;
             }
+{#ENDIF DELETEREFERENCECOUNT}
 
             string DeletionQuestion = MCommonResourcestrings.StrDefaultDeletionQuestion;
             if ((FPrimaryKeyControl != null) && (FPrimaryKeyLabel != null))
@@ -774,8 +784,10 @@ namespace {#NAMESPACE}
 
                     {#MULTIDELETEDELETABLE}
 
+{#IFDEF DELETEREFERENCECOUNT}
                     TVerificationResultCollection VerificationResults = null;
-                    {#MULTIDELETEREFERENCECOUNT}
+                    int RefCountLimit = FPetraUtilsObject.MaxReferenceCountOnDelete;
+                    {#DELETEREFERENCECOUNT}
 
                     if ((VerificationResults != null) && (VerificationResults.Count > 0))
                     {
@@ -784,6 +796,7 @@ namespace {#NAMESPACE}
                         listConflicts.Add(result);
                         continue;
                     }
+{#ENDIF DELETEREFERENCECOUNT}
 
                     bool AllowDeletion = true;
                     bool DeletionPerformed = false;
@@ -1676,21 +1689,13 @@ namespace {#NAMESPACE}
 {#INCLUDE findandfilter.cs}
 
 {##SNIPDELETEREFERENCECOUNT}
-if (TVerificationHelper.IsNullOrOnlyNonCritical(FPetraUtilsObject.VerificationResultCollection))
-{
-    this.Cursor = Cursors.WaitCursor;
-    TRemote.{#CONNECTORNAMESPACE}.ReferenceCount.WebConnectors.GetNonCacheableRecordReferenceCount(
-        FMainDS.{#NONCACHEABLETABLENAME},
-        DataUtilities.GetPKValuesFromDataRow(FPreviouslySelectedDetailRow),
-        out VerificationResults);
-    this.Cursor = Cursors.Default;
-}
-
-{##SNIPMULTIDELETEREFERENCECOUNT}
+this.Cursor = Cursors.WaitCursor;
 TRemote.{#CONNECTORNAMESPACE}.ReferenceCount.WebConnectors.GetNonCacheableRecordReferenceCount(
     FMainDS.{#NONCACHEABLETABLENAME},
-    DataUtilities.GetPKValuesFromDataRow(rowToDelete),
+    DataUtilities.GetPKValuesFromDataRow(FPreviouslySelectedDetailRow),
+    RefCountLimit,
     out VerificationResults);
+this.Cursor = Cursors.Default;
 
 {##SNIPMULTIDELETEDELETABLE}
 if (!rowToDelete.{#DELETEABLEFLAG})

@@ -40,16 +40,16 @@ using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
+using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Client.MPartner;
-using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Client.CommonForms;
-using Ict.Petra.Client.CommonControls;
-using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MCommon;
-using Ict.Petra.Shared.MSysMan;
+using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MPartner;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -66,15 +66,6 @@ namespace Ict.Petra.Client.MPartner.Gui
     public partial class TPartnerFindScreen
     {
         #region Resourcestrings
-
-// TODO        private static readonly string StrPartnersAddedToExtractText = Catalog.GetString(
-// TODO            "{0} Partner was added to the new Extract.");
-
-// TODO        private static readonly string StrPartnersAddedToExtractPluralText = Catalog.GetString(
-// TODO            "{0} Partners were added to the new Extract.");
-
-// TODO        private static readonly string StrPartnersAddedToExtractTitle = Catalog.GetString(
-// TODO            "Generate Extract From Found Partners");
 
         /// <summary>String for the title</summary>
         private static readonly string StrTitleFirstPart = Catalog.GetString("Partner");
@@ -121,8 +112,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ArrangeMenuItemsAndToolBarButtons();
 
-            CancelButton = btnCancel;
-
             tbbEditPartner.Enabled = false;
             mniFileEditPartner.Enabled = false;
 
@@ -136,7 +125,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                 MPartnerResourcestrings.StrCancelButtonHelpText + MPartnerResourcestrings.StrPartnerFindSearchTargetText);
 
             // catch enter on all controls, to trigger search or accept (could use this.AcceptButton, but we have several search buttons etc)
-            this.KeyPreview = true;
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.CatchEnterKey);
 
             mniFile.DropDownOpening += new System.EventHandler(MniFile_DropDownOpening);
@@ -156,12 +144,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ucoFindByPartnerDetails.SetupPartnerInfoPane();
 
-            ucoFindByBankDetails.PartnerInfoPaneCollapsed += new EventHandler(ucoFindByPartnerDetails_PartnerInfoPaneCollapsed);
-            ucoFindByBankDetails.PartnerInfoPaneExpanded += new EventHandler(ucoFindByPartnerDetails_PartnerInfoPaneExpanded);
+            ucoFindByBankDetails.PartnerAvailable += new TUC_PartnerFind_ByPartnerDetails.TPartnerAvailableChangeEventHandler(
+                ucoFindByPartnerDetails_PartnerAvailable);
+            ucoFindByBankDetails.SearchOperationStateChange += new TUC_PartnerFind_ByPartnerDetails.TSearchOperationStateChangeEventHandler(
+                ucoFindByPartnerDetails_SearchOperationStateChange);
             ucoFindByBankDetails.EnableAcceptButton += new EventHandler(ucoFindByPartnerDetails_EnableAcceptButton);
             ucoFindByBankDetails.DisableAcceptButton += new EventHandler(ucoFindByPartnerDetails_DisableAcceptButton);
-
-            ucoFindByBankDetails.SetupPartnerInfoPane();
 
             // FindByPartnerDetails tab is shown first
             FCurrentlySelectedTab = ucoFindByPartnerDetails;
@@ -326,84 +314,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 mniMailingGenerateExtract.Enabled = true;
             }
-        }
-
-        private void CreateNewExtractFromFoundPartners()
-        {
-// TODO: CreateNewExtractFromFoundPartners
-#if TODO
-            bool Success = false;
-
-            using (TPartnerNewExtract CreateExtractDialog = new TPartnerNewExtract())
-            {
-                // Open the Dialog for creating a New Extract
-                if (CreateExtractDialog.ShowDialog() == DialogResult.OK)
-                {
-                    // Make Dialog visible again to be able to show Text in its StatusBar!
-                    CreateExtractDialog.Visible = true;
-                    CreateExtractDialog.ShowProgressAfterOK("Adding Partners to Extract. Please wait...");
-
-                    this.Cursor = Cursors.WaitCursor;
-                    Application.DoEvents();
-
-                    int ExtractId;
-                    CreateExtractDialog.GetReturnedParameters(out ExtractId);
-
-                    /*
-                     * Make Server call to add all found Partners to the new Extract.
-                     * This can take some time to finish...
-                     */
-                    try
-                    {
-                        TVerificationResultCollection VerificationResult;
-                        int ExtractPartners = FPartnerFindObject.AddAllFoundPartnersToExtract(ExtractId, out VerificationResult);
-
-                        if (ExtractPartners != -1)
-                        {
-                            string MessageText;
-
-                            if (ExtractPartners == 1)
-                            {
-                                MessageText = MPartnerResourcestrings.StrPartnersAddedToExtractText;
-                            }
-                            else
-                            {
-                                MessageText = MPartnerResourcestrings.StrPartnersAddedToExtractPluralText;
-                            }
-
-                            MessageBox.Show(String.Format(MessageText,
-                                    ExtractPartners), MPartnerResourcestrings.StrPartnersAddedToExtractTitle, MessageBoxButtons.OK,
-                                MessageBoxIcon.Information);
-
-                            Success = true;
-                        }
-                        else
-                        {
-                            if (VerificationResult != null)
-                            {
-                                MessageBox.Show(Messages.BuildMessageFromVerificationResult(null, VerificationResult));
-                            }
-                            else
-                            {
-                                MessageBox.Show("An unknown error occured while Parters were added to the Extract.");
-                            }
-
-                            Success = false;
-                        }
-                    }
-                    finally
-                    {
-                        if (!Success)
-                        {
-                            CreateExtractDialog.DeleteExtractAgain();
-                        }
-
-                        this.Cursor = Cursors.Default;
-                        Application.DoEvents();
-                    }
-                }
-            }
-#endif
         }
 
         private void MniMaintain_DropDownOpening(System.Object sender, System.EventArgs e)
@@ -836,6 +746,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         // called when the selected tab is changed
         private void TabChanged(System.Object sender, System.EventArgs e)
         {
+            FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
+
             // if FindByBankDetails tab is selected
             if (tpgFindBankDetails.Visible)
             {
@@ -1248,6 +1160,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 this.mnuMain.Visible = false;  // Modal Dialogs don't have menus
+                this.CancelButton = btnCancel;
                 pnlModalButtons.Visible = true;
                 pnlModalButtons.SendToBack();
                 pnlModalButtons.AutoScroll = false;
@@ -1297,9 +1210,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void TPartnerFindScreen_Closed(System.Object sender, System.EventArgs e)
         {
             FCurrentlySelectedTab.StoreUserDefaults();
-
-            // Save Window Position and Size
-            // TODO? TUserDefaults.NamedDefaults.SetWindowPositionAndSize(this, WINDOWSETTINGSDEFAULT_NAME);
 
             ReleaseServerObject();
 

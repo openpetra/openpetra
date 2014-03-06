@@ -239,7 +239,7 @@ namespace Ict.Petra.Client.MConference.Gui
         {
             TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
-            frm.SetParameters(TScreenMode.smEdit, GetPartnerKeySelected());
+            frm.SetParameters(TScreenMode.smEdit, GetPartnerKeySelected(), TPartnerEditTabPageEnum.petpPersonnelApplications);
             frm.Show();
         }
 

@@ -195,6 +195,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             base.SetControlProperties(writer, ctrl);
 
+            writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".CancelEditingWithEscapeKey = false;" + Environment.NewLine);
+
             if (TYml2Xml.HasAttribute(ctrl.xmlNode, "SelectedRowActivates"))
             {
                 // TODO: this function needs to be called by the manual code at the moment when eg a search finishes

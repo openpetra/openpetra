@@ -61,24 +61,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             rbtDate.Enabled = false;
             txtQuarter.Enabled = false;
             cmbQuarterYear.Enabled = false;
-
-            /* This is not required because of a fix in cmbAutoComplete:
-             *
-             * cmbAccountHierarchy.Leave += new EventHandler(RequireCmbValue);
-             * cmbCurrency.Leave += new EventHandler(RequireCmbValue);
-             * cmbPeriodYear.Leave += new EventHandler(RequireCmbValue);
-             * cmbQuarterYear.Leave += new EventHandler(RequireCmbValue);
-             */
-        }
-
-        void RequireCmbValue(object sender, EventArgs e)
-        {
-            ComboBox cmb = (sender is TCmbLabelled) ? ((TCmbLabelled)sender).cmbCombobox : (ComboBox)sender;
-
-            if (cmb.SelectedIndex < 0)
-            {
-                cmb.SelectedIndex = 0;
-            }
+            cmbBreakdownYear.Enabled = false;
+            EnableBreakdownByPeriod(false);
         }
 
         /// <summary>
@@ -99,17 +83,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbQuarterYear, FLedgerNumber);
             cmbQuarterYear.SelectedIndex = 0;
 
+            TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbBreakdownYear, FLedgerNumber);
+            cmbBreakdownYear.SelectedIndex = 0;
+
             TFinanceControls.InitialiseAccountHierarchyList(ref cmbAccountHierarchy, FLedgerNumber);
             cmbAccountHierarchy.SelectedIndex = 0;
 
             // if there is only one hierarchy, disable the control
-//			cmbAccountHierarchy.Enabled = (cmbAccountHierarchy.Count > 1);
+//          cmbAccountHierarchy.Enabled = (cmbAccountHierarchy.Count > 1);
 
             /* select the latest year TODO ??? */
-            //            if (this.CbB_AvailableYears.Items.Count > 0)
-            //            {
-            //                this.CbB_AvailableYears.SelectedIndex = 0; /// first item is the most current year
-            //            }
+//            if (this.CbB_AvailableYears.Items.Count > 0)
+//            {
+//                this.CbB_AvailableYears.SelectedIndex = 0; /// first item is the most current year
+//            }
         }
 
         #region Parameter/Settings Handling
@@ -151,6 +138,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalculator.AddParameter("param_currency_name", CurrencyName);
 
             ACalculator.AddParameter("param_period", rbtPeriod.Checked);
+            ACalculator.AddParameter("param_period_breakdown", rbtBreakdown.Checked);
             ACalculator.AddParameter("param_date_checked", rbtDate.Checked);
 
             if (rbtQuarter.Checked)
@@ -212,6 +200,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     }
                 }
             }
+            else if (rbtBreakdown.Checked)
+            {
+                Year = cmbBreakdownYear.GetSelectedInt32();
+                ACalculator.AddParameter("param_real_year", cmbBreakdownYear.GetSelectedString(1));
+            }
 
             ACalculator.AddParameter("param_year_i", Year);
             ACalculator.AddParameter("param_start_date", dtpStartDate.Date);
@@ -241,12 +234,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             cmbCurrency.SetSelectedString(AParameters.Get("param_currency").ToString());
             cmbPeriodYear.SetSelectedInt32(AParameters.Get("param_year_i").ToInt());
             cmbQuarterYear.SetSelectedInt32(AParameters.Get("param_year_i").ToInt());
+            cmbBreakdownYear.SetSelectedInt32(AParameters.Get("param_year_i").ToInt());
 
             rbtQuarter.Checked = AParameters.Get("param_quarter").ToBool();
             rbtDate.Checked = AParameters.Get("param_date_checked").ToBool();
             rbtPeriod.Checked = AParameters.Get("param_period").ToBool();
+            rbtBreakdown.Checked = AParameters.Get("param_period_breakdown").ToBool();
 
-            if (!rbtPeriod.Checked && !rbtDate.Checked && !rbtQuarter.Checked)
+            if (!rbtPeriod.Checked && !rbtDate.Checked && !rbtQuarter.Checked && !rbtBreakdown.Checked)
             {
                 rbtPeriod.Checked = true;
             }
@@ -283,7 +278,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         #endregion
 
         /// <summary>
-        /// Hide all Period Range selcection elements except of the year selection
+        /// Hide all Period Range selection elements except of the year selection
         /// </summary>
         public void ShowOnlyYearSelection()
         {
@@ -346,6 +341,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         public void EnableDateSelection(bool AValue)
         {
             rbtDate.Enabled = AValue;
+        }
+
+        /// <summary>
+        /// Allow Breakdown By Period (in Income Expense Statement only)
+        /// </summary>
+        /// <param name="AValue"></param>
+        public void EnableBreakdownByPeriod(bool AValue)
+        {
+            rbtBreakdown.Visible = AValue;
+            lblYear.Visible = AValue;
+            cmbBreakdownYear.Visible = AValue;
+            grpPeriodRange.Height = (AValue) ? 240 : 164;
         }
 
         private void UnselectAll(System.Object sender, System.EventArgs e)
