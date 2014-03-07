@@ -68,21 +68,21 @@ namespace Tests.MFinance.Server.Gift
 
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
-			try
-			{
-	            Assert.AreEqual(1, Ict.Petra.Server.MFinance.Account.Data.Access.ALedgerAccess.CountAll(Transaction), "Testing the number of ledgers");
-			}
-			catch (Exception)
-			{
-				throw;
-			}
-			finally
-			{
-				if (NewTransaction)
-				{
-					DBAccess.GDBAccessObj.RollbackTransaction();
-				}
-			}            
+            try
+            {
+                Assert.AreEqual(1, Ict.Petra.Server.MFinance.Account.Data.Access.ALedgerAccess.CountAll(Transaction), "Testing the number of ledgers");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
         }
 
         /// <summary>

@@ -416,7 +416,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             ACorporateExchangeRateRow mainRow = (ACorporateExchangeRateRow)FMainDS.ACorporateExchangeRate.Rows.Find(
                 new object[] { ARow.ToCurrencyCode, ARow.FromCurrencyCode, ARow.DateEffectiveFrom });
 
-            if (mainRow != null)
+            if ((mainRow != null) && (ARow.RateOfExchange != 0.0m))
             {
                 // Checking to see if we have a matching rate is tricky because rounding errors mean that the inverse of an inverse
                 // does not always get you back where you started.  So we check both ways to look for a match.

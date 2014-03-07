@@ -318,25 +318,25 @@ namespace Tests.MFinance.Server.Gift
 
             try
             {
-	            GiftBatchTDS MainDS = new GiftBatchTDS();
-	
-	            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-	
-	            if (MainDS.ALedger.Count > 0)
-	            {
-	                retVal = MainDS.ALedger[0].PartnerKey;
-	            }
+                GiftBatchTDS MainDS = new GiftBatchTDS();
+
+                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+
+                if (MainDS.ALedger.Count > 0)
+                {
+                    retVal = MainDS.ALedger[0].PartnerKey;
+                }
             }
             catch (Exception)
             {
-            	throw;
+                throw;
             }
             finally
             {
-	            if (NewTransaction)
-	            {
-	                DBAccess.GDBAccessObj.RollbackTransaction();
-	            }
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
 
             return retVal;

@@ -1489,7 +1489,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 if (ACanDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
                 {                // and do the low-level database check to see if a deletion would succeed:
                     TVerificationResultCollection ReferenceResults;
-                    Int32 RefCount = AAccountCascading.CountByPrimaryKey(ALedgerNumber, AAccountCode, Transaction, false, out ReferenceResults);
+                    Int32 RefCount = AAccountCascading.CountByPrimaryKey(ALedgerNumber, AAccountCode, 50, Transaction, false, out ReferenceResults);
 
                     if (RefCount > 0)
                     {
@@ -1528,6 +1528,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             Int32 RefCount = AAnalysisAttributeCascading.CountByPrimaryKey(ALedgerNumber,
                 AAnalysisTypeCode,
                 AAccountCode,
+                0,
                 Transaction,
                 true,
                 out References);
@@ -3393,7 +3394,12 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 if (ACanDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
                 {                // and do the low-level database check to see if a deletion would succeed:
                     TVerificationResultCollection ReferenceResults;
-                    Int32 RefCount = ACostCentreCascading.CountByPrimaryKey(ALedgerNumber, ACostCentreCode, Transaction, false, out ReferenceResults);
+                    Int32 RefCount = ACostCentreCascading.CountByPrimaryKey(ALedgerNumber,
+                        ACostCentreCode,
+                        50,
+                        Transaction,
+                        false,
+                        out ReferenceResults);
 
                     if (RefCount > 0)
                     {

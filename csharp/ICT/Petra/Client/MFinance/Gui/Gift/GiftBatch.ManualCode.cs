@@ -297,6 +297,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ATab"></param>
         public void SelectTab(eGiftTabs ATab)
         {
+            FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
+
             if (ATab == eGiftTabs.Batches)
             {
                 this.tabGiftBatch.SelectedTab = this.tpgBatches;
