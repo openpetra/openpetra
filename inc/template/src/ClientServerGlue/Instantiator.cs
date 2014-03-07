@@ -115,7 +115,6 @@ public I{#NAMESPACENAME}Namespace {#OBJECTNAME}
     get
     {
         return (I{#NAMESPACENAME}Namespace) TCreateRemotableObject.CreateRemotableObject(
-                typeof(I{#NAMESPACENAME}Namespace),
                 typeof(T{#NAMESPACENAME}NamespaceRemote),
                 new T{#NAMESPACENAME}Namespace());
     }

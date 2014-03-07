@@ -35,6 +35,7 @@ namespace Ict.Petra.Client.CommonControls.Logic
     {
         static TDelegateOpenPartnerFindScreen FOpenPartnerFindScreen;
         static TDelegateOpenPartnerFindByBankDetailsScreen FOpenPartnerFindByBankDetailsScreen;
+        static TDelegateOpenBankFindDialog FOpenBankFindDialog;
         static TDelegateOpenConferenceFindScreen FOpenConferenceFindScreen;
         static TDelegateOpenEventFindScreen FOpenEventFindScreen;
         static TDelegateOpenExtractFindScreen FOpenExtractFindScreen;
@@ -75,6 +76,24 @@ namespace Ict.Petra.Client.CommonControls.Logic
             set
             {
                 FOpenPartnerFindByBankDetailsScreen = value;
+            }
+        }
+
+        /// <summary>
+        /// This property is used to provide a function which opens a modal Partner Find screen with only the
+        /// Find By Bank Details tab enabled.
+        /// </summary>
+        /// <description>The Delegate is set up at the start of the application.</description>
+        public static TDelegateOpenBankFindDialog OpenBankFindDialog
+        {
+            get
+            {
+                return FOpenBankFindDialog;
+            }
+
+            set
+            {
+                FOpenBankFindDialog = value;
             }
         }
 

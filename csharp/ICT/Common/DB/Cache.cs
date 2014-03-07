@@ -69,10 +69,9 @@ namespace Ict.Common.DB.DBCaching
         {
             DB.TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
-            int counter;
             DataSet newDataSet;
 
-            counter = 0;
+            int counter = 0;
 
             foreach (string sqlstr in storedSQLQuery)
             {
@@ -83,7 +82,7 @@ namespace Ict.Common.DB.DBCaching
                     return ((DataSet)storedDataSet[counter]).Copy();
                 }
 
-                counter = counter + 1;
+                counter++;
             }
 
             try
@@ -175,10 +174,7 @@ namespace Ict.Common.DB.DBCaching
         public ArrayList GetStringList(DB.TDataBase db, String sql)
         {
             ArrayList ReturnValue = new ArrayList();
-            DataSet ds;
-
-
-            ds = GetDataSet(db, sql);
+            DataSet ds = GetDataSet(db, sql);
 
             foreach (DataRow row in ds.Tables[0].Rows)
             {
@@ -195,24 +191,20 @@ namespace Ict.Common.DB.DBCaching
         /// <returns>void</returns>
         public void InvalidateTable(String tablename)
         {
-            String sqlstr;
-            int counter;
-
-            counter = 0;
+            int counter = 0;
 
             while (counter < storedSQLQuery.Count)
             {
-                sqlstr = (String)storedSQLQuery[counter];
+                String sqlstr = (String)storedSQLQuery[counter];
 
                 if (sqlstr.IndexOf(tablename) != -1)
                 {
                     storedDataSet.RemoveAt(counter);
                     storedSQLQuery.RemoveAt(counter);
-                    counter = 0;
                 }
                 else
                 {
-                    counter = counter + 1;
+                    counter++;
                 }
             }
         }

@@ -118,7 +118,7 @@ public partial class CollapsiblePanelHosterTest : Form
         this.FCollPanelHoster.ItemActivation += new TTaskList.TaskLinkClicked(CollPanelHoster_ItemActivation);
     }
 
-    void CollPanelHoster_ItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+    void CollPanelHoster_ItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
     {
         MessageBox.Show(String.Format("Task '{0}' with Label '{1}' got clicked.", ATaskListNode.Name, AItemClicked.Text));
     }

@@ -1241,9 +1241,9 @@ namespace Ict.Common.Controls
 
             UpdateTaskList();
 
-            FTaskListInstance.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+            FTaskListInstance.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
             {
-                OnItemActivation(ATaskList, ATaskListNode, AItemClicked);
+                OnItemActivation(ATaskList, ATaskListNode, AItemClicked, AOtherData);
             };
 
             return FTaskListInstance;
@@ -1302,9 +1302,9 @@ namespace Ict.Common.Controls
 
             UpdateCollapsiblePanelHoster();
 
-            FPnlCollapsibleHoster.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+            FPnlCollapsibleHoster.ItemActivation += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
             {
-                OnItemActivation(ATaskList, ATaskListNode, AItemClicked);
+                OnItemActivation(ATaskList, ATaskListNode, AItemClicked, AOtherData);
             };
 
             return FPnlCollapsibleHoster;
@@ -1483,12 +1483,12 @@ namespace Ict.Common.Controls
             return GraphicIndex;
         }
 
-        private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+        private void OnItemActivation(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
         {
             // Re-fire Event
             if (ItemActivation != null)
             {
-                ItemActivation(ATaskList, ATaskListNode, AItemClicked);
+                ItemActivation(ATaskList, ATaskListNode, AItemClicked, AOtherData);
             }
         }
 

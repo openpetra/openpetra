@@ -88,6 +88,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             /// </summary>
             public Boolean? CanDelete;
             public Boolean IsNew;
+            public String Msg;
 
             public AAccountRow AccountRow;
             public AAccountHierarchyDetailRow DetailRow;
@@ -233,7 +234,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
 
         /// <summary>
-        /// Make this account of child of the selected one in the hierarchy (from drag-drop).
+        /// Make this account a child of the selected one in the hierarchy (from drag-drop).
         /// </summary>
         /// <param name="AChild"></param>
         /// <param name="ANewParent"></param>
@@ -270,7 +271,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void RunOnceOnActivationManual()
         {
-            FPetraUtilsObject.UnhookControl(txtDetailAccountCode, true); // I don't want changes in this edit box to cause SetChangedFlag - I'll set it myself.
+            FPetraUtilsObject.UnhookControl(txtDetailAccountCode, false); // I don't want changes in this edit box to cause SetChangedFlag - I'll set it myself.
+            FPetraUtilsObject.UnhookControl(txtStatus, false); // This control is not to be spied on!
             txtDetailAccountCode.TextChanged += new EventHandler(txtDetailAccountCode_TextChanged);
             chkDetailForeignCurrencyFlag.CheckedChanged += new EventHandler(chkDetailForeignCurrencyFlag_CheckedChanged);
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnHierarchySaved);
@@ -438,7 +440,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if ((FCurrentNode != null) && (FCurrentNode != treeViewCancelEventArgs.Node))
                 {
                     AccountNodeDetails NodeDetails = (AccountNodeDetails)FCurrentNode.Tag;
-                    String CurrentReportingAccountCode = NodeDetails.DetailRow.ReportingAccountCode;
                     FSelectedAccountRow = (GLSetupTDSAAccountRow)NodeDetails.AccountRow;
                     GetDetailsFromControls(FSelectedAccountRow);
 
@@ -470,12 +471,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 bool RemoteCanBeParent = false;
                 bool RemoteCanDelete = false;
+                String Msg;
 
                 if (TRemote.MFinance.Setup.WebConnectors.GetAccountCodeAttributes(FLedgerNumber, nodeDetails.DetailRow.ReportingAccountCode,
-                        out RemoteCanBeParent, out RemoteCanDelete))
+                        out RemoteCanBeParent, out RemoteCanDelete, out Msg))
                 {
                     nodeDetails.CanHaveChildren = RemoteCanBeParent;
                     nodeDetails.CanDelete = RemoteCanDelete;
+                    nodeDetails.Msg = Msg;
                 }
             }
 
@@ -543,6 +546,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
         }
 
+        private void SelectNodeByName(String AccountCode)
+        {
+            FMainDS.AAccount.DefaultView.RowFilter = String.Format("a_account_code_c='{0}'", AccountCode);
+
+            if (FMainDS.AAccount.DefaultView.Count > 0)
+            {
+                AAccountRow Row = (AAccountRow)FMainDS.AAccount.DefaultView[0].Row;
+                String SearchFor = NodeLabel(Row);
+                TreeNode[] FoundNodes = trvAccounts.Nodes.Find(SearchFor, true);
+
+                if (FoundNodes.Length > 0)
+                {
+                    FoundNodes[0].EnsureVisible();
+                    trvAccounts.SelectedNode = FoundNodes[0];
+                    trvAccounts.Focus();
+                }
+            }
+        }
+
         private void ValidateDataDetailsManual(GLSetupTDSAAccountRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
@@ -571,7 +593,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ucoAccountAnalysisAttributes.AccountCode = ARow.AccountCode;
 
                 chkDetailForeignCurrencyFlag.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag);
-                cmbDetailForeignCurrencyCode.Enabled = !ARow.SystemAccountFlag;
+                cmbDetailForeignCurrencyCode.Enabled = (ARow.PostingStatus && !ARow.SystemAccountFlag && ARow.ForeignCurrencyFlag);
+
+                if (!ARow.ForeignCurrencyFlag)
+                {
+                    cmbDetailForeignCurrencyCode.SelectedIndex = -1;
+                    ARow.ForeignCurrencyCode = "";
+                }
+
                 chkDetailAccountActiveFlag.Enabled = !ARow.SystemAccountFlag;
 
                 // I allow the user to attempt to change the primary key,
@@ -800,81 +829,84 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 MessageBox.Show(
                     String.Format(Catalog.GetString(
-                            "Account {0} cannot be deleted because it has already been used in GL transactions, or it is a system or summary account. You can deactivate the account, but not delete it."),
-                        AccountCode),
+                            "Account {0} cannot be deleted. You can deactivate the account, but not delete it."),
+                        AccountCode) +
+                    "\r\n" + NodeDetails.Msg,
                     Catalog.GetString("Delete Account"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // select parent node first, so that account to be deleted will not be updated later anymore
+            TreeNode NodeToBeDeleted = FCurrentNode;
+            trvAccounts.SelectedNode = FCurrentNode.Parent;
+
+            trvAccounts.BeginUpdate();
+            NodeToBeDeleted.Remove();
+            trvAccounts.EndUpdate();
+
+            //
+            // If this account has analysis Attributes,
+            // I need to remove them.
+
+            if (FMainDS.AAnalysisAttribute != null)
+            {
+                DataView DeleteThese = new DataView(FMainDS.AAnalysisAttribute);
+                DeleteThese.RowFilter = String.Format("a_ledger_number_i={0} AND a_account_code_c='{1}'",
+                    FLedgerNumber, AccountCode);
+
+                foreach (DataRowView rv in DeleteThese)
+                {
+                    DataRow TempRow = rv.Row;
+                    TempRow.Delete();
+                }
+            }
+
+            AAccountHierarchyDetailRow AccountHDetailToBeDeleted = (AAccountHierarchyDetailRow)FMainDS.AAccountHierarchyDetail.Rows.Find(
+                new object[] { FLedgerNumber, FSelectedHierarchy, AccountCode });
+            AccountHDetailToBeDeleted.Delete();
+
+            //
+            // I can delete this account if it no longer appears in any Hieararchy.
+
+            DataView AHD_stillInUse = new DataView(FMainDS.AAccountHierarchyDetail);
+            AHD_stillInUse.RowFilter = String.Format("a_ledger_number_i={0} AND a_reporting_account_code_c='{1}'",
+                FLedgerNumber, AccountCode);
+
+            if (AHD_stillInUse.Count == 0)
+            {
+                AAccountRow AccountToBeDeleted = (AAccountRow)FMainDS.AAccount.Rows.Find(
+                    new object[] { FLedgerNumber, AccountCode });
+                AccountToBeDeleted.Delete();
             }
             else
             {
-                // select parent node first, so that account to be deleted will not be updated later anymore
-                TreeNode NodeToBeDeleted = FCurrentNode;
-                trvAccounts.SelectedNode = FCurrentNode.Parent;
-
-                trvAccounts.BeginUpdate();
-                NodeToBeDeleted.Remove();
-                trvAccounts.EndUpdate();
-
-                //
-                // If this account has analysis Attributes,
-                // I need to remove them.
-
-                if (FMainDS.AAnalysisAttribute != null)
-                {
-                    DataView DeleteThese = new DataView(FMainDS.AAnalysisAttribute);
-                    DeleteThese.RowFilter = String.Format("a_ledger_number_i={0} AND a_account_code_c='{1}'",
-                        FLedgerNumber, AccountCode);
-
-                    foreach (DataRowView rv in DeleteThese)
-                    {
-                        DataRow TempRow = rv.Row;
-                        TempRow.Delete();
-                    }
-                }
-
-                AAccountHierarchyDetailRow AccountHDetailToBeDeleted = (AAccountHierarchyDetailRow)FMainDS.AAccountHierarchyDetail.Rows.Find(
-                    new object[] { FLedgerNumber, FSelectedHierarchy, AccountCode });
-                AccountHDetailToBeDeleted.Delete();
-
-                //
-                // I can delete this account if it no longer appears in any Hieararchy.
-
-                DataView AHD_stillInUse = new DataView(FMainDS.AAccountHierarchyDetail);
-                AHD_stillInUse.RowFilter = String.Format("a_ledger_number_i={0} AND a_reporting_account_code_c='{1}'",
-                    FLedgerNumber, AccountCode);
-
-                if (AHD_stillInUse.Count == 0)
-                {
-                    AAccountRow AccountToBeDeleted = (AAccountRow)FMainDS.AAccount.Rows.Find(
-                        new object[] { FLedgerNumber, AccountCode });
-                    AccountToBeDeleted.Delete();
-                }
-                else
-                {
-                    MessageBox.Show(String.Format(
-                            Catalog.GetString(
-                                "The account {0} is removed from the {1} hierarchy, but not deleted, since it remains part of another heirarchy."),
-                            AccountCode,
-                            FSelectedHierarchy),
-                        Catalog.GetString("Delete Account"),
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-
-                // If the account [parent of the deleted node] now has no accounts reporting to it (in any hierarchies), mark it as posting account.
-                NodeDetails = GetAccountCodeAttributes(trvAccounts.SelectedNode);
-                tbbDeleteUnusedAccount.Enabled = (NodeDetails.CanDelete.HasValue ? NodeDetails.CanDelete.Value : false);
-                AAccountRow AccountParent = NodeDetails.AccountRow;
-                AHD_stillInUse.RowFilter = String.Format("a_ledger_number_i={0} AND a_account_code_to_report_to_c='{1}'",
-                    FLedgerNumber, AccountParent.AccountCode);
-
-                if (AHD_stillInUse.Count == 0)  // No-one now reports to this account, so I can mark it as "Posting"
-                {
-                    AccountParent.PostingStatus = true;
-                    // It's possible this account could now be deleted, but the user would need to save and re-load first,
-                    // because the server still has it down as a summary account.
-                }
-
-                FPetraUtilsObject.SetChangedFlag();
+                MessageBox.Show(String.Format(
+                        Catalog.GetString(
+                            "The account {0} is removed from the {1} hierarchy, but not deleted, since it remains part of another heirarchy."),
+                        AccountCode,
+                        FSelectedHierarchy),
+                    Catalog.GetString("Delete Account"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+
+            // If the account [parent of the deleted node] now has no accounts reporting to it (in any hierarchies), mark it as posting account.
+            NodeDetails = GetAccountCodeAttributes(trvAccounts.SelectedNode);
+            tbbDeleteUnusedAccount.Enabled = (NodeDetails.CanDelete.HasValue ? NodeDetails.CanDelete.Value : false);
+            AAccountRow AccountParent = NodeDetails.AccountRow;
+            AHD_stillInUse.RowFilter = String.Format("a_ledger_number_i={0} AND a_account_code_to_report_to_c='{1}'",
+                FLedgerNumber, AccountParent.AccountCode);
+
+            if (AHD_stillInUse.Count == 0)  // No-one now reports to this account, so I can mark it as "Posting"
+            {
+                AccountParent.PostingStatus = true;
+                chkDetailForeignCurrencyFlag.Enabled = (!AccountParent.SystemAccountFlag);
+                cmbDetailForeignCurrencyCode.Enabled = (!AccountParent.SystemAccountFlag && AccountParent.ForeignCurrencyFlag);
+
+                // It's possible this account could now be deleted, but the user would need to save and re-load first,
+                // because the server still has it down as a summary account.
+            }
+
+            FPetraUtilsObject.SetChangedFlag();
         }
 
         /// <summary>
@@ -931,6 +963,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         public bool ChangeAccountCodeValue()
         {
             String strNewDetailAccountCode = txtDetailAccountCode.Text;
+            String strAccountShortDescr = txtDetailEngAccountCodeShortDesc.Text;
+
             bool changeAccepted = false;
 
             if (strNewDetailAccountCode != FRecentlyUpdatedDetailAccountCode)
@@ -954,7 +988,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     }
 
                     this.Cursor = Cursors.WaitCursor;
-                    this.Refresh();
+                    this.Refresh();  // Just to get the Wait Cursor to display...
 
                     FRecentlyUpdatedDetailAccountCode = strNewDetailAccountCode;
                     AccountNodeDetails NodeDetails = (AccountNodeDetails)trvAccounts.SelectedNode.Tag;
@@ -967,8 +1001,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         NodeDetails.AccountRow.EndEdit();
 
                         trvAccounts.BeginUpdate();
-                        trvAccounts.SelectedNode.Text = strNewDetailAccountCode;
-                        trvAccounts.SelectedNode.Name = strNewDetailAccountCode;
+                        trvAccounts.SelectedNode.Text = NodeLabel(strNewDetailAccountCode, strAccountShortDescr);
+                        trvAccounts.SelectedNode.Name = NodeLabel(strNewDetailAccountCode, strAccountShortDescr);
                         trvAccounts.EndUpdate();
 
                         changeAccepted = true;
@@ -1014,6 +1048,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         else
                         {
                             FStatus += Catalog.GetString("Updating Account Code change - please wait.\r\n");
+
                             txtStatus.Text = FStatus;
                             txtStatus.Refresh();
                             TVerificationResultCollection VerificationResults;
@@ -1025,7 +1060,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             bool Success = TRemote.MFinance.Setup.WebConnectors.RenameAccountCode(strOldDetailAccountCode,
                                 strNewDetailAccountCode,
                                 FLedgerNumber,
-                                out VerificationResults);                                                                       // This call takes ages..
+                                out VerificationResults);                                                           // This call takes ages..
 
                             if (Success)
                             {
@@ -1033,14 +1068,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 FMainDS.Clear();
                                 FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));      // and this also takes a while!
                                 strOldDetailAccountCode = "";
-                                FPetraUtilsObject.HasChanges = false;
+                                FPetraUtilsObject.SuppressChangeDetection = true;
                                 PopulateTreeView();
                                 ShowDetailsManual(null);
                                 FStatus = "";
                                 txtStatus.Text = FStatus;
                                 FIAmUpdating = false;
-                                FPetraUtilsObject.HasChanges = false;
-                                FPetraUtilsObject.DisableSaveButton();
+                                FPetraUtilsObject.SuppressChangeDetection = false;
+                                SelectNodeByName(FRecentlyUpdatedDetailAccountCode);
 
                                 FStatus += String.Format(Catalog.GetString("Account Code changed to '{0}'."), strNewDetailAccountCode) + "\r\n";
                                 txtStatus.Text = FStatus;

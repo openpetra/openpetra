@@ -1261,7 +1261,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             out TVerificationResultCollection AVerificationResult)
         {
             TSubmitChangesResult ReturnValue = TSubmitChangesResult.scrOK;
-            TValidationControlsDict ValidationControlsDict = new TValidationControlsDict();
 
             AVerificationResult = new TVerificationResultCollection();
 
@@ -1361,8 +1360,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             {
                 if (AInspectDS.AAnalysisType.Rows.Count > 0)
                 {
-                    ValidateAAnalysisType(ValidationControlsDict, ref AVerificationResult, AInspectDS.AAnalysisType);
-                    ValidateAAnalysisTypeManual(ValidationControlsDict, ref AVerificationResult, AInspectDS.AAnalysisType);
+                    ValidateAAnalysisType(ref AVerificationResult, AInspectDS.AAnalysisType);
+                    ValidateAAnalysisTypeManual(ref AVerificationResult, AInspectDS.AAnalysisType);
 
                     if (!TVerificationHelper.IsNullOrOnlyNonCritical(AVerificationResult))
                     {
@@ -1442,14 +1441,20 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="AAccountCode"></param>
         /// <param name="ACanBeParent"></param>
         /// <param name="ACanDelete"></param>
+        /// <param name="AMsg"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Boolean GetAccountCodeAttributes(Int32 ALedgerNumber, String AAccountCode, out bool ACanBeParent, out bool ACanDelete)
+        public static Boolean GetAccountCodeAttributes(Int32 ALedgerNumber,
+            String AAccountCode,
+            out bool ACanBeParent,
+            out bool ACanDelete,
+            out String AMsg)
         {
 //        public static Boolean AccountCodeCanHaveChildren(Int32 ALedgerNumber, String AAccountCode)
             ACanBeParent = true;
             ACanDelete = true;
             bool DbSuccess = true;
+            AMsg = "";
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             AAccountTable AccountTbl = AAccountAccess.LoadByPrimaryKey(ALedgerNumber, AAccountCode, Transaction);
 
@@ -1464,11 +1469,33 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 ACanBeParent = IsParent; // If it's a summary account, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
                 ACanDelete = !IsParent;
 
+                if (!ACanDelete)
+                {
+                    AMsg = Catalog.GetString("Account is a summary account with other accounts reporting into it.");
+                }
+
                 if (!ACanBeParent || ACanDelete)
                 {
                     bool IsInUse = AccountCodeHasBeenUsed(ALedgerNumber, AAccountCode, Transaction);
                     ACanBeParent = !IsInUse;    // For posting accounts, I can still add children (and upgrade the account) if there's nothing posted to it yet.
                     ACanDelete = !IsInUse;      // Once it has transactions posted, I can't delete it, ever.
+
+                    if (!ACanDelete)
+                    {
+                        AMsg = Catalog.GetString("Account has been used in Transactions.");
+                    }
+                }
+
+                if (ACanDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
+                {                // and do the low-level database check to see if a deletion would succeed:
+                    TVerificationResultCollection ReferenceResults;
+                    Int32 RefCount = AAccountCascading.CountByPrimaryKey(ALedgerNumber, AAccountCode, Transaction, false, out ReferenceResults);
+
+                    if (RefCount > 0)
+                    {
+                        ACanDelete = false;
+                        AMsg = ReferenceResults.BuildVerificationResultString();
+                    }
                 }
             }
 
@@ -1478,10 +1505,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
         #region Data Validation
 
-        static partial void ValidateAAnalysisType(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
-        static partial void ValidateAAnalysisTypeManual(TValidationControlsDict ValidationControlsDict,
-            ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateAAnalysisType(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
+        static partial void ValidateAAnalysisTypeManual(ref TVerificationResultCollection AVerificationResult, TTypedDataTable ASubmitTable);
 
         #endregion Data Validation
 
@@ -1890,12 +1915,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// only works if there are no balances/transactions yet for the cost centres that are deleted
+        /// only works if there are no balances/transactions yet for the cost centres that are deleted.
+        /// Returns false with helpful error message otherwise.
         /// </summary>
         [RequireModulePermission("FINANCE-3")]
-        public static bool ImportCostCentreHierarchy(Int32 ALedgerNumber, string AXmlHierarchy)
+        public static bool ImportCostCentreHierarchy(Int32 ALedgerNumber, string AXmlHierarchy, out TVerificationResultCollection VerificationResult)
         {
             XmlDocument doc = new XmlDocument();
+
+            VerificationResult = new TVerificationResultCollection();
 
             doc.LoadXml(AXmlHierarchy);
 
@@ -1913,12 +1941,28 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     // TODO: delete costcentres that don't exist anymore in the new hierarchy, or deactivate them?
                     // (check if their balance is empty and no transactions exist, or catch database constraint violation)
                     // TODO: what about system cost centres? probably alright to ignore here
+                    bool CanBeParent;
+                    bool CanDelete;
+                    String ErrorMsg;
+                    GetCostCentreAttributes(ALedgerNumber,
+                        costCentreRow.CostCentreCode,
+                        out CanBeParent,
+                        out CanDelete,
+                        out ErrorMsg);
+
+                    if (!CanDelete)
+                    {
+                        ErrorMsg = String.Format(Catalog.GetString("Unable to delete Cost Centre {0}"), costCentreRow.CostCentreCode) +
+                                   "\r\n" +
+                                   ErrorMsg;
+                        VerificationResult.Add(new TVerificationResult(Catalog.GetString("Import hierarchy"), ErrorMsg, TResultSeverity.Resv_Critical));
+                        return false;
+                    }
 
                     costCentreRow.Delete();
                 }
             }
 
-            TVerificationResultCollection VerificationResult;
             return SaveGLSetupTDS(ALedgerNumber, ref MainDS, out VerificationResult) == TSubmitChangesResult.scrOK;
         }
 
@@ -3290,8 +3334,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             out bool ACanDelete,
             out String AMsg)
         {
-            ACanBeParent = true;
-            ACanDelete = true;
+            ACanBeParent = false;
+            ACanDelete = false;
             AMsg = "";
             bool DbSuccess = true;
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
@@ -3305,13 +3349,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             else
             {
                 bool IsParent = CostCentreHasChildren(ALedgerNumber, ACostCentreCode, Transaction);
-                ACostCentreRow AccountRow = TempTbl[0];
-                ACanBeParent = IsParent; // If it's a summary account, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
+                ACostCentreRow CostCentreRow = TempTbl[0];
+                ACanBeParent = !CostCentreRow.PostingCostCentreFlag; // If it's a summary Cost Centre, it's OK (This shouldn't happen either, because the client shouldn't ask me!)
 
                 if (IsParent)
                 {
                     ACanDelete = false;
                     AMsg = Catalog.GetString("Cost Centre has children.");
+                }
+                else
+                {
+                    ACanDelete = true;
                 }
 
                 if (!ACanBeParent || ACanDelete)
@@ -3320,9 +3368,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                     if (IsInUse)
                     {
-                        ACanBeParent = false;    // For posting accounts, I can still add children (and change the account to summary) if there's nothing posted to it yet.
+                        ACanBeParent = false;
                         ACanDelete = false;      // Once it has transactions posted, I can't delete it, ever.
                         AMsg = Catalog.GetString("Cost Centre is referenced in transactions.");
+                    }
+                    else
+                    {
+                        ACanBeParent = true;    // For posting Cost Centres, I can still add children (and change the Cost Centre to summary) if there's nothing posted to it yet.
                     }
                 }
 
@@ -3335,6 +3387,18 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         ACanBeParent = false;
                         ACanDelete = false;
                         AMsg = String.Format(Catalog.GetString("Cost Centre is linked to partner {0}."), VlnTbl[0].PartnerKey);
+                    }
+                }
+
+                if (ACanDelete)  // In the absence of any screamingly obvious problem, I'll assume the user really does want to delete this
+                {                // and do the low-level database check to see if a deletion would succeed:
+                    TVerificationResultCollection ReferenceResults;
+                    Int32 RefCount = ACostCentreCascading.CountByPrimaryKey(ALedgerNumber, ACostCentreCode, Transaction, false, out ReferenceResults);
+
+                    if (RefCount > 0)
+                    {
+                        ACanDelete = false;
+                        AMsg = ReferenceResults.BuildVerificationResultString();
                     }
                 }
             }
@@ -3473,14 +3537,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     ALedgerNumber,
                     Transaction,
                     ref AttemptedOperation);
-
-
-/*
- * These tables were previously checked in the 4GL, but they don't exist in Open Petra:
- *
- * "a_previous_year_transaction"
- * "a_ich_stewardship"
- */
 
                 PrevRow.Delete();
 

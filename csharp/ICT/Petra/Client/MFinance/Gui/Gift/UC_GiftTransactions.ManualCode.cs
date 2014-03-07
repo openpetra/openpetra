@@ -217,7 +217,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
             }
-            
+
             //Check if need to update batch period in each gift
             ((TFrmGiftBatch)ParentForm).GetBatchControl().UpdateBatchPeriod();
 
@@ -232,7 +232,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FSuppressListChanged = false;
             grdDetails.ResumeLayout();
-            
+
             return true;
         }
 
@@ -780,7 +780,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //txtDetailCostCentreCode.Text = TRemote.MFinance.Gift.WebConnectors.IdentifyPartnerCostCentre(FLedgerNumber, FieldNumber);
         }
 
-        
         private void GetRecipientData(long APartnerKey = 0)
         {
             if (APartnerKey == 0)
@@ -790,7 +789,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             TFinanceControls.GetRecipientData(ref cmbMinistry, ref txtField, APartnerKey, true);
         }
-        
+
         private void GiftDetailAmountChanged(object sender, EventArgs e)
         {
             TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
@@ -2119,9 +2118,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ABatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
             {
-            	return;
+                return;
             }
-            
+
             ledgerNumber = ABatchRow.LedgerNumber;
             batchNumber = ABatchRow.BatchNumber;
             batchEffectiveDate = ABatchRow.GlEffectiveDate;
@@ -2132,7 +2131,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
             }
-			else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
+            else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
             {
                 FGLEffectivePeriodChanged = true;
                 //Rows already active in transaction tab. Need to set current row ac code below will not update selected row

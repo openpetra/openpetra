@@ -73,7 +73,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             clbFields.AddCheckBoxColumn("", FFieldTable.Columns[CheckedMember], 17, false);
             clbFields.AddTextColumn(Catalog.GetString("Field Key"), FFieldTable.Columns[ValueMember], 80);
             clbFields.AddTextColumn(Catalog.GetString("Field Name"), FFieldTable.Columns[DisplayMember], 200);
-            clbFields.DataBindGrid(FFieldTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+            clbFields.DataBindGrid(FFieldTable, ValueMember, CheckedMember, ValueMember, false, true, false);
 
             FTypeTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.PartnerTypeList);
 
@@ -85,7 +85,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             clbTypes.AddCheckBoxColumn("", FTypeTable.Columns[CheckedMember], 17);
             clbTypes.AddTextColumn(Catalog.GetString("Partner Type"), FTypeTable.Columns[PTypeTable.GetTypeCodeDBName()], 280);
             clbTypes.DataBindGrid(FTypeTable, PTypeTable.GetTypeCodeDBName(), CheckedMember,
-                PTypeTable.GetTypeCodeDBName(), PTypeTable.GetTypeCodeDBName(), false, true, false);
+                PTypeTable.GetTypeCodeDBName(), false, true, false);
         }
 
         private void SelectAllFields(object sender, EventArgs e)

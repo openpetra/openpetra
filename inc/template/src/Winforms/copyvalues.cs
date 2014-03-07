@@ -106,7 +106,10 @@ else
 {##GETVALUEORNULL}
 if ({#DETERMINECONTROLISNULL})
 {
-    {#ROW}.Set{#COLUMNNAME}Null();
+    if (!{#ROW}.Is{#COLUMNNAME}Null())
+    {
+        {#ROW}.Set{#COLUMNNAME}Null();
+    }
 }
 else
 {

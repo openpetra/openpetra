@@ -42,6 +42,7 @@ using Ict.Petra.Shared.Interfaces.MReporting;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Common.Remoting.Shared;
+using Ict.Petra.Client.MFinance.Gui.Setup;
 
 namespace Ict.Petra.Client.App.PetraClient
 {
@@ -311,26 +312,27 @@ namespace Ict.Petra.Client.App.PetraClient
                     if (ConferenceName != String.Empty)
                     {
                         const int BreakPoint = 28;
+                        SpecificConferenceNode.Attributes["Label"].Value = "";
 
-                        // split up the name if it is too long to fit in the navigation panel
-                        if (ConferenceName.Length <= BreakPoint)
-                        {
-                            SpecificConferenceNode.Attributes["Label"].Value = ConferenceName + "\n";
-                        }
-                        else
+                        // splits the name over multiple lines if it too long
+                        while (ConferenceName.Length > BreakPoint)
                         {
                             int IndexOfSpace = ConferenceName.IndexOf(" ", 0);
                             int LastIndexOfSpace = 0;
 
+                            // searches for the last breakpoint for a line
                             while (IndexOfSpace <= BreakPoint && IndexOfSpace != -1)
                             {
                                 LastIndexOfSpace = IndexOfSpace;
                                 IndexOfSpace = ConferenceName.IndexOf(" ", LastIndexOfSpace + 1);
                             }
 
-                            SpecificConferenceNode.Attributes["Label"].Value = ConferenceName.Substring(0, LastIndexOfSpace) +
-                                                                               "\n" + ConferenceName.Substring(LastIndexOfSpace + 1) + "\n";
+                            SpecificConferenceNode.Attributes["Label"].Value += ConferenceName.Substring(0, LastIndexOfSpace) + "\n";
+
+                            ConferenceName = ConferenceName.Remove(0, LastIndexOfSpace + 1);
                         }
+
+                        SpecificConferenceNode.Attributes["Label"].Value += ConferenceName + "\n";
                     }
                     else
                     {
@@ -566,13 +568,23 @@ namespace Ict.Petra.Client.App.PetraClient
 
             lstFolders.ClearFolders();
 
-            lstFolders.SubmoduleChanged += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+            lstFolders.SubmoduleChanged += delegate(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
             {
                 OnSubmoduleChanged(ATaskList, ATaskListNode, AItemClicked);
             };
             lstFolders.LedgerChanged += delegate(int ALedgerNr, string ALedgerName)
             {
                 OnLedgerChanged(ALedgerNr, ALedgerName);
+            };
+
+            TPnlModuleNavigation.SubSystemLinkStatus += delegate(int ALedgerNr, TPnlCollapsible APnlCollapsible)
+            {
+                UpdateSubsystemLinkStatus(ALedgerNr, APnlCollapsible);
+            };
+
+            TFrmGLEnableSubsystems.FinanceSubSystemLinkStatus += delegate()
+            {
+                UpdateFinanceSubsystemLinkStatus();
             };
 
             TLstTasks.Init(UserInfo.GUserInfo.UserID, HasAccessPermission);
@@ -890,6 +902,54 @@ namespace Ict.Petra.Client.App.PetraClient
         public Int64 GetSelectedConferenceKey()
         {
             return FConferenceKey;
+        }
+
+        private void UpdateFinanceSubsystemLinkStatus()
+        {
+            // Only necessary to do something here if Finance Module is currently selected
+            // as otherwise handling will be automatically done via link selection change events
+            lstFolders.FireSelectedLinkEventIfFolderSelected("Finance");
+        }
+
+        private void UpdateSubsystemLinkStatus(int ALedgerNr, TPnlCollapsible APnlCollapsible)
+        {
+            if (APnlCollapsible == null)
+            {
+                return;
+            }
+
+            if (APnlCollapsible.TaskListNode.Name == "Finance")
+            {
+                XmlNode TempNode = APnlCollapsible.TaskListNode.FirstChild;
+
+                while (TempNode != null)
+                {
+                    if (TempNode.Name == "GiftProcessing")
+                    {
+                        if (TRemote.MFinance.Setup.WebConnectors.IsGiftProcessingSubsystemActivated(ALedgerNr))
+                        {
+                            APnlCollapsible.TaskListInstance.EnableTaskItem(TempNode);
+                        }
+                        else
+                        {
+                            APnlCollapsible.TaskListInstance.DisableTaskItem(TempNode);
+                        }
+                    }
+                    else if (TempNode.Name == "AccountsPayable")
+                    {
+                        if (TRemote.MFinance.Setup.WebConnectors.IsAccountsPayableSubsystemActivated(ALedgerNr))
+                        {
+                            APnlCollapsible.TaskListInstance.EnableTaskItem(TempNode);
+                        }
+                        else
+                        {
+                            APnlCollapsible.TaskListInstance.DisableTaskItem(TempNode);
+                        }
+                    }
+
+                    TempNode = TempNode.NextSibling;
+                }
+            }
         }
     }
 }

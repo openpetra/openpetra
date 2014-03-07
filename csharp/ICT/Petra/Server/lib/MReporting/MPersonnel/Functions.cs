@@ -22,11 +22,14 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Petra.Server.MCommon.Cacheable;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MReporting;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Server.MReporting.MPartner;
@@ -109,6 +112,12 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             if (StringHelper.IsSame(f, "GetPassport"))
             {
                 value = new TVariant(GetPassport(ops[1].ToInt64()));
+                return true;
+            }
+
+            if (StringHelper.IsSame(f, "GetNationalities"))
+            {
+                value = new TVariant(GetNationalities(ops[1].ToInt64()));
                 return true;
             }
 
@@ -801,6 +810,28 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             return ResultPassportRow != null;
         }
 
+        /// <summary>
+        /// Gets nationalities from all of a Partner's recorded passports
+        /// </summary>
+        /// <param name="APartnerKey">Partner key</param>
+        /// <returns>returns nationalities in a comma seperated string</returns>
+        private string GetNationalities(Int64 APartnerKey)
+        {
+            TCacheable CommonCacheable = new TCacheable();
+
+            StringCollection PassportColumns = StringHelper.StrSplit(
+                PmPassportDetailsTable.GetDateOfIssueDBName() + "," +
+                PmPassportDetailsTable.GetDateOfExpirationDBName() + "," +
+                PmPassportDetailsTable.GetPassportNationalityCodeDBName() + "," +
+                PmPassportDetailsTable.GetMainPassportDBName(), ",");
+
+            PmPassportDetailsTable PassportDetailsDT = PmPassportDetailsAccess.LoadViaPPerson(APartnerKey,
+                PassportColumns, situation.GetDatabaseConnection().Transaction, null, 0, 0);
+
+            return Ict.Petra.Shared.MPersonnel.Calculations.DeterminePersonsNationalities(
+                @CommonCacheable.GetCacheableTable, PassportDetailsDT);
+        }
+
         private String GetDriverStatus(Int64 APartnerKey)
         {
             String DriverStatus = "";
@@ -1062,7 +1093,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         /// <returns>The calculated age as a string</returns>
         private String CalculateAge(DateTime ABirthday)
         {
-            return Calculations.CalculateAge(ABirthday).ToString();
+            return Ict.Petra.Shared.MPartner.Calculations.CalculateAge(ABirthday).ToString();
         }
 
         /// <summary>
@@ -1073,7 +1104,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
         /// <returns>The calculated age as a string</returns>
         private String CalculateAgeAtDate(DateTime ABirthday, DateTime ATestDate)
         {
-            return Calculations.CalculateAge(ABirthday, ATestDate).ToString();
+            return Ict.Petra.Shared.MPartner.Calculations.CalculateAge(ABirthday, ATestDate).ToString();
         }
 
         /// <summary>

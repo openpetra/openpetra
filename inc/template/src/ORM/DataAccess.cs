@@ -268,7 +268,7 @@ public class {#TABLENAME}Access : TTypedDataAccess
     /// this method is called by all overloads
     public static int CountUsingTemplate(TSearchCriteria[] ASearchCriteria, TDBTransaction ATransaction)
     {
-        return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}" + GenerateWhereClause(TTypedDataTable.GetColumnStringList({#TABLENAME}Table.TableId), ASearchCriteria)), ATransaction, 
+        return Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(("SELECT COUNT(*) FROM PUB_{#SQLTABLENAME}" + GenerateWhereClause(ASearchCriteria)), ATransaction, 
         GetParametersForWhereClause({#TABLENAME}Table.TableId, ASearchCriteria)));
     }
     {#VIAOTHERTABLE}

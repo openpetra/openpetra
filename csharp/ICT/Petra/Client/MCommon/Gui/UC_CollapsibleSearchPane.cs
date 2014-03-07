@@ -838,12 +838,12 @@ namespace Ict.Petra.Client.MCommon.Gui
         {
             if (this.FPreventCollapsing == true)
             {
-                args.Cancel = true;
+// TODO               args.Cancel = true;
                 this.FCollapsing = false;
             }
             else
             {
-                this.FCollapsing = args.WillCollapse;
+// TODO                this.FCollapsing = args.WillCollapse;
             }
         }
 

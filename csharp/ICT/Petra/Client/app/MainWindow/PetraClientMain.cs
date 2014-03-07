@@ -265,7 +265,6 @@ namespace Ict.Petra.Client.App.PetraClient
                 TPatchTools.OPENPETRA_VERSIONPREFIX,
                 TClientSettings.PathTemp,
                 "",
-                "",
                 TClientSettings.Petra_Path_Patches,
                 TClientSettings.Petra_Path_RemotePatches);
 
@@ -663,6 +662,7 @@ namespace Ict.Petra.Client.App.PetraClient
             // Set up Delegates for forwarding of calls to Screens in various Assemblies
             TCommonScreensForwarding.OpenPartnerFindScreen = @TPartnerFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenPartnerFindByBankDetailsScreen = @TPartnerFindScreenManager.OpenModalForm;
+            TCommonScreensForwarding.OpenBankFindDialog = @TBankFindDialogManager.OpenModalForm;
             TCommonScreensForwarding.OpenConferenceFindScreen = @TConferenceFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenEventFindScreen = @TEventFindScreenManager.OpenModalForm;
             TCommonScreensForwarding.OpenExtractFindScreen = @TExtractFindScreenManager.OpenModalForm;

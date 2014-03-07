@@ -151,13 +151,13 @@ namespace Ict.Petra.Server.MReporting.MConference
                 return true;
             }
 
-            if (StringHelper.IsSame(f, "CalculateSingleNationality"))
+            if (StringHelper.IsSame(f, "CalculateNationalities"))
             {
                 bool ResultValue = false;
 
                 if (FNationalitySummaryCalculation != null)
                 {
-                    ResultValue = FNationalitySummaryCalculation.CalculateSingleNationality(ops[1].ToInt64(),
+                    ResultValue = FNationalitySummaryCalculation.CalculateNationalities(ops[1].ToInt64(),
                         ops[2].ToString(), ops[3].ToString(), ref situation);
                 }
 

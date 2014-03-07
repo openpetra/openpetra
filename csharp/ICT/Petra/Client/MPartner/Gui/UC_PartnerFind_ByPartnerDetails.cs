@@ -34,19 +34,22 @@ using SourceGrid.Selection;
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
-using Ict.Petra.Client.App.Core;
-using Ict.Petra.Client.MPartner;
-using Ict.Petra.Client.MPartner.Logic;
-using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.CommonControls;
-using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Gui.Gift;
+using Ict.Petra.Client.MPartner;
+using Ict.Petra.Client.MPartner.Logic;
+using Ict.Petra.Client.MReporting.Gui;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -545,7 +548,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             //            MessageBox.Show("PartnerKey of newly selected Row: " + FLogic.PartnerKey.ToString());
             //            TLogging.Log("DataGrid_FocusRowEntered: PartnerKey of newly selected Row: " + FLogic.PartnerKey.ToString());
 
-            // Update 'Partner Info' if this Panel is shown
+            // Update 'Partner Info' if this Panel is shown and this is not the 'Bank Details' tab
             UpdatePartnerInfoPanel();
         }
 
@@ -776,6 +779,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     TCommonScreensForwarding.OpenExtractMasterScreen.Invoke(this.ParentForm);
                 }
             }
+            else if (ClickedMenuItemName == "mniMailingGenerateExtract")
+            {
+                CreateNewExtractFromFoundPartners();
+            }
             else
             {
                 throw new NotImplementedException();
@@ -805,10 +812,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             else if (ClickedMenuItemText == mniMailingSubscriptionExpNotice.Text)
             {
                 TMenuFunctions.SubscriptionExpiryNotices();
-            }
-            else if (ClickedMenuItemText == mniMailingGenerateExtract.Text)
-            {
-                CreateNewExtractFromFoundPartners();
             }
 #endif
         }
@@ -868,7 +871,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TLocationPK CurrentLocationPK;
 
-            if (!ucoPartnerInfo.IsCollapsed)
+            if (!ucoPartnerInfo.IsCollapsed && !FBankDetailsTab)
             {
                 CurrentLocationPK = FLogic.DetermineCurrentLocationPK();
 
@@ -1218,6 +1221,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // Register Event Handler for the OnCriteriaContentChanged event
             ucoPartnerFindCriteria.OnCriteriaContentChanged += new EventHandler(this.UcoPartnerFindCriteria_CriteriaContentChanged);
+
+            if (FBankDetailsTab)
+            {
+                // populate comboboxes (from database)
+                Thread BankDetailThread = new Thread(ucoPartnerFindCriteria.PopulateBankComboBoxes);
+                BankDetailThread.Start();
+            }
         }
 
         private void RestoreSplitterSettings()
@@ -1383,14 +1393,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.Cursor = Cursors.WaitCursor;
 
             // Set Partner to be the "Last Used Partner"
-            if (ucoPartnerFindCriteria.RestrictedPartnerClass.Length == 0)
-            {
-                TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPARTNERMAILROOM, APartnerKey);
-            }
-            else if (ucoPartnerFindCriteria.RestrictedPartnerClass[0] == "PERSON")
-            {
-                TUserDefaults.SetDefault(TUserDefaults.USERDEFAULT_LASTPERSONPERSONNEL, APartnerKey);
-            }
+            TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(APartnerKey, TLastPartnerUse.lpuMailroomPartner);
 
             try
             {
@@ -1517,6 +1520,80 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoPartnerFindCriteria.DisplayCriteriaFieldControls();
         }
 
+        private void CreateNewExtractFromFoundPartners()
+        {
+            TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(FPetraUtilsObject.GetForm());
+            int ExtractId = 0;
+            string ExtractName;
+            string ExtractDescription;
+            TVerificationResultCollection VerificationResult;
+
+            ExtractNameDialog.ShowDialog();
+
+            if (ExtractNameDialog.DialogResult != System.Windows.Forms.DialogResult.Cancel)
+            {
+                // Get values from the Dialog
+                ExtractNameDialog.GetReturnedParameters(out ExtractName, out ExtractDescription);
+            }
+            else
+            {
+                // dialog was cancelled, do not continue with extract generation
+                return;
+            }
+
+            ExtractNameDialog.Dispose();
+
+            this.Cursor = Cursors.WaitCursor;
+
+            /* Make Server call to add all found Partners to the new Extract.
+             * Note: Partners will not be included more than once in the extract.
+             * If a partner is included more than once then the 'best location' location key is used.
+             * Otherwise the location key that is found by Partner Find is the one that is used.
+             */
+            try
+            {
+                int ExtractPartners = FPartnerFindObject.AddAllFoundPartnersToExtract(
+                    ExtractName, ExtractDescription, ExtractId, out VerificationResult);
+
+                if (ExtractPartners != -1)
+                {
+                    string MessageText;
+
+                    if (ExtractPartners == 1)
+                    {
+                        MessageText = MPartnerResourcestrings.StrPartnersAddedToExtractText;
+                    }
+                    else
+                    {
+                        MessageText = MPartnerResourcestrings.StrPartnersAddedToExtractPluralText;
+                    }
+
+                    MessageBox.Show(String.Format(MessageText, ExtractPartners),
+                        MPartnerResourcestrings.StrPartnersAddedToExtractTitle, MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+                else
+                {
+                    if (VerificationResult != null)
+                    {
+                        MessageBox.Show(Messages.BuildMessageFromVerificationResult(null, VerificationResult));
+                    }
+                    else
+                    {
+                        MessageBox.Show(Catalog.GetString("Creation of extract failed"),
+                            MPartnerResourcestrings.StrPartnersAddedToExtractTitle,
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
+                    }
+                }
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+                Application.DoEvents();
+            }
+        }
+
         #endregion
 
         #region Helper functions
@@ -1604,7 +1681,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             Int64 MergedPartnerKey;
 
             // Since this procedure is called from a separate (background) Thread, it is
-            // necessary to executethis procedure in the Thread of the GUI
+            // necessary to execute this procedure in the Thread of the GUI
             if (btnSearch.InvokeRequired)
             {
                 Args = new object[1];
@@ -2147,7 +2224,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             TUserDefaults.SetDefault(TUserDefaults.PARTNER_FIND_SPLITPOS_FINDBYDETAILS, spcPartnerFindByDetails.SplitterDistance);
 
             // Save Partner Info Pane and Partner Task Pane settings
-            TUserDefaults.SetDefault(TUserDefaults.PARTNER_FIND_PARTNERDETAILS_OPEN, FPartnerInfoPaneOpen);
+            if (!FBankDetailsTab)
+            {
+                TUserDefaults.SetDefault(TUserDefaults.PARTNER_FIND_PARTNERDETAILS_OPEN, FPartnerInfoPaneOpen);
+            }
+
             TUserDefaults.SetDefault(TUserDefaults.PARTNER_FIND_PARTNERTASKS_OPEN, FPartnerTasksPaneOpen);
         }
 

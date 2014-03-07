@@ -231,6 +231,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             return true;
         }
 
+        private void RemoveSelectedDocument(Object sender, EventArgs e)
+        {
+            if (FSelectedDocumentRow != null)
+            {
+                FMainDS.AApDocumentPayment.Rows.Remove(FSelectedDocumentRow);
+                FSelectedDocumentRow = null;
+                FocusedRowChangedDetails(null, null);
+            }
+        }
+
         private void UpdateTotalAmount(Object sender, EventArgs e)
         {
             txtTotalAmount.NumberValueDecimal = FSelectedPaymentRow.Amount;
@@ -332,11 +342,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FSelectedDocumentRow.Amount = Decimal.Parse(txtAmountToPay.Text);
             }
 
-            FSelectedDocumentRow = (AccountsPayableTDSAApDocumentPaymentRow)SelectedGridRow[0].Row;
-            rbtPayFullOutstandingAmount.Checked = FSelectedDocumentRow.PayFullInvoice;
-            rbtPayPartialAmount.Checked = !rbtPayFullOutstandingAmount.Checked;
+            if (SelectedGridRow.Length == 0)
+            {
+                FSelectedDocumentRow = null;
+            }
+            else
+            {
+                FSelectedDocumentRow = (AccountsPayableTDSAApDocumentPaymentRow)SelectedGridRow[0].Row;
+                FSelectedDocumentRow = (AccountsPayableTDSAApDocumentPaymentRow)SelectedGridRow[0].Row;
+                rbtPayFullOutstandingAmount.Checked = FSelectedDocumentRow.PayFullInvoice;
+                rbtPayPartialAmount.Checked = !rbtPayFullOutstandingAmount.Checked;
 
-            EnablePartialPayment(null, null);
+                EnablePartialPayment(null, null);
+            }
         }
 
         private void PrintPaymentReport(object sender, EventArgs e)

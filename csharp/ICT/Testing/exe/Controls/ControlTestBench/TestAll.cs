@@ -357,7 +357,7 @@ public partial class TestAll : Form
         ACollPanelHoster.ItemActivation += new TTaskList.TaskLinkClicked(ItemActivationHandler);
     }
 
-    void ItemActivationHandler(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked)
+    void ItemActivationHandler(TTaskList ATaskList, XmlNode ATaskListNode, LinkLabel AItemClicked, object AOtherData)
     {
         MessageBox.Show(String.Format("Task '{0}' with Label '{1}' got clicked.", ATaskListNode.Name, AItemClicked.Text));
     }

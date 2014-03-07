@@ -149,7 +149,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                 clbEvent.AddTextColumn(Catalog.GetString("Event Code"), NewTable.Columns[EventCodeMember], 110);
             }
 
-            clbEvent.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+            clbEvent.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, false, true, false);
 
             //TODO: only temporarily until settings file exists
             clbEvent.SetCheckedStringList("");
@@ -174,7 +174,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             clbEventRole.AddTextColumn(Catalog.GetString("Event Role"), NewTable.Columns[ValueMember], 100);
             clbEventRole.AddTextColumn(Catalog.GetString("Description"), NewTable.Columns[DisplayMember], 240);
 
-            clbEventRole.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+            clbEventRole.DataBindGrid(NewTable, DisplayMember, CheckedMember, ValueMember, false, true, false);
 
             //TODO: only temporarily until settings file exists
             clbEventRole.SetCheckedStringList("");

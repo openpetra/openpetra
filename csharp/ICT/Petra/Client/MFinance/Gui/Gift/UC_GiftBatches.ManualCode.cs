@@ -733,10 +733,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Leave BatchPeriod as it is
             }
         }
-        
+
         private void UpdateBatchPeriod(object sender, EventArgs e)
         {
-        	UpdateBatchPeriod();
+            UpdateBatchPeriod();
         }
 
         private bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)

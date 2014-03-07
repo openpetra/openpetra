@@ -6,6 +6,7 @@
 //       Tim Ingham
 //
 // Copyright 2004-2013 by OM International
+// Copyright 2013-2014 by SolidCharity
 //
 // This file is part of OpenPetra.org.
 //
@@ -214,6 +215,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // recognise detail lines automatically
             string RowTemplate;
             msg = TPrinterHtml.GetTableRow(msg, "#AMOUNT", out RowTemplate);
+            string OrigRowTemplate = RowTemplate;
             string rowTexts = "";
             decimal sum = 0;
 
@@ -234,6 +236,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 string accountDesc = rowGifts["AccountDesc"].ToString();
                 string costcentreDesc = rowGifts["CostCentreDesc"].ToString();
                 string gifttype = rowGifts["GiftType"].ToString();
+                RowTemplate = OrigRowTemplate;
 
                 sum += Convert.ToDecimal(rowGifts["AmountInBaseCurrency"]);
 
@@ -295,6 +298,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (prevDateEntered != DateTime.MaxValue)
             {
+                RowTemplate = OrigRowTemplate;
+
                 if (prevgifttype == MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND)
                 {
                     RowTemplate = TPrinterHtml.RemoveDivWithClass(RowTemplate, MFinanceConstants.GIFT_TYPE_GIFT);

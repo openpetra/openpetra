@@ -90,6 +90,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.AddDateColumn("as of", FMainDS.PmPersonLanguage.ColumnYearsOfExperienceAsOf);
 
             FLanguageCodeDT = (PLanguageTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
+
+            // make sure action can be taken when data is saved successfully
+            FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
         }
 
         /// <summary>
@@ -268,6 +271,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (RecalculateScreenParts != null)
             {
                 RecalculateScreenParts(this, e);
+            }
+        }
+
+        private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
+        {
+            if (!FPetraUtilsObject.HasChanges)
+            {
+                // only set to read only if saving of data was successful
+                SetPrimaryKeyReadOnly(true);
             }
         }
 

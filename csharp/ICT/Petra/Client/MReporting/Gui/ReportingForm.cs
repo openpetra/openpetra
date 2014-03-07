@@ -493,6 +493,12 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             if (FDelegateViewReportOverride != null)
             {
+                // read the settings and parameters from the controls
+                if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate))
+                {
+                    return;
+                }
+
                 FDelegateViewReportOverride(FCalculator);
             }
         }

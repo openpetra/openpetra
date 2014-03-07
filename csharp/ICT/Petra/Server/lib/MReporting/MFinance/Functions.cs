@@ -61,9 +61,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
         private string UnitKeyToForeignCostCentre(Int64 pv_unit_partner_key_n)
         {
             string ReturnValue;
-            Int64 ledgerNumber;
-
-            ledgerNumber = pv_unit_partner_key_n / 1000000;
+            Int64 ledgerNumber = pv_unit_partner_key_n / 1000000;
 
             if (ledgerNumber < 10)
             {
@@ -234,17 +232,12 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
         private decimal GetAssetsMinusLiabs(int master, int column)
         {
-            decimal ReturnValue;
-            decimal assets;
-            decimal liabs;
-            Boolean notnull;
-            ArrayList list;
+            Decimal ReturnValue = 0;
+            ArrayList list = new ArrayList();
+            Boolean notnull = false;
+            Decimal assets = 0;
+            Decimal liabs = 0;
 
-            ReturnValue = 0;
-            list = new ArrayList();
-            notnull = false;
-            assets = 0;
-            liabs = 0;
             situation.GetResults().GetChildRows(master, ref list);
 
             foreach (TResult element in list)
@@ -362,34 +355,31 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
         private string GetCurrency(int ledgernumber, String param_currency)
         {
-            string ReturnValue;
-            string strSql;
-            DataTable tab;
-            String currencyFormat;
+            string ReturnValue = "";
 
-            ReturnValue = "";
+            param_currency = param_currency.ToLower();
 
-            if (param_currency == "Transaction")
+            if (param_currency == "transaction")
             {
                 ReturnValue = "All";
             }
-            else if ((param_currency.ToLower() == "mixed") || (param_currency.ToLower() == "depends on column"))
+            else if ((param_currency == "mixed") || (param_currency == "depends on column"))
             {
                 ReturnValue = "mixed";
             }
             else
             {
-                strSql = "SELECT a_base_currency_c, a_intl_currency_c FROM PUB_a_ledger WHERE a_ledger_number_i = ?";
-                tab = situation.GetDatabaseConnection().SelectDT(strSql, "currencies",
-                    situation.GetDatabaseConnection().Transaction, new OdbcParameter[] { new OdbcParameter("ledger", (System.Object)ledgernumber) });
+                string strSql = "SELECT a_base_currency_c, a_intl_currency_c FROM PUB_a_ledger WHERE a_ledger_number_i = " + ledgernumber;
+                DataTable tab = situation.GetDatabaseConnection().SelectDT(strSql, "currencies",
+                    situation.GetDatabaseConnection().Transaction);
 
                 if (tab.Rows.Count > 0)
                 {
-                    if (param_currency.ToLower() == "base")
+                    if (param_currency == "base")
                     {
                         ReturnValue = Convert.ToString(tab.Rows[0]["a_base_currency_c"]);
                     }
-                    else if ((param_currency.ToLower() == "intl") || (param_currency.ToLower() == "international"))
+                    else if (param_currency.StartsWith("int"))
                     {
                         ReturnValue = Convert.ToString(tab.Rows[0]["a_intl_currency_c"]);
                     }
@@ -398,15 +388,12 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
             if (parameters.Exists("param_currency_format"))
             {
-                currencyFormat = parameters.Get("param_currency_format").ToString();
+                String currencyFormat = parameters.Get("param_currency_format").ToString();
 
                 if (StringHelper.IsSame(currencyFormat, "CurrencyThousands"))
                 {
                     ReturnValue = ReturnValue + " (in Thousands)";
                 }
-
-                // else if (StringHelper.IsSame(currencyFormat, 'CurrencyWithoutDecimals')) then
-                // result := result + ' (without decimals)'
             }
 
             return ReturnValue;
@@ -421,35 +408,36 @@ namespace Ict.Petra.Server.MReporting.MFinance
         {
             String ReturnValue = "";
 
-            if (param_type.ToLower().CompareTo("summary") == 0)
+            param_type = param_type.ToLower();
+            param_currency = param_currency.ToLower();
+
+            if (param_type == "summary")
             {
                 ReturnValue = "Summary Report";
             }
-            else if (param_type.ToLower().CompareTo("standard") == 0)
+            else if (param_type == "standard")
             {
                 ReturnValue = "Standard Report";
             }
-            else if (param_type.ToLower().CompareTo("detail") == 0)
+            else if (param_type == "detail")
             {
                 ReturnValue = "Detailed Report";
             }
 
-            ReturnValue = ReturnValue + "    (";
-
-            if (param_currency.ToLower().CompareTo("base") == 0)
+            if (param_currency == "base")
             {
-                ReturnValue = ReturnValue + "Base";
+                ReturnValue += "    (Base)";
             }
-            else if ((param_currency.ToLower().CompareTo("intl") == 0) || (param_currency.ToLower().CompareTo("international") == 0))
+            else if (param_currency.StartsWith("int"))
             {
-                ReturnValue = ReturnValue + "International";
+                ReturnValue += "    (International)";
             }
-            else if ((param_currency.ToLower().CompareTo("mixed") == 0) || (param_currency.ToLower().CompareTo("depends on column") == 0))
+            else if ((param_currency == "mixed") || (param_currency == "depends on column"))
             {
-                ReturnValue = ReturnValue + "Mixed Currencies";
+                ReturnValue += "    (Mixed Currencies)";
             }
 
-            return ReturnValue + ")";
+            return ReturnValue;
         }
 
         private String GetAccountingHierarchy(String param_accounting_hierarchy)
@@ -484,7 +472,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 }
                 else
                 {
-                    if (currency_s.CompareTo("international") == 0)
+                    if (currency_s.StartsWith("int"))
                     {
                         ReturnValue = parameters.Get("a_amount_in_intl_currency_n", situation.GetColumn(), situation.GetDepth()).ToDecimal();
                     }
@@ -552,25 +540,19 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// <param name="pv_year_i"></param>
         public void GetGlmSequences(int pv_ledger_number_i, String pv_cost_centre_code_c, String pv_account_code_c, int pv_year_i)
         {
-            int col;
-            int ledgernr;
-            string cost_centre_other;
-            Boolean use_several_ledgers;
-            TGlmSequence glmSequence;
-
             if (pv_cost_centre_code_c.Length == 0)
             {
                 pv_cost_centre_code_c = GetMainCostCentre(pv_ledger_number_i);
             }
 
-            col = situation.GetColumn();
+            int col = situation.GetColumn();
 
             if (col == ReportingConsts.ALLCOLUMNS)
             {
                 col = -1;
             }
 
-            glmSequence = LedgerStatus.GlmSequencesCache.GetGlmSequenceCurrentYear(
+            TGlmSequence glmSequence = LedgerStatus.GlmSequencesCache.GetGlmSequenceCurrentYear(
                 situation.GetDatabaseConnection(), pv_ledger_number_i, pv_cost_centre_code_c, pv_account_code_c,
                 situation.GetParameters().Get("param_current_financial_year_i", -1).ToInt());
 
@@ -591,7 +573,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 situation.GetParameters().Add("debit_credit_indicator", new TVariant(), col, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
             }
 
-            use_several_ledgers = (situation.GetParameters().Get("use_several_ledgers").ToBool() == true);
+            Boolean use_several_ledgers = (situation.GetParameters().Get("use_several_ledgers").ToBool() == true);
 
             if (use_several_ledgers)
             {
@@ -599,11 +581,11 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
                 while (situation.GetParameters().Exists("param_calculation", col, -1, eParameterFit.eExact))
                 {
-                    ledgernr = situation.GetParameters().Get("param_ledger_number_i", col, -1, eParameterFit.eExact).ToInt();
+                    int ledgernr = situation.GetParameters().Get("param_ledger_number_i", col, -1, eParameterFit.eExact).ToInt();
 
                     if (ledgernr != -1)
                     {
-                        cost_centre_other = pv_cost_centre_code_c.Replace(pv_ledger_number_i.ToString(), ledgernr.ToString());
+                        string cost_centre_other = pv_cost_centre_code_c.Replace(pv_ledger_number_i.ToString(), ledgernr.ToString());
                         glmSequence = LedgerStatus.GlmSequencesCache.GetGlmSequenceCurrentYear(
                             situation.GetDatabaseConnection(), ledgernr, cost_centre_other, pv_account_code_c,
                             situation.GetParameters().Get("param_current_financial_year_i", col).ToInt());
@@ -645,14 +627,10 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// <returns>the main cost centre of the given ledger, e.g. [10]</returns>
         private string GetMainCostCentre(int pv_ledger_number_i)
         {
-            string ReturnValue;
-            string strSql;
-            DataTable tab;
-
-            ReturnValue = "";
-            strSql = "SELECT a_cost_centre_code_c " + "FROM PUB_a_cost_centre " + "WHERE a_ledger_number_i = " + StringHelper.IntToStr(
-                pv_ledger_number_i) + " AND a_cost_centre_to_report_to_c = \"\"";
-            tab = situation.GetDatabaseConnection().SelectDT(strSql, "table", situation.GetDatabaseConnection().Transaction);
+            string ReturnValue = "";
+            string strSql = "SELECT a_cost_centre_code_c FROM PUB_a_cost_centre WHERE a_ledger_number_i = " + pv_ledger_number_i +
+                            " AND a_cost_centre_to_report_to_c = \"\"";
+            DataTable tab = situation.GetDatabaseConnection().SelectDT(strSql, "table", situation.GetDatabaseConnection().Transaction);
 
             if (tab.Rows.Count > 0)
             {
@@ -664,23 +642,24 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
         private decimal GetActualValue(TFinancialPeriod period, String pv_currency_select_c)
         {
-            string strSql = "SELECT a_actual_base_n, a_actual_intl_n, a_actual_foreign_n " + "FROM PUB_a_general_ledger_master_period " +
-                            "WHERE a_glm_sequence_i = " + StringHelper.IntToStr(period.realGlmSequence.glmSequence) + ' ' +
-                            "AND a_period_number_i = " +
-                            StringHelper.IntToStr(period.realPeriod);
+            string strSql = "SELECT a_actual_base_n, a_actual_intl_n, a_actual_foreign_n FROM PUB_a_general_ledger_master_period" +
+                            " WHERE a_glm_sequence_i = " + period.realGlmSequence.glmSequence +
+                            " AND a_period_number_i = " + period.realPeriod;
             DataTable tab = ActualsCache.GetDataTable(situation.GetDatabaseConnection(), strSql);
 
             if (tab.Rows.Count > 0)
             {
-                if (StringHelper.IsSame(pv_currency_select_c, "Base"))
+                pv_currency_select_c = pv_currency_select_c.ToLower();
+
+                if (pv_currency_select_c == "base")
                 {
                     return Convert.ToDecimal(tab.Rows[0]["a_actual_base_n"]);
                 }
-                else if (StringHelper.IsSame(pv_currency_select_c, "Intl") || StringHelper.IsSame(pv_currency_select_c, "International"))
+                else if (pv_currency_select_c.StartsWith("int"))
                 {
                     return Convert.ToDecimal(tab.Rows[0]["a_actual_base_n"]) * period.exchangeRateToIntl;
                 }
-                else if (StringHelper.IsSame(pv_currency_select_c, "Transaction"))
+                else if (pv_currency_select_c == "transaction")
                 {
                     if (tab.Rows[0].IsNull("a_actual_foreign_n"))
                     {
@@ -710,36 +689,29 @@ namespace Ict.Petra.Server.MReporting.MFinance
             String pv_currency_select_c,
             String accountHierarchy)
         {
-            decimal ReturnValue;
-            string accountChildren;
-            string accountChild;
-            decimal subAccountAmount;
-            TFinancialPeriod subAccountPeriod;
-            bool childDebitCreditIndicator;
-
             // get all the posting accounts that report to this account in the selected account hierarchy
-            accountChildren = GetAllAccountDescendants(periodParent.realGlmSequence.ledger_number,
+            string accountChildren = GetAllAccountDescendants(periodParent.realGlmSequence.ledger_number,
                 periodParent.realGlmSequence.account_code,
                 accountHierarchy);
-            ReturnValue = 0;
+            decimal ReturnValue = 0;
 
             while (accountChildren.Length > 0)
             {
-                accountChild = StringHelper.GetNextCSV(ref accountChildren);
+                string accountChild = StringHelper.GetNextCSV(ref accountChildren);
 
                 StringHelper.GetNextCSV(ref accountChildren);
                 // alias
                 StringHelper.GetNextCSV(ref accountChildren);
 
                 // accountChildAccountDescr
-                childDebitCreditIndicator = (StringHelper.GetNextCSV(ref accountChildren).ToUpper() == "TRUE");
-                subAccountPeriod = new TFinancialPeriod(
+                bool childDebitCreditIndicator = (StringHelper.GetNextCSV(ref accountChildren).ToUpper() == "TRUE");
+                TFinancialPeriod subAccountPeriod = new TFinancialPeriod(
                     situation.GetDatabaseConnection(), pv_period_number_i, pv_year_i, periodParent.diffPeriod, periodParent.FCurrentFinancialYear,
                     periodParent.FCurrentPeriod, periodParent.FNumberAccountingPeriods, periodParent.FNumberForwardingPeriods,
                     LedgerStatus.GlmSequencesCache.GetGlmSequenceCurrentYear(situation.GetDatabaseConnection(),
                         periodParent.realGlmSequence.ledger_number, periodParent.realGlmSequence.cost_centre_code, accountChild,
                         periodParent.FCurrentFinancialYear));
-                subAccountAmount = GetActual(subAccountPeriod, pv_period_number_i, pv_year_i, pv_ytd_l, pv_currency_select_c);
+                decimal subAccountAmount = GetActual(subAccountPeriod, pv_period_number_i, pv_year_i, pv_ytd_l, pv_currency_select_c);
 
                 if (childDebitCreditIndicator != periodParent.realGlmSequence.DebitCreditIndicator)
                 {
@@ -792,14 +764,6 @@ namespace Ict.Petra.Server.MReporting.MFinance
         /// <returns></returns>
         private decimal GetActual(TFinancialPeriod period, int pv_period_number_i, int pv_year_i, Boolean pv_ytd_l, String pv_currency_select_c)
         {
-            TFinancialPeriod firstPeriod;
-            TFinancialPeriod beforeFirstPeriodOfYear;
-            TFinancialPeriod lastPeriodOfPrevYear;
-            decimal lv_currency_amount_n;
-            decimal lv_prev_year_amount_n;
-            string strSql;
-            DataTable tab;
-
             if ((period == null) || (period.realGlmSequence == null))
             {
                 return 0.0M;
@@ -819,21 +783,21 @@ namespace Ict.Petra.Server.MReporting.MFinance
             }
 
             // for summary accounts, need to get the correct summary amount
-            string accountHierarchy = parameters.Get("param_account_hierarchy_c").ToString();
-
             if (!period.realGlmSequence.postingAccount)
             {
+                string accountHierarchy = parameters.Get("param_account_hierarchy_c").ToString();
                 return GetActualSummary(period, pv_period_number_i, pv_year_i, pv_ytd_l, pv_currency_select_c, accountHierarchy);
             }
 
-            lv_currency_amount_n = 0;
+            decimal lv_currency_amount_n = 0;
 
             if (period.realPeriod == 0)
             {
                 // start balance
-                strSql = "SELECT a_start_balance_base_n, a_start_balance_intl_n, a_start_balance_foreign_n " + "FROM PUB_a_general_ledger_master " +
-                         "WHERE a_glm_sequence_i = " + StringHelper.IntToStr(period.realGlmSequence.glmSequence);
-                tab = ActualsCache.GetDataTable(situation.GetDatabaseConnection(), strSql);
+                string strSql =
+                    "SELECT a_start_balance_base_n, a_start_balance_intl_n, a_start_balance_foreign_n FROM PUB_a_general_ledger_master " +
+                    "WHERE a_glm_sequence_i = " + period.realGlmSequence.glmSequence;
+                DataTable tab = ActualsCache.GetDataTable(situation.GetDatabaseConnection(), strSql);
 
                 if (tab.Rows.Count > 0)
                 {
@@ -843,8 +807,9 @@ namespace Ict.Petra.Server.MReporting.MFinance
                     }
                     else
                     {
-                        if ((pv_currency_select_c == "Intl") || (pv_currency_select_c == "International"))
+                        if (pv_currency_select_c.ToLower().StartsWith("int"))
                         {
+                            // Curiously the a_start_balance_intl_n field is not just returned here...
                             lv_currency_amount_n = Convert.ToDecimal(tab.Rows[0]["a_start_balance_base_n"]) * period.exchangeRateToIntl;
                         }
                         else
@@ -888,15 +853,15 @@ namespace Ict.Petra.Server.MReporting.MFinance
  */
                     if ((period.diffPeriod != 0) && (period.realGlmSequence.incExpAccount))
                     {
+                        decimal lv_prev_year_amount_n = 0;
                         // start balance starts with 0
-                        firstPeriod = new TFinancialPeriod(situation.GetDatabaseConnection(), 1, pv_year_i, period);
+                        TFinancialPeriod firstPeriod = new TFinancialPeriod(situation.GetDatabaseConnection(), 1, pv_year_i, period);
 
                         if (firstPeriod.realYear != period.realYear)
                         {
                             // add the amount from the last year (real)
-                            lastPeriodOfPrevYear = new TFinancialPeriod(
+                            TFinancialPeriod lastPeriodOfPrevYear = new TFinancialPeriod(
                                 situation.GetDatabaseConnection(), period.FNumberAccountingPeriods - period.diffPeriod, pv_year_i - 1, period);
-                            lv_prev_year_amount_n = 0;
 
                             if (lastPeriodOfPrevYear.realGlmSequence != null)
                             {
@@ -907,8 +872,8 @@ namespace Ict.Petra.Server.MReporting.MFinance
                             lv_currency_amount_n = lv_currency_amount_n + lv_prev_year_amount_n;
                         }
 
-                        // substract the value that is before the first period of the (artificial) year
-                        beforeFirstPeriodOfYear = new TFinancialPeriod(situation.GetDatabaseConnection(), 0, pv_year_i, period);
+                        // subtract the value that is before the first period of the (artificial) year
+                        TFinancialPeriod beforeFirstPeriodOfYear = new TFinancialPeriod(situation.GetDatabaseConnection(), 0, pv_year_i, period);
                         lv_prev_year_amount_n = 0;
 
                         if (beforeFirstPeriodOfYear.realGlmSequence != null)
@@ -916,7 +881,6 @@ namespace Ict.Petra.Server.MReporting.MFinance
                             lv_prev_year_amount_n = GetActualValue(beforeFirstPeriodOfYear, pv_currency_select_c);
                         }
 
-                        beforeFirstPeriodOfYear = null;
                         lv_currency_amount_n = lv_currency_amount_n - lv_prev_year_amount_n;
                     }
                 }
@@ -1013,19 +977,11 @@ namespace Ict.Petra.Server.MReporting.MFinance
             int pv_year_i,
             String accountHierarchy)
         {
-            decimal ReturnValue;
-            string accountChildren;
-            string accountChild;
-            decimal subAccountAmount;
-            TFinancialPeriod subAccountEndPeriod;
-            TFinancialPeriod subAccountStartPeriod;
-            bool childDebitCreditIndicator;
-
             // get all the posting accounts that report to this account in the selected account hierarchy
-            accountChildren = GetAllAccountDescendants(StartPeriodParent.realGlmSequence.ledger_number,
+            string accountChildren = GetAllAccountDescendants(StartPeriodParent.realGlmSequence.ledger_number,
                 StartPeriodParent.realGlmSequence.account_code,
                 accountHierarchy);
-            ReturnValue = 0;
+            decimal ReturnValue = 0;
 
             // precondition: the parent periods must be in the same real year; that is taken care of in CalculateBudget
             if (StartPeriodParent.realYear != EndPeriodParent.realYear)
@@ -1035,24 +991,24 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
             while (accountChildren.Length > 0)
             {
-                accountChild = StringHelper.GetNextCSV(ref accountChildren);
+                string accountChild = StringHelper.GetNextCSV(ref accountChildren);
 
                 StringHelper.GetNextCSV(ref accountChildren);
                 // alias
                 StringHelper.GetNextCSV(ref accountChildren);
 
                 // accountChildAccountDescr
-                childDebitCreditIndicator = (StringHelper.GetNextCSV(ref accountChildren).ToUpper() == "TRUE");
-                subAccountStartPeriod = new TFinancialPeriod(
+                bool childDebitCreditIndicator = (StringHelper.GetNextCSV(ref accountChildren).ToUpper() == "TRUE");
+                TFinancialPeriod subAccountStartPeriod = new TFinancialPeriod(
                     situation.GetDatabaseConnection(), pv_period_number_i, pv_year_i, StartPeriodParent.diffPeriod,
                     StartPeriodParent.FCurrentFinancialYear, StartPeriodParent.FCurrentPeriod, StartPeriodParent.FNumberAccountingPeriods,
                     StartPeriodParent.FNumberForwardingPeriods,
                     LedgerStatus.GlmSequencesCache.GetGlmSequenceCurrentYear(situation.GetDatabaseConnection(),
                         StartPeriodParent.realGlmSequence.ledger_number, StartPeriodParent.realGlmSequence.cost_centre_code, accountChild,
                         StartPeriodParent.FCurrentFinancialYear));
-                subAccountEndPeriod = new TFinancialPeriod(subAccountStartPeriod);
+                TFinancialPeriod subAccountEndPeriod = new TFinancialPeriod(subAccountStartPeriod);
                 subAccountEndPeriod.realPeriod = EndPeriodParent.realPeriod;
-                subAccountAmount = GetBudget(subAccountStartPeriod, subAccountEndPeriod, pv_period_number_i, pv_year_i);
+                decimal subAccountAmount = GetBudget(subAccountStartPeriod, subAccountEndPeriod, pv_period_number_i, pv_year_i);
 
                 if (childDebitCreditIndicator != StartPeriodParent.realGlmSequence.DebitCreditIndicator)
                 {
@@ -1067,12 +1023,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
         private decimal GetBudget(TFinancialPeriod startperiod, TFinancialPeriod endperiod, Int32 periodNr, Int32 yearNr)
         {
-            decimal ReturnValue;
-            string strSql;
-            DataTable tab;
-            string accountHierarchy;
-
-            ReturnValue = 0;
+            decimal ReturnValue = 0;
 
             if ((startperiod == null) || (startperiod.realGlmSequence == null) || (startperiod.realGlmSequence.glmSequence <= -1))
             {
@@ -1087,21 +1038,21 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
             // for summary accounts, when using a different than the STANDARD accounting hierarchy,
             // need to get the correct summary amount
-            accountHierarchy = parameters.Get("param_account_hierarchy_c").ToString();
+            string accountHierarchy = parameters.Get("param_account_hierarchy_c").ToString();
 
             if ((!startperiod.realGlmSequence.postingAccount) && (!(accountHierarchy.ToUpper().CompareTo("STANDARD") == 0)))
             {
                 return GetBudgetSummary(startperiod, endperiod, periodNr, yearNr, accountHierarchy);
             }
 
-            strSql = "SELECT SUM(a_budget_base_n) " + "FROM PUB_a_general_ledger_master_period " + "WHERE a_glm_sequence_i = " +
-                     StringHelper.IntToStr(startperiod.realGlmSequence.glmSequence) + ' ' + "AND a_period_number_i >= " + StringHelper.IntToStr(
-                startperiod.realPeriod) + ' ' + "AND a_period_number_i <= " + StringHelper.IntToStr(endperiod.realPeriod);
-            tab = situation.GetDatabaseConnection().SelectDT(strSql, "GetBudget_TempTable", situation.GetDatabaseConnection().Transaction);
+            string strSql = "SELECT SUM(a_budget_base_n) FROM PUB_a_general_ledger_master_period WHERE a_glm_sequence_i = " +
+                            startperiod.realGlmSequence.glmSequence + " AND a_period_number_i >= " + startperiod.realPeriod +
+                            " AND a_period_number_i <= " + endperiod.realPeriod;
+            DataTable tab = situation.GetDatabaseConnection().SelectDT(strSql, "GetBudget_TempTable", situation.GetDatabaseConnection().Transaction);
 
             if (tab.Rows.Count > 0)
             {
-                ReturnValue = ReturnValue + Convert.ToDecimal(tab.Rows[0][0]);
+                ReturnValue = Convert.ToDecimal(tab.Rows[0][0]);
             }
 
             return ReturnValue;
@@ -1109,19 +1060,10 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
         private decimal CalculateBudget(int pv_start_period_i, int pv_end_period_i, int pv_year_i, String pv_currency_select_c)
         {
-            decimal ReturnValue;
-
-            //int lv_ytd_period_i;
-            TFinancialPeriod startPeriod;
-            TFinancialPeriod endPeriod;
-            TFinancialPeriod endOfYearPeriod;
-            TFinancialPeriod beginOfYearPeriod;
-            decimal lastExchangeRate;
-
             System.Int32 Counter;
-            ReturnValue = 0;
-            lastExchangeRate = -1;
-            startPeriod = new TFinancialPeriod(situation.GetDatabaseConnection(), pv_start_period_i, pv_year_i,
+            decimal ReturnValue = 0;
+            decimal lastExchangeRate = -1;
+            TFinancialPeriod startPeriod = new TFinancialPeriod(situation.GetDatabaseConnection(), pv_start_period_i, pv_year_i,
                 situation.GetParameters(), situation.GetColumn());
 
             if (startPeriod.realPeriod > startPeriod.FNumberAccountingPeriods)
@@ -1132,7 +1074,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
                     situation.GetParameters(), situation.GetColumn());
             }
 
-            endPeriod = new TFinancialPeriod(situation.GetDatabaseConnection(), pv_end_period_i, pv_year_i,
+            TFinancialPeriod endPeriod = new TFinancialPeriod(situation.GetDatabaseConnection(), pv_end_period_i, pv_year_i,
                 situation.GetParameters(), situation.GetColumn());
 
             if (endPeriod.realPeriod > endPeriod.FNumberAccountingPeriods)
@@ -1156,10 +1098,10 @@ namespace Ict.Petra.Server.MReporting.MFinance
             // GetBudget can only deal with a range of periods in the same year (same glm sequence)
             if (startPeriod.realYear != endPeriod.realYear)
             {
-                endOfYearPeriod = new TFinancialPeriod(startPeriod);
+                TFinancialPeriod endOfYearPeriod = new TFinancialPeriod(startPeriod);
                 endOfYearPeriod.realPeriod = endOfYearPeriod.FNumberAccountingPeriods;
                 ReturnValue = ReturnValue + GetBudget(startPeriod, endOfYearPeriod, pv_start_period_i, pv_year_i);
-                beginOfYearPeriod = new TFinancialPeriod(endPeriod);
+                TFinancialPeriod beginOfYearPeriod = new TFinancialPeriod(endPeriod);
                 endOfYearPeriod.realPeriod = 1;
                 ReturnValue = ReturnValue + GetBudget(beginOfYearPeriod, endPeriod, pv_end_period_i, pv_year_i);
             }
@@ -1168,7 +1110,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 ReturnValue = ReturnValue + GetBudget(startPeriod, endPeriod, pv_start_period_i, pv_year_i);
             }
 
-            if (StringHelper.IsSame(pv_currency_select_c, "Intl"))
+            if (pv_currency_select_c.ToLower().StartsWith("int"))
             {
                 if ((endPeriod != null) && (endPeriod.realGlmSequence != null))
                 {
@@ -1182,12 +1124,10 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
         private decimal GetBudgetPeriods(int pv_start_period_i, int pv_end_period_i, int pv_year_i, Boolean pv_ytd_l, String pv_currency_select_c)
         {
-            int numberAccountingPeriods;
-
             if (pv_ytd_l)
             {
                 pv_start_period_i = 1;
-                numberAccountingPeriods = situation.GetParameters().Get("param_number_of_accounting_periods_i", situation.GetColumn()).ToInt();
+                int numberAccountingPeriods = situation.GetParameters().Get("param_number_of_accounting_periods_i", situation.GetColumn()).ToInt();
 
                 if (pv_end_period_i > numberAccountingPeriods)
                 {
@@ -1200,17 +1140,12 @@ namespace Ict.Petra.Server.MReporting.MFinance
 
         private string GetAllAccountDescendants(int pv_ledger_number_i, string pv_account_code_c, string pv_account_hierarchy_c)
         {
-            string ReturnValue;
-            DataTable tab;
-            TRptCalculation rptCalculation;
-            TRptDataCalcCalculation rptDataCalcCalculation;
-            TVariant calculationResult;
+            string ReturnValue = "";
 
-            ReturnValue = "";
             parameters.Add("param_parentaccountcode", pv_account_code_c);
-            rptCalculation = situation.GetReportStore().GetCalculation(situation.GetCurrentReport(), "Select AllAccountDescendants");
-            rptDataCalcCalculation = new TRptDataCalcCalculation(situation);
-            calculationResult = rptDataCalcCalculation.EvaluateCalculationAll(rptCalculation,
+            TRptCalculation rptCalculation = situation.GetReportStore().GetCalculation(situation.GetCurrentReport(), "Select AllAccountDescendants");
+            TRptDataCalcCalculation rptDataCalcCalculation = new TRptDataCalcCalculation(situation);
+            TVariant calculationResult = rptDataCalcCalculation.EvaluateCalculationAll(rptCalculation,
                 null,
                 rptCalculation.rptGrpTemplate,
                 rptCalculation.rptGrpQuery);
@@ -1223,7 +1158,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             if ((calculationResult.ToString().ToUpper().IndexOf("SELECT") >= 0) && (calculationResult.ToString().ToUpper().IndexOf("SELECT") <= 3))
             {
                 // this is an sql statement and not a function result
-                tab = AccountDescendantsCache.GetDataTable(situation.GetDatabaseConnection(), calculationResult.ToString());
+                DataTable tab = AccountDescendantsCache.GetDataTable(situation.GetDatabaseConnection(), calculationResult.ToString());
 
                 foreach (DataRow row in tab.Rows)
                 {

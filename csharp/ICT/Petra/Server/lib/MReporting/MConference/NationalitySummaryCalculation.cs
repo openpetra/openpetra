@@ -22,13 +22,18 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 using Ict.Common;
 using Ict.Petra.Server.MReporting;
 using Ict.Common.Data;
+using Ict.Petra.Server.MCommon.Cacheable;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MReporting.MPersonnel;
 
@@ -68,32 +73,71 @@ namespace Ict.Petra.Server.MReporting.MConference
         /// <param name="ALanguageCode">The mother language of the current partner</param>
         /// <param name="ASituation">The current report situation</param>
         /// <returns></returns>
-        public bool CalculateSingleNationality(long APartnerKey, String AGender, String ALanguageCode, ref TRptSituation ASituation)
+        public bool CalculateNationalities(long APartnerKey, String AGender, String ALanguageCode, ref TRptSituation ASituation)
         {
+            TCacheable CommonCacheable = new TCacheable();
+
+            StringCollection PassportColumns = StringHelper.StrSplit(
+                PmPassportDetailsTable.GetDateOfIssueDBName() + "," +
+                PmPassportDetailsTable.GetDateOfExpirationDBName() + "," +
+                PmPassportDetailsTable.GetPassportNationalityCodeDBName() + "," +
+                PmPassportDetailsTable.GetMainPassportDBName(), ",");
+
+            PmPassportDetailsTable PassportDetailsDT = PmPassportDetailsAccess.LoadViaPPerson(APartnerKey,
+                PassportColumns, ASituation.GetDatabaseConnection().Transaction, null, 0, 0);
+
+            string Nationalities = Ict.Petra.Shared.MPersonnel.Calculations.DeterminePersonsNationalities(
+                @CommonCacheable.GetCacheableTable, PassportDetailsDT);
+
+            string[] NationalitiesArray = Nationalities.Split(',');
+
             // GetPassport(APartnerKey);
-            PmPassportDetailsRow PassportRow = Ict.Petra.Server.MReporting.MPersonnel.TRptUserFunctionsPersonnel.GetLatestPassport(APartnerKey,
-                ASituation);
+            //TODO: is this still needed? PmPassportDetailsRow PassportRow = Ict.Petra.Server.MReporting.MPersonnel.TRptUserFunctionsPersonnel.GetLatestPassport(APartnerKey, ASituation);
             bool FoundNationality = false;
-            String NationalityCode = "";
+            List <string>PreviousNationalities = new List <string>();
 
-            if ((PassportRow != null)
-                && !PassportRow.IsPassportNationalityCodeNull())
+            foreach (string Nationality in NationalitiesArray)
             {
-                NationalityCode = PassportRow.PassportNationalityCode;
-            }
+                string SingleNationality = Nationality;
 
-            for (int Counter = 0; Counter < FNationalityTable.Rows.Count; ++Counter)
-            {
-                if (((String)FNationalityTable.Rows[Counter][COLUMNNATIONALITYCODE] == NationalityCode))
+                // remove all characters other than the country name
+                SingleNationality = Nationality.TrimStart(' ');
+
+                if (SingleNationality.EndsWith(Ict.Petra.Shared.MPersonnel.Calculations.PASSPORT_EXPIRED))
                 {
-                    FoundNationality = true;
-                    AddAttendeeToTable(Counter, AGender, NationalityCode, ALanguageCode);
+                    SingleNationality = SingleNationality.Remove(SingleNationality.Length -
+                        Ict.Petra.Shared.MPersonnel.Calculations.PASSPORT_EXPIRED.Length);
                 }
-            }
+                else if (SingleNationality.EndsWith(Ict.Petra.Shared.MPersonnel.Calculations.PASSPORTMAIN_EXPIRED))
+                {
+                    SingleNationality = SingleNationality.Remove(SingleNationality.Length -
+                        Ict.Petra.Shared.MPersonnel.Calculations.PASSPORTMAIN_EXPIRED.Length);
+                }
 
-            if (!FoundNationality)
-            {
-                AddAttendeeToTable(-1, AGender, NationalityCode, ALanguageCode);
+                if (SingleNationality == "")
+                {
+                    SingleNationality = Catalog.GetString("UNKNOWN");
+                }
+
+                // make sure that this nationality has not already been processed for this partner
+                if (!PreviousNationalities.Contains(SingleNationality))
+                {
+                    for (int Counter = 0; Counter < FNationalityTable.Rows.Count; ++Counter)
+                    {
+                        if (((String)FNationalityTable.Rows[Counter][COLUMNNATIONALITYCODE] == SingleNationality))
+                        {
+                            FoundNationality = true;
+                            AddAttendeeToTable(Counter, AGender, SingleNationality, ALanguageCode);
+                        }
+                    }
+
+                    if (!FoundNationality)
+                    {
+                        AddAttendeeToTable(-1, AGender, SingleNationality, ALanguageCode);
+                    }
+
+                    PreviousNationalities.Add(SingleNationality);
+                }
             }
 
             return true;
@@ -117,7 +161,7 @@ namespace Ict.Petra.Server.MReporting.MConference
             foreach (DataRow CurrentRow in FNationalityTable.Rows)
             {
                 String NationalityCode = (String)CurrentRow[COLUMNNATIONALITYCODE];
-                CurrentRow[COLUMNNATIONALITY] = NationalityCode + "  " + GetCountryName(NationalityCode, ref ASituation);
+                CurrentRow[COLUMNNATIONALITY] = NationalityCode; // + "  " + GetCountryName(NationalityCode, ref ASituation);
 
                 TVariant[] Header = new TVariant[6];
                 TVariant[] Description =

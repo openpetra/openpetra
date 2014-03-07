@@ -122,7 +122,7 @@ namespace Tests.MPartner.Server.PartnerEdit
         /// first save the partner with location 0, then add a new location, and save again
         /// </summary>
         [Test]
-        
+
         public void TestNewPartnerWithLocation0()
         {
             TPartnerEditUIConnector connector = new TPartnerEditUIConnector();

@@ -66,7 +66,7 @@ namespace Ict.Petra.ServerAdmin.App.Core
                         Hashtable properties = new Hashtable();
                         properties.Add("FilePublicKeyXml", TAppSettingsManager.GetValue("Server.ChannelEncryption.PublicKeyfile"));
 
-                        TCPSink.Next = new EncryptionClientSinkProvider(properties, null);
+                        TCPSink.Next = new EncryptionClientSinkProvider(properties);
                     }
 
                     Hashtable ChannelProperties = new Hashtable();

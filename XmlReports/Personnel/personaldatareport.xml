@@ -351,7 +351,7 @@
         </detail>
       </level>
 
-      <level name="Local Partner Data Level" identification="StaffPartnerKey">
+      <level name="Local Partner Data Level" identification="StaffPartnerKey" condition="HasChildRows">
         <header>
           <field whichfield="header 0" pos="0cm">
             <value text="************** Local Partner Data *************"/>
@@ -360,13 +360,8 @@
         <detail>
           <lowerLevelReport level="Local Partner Data lower Level" calculation="SelectLocalPartnerData"></lowerLevelReport>
         </detail>
-        <footer space="below">
-          <field whichfield="column 0" pos="0cm">
-            <value text="************************************************** "/>
-          </field>
-        </footer>
       </level>
-      <level name="Local Personnel Data Level" identification="StaffPartnerKey">
+      <level name="Local Personnel Data Level" identification="StaffPartnerKey" condition="HasChildRows">
         <header>
           <field whichfield="header 0" pos="0cm">
             <value text="************ Local Personnel Data ************"/>
@@ -375,11 +370,6 @@
         <detail>
           <lowerLevelReport level="Local Partner Data lower Level" calculation="SelectLocalPersonnelData"></lowerLevelReport>
         </detail>
-        <footer space="below">
-          <field whichfield="column 0" pos="0cm">
-            <value text="************************************************** "/>
-          </field>
-        </footer>
       </level>
       <level name="Local Partner Data lower Level" identification="StaffPartnerKey">
         <detail>
@@ -456,7 +446,7 @@
         </detail>
       </level>
 
-      <level name="Job Assignments Level" identification="StaffPartnerKey">
+      <level name="Job Assignments Level" identification="StaffPartnerKey" condition="HasChildRows">
         <header>
           <field whichfield="header 0" pos="0cm">
             <value text="************** Job Assignments ***************"/>
@@ -465,11 +455,6 @@
         <detail>
           <lowerLevelReport level="Job Assignments lower Level" calculation="SelectJobAssignments"></lowerLevelReport>
         </detail>
-        <footer space="below">
-          <field whichfield="column 0" pos="0cm">
-            <value text="************************************************** "/>
-          </field>
-        </footer>
       </level>
       <level name="Job Assignments lower Level" identification="StaffPartnerKey">
         <detail>
@@ -493,7 +478,7 @@
         </detail>
       </level>
 
-      <level name="Commitment Period Level" identification="StaffPartnerKey">
+      <level name="Commitment Period Level" identification="StaffPartnerKey" condition="HasChildRows">
         <header>
           <field whichfield="header 0" pos="0cm">
             <value text="************* Commitment Period *************"/>
@@ -502,11 +487,6 @@
         <detail>
           <lowerLevelReport level="Commitment Period lower Level" calculation="SelectCommitmentPeriod"></lowerLevelReport>
         </detail>
-        <footer space="below">
-          <field whichfield="column 0" pos="0cm">
-            <value text="************************************************** "/>
-          </field>
-        </footer>
       </level>
       <level name="Commitment Period lower Level" identification="StaffPartnerKey">
         <detail>
@@ -564,7 +544,7 @@
         </detail>
       </level>
 
-      <level name="Passport Level" identification="StaffPartnerKey">
+      <level name="Passport Level" identification="StaffPartnerKey" condition="HasChildRows">
         <header>
           <field whichfield="header 0" pos="0cm">
             <value text="******************* Passport *******************"/>
@@ -573,11 +553,6 @@
         <detail>
           <lowerLevelReport level="Passport Lowest Level" calculation="SelectPassports"></lowerLevelReport>
         </detail>
-        <footer space="below">
-          <field whichfield="column 0" pos="0cm">
-            <value text="************************************************** "/>
-          </field>
-        </footer>
       </level>
       <level name="Passport Lowest Level" identification="StaffPartnerKey">
         <detail>
@@ -630,7 +605,7 @@
         </detail>
       </level>
 
-      <level name="Personal Documents Level" identification="StaffPartnerKey">
+      <level name="Personal Documents Level" identification="StaffPartnerKey" condition="HasChildRows">
         <header>
           <field whichfield="header 0" pos="0cm">
             <value text="************ Personal Documents ************"/>
@@ -639,11 +614,6 @@
         <detail>
           <lowerLevelReport level="Personal Documents lower Level" calculation="SelectPersonalDocuments"></lowerLevelReport>
         </detail>
-        <footer space="below">
-          <field whichfield="column 0" pos="0cm">
-            <value text="************************************************** "/>
-          </field>
-        </footer>
       </level>
       <level name="Personal Documents lower Level" identification="StaffPartnerKey">
         <detail>
@@ -730,7 +700,7 @@
         </detail>
       </level>
 
-      <level name="Special Need Level" identification="StaffPartnerKey">
+      <level name="Special Need Level" identification="StaffPartnerKey" condition="HasChildRows">
         <header>
           <field whichfield="header 0" pos="0cm">
             <value text="**************** Special Needs ****************"/>
@@ -739,27 +709,21 @@
         <detail>
           <lowerLevelReport level="Special Need lower Level" calculation="SelectSpecialNeeds"></lowerLevelReport>
         </detail>
-        <footer space="below">
-          <field whichfield="column 0" pos="0cm">
-            <value text="************************************************** "/>
-          </field>
-        </footer>
       </level>
-      <level name="Special Need lower Level" identification="StaffPartnerKey">
+      <level name="Special Need lower Level" identification="StaffPartnerKey" condition="HasChildRows">
         <detail>
-          <lowerLevelReport level="Special Need Lowest Level1"/>
-          <lowerLevelReport level="Special Need Lowest Level2" condition="not(and(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l}))"/>
+          <lowerLevelReport level="Special Need Lowest Level1" condition="gt({pm_medical_comment_c}, 0)"/>
+          <lowerLevelReport level="Special Need Lowest Level2" condition="and(or(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l}), not(and(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l})))"/>
           <lowerLevelReport level="Special Need Lowest Level2 tow lines 1" condition="and(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l})"/>
           <lowerLevelReport level="Special Need Lowest Level2 tow lines 2" condition="and(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l})"/>
-          <lowerLevelReport level="Special Need Lowest Level3"/>
+          <lowerLevelReport level="Special Need Lowest Level3" condition="gt({pm_other_special_need_c}, 0)"/>
         </detail>
         <footer space="below"/>
       </level>
       <level name="Special Need Lowest Level1" identification="StaffPartnerKey">
         <detail>
           <field whichfield="column 0" pos="1cm">
-            <value text="Medical Needs: " condition="gt({pm_medical_comment_c}, 0)"/>
-            <value text="Medical Needs: (none recorded)" condition="lt({pm_medical_comment_c}, 1)"/>
+            <value text="Medical Needs: " />
             <value variable="pm_medical_comment_c"/>
           </field>
         </detail>
@@ -769,19 +733,19 @@
           <field whichfield="column 0" pos="1cm">
             <value text="Dietary Needs: "/>
             <value text="Vegetarian " condition="{pm_vegetarian_flag_l}"/>
-            <value text="(none recorded)" condition="and(lt({pm_dietary_comment_c}, 1), not({pm_vegetarian_flag_l}))"/>
             <value variable="pm_dietary_comment_c"/>
           </field>
         </detail>
       </level>
+
       <level name="Special Need Lowest Level2 tow lines 1" identification="StaffPartnerKey">
         <detail>
           <field whichfield="column 0" pos="1cm">
-            <value text="Dietary Needs: "/>
-            <value text="Vegetarian"/>
+            <value text="Dietary Needs: Vegetarian"/>
           </field>
         </detail>
       </level>
+
       <level name="Special Need Lowest Level2 tow lines 2" identification="StaffPartnerKey">
         <detail>
           <field whichfield="column 0" pos="1cm">
@@ -790,17 +754,17 @@
           </field>
         </detail>
       </level>
+
       <level name="Special Need Lowest Level3" identification="StaffPartnerKey">
         <detail>
           <field whichfield="column 0" pos="1cm">
-            <value text="Other Needs: " condition="gt({pm_other_special_need_c}, 0)"/>
-            <value text="Other Needs: (none recorded)" condition="lt({pm_other_special_need_c}, 1)"/>
+            <value text="Other Needs: "/>
             <value variable="pm_other_special_need_c"/>
           </field>
         </detail>
       </level>
 
-      <level name="Professional Areas Level" identification="StaffPartnerKey">
+      <level name="Professional Areas Level" identification="StaffPartnerKey" condition="HasChildRows">
         <header>
           <field whichfield="header 0" pos="0cm">
             <value text="************** Professional Areas *************"/>
@@ -809,11 +773,6 @@
         <detail>
           <lowerLevelReport level="Professional Areas lower Level" calculation="SelectQualifications"></lowerLevelReport>
         </detail>
-        <footer space="below">
-          <field whichfield="column 0" pos="0cm">
-            <value text="************************************************** "/>
-          </field>
-        </footer>
       </level>
       <level name="Professional Areas lower Level" identification="StaffPartnerKey">
         <detail>
@@ -856,7 +815,7 @@
         </detail>
       </level>
 
-      <level name="Ability Level" identification="StaffPartnerKey">
+      <level name="Ability Level" identification="StaffPartnerKey" condition="HasChildRows">
         <header>
           <field whichfield="header 0" pos="0cm">
             <value text="***************** Ability Areas *****************"/>
@@ -865,12 +824,8 @@
         <detail>
           <lowerLevelReport level="Ability lower Level" calculation="SelectAbilities"></lowerLevelReport>
         </detail>
-        <footer space="below">
-          <field whichfield="column 0" pos="0cm">
-            <value text="************************************************** "/>
-          </field>
-        </footer>
       </level>
+
       <level name="Ability lower Level" identification="StaffPartnerKey">
         <detail>
           <lowerLevelReport level="Ability Lowest Level1"/>
@@ -893,7 +848,7 @@
         </detail>
       </level>
 
-      <level name="Language Level" identification="StaffPartnerKey">
+      <level name="Language Level" identification="StaffPartnerKey" condition="HasChildRows">
         <header>
           <field whichfield="header 0" pos="0cm">
             <value text="*************** Language Areas ***************"/>
@@ -902,17 +857,14 @@
         <detail>
           <lowerLevelReport level="Language lower Level" calculation="SelectLanguages"></lowerLevelReport>
         </detail>
-        <footer space="below">
-          <field whichfield="column 0" pos="0cm">
-            <value text="************************************************** "/>
-          </field>
-        </footer>
       </level>
+
       <level name="Language lower Level" identification="StaffPartnerKey">
         <detail>
           <lowerLevelReport level="Language Lowest Level1"/>
         </detail>
       </level>
+
       <level name="Language Lowest Level1" identification="StaffPartnerKey">
         <detail>
           <field whichfield="column 0" pos="1cm">
@@ -930,7 +882,7 @@
         </detail>
       </level>
 
-      <level name="Previous Experience Level" identification="StaffPartnerKey">
+      <level name="Previous Experience Level" identification="StaffPartnerKey" condition="HasChildRows">
         <header>
           <field whichfield="header 0" pos="0cm">
             <value text="************* Previous Experience ************"/>
@@ -939,11 +891,6 @@
         <detail>
           <lowerLevelReport level="Previous Experience lower Level" calculation="SelectPreviousExperiences"></lowerLevelReport>
         </detail>
-        <footer space="below">
-          <field whichfield="column 0" pos="0cm">
-            <value text="************************************************** "/>
-          </field>
-        </footer>
       </level>
       <level name="Previous Experience lower Level" identification="StaffPartnerKey">
         <detail>

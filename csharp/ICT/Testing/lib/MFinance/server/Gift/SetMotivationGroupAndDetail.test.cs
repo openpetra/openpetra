@@ -30,18 +30,18 @@ using Ict.Testing.NUnitPetraServer;
 using NUnit.Framework;
 using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.UIConnectors;
 using Ict.Petra.Server.MPartner.Partner.WebConnectors;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
-using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Tests.MPartner.shared.CreateTestPartnerData;
-
 
 
 namespace Tests.MFinance.Server.Gift
@@ -147,7 +147,7 @@ namespace Tests.MFinance.Server.Gift
             Assert.IsTrue(partnerKeyIsValid, String.Format("PartnerKey {0} was created but does not exist!", partnerKey));
             Assert.AreEqual(SMTH, motivationGroup, "motivationGroup must not be changed");
             Assert.AreEqual(KMIN, motivationDetail, "motivationDetail must be changed to " + KMIN);
-            
+
             DeletePartnerKeyWithUnit(partnerKey);
         }
 
@@ -159,7 +159,7 @@ namespace Tests.MFinance.Server.Gift
         {
             Int64 partnerKey = CreateNewPartnerKeyWithUnit();
             Boolean partnerKeyIsValid;
-            
+
             String motivationGroup = SMTH;
             String motivationDetail = KMIN;
 
@@ -169,10 +169,10 @@ namespace Tests.MFinance.Server.Gift
             Assert.IsTrue(partnerKeyIsValid, String.Format("PartnerKey {0} was created but does not exist!", partnerKey));
             Assert.AreEqual(SMTH, motivationGroup, "motivationGroup must not be changed");
             Assert.AreEqual(KMIN, motivationDetail, "motivationDetail should not change from " + KMIN);
-            
+
             DeletePartnerKeyWithUnit(partnerKey);
         }
-        
+
         /// <summary>
         ///
         /// </summary>
@@ -182,24 +182,24 @@ namespace Tests.MFinance.Server.Gift
             Int64 partnerKey = CreateNewPartnerKey();
 
             long RecipLedgerNumber = TGiftTransactionWebConnector.GetRecipientLedgerNumber(partnerKey);
-            
+
             Assert.IsTrue((RecipLedgerNumber != 0), String.Format("PartnerKey {0} has a recipient ledger number of 0!", partnerKey));
         }
-        
 
         /// <summary>
         ///
         /// </summary>
         //[Test] - TODO - reinstate once worker field is sorted
-        public void Test_ZRecipientLedgerEqualsLedgerPartner()
+        private void Test_ZRecipientLedgerEqualsLedgerPartner()
         {
             Int64 partnerKey = CreateNewPartnerKeyWithUnit();
             Int64 ledgerPartnerKey = GetLedgerPartnerKey(43);
 
             long RecipLedgerNumber = TGiftTransactionWebConnector.GetRecipientLedgerNumber(partnerKey);
-            
-            Assert.AreEqual(RecipLedgerNumber, ledgerPartnerKey, String.Format("Expected RecipientLedgerNumber ({0}) to equal Ledger PartnerKey ({1})", RecipLedgerNumber, ledgerPartnerKey));
-            
+
+            Assert.AreEqual(RecipLedgerNumber, ledgerPartnerKey,
+                String.Format("Expected RecipientLedgerNumber ({0}) to equal Ledger PartnerKey ({1})", RecipLedgerNumber, ledgerPartnerKey));
+
             DeletePartnerKeyWithUnit(partnerKey);
         }
 
@@ -207,16 +207,17 @@ namespace Tests.MFinance.Server.Gift
         ///
         /// </summary>
         //[Test] - TODO - reinstate once worker field is sorted
-        public void Test_ZValidLedgerNumberExistsForRecipient()
+        private void Test_ZValidLedgerNumberExistsForRecipient()
         {
             bool Success = false;
             string CostCentreCode = string.Empty;
             Int64 partnerKey = CreateNewPartnerKeyWithUnit();
 
             Success = TGiftTransactionWebConnector.ValidLedgerNumberExistsForRecipient(43, partnerKey, out CostCentreCode);
-            
-            Assert.IsTrue(Success, String.Format("Invalid Ledger number exists for PartnerKey ({0}), returning Cost Centre {1}", partnerKey, CostCentreCode));
-            
+
+            Assert.IsTrue(Success,
+                String.Format("Invalid Ledger number exists for PartnerKey ({0}), returning Cost Centre {1}", partnerKey, CostCentreCode));
+
             DeletePartnerKeyWithUnit(partnerKey);
         }
 
@@ -228,106 +229,117 @@ namespace Tests.MFinance.Server.Gift
         {
             bool KeyMinActive = false;
             bool Success = false;
-            
+
             Int64 partnerKey = CreateNewPartnerKeyWithUnit();
-            
+
             Success = TGiftTransactionWebConnector.KeyMinistryExists(partnerKey, out KeyMinActive);
-            
+
             Assert.IsTrue(Success, String.Format("PartnerKey {0} has has no key ministry!", partnerKey));
-            
+
             if (Success)
             {
-                Assert.IsTrue(KeyMinActive, String.Format("PartnerKey {0} has inactive key ministry!", partnerKey));                
+                Assert.IsTrue(KeyMinActive, String.Format("PartnerKey {0} has inactive key ministry!", partnerKey));
             }
-            
+
             DeletePartnerKeyWithUnit(partnerKey);
         }
-        
+
         private Int64 CreateNewPartnerKey()
         {
             TVerificationResultCollection VerificationResult;
             TSubmitChangesResult result;
             DataSet ResponseDS = new PartnerEditTDS();
             Int64 retVal = 0;
-            
+
             TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
-            
+
             PPartnerRow partnerRow = TCreateTestPartnerData.CreateNewPartner(MainDS);
 
             if (partnerRow != null)
             {
                 result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
-                
+
                 if (result == TSubmitChangesResult.scrOK)
                 {
-                    retVal = partnerRow.PartnerKey;                    
+                    retVal = partnerRow.PartnerKey;
                 }
             }
-            
+
             return retVal;
         }
-        
+
         private Int64 CreateNewPartnerKeyWithUnit()
         {
             TVerificationResultCollection VerificationResult;
             TSubmitChangesResult result;
             DataSet ResponseDS = new PartnerEditTDS();
             Int64 retVal = 0;
-            
+
             TPartnerEditUIConnector connector = new TPartnerEditUIConnector();
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
             PPartnerRow UnitPartnerRow = TCreateTestPartnerData.CreateNewUnitPartnerWithTypeCode(MainDS, "KEY-MIN");
-            
+
             if (UnitPartnerRow != null)
             {
                 result = connector.SubmitChanges(ref MainDS, ref ResponseDS, out VerificationResult);
-                
+
                 if (result == TSubmitChangesResult.scrOK)
                 {
-                    retVal = UnitPartnerRow.PartnerKey;                    
+                    retVal = UnitPartnerRow.PartnerKey;
                 }
             }
 
             return retVal;
         }
-        
+
         private void DeletePartnerKeyWithUnit(Int64 APartnerKey)
         {
             TVerificationResultCollection VerificationResult;
+
             // check if Unit record is being deleted
-            Assert.IsTrue(TPartnerWebConnector.DeletePartner(APartnerKey, out VerificationResult), "Error deleting partner-key-with-unit " + APartnerKey.ToString());
+            Assert.IsTrue(TPartnerWebConnector.DeletePartner(APartnerKey,
+                    out VerificationResult), "Error deleting partner-key-with-unit " + APartnerKey.ToString());
 
             // check that Unit record is really deleted
-            Assert.IsTrue(!TPartnerServerLookups.VerifyPartner(APartnerKey), "Error. Partner-key-with-unit " + APartnerKey.ToString() + " still exists!");
+            Assert.IsTrue(!TPartnerServerLookups.VerifyPartner(APartnerKey),
+                "Error. Partner-key-with-unit " + APartnerKey.ToString() + " still exists!");
         }
-        
+
         private Int64 GetLedgerPartnerKey(Int32 ALedgerNumber)
         {
             Int64 retVal = 0;
             bool NewTransaction = false;
-            
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
-            GiftBatchTDS MainDS = new GiftBatchTDS();
-            
-            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
-            
-            if (MainDS.ALedger.Count > 0)
+            try
             {
-                retVal = MainDS.ALedger[0].PartnerKey;                
+	            GiftBatchTDS MainDS = new GiftBatchTDS();
+	
+	            ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
+	
+	            if (MainDS.ALedger.Count > 0)
+	            {
+	                retVal = MainDS.ALedger[0].PartnerKey;
+	            }
             }
-            
-            if (NewTransaction)
+            catch (Exception)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();    
+            	throw;
             }
-            
+            finally
+            {
+	            if (NewTransaction)
+	            {
+	                DBAccess.GDBAccessObj.RollbackTransaction();
+	            }
+            }
+
             return retVal;
         }
-        
     }
 }

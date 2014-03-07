@@ -376,6 +376,12 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 
                 PetraPrincipal.ProcessID = AProcessID;
                 AProcessID = 0;
+
+                if (UserDR.PasswordNeedsChange)
+                {
+                    // The user needs to change their password before they can use OpenPetra
+                    PetraPrincipal.LoginMessage = Catalog.GetString("You need to change your password immediately.");
+                }
             }
             finally
             {

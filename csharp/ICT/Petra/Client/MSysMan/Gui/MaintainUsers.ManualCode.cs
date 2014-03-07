@@ -88,7 +88,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             clbUserGroup.AddCheckBoxColumn("", NewTable.Columns[CheckedMember], 17, false);
             clbUserGroup.AddTextColumn(Catalog.GetString("Module"), NewTable.Columns[ValueMember], 100);
             clbUserGroup.AddTextColumn(Catalog.GetString("Description"), NewTable.Columns[DisplayMember], 220);
-            clbUserGroup.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+            clbUserGroup.DataBindGrid(NewTable, ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 
         private void LoadUsers()
@@ -230,7 +230,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             {
                 string password = input.GetAnswer();
 
-                if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password))
+                if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password, true))
                 {
                     LoadUsers();
                     MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), username));

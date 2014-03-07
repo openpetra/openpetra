@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 AApAnalAttribRow Row = (AApAnalAttribRow)FMainDS.AApAnalAttrib.Rows[RowNum - 1];
 
-                if (Row.AnalysisAttributeValue == "")  // I need to delete empty rows
+                if ((Row.RowState != DataRowState.Deleted) && (Row.AnalysisAttributeValue == ""))  // I need to delete empty rows
                 {
                     Row.Delete();
                 }
@@ -120,8 +120,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
             }
 
-            grdAnalAttributes.Columns[0].Width = 90; // for some reason, doing this to early doesn't work.
+            grdAnalAttributes.Columns[0].Width = 90; // for some reason, doing this too early doesn't work.
             grdAnalAttributes.Columns[1].Width = 120;
+
+            mniEdit.DropDownItems.Remove(mniEditFilter); // These items are provided by windowEditWebConnectorMasterDetail
+            mniEdit.DropDownItems.Remove(mniEditFind);   // but are not needed in this application.
         }
 
         private void AnalysisAttributesGrid_RowSelected(System.Object sender, RangeRegionChangedEventArgs e)
@@ -235,7 +238,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 txtDetailItemRef.Enabled = false;
                 txtDetailAmount.Enabled = false;
                 cmbDetailCostCentreCode.Enabled = false;
-                btnUseTaxAccount.Enabled = false;
                 txtDetailBaseAmount.Enabled = false;
                 cmbDetailAccountCode.Enabled = false;
                 pnlDetails.Enabled = false;
@@ -340,7 +342,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void ShowDataManual()
         {
             AccountsPayableTDSAApDocumentRow DocumentRow = FMainDS.AApDocument[0];
-            AApSupplierRow SupplierRow = FMainDS.AApSupplier[0];
 
             FDocumentLedgerNumber = DocumentRow.LedgerNumber;
 
@@ -458,10 +459,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 EnableControls();
             }
-        }
-
-        private void UseTaxAccount(Object sender, EventArgs e)
-        {
         }
 
         private void ValidateDataManual(AccountsPayableTDSAApDocumentRow ARow)

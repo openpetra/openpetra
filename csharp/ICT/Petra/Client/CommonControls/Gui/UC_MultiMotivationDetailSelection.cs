@@ -92,7 +92,7 @@ namespace Ict.Petra.Client.CommonControls
             this.clbMotivations.AddCheckBoxColumn("", Table.Columns[CheckedMember], 17);
             this.clbMotivations.AddTextColumn("Test1", Table.Columns[ValueMember], 60);
             this.clbMotivations.AddTextColumn("Test2", Table.Columns[DisplayMember], 200);
-            this.clbMotivations.DataBindGrid(Table, ValueMember, CheckedMember, ValueMember, DisplayMember, false, true, false);
+            this.clbMotivations.DataBindGrid(Table, ValueMember, CheckedMember, ValueMember, false, true, false);
         }
 
         /// <summary>

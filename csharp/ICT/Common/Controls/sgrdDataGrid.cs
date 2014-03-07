@@ -1002,7 +1002,7 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth)
         {
-            AddCheckBoxColumn(AColumnTitle, ADataColumn, -1, null, true);
+            AddCheckBoxColumn(AColumnTitle, ADataColumn, AColumnWidth, null, true);
         }
 
         /// <summary>
@@ -1015,7 +1015,7 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth, bool AReadOnly)
         {
-            AddCheckBoxColumn(AColumnTitle, ADataColumn, -1, null, AReadOnly);
+            AddCheckBoxColumn(AColumnTitle, ADataColumn, AColumnWidth, null, AReadOnly);
         }
 
         /// <summary>

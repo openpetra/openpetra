@@ -742,26 +742,7 @@ namespace Ict.Common.Remoting.Server
         /// <returns></returns>
         public static Int32 QueueClientTask(String AUserID, String ATaskGroup, String ATaskCode, System.Int16 ATaskPriority)
         {
-            return QueueClientTask(AUserID, ATaskGroup, ATaskCode, ATaskPriority, -1);
-        }
-
-        /// <summary>
-        /// overload
-        /// </summary>
-        /// <param name="AUserID"></param>
-        /// <param name="ATaskGroup"></param>
-        /// <param name="ATaskCode"></param>
-        /// <param name="ATaskPriority"></param>
-        /// <param name="AExceptClientID"></param>
-        /// <returns></returns>
-        public static Int32 QueueClientTask(String AUserID,
-            String ATaskGroup,
-            String ATaskCode,
-            System.Int16 ATaskPriority,
-            System.Int16 AExceptClientID)
-        {
-            return QueueClientTask(AUserID, ATaskGroup, ATaskCode,
-                null, null, null, null, ATaskPriority);
+            return QueueClientTask(AUserID, ATaskGroup, ATaskCode, ATaskPriority);
         }
 
         /// <summary>

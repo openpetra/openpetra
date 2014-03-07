@@ -121,25 +121,42 @@ namespace Tests.MFinance.Server.Gift
         [Test]
         public void TestProcessAdminFees()
         {
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            bool NewTransaction = false;
+
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             TVerificationResultCollection VerficationResults = null;
 
-            AFeesPayableRow template = new AFeesPayableTable().NewRowTyped(false);
-
-            template.LedgerNumber = FLedgerNumber;
-            template.FeeCode = MainFeesPayableCode;
-
-            AFeesPayableTable FeesPayableTable = AFeesPayableAccess.LoadUsingTemplate(template, Transaction);
-
-            AFeesReceivableRow template1 = new AFeesReceivableTable().NewRowTyped(false);
-
-            template1.LedgerNumber = FLedgerNumber;
-            template1.FeeCode = MainFeesReceivableCode;
-
-            AFeesReceivableTable FeesReceivableTable = AFeesReceivableAccess.LoadUsingTemplate(template1, Transaction);
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
+			AFeesPayableTable FeesPayableTable = null;
+            AFeesReceivableTable FeesReceivableTable = null;
+            
+            try
+			{
+	            AFeesPayableRow template = new AFeesPayableTable().NewRowTyped(false);
+	
+	            template.LedgerNumber = FLedgerNumber;
+	            template.FeeCode = MainFeesPayableCode;
+	
+	            FeesPayableTable = AFeesPayableAccess.LoadUsingTemplate(template, Transaction);
+	
+	            AFeesReceivableRow template1 = new AFeesReceivableTable().NewRowTyped(false);
+	
+	            template1.LedgerNumber = FLedgerNumber;
+	            template1.FeeCode = MainFeesReceivableCode;
+	
+	            FeesReceivableTable = AFeesReceivableAccess.LoadUsingTemplate(template1, Transaction);
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+			finally
+			{
+				if (NewTransaction)
+				{
+					DBAccess.GDBAccessObj.RollbackTransaction();
+				}
+			}
 
             if (FeesPayableTable.Count == 0)
             {
@@ -155,14 +172,28 @@ namespace Tests.MFinance.Server.Gift
 
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
-            Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            //Reset
+            NewTransaction = false;
+            Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
-            AFeesPayableAccess.LoadViaALedger(MainDS, FLedgerNumber, Transaction);
-            AFeesReceivableAccess.LoadViaALedger(MainDS, FLedgerNumber, Transaction);
+			try
+			{
+	            AFeesPayableAccess.LoadViaALedger(MainDS, FLedgerNumber, Transaction);
+	            AFeesReceivableAccess.LoadViaALedger(MainDS, FLedgerNumber, Transaction);
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+			finally
+			{
+				if (NewTransaction)
+				{
+					DBAccess.GDBAccessObj.RollbackTransaction();
+				}
+			}
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
-
-            //TODO If this first one works, try different permatations for Assert.AreEqual
+			//TODO If this first one works, try different permatations for Assert.AreEqual
             // Test also for exception handling
             Assert.AreEqual(12m, TGiftTransactionWebConnector.CalculateAdminFee(MainDS,
                     FLedgerNumber,
@@ -170,7 +201,6 @@ namespace Tests.MFinance.Server.Gift
                     100m,
                     out VerficationResults), "admin fee fixed 12% of 100 expect 12");
         }
-        
 
         /// <summary>
         /// This will test the admin fee processer
@@ -180,20 +210,18 @@ namespace Tests.MFinance.Server.Gift
         {
             Int64 partnerKey = 73000000;
             Int64 RecipientLedgerNumber = 0;
-            
+
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-            
+
             Transaction = DBAccess.GDBAccessObj.BeginTransaction();
 
             RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientLedgerNumber(partnerKey);
-            
+
             DBAccess.GDBAccessObj.RollbackTransaction();
 
             //TODO If this first one works, try different permatations for Assert.AreEqual
             // Test also for exception handling
             Assert.AreEqual(73, RecipientLedgerNumber, String.Format("Expected Recipient Ledger Number: {0} but got {1}", 73, RecipientLedgerNumber));
-        }        
-        
-        
+        }
     }
 }

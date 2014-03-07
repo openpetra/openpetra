@@ -113,7 +113,7 @@ namespace Ict.Tools.ExportDataProgress
                     else if (settings.GetOptValue("output").EndsWith("xml"))
                     {
                         StreamWriter sw = new StreamWriter(settings.GetOptValue("output"));
-                        sw.Write(TXMLParser.XmlToString(doc, true));
+                        sw.Write(TXMLParser.XmlToString2(doc));
                         sw.Close();
                     }
                 }

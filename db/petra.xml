@@ -6054,8 +6054,7 @@
                 descr=""
                 format="9999999999"
                 label="Gift Given By"
-                help="Who gave this subscription as a gift"
-                initial="0"/>
+                help="Who gave this subscription as a gift"/>
     <!-- Constraints on table p_subscription -->
     <primarykey name="p_subscription_pk"
                 descr=""
@@ -6659,7 +6658,7 @@
                 descr="Used to get a yes no response from the user"
                 format="Yes/No"
                 label="Suspense Account Flag"
-                help="Enter &quot;&quot;Yes&quot;&quot; or &quot;&quot;No&quot;&quot;"
+                help="Allow suspense accounts"
                 notnull="yes"
                 initial="no"/>
     <tablefield name="a_bank_accounts_flag_l"

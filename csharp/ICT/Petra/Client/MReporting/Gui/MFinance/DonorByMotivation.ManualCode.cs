@@ -94,7 +94,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ValueMemberMotGroup,
                 CheckedMemberMotGroup,
                 ValueMemberMotGroup,
-                DisplayMemberMotGroup,
                 false,
                 true,
                 false);
@@ -167,7 +166,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             clbMotivationDetail.AddTextColumn(Catalog.GetString("Detail Code"), NewMotDetailTable.Columns[Value2MemberMotDetail], 80);
             clbMotivationDetail.AddTextColumn(Catalog.GetString("Group Code"), NewMotDetailTable.Columns[Value1MemberMotDetail], 80);
             clbMotivationDetail.AddTextColumn(Catalog.GetString("Description"), NewMotDetailTable.Columns[DisplayMemberMotDetail], 200);
-            clbMotivationDetail.DataBindGrid(NewMotDetailTable, "", CheckedMemberMotDetail, KeyColumnList, DisplayMemberMotDetail, false, true, false);
+            clbMotivationDetail.DataBindGrid(NewMotDetailTable, "", CheckedMemberMotDetail, KeyColumnList, false, true, false);
 
             // reset checked records
             clbMotivationDetail.SetCheckedStringList(FCheckedMotDetailStringList);

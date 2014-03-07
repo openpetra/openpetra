@@ -25,29 +25,19 @@ using System;
 using System.Data;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Xml;
-using GNU.Gettext;
-using Ict.Common.Verification;
 using Ict.Common;
-using Ict.Common.Data;
-using Ict.Common.Controls;
-using Ict.Common.IO;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
-using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MPartner.Gui;
-using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPersonnel;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
-using Ict.Petra.Shared.MPersonnel.Personnel.Validation;
 
 namespace Ict.Petra.Client.MPersonnel.Gui
 {
@@ -60,28 +50,84 @@ namespace Ict.Petra.Client.MPersonnel.Gui
         // option to show applicants for all outreaches of a conference
         private bool FShowAllOutreaches = false;
 
-        /// PartnerKey for selected conference to be set from outside
-        public static Int64 FPartnerKey {
-            private get; set;
-        }
+        // The user's default filter from SUserDefaults (if it exists)
+        private string FUserDefaultFilter;
 
         private void InitializeManualCode()
         {
             // initially load all applicants that have no event
             FOutreachCode = "";
-            txtEventName.Text = "Applications with no event filled in";
+            txtEventName.Text = Catalog.GetString("Applications with no event filled in");
 
             // open partner edit screen when user double clicks on a row
             this.grdApplications.DoubleClick += new System.EventHandler(this.EditApplication);
 
-            txtDetailedStatuses.Text = "R1,R2";
-            chkAccepted.Checked = true;
+            this.Closed += new System.EventHandler(this.TFrmPetra_ClosedManual);
+
+            SetupFilter();
+        }
+
+        // read user default filter from SUserDefaults (if it exists) and apply it to form
+        private void SetupFilter()
+        {
+            FUserDefaultFilter = TUserDefaults.GetStringDefault(TUserDefaults.PERSONNEL_APPLICATION_STATUS);
+            string[] FilterArray = FUserDefaultFilter.Split(',');
+
+            // No filter
+            if (FUserDefaultFilter == "")
+            {
+                return;
+            }
+            // General filter
+            else if (FUserDefaultFilter.Substring(0, 1) == ",")
+            {
+                rbtGeneral.Checked = true;
+
+                foreach (string Filter in FilterArray)
+                {
+                    if (Filter == "A")
+                    {
+                        chkAccepted.Checked = true;
+                    }
+                    else if (Filter == "C")
+                    {
+                        chkCancelled.Checked = true;
+                    }
+                    else if (Filter == "H")
+                    {
+                        chkHold.Checked = true;
+                    }
+                    else if (Filter == "E")
+                    {
+                        chkEnquiry.Checked = true;
+                    }
+                    else if (Filter == "R")
+                    {
+                        chkRejected.Checked = true;
+                    }
+                }
+            }
+            // Detailed filter
+            else
+            {
+                rbtDetailed.Checked = true;
+                txtDetailedStatuses.Text = FUserDefaultFilter;
+            }
         }
 
         private void InitGridManually()
         {
             LoadDataGrid();
-            UpdateRecordNumberDisplay();
+
+            // if default filter exists then apply this to the grid
+            if (FUserDefaultFilter != "")
+            {
+                FilterChange(this, null);
+            }
+            else
+            {
+                UpdateRecordNumberDisplay();
+            }
         }
 
         private void LoadDataGrid()
@@ -90,36 +136,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui
 
             // populate dataset
             TRemote.MPersonnel.WebConnectors.LoadShortTermApplications(ref FMainDS, FOutreachCode);
-
-            FMainDS.PmShortTermApplication.Columns.Add(PPartnerTable.GetPartnerShortNameDBName(), Type.GetType("System.String"));
-            FMainDS.PmShortTermApplication.Columns.Add(PmGeneralApplicationTable.GetGenApplicationStatusDBName(), Type.GetType("System.String"));
-
-            for (int Counter = 0; Counter < FMainDS.PmShortTermApplication.Rows.Count; ++Counter)
-            {
-                long PartnerKey = ((PmShortTermApplicationRow)FMainDS.PmShortTermApplication.Rows[Counter]).PartnerKey;
-
-                foreach (PmGeneralApplicationRow Row in FMainDS.PmGeneralApplication.Rows)
-                {
-                    if (Row.PartnerKey == PartnerKey)
-                    {
-                        FMainDS.PmShortTermApplication.Rows[Counter][PmGeneralApplicationTable.GetGenApplicationStatusDBName()] =
-                            ((PmGeneralApplicationRow)FMainDS.PmGeneralApplication.Rows[Counter]).GenApplicationStatus;
-
-                        break;
-                    }
-                }
-
-                foreach (PPartnerRow Row in FMainDS.PPartner.Rows)
-                {
-                    if (Row.PartnerKey == PartnerKey)
-                    {
-                        FMainDS.PmShortTermApplication.Rows[Counter][PPartnerTable.GetPartnerShortNameDBName()] =
-                            ((PPartnerRow)FMainDS.PPartner.Rows[Counter]).PartnerShortName;
-
-                        break;
-                    }
-                }
-            }
 
             FMainDS.PmShortTermApplication.DefaultView.AllowNew = false;
 
@@ -134,6 +150,48 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             }
 
             grdApplications.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
+        }
+
+        // Run when screen is closed to save filter as user default
+        private void TFrmPetra_ClosedManual(object sender, EventArgs e)
+        {
+            string DefaultFilter = "";
+
+            if (rbtGeneral.Checked)
+            {
+                DefaultFilter = ",";
+
+                if (chkAccepted.Checked)
+                {
+                    DefaultFilter += "A,";
+                }
+
+                if (chkCancelled.Checked)
+                {
+                    DefaultFilter += "C,";
+                }
+
+                if (chkHold.Checked)
+                {
+                    DefaultFilter += "H,";
+                }
+
+                if (chkEnquiry.Checked)
+                {
+                    DefaultFilter += "E,";
+                }
+
+                if (chkRejected.Checked)
+                {
+                    DefaultFilter += "R";
+                }
+            }
+            else if (rbtDetailed.Checked)
+            {
+                DefaultFilter = txtDetailedStatuses.Text;
+            }
+
+            TUserDefaults.SetDefault(TUserDefaults.PERSONNEL_APPLICATION_STATUS, DefaultFilter);
         }
 
         private void SelectEvent_Click(System.Object sender, EventArgs e)
@@ -168,6 +226,22 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             }
         }
 
+        private void SelectStatuses_Click(System.Object sender, EventArgs e)
+        {
+            // open dialog to select detailed statuses
+            string ApplicationStatusList;
+            DialogResult DlgResult = TFrmApplicationStatusDialog.OpenApplicationStatusDialog(
+                txtDetailedStatuses.Text, FPetraUtilsObject.GetForm(), out ApplicationStatusList);
+
+            if ((DlgResult == DialogResult.OK) && (txtDetailedStatuses.Text != ApplicationStatusList))
+            {
+                txtDetailedStatuses.Text = ApplicationStatusList;
+            }
+
+            // update the grid with the new filter
+            FilterChange(sender, e);
+        }
+
         private void ShowAllOutreaches_CheckBox(System.Object sender, EventArgs e)
         {
             FShowAllOutreaches = !FShowAllOutreaches;
@@ -191,12 +265,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui
 
         private void EditApplication(System.Object sender, EventArgs e)
         {
+            // Open the selected partner's Partner Edit screen at Personnel Applications
             TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
 
             frm.SetParameters(TScreenMode.smEdit, GetPartnerKeySelected(), TPartnerEditTabPageEnum.petpPersonnelApplications);
             frm.Show();
         }
 
+        // update the grid once the filter is changed
         private void FilterChange(System.Object sender, EventArgs e)
         {
             List <string>Filters = new List <string>();
@@ -211,7 +287,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui
                 FiltersString = PmShortTermApplicationTable.GetConfirmedOptionCodeDBName() + " = '" + FOutreachCode + "'";
             }
 
-            if (chkAccepted.Enabled)
+            if (rbtGeneral.Checked)
             {
                 if (!chkAccepted.Checked)
                 {
@@ -250,7 +326,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui
                     }
                 }
             }
-            else if (btnSelectDetailedStatuses.Enabled)
+            else if (rbtDetailed.Checked)
             {
                 string[] DetailedStatuses = txtDetailedStatuses.Text.Split(',');
 
@@ -290,6 +366,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui
 
         private void GridRowSelected(System.Object sender, EventArgs e)
         {
+            // Only enable the button if a row is selected.
             btnEditApplication.Enabled = true;
         }
 

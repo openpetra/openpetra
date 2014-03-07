@@ -103,7 +103,6 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                 }
 
                 return (IAsynchronousExecutionProgress)TCreateRemotableObject.CreateRemotableObject(
-                    typeof(IAsynchronousExecutionProgress),
                     typeof(TAsynchronousExecutionProgressRemote),
                     FAsyncExecProgress);
             }

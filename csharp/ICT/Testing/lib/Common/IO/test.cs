@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,6 +31,7 @@ using System.Globalization;
 using System.Xml;
 using System.Text;
 using System.IO;
+using System.Data;
 using Ict.Common;
 using Ict.Common.IO;
 using Jayrock.Json;
@@ -49,7 +50,7 @@ namespace Ict.Common.IO.Testing
         [SetUp]
         public void Init()
         {
-            new TLogging("test.log");
+            new TLogging("../../log/test.log");
             new TAppSettingsManager("../../etc/TestClient.config");
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Client.DebugLevel", 0);
 
@@ -169,7 +170,7 @@ namespace Ict.Common.IO.Testing
 
             filename = PathToTestData + "test.xml";
             StreamWriter sw = new StreamWriter(filename + ".new");
-            sw.Write(TXMLParser.XmlToString(docFromCSV, true));
+            sw.Write(TXMLParser.XmlToString2(docFromCSV));
             sw.Close();
             Assert.AreEqual(true, TTextFile.SameContent(filename,
                     filename + ".new"), "after importing from csv: the files should be the same: " + filename);
@@ -188,7 +189,7 @@ namespace Ict.Common.IO.Testing
 
             filename = PathToTestData + "testWithInheritedAttributes.xml";
             StreamWriter sw = new StreamWriter(filename + ".new");
-            sw.Write(TXMLParser.XmlToString(docFromYML, true));
+            sw.Write(TXMLParser.XmlToString2(docFromYML));
             sw.Close();
             Assert.AreEqual(true, TTextFile.SameContent(filename,
                     filename + ".new"), "after importing from yml: the files should be the same: " + filename);
@@ -534,6 +535,62 @@ namespace Ict.Common.IO.Testing
             // through method 'OfficeOpenXml.Utils.EncryptedPackageHandler.StgIsStorageFile(System.String)' failed.
             // Methods must be security critical or security safe-critical to call native code.
             //Assert.IsInstanceOf(typeof(ExcelPackage), new ExcelPackage(new FileInfo(filename)), "cannot open excel file");
+        }
+
+        /// <summary>
+        /// test reading an Excel file
+        /// </summary>
+        [Test]
+        public void TestExcelImportStream()
+        {
+            string filename = PathToTestData + "testReading.xlsx";
+
+            // display error messages in english
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (FileStream fs = File.OpenRead(filename))
+                {
+                    fs.CopyTo(ms);
+                }
+
+                DataTable table = TCsv2Xml.ParseExcelStream2DataTable(ms, true);
+
+                Assert.AreEqual("test1", table.Columns[0].ColumnName, "name of first column");
+                Assert.AreEqual("1", table.Rows[0][0].ToString(), "value of first row, first column");
+                Assert.AreEqual("2", table.Rows[0]["test2"].ToString(), "value of first row, second column");
+                Assert.AreEqual("vier", table.Rows[0][3].ToString(), "value of first row, forth column");
+            }
+        }
+
+        /// <summary>
+        /// test reading an OpenDocument spreadsheet file
+        /// </summary>
+        [Test]
+        public void TestODSImportStream()
+        {
+            string filename = PathToTestData + "testReading.ods";
+
+            // display error messages in english
+            Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (FileStream fs = File.OpenRead(filename))
+                {
+                    fs.CopyTo(ms);
+                }
+
+                DataTable table = TOpenDocumentParser.ParseODSStream2DataTable(ms, true);
+
+                Assert.AreEqual("col1", table.Columns[0].ColumnName, "name of first column");
+                Assert.AreEqual("test1", table.Rows[0][0].ToString(), "value of first row, first column");
+                Assert.AreEqual("test2", table.Rows[0]["col2"].ToString(), "value of first row, second column");
+                Assert.AreEqual("test4", table.Rows[0][3].ToString(), "value of first row, forth column");
+                Assert.AreEqual("test6", table.Rows[1][3].ToString(), "value of second row, forth column");
+                Assert.AreEqual("test7", table.Rows[2][3].ToString(), "value of third row, forth column");
+            }
         }
     }
 }

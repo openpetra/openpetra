@@ -149,17 +149,22 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 return;
             }
 
-            // 'Date of Birth' must not be a future date
+            // 'Date of Birth' must have a sensible value (must not be below 1850 and must not lie in the future)
             ValidationColumn = ARow.Table.Columns[PPersonTable.ColumnDateOfBirthId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TDateChecks.IsCurrentOrPastDate(ARow.DateOfBirth,
-                    ValidationControlsData.ValidationControlLabel,
-                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+                if (!ARow.IsDateOfBirthNull())
+                {
+                    VerificationResult = TDateChecks.IsDateBetweenDates(
+                        ARow.DateOfBirth, new DateTime(1850, 1, 1), DateTime.Today,
+                        ValidationControlsData.ValidationControlLabel,
+                        TDateBetweenDatesCheckType.dbdctUnrealisticDate, TDateBetweenDatesCheckType.dbdctNoFutureDate,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
-                // Handle addition to/removal from TVerificationResultCollection
-                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                }
             }
 
             // 'MaritalStatusSince' must be valid
@@ -928,12 +933,13 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// <param name="AContext">Context that describes where the data validation failed.</param>
         /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
         /// <param name="ABankingDetails">test if there is only one main account</param>
+        /// <param name="ACountryCode">Country Code for ARow's corresponding Bank's country</param>
         /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
         /// data validation errors occur.</param>
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         public static void ValidateBankingDetails(object AContext, PBankingDetailsRow ARow,
-            PBankingDetailsTable ABankingDetails,
+            PBankingDetailsTable ABankingDetails, string ACountryCode,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
         {
             DataColumn ValidationColumn;
@@ -1012,6 +1018,32 @@ namespace Ict.Petra.Shared.MPartner.Validation
                             AContext,
                             ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKINGDETAILS_MISSING_ACCOUNTNUMBERORIBAN)),
                         ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnBankAccountNumber,
+                        ValidationControlsData.ValidationControl
+                        ));
+            }
+
+            // validate the account number (if validation exists for bank's country)
+            CommonRoutines Routines = new CommonRoutines();
+
+            if ((ARow.BankAccountNumber != null) && (Routines.CheckAccountNumber(ARow.BankAccountNumber, ACountryCode) == 0))
+            {
+                AVerificationResultCollection.Add(
+                    new TScreenVerificationResult(
+                        new TVerificationResult(
+                            AContext,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_ACCOUNTNUMBER_INVALID)),
+                        ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnBankAccountNumber,
+                        ValidationControlsData.ValidationControl
+                        ));
+            }
+
+            // validate the IBAN (if it exists)
+            if ((ARow.Iban != "") && (CommonRoutines.CheckIBAN(ARow.Iban, out VerificationResult) == false))
+            {
+                AVerificationResultCollection.Add(
+                    new TScreenVerificationResult(
+                        VerificationResult,
+                        ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnIban,
                         ValidationControlsData.ValidationControl
                         ));
             }
