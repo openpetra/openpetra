@@ -40,6 +40,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.MFinance.Validation;
@@ -997,15 +998,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // Both currencies the same
                 txtDetailRateOfExchange.NumberValueDecimal = 1.0m;
                 txtDetailRateOfExchange.Enabled = false;
+                txtDetailTimeEffectiveFrom.Enabled = false;
                 btnInvertExchangeRate.Enabled = false;
+                btnEnableEdit.Enabled = false;
+
                 btnDelete.Enabled = true;
             }
             else
             {
                 // Currencies differ
                 txtDetailRateOfExchange.Enabled = (FIsCurrentRowStateAdded || FCanEditCurrentRow);
+                txtDetailTimeEffectiveFrom.Enabled = (FIsCurrentRowStateAdded || FCanEditCurrentRow);
                 btnInvertExchangeRate.Enabled = (FIsCurrentRowStateAdded || FCanEditCurrentRow);
                 btnDelete.Enabled = (FIsCurrentRowStateAdded || FCanDeleteCurrentRow);
+                
+                btnEnableEdit.Enabled = (!FIsCurrentRowStateAdded && !FCanEditCurrentRow);
             }
         }
 
@@ -1142,8 +1149,52 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 TVerificationResultCollection results = FPetraUtilsObject.VerificationResultCollection;
 
-                TImportExchangeRates.ImportCurrencyExRates(FMainDS.ADailyExchangeRate, "Daily", results);
-                FPetraUtilsObject.SetChangedFlag();
+                int nRowsImported = TImportExchangeRates.ImportCurrencyExRates(FMainDS.ADailyExchangeRate, "Daily", results);
+
+                if (results.Count > 0)
+                {
+                    string formatter;
+                    if (nRowsImported == 0)
+                    {
+                        formatter = MCommonResourcestrings.StrExchRateImportNoRows;
+                    }
+                    else if (nRowsImported == 1)
+                    {
+                        formatter = MCommonResourcestrings.StrExchRateImportOneRow;
+                    }
+                    else
+                    {
+                        formatter = MCommonResourcestrings.StrExchRateImportMultiRow;
+                    }
+
+                    formatter += "{0}{0}{1}{0}{0}{3}{0}{0}{4}";
+                    MessageBox.Show(String.Format(formatter,
+                            Environment.NewLine,
+                            results[0].ResultText,
+                            nRowsImported,
+                            MCommonResourcestrings.StrExchRateImportTryAgain,
+                            results[0].ResultCode),
+                            MCommonResourcestrings.StrExchRateImportTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    results.Clear();
+                }
+                else if (nRowsImported == 0)
+                {
+                    MessageBox.Show(MCommonResourcestrings.StrExchRateImportNoRows, MCommonResourcestrings.StrExchRateImportTitle);
+                }
+                else if (nRowsImported == 1)
+                {
+                    MessageBox.Show(MCommonResourcestrings.StrExchRateImportOneRowSuccess, MCommonResourcestrings.StrExchRateImportTitle);
+                }
+                else
+                {
+                    MessageBox.Show(String.Format(MCommonResourcestrings.StrExchRateImportMultiRowSuccess, nRowsImported), MCommonResourcestrings.StrExchRateImportTitle);
+                }
+
+                if (nRowsImported > 0)
+                {
+                    FPetraUtilsObject.SetChangedFlag();
+                }
             }
         }
 
