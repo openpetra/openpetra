@@ -49,9 +49,17 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             string newName = Catalog.GetString("NEWCODE");
             Int32 countNewDetail = 0;
 
-            if (FMainDS.PtPosition.Rows.Find(new object[] { newName, String.Empty }) != null)
+            // Note from AlanP on 8 March 2014:
+            // The PK needs to include a Unit Type Code but we do not have an interface for that (yet?).
+            // Multiple codes exist in the standard database.
+            // But all positions use the 'O' code, which means 'Other'
+            // (see Mantis case 2793)
+
+            string positionScope = "O";
+
+            if (FMainDS.PtPosition.Rows.Find(new object[] { newName, positionScope }) != null)
             {
-                while (FMainDS.PtPosition.Rows.Find(new object[] { newName + countNewDetail.ToString(), String.Empty }) != null)
+                while (FMainDS.PtPosition.Rows.Find(new object[] { newName + countNewDetail.ToString(), positionScope }) != null)
                 {
                     countNewDetail++;
                 }
@@ -60,7 +68,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             }
 
             ARow.PositionName = newName;
-            ARow.PositionScope = "Not used";
+            ARow.PositionScope = positionScope;
         }
 
         private void NewRecord(Object sender, EventArgs e)
