@@ -702,6 +702,18 @@ namespace Ict.Petra.Client.CommonControls
                         else
                         {
                             iffp.PanelControl.Text = String.Empty;
+
+                            // For auto-complete combos we may not have done enough depending on whether they have an empty first item
+                            if ((iffp.PanelControl is TCmbAutoComplete) && (iffp.PanelControl.Text != String.Empty))
+                            {
+                                TCmbAutoComplete cbo = (TCmbAutoComplete)iffp.PanelControl;
+                                cbo.SelectedIndex = -1;
+                                
+                                if (cbo.SelectedIndex == 0)
+                                {
+                                    cbo.SelectedIndex = -1;
+                                }
+                            }
                         }
                     }
                 }
