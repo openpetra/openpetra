@@ -93,9 +93,9 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             SUserRow ReturnValue;
 
             Ict.Petra.Shared.Security.TPetraIdentity PetraIdentity;
-            
+
             ReturnValue = LoadUser(AUserID, out PetraIdentity);
-            
+
             APetraPrincipal = new TPetraPrincipal(PetraIdentity, TGroupManager.LoadUserGroups(
                     AUserID), TTableAccessPermissionManager.LoadTableAccessPermissions(
                     AUserID), TModuleAccessManager.LoadUserModules(AUserID));

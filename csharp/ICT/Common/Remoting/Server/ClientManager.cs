@@ -451,7 +451,7 @@ namespace Ict.Common.Remoting.Server
             {
                 TLogging.Log(String.Format(AUTHENTICATION_FAILED,
                         new String[] { AUserName, "User does not exist in the OpenPetra Database!", AClientComputerName, AClientIPAddress }));
-                
+
                 throw;
             }
             catch (EPasswordWrongException PasswordWrongException)
@@ -465,7 +465,8 @@ namespace Ict.Common.Remoting.Server
             catch (EAccessDeniedException AccessDeniedException)
             {
                 TLogging.Log(String.Format(AUTHENTICATION_FAILED,
-                        new String[] { AUserName, "User got auto-retired after too many failed log-in attempts!", AClientComputerName, AClientIPAddress }));
+                        new String[] { AUserName, "User got auto-retired after too many failed log-in attempts!", AClientComputerName,
+                                       AClientIPAddress }));
 
                 // for security reasons we don't distinguish between user that just got auto-retired and a wrong username/password combination when informing the Client!
                 throw new EUserNotExistantException(AccessDeniedException.Message);
@@ -476,19 +477,20 @@ namespace Ict.Common.Remoting.Server
                         new String[] { AUserName, "User tried to log in, but that user is 'retired'.", AClientComputerName, AClientIPAddress }));
 
                 // for security reasons we don't distinguish between user that is retired and a wrong username/password combination when informing the Client!
-                throw new EUserNotExistantException(UserRetiredException.Message);                
+                throw new EUserNotExistantException(UserRetiredException.Message);
             }
             catch (ESystemDisabledException)
             {
-                TLogging.Log(String.Format(AUTHENTICATION_FAILED, new String[] { AUserName, "The System is currently Disabled", AClientComputerName, AClientIPAddress }));
-                
+                TLogging.Log(String.Format(AUTHENTICATION_FAILED,
+                        new String[] { AUserName, "The System is currently Disabled", AClientComputerName, AClientIPAddress }));
+
                 throw;
             }
             catch (Exception exp)
             {
                 TLogging.Log(String.Format(AUTHENTICATION_FAILED,
                         new String[] { AUserName, "Exception occured: " + exp.ToString(), AClientComputerName, AClientIPAddress }));
-                
+
                 throw;
             }
 

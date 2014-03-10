@@ -42,7 +42,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// The user can insert a recipient key manualy and so each key has to be checked for
         /// usability. Parallel to this request you can check the values of MotivationGroup and
         /// MotivationDetail. In normal cases the global defaul values shall be used.
-        /// But in some cases the some "PartnerKey"-specific defaults shall be used.
+        /// But in some cases the "PartnerKey"-specific defaults shall be used.
         ///
         /// This Routine
         /// 1. Checks if PartnerKey is available in p_partner
@@ -50,7 +50,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         ///    parameter are not changed.
         /// 3. If PartnerKey is available then PartnerKeyIsValid = false and:
         /// 4. The Table-Entry p_partner_class_c is checked for the value "unit"
-        /// 5. If p_partner_class_c does not hold the value unit, den the routine is done, the other
+        /// 5. If p_partner_class_c does not hold the value unit, then the routine is done, the other
         ///    parameters are not changed
         /// 6. If p_partner_class_c holds the value "unit" then the table p_unit shall be checked.
         /// 7. If p_unit.p_partner_class_c holds the value "KEYMIN" then the value of MotivationDetail
