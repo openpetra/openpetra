@@ -952,6 +952,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
             else
             {
+                // Older databases may have times that require long format...  Otherwise the data gets 'modified' without us realising
+                //  which leads to all sorts of unwanted warnings ...
+                string strLong = new Ict.Common.TypeConverter.TLongTimeConverter().ConvertTo(ARow.TimeEffectiveFrom, typeof(string)).ToString();
+                
+                if (!strLong.EndsWith("00"))
+                {
+                    txtDetailTimeEffectiveFrom.Text = strLong;
+                }
+
                 if (ARow.FromCurrencyCode == ARow.ToCurrencyCode)
                 {
                     ARow.RateOfExchange = 1.0m;
