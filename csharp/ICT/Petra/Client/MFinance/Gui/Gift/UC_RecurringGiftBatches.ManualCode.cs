@@ -304,6 +304,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(ARecurringGiftBatchRow ARow)
         {
+            // We cannot view transactions on an empty row!  (It may be empty because of filtering)
+            ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab(ARow != null);
+
             if (ARow == null)
             {
                 return;
@@ -312,8 +315,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FLedgerNumber = ARow.LedgerNumber;
 
             FPetraUtilsObject.DetailProtectedMode = false;
-
-            ((TFrmRecurringGiftBatch)ParentForm).EnableTransactionsTab();
 
             UpdateChangeableStatus();
         }
