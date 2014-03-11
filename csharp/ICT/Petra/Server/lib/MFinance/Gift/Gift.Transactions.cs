@@ -572,7 +572,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             bool KeyMinExists = false;
 
             string ValidLedgerNumberCostCentreCode = string.Empty;
-            bool ValidLedgerNumberExists = false;
+            //bool ValidLedgerNumberExists = false;
 
             string ErrMsg = string.Empty;
 
@@ -614,9 +614,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 KeyMinIsActive = false;
                 KeyMinExists = KeyMinistryExists(PartnerKey, out KeyMinIsActive);
 
-                ValidLedgerNumberExists = ValidLedgerNumberExistsForRecipient(LedgerNumber,
-                    PartnerKey,
-                    out ValidLedgerNumberCostCentreCode);
+                //ValidLedgerNumberExists = ValidLedgerNumberExistsForRecipient(LedgerNumber,
+                //    PartnerKey,
+                //    out ValidLedgerNumberCostCentreCode);
 
                 if (ValidLedgerNumberExistsForRecipient(LedgerNumber, PartnerKey,
                         out ValidLedgerNumberCostCentreCode)
