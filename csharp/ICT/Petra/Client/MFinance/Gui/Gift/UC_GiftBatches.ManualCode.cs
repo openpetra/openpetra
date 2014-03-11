@@ -930,26 +930,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void CancelRecord(System.Object sender, EventArgs e)
         {
-            string completionMessage = string.Empty;
-            int currentlySelectedRow = 0;
-            string existingBatchStatus = string.Empty;
-            decimal existingBatchTotal = 0;
+            string CancelMessage = string.Empty;
+            string CompletionMessage = string.Empty;
+            int CurrentlySelectedRow = 0;
+            string ExistingBatchStatus = string.Empty;
+            decimal ExistingBatchTotal = 0;
 
             if ((FPreviouslySelectedDetailRow == null) || (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
                 return;
             }
 
-            currentlySelectedRow = grdDetails.GetFirstHighlightedRowIndex();
+            CurrentlySelectedRow = grdDetails.GetFirstHighlightedRowIndex();
+
+            CancelMessage = String.Format(Catalog.GetString("Are you sure you want to cancel gift batch no.: {0}?"),
+                FPreviouslySelectedDetailRow.BatchNumber);
+
+            if ((MessageBox.Show(CancelMessage,
+                     "Cancel Batch",
+                     MessageBoxButtons.YesNo,
+                     MessageBoxIcon.Question,
+                     MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes))
+            {
+                return;
+            }
 
             try
             {
                 //Normally need to set the message parameters before the delete is performed if requiring any of the row values
-                completionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
+                CompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
                     FPreviouslySelectedDetailRow.BatchNumber);
 
-                existingBatchTotal = FPreviouslySelectedDetailRow.BatchTotal;
-                existingBatchStatus = FPreviouslySelectedDetailRow.BatchStatus;
+                ExistingBatchTotal = FPreviouslySelectedDetailRow.BatchTotal;
+                ExistingBatchStatus = FPreviouslySelectedDetailRow.BatchStatus;
 
                 //Load all journals for current Batch
                 //clear any transactions currently being editied in the Transaction Tab
@@ -989,20 +1002,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     FPreviouslySelectedDetailRow.BeginEdit();
                     //Should normally be Unposted, but allow for other status values in future
-                    FPreviouslySelectedDetailRow.BatchTotal = existingBatchTotal;
-                    FPreviouslySelectedDetailRow.BatchStatus = existingBatchStatus;
+                    FPreviouslySelectedDetailRow.BatchTotal = ExistingBatchTotal;
+                    FPreviouslySelectedDetailRow.BatchStatus = ExistingBatchStatus;
                     FPreviouslySelectedDetailRow.EndEdit();
 
-                    SelectRowInGrid(currentlySelectedRow);
+                    SelectRowInGrid(CurrentlySelectedRow);
 
                     // saving failed, therefore do not try to cancel
                     MessageBox.Show(Catalog.GetString("The cancelled batch failed to save!"));
                 }
                 else
                 {
-                    SelectRowInGrid(currentlySelectedRow);
+                    SelectRowInGrid(CurrentlySelectedRow);
 
-                    MessageBox.Show(completionMessage,
+                    MessageBox.Show(CompletionMessage,
                         "Batch Cancelled",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
@@ -1012,7 +1025,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             catch (Exception ex)
             {
-                completionMessage = ex.Message;
+                CompletionMessage = ex.Message;
                 MessageBox.Show(ex.Message,
                     "Cancellation Error",
                     MessageBoxButtons.OK,
