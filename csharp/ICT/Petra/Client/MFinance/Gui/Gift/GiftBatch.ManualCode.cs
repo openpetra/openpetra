@@ -197,14 +197,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Process update errors
             if (FMainDS.Tables.Contains("AUpdateErrors"))
             {
+                //TODO remove this code when the worker field issue is sorted out
+                AShowMessage = false;
+
+                //--------------------------------------------------------------
                 if (AShowMessage)
                 {
                     string loadErrors = FMainDS.Tables["AUpdateErrors"].Rows[0].ItemArray[0].ToString();
 
-                    //TODO re-enable this code when the worker field issue is sorted out
-//                    MessageBox.Show(String.Format("Errors occurred in updating gift data:{0}{0}{1}",
-//                                                   Environment.NewLine,
-//                                                   loadErrors), "Update Gift Details", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(String.Format("Errors occurred in updating gift data:{0}{0}{1}",
+                            Environment.NewLine,
+                            loadErrors), "Update Gift Details", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 FMainDS.Tables.Remove("AUpdateErrors");

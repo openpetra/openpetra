@@ -268,9 +268,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             string ValidLedgerNumberCostCentreCode;
 
-            bool ValidLedgerNumberExists = TRemote.MFinance.Gift.WebConnectors.ValidLedgerNumberExistsForRecipient(FLedgerNumber,
-                PartnerKey,
-                out ValidLedgerNumberCostCentreCode);
+            //bool ValidLedgerNumberExists = TRemote.MFinance.Gift.WebConnectors.ValidLedgerNumberExistsForRecipient(FLedgerNumber,
+            //    PartnerKey,
+            //    out ValidLedgerNumberCostCentreCode);
 
             string errMsg = string.Empty;
 

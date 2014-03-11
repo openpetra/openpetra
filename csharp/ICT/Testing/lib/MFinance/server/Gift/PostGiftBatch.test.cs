@@ -211,9 +211,9 @@ namespace Tests.MFinance.Server.Gift
             Int64 partnerKey = 73000000;
             Int64 RecipientLedgerNumber = 0;
 
-            bool NewTransaction = false;
+            //bool NewTransaction = false;
 
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+            //TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
 
             try
             {
@@ -223,13 +223,13 @@ namespace Tests.MFinance.Server.Gift
             {
                 throw;
             }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
-            }
+            //finally
+            //{
+            //if (NewTransaction)
+            //{
+            //    DBAccess.GDBAccessObj.RollbackTransaction();
+            //}
+            //}
 
             //TODO the value to check for needs to be updated oncw workwer field is implemented.
             //TODO If this first one works, try different permatations for Assert.AreEqual
