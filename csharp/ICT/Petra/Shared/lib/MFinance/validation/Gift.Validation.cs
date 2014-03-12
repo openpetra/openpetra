@@ -310,15 +310,15 @@ namespace Ict.Petra.Shared.MFinance.Validation
             ValidationColumn = ARow.Table.Columns[AGiftTable.ColumnDateEnteredId];
             ValidationContext = String.Format("Gift No.: {0}", ARow.GiftTransactionNumber);
 
-            DateTime StartDatePeriod;
-            DateTime EndDatePeriod;
-            TSharedFinanceValidationHelper.GetValidPeriodDates(ARow.LedgerNumber, AYear, 0, APeriod,
-                out StartDatePeriod,
-                out EndDatePeriod);
+            DateTime StartDateCurrentPeriod;
+            DateTime EndDateLastForwardingPeriod;
+            TSharedFinanceValidationHelper.GetValidPostingDateRange(ARow.LedgerNumber,
+                out StartDateCurrentPeriod,
+                out EndDateLastForwardingPeriod);
 
             VerificationResult = (TScreenVerificationResult)TDateChecks.IsDateBetweenDates(ARow.DateEntered,
-                StartDatePeriod,
-                EndDatePeriod,
+                StartDateCurrentPeriod,
+                EndDateLastForwardingPeriod,
                 "Gift Date for " + ValidationContext.ToString(),
                 TDateBetweenDatesCheckType.dbdctUnspecific,
                 TDateBetweenDatesCheckType.dbdctUnspecific,

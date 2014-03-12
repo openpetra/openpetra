@@ -64,6 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private DateTime FStartDateCurrentPeriod;
         private DateTime FEndDateLastForwardingPeriod;
         private DateTime FDefaultDate;
+        private Boolean FPostingInProgress = false;
 
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
@@ -817,8 +818,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            bool ActiveOnly = (ARow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
-            RefreshBankAccountAndCostCentreFilters(ActiveOnly, ARow);
+            if (!FPostingInProgress)
+            {
+                bool ActiveOnly = (ARow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
+                RefreshBankAccountAndCostCentreFilters(ActiveOnly, ARow);
+            }
 
             if (ARow.BatchStatus == MFinanceConstants.BATCH_CANCELLED)
             {
@@ -1163,22 +1167,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             this.Cursor = Cursors.WaitCursor;
 
-            RadioButton rbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
-            int currentBatchNo = 0;
+            //RadioButton rbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
+            int currentBatchNo = FPreviouslySelectedDetailRow.BatchNumber; //0;
 
-            if (rbtAll.Checked)
-            {
-                currentBatchNo = FPreviouslySelectedDetailRow.BatchNumber;
-            }
+            //if (rbtAll.Checked)
+            //{
+            //    currentBatchNo = FPreviouslySelectedDetailRow.BatchNumber;
+            //}
 
             Boolean batchIsEmpty = true;
             ((TFrmGiftBatch)ParentForm).LoadTransactions(FPreviouslySelectedDetailRow.LedgerNumber,
-                FPreviouslySelectedDetailRow.BatchNumber,
+                currentBatchNo,
                 FPreviouslySelectedDetailRow.BatchStatus);
 
             if (FMainDS.AGift != null)
             {
-                FMainDS.AGift.DefaultView.RowFilter = "a_batch_number_i = " + FPreviouslySelectedDetailRow.BatchNumber;
+                FMainDS.AGift.DefaultView.RowFilter = "a_batch_number_i = " + currentBatchNo;
                 batchIsEmpty = (FMainDS.AGift.DefaultView.Count == 0);
             }
 
@@ -1214,7 +1218,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // ask if the user really wants to post the batch
             if (MessageBox.Show(String.Format(Catalog.GetString("Do you really want to post gift batch {0}?"),
-                        FPreviouslySelectedDetailRow.BatchNumber),
+                        currentBatchNo),
                     Catalog.GetString("Confirm posting of Gift Batch"),
                     MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
             {
@@ -1223,48 +1227,61 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             Verifications = new TVerificationResultCollection();
 
-            Thread postingThread = new Thread(() => PostGiftBatch(out Verifications));
-
-            using (TProgressDialog dialog = new TProgressDialog(postingThread))
+            try
             {
-                dialog.ShowDialog();
-            }
+                FPostingInProgress = true;
 
-            if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verifications))
-            {
-                string ErrorMessages = String.Empty;
+                Thread postingThread = new Thread(() => PostGiftBatch(out Verifications));
 
-                foreach (TVerificationResult verif in Verifications)
+                using (TProgressDialog dialog = new TProgressDialog(postingThread))
                 {
-                    ErrorMessages += "[" + verif.ResultContext + "] " +
-                                     verif.ResultTextCaption + ": " +
-                                     verif.ResultText + Environment.NewLine;
+                    dialog.ShowDialog();
                 }
 
-                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"));
-            }
-            else
-            {
-                MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"));
-
-                AGiftBatchRow giftBatchRow = (AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(new object[] { FLedgerNumber, FSelectedBatchNumber });
-
-                // print reports on successfully posted batch.
-
-                // I need to retrieve the Gift Batch Row, which now has modified fields because it's been posted.
-                //
-
-                GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadGiftBatchData(giftBatchRow.LedgerNumber,
-                    giftBatchRow.BatchNumber);
-                PrintGiftBatchReceipts(PostedGiftTDS);
-
-                RefreshAll();
-                RefreshGridData(currentBatchNo, false, true);
-
-                if (FPetraUtilsObject.HasChanges)
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verifications))
                 {
-                    ((TFrmGiftBatch)ParentForm).SaveChanges();
+                    string ErrorMessages = String.Empty;
+
+                    foreach (TVerificationResult verif in Verifications)
+                    {
+                        ErrorMessages += "[" + verif.ResultContext + "] " +
+                                         verif.ResultTextCaption + ": " +
+                                         verif.ResultText + Environment.NewLine;
+                    }
+
+                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"));
                 }
+                else
+                {
+                    MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"));
+
+                    AGiftBatchRow giftBatchRow = (AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(new object[] { FLedgerNumber, FSelectedBatchNumber });
+
+                    // print reports on successfully posted batch.
+
+                    // I need to retrieve the Gift Batch Row, which now has modified fields because it's been posted.
+                    //
+
+                    GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadGiftBatchData(giftBatchRow.LedgerNumber,
+                        giftBatchRow.BatchNumber);
+                    PrintGiftBatchReceipts(PostedGiftTDS);
+
+                    RefreshAll();
+                    RefreshGridData(currentBatchNo, false, true);
+
+                    if (FPetraUtilsObject.HasChanges)
+                    {
+                        ((TFrmGiftBatch)ParentForm).SaveChanges();
+                    }
+                }
+            }
+            catch
+            {
+                //Do nothing
+            }
+            finally
+            {
+                FPostingInProgress = false;
             }
         }
 
