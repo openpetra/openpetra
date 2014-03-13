@@ -411,6 +411,13 @@ namespace Ict.Common.Controls
                     {
                         FSubSystemLinkStatus(FCurrentLedger, (TPnlCollapsible)AOtherData);
                     }
+
+                    // If ledger has been changed then possibly the functional menu item (panel above ledger panel) may be disabled.
+                    // Therefore reselect first active menu item to make sure that menu is initialized properly.
+                    if (FCollapsibleNavigation.CollapsiblePanelHosterInstance.GetTaskListInstance(0) != null)
+                    {
+                        FCollapsibleNavigation.CollapsiblePanelHosterInstance.GetTaskListInstance(0).SelectFirstTaskItem();
+                    }
                 }
             }
 
