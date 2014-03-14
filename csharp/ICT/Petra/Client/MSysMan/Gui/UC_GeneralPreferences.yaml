@@ -8,7 +8,7 @@ RootNode:
 
     Controls:
         pnlContent:
-            Controls: [grpLanguage, grpNumberOfPartners]
+            Controls: [grpLanguage, grpNumberOfPartners, grpMiscellaneous]
             Dock: Fill
         grpLanguage:
             Controls: [pnlLanguage]
@@ -19,6 +19,12 @@ RootNode:
             Controls: [pnlNumberOfPartners]
             Width: 430
             Height: 65
+        grpMiscellaneous:
+            Controls:
+                Row0: [chkEscClosesScreen]
+                Row1: [chkSaveWindowProperties]
+            Width: 430
+            Height: 70
         pnlLanguage:
             Controls:
                 Row0: [cmbLanguage]
@@ -33,7 +39,6 @@ RootNode:
                 Row0: [lblPartnerNumber, nudNumberOfPartners]
             Width: 410
             Height: 45
-            #Padding: 0, 5, 0, 5
 
         cmbLanguage: 
             Width: 204
@@ -59,3 +64,11 @@ RootNode:
             Multiline: true
             Width: 310
             Height: 40
+        chkEscClosesScreen:
+            CheckBoxAttachedLabel: right
+            Label: Escape key closes the active window
+            Padding: 10, 5, 0, 0
+        chkSaveWindowProperties:
+            CheckBoxAttachedLabel: right
+            Label: Save window sizes and positions between sessions
+            Padding: 10, 3, 0, 0

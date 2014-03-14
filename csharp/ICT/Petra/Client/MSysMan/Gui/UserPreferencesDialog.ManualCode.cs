@@ -56,7 +56,11 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-            ucoGeneral.SaveGeneralTab();
+            // The general tab may present a dialog that allows the user to cancel - so we need to call this first
+            if (ucoGeneral.SaveGeneralTab() == System.Windows.Forms.DialogResult.Cancel)
+            {
+                return;
+            }
 
             if (ucoAppearance.SaveAppearanceTab() | (tpgFinance.Enabled && ucoFinance.SaveFinanceTab()))
             {

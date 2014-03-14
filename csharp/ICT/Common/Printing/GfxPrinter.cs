@@ -1182,17 +1182,19 @@ namespace Ict.Common.Printing
             }
 
             CurrentYPos = FTopMargin;
+            CurrentXPos = FLeftMargin;
+
             FPrinterLayout.PrintPageHeader();
 
             float CurrentYPosBefore = CurrentYPos;
+            float CurrentXPosBefore = CurrentXPos;
             FPrinterLayout.PrintPageBody();
 
-            if ((CurrentYPosBefore == CurrentYPos) && FEv.HasMorePages)
+            if ((CurrentYPosBefore == CurrentYPos) && (CurrentXPosBefore == CurrentXPos) && FEv.HasMorePages)
             {
                 throw new Exception("failure printing, does not fit the page");
             }
 
-            FPrinterLayout.PrintPageBody();
             FPrinterLayout.PrintPageFooter();
 
             if (AEv.PageSettings.PrinterSettings.PrintRange == PrintRange.SomePages)

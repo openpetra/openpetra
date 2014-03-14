@@ -520,6 +520,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             base.SetControlProperties(writer, ctrl);
             writer.SetControlProperty(ctrl, "FixedRows", "1");
+            writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".CancelEditingWithEscapeKey = false;" + Environment.NewLine);
             return writer.FTemplate;
         }
     }
@@ -531,7 +532,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
     {
         /// <summary>constructor</summary>
         public PrintPreviewGenerator()
-            : base("ppv", typeof(PrintPreviewControl))
+            : base("ppv", "Ict.Petra.Client.CommonControls.TUC_PrintPreviewControl")
         {
             FGenerateLabel = false;
         }

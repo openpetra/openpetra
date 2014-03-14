@@ -898,22 +898,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        public void RestoreSplitterSetting()
-        {
-            spcCriteria.SplitterDistance = TUserDefaults.GetInt32Default(TUserDefaults.PARTNER_FIND_SPLITPOS_CRITERIA, 326);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        public void SaveSplitterSetting()
-        {
-            TUserDefaults.SetDefault(TUserDefaults.PARTNER_FIND_SPLITPOS_CRITERIA, spcCriteria.SplitterDistance);
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
         public void LoadMatchButtonSettings()
         {
             String strLeft;

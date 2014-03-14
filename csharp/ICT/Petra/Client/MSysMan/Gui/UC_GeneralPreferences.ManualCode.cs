@@ -26,9 +26,12 @@ using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
+using System.Reflection;
 using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan;
 
 namespace Ict.Petra.Client.MSysMan.Gui
@@ -36,6 +39,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
     public partial class TUC_GeneralPreferences
     {
         private bool LanguageChanged = false;
+        private bool WasSaveWindowPropertiesInitiallyChecked = true;
 
         private void InitializeManualCode()
         {
@@ -92,6 +96,12 @@ namespace Ict.Petra.Client.MSysMan.Gui
             // Get the number of recent partners that the user has set, if not found take 10 as default value.
             nudNumberOfPartners.Value = TUserDefaults.GetInt16Default(MSysManConstants.USERDEFAULT_NUMBEROFRECENTPARTNERS, 10);
             nudNumberOfPartners.Maximum = 10;
+
+            // Other preferences
+            chkEscClosesScreen.Checked = TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_ESC_CLOSES_SCREEN, true);
+            chkSaveWindowProperties.Checked = TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, true);
+
+            WasSaveWindowPropertiesInitiallyChecked = chkSaveWindowProperties.Checked;
         }
 
         /// <summary>
@@ -116,8 +126,61 @@ namespace Ict.Petra.Client.MSysMan.Gui
         /// Saves any changed preferences to s_user_defaults
         /// </summary>
         /// <returns>void</returns>
-        public void SaveGeneralTab()
+        public DialogResult SaveGeneralTab()
         {
+            // First, we need to show any dialogs that may result in Cancel
+            if (chkSaveWindowProperties.Checked && !WasSaveWindowPropertiesInitiallyChecked)
+            {
+                // The user wants to start saving the window positions etc.
+                // If we have some information about this that we stored previously, we can offer to use it again...
+                string commonSettingsPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                    CommonFormsResourcestrings.StrFolderOrganisationName,
+                    System.Diagnostics.FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName);
+                string settingsFileName = String.Format(CommonFormsResourcestrings.StrScreenPositionsFileName, UserInfo.GUserInfo.UserID);
+                string settingsPath = Path.Combine(commonSettingsPath, settingsFileName);
+
+                if (File.Exists(settingsPath))
+                {
+                    string msg = String.Format("{0}{1}{2}{3}{4}",
+                        CommonFormsResourcestrings.StrReuseScreenPositionsMessage1,
+                        CommonFormsResourcestrings.StrReuseScreenPositionsMessage2,
+                        Environment.NewLine,
+                        Environment.NewLine,
+                        CommonFormsResourcestrings.StrReuseScreenPositionsMessage3);
+                    DialogResult result = MessageBox.Show(msg,
+                        CommonFormsResourcestrings.StrReuseScreenPositionsTitle,
+                        MessageBoxButtons.YesNoCancel,
+                        MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Cancel)
+                    {
+                        return result;
+                    }
+
+                    if (result == DialogResult.No)
+                    {
+                        try
+                        {
+                            // Delete the old file
+                            File.Delete(settingsPath);
+                        }
+                        catch (Exception ex)
+                        {
+                            TLogging.Log(String.Format("Exception occurred while deleting the window position file '{0}': {1}",
+                                    settingsPath,
+                                    ex.Message), TLoggingType.ToLogfile);
+                        }
+                    }
+
+                    if (result == DialogResult.Yes)
+                    {
+                        // Load the information we have already
+                        PetraUtilsObject.LoadWindowPositionsFromFile();
+                    }
+                }
+            }
+
             if (LanguageChanged)
             {
                 string LanguageCode = cmbLanguage.GetSelectedString();
@@ -137,6 +200,10 @@ namespace Ict.Petra.Client.MSysMan.Gui
             }
 
             TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_NUMBEROFRECENTPARTNERS, nudNumberOfPartners.Value);
+            TUserDefaults.SetDefault(TUserDefaults.NamedDefaults.USERDEFAULT_ESC_CLOSES_SCREEN, chkEscClosesScreen.Checked);
+            TUserDefaults.SetDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, chkSaveWindowProperties.Checked);
+
+            return DialogResult.OK;
         }
 
         private Boolean ViewMode

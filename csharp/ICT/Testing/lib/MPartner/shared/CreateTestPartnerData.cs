@@ -142,6 +142,23 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             return PartnerRow;
         }
 
+        /// create a new unit
+        public static PPartnerRow CreateNewUnitPartnerWithTypeCode(PartnerEditTDS AMainDS, string AUnitType)
+        {
+            PPartnerRow PartnerRow = CreateNewPartner(AMainDS);
+
+            PartnerRow.PartnerClass = MPartnerConstants.PARTNERCLASS_UNIT;
+            PartnerRow.PartnerShortName = PartnerRow.PartnerKey.ToString() + ", TestUnit";
+
+            PUnitRow UnitRow = AMainDS.PUnit.NewRowTyped();
+            UnitRow.PartnerKey = PartnerRow.PartnerKey;
+            UnitRow.UnitName = "TestUnit";
+            UnitRow.UnitTypeCode = AUnitType;
+            AMainDS.PUnit.Rows.Add(UnitRow);
+
+            return PartnerRow;
+        }
+
         /// create a new organisation
         public static PPartnerRow CreateNewOrganisationPartner(PartnerEditTDS AMainDS)
         {

@@ -90,7 +90,7 @@ RootNode:
                 ReceiptPrinted: {Label=Receipt Printed,Type=Boolean} 
             ActionFocusRow: FocusedRowChanged
             EnableMultiSelection: false
-            SortOrder: GiftTransactionNumber ASC
+            #SortOrder: GiftTransactionNumber DESC, DetailNumber ASC
             RowFilter: AGiftDetail.BatchNumber
             SortableHeaders: false
         pnlDetails:
@@ -131,8 +131,6 @@ RootNode:
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
         cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=FilterMotivationDetail}
         cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, OnChange=MotivationDetailChanged}
-        #txtDetailMotivationGroupCode: {Label=Motivation Group}
-        #txtDetailMotivationDetailCode: {Label=Motivation Detail}
         txtDetailMotivationDetailDescription: {Label=Empty, ReadOnly=true, Visible=false}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
         txtField: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true}

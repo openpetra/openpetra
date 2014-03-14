@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -196,6 +196,10 @@ namespace Ict.Common.IO
                         {
                             AWorksheet.Cells[rowCounter, colCounter].Value = TVariant.DecodeFromString(value).ToInt64();
                         }
+                        else if (value.StartsWith(eVariantTypes.eDecimal.ToString() + ":"))
+                        {
+                            AWorksheet.Cells[rowCounter, colCounter].Value = TVariant.DecodeFromString(value).ToDecimal();
+                        }
                         else
                         {
                             AWorksheet.Cells[rowCounter, colCounter].Value = value;
@@ -354,6 +358,76 @@ namespace Ict.Common.IO
                 TLogging.Log(e.ToString());
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Load an xlsx Excel file into a datatable
+        /// </summary>
+        public static DataTable ParseExcelStream2DataTable(MemoryStream AStream,
+            bool AHasHeader = false,
+            int AWorksheetID = 0,
+            List <string>AColumnsToImport = null)
+        {
+            ExcelPackage pck = new ExcelPackage();
+
+            pck.Load(AStream);
+
+            int countWorksheets = 0;
+            ExcelWorksheet worksheet = null;
+
+            foreach (ExcelWorksheet worksheetLoop in pck.Workbook.Worksheets)
+            {
+                if (countWorksheets == AWorksheetID)
+                {
+                    worksheet = worksheetLoop;
+                }
+
+                countWorksheets++;
+            }
+
+            DataTable result = new DataTable();
+
+            if (worksheet == null)
+            {
+                return result;
+            }
+
+            List <string>ColumnNames = new List <string>();
+
+            foreach (ExcelRangeBase firstRowCell in worksheet.Cells[1, 1, 1, worksheet.Dimension.End.Column])
+            {
+                string ColumnName = (AHasHeader ? firstRowCell.Text : string.Format("Column {0}", firstRowCell.Start.Column));
+                ColumnNames.Add(ColumnName);
+
+                if ((AColumnsToImport != null) && !AColumnsToImport.Contains(ColumnName))
+                {
+                    continue;
+                }
+
+                result.Columns.Add(ColumnName);
+            }
+
+            int firstDataRow = AHasHeader ? 2 : 1;
+
+            for (int countRow = firstDataRow; countRow <= worksheet.Dimension.End.Row; countRow++)
+            {
+                ExcelRangeBase ExcelRow = worksheet.Cells[countRow, 1, countRow, worksheet.Dimension.End.Column];
+                DataRow NewRow = result.NewRow();
+
+                foreach (ExcelRangeBase cell in ExcelRow)
+                {
+                    if ((AColumnsToImport != null) && !AColumnsToImport.Contains(ColumnNames[cell.Start.Column - 1]))
+                    {
+                        continue;
+                    }
+
+                    NewRow[ColumnNames[cell.Start.Column - 1]] = cell.Value;
+                }
+
+                result.Rows.Add(NewRow);
+            }
+
+            return result;
         }
 
         /// <summary>

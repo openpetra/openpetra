@@ -74,6 +74,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.grdPartnerTypes.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
             this.grdPartnerTypes.BackColor = System.Drawing.SystemColors.ControlDark;
             this.grdPartnerTypes.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.grdPartnerTypes.CancelEditingWithEscapeKey = false;
             this.grdPartnerTypes.DeleteQuestionMessage = "You have chosen to delete t" + "his record.'#13#10#13#10'Dou you really want to delete it?";
             this.grdPartnerTypes.Dock = System.Windows.Forms.DockStyle.Fill;
             this.grdPartnerTypes.FixedRows = 1;

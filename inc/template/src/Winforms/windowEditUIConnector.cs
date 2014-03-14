@@ -143,8 +143,6 @@ namespace {#NAMESPACE}
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
     {
-        // TODO? Save Window position
-
         if (FUIConnector != null)
         {
             // UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer
