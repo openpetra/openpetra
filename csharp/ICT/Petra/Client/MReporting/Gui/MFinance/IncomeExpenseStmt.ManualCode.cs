@@ -39,7 +39,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     public partial class TFrmIncomeExpenseStmt
     {
         private Int32 FLedgerNumber;
-        FastReportsWrapper FFastReportsPlugin;
 
         /// <summary>
         /// the report should be run for this ledger
@@ -54,7 +53,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
 
                 FPetraUtilsObject.LoadDefaultSettings();
-                FFastReportsPlugin = new FastReportsWrapper(FPetraUtilsObject, LoadReportData);
+                if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+                {
+                    FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+                }
             }
         }
 
@@ -96,7 +98,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             // It does not contain any variance (actual / budget) figures - these are calculated in the report.
 
             DataTable ReportTable = TRemote.MFinance.Reporting.WebConnectors.IncomeExpenseTable(paramsDictionary);
-            FFastReportsPlugin.RegisterData(ReportTable, "IncomeExpense");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "IncomeExpense");
 
             //
             // I need to get the name of the current ledger..
@@ -122,7 +124,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private void RunOnceOnActivationManual()
         {
-            if (FFastReportsPlugin.LoadedOK)
+            if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
             {
                 this.tabReportSettings.Controls.Remove(tpgAdditionalSettings); // These tabs represent settings that are not supported
                 this.tabReportSettings.Controls.Remove(tpgColumnSettings);     // in the FastReports based solution.

@@ -37,7 +37,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     public partial class TFrmBalanceSheetStandard
     {
         private Int32 FLedgerNumber;
-        FastReportsWrapper FFastReportsPlugin;
 
         /// <summary>
         /// the report should be run for this ledger
@@ -51,7 +50,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
 
                 FPetraUtilsObject.LoadDefaultSettings();
-                FFastReportsPlugin = new FastReportsWrapper(FPetraUtilsObject, LoadReportData);
+                if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+                {
+                    FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+                }
             }
         }
 
@@ -92,7 +94,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             // It does not contain any variance (this year / last year) figures - these are calculated in the report.
 
             DataTable ReportTable = TRemote.MFinance.Reporting.WebConnectors.BalanceSheetTable(paramsDictionary);
-            FFastReportsPlugin.RegisterData(ReportTable, "IncomeExpense");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "IncomeExpense");
 
             //
             // I need to get the name of the current ledger..

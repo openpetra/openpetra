@@ -41,7 +41,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     public partial class TFrmAccountDetail
     {
         private Int32 FLedgerNumber;
-        FastReportsWrapper FFastReportsPlugin;
 
         /// <summary>
         /// the report should be run for this ledger
@@ -58,7 +57,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
                 pnlSorting.Padding = new System.Windows.Forms.Padding(8); // This tweak bring controls inline.
                 FPetraUtilsObject.LoadDefaultSettings();
-                FFastReportsPlugin = new FastReportsWrapper(FPetraUtilsObject, LoadReportData);
+                if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+                {
+                    FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+                }
             }
         }
 
@@ -219,7 +221,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     pm.Get("param_currency").ToString().StartsWith("Int")
                     );
                 ReportDs.Merge(Balances);
-                FFastReportsPlugin.RegisterData(Balances, "balances");
+                FPetraUtilsObject.FFastReportsPlugin.RegisterData(Balances, "balances");
             }
 
             // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
@@ -250,11 +252,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ReportDs.Merge(TRemote.MFinance.Reporting.WebConnectors.GetReportingDataSet(Csv));
             }
 
-            FFastReportsPlugin.RegisterData(ReportDs.ATransAnalAttrib, "a_trans_anal_attrib");
-            FFastReportsPlugin.RegisterData(ReportDs.AAnalysisType, "a_analysis_type");
-            FFastReportsPlugin.RegisterData(ReportDs.AAccount, "a_account");
-            FFastReportsPlugin.RegisterData(ReportDs.ACostCentre, "a_costCentre");
-            FFastReportsPlugin.RegisterData(ReportDs.ATransaction, "a_transaction");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ATransAnalAttrib, "a_trans_anal_attrib");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.AAnalysisType, "a_analysis_type");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.AAccount, "a_account");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ACostCentre, "a_costCentre");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ATransaction, "a_transaction");
             return true;
         }
     }

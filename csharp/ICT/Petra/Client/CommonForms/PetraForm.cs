@@ -666,7 +666,10 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="AHelpText"></param>
         public void SetStatusBarText(Control AControl, string AHelpText)
         {
-            FStatusBar.SetHelpText(AControl, AHelpText);
+            if (FStatusBar != null)
+            {
+                FStatusBar.SetHelpText(AControl, AHelpText);
+            }
         }
 
         const Int16 MAX_COMBOBOX_HISTORY = 30;

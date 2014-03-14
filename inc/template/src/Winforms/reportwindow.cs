@@ -281,45 +281,8 @@ namespace {#NAMESPACE}
 
 #endregion
 
-    /// <summary>
-    /// allow to store and load settings
-    /// </summary>
-    /// <param name="AEnabled">True if the store and load settings are to be enabled.</param>
-    public void EnableSettings(bool AEnabled)
-    {   
-        foreach (ToolStripItem item in mniLoadSettings.DropDownItems)
-        {
-            item.Enabled = AEnabled;
-        }
-        mniLoadSettings.Enabled = AEnabled;
-        mniSaveSettings.Enabled = AEnabled;
-        mniSaveSettingsAs.Enabled = AEnabled;
-        mniMaintainSettings.Enabled = AEnabled;
-        //tbbLoadSettings.Enabled = AEnabled;
-        tbbSaveSettings.Enabled = AEnabled;
-        tbbSaveSettingsAs.Enabled = AEnabled;
-    }
-
-    /// <summary>
-    /// this is used for writing the captions of the menu items and toolbar buttons for recently used report settings
-    /// </summary>
-    /// <returns>false if an item with that index does not exist</returns>
-    /// <param name="AIndex"></param>
-    /// <param name="mniItem"></param>
-    /// <param name="tbbItem"></param>
-    public bool GetRecentSettingsItems(int AIndex, out ToolStripItem mniItem, out ToolStripItem tbbItem)
-    {
-        if (AIndex < 0 || AIndex >= mniLoadSettings.DropDownItems.Count - 2)
-        {
-            mniItem = null;
-            tbbItem = null;
-            return false;
-        }
-        mniItem = mniLoadSettings.DropDownItems[AIndex + 2];
-        // TODO
-        tbbItem = null;
-        return true;
-    }
+  //
+  // EnableSettings and GetRecentSettingsItems moved to ReportingForm.cs
 
 #region Action Handling
 

@@ -1,0 +1,44 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraForm.yaml
+    Template: windowBasic
+    TemplateParameters:
+        INITMANUALCODE: InitManualCode();
+    FormTitle: Reporting Templates
+    Namespace: Ict.Petra.Client.MReporting.Gui
+    UsingNamespaces: [Ict.Petra.Shared.MSysMan.Data]
+    FormType: edit
+
+    WindowWidth: 363
+    WindowHeight: 430
+    Actions:
+        actDelete: {ActionClick=DeleteRecord}
+        actSelect: {ActionClick=ReturnSelected}
+        actCancel: {ActionClick=ReturnCancel}
+        actDuplicate: {ActionClick=DuplicateRecord}
+    Controls:
+        pnlContent:
+            Controls: [pnlTemplateList, grpDetails, pnlBtnRow]
+            Dock: Fill
+        pnlTemplateList:
+            Controls: [grdTemplateList]
+            Width:340
+            Height:180
+        grdTemplateList:
+            Dock: Fill
+            ActionFocusRow: FocusedRowChanged
+        grpDetails:
+            Width:340
+            Controls: [txtDescription,chkDefault,chkPrivate,chkPrivateDefault,chkReadonly]
+        txtDescription: {Width=220}
+        chkDefault:
+        chkPrivate:
+        chkPrivateDefault:
+        chkReadonly:
+        pnlBtnRow: {AutoButtonMaxWidths=true, ControlsOrientation = horizontal }
+            Padding:16,0,0,0
+            Width:340
+            Controls: [btnDuplicate, btnDelete, btnCancel, btnSelect]
+        btnDuplicate:
+        btnDelete:
+        btnCancel:
+        btnSelect:

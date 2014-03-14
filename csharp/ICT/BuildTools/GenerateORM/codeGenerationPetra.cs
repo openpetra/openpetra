@@ -48,18 +48,31 @@ namespace Ict.Tools.CodeGeneration.DataStore
         /// convert the type from the xml file to an ODBC type
         public static string ToOdbcTypeString(TTableField tableField)
         {
+//          Console.WriteLine("ToOdbcTypeString[" + tableField.strTableName + "]." + tableField.strName + ": "+ tableField.strType + "/" + tableField.strTypeDotNet);
+
             if ((tableField.strType == "number") && (tableField.iLength == 24))
             {
-                // currency valuse
+                // currency value. This length="24" attribute is not consistently applied - check XML files 
+                // by un-commenting the Writelns here before assuming that all the field definitions are correct.
+
+//              Console.WriteLine("tableField.iLength == 24 in [" + tableField.strTableName + "]." + tableField.strName);
                 return "OdbcType.Decimal";
             }
             else if ((tableField.strType == "number") || ((tableField.strTypeDotNet != null) && tableField.strTypeDotNet.ToLower().Contains("int64")))
             {
                 return "OdbcType.Decimal";
             }
+            else if (tableField.strTypeDotNet.ToLower().Contains("decimal"))
+            {
+                return "OdbcType.Decimal";
+            }
             else if ((tableField.strType == "varchar") || ((tableField.strTypeDotNet != null) && tableField.strTypeDotNet.ToLower().Contains("string")))
             {
                 return "OdbcType.VarChar";
+            }
+            else if (tableField.strType == "text")
+            {
+                return "OdbcType.Text";
             }
             else if ((tableField.strType == "bit") || ((tableField.strTypeDotNet != null) && tableField.strTypeDotNet.ToLower().Contains("bool")))
             {
@@ -73,13 +86,16 @@ namespace Ict.Tools.CodeGeneration.DataStore
             {
                 return "OdbcType.DateTime";
             }
-            else if (tableField.strType == "integer")
+            else if ((tableField.strType == "integer") || ((tableField.strTypeDotNet != null) && tableField.strTypeDotNet.ToLower().Contains("int32")))
             {
                 return "OdbcType.Int";
             }
             else
             {
-                return "OdbcType.Int";
+                //
+                // This is new (March 2014) - previously every bad type was given as int.
+
+                throw (new Exception("ERROR: Bad Field Type in [" + tableField.strTableName + "]." + tableField.strName + ": " + tableField.strType + "/" + tableField.strTypeDotNet));
             }
         }
     }

@@ -9,4 +9,5 @@ InterfacesUsingNamespaces:
     Partner: [Ict.Petra.Shared.MPartner, Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Mailroom.Data, Ict.Petra.Shared.MPersonnel.Person, Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.MCommon, Ict.Petra.Shared.MCommon.Data]
     Personnel: [Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.MPersonnel.Person]
     SysMan: [Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MSysMan, Ict.Petra.Shared.Security]
+    Reporting: [Ict.Petra.Shared.MSysMan.Data]
     

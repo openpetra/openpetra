@@ -16,6 +16,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonForms;
 
 namespace {#NAMESPACE}
 {
@@ -38,8 +39,8 @@ namespace {#NAMESPACE}
 
       {#ASSIGNFONTATTRIBUTES}
       
-      {#INITUSERCONTROLS}
       {#INITMANUALCODE}      
+      {#INITUSERCONTROLS}
     }
 
     private void TFrmPetra_Closed(object sender, EventArgs e)

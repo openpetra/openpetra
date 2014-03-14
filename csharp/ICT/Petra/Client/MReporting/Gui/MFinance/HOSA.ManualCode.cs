@@ -44,7 +44,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     public partial class TFrmHOSA
     {
         private Int32 FLedgerNumber;
-        FastReportsWrapper FFastReportsPlugin;
 
         /// <summary>
         /// the report should be run for this ledger
@@ -62,7 +61,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.CurrencyOptions(new object[] { "Base", "International" });
 
                 FPetraUtilsObject.LoadDefaultSettings();
-                FFastReportsPlugin = new FastReportsWrapper(FPetraUtilsObject, LoadReportData);
+                if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+                {
+                    FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+                }
             }
         }
 
@@ -214,10 +216,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             DataTable Gifts = TRemote.MFinance.Reporting.WebConnectors.HosaGiftsTable(paramsDictionary);
-            FFastReportsPlugin.RegisterData(Gifts, "Gifts");
-            FFastReportsPlugin.RegisterData(ReportDs.AAccount, "a_account");
-            FFastReportsPlugin.RegisterData(ReportDs.ACostCentre, "a_costCentre");
-            FFastReportsPlugin.RegisterData(ReportDs.ATransaction, "a_transaction");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(Gifts, "Gifts");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.AAccount, "a_account");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ACostCentre, "a_costCentre");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ATransaction, "a_transaction");
             //
             // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
             String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);

@@ -326,6 +326,13 @@ namespace Ict.Common.DB
 
                             break;
 
+                        case OdbcType.Text:
+                            ReturnValue[Counter] = new NpgsqlParameter(
+                            ParamName,
+                            NpgsqlDbType.Text);
+
+                            break;
+
                         default:
                             ReturnValue[Counter] = new NpgsqlParameter(
                             ParamName,
