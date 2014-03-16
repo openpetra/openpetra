@@ -277,9 +277,25 @@ namespace Ict.Common.Controls
         private Boolean FAutoFindListRebuildNeeded;
 
         /// <summary>
+        /// A flag that is true while the mouse is down.
+        /// </summary>
+        private Boolean FMouseIsDown;
+
+        /// <summary>
         /// A flag that is true during the 'Sorted' event.
         /// </summary>
         private Boolean FSorting;
+
+        /// <summary>
+        /// Returns true when the mouse is down inside the grid.
+        /// </summary>
+        public Boolean IsMouseDown
+        {
+            get
+            {
+                return FMouseIsDown;
+            }
+        }
 
         /// <summary>
         /// Returns true when the grid is re-ordering rows after a sort operation.  Can be used to ignore updates from a panel to the grid
@@ -758,6 +774,9 @@ namespace Ict.Common.Controls
             // Hook up our custom DoubleClick Handler
             this.Controller.AddController(new DoubleClickController());
             SpecialKeys = SourceGrid.GridSpecialKeys.Default ^ SourceGrid.GridSpecialKeys.Tab;
+
+            this.MouseDown += new MouseEventHandler(TSgrdDataGrid_MouseDown);
+            this.MouseUp += new MouseEventHandler(TSgrdDataGrid_MouseUp);
 
             TToolTipModel.InitializeUnit();
         }
@@ -1424,6 +1443,16 @@ namespace Ict.Common.Controls
             FAutoFindListRebuildNeeded = true;
         }
 
+        private void TSgrdDataGrid_MouseUp(object sender, MouseEventArgs e)
+        {
+            FMouseIsDown = false;
+        }
+
+        private void TSgrdDataGrid_MouseDown(object sender, MouseEventArgs e)
+        {
+            FMouseIsDown = true;
+        }
+
         /// <summary>
         /// double click on cell
         /// </summary>
@@ -1631,23 +1660,27 @@ namespace Ict.Common.Controls
         public int DataSourceRowToIndex2(DataRow ADataRow, int AHintRowToTryFirst = -1)
         {
             int RowIndex = -1;
-            DataView dv = (this.DataSource as BoundDataView).DataView;
 
-            if ((AHintRowToTryFirst >= 0) && (AHintRowToTryFirst < dv.Count))
+            if (ADataRow != null)
             {
-                if (dv[AHintRowToTryFirst].Row == ADataRow)
+                DataView dv = (this.DataSource as BoundDataView).DataView;
+
+                if ((AHintRowToTryFirst >= 0) && (AHintRowToTryFirst < dv.Count))
                 {
-                    // Good hint!
-                    return AHintRowToTryFirst;
+                    if (dv[AHintRowToTryFirst].Row == ADataRow)
+                    {
+                        // Good hint!
+                        return AHintRowToTryFirst;
+                    }
                 }
-            }
 
-            for (int Counter2 = 0; Counter2 < dv.Count; Counter2++)
-            {
-                if (dv[Counter2].Row == ADataRow)
+                for (int Counter2 = 0; Counter2 < dv.Count; Counter2++)
                 {
-                    RowIndex = Counter2;
-                    break;
+                    if (dv[Counter2].Row == ADataRow)
+                    {
+                        RowIndex = Counter2;
+                        break;
+                    }
                 }
             }
 
