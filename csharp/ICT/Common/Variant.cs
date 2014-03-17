@@ -1097,7 +1097,7 @@ namespace Ict.Common
                 Regex exp = new Regex(@"(\d\d\d\d)-(\d\d)-(\d\d)[T ](\d\d):(\d\d):(\d\d)");
                 MatchCollection matches = exp.Matches(StringValue);
 
-                if (matches.Count != 0)
+                if ((matches.Count == 1) && (matches[0].Length == StringValue.Length))
                 {
                     return new DateTime(Convert.ToInt32(matches[0].Groups[1].ToString()),
                         Convert.ToInt32(matches[0].Groups[2].ToString()),
@@ -1111,7 +1111,7 @@ namespace Ict.Common
                 exp = new Regex(@"(\d\d\d\d)-(\d\d)-(\d\d)");
                 matches = exp.Matches(StringValue);
 
-                if (matches.Count != 0)
+                if ((matches.Count == 1) && (matches[0].Length == StringValue.Length))
                 {
                     return new DateTime(Convert.ToInt32(matches[0].Groups[1].ToString()),
                         Convert.ToInt32(matches[0].Groups[2].ToString()),
