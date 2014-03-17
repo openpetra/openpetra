@@ -165,7 +165,7 @@ namespace Ict.Common.IO
                             else if (CellType == "date")
                             {
                                 NewRow[ColumnNames[columnCounter]] =
-                                    (new TVariant(TXMLParser.GetAttribute(cellNode, "office:date-value") + " 00:00:00")).ToDate();
+                                    new TVariant(TXMLParser.GetAttribute(cellNode, "office:date-value")).ToDate();
                             }
                             else if (CellType == "boolean")
                             {
