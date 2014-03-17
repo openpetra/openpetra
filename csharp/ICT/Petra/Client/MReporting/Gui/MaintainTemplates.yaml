@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../CommonForms/PetraForm.yaml
+    BaseYaml: ../../CommonForms/PetraFormBasic.yaml
     Template: windowBasic
     TemplateParameters:
         INITMANUALCODE: InitManualCode();
@@ -9,7 +9,7 @@ RootNode:
     FormType: edit
 
     WindowWidth: 363
-    WindowHeight: 430
+    WindowHeight: 410
     Actions:
         actDelete: {ActionClick=DeleteRecord}
         actSelect: {ActionClick=ReturnSelected}
@@ -35,10 +35,9 @@ RootNode:
         chkPrivateDefault:
         chkReadonly:
         pnlBtnRow: {AutoButtonMaxWidths=true, ControlsOrientation = horizontal }
-            Padding:16,0,0,0
-            Width:340
-            Controls: [btnDuplicate, btnDelete, btnCancel, btnSelect]
+            Padding:97,0,0,0
+            Width:243
+            Controls: [btnDuplicate, btnDelete, btnSelect]
         btnDuplicate:
         btnDelete:
-        btnCancel:
         btnSelect:

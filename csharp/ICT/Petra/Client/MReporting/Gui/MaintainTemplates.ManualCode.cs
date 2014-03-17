@@ -41,6 +41,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         private TFrmPetraReportingUtils FPetraUtilsObject;
         private String FCurrentUser;
         private Boolean FInChangeEvent = false;
+        private Boolean DataChangedFlag = false;
 
         private void InitManualCode()
         {
@@ -48,21 +49,14 @@ namespace Ict.Petra.Client.MReporting.Gui
             FPetraUtilsObject = new TFrmPetraReportingUtils(this, this, null);
         }
 
-        private void ShowDataManual()
+        private bool SaveChanges()
         {
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public bool SaveChanges()
-        {
+            if (DataChangedFlag)
+            {
+                FTemplateTable.Merge(TRemote.MReporting.WebConnectors.SaveTemplates(FTemplateTable));
+                DataChangedFlag = false;
+            }
             return true;
-        }
-
-        private void FileSave(System.Object sender, System.Object e)
-        {
         }
 
         private void SetControlsVisible()
@@ -90,9 +84,6 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         }
 
-        // When using the windowBasic template,
-        // The code generator generates calls to a load of functions that it doesn't provide:
-
         private void chkDefaultCheckedChanged(System.Object sender, System.Object e)
         {
             if (!FInChangeEvent)
@@ -114,13 +105,17 @@ namespace Ict.Petra.Client.MReporting.Gui
                     }
                 }
                 else // The user wants to unset this but he can't.
-                // Rather than just disabling the control, I'll explain why...
+                     // Rather than just disabling the control, I'll allow him to try,
+                     // and then explain why it doesn't work...
                 {
-                    MessageBox.Show(Catalog.GetString("There must always be a default Template.\r\nDon't de-select this; select another template instead."),
+                    MessageBox.Show(Catalog.GetString("There must always be a default Template.\r\nDon't de-select this; set another template as default instead."),
                         Catalog.GetString("Default Template"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
                     chkDefault.Checked = true;
                     return;
                 }
+
+                GetDataFromControls();
+                DataChangedFlag = true;
                 SetControlsVisible();
             }
         }
@@ -136,27 +131,36 @@ namespace Ict.Petra.Client.MReporting.Gui
                     chkPrivate.Checked = false;
                     chkPrivateDefault.Checked = false;
                 }
+
+                //
+                // If it's not private, it can't be private default.
+                if (!chkPrivate.Checked)
+                {
+                    chkPrivateDefault.Checked = false;
+                }
+
+                GetDataFromControls();
+                DataChangedFlag = true;
                 SetControlsVisible();
             }
         }
 
         private void chkPrivateDefaultCheckedChanged(System.Object sender, System.Object e)
         {
+            if (!FInChangeEvent)
+            {
+                GetDataFromControls();
+                DataChangedFlag = true;
+            }
         }
+
         private void chkReadonlyCheckedChanged(System.Object sender, System.Object e)
         {
-        }
-        private void TFrmPetra_Activated(object sender, EventArgs e)
-        {
-        }
-        private void TFrmPetra_Closing(object sender, EventArgs e)
-        {
-        }
-        private void TFrmPetra_Load(object sender, EventArgs e)
-        {
-        }
-        private void Form_KeyDown(object sender, EventArgs e)
-        {
+            if (!FInChangeEvent)
+            {
+                GetDataFromControls();
+                DataChangedFlag = true;
+            }
         }
 
         private void GetDataFromControls()
@@ -165,14 +169,15 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 try
                 {
-                    FSelectedRow.ReportVariant = txtDescription.Text; // This will fail if the new name is already in use.
-                }
+                    FSelectedRow.ReportVariant = txtDescription.Text;   // This previously could fail, but now ReportVariant is not a Primary Key.
+                }                                                       // the Try-Catch block is left here in case the previous style comes back!
                 catch (Exception)
                 {
-                    MessageBox.Show(String.Format(Catalog.GetString("Cannot rename tamplate.\r\nAnother template is called {0}."), txtDescription.Text),
+                    MessageBox.Show(String.Format(Catalog.GetString("Cannot rename template.\r\nAnother template is called {0}."), txtDescription.Text),
                         Catalog.GetString("Rename Template"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
                     chkDefault.Checked = true;
                 }
+
                 FSelectedRow.Default = chkDefault.Checked;
                 FSelectedRow.Private = chkPrivate.Checked;
                 FSelectedRow.PrivateDefault = chkPrivateDefault.Checked;
@@ -231,6 +236,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             grdTemplateList.AddTextColumn(AReportType, FTemplateTable.ColumnReportVariant);
             grdTemplateList.SelectRowInGrid(1);
             FocusedRowChanged(null, null);
+
+            this.FormClosing += TFrmPetra_Closed; // Apparently I need to do this myself - it's not called automatically.
             return ShowDialog();
         }
 
@@ -244,6 +251,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
 
+        private void ExitManualCode()
+        {
+            SaveChanges();
+        }
+
         private void DeleteRecord(object sender, EventArgs e)
         {
             if (FSelectedRow.Default)
@@ -253,6 +265,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 return;
             }
             FSelectedRow.Delete();
+            DataChangedFlag = true;
             FSelectedRow = null;
             FocusedRowChanged(null, null);
         }
@@ -268,18 +281,13 @@ namespace Ict.Petra.Client.MReporting.Gui
             NewRow.Readonly = false;
             NewRow.ReportVariant = String.Format(Catalog.GetString("Copy of {0}"), NewRow.ReportVariant);
             FTemplateTable.Rows.Add(NewRow);
-        }
-
-        private void ReturnCancel(object sender, EventArgs e)
-        {
-            this.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            Close();
+            DataChangedFlag = true;
         }
 
         private void ReturnSelected(object sender, EventArgs e)
         {
             GetDataFromControls();
-            FTemplateTable.Merge (TRemote.MReporting.WebConnectors.SaveTemplates(FTemplateTable));
+            SaveChanges();
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             Close();
         }

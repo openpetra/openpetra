@@ -69,7 +69,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             }
 
             Tbl.DefaultView.RowFilter = filter;
-            Tbl.DefaultView.Sort = "s_private_default_l DESC";
+            Tbl.DefaultView.Sort = (ADefaultOnly)? "s_private_default_l DESC, s_default_l DESC" : "s_readonly_l DESC, s_default_l DESC, s_private_default_l DESC";
 
             SReportTemplateTable Ret = new SReportTemplateTable();
             Ret.Merge(Tbl.DefaultView.ToTable());

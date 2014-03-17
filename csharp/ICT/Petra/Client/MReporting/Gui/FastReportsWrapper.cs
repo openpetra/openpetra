@@ -52,6 +52,8 @@ namespace Ict.Petra.Client.MReporting.Gui
         private TDataGetter FDataGetter;
         private Assembly FastReportsDll;
         private object FfastReportInstance;
+        private object FfastReportDesigner;
+
         Type FFastReportType;
         /// <summary>
         /// Use this to check whether loading the FastReports DLL worked.
@@ -116,6 +118,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
 
                 FfastReportInstance = FastReportsDll.CreateInstance("FastReport.Report");
+                FfastReportDesigner = FastReportsDll.CreateInstance("FastReport.Design");
                 FFastReportType = FfastReportInstance.GetType();
                 FFastReportType.GetProperty("StoreInResources").SetValue(FfastReportInstance, false, null);
                 SetTemplate (TemplateTable[0]);
@@ -198,7 +201,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 if (FSelectedTemplate.Readonly)
                 {
                     if (MessageBox.Show(
-                        String.Format(Catalog.GetString("{0} cannot be overritten.\r\nMake a copy instead?"), FSelectedTemplate.ReportVariant),
+                        String.Format(Catalog.GetString("{0} cannot be ovewritten.\r\nMake a copy instead?"), FSelectedTemplate.ReportVariant),
                         Catalog.GetString("Design Template"),
                         MessageBoxButtons.YesNo) == DialogResult.No)
                     {
@@ -226,6 +229,9 @@ namespace Ict.Petra.Client.MReporting.Gui
                 {
                     NewRow.TemplateId = -1; // The value will come from the sequence
                     NewRow.ReportVariant = "Copy of " + TemplateTable[0].ReportVariant;
+                    NewRow.Readonly = false;
+                    NewRow.Default = false;
+                    NewRow.PrivateDefault = false;
                 }
                 else
                 {
