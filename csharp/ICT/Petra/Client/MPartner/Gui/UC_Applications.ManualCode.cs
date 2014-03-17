@@ -159,7 +159,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 //TODO temp, needs to be changed
                 NewRowGeneralApp.AppTypeName = "CONFERENCE";
-                NewRowGeneralApp.OldLink = "0";
+                NewRowGeneralApp.OldLink = TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, "") + ";" + NewRowGeneralApp.ApplicationKey.ToString();
                 NewRowGeneralApp.GenApplicantType = "Participant";
 
                 NewRowShortTermApp.PartnerKey = NewRowGeneralApp.PartnerKey;
@@ -207,7 +207,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 //TODO temp, needs to be changed
                 NewRowGeneralApp.AppTypeName = "FIELD";
-                NewRowGeneralApp.OldLink = "0";
+                NewRowGeneralApp.OldLink = TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, "") + ";" + NewRowGeneralApp.ApplicationKey.ToString(); ;
                 NewRowGeneralApp.GenApplicantType = "Participant";
 
                 NewRowLongTermApp.PartnerKey = NewRowGeneralApp.PartnerKey;
