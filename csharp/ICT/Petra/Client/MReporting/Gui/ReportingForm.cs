@@ -169,7 +169,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             FCurrentSettingsName = "";
             FSelectedColumn = -1;
-            FAvailableFunctions = null;
+            FAvailableFunctions = new ArrayList();
             FGenerateReportThread = null;
             FGenerateExtractThread = null;
             FDontResizeForm = false;

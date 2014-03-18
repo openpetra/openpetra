@@ -431,23 +431,29 @@ namespace Ict.Petra.Server.MCommon
             // create temp table
             FTmpDataTable = new DataTable(FFindParameters.FPagedTable + "_for_paging");
 
-            // Fill temporary table with query results (all records)
-            FDataAdapter = null;
-            DBAccess.GDBAccessObj.PrepareNextCommand();
-            DBAccess.GDBAccessObj.SetTimeoutForNextCommand(60);
+            TDBTransaction transaction;
+            Boolean NewTransaction = false;
 
-            FDataAdapter = (DbDataAdapter)DBAccess.GDBAccessObj.SelectDA(FSelectSQL, null, FFindParameters.FParametersArray);
-
-            if ((FFindParameters.FColumNameMapping != null) && (FDataAdapter != null))
-            {
-                PerformColumnNameMapping();
-            }
-
-            //
-            // Actual DB call for execution of SELECT query
-            //
             try
             {
+                transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                        TEnforceIsolationLevel.eilMinimum,
+                        out NewTransaction);
+                // Fill temporary table with query results (all records)
+                FDataAdapter = null;
+                DBAccess.GDBAccessObj.PrepareNextCommand();
+                DBAccess.GDBAccessObj.SetTimeoutForNextCommand(60);
+
+                FDataAdapter = (DbDataAdapter)DBAccess.GDBAccessObj.SelectDA(FSelectSQL, null, FFindParameters.FParametersArray);
+
+                if ((FFindParameters.FColumNameMapping != null) && (FDataAdapter != null))
+                {
+                    PerformColumnNameMapping();
+                }
+
+                //
+                // Actual DB call for execution of SELECT query
+                //
                 FTotalRecords = FDataAdapter.Fill(FTmpDataTable);
             }
             catch (NpgsqlException Exp)
@@ -473,6 +479,13 @@ namespace Ict.Petra.Server.MCommon
                 FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;
 
                 return;
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
 
             /*

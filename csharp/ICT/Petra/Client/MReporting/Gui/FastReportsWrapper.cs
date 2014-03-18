@@ -52,7 +52,6 @@ namespace Ict.Petra.Client.MReporting.Gui
         private TDataGetter FDataGetter;
         private Assembly FastReportsDll;
         private object FfastReportInstance;
-        private object FfastReportDesigner;
 
         Type FFastReportType;
         /// <summary>
@@ -118,7 +117,6 @@ namespace Ict.Petra.Client.MReporting.Gui
 
 
                 FfastReportInstance = FastReportsDll.CreateInstance("FastReport.Report");
-                FfastReportDesigner = FastReportsDll.CreateInstance("FastReport.Design");
                 FFastReportType = FfastReportInstance.GetType();
                 FFastReportType.GetProperty("StoreInResources").SetValue(FfastReportInstance, false, null);
                 SetTemplate (TemplateTable[0]);
