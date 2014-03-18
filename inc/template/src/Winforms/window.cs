@@ -483,11 +483,11 @@ namespace {#NAMESPACE}
     }
 
 {#IFDEF MASTERTABLE}
-    private void ValidateData({#MASTERTABLE}Row ARow)
+    private void ValidateData({#MASTERTABLETYPE}Row ARow)
     {
         TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
-        {#MASTERTABLE}Validation.Validate(this, ARow, ref VerificationResultCollection,
+        {#MASTERTABLETYPE}Validation.Validate(this, ARow, ref VerificationResultCollection,
             FPetraUtilsObject.ValidationControlsDict);
     }
 {#ENDIF MASTERTABLE}
@@ -521,7 +521,7 @@ namespace {#NAMESPACE}
         // This is the last control in the tab order that matches a key
         int lastTabIndex = -1;
 {#IFDEF MASTERTABLE}
-        DataRow row = (new {#MASTERTABLE}Table()).NewRow();
+        DataRow row = (new {#MASTERTABLETYPE}Table()).NewRow();
 {#ENDIF MASTERTABLE}
 {#IFNDEF MASTERTABLE}
         DataRow row = (new {#DETAILTABLE}Table()).NewRow();
