@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -720,6 +720,12 @@ namespace Ict.Petra.Shared.MPartner
                 {
                     return names[names.Count - 1];
                 }
+
+                // eg. Mustermann, Family
+                if (names.Count > 1)
+                {
+                    return names[1];
+                }
             }
             else if (AFormat == eShortNameFormat.eOnlySurname)
             {
@@ -727,7 +733,10 @@ namespace Ict.Petra.Shared.MPartner
             }
             else if (AFormat == eShortNameFormat.eOnlyFirstname)
             {
-                return names[1];
+                if (names.Count > 1)
+                {
+                    return names[1];
+                }
             }
             else if (AFormat == eShortNameFormat.eReverseWithoutTitle)
             {
@@ -841,7 +850,7 @@ namespace Ict.Petra.Shared.MPartner
             else
             {
                 // unrecognised title
-                return String.Format(Catalog.GetString("Dear {0}{1}{#NOGENDER}").Replace("{#NOGENDER}", ""),
+                return String.Format(Catalog.GetString("Dear {0} {1}{#NOGENDER}").Replace("{#NOGENDER}", ""),
                     title,
                     Calculations.FormatShortName(APartnerShortName, eShortNameFormat.eOnlySurname));
             }

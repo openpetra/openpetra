@@ -614,10 +614,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         // when cmbBankCode is changed
         private void BankCodeChanged(System.Object sender, EventArgs e)
         {
-            if ((string.IsNullOrEmpty(cmbBankCode.GetSelectedString()) && !string.IsNullOrEmpty(FCurrentBankRow.BranchCode))
-                || ((cmbBankCode.GetSelectedString() == "<INACTIVE> ") && (FCurrentBankRow.BranchCode != "<INACTIVE> ")))
+            if ((string.IsNullOrEmpty(cmbBankCode.GetSelectedString()) && (FCurrentBankRow != null)
+                 && !string.IsNullOrEmpty(FCurrentBankRow.BranchCode))
+                || ((cmbBankCode.GetSelectedString() == "<INACTIVE> ") && ((FCurrentBankRow == null) || (FCurrentBankRow.BranchCode != "<INACTIVE> "))))
             {
                 // if "<INACTIVE>" has been selected change it to blank
+                FCurrentBankRow = FBankDataset.PBank.NewRowTyped();
+                FCurrentBankRow.BranchCode = "";
                 cmbBankCode.SelectedIndex = -1;
                 txtBankKey.Text = "0";
             }
