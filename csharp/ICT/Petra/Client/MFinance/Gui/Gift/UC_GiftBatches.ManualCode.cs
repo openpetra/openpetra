@@ -1057,9 +1057,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             AGiftBatchRow GiftBatchRow = AGiftTDS.AGiftBatch[0];
 
-            //Test purposes
-            MessageBox.Show("Batch: " + GiftBatchRow.BatchNumber.ToString());
-
             DataView GiftView = new DataView(AGiftTDS.AGift);
             //AGiftTDS.AGift.DefaultView.RowFilter
             GiftView.RowFilter = String.Format("{0}={1} and {2}={3}",
