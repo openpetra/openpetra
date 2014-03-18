@@ -444,7 +444,7 @@ namespace Ict.Petra.Server.MCommon
                 DBAccess.GDBAccessObj.PrepareNextCommand();
                 DBAccess.GDBAccessObj.SetTimeoutForNextCommand(60);
 
-                FDataAdapter = (DbDataAdapter)DBAccess.GDBAccessObj.SelectDA(FSelectSQL, null, FFindParameters.FParametersArray);
+                FDataAdapter = (DbDataAdapter)DBAccess.GDBAccessObj.SelectDA(FSelectSQL, transaction, FFindParameters.FParametersArray);
 
                 if ((FFindParameters.FColumNameMapping != null) && (FDataAdapter != null))
                 {
@@ -454,7 +454,7 @@ namespace Ict.Petra.Server.MCommon
                 //
                 // Actual DB call for execution of SELECT query
                 //
-                FTotalRecords = FDataAdapter.Fill(FTmpDataTable);
+                FTotalRecords = FDataAdapter.Fill((FTmpDataTable);
             }
             catch (NpgsqlException Exp)
             {
