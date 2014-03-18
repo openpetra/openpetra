@@ -274,7 +274,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!SaveChanges())
+            if (!ValidateAllData(false, true))
             {
                 e.Cancel = true;
 

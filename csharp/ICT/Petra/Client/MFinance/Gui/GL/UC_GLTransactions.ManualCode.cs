@@ -95,6 +95,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FBatchRow = GetBatchRow();
             FIsUnposted = (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
+            if (FLedgerNumber == -1)
+            {
+                InitialiseControls();
+            }
+
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FJournalNumber == AJournalNumber)
                 && (FTransactionCurrency == AForeignCurrencyName) && (FBatchStatus == ABatchStatus) && (FJournalStatus == AJournalStatus)
@@ -224,6 +229,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        private void InitialiseControls()
+        {
+            cmbDetailKeyMinistryKey.ComboBoxWidth = txtDetailNarrative.Width;
+        }
+        
         private void ClearTransactionDefaultView()
         {
             FMainDS.ATransaction.DefaultView.RowFilter = String.Empty;
@@ -1506,7 +1516,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((cmbDetailAccountCode.GetSelectedString() == MFinanceConstants.FUND_TRANSFER_INCOME_ACC)
                 && (cmbDetailCostCentreCode.GetSelectedString() != ""))
             {
-                cmbDetailKeyMinistryKey.Enabled = true;
                 TRemote.MFinance.Common.ServerLookups.WebConnectors.GetPartnerKeyForForeignCostCentreCode(FLedgerNumber,
                     cmbDetailCostCentreCode.GetSelectedString(),
                     out RecipientKey);
@@ -1515,7 +1524,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             else
             {
                 cmbDetailKeyMinistryKey.SetSelectedString("", -1);
-                cmbDetailKeyMinistryKey.Enabled = false;
             }
         }
 

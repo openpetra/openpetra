@@ -6,7 +6,7 @@ RootNode:
     FormType: browse
     Template: windowTDS
     WindowWidth: 900
-    WindowHeight: 685
+    WindowHeight: 710
     UsingNamespaces: [Ict.Petra.Shared.Interfaces.MFinance]
 
     Events:
