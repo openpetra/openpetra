@@ -1516,6 +1516,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((cmbDetailAccountCode.GetSelectedString() == MFinanceConstants.FUND_TRANSFER_INCOME_ACC)
                 && (cmbDetailCostCentreCode.GetSelectedString() != ""))
             {
+                cmbDetailKeyMinistryKey.Enabled = true;
                 TRemote.MFinance.Common.ServerLookups.WebConnectors.GetPartnerKeyForForeignCostCentreCode(FLedgerNumber,
                     cmbDetailCostCentreCode.GetSelectedString(),
                     out RecipientKey);
@@ -1524,6 +1525,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             else
             {
                 cmbDetailKeyMinistryKey.SetSelectedString("", -1);
+                cmbDetailKeyMinistryKey.Enabled = false;
             }
         }
 
