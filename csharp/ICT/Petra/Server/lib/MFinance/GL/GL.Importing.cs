@@ -353,7 +353,6 @@ namespace Ict.Petra.Server.MFinance.GL
                                 throw new EOPAppException();
                             }
 
-
                             NewTransaction.Reference = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("reference"),
                                 ATransactionTable.GetReferenceLength());
 

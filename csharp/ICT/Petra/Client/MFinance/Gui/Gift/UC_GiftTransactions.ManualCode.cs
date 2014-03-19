@@ -117,9 +117,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             pnlDetails.Enter += new EventHandler(BeginEditMode);
             pnlDetails.Leave += new EventHandler(EndEditMode);
 
-            cmbMinistry.Enter += new EventHandler(SetKeyMinistryTextBoxInvisible);
-            cmbDetailMotivationGroupCode.Enter += new EventHandler(SetKeyMinistryTextBoxInvisible);
-            cmbDetailMotivationDetailCode.Enter += new EventHandler(SetKeyMinistryTextBoxInvisible);
+            //cmbMinistry.Enter += new EventHandler(SetKeyMinistryTextBoxInvisible);
+            //cmbDetailMotivationGroupCode.Enter += new EventHandler(SetKeyMinistryTextBoxInvisible);
+            //cmbDetailMotivationDetailCode.Enter += new EventHandler(SetKeyMinistryTextBoxInvisible);
 
             SetTextBoxOverlayOnKeyMinistryCombo();
         }
@@ -488,14 +488,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void SetTextBoxOverlayOnKeyMinistryCombo()
-        {
-            ResetMotivationDetailCodeFilter();
-
-            txtKeyMinistry.Visible = true;
-            txtKeyMinistry.BringToFront();
-        }
-
         private void OverlayTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             e.Handled = true;
@@ -509,19 +501,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void SetFocusToKeyMinistryCombo(object sender, EventArgs e)
         {
             cmbMinistry.Focus();
-        }
-
-        private void SetKeyMinistryTextBoxInvisible(object sender, EventArgs e)
-        {
-            if (txtKeyMinistry.Visible)
-            {
-                ApplyMotivationDetailCodeFilter();
-
-                PopulateKeyMinistry();
-
-                //hide the overlay box during editing
-                txtKeyMinistry.Visible = false;
-            }
         }
 
         private void BeginEditMode(object sender, EventArgs e)
@@ -542,6 +521,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 SetTextBoxOverlayOnKeyMinistryCombo();
             }
+        }
+
+        private void SetKeyMinistryTextBoxInvisible(object sender, EventArgs e)
+        {
+            if (txtKeyMinistry.Visible)
+            {
+                ApplyMotivationDetailCodeFilter();
+
+                PopulateKeyMinistry();
+
+                //hide the overlay box during editing
+                txtKeyMinistry.Visible = false;
+            }
+        }
+
+        private void SetTextBoxOverlayOnKeyMinistryCombo()
+        {
+            ResetMotivationDetailCodeFilter();
+
+            txtKeyMinistry.Visible = true;
+            txtKeyMinistry.BringToFront();
         }
 
         private void DetailCommentTypeChanged(object sender, EventArgs e)
@@ -613,7 +613,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void FilterMotivationDetail(object sender, EventArgs e)
+        private void MotivationGroupChanged(object sender, EventArgs e)
         {
             if (!FBatchUnposted || FPetraUtilsObject.SuppressChangeDetection || !FInEditMode || txtKeyMinistry.Visible)
             {
@@ -647,6 +647,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Force refresh of label
                 MotivationDetailChanged(null, null);
             }
+            else
+            {
+                cmbDetailMotivationDetailCode.SelectedIndex = -1;
+                //Force refresh of label
+                MotivationDetailChanged(null, null);
+            }
 
             RetrieveMotivationDetailAccountCode();
 
@@ -659,7 +665,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ResetMotivationDetailCodeFilter()
         {
-            FMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
+            if ((cmbDetailMotivationDetailCode.Count == 0) && (cmbDetailMotivationDetailCode.Filter != "1 = 2"))
+            {
+                FMotivationDetail = string.Empty;
+                cmbDetailMotivationDetailCode.RefreshLabel();
+                cmbDetailMotivationDetailCode.Filter = "1 = 2";
+                return;
+            }
+            else if (cmbDetailMotivationDetailCode.Count > 0)
+            {
+                FMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
+            }
 
             if (FActiveOnly)
             {
@@ -681,12 +697,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             string AcctCode = string.Empty;
 
-            AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
-                new object[] { FLedgerNumber, FMotivationGroup, FMotivationDetail });
-
-            if (motivationDetail != null)
+            if (FMotivationDetail.Length > 0)
             {
-                AcctCode = motivationDetail.AccountCode.ToString();
+                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                    new object[] { FLedgerNumber, FMotivationGroup, FMotivationDetail });
+
+                if (motivationDetail != null)
+                {
+                    AcctCode = motivationDetail.AccountCode.ToString();
+                }
             }
 
             txtDetailAccountCode.Text = AcctCode;
@@ -696,12 +715,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             string CostCentreCode = string.Empty;
 
-            AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
-                new object[] { FLedgerNumber, FMotivationGroup, FMotivationDetail });
-
-            if (motivationDetail != null)
+            if (FMotivationDetail.Length > 0)
             {
-                CostCentreCode = motivationDetail.CostCentreCode.ToString();
+                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                    new object[] { FLedgerNumber, FMotivationGroup, FMotivationDetail });
+
+                if (motivationDetail != null)
+                {
+                    CostCentreCode = motivationDetail.CostCentreCode.ToString();
+                }
             }
 
             txtDetailCostCentreCode.Text = CostCentreCode;
@@ -737,14 +759,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FMotivationDetail = cmbDetailMotivationDetailCode.GetSelectedString();
 
-            AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
-                new object[] { FLedgerNumber, FMotivationGroup, FMotivationDetail });
-
-            cmbDetailMotivationDetailCode.RefreshLabel();
-
-            if (motivationDetail != null)
+            if (FMotivationDetail.Length > 0)
             {
-                RetrieveMotivationDetailAccountCode();
+                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                    new object[] { FLedgerNumber, FMotivationGroup, FMotivationDetail });
+
+                cmbDetailMotivationDetailCode.RefreshLabel();
+
+                if (motivationDetail != null)
+                {
+                    RetrieveMotivationDetailAccountCode();
+                }
             }
 
             long PartnerKey = 0;
