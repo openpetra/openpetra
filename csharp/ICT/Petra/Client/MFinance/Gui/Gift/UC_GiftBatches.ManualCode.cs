@@ -873,7 +873,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowTransactionTab(Object sender, EventArgs e)
         {
-            if (grdDetails.Rows.Count > 1 && ValidateAllData(false, true))
+            if ((grdDetails.Rows.Count > 1) && ValidateAllData(false, true))
             {
                 ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Transactions);
             }
@@ -1058,6 +1058,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             AGiftBatchRow GiftBatchRow = AGiftTDS.AGiftBatch[0];
 
             DataView GiftView = new DataView(AGiftTDS.AGift);
+
             //AGiftTDS.AGift.DefaultView.RowFilter
             GiftView.RowFilter = String.Format("{0}={1} and {2}={3}",
                 AGiftTable.GetLedgerNumberDBName(), GiftBatchRow.LedgerNumber,
@@ -1184,13 +1185,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     TLogging.Log("Row:" + giftRow.GiftTransactionNumber.ToString() + " " + giftRow.ItemArray.ToString());
                 }
-                
+
                 DataView giftView = new DataView(FMainDS.AGift);
                 giftView.RowFilter = String.Format("{0}={1} And {2}={3}",
-                                                    AGiftTable.GetLedgerNumberDBName(),
-                                                    FLedgerNumber,
-                                                    AGiftTable.GetBatchNumberDBName(),
-                                                    currentBatchNo);
+                    AGiftTable.GetLedgerNumberDBName(),
+                    FLedgerNumber,
+                    AGiftTable.GetBatchNumberDBName(),
+                    currentBatchNo);
                 batchIsEmpty = (giftView.Count == 0);
             }
 

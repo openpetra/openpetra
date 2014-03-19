@@ -665,7 +665,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ResetMotivationDetailCodeFilter()
         {
-            if (cmbDetailMotivationDetailCode.Count == 0 && cmbDetailMotivationDetailCode.Filter != "1 = 2")
+            if ((cmbDetailMotivationDetailCode.Count == 0) && (cmbDetailMotivationDetailCode.Filter != "1 = 2"))
             {
                 FMotivationDetail = string.Empty;
                 cmbDetailMotivationDetailCode.RefreshLabel();

@@ -233,7 +233,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             cmbDetailKeyMinistryKey.ComboBoxWidth = txtDetailNarrative.Width;
         }
-        
+
         private void ClearTransactionDefaultView()
         {
             FMainDS.ATransaction.DefaultView.RowFilter = String.Empty;
