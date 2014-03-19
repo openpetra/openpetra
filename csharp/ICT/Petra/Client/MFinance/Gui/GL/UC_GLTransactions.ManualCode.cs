@@ -1521,6 +1521,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     cmbDetailCostCentreCode.GetSelectedString(),
                     out RecipientKey);
                 TFinanceControls.GetRecipientData(ref cmbDetailKeyMinistryKey, RecipientKey);
+                cmbDetailKeyMinistryKey.ComboBoxWidth = txtDetailNarrative.Width;
             }
             else
             {
