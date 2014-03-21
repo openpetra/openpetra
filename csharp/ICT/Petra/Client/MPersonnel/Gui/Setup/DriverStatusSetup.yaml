@@ -39,9 +39,9 @@ RootNode:
             CustomColumns:
                 DetailCode: {Label=Driver Status, Type=String}
                 DetailDescription: {Label=Description, Type=String}
-                DetailUnassignableFlag: {Label=Unassignable?, Type=Boolean}
+                DetailUnassignableFlag: {Label=Unassignable, Type=Boolean}
                 DetailUnassignableDate: {Label=Assignable Date, Type=DateTime}
-                DetailDeletableFlag: {Label=Deletable?, Type=Boolean}
+                DetailDeletableFlag: {Label=Deletable, Type=Boolean}
             SortOrder: DetailCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
