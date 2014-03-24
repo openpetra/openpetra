@@ -69,10 +69,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private String FTypeFilter = "";    // filter which types of transactions are shown
         private String FStatusFilter = "";  // filter the status of invoices
         private String FHistoryFilter = "";  // filter the status of history
-        //private int[] ColumnWidth =
-        //{
-        //    20, 70, 90, 90, 90, 90, 100, 110
-        //};
         private string FAgedOlderThan;
 
         private TSgrdDataGridPaged grdDetails;
@@ -87,6 +83,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdResult.DataPageLoaded += new TDataPageLoadedEventHandler(grdResult_DataPageLoaded);
 
             this.Resize += new EventHandler(TFrmAPSupplierTransactions_Resize);
+
+            FPetraUtilsObject.SetStatusBarText(grdDetails, Catalog.GetString("Use the navigation keys to select a transaction.  Double-click to view the details"));
+            FPetraUtilsObject.SetStatusBarText(btnAddTaggedToPayment, Catalog.GetString("Click to pay the tagged items"));
+            FPetraUtilsObject.SetStatusBarText(btnApproveTagged, Catalog.GetString("Click to approve the tagged items"));
+            FPetraUtilsObject.SetStatusBarText(btnPostTagged, Catalog.GetString("Click to post the tagged items"));
+            FPetraUtilsObject.SetStatusBarText(btnReloadList, Catalog.GetString("Click to re-load the transactions list"));
+            FPetraUtilsObject.SetStatusBarText(btnTagAll, Catalog.GetString("Click to tag all the displayed items"));
+            FPetraUtilsObject.SetStatusBarText(btnUntagAll, Catalog.GetString("Click to un-tag all the displayed items"));
+            FPetraUtilsObject.SetStatusBarText(chkToggleFilter, Catalog.GetString("Click to show/hide the Filter/Find panel"));
         }
 
         private void SelectRowInGrid(int ARowNumber)
