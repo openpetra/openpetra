@@ -180,6 +180,8 @@ OpenPetra:
                         #DonorByMiscellaneous: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Miscellaneous, ActionClick=TFinanceMain.DonorByMiscellaneousExtract}
                 AccountsPayable: {Namespace=Ict.Petra.Client.MFinance.Gui.AP, DontShowNestedTasksAsLinks=true}
                     AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain}
+                        Suppliers: {Description: Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain, InitialTab=Suppliers}
+                        OutstandingInvoices: {Description: Manage payments, ActionOpenScreen=TFrmAPMain, InitialTab=Invoices}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         DetailReport: {ActionOpenScreen=TFrmAP_AccountDetailReport}
                         AgedSupplierList: {ActionOpenScreen=TFrmAP_AgedSupplierList}
