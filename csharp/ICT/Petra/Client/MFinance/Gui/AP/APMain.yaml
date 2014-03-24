@@ -83,13 +83,13 @@ RootNode:
             Dock: Fill
             Action:actTabChange
         tpgSuppliers:
-            Controls: [ucoSupplierResult]
+            Controls: [ucoSuppliers]
         tpgOutstandingInvoices:
-            Controls: [ucoInvoiceResult]
-        ucoSupplierResult:
+            Controls: [ucoOutstandingInvoices]
+        ucoSuppliers:
             Type: Ict.Petra.Client.MFinance.Gui.AP.TUC_Suppliers
             Dock: Fill
-        ucoInvoiceResult:
+        ucoOutstandingInvoices:
             Type: Ict.Petra.Client.MFinance.Gui.AP.TUC_OutstandingInvoices
             Dock: Fill
 

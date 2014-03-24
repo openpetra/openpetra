@@ -180,13 +180,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void InitializeManualCode()
         {
+            ucoSuppliers.InitializeGUI(this);
+            ucoOutstandingInvoices.InitializeGUI(this);
         }
 
         private void RunOnceOnActivationManual()
         {
-            ucoSupplierResult.MainForm = this;
-            ucoInvoiceResult.MainForm = this;
-
             // See if we were launched with an initial tab set??
             if (FInitialTab == "Invoices")
             {
@@ -200,57 +199,57 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             if (tabSearchResult.SelectedTab == tpgSuppliers)
             {
-                ucoSupplierResult.MniFilterFind_Click(sender, e);
+                ucoSuppliers.MniFilterFind_Click(sender, e);
             }
             else
             {
-                ucoInvoiceResult.MniFilterFind_Click(sender, e);
+                ucoOutstandingInvoices.MniFilterFind_Click(sender, e);
             }
         }
 
         private void SupplierTransactions(object sender, EventArgs e)
         {
-            ucoSupplierResult.SupplierTransactions(sender, e);
+            ucoSuppliers.SupplierTransactions(sender, e);
         }
 
         private void ShowInvoice(object sender, EventArgs e)
         {
-            ucoInvoiceResult.ShowInvoice(sender, e);
+            ucoOutstandingInvoices.ShowInvoice(sender, e);
         }
 
         private void NewSupplier(object sender, EventArgs e)
         {
-            ucoSupplierResult.NewSupplier(sender, e);
+            ucoSuppliers.NewSupplier(sender, e);
         }
 
         private void EditSupplier(object sender, EventArgs e)
         {
-            ucoSupplierResult.EditSupplier(sender, e);
+            ucoSuppliers.EditSupplier(sender, e);
         }
 
         private void CreateInvoice(object sender, EventArgs e)
         {
-            ucoSupplierResult.CreateInvoice(sender, e);
+            ucoSuppliers.CreateInvoice(sender, e);
         }
 
         private void CreateCreditNote(object sender, EventArgs e)
         {
-            ucoSupplierResult.CreateCreditNote(sender, e);
+            ucoSuppliers.CreateCreditNote(sender, e);
         }
 
         //private AccountsPayableTDS LoadTaggedDocuments()
         //{
-        //    return ucoInvoiceResult.LoadTaggedDocuments();
+        //    return ucoOutstandingInvoices.LoadTaggedDocuments();
         //}
 
         private void DeleteAllTagged(object sender, EventArgs e)
         {
-            ucoInvoiceResult.DeleteAllTagged(sender, e);
+            ucoOutstandingInvoices.DeleteAllTagged(sender, e);
         }
 
         private void OpenAllTagged(object sender, EventArgs e)
         {
-            ucoInvoiceResult.OpenAllTagged(sender, e);
+            ucoOutstandingInvoices.OpenAllTagged(sender, e);
         }
 
         private void ApproveAllTagged(object sender, EventArgs e)
@@ -260,17 +259,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void PostAllTagged(object sender, EventArgs e)
         {
-            ucoInvoiceResult.PostAllTagged(sender, e);
+            ucoOutstandingInvoices.PostAllTagged(sender, e);
         }
 
         private void ReverseAllTagged(object sender, EventArgs e)
         {
-            ucoInvoiceResult.ReverseAllTagged(sender, e);
+            ucoOutstandingInvoices.ReverseAllTagged(sender, e);
         }
 
         private void PayAllTagged(object sender, EventArgs e)
         {
-            ucoInvoiceResult.PayAllTagged(sender, e);
+            ucoOutstandingInvoices.PayAllTagged(sender, e);
         }
 
         private void TabChange(object sender, EventArgs e)
@@ -296,7 +295,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 tbbApproveTagged.Visible = true;
                 tbbReverseTagged.Visible = true;
 
-                ucoInvoiceResult.LoadInvoices();
+                ucoOutstandingInvoices.LoadInvoices();
             }
             else
             {
@@ -317,7 +316,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 tbbApproveTagged.Visible = false;
                 tbbReverseTagged.Visible = false;
 
-                ucoSupplierResult.LoadSuppliers();
+                ucoSuppliers.LoadSuppliers();
             }
 
             this.Cursor = Cursors.Default;

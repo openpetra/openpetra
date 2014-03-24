@@ -31,6 +31,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using System.Threading;
@@ -75,6 +76,18 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void SelectRowInGrid(int ARowNumber)
         {
+            if (ARowNumber >= grdSuppliers.Rows.Count)
+            {
+                ARowNumber = grdSuppliers.Rows.Count - 1;
+            }
+
+            if ((ARowNumber < 1) && (grdSuppliers.Rows.Count > 1))
+            {
+                ARowNumber = 1;
+            }
+
+            grdSuppliers.SelectRowInGrid(ARowNumber);
+            FPrevRowChangedRow = ARowNumber;
         }
 
         /// <summary>
@@ -94,6 +107,20 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         /// /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+        public void InitializeGUI(TFrmAPMain AMainForm)
+        {
+            FMainForm = AMainForm;
+
+            TFrmPetraUtils utils = FMainForm.GetPetraUtilsObject();
+            utils.SetStatusBarText(grdSuppliers, Catalog.GetString("Double-click a supplier to see the transaction history"));
+            utils.SetStatusBarText(btnCreateCreditNote, Catalog.GetString("Click to create a credit note for the selected supplier"));
+            utils.SetStatusBarText(btnCreateInvoice, Catalog.GetString("Click to create an invoice for the selected supplier"));
+            utils.SetStatusBarText(btnEditSupplier, Catalog.GetString("Click to edit the details for the selected supplier"));
+            utils.SetStatusBarText(btnNewSupplier, Catalog.GetString("Click to create a new supplier"));
+            utils.SetStatusBarText(btnSupplierTransactions, Catalog.GetString("Click to view the transaction history for the selected supplier"));
+            utils.SetStatusBarText(chkToggleFilter, Catalog.GetString("Click to show/hide the Filter/Find panel"));
+        }
 
         private void UpdateRecordNumberDisplay()
         {
@@ -150,6 +177,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 // we have loaded the results already
                 if (!FMainForm.IsSupplierDataChanged)
                 {
+                    grdSuppliers.Focus();
                     return;
                 }
             }
@@ -266,7 +294,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
 
                 // Highlight first Row
-                grdSuppliers.Selection.SelectRow(1, true);
+                SelectRowInGrid(1);
             }
 
             // Size it
