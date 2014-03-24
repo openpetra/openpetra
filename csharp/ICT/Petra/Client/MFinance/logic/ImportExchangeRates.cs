@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AExchangeRateDT">The corporate or daily exchange rate table</param>
         /// <param name="AImportMode">Determines whether corporate or daily exchange rates specified - either 'Daily' or 'Corporate'</param>
         /// <param name="AResultCollection">A validation collection to which errors will be added</param>
-        /// <returns>The number of rows that were actually imported.  Rows that duplicate existing rows do not count.  
+        /// <returns>The number of rows that were actually imported.  Rows that duplicate existing rows do not count.
         /// This is usually because this is an attempt to import again after a failed previous attempt.</returns>
         public static int ImportCurrencyExRates(TTypedDataTable AExchangeRateDT, string AImportMode, TVerificationResultCollection AResultCollection)
         {
@@ -114,7 +114,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ACSVSeparator">The separator that the file uses</param>
         /// <param name="AImportMode">Determines whether corporate or daily exchange rates specified - either 'Daily' or 'Corporate'</param>
         /// <param name="AResultCollection">A validation collection to which errors will be added</param>
-        /// <returns>The number of rows that were actually imported.  Rows that duplicate existing rows do not count.  
+        /// <returns>The number of rows that were actually imported.  Rows that duplicate existing rows do not count.
         /// This is usually because this is an attempt to import again after a failed previous attempt.</returns>
         public static int ImportCurrencyExRates(TTypedDataTable AExchangeRateDT,
             string AImportFileName,
@@ -143,7 +143,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ADateFormat"></param>
         /// <param name="AImportMode">Daily or Corporate</param>
         /// <param name="AResultCollection">A validation collection to which errors will be added</param>
-        /// <returns>The number of rows that were actually imported.  Rows that duplicate existing rows do not count.  
+        /// <returns>The number of rows that were actually imported.  Rows that duplicate existing rows do not count.
         /// This is usually because this is an attempt to import again after a failed previous attempt.</returns>
         private static int ImportCurrencyExRatesFromCSV(TTypedDataTable AExchangeRDT,
             string ADataFilename,
@@ -409,7 +409,6 @@ namespace Ict.Petra.Client.MFinance.Logic
                                 ExchangeRow.DateEffectiveFrom = DateEffective;
                                 ExchangeRateDT.Rows.Add(ExchangeRow);
                                 RowsImported++;
-
                             }
 
                             if (i == 0)

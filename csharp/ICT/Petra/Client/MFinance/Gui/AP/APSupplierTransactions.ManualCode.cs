@@ -82,10 +82,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void InitializeManualCode()
         {
             grdDetails = grdResult;
-            
+
             grdResult.MouseClick += new MouseEventHandler(grdResult_Click);
             grdResult.DataPageLoaded += new TDataPageLoadedEventHandler(grdResult_DataPageLoaded);
-            
+
             this.Resize += new EventHandler(TFrmAPSupplierTransactions_Resize);
         }
 
@@ -107,7 +107,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
                 lblRecordCounter.Text = String.Format(
-                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount, true),
+                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
+                        true),
                     RecordCount) + String.Format(" ({0})", totalTableRecords);
 
                 SetRecordNumberDisplayProperties();
@@ -379,6 +380,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void UpdateSupplierBalance()
         {
             DataView dv = new DataView(FPagedDataTable);
+
             txtSupplierBalance.Text = UpdateBalance(dv).ToString("n2") + " " + FSupplierRow.CurrencyCode;
         }
 
@@ -537,6 +539,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             RadioButton rbtForApproval = (RadioButton)FFilterPanelControls.FindControlByName("rbtForApproval");
+
             if (rbtForApproval.Checked)
             {
                 if (FStatusFilter != "")
@@ -548,6 +551,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             RadioButton rbtForPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtForPosting");
+
             if (rbtForPosting.Checked)
             {
                 if (FStatusFilter != "")
@@ -559,6 +563,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             RadioButton rbtForPaying = (RadioButton)FFilterPanelControls.FindControlByName("rbtForPaying");
+
             if (rbtForPaying.Checked)
             {
                 if (FStatusFilter != "")
@@ -591,12 +596,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FHistoryFilter = String.Empty;
 
             RadioButton rbtRecent = (RadioButton)FFilterPanelControls.FindControlByName("rbtRecent");
+
             if (rbtRecent.Checked)
             {
                 FHistoryFilter = ("(Date >'" + FAgedOlderThan + "')");
             }
 
             RadioButton rbtQuarter = (RadioButton)FFilterPanelControls.FindControlByName("rbtLastQuarter");
+
             if (rbtQuarter.Checked)
             {
                 if (FHistoryFilter != "")
@@ -608,6 +615,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             RadioButton rbtHalf = (RadioButton)FFilterPanelControls.FindControlByName("rbtLastSixMonths");
+
             if (rbtHalf.Checked)
             {
                 if (FHistoryFilter != "")
@@ -619,6 +627,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             RadioButton rbtYear = (RadioButton)FFilterPanelControls.FindControlByName("rbtLastYear");
+
             if (rbtYear.Checked)
             {
                 if (FHistoryFilter != "")

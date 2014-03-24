@@ -627,8 +627,8 @@ namespace Ict.Petra.Client.CommonControls
             bool bIgnoreStandardFilter = (AIsCollapsed
                                           && (AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.None
                                               || AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly) /*
-                                          && (AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.None
-                                              || AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly)*/);
+                                                                                                                                          * && (AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.None
+                                                                                                                                          || AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly)*/);
             string stdFilter = (bIgnoreStandardFilter) ? String.Empty : GetCurrentFilter(FStandardFilterPanels);
 
             bool bIgnoreExtraFilter = (AIsCollapsed
@@ -708,7 +708,7 @@ namespace Ict.Petra.Client.CommonControls
                             {
                                 TCmbAutoComplete cbo = (TCmbAutoComplete)iffp.PanelControl;
                                 cbo.SelectedIndex = -1;
-                                
+
                                 if (cbo.SelectedIndex == 0)
                                 {
                                     cbo.SelectedIndex = -1;
@@ -1095,7 +1095,8 @@ namespace Ict.Petra.Client.CommonControls
                             }
                         }
                         else if ((iffp.FindComparison.Contains("#"))
-                                 && DateTime.TryParse(ARow[iffp.DBColumnName].ToString(), out dtValue) && DateTime.TryParse(controlText, out dtCompareTo))
+                                 && DateTime.TryParse(ARow[iffp.DBColumnName].ToString(),
+                                     out dtValue) && DateTime.TryParse(controlText, out dtCompareTo))
                         {
                             // It is a date
                             if (iffp.FindComparison.StartsWith(">=") && (dtValue >= dtCompareTo))

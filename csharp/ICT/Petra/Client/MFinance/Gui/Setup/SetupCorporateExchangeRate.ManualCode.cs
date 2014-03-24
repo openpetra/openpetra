@@ -469,6 +469,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if (results.Count > 0)
                 {
                     string formatter;
+
                     if (nRowsImported == 0)
                     {
                         formatter = MCommonResourcestrings.StrExchRateImportNoRows;
@@ -489,7 +490,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             nRowsImported,
                             MCommonResourcestrings.StrExchRateImportTryAgain,
                             results[0].ResultCode),
-                            MCommonResourcestrings.StrExchRateImportTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MCommonResourcestrings.StrExchRateImportTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     results.Clear();
                 }
@@ -503,7 +504,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
                 else
                 {
-                    MessageBox.Show(String.Format(MCommonResourcestrings.StrExchRateImportMultiRowSuccess, nRowsImported), MCommonResourcestrings.StrExchRateImportTitle);
+                    MessageBox.Show(String.Format(MCommonResourcestrings.StrExchRateImportMultiRowSuccess,
+                            nRowsImported), MCommonResourcestrings.StrExchRateImportTitle);
                 }
 
                 if (nRowsImported > 0)

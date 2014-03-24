@@ -102,7 +102,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             set
             {
-                if (value == "Suppliers" || value == "Invoices")
+                if ((value == "Suppliers") || (value == "Invoices"))
                 {
                     FInitialTab = value;
                 }
@@ -192,7 +192,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 tabSearchResult.SelectedTab = tpgOutstandingInvoices;
             }
-            
+
             TabChange(null, null);
         }
 

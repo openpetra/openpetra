@@ -189,16 +189,19 @@ namespace Ict.Petra.Client.MCommon
         public static readonly string StrExchRateImportOneRow = Catalog.GetString("1 row was imported.");
 
         /// <summary>todoComment</summary>
-        public static readonly string StrExchRateImportMultiRow = Catalog.GetString("{2} rows were imported (including inverse rates where required).");
+        public static readonly string StrExchRateImportMultiRow = Catalog.GetString(
+            "{2} rows were imported (including inverse rates where required).");
 
         /// <summary>todoComment</summary>
-        public static readonly string StrExchRateImportTryAgain = Catalog.GetString("You should attempt to fix the problem and try the Import again.  If you re-import the same file you will not get duplicate records of the data already imported.");
+        public static readonly string StrExchRateImportTryAgain = Catalog.GetString(
+            "You should attempt to fix the problem and try the Import again.  If you re-import the same file you will not get duplicate records of the data already imported.");
 
         /// <summary>todoComment</summary>
         public static readonly string StrExchRateImportOneRowSuccess = Catalog.GetString("1 row was imported successfully.");
 
         /// <summary>todoComment</summary>
-        public static readonly string StrExchRateImportMultiRowSuccess = Catalog.GetString("{0} row(s) were imported successfully (including inverse rates where required).");
+        public static readonly string StrExchRateImportMultiRowSuccess = Catalog.GetString(
+            "{0} row(s) were imported successfully (including inverse rates where required).");
 
         #endregion
 

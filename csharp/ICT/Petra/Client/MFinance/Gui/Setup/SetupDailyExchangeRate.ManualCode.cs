@@ -955,7 +955,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // Older databases may have times that require long format...  Otherwise the data gets 'modified' without us realising
                 //  which leads to all sorts of unwanted warnings ...
                 string strLong = new Ict.Common.TypeConverter.TLongTimeConverter().ConvertTo(ARow.TimeEffectiveFrom, typeof(string)).ToString();
-                
+
                 if (!strLong.EndsWith("00"))
                 {
                     txtDetailTimeEffectiveFrom.Text = strLong;
@@ -1020,7 +1020,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 txtDetailTimeEffectiveFrom.Enabled = (FIsCurrentRowStateAdded || FCanEditCurrentRow);
                 btnInvertExchangeRate.Enabled = (FIsCurrentRowStateAdded || FCanEditCurrentRow);
                 btnDelete.Enabled = (FIsCurrentRowStateAdded || FCanDeleteCurrentRow);
-                
+
                 btnEnableEdit.Enabled = (!FIsCurrentRowStateAdded && !FCanEditCurrentRow);
             }
         }
@@ -1163,6 +1163,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 if (results.Count > 0)
                 {
                     string formatter;
+
                     if (nRowsImported == 0)
                     {
                         formatter = MCommonResourcestrings.StrExchRateImportNoRows;
@@ -1183,7 +1184,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                             nRowsImported,
                             MCommonResourcestrings.StrExchRateImportTryAgain,
                             results[0].ResultCode),
-                            MCommonResourcestrings.StrExchRateImportTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MCommonResourcestrings.StrExchRateImportTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                     results.Clear();
                 }
@@ -1197,7 +1198,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
                 else
                 {
-                    MessageBox.Show(String.Format(MCommonResourcestrings.StrExchRateImportMultiRowSuccess, nRowsImported), MCommonResourcestrings.StrExchRateImportTitle);
+                    MessageBox.Show(String.Format(MCommonResourcestrings.StrExchRateImportMultiRowSuccess,
+                            nRowsImported), MCommonResourcestrings.StrExchRateImportTitle);
                 }
 
                 if (nRowsImported > 0)

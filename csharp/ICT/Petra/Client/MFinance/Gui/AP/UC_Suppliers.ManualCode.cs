@@ -107,7 +107,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
                 lblRecordCounter.Text = String.Format(
-                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount, true),
+                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount,
+                        true),
                     RecordCount) + String.Format(" ({0})", totalTableRecords);
 
                 SetRecordNumberDisplayProperties();
@@ -184,6 +185,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // This is where we end up after querying the database and loading the first data into the grid
             // We are back in our main thread here
             this.Cursor = Cursors.Default;
+
             if (e.DataPage == 0)
             {
                 FMainForm.IsSupplierDataChanged = false;
@@ -263,7 +265,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     // Now we can load the remaining pages ...
                     grdSuppliers.LoadAllDataPages();
                 }
-                
+
                 // Highlight first Row
                 grdSuppliers.Selection.SelectRow(1, true);
             }
@@ -291,6 +293,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             ATotalPages = 0;
 
             IAPUIConnectorsFind findObject = FMainForm.SupplierFindObject;
+
             if (findObject != null)
             {
                 DataTable NewPage = findObject.GetDataPagedResult(ANeededPage, APageSize, out ATotalRecords, out ATotalPages);
@@ -323,12 +326,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 string filterJoint = " AND ";
 
                 TextBox txtSupplierName = (TextBox)FFilterPanelControls.FindControlByName("txtSupplierName");
+
                 if (txtSupplierName.Text.Trim().Length > 0)
                 {
                     filter += String.Format("(PartnerShortName LIKE '%{0}%')", txtSupplierName.Text.Trim());
                 }
 
                 TCmbAutoComplete cmbCurrency = (TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbCurrency");
+
                 if (cmbCurrency.Text.Length > 0)
                 {
                     if (filter.Length > 0)
@@ -340,6 +345,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
 
                 RadioButton rbtActiveSuppliers = (RadioButton)FFilterPanelControls.FindControlByName("rbtActiveSuppliers");
+
                 if (rbtActiveSuppliers.Checked)
                 {
                     if (filter.Length > 0)
@@ -351,6 +357,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
 
                 RadioButton rbtInactiveSuppliers = (RadioButton)FFilterPanelControls.FindControlByName("rbtInactiveSuppliers");
+
                 if (rbtInactiveSuppliers.Checked)
                 {
                     if (filter.Length > 0)
