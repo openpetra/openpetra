@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1417,6 +1417,30 @@ namespace Ict.Common.Printing
             Int32 posTableRowEnd = ATemplate.IndexOf("</tr>", posSearchText) + 5;
             ATemplateRow = ATemplate.Substring(posTableRowStart, posTableRowEnd - posTableRowStart);
             return ATemplate.Replace(ATemplateRow, "#ROWTEMPLATE");
+        }
+
+        /// <summary>
+        /// find section that starts with BEGIN detail comment and ends with END detail comment
+        /// </summary>
+        /// <param name="ATemplate"></param>
+        /// <param name="ATemplateRow">template for one row</param>
+        /// <returns>modified template, replace detail block with #ROWTEMPLATE</returns>
+        public static string GetTableRowByDetailComment(string ATemplate, out string ATemplateRow)
+        {
+            string startString = "<!-- BEGIN detail -->";
+            string endString = "<!-- END detail -->";
+            Int32 posTableRowStart = ATemplate.IndexOf(startString);
+            Int32 posTableRowEnd = ATemplate.IndexOf(endString);
+
+            if ((posTableRowStart == -1) || (posTableRowEnd == -1))
+            {
+                ATemplateRow = "";
+                return ATemplate;
+            }
+
+            ATemplateRow = ATemplate.Substring(posTableRowStart + startString.Length,
+                posTableRowEnd - posTableRowStart - startString.Length);
+            return ATemplate.Substring(0, posTableRowStart) + "#ROWTEMPLATE" + ATemplate.Substring(posTableRowEnd + endString.Length);
         }
 
         private static void FindAllChildren(XmlNode ANode, ref List <XmlNode>AResult, string AElement, string AAttributeName, string AName)

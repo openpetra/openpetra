@@ -344,6 +344,15 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewTransaction.Narrative = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("narrative"),
                                 ATransactionTable.GetNarrativeLength());
 
+                            if ((NewTransaction.Narrative == null)
+                                || (NewTransaction.Narrative == ""))
+                            {
+                                // raise error if empty narrative is imported
+                                FImportMessage = Catalog.GetString("The transaction narrative must not be empty");
+
+                                throw new EOPAppException();
+                            }
+
                             NewTransaction.Reference = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("reference"),
                                 ATransactionTable.GetReferenceLength());
 

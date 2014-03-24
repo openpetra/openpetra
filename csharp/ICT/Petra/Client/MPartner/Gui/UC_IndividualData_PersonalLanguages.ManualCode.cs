@@ -283,6 +283,29 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// react to change in "Years of Experience"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ProcessYearsOfExperience(System.Object sender, EventArgs e)
+        {
+            // do set date for "Years of Experience as of date" if it is not already set
+            // and value for "Years of Experience" was changed
+            if (txtYearsOfExperience.Text.Length == 0)
+            {
+                dtpYearsOfExperienceAsOf.Text = "";
+            }
+            else
+            {
+                if ((dtpYearsOfExperienceAsOf.Text.Length == 0)
+                    && (txtYearsOfExperience.Text != "99"))
+                {
+                    dtpYearsOfExperienceAsOf.Date = DateTime.Today;
+                }
+            }
+        }
+
         private void ValidateDataDetailsManual(PmPersonLanguageRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;

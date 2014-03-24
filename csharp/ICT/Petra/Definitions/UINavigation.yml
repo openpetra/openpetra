@@ -141,6 +141,43 @@ OpenPetra:
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
         Finance: {Icon=accounts.ico, Label=Finance, DependsOnLedger=true, Namespace=Ict.Petra.Client.MFinance.Gui, PermissionsRequired=FINANCE-1}
             Finance:
+                GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL, DontShowNestedTasksAsLinks=true}
+                    SearchBoxes: [Transaction, Batch]
+                    General:
+                        LedgerInfo: {Description: View general information about this ledger, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TFrmGLInfo}
+                        ImportGLTransactionsFromBankStatement: {Description: Matching regular payments etc, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
+                        GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=TFrmGLBatch}
+                        RecurringGLBatches: {Label=Recurring GL Batches, Description:Enter and submit recurring General Ledger batches, ActionOpenScreen=TFrmRecurringGLBatch}
+                        GLRevaluation: {Description:Runs a Revaluation, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TGLRevaluation}
+                        ExportBatches: {Description:Export to CSV file for use with Excel,ActionOpenScreen= TFrmGLBatchExport}
+                        #EnterTransactions:
+                        #ImportTransactions:
+                        #EditExistingTransactions:
+                        #EditTransactionsInPreviouslyUsedBatch:
+                        #PostBatch:
+                        #FindTransaction:
+                    PeriodEnd: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
+                        MonthEnd: {Description:Close a month, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndMonth}
+                        YearEnd: {Description:Close a year, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndYear}
+                    ICHProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.ICH}
+                        StewardshipCalculation: {ActionOpenScreen=TFrmStewardshipCalculation, ReportingPeriodSelectionMode=rpsmICHStewardshipCalc}
+                        StewardshipReports: {ActionOpenScreen=TFrmStewardshipReports}
+                    Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
+                        AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
+#                       AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}
+                        TrialBalance: {ActionOpenScreen=TFrmTrialBalance}
+                        HOSA: {Description: Home Office Statement of Accounts, ActionOpenScreen=TFrmHOSA}
+                        SurplusDeficit: {ActionOpenScreen=TFrmSurplusDeficit}
+                        BalanceSheetStandard: {Label=Standard Balance Sheet, ActionOpenScreen=TFrmBalanceSheetStandard}
+                        BalanceSheetMultiLedger: {Label=Multi Ledger Balance Sheet, ActionOpenScreen=TFrmBalanceSheetMultiLedger}
+                            #CurrentPeriod:
+                            #EndOfLastYear:
+                            #SpecifyParameters:
+                            #RepeatLastReport:
+                            #MyFancyBalanceSheetWithCoolGraph:
+                        IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
+                      # IncomeExpenseStatementMultiPeriod: {Label=Multi Period Statement, ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
+                        IncomeExpenseStatementMultiLedger: {Label=Multi Ledger Statement, ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
                 GiftProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.Gift, DontShowNestedTasksAsLinks=true}
                     SearchBoxes: [Donor, Recipient]
                     GiftEntry:
@@ -195,43 +232,6 @@ OpenPetra:
                         ConsolidateBudgets: {ActionClick=TConsolidateBudgets.ConsolidateBudgets}
                         ExportBudget: {ActionOpenScreen=TFrmExportBudget}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
-                        IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
-                      # IncomeExpenseStatementMultiPeriod: {Label=Multi Period Statement, ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
-                        IncomeExpenseStatementMultiLedger: {Label=Multi Ledger Statement, ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
-                GeneralLedger: {Namespace=Ict.Petra.Client.MFinance.Gui.GL, DontShowNestedTasksAsLinks=true}
-                    SearchBoxes: [Transaction, Batch]
-                    General:
-                        LedgerInfo: {Description: View general information about this ledger, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TFrmGLInfo}
-                        ImportGLTransactionsFromBankStatement: {Description: Matching regular payments etc, Namespace=Ict.Petra.Client.MFinance.Gui.Common, ActionOpenScreen=TFrmBankStatementImport}
-                        GLBatches: {Description:Enter and post General Ledger batches, ActionOpenScreen=TFrmGLBatch}
-                        RecurringGLBatches: {Label=Recurring GL Batches, Description:Enter and submit recurring General Ledger batches, ActionOpenScreen=TFrmRecurringGLBatch}
-                        GLRevaluation: {Description:Runs a Revaluation, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TGLRevaluation}
-                        ExportBatches: {Description:Export to CSV file for use with Excel,ActionOpenScreen= TFrmGLBatchExport}
-                        #EnterTransactions:
-                        #ImportTransactions:
-                        #EditExistingTransactions:
-                        #EditTransactionsInPreviouslyUsedBatch:
-                        #PostBatch:
-                        #FindTransaction:
-                    PeriodEnd: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
-                        MonthEnd: {Description:Close a month, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndMonth}
-                        YearEnd: {Description:Close a year, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndYear}
-                    ICHProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.ICH}
-                        StewardshipCalculation: {ActionOpenScreen=TFrmStewardshipCalculation, ReportingPeriodSelectionMode=rpsmICHStewardshipCalc}
-                        StewardshipReports: {ActionOpenScreen=TFrmStewardshipReports}
-                    Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
-                        AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
-#                       AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}
-                        TrialBalance: {ActionOpenScreen=TFrmTrialBalance}
-                        HOSA: {Description: Home Office Statement of Accounts, ActionOpenScreen=TFrmHOSA}
-                        SurplusDeficit: {ActionOpenScreen=TFrmSurplusDeficit}
-                        BalanceSheetStandard: {Label=Standard Balance Sheet, ActionOpenScreen=TFrmBalanceSheetStandard}
-                        BalanceSheetMultiLedger: {Label=Multi Ledger Balance Sheet, ActionOpenScreen=TFrmBalanceSheetMultiLedger}
-                            #CurrentPeriod:
-                            #EndOfLastYear:
-                            #SpecifyParameters:
-                            #RepeatLastReport:
-                            #MyFancyBalanceSheetWithCoolGraph:
                         IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
                       # IncomeExpenseStatementMultiPeriod: {Label=Multi Period Statement, ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
                         IncomeExpenseStatementMultiLedger: {Label=Multi Ledger Statement, ActionOpenScreen=TFrmIncomeExpenseMultiLedger}

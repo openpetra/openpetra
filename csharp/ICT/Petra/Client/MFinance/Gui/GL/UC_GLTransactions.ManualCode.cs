@@ -95,6 +95,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FBatchRow = GetBatchRow();
             FIsUnposted = (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
+            if (FLedgerNumber == -1)
+            {
+                InitialiseControls();
+            }
+
             //Check if the same batch is selected, so no need to apply filter
             if ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FJournalNumber == AJournalNumber)
                 && (FTransactionCurrency == AForeignCurrencyName) && (FBatchStatus == ABatchStatus) && (FJournalStatus == AJournalStatus)
@@ -222,6 +227,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMainDS.ATransaction.Clear();
                 ClearControls();
             }
+        }
+
+        private void InitialiseControls()
+        {
+            cmbDetailKeyMinistryKey.ComboBoxWidth = txtDetailNarrative.Width;
         }
 
         private void ClearTransactionDefaultView()
@@ -1511,6 +1521,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     cmbDetailCostCentreCode.GetSelectedString(),
                     out RecipientKey);
                 TFinanceControls.GetRecipientData(ref cmbDetailKeyMinistryKey, RecipientKey);
+                cmbDetailKeyMinistryKey.ComboBoxWidth = txtDetailNarrative.Width;
             }
             else
             {

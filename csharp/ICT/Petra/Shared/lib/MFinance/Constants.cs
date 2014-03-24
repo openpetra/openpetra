@@ -184,6 +184,9 @@ namespace Ict.Petra.Shared.MFinance
         public const String SUB_SYSTEM_GR = "GR";
 
         /// <summary>Unit-Type is key-min</summary>
+        public const String UNIT_TYPE_CODE_KEY_MIN = "KEY-MIN";
+
+        /// <summary>Unit-Type is key-min</summary>
         public const String GROUP_DETAIL_KEY_MIN = "KEYMIN";
 
         /// <summary>Used in Admin Grants Payable and Receivable</summary>

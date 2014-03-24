@@ -849,10 +849,32 @@ namespace Ict.Common.Controls
         /// </summary>
         public void SelectFirstTaskItem()
         {
-            LinkLabel FirstLinkLabel = (LinkLabel) this.tPnlGradient1.Controls[0];
+            int CurrentIndex = 0;
+            LinkLabel FirstLinkLabel = (LinkLabel) this.tPnlGradient1.Controls[CurrentIndex];
 
-            lblTaskItem_LinkClicked(FirstLinkLabel, new LinkLabelLinkClickedEventArgs
-                    (FirstLinkLabel.Links[0]));
+            // not an ideal solution: this call triggers initialization (enable/disable) of xml nodes that later in this
+            // method is needed to react to disabled items
+            if (FirstLinkLabel != null)
+            {
+                lblTaskItem_LinkClicked(FirstLinkLabel, new LinkLabelLinkClickedEventArgs
+                        (FirstLinkLabel.Links[0]));
+            }
+
+            // retrieve first item again as LinkClicked event may have triggered recreation of link labels
+            FirstLinkLabel = (LinkLabel) this.tPnlGradient1.Controls[CurrentIndex];
+
+            while (CurrentIndex <= this.tPnlGradient1.Controls.Count - 1
+                   && IsDisabled((XmlNode)FirstLinkLabel.Links[0].LinkData))
+            {
+                CurrentIndex++;
+                FirstLinkLabel = (LinkLabel) this.tPnlGradient1.Controls[CurrentIndex];
+            }
+
+            if (FirstLinkLabel != null)
+            {
+                lblTaskItem_LinkClicked(FirstLinkLabel, new LinkLabelLinkClickedEventArgs
+                        (FirstLinkLabel.Links[0]));
+            }
         }
 
         /// <summary>

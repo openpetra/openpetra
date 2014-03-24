@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -137,7 +137,7 @@ namespace Ict.Tools.CodeGeneration
                     table = new TTable();
                     tablename = tableNode.Attributes["name"].Value;
                     table.strName = tablename;
-                    table.strDotNetName = tablename;
+                    table.strDotNetName = datasetName + tablename;
                     table.strVariableNameInDataset = tablename;
                 }
 

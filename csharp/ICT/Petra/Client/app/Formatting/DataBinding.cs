@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Threading;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Verification;
@@ -79,7 +80,8 @@ namespace Ict.Petra.Client.App.Formatting
 
             // see StringHelper.DateToLocalizedString
             // Mono and .Net return different strings for month of March in german culture
-            if (CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "de")
+            if ((CultureInfo.CurrentCulture.TwoLetterISOLanguageName == "de")
+                && (Thread.CurrentThread.CurrentCulture.ToString() != "de-AT"))
             {
                 AParseDate = AParseDate.Replace("MÄR", "MRZ");
             }

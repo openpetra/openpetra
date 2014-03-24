@@ -1234,8 +1234,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FBankDetailsTab)
             {
                 // populate comboboxes (from database)
-                Thread BankDetailThread = new Thread(ucoPartnerFindCriteria.PopulateBankComboBoxes);
-                BankDetailThread.Start();
+                ucoPartnerFindCriteria.PopulateBankComboBoxes();
             }
         }
 
