@@ -42,6 +42,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using System.Threading;
@@ -67,11 +68,103 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private String FTypeFilter = "";    // filter which types of transactions are shown
         private String FStatusFilter = "";  // filter the status of invoices
-        private int[] ColumnWidth =
-        {
-            20, 70, 90, 90, 90, 90, 100, 110
-        };
+        private String FHistoryFilter = "";  // filter the status of history
+        //private int[] ColumnWidth =
+        //{
+        //    20, 70, 90, 90, 90, 90, 100, 110
+        //};
         private string FAgedOlderThan;
+
+        private TSgrdDataGridPaged grdDetails;
+        private int FPrevRowChangedRow = -1;
+        private DataRow FPreviouslySelectedDetailRow = null;
+
+        private void InitializeManualCode()
+        {
+            grdDetails = grdResult;
+            
+            grdResult.MouseClick += new MouseEventHandler(grdResult_Click);
+            grdResult.DataPageLoaded += new TDataPageLoadedEventHandler(grdResult_DataPageLoaded);
+            
+            this.Resize += new EventHandler(TFrmAPSupplierTransactions_Resize);
+        }
+
+        private void SelectRowInGrid(int ARowNumber)
+        {
+            grdDetails.Selection.SelectRow(ARowNumber, true);
+            FPrevRowChangedRow = ARowNumber;
+        }
+
+        private void UpdateRecordNumberDisplay()
+        {
+            int RecordCount;
+
+            if (grdDetails.DataSource != null)
+            {
+                int totalTableRecords = grdResult.TotalRecords;
+                int totalGridRecords = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
+                bool hasFilter = FFilterPanelControls.BaseFilter.Length > 0;
+
+                RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
+                lblRecordCounter.Text = String.Format(
+                    Catalog.GetPluralString(MCommonResourcestrings.StrSingularRecordCount, MCommonResourcestrings.StrPluralRecordCount, RecordCount, true),
+                    RecordCount) + String.Format(" ({0})", totalTableRecords);
+
+                SetRecordNumberDisplayProperties();
+                UpdateDisplayedBalance();
+            }
+        }
+
+        private void ApplyFilterManual(ref string AFilter)
+        {
+            if (FPagedDataTable != null)
+            {
+                FPagedDataTable.DefaultView.RowFilter = AFilter;
+            }
+
+            bool gotRows = (grdDetails.Rows.Count > 1);
+            bool canApprove = ((RadioButton)FFilterPanelControls.FindControlByName("rbtForApproval")).Checked && gotRows;
+            bool canPost = ((RadioButton)FFilterPanelControls.FindControlByName("rbtForPosting")).Checked && gotRows;
+            bool canPay = ((RadioButton)FFilterPanelControls.FindControlByName("rbtForPaying")).Checked && gotRows;
+
+            bool canTag = canApprove || canPost || canPay;
+
+            ActionEnabledEvent(null, new ActionEventArgs("actApproveTagged", canApprove));
+            ActionEnabledEvent(null, new ActionEventArgs("actPostTagged", canPost));
+            ActionEnabledEvent(null, new ActionEventArgs("actAddTaggedToPayment", canPay));
+            ActionEnabledEvent(null, new ActionEventArgs("actTagAll", canTag));
+            ActionEnabledEvent(null, new ActionEventArgs("actUntagAll", canTag));
+        }
+
+        private void FilterToggledManual(bool AFilterIsOff)
+        {
+            AutoSizeGrid();
+        }
+
+        private bool IsMatchingRowManual(DataRow ARow)
+        {
+            string transactionType = ((TCmbAutoComplete)FFindPanelControls.FindControlByName("cmbTransactionType")).Text;
+
+            if (transactionType != String.Empty)
+            {
+                if (!ARow["Type"].ToString().Contains(transactionType))
+                {
+                    return false;
+                }
+            }
+
+            string status = ((TCmbAutoComplete)FFindPanelControls.FindControlByName("cmbStatus")).Text;
+
+            if (status != String.Empty)
+            {
+                if (!ARow["Status"].ToString().Contains(status))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// Load the supplier and all the transactions (invoices and payments) that relate to it.
@@ -80,6 +173,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="APartnerKey"></param>
         public void LoadSupplier(Int32 ALedgerNumber, Int64 APartnerKey)
         {
+            this.Cursor = Cursors.WaitCursor;
+
             FLedgerNumber = ALedgerNumber;
             FPartnerKey = APartnerKey;
             FMainDS = TRemote.MFinance.AP.WebConnectors.LoadAApSupplier(ALedgerNumber, APartnerKey);
@@ -108,8 +203,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             Thread FinishedCheckThread = new Thread(new ThreadStart(SearchFinishedCheckThread));
             FinishedCheckThread.Start();
 
-            grdResult.MouseClick += new MouseEventHandler(grdResult_Click);
             this.Text = Catalog.GetString("Supplier Transactions") + " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+        }
+
+        private void grdResult_DataPageLoaded(object Sender, TDataPageLoadEventArgs e)
+        {
+            // This is where we end up after querying the database and loading the first data into the grid
+            // We are back in our main thread here
+            this.Cursor = Cursors.Default;
         }
 
         private delegate void SimpleDelegate();
@@ -152,6 +253,52 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 // Sleep a bit, then loop...
                 Thread.Sleep(200);
             }
+        }
+
+        private void FinishThread()
+        {
+            // Fetch the first page of data
+            try
+            {
+                FPagedDataTable = grdResult.LoadFirstDataPage(@GetDataPagedResult);
+            }
+            catch (Exception E)
+            {
+                MessageBox.Show(E.ToString());
+            }
+
+            InitialiseGrid();
+            DataView myDataView = FPagedDataTable.DefaultView;
+            myDataView.AllowNew = false;
+
+            grdResult.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            grdResult.Visible = true;
+            UpdateRowFilter();
+
+            if (grdResult.TotalPages > 0)
+            {
+                //
+                // I don't want to do either of these things, if I'm being called from a child form
+                // that's just been saved..
+                //              grdResult.BringToFront();
+                //              grdResult.Focus();
+
+                grdResult.LoadAllDataPages();
+
+                AutoSizeGrid();
+                this.Width = this.Width - 1;
+                this.Width = this.Width + 1;
+
+                // Highlight first Row
+                grdResult.Selection.SelectRow(1, true);
+                FPrevRowChangedRow = 1;
+            }
+
+            UpdateSupplierBalance();
+            UpdateDisplayedBalance();
+            UpdateRecordNumberDisplay();
+            RefreshSumTagged(null, null);
+            ActionEnabledEvent(null, new ActionEventArgs("cndSelectedSupplier", grdResult.TotalPages > 0));
         }
 
         /// <summary>
@@ -217,19 +364,31 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             // Although "Ordinary" text columns have had a width specified above, this loop overwrites
             // the widths with values that survive the user pressing the "Reload" button.
-            for (int i = 0; i < ColumnWidth.Length; i++)
-            {
-                grdResult.Columns[i].Width = ColumnWidth[i];
-            }
+            //for (int i = 0; i < ColumnWidth.Length; i++)
+            //{
+            //    grdResult.Columns[i].Width = ColumnWidth[i];
+            //}
         }
 
         private void UpdateDisplayedBalance()
         {
-            Decimal SumDisplayed = 0.0m;
+            DevAge.ComponentModel.BoundDataView dv = (DevAge.ComponentModel.BoundDataView)grdResult.DataSource;
+            txtFilteredBalance.Text = UpdateBalance(dv.DataView).ToString("n2") + " " + FSupplierRow.CurrencyCode;
+        }
+
+        private void UpdateSupplierBalance()
+        {
+            DataView dv = new DataView(FPagedDataTable);
+            txtSupplierBalance.Text = UpdateBalance(dv).ToString("n2") + " " + FSupplierRow.CurrencyCode;
+        }
+
+        private Decimal UpdateBalance(DataView ADataView)
+        {
+            Decimal balance = 0.0m;
 
             if (FPagedDataTable != null)
             {
-                foreach (DataRowView rv in FPagedDataTable.DefaultView)
+                foreach (DataRowView rv in ADataView)
                 {
                     DataRow Row = rv.Row;
 
@@ -237,71 +396,49 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     {
                         if (Row["CreditNote"].Equals(true))  // Payments also carry this "Credit note" label
                         {
-                            SumDisplayed -= (Decimal)Row["OutstandingAmount"];
+                            balance -= (Decimal)Row["OutstandingAmount"];
                         }
                         else
                         {
-                            SumDisplayed += (Decimal)Row["OutstandingAmount"];
+                            balance += (Decimal)Row["OutstandingAmount"];
                         }
                     }
                 }
             }
 
-            txtDisplayedBalance.Text = SumDisplayed.ToString("n2");
+            return balance;
         }
 
         private void UpdateRowFilter()
         {
             if (FPagedDataTable != null)
             {
-                String FilterJoint = "";
+                string filter = String.Format("(Currency='{0}')", txtSupplierCurrency.Text);
+                string filterJoint = " AND ";
 
-                if ((FTypeFilter.Length > 0) && (FStatusFilter.Length > 0))
+                if ((FStatusFilter.Length > 0) && (filter.Length > 0))
                 {
-                    FilterJoint = " AND ";
+                    filter += filterJoint;
                 }
 
-                FPagedDataTable.DefaultView.RowFilter = FTypeFilter + FilterJoint + FStatusFilter;
-                UpdateDisplayedBalance();
+                filter += FStatusFilter;
+
+                if ((FTypeFilter.Length > 0) && (filter.Length > 0))
+                {
+                    filter += filterJoint;
+                }
+
+                filter += FTypeFilter;
+
+                if ((FHistoryFilter.Length > 0) && (filter.Length > 0))
+                {
+                    filter += filterJoint;
+                }
+
+                filter += FHistoryFilter;
+
+                FFilterPanelControls.SetBaseFilter(filter, filter.Length == 0);
             }
-        }
-
-        private void FinishThread()
-        {
-            // Fetch the first page of data
-            try
-            {
-                FPagedDataTable = grdResult.LoadFirstDataPage(@GetDataPagedResult);
-            }
-            catch (Exception E)
-            {
-                MessageBox.Show(E.ToString());
-            }
-            InitialiseGrid();
-            DataView myDataView = FPagedDataTable.DefaultView;
-            myDataView.AllowNew = false;
-
-            grdResult.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-            grdResult.Visible = true;
-            UpdateRowFilter();
-
-            if (grdResult.TotalPages > 0)
-            {
-                //
-                // I don't want to do either of these things, if I'm being called from a child form
-                // that's just been saved..
-//              grdResult.BringToFront();
-//              grdResult.Focus();
-
-                // Highlight first Row
-                grdResult.Selection.SelectRow(1, true);
-
-                // Make the Grid respond on updown keys
-                UpdateDisplayedBalance();
-                RefreshSumTagged(null, null);
-            }
-
-            ActionEnabledEvent(null, new ActionEventArgs("cndSelectedSupplier", grdResult.TotalPages > 0));
         }
 
         /// <summary>
@@ -309,10 +446,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         public void Reload()
         {
-            for (int i = 0; i < grdResult.Columns.Count; i++)
-            {
-                ColumnWidth[i] = grdResult.Columns[i].Width;
-            }
+            //for (int i = 0; i < grdResult.Columns.Count; i++)
+            //{
+            //    ColumnWidth[i] = grdResult.Columns[i].Width;
+            //}
 
             LoadSupplier(FLedgerNumber, FPartnerKey);
         }
@@ -338,23 +475,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return;
             }
 
-            bool TaggedInvoicesPostable = false;
-            bool TaggedInvoicesPayable = false;
+            FPrevRowChangedRow = grdResult.Selection.ActivePosition.Row;
+
             Decimal TotalSelected = 0;
-            bool ListHasItems = false;
+            int TaggedItemCount = 0;
 
             foreach (DataRowView rv in FPagedDataTable.DefaultView)
             {
                 DataRow Row = rv.Row;
-                Boolean IsMyCurrency = (Row["Currency"].ToString() == txtSupplierCurrency.Text);
 
-                if (IsMyCurrency)
+                if (Row["Tagged"].Equals(true))
                 {
-                    ListHasItems = true;
-                }
+                    TaggedItemCount++;
 
-                if (IsMyCurrency && Row["Tagged"].Equals(true))
-                {
                     if (Row["Type"].ToString() != "Payment")
                     {
                         // If it's a credit note, I'll subract it
@@ -368,30 +501,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         {
                             TotalSelected += (Decimal)(Row["OutstandingAmount"]);
                         }
-
-                        //
-                        // While I'm in this loop, I'll also check whether to enable the "Pay" and "Post" buttons.
-                        //
-                        if ("|POSTED|PARTPAID|".IndexOf("|" + Row["Status"].ToString()) >= 0)
-                        {
-                            TaggedInvoicesPayable = true;
-                        }
-
-                        if ("|POSTED|PARTPAID|PAID|".IndexOf(Row["Status"].ToString()) < 0)
-                        {
-                            TaggedInvoicesPostable = true;
-                        }
                     }
                 }
             }
 
-            txtSumOfTagged.Text = TotalSelected.ToString("n2") + " " + FSupplierRow.CurrencyCode;
-
-            ActionEnabledEvent(null, new ActionEventArgs("actAddTaggedToPayment", TaggedInvoicesPayable));
-            ActionEnabledEvent(null, new ActionEventArgs("actPostTagged", TaggedInvoicesPostable));
-            ActionEnabledEvent(null, new ActionEventArgs("actTagAllPostable", ListHasItems));
-            ActionEnabledEvent(null, new ActionEventArgs("actTagAllPayable", ListHasItems));
-            ActionEnabledEvent(null, new ActionEventArgs("actUntagAll", ListHasItems));
+            txtTaggedBalance.Text = TotalSelected.ToString("n2") + " " + FSupplierRow.CurrencyCode;
+            txtTaggedCount.Text = TaggedItemCount.ToString();
         }
 
         private void grdResult_Click(object sender, EventArgs e)
@@ -407,25 +522,51 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void StatusFilterChange(object sender, EventArgs e)
         {
-            String SelectedItem = cmbStatus.SelectedItem.ToString();
+            FStatusFilter = String.Empty;
+            string filterJoint = " AND ";
 
-            if (SelectedItem == "All")
+            String SelectedItem = ((TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbStatus")).Text;
+
+            if (SelectedItem == "OPEN")
             {
-                FStatusFilter = "";
+                FStatusFilter = "(Status='' OR Status='" + SelectedItem + "')";
             }
-            else
+            else if (SelectedItem != String.Empty)
             {
-                FStatusFilter = "(Status = '' OR Status='" + SelectedItem + "')";
+                FStatusFilter = "(Status='" + SelectedItem + "')";
             }
 
-            if (chkHideAgedTransactions.Checked)
+            RadioButton rbtForApproval = (RadioButton)FFilterPanelControls.FindControlByName("rbtForApproval");
+            if (rbtForApproval.Checked)
             {
                 if (FStatusFilter != "")
                 {
-                    FStatusFilter += " AND ";
+                    FStatusFilter += filterJoint;
                 }
 
-                FStatusFilter += ("(Date >'" + FAgedOlderThan + "')");
+                FStatusFilter += ("(Status='' OR Status='OPEN')");
+            }
+
+            RadioButton rbtForPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtForPosting");
+            if (rbtForPosting.Checked)
+            {
+                if (FStatusFilter != "")
+                {
+                    FStatusFilter += filterJoint;
+                }
+
+                FStatusFilter += ("(Status='' OR Status='OPEN' OR Status='APPROVED')");
+            }
+
+            RadioButton rbtForPaying = (RadioButton)FFilterPanelControls.FindControlByName("rbtForPaying");
+            if (rbtForPaying.Checked)
+            {
+                if (FStatusFilter != "")
+                {
+                    FStatusFilter += filterJoint;
+                }
+
+                FStatusFilter += ("(Status='POSTED' OR Status='PARTPAID')");
             }
 
             UpdateRowFilter();
@@ -433,13 +574,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void TypeFilterChange(object sender, EventArgs e)
         {
-            String SelectedItem = cmbType.SelectedItem.ToString();
+            FTypeFilter = "";
 
-            if (SelectedItem == "All")
-            {
-                FTypeFilter = "";
-            }
-            else
+            String SelectedItem = ((TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbTransactionType")).Text;
+
+            if (SelectedItem != String.Empty)
             {
                 FTypeFilter = "Type='" + SelectedItem + "'";
             }
@@ -447,33 +586,125 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             UpdateRowFilter();
         }
 
-        private void TagAllPostable(object sender, EventArgs e)
+        private void HistoryFilterChange(object sender, EventArgs e)
         {
-            foreach (DataRowView rv in FPagedDataTable.DefaultView)
-            {
-                DataRow Row = rv.Row;
+            FHistoryFilter = String.Empty;
 
-                if ((Row["Currency"].ToString() == txtSupplierCurrency.Text) && (Row["Status"].ToString().Length > 0)
-                    && ("|POSTED|PARTPAID|PAID|".IndexOf("|" + Row["Status"].ToString()) < 0))
-                {
-                    Row["Tagged"] = true;
-                }
+            RadioButton rbtRecent = (RadioButton)FFilterPanelControls.FindControlByName("rbtRecent");
+            if (rbtRecent.Checked)
+            {
+                FHistoryFilter = ("(Date >'" + FAgedOlderThan + "')");
             }
 
-            RefreshSumTagged(null, null);
+            RadioButton rbtQuarter = (RadioButton)FFilterPanelControls.FindControlByName("rbtLastQuarter");
+            if (rbtQuarter.Checked)
+            {
+                if (FHistoryFilter != "")
+                {
+                    FHistoryFilter += " AND ";
+                }
+
+                FHistoryFilter += ("(Date > #" + DateTime.Now.AddMonths(-3).ToString("d", System.Globalization.CultureInfo.InvariantCulture) + "#)");
+            }
+
+            RadioButton rbtHalf = (RadioButton)FFilterPanelControls.FindControlByName("rbtLastSixMonths");
+            if (rbtHalf.Checked)
+            {
+                if (FHistoryFilter != "")
+                {
+                    FHistoryFilter += " AND ";
+                }
+
+                FHistoryFilter += ("(Date > #" + DateTime.Now.AddMonths(-6).ToString("d", System.Globalization.CultureInfo.InvariantCulture) + "#)");
+            }
+
+            RadioButton rbtYear = (RadioButton)FFilterPanelControls.FindControlByName("rbtLastYear");
+            if (rbtYear.Checked)
+            {
+                if (FHistoryFilter != "")
+                {
+                    FHistoryFilter += " AND ";
+                }
+
+                FHistoryFilter += ("(Date > #" + DateTime.Now.AddMonths(-12).ToString("d", System.Globalization.CultureInfo.InvariantCulture) + "#)");
+            }
+
+            UpdateRowFilter();
         }
 
-        private void TagAllPayable(object sender, EventArgs e)
+        //private void ResetFilter()
+        //{
+        //    if ((FucoFilterAndFind == null) || FucoFilterAndFind.IsCollapsed)
+        //    {
+        //        return;
+        //    }
+
+        //    ((RadioButton)FFilterPanelControls.FindControlByName("rbtAllStatus")).Checked = true;
+        //    ((RadioButton)FFilterPanelControls.FindControlByName("rbtAllHistory")).Checked = true;
+        //    TCmbAutoComplete cmbType = ((TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbTransactionType"));
+        //    TCmbAutoComplete cmbStatus = ((TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbStatus"));
+
+        //    for (int i = 0; i < 2; i++)
+        //    {
+        //        cmbType.SelectedIndex = -1;
+        //        cmbStatus.SelectedIndex = -1;
+        //    }
+        //}
+
+        //private void TagAllPostable(object sender, EventArgs e)
+        //{
+        //    ResetFilter();
+
+        //    foreach (DataRowView rv in FPagedDataTable.DefaultView)
+        //    {
+        //        DataRow Row = rv.Row;
+
+        //        if ((Row["Currency"].ToString() == txtSupplierCurrency.Text) && (Row["Status"].ToString().Length > 0)
+        //            && ("|POSTED|PARTPAID|PAID|".IndexOf("|" + Row["Status"].ToString()) < 0))
+        //        {
+        //            Row["Tagged"] = true;
+        //        }
+        //    }
+
+        //    RefreshSumTagged(null, null);
+        //}
+
+        //private void TagAll(object sender, EventArgs e)
+        //{
+        //    ResetFilter();
+
+        //    foreach (DataRowView rv in FPagedDataTable.DefaultView)
+        //    {
+        //        DataRow Row = rv.Row;
+
+        //        if ((Row["Currency"].ToString() == txtSupplierCurrency.Text) && (Row["Status"].ToString().Length > 0)
+        //            && ("|POSTED|PARTPAID|".IndexOf("|" + Row["Status"].ToString()) >= 0))
+        //        {
+        //            Row["Tagged"] = true;
+        //        }
+        //    }
+
+        //    RefreshSumTagged(null, null);
+        //}
+
+        //private void UntagAll(object sender, EventArgs e)
+        //{
+        //    ResetFilter();
+
+        //    foreach (DataRowView rv in FPagedDataTable.DefaultView)
+        //    {
+        //        DataRow Row = rv.Row;
+        //        Row["Tagged"] = false;
+        //    }
+
+        //    RefreshSumTagged(null, null);
+        //}
+
+        private void TagAll(object sender, EventArgs e)
         {
             foreach (DataRowView rv in FPagedDataTable.DefaultView)
             {
-                DataRow Row = rv.Row;
-
-                if ((Row["Currency"].ToString() == txtSupplierCurrency.Text) && (Row["Status"].ToString().Length > 0)
-                    && ("|POSTED|PARTPAID|".IndexOf("|" + Row["Status"].ToString()) >= 0))
-                {
-                    Row["Tagged"] = true;
-                }
+                rv.Row["Tagged"] = true;
             }
 
             RefreshSumTagged(null, null);
@@ -483,8 +714,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             foreach (DataRowView rv in FPagedDataTable.DefaultView)
             {
-                DataRow Row = rv.Row;
-                Row["Tagged"] = false;
+                rv.Row["Tagged"] = false;
             }
 
             RefreshSumTagged(null, null);
@@ -616,6 +846,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
+        /// Approve all tagged documents
+        /// Uses static functions from TFrmAPEditDocument??
+        /// Not yet implemented
+        /// </summary>
+        private void ApproveTaggedDocuments(object sender, EventArgs e)
+        {
+            throw new NotImplementedException("Sorry! This feature is not yet implemented...");
+        }
+
+        /// <summary>
         /// Post all tagged documents in one GL Batch
         /// Uses static functions from TFrmAPEditDocument
         /// </summary>
@@ -731,6 +971,49 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             reporter.LedgerNumber = FLedgerNumber;
             reporter.SetPaymentNumber(PaymentNumStart, PaymentNumEnd);
             reporter.Show();
+        }
+
+        private bool FWindowIsMaximized = false;
+        private void TFrmAPSupplierTransactions_Resize(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Maximized)
+            {
+                // set the flag that we are maximized
+                FWindowIsMaximized = true;
+                AutoSizeGrid();
+            }
+            else if (FWindowIsMaximized && (this.WindowState == FormWindowState.Normal))
+            {
+                // we have been maximized but now are normal.  In this case we need to re-autosize the cells because otherwise they are still 'stretched'.
+                AutoSizeGrid();
+                FWindowIsMaximized = false;
+            }
+        }
+
+        private void AutoSizeGrid()
+        {
+            if (grdDetails.Columns.Count == 0)
+            {
+                // Not created yet
+                return;
+            }
+
+            foreach (SourceGrid.DataGridColumn column in grdDetails.Columns)
+            {
+                column.Width = 100;
+                column.AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch;
+            }
+
+            grdDetails.Columns[0].Width = 20;
+            grdDetails.Columns[5].Width = 75;
+            grdDetails.Columns[6].Width = 75;
+            //grdDetails.Columns[3].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
+
+            grdDetails.AutoStretchColumnsToFitWidth = true;
+            grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
+            grdResult.SuspendLayout();
+            grdDetails.AutoSizeCells();
+            grdResult.ResumeLayout();
         }
     }
 }

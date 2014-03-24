@@ -1,0 +1,73 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    Namespace: Ict.Petra.Client.MFinance.Gui.AP   
+    #UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    #DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    FormType: edit
+    Template: usercontrolUnbound
+    Actions:
+        actSupplierTransactions:
+            Label: &Open Transactions
+            ActionClick: SupplierTransactions
+            Tooltip: Open the transactions of the supplier
+            ShortCut: Ctrl+O
+            Enabled: cndSelectedSupplier
+        actNewSupplier:
+            Label: &New Supplier
+            ActionClick: NewSupplier
+            Tooltip: Create a new supplier
+            ShortCut: Ctrl+N
+        actEditSupplier:
+            Label: &Edit Supplier
+            ActionClick: EditSupplier
+            Tooltip: Change the details and settings of an existing supplier
+            ShortCut: Ctrl+E
+            Enabled: cndSelectedSupplier
+        actCreateInvoice:
+            Label: Create &Invoice
+            ShortCut: Ctrl+I
+            ActionClick: CreateInvoice
+            Enabled: cndSelectedSupplier
+        actCreateCreditNote:
+            Label: Create C&redit Note
+            ShortCut: Ctrl+R
+            ActionClick: CreateCreditNote
+            Enabled: cndSelectedSupplier
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlButtons]
+            Padding: 0, 2, 0, 0
+            Dock: Fill
+        pnlGrid:
+            Controls: [pnlFilterAndFind, grdSuppliers]
+            Dock: Fill
+        pnlButtons:
+            Controls: [btnNewSupplier, btnEditSupplier, btnSupplierTransactions, btnCreateInvoice, btnCreateCreditNote]
+            ControlsOrientation: horizontal
+            Dock:Bottom
+        pnlFilterAndFind:
+            Dock: Left
+            ExpandedWidth: 185
+            InitiallyExpanded: true     
+            ShowFilterIsAlwaysOnLabel: FilterContext.StandardFilterOnly
+            FilterControls: [pnlFilterControls]
+            #FindControls: [pnlFindControls]
+            Panels:
+                pnlFilterControls:
+                    Controls: [txtSupplierName, rgrShowSuppliers, cmbCurrency]
+                    txtSupplierName: {OnChange=SetSupplierFilters} 
+                    rgrShowSuppliers: 
+                        #Label: Show Suppliers
+                        ClearButton: false
+                        OptionalValues: [=All, ActiveSuppliers, InactiveSuppliers]
+                    rbtAll:  {OnChange=SetSupplierFilters}
+                    rbtActiveSuppliers: {OnChange=SetSupplierFilters}
+                    rbtInactiveSuppliers: {OnChange=SetSupplierFilters}
+                    cmbCurrency: {OnChange=SetSupplierFilters}
+        grdSuppliers: {ActionDoubleClick=actSupplierTransactions}
+            Dock: Fill
+        btnNewSupplier:
+        btnEditSupplier:
+        btnSupplierTransactions:
+        btnCreateInvoice:
+        btnCreateCreditNote:
