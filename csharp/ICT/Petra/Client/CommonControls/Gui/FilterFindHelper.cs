@@ -626,9 +626,9 @@ namespace Ict.Petra.Client.CommonControls
 
             bool bIgnoreStandardFilter = (AIsCollapsed
                                           && (AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.None
-                                              || AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly)
+                                              || AKeepFilterOnButtonDepressedContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly) /*
                                           && (AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.None
-                                              || AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly));
+                                              || AFilterAlwaysOnLabelContext == TUcoFilterAndFind.FilterContext.ExtraFilterOnly)*/);
             string stdFilter = (bIgnoreStandardFilter) ? String.Empty : GetCurrentFilter(FStandardFilterPanels);
 
             bool bIgnoreExtraFilter = (AIsCollapsed
@@ -1058,120 +1058,127 @@ namespace Ict.Petra.Client.CommonControls
                     decimal decimalValue, decimalCompareTo;
                     DateTime dtValue, dtCompareTo;
 
-                    if (iffp.FindComparison.Contains("LIKE"))
+                    if (iffp.FilterComparison == null)
                     {
-                        string columnName = iffp.DBColumnName;
-
-                        if ((iffp.DBColumnDataType == "integer") || (iffp.DBColumnDataType == "number"))
-                        {
-                            columnName = columnName + "_text";
-                        }
-
-                        string columnText = ARow[columnName].ToString().ToLower();
-                        string controlTextLower = controlText.ToLower();
-
-                        // Just do a case-insensitive comparison of the text (contains, startswith or endswith)
-                        if (iffp.FindComparison.EndsWith("%{0}%'") && columnText.Contains(controlTextLower))
-                        {
-                            continue;
-                        }
-                        else if (iffp.FindComparison.EndsWith("{0}%'") && columnText.StartsWith(controlTextLower))
-                        {
-                            continue;
-                        }
-                        else if (iffp.FindComparison.EndsWith("%{0}'") && columnText.EndsWith(controlTextLower))
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            return false;
-                        }
+                        return false;
                     }
-                    else if ((iffp.FindComparison.Contains("#"))
-                             && DateTime.TryParse(ARow[iffp.DBColumnName].ToString(), out dtValue) && DateTime.TryParse(controlText, out dtCompareTo))
+                    else
                     {
-                        // It is a date
-                        if (iffp.FindComparison.StartsWith(">=") && (dtValue >= dtCompareTo))
+                        if (iffp.FindComparison.Contains("LIKE"))
                         {
-                            continue;
+                            string columnName = iffp.DBColumnName;
+
+                            if ((iffp.DBColumnDataType == "integer") || (iffp.DBColumnDataType == "number"))
+                            {
+                                columnName = columnName + "_text";
+                            }
+
+                            string columnText = ARow[columnName].ToString().ToLower();
+                            string controlTextLower = controlText.ToLower();
+
+                            // Just do a case-insensitive comparison of the text (contains, startswith or endswith)
+                            if (iffp.FindComparison.EndsWith("%{0}%'") && columnText.Contains(controlTextLower))
+                            {
+                                continue;
+                            }
+                            else if (iffp.FindComparison.EndsWith("{0}%'") && columnText.StartsWith(controlTextLower))
+                            {
+                                continue;
+                            }
+                            else if (iffp.FindComparison.EndsWith("%{0}'") && columnText.EndsWith(controlTextLower))
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
-                        else if (iffp.FindComparison.StartsWith(">") && (dtValue > dtCompareTo))
+                        else if ((iffp.FindComparison.Contains("#"))
+                                 && DateTime.TryParse(ARow[iffp.DBColumnName].ToString(), out dtValue) && DateTime.TryParse(controlText, out dtCompareTo))
                         {
-                            continue;
+                            // It is a date
+                            if (iffp.FindComparison.StartsWith(">=") && (dtValue >= dtCompareTo))
+                            {
+                                continue;
+                            }
+                            else if (iffp.FindComparison.StartsWith(">") && (dtValue > dtCompareTo))
+                            {
+                                continue;
+                            }
+                            else if (iffp.FindComparison.StartsWith("<=") && (dtValue <= dtCompareTo))
+                            {
+                                continue;
+                            }
+                            else if (iffp.FindComparison.StartsWith("<") && (dtValue < dtCompareTo))
+                            {
+                                continue;
+                            }
+                            else if (iffp.FindComparison.StartsWith("=") && (dtValue == dtCompareTo))
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
-                        else if (iffp.FindComparison.StartsWith("<=") && (dtValue <= dtCompareTo))
+                        else if (Int32.TryParse(ARow[iffp.DBColumnName].ToString(), out intValue) && Int32.TryParse(controlText, out intCompareTo))
                         {
-                            continue;
+                            // It is a Int32
+                            if (iffp.FindComparison.StartsWith(">=") && (intValue >= intCompareTo))
+                            {
+                                continue;
+                            }
+                            else if (iffp.FindComparison.StartsWith(">") && (intValue > intCompareTo))
+                            {
+                                continue;
+                            }
+                            else if (iffp.FindComparison.StartsWith("<=") && (intValue <= intCompareTo))
+                            {
+                                continue;
+                            }
+                            else if (iffp.FindComparison.StartsWith("<") && (intValue < intCompareTo))
+                            {
+                                continue;
+                            }
+                            else if (iffp.FindComparison.StartsWith("=") && (intValue == intCompareTo))
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
-                        else if (iffp.FindComparison.StartsWith("<") && (dtValue < dtCompareTo))
+                        else if (Decimal.TryParse(ARow[iffp.DBColumnName].ToString(),
+                                     out decimalValue) && Decimal.TryParse(controlText, out decimalCompareTo))
                         {
-                            continue;
-                        }
-                        else if (iffp.FindComparison.StartsWith("=") && (dtValue == dtCompareTo))
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                    else if (Int32.TryParse(ARow[iffp.DBColumnName].ToString(), out intValue) && Int32.TryParse(controlText, out intCompareTo))
-                    {
-                        // It is a Int32
-                        if (iffp.FindComparison.StartsWith(">=") && (intValue >= intCompareTo))
-                        {
-                            continue;
-                        }
-                        else if (iffp.FindComparison.StartsWith(">") && (intValue > intCompareTo))
-                        {
-                            continue;
-                        }
-                        else if (iffp.FindComparison.StartsWith("<=") && (intValue <= intCompareTo))
-                        {
-                            continue;
-                        }
-                        else if (iffp.FindComparison.StartsWith("<") && (intValue < intCompareTo))
-                        {
-                            continue;
-                        }
-                        else if (iffp.FindComparison.StartsWith("=") && (intValue == intCompareTo))
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                    else if (Decimal.TryParse(ARow[iffp.DBColumnName].ToString(),
-                                 out decimalValue) && Decimal.TryParse(controlText, out decimalCompareTo))
-                    {
-                        // It is a Int32
-                        if (iffp.FindComparison.StartsWith(">=") && (decimalValue >= decimalCompareTo))
-                        {
-                            continue;
-                        }
-                        else if (iffp.FindComparison.StartsWith(">") && (decimalValue > decimalCompareTo))
-                        {
-                            continue;
-                        }
-                        else if (iffp.FindComparison.StartsWith("<=") && (decimalValue <= decimalCompareTo))
-                        {
-                            continue;
-                        }
-                        else if (iffp.FindComparison.StartsWith("<") && (decimalValue < decimalCompareTo))
-                        {
-                            continue;
-                        }
-                        else if (iffp.FindComparison.StartsWith("=") && (decimalValue == decimalCompareTo))
-                        {
-                            continue;
-                        }
-                        else
-                        {
-                            return false;
+                            // It is a Int32
+                            if (iffp.FindComparison.StartsWith(">=") && (decimalValue >= decimalCompareTo))
+                            {
+                                continue;
+                            }
+                            else if (iffp.FindComparison.StartsWith(">") && (decimalValue > decimalCompareTo))
+                            {
+                                continue;
+                            }
+                            else if (iffp.FindComparison.StartsWith("<=") && (decimalValue <= decimalCompareTo))
+                            {
+                                continue;
+                            }
+                            else if (iffp.FindComparison.StartsWith("<") && (decimalValue < decimalCompareTo))
+                            {
+                                continue;
+                            }
+                            else if (iffp.FindComparison.StartsWith("=") && (decimalValue == decimalCompareTo))
+                            {
+                                continue;
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
                     }
                 }
