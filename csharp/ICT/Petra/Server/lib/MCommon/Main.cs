@@ -454,7 +454,7 @@ namespace Ict.Petra.Server.MCommon
                 //
                 // Actual DB call for execution of SELECT query
                 //
-                FTotalRecords = FDataAdapter.Fill((FTmpDataTable);
+                FTotalRecords = FDataAdapter.Fill(FTmpDataTable);
             }
             catch (NpgsqlException Exp)
             {

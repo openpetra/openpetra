@@ -442,7 +442,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             else
             {
                 DataRow Row = HierarchyView[RowNum].Row;
-                AccountPath = Row["AccountCode"].ToString() + "/" + AccountPath;
+                AccountPath = Row["AccountCode"].ToString() + "~" + AccountPath;
                 return GetAccountLevel(HierarchyView, Row["ReportsTo"].ToString(), ref AccountPath, ChildLevel + 1);
             }
         }
@@ -462,36 +462,29 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Boolean SortAccountFirst,
             Boolean ByPeriod,
             out string ParentAccountPath,
+            out Int32 ParentAccountTypeOrder,
             TDBTransaction ReadTrans)
         {
             Int32 Idx = HierarchyTbl.DefaultView.Find(AccountCode);
             // If Idx < 0 that's pretty serious. The next line will raise an exception.
             AAccountHierarchyDetailRow HDRow = (AAccountHierarchyDetailRow)HierarchyTbl.DefaultView[Idx].Row;
             String ParentAccountCode = HDRow.AccountCodeToReportTo;
-            String MyParentAccountPath;
-            Int32 Period = (ByPeriod) ? Convert.ToInt32(NewDataRow["Period"]) : 0;
-            String PeriodField = "P" + Period;
 
-            if ((ParentAccountCode == "RET EARN") || (ParentAccountCode == LedgerNumber.ToString()))
+            if (((filteredResults.TableName == "IncomeExpense") && (ParentAccountCode == "RET EARN")) // This is a literal AccountCode, which (in a non-OM setting) the user could potentially change.
+               || (ParentAccountCode == LedgerNumber.ToString()))                                     // And actually this is effectively a literal too.
             {
                 // The calling Row is a "first level" account with no parent.
                 ParentAccountPath = "";
+                ParentAccountTypeOrder = 0;
                 return 0;
             }
             else
             {
-                DataRow ParentRow;
-                Int32 AccountLevel = AddTotalsToParentAccountRow( // Update my parent first
-                    filteredResults,
-                    HierarchyTbl,
-                    LedgerNumber,
-                    CostCentreCode,
-                    ParentAccountCode,
-                    NewDataRow,
-                    SortAccountFirst,
-                    ByPeriod,
-                    out MyParentAccountPath,
-                    ReadTrans);
+                String MyParentAccountPath;
+                Int32 MyParentAccountTypeOrder;
+
+                Int32 Period = (ByPeriod) ? Convert.ToInt32(NewDataRow["Period"]) : 0;
+                String PeriodField = "P" + Period;
 
                 Decimal NewRowActual = Convert.ToDecimal(NewDataRow["Actual"]);
 
@@ -511,22 +504,43 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     }
                 }
 
+                DataRow ParentRow;
                 if (Idx < 0)                // This Parent Account Code should have a row in the table - if not I need to create one now.
                 {
                     ParentRow = filteredResults.NewRow();
                     DataUtilities.CopyAllColumnValues(NewDataRow, ParentRow);
                     ParentRow["AccountCode"] = ParentAccountCode;
-                    ParentRow["AccountPath"] = MyParentAccountPath + "/" + ParentAccountCode;
-                    ParentRow["AccountLevel"] = AccountLevel;
 
                     // I need to find the name of this parent account.
                     AAccountRow ParentAccountRow = AAccountAccess.LoadByPrimaryKey(LedgerNumber, ParentAccountCode, ReadTrans)[0];
                     ParentRow["AccountName"] = ParentAccountRow.AccountCodeShortDesc;
                     ParentRow["AccountType"] = ParentAccountRow.AccountType;
+                    ParentRow["DebitCredit"] = ParentAccountRow.DebitCreditIndicator;
+
+
+                    //
+                    // This AccountTypeOrder will be used for sorting the rows in the report,
+                    // but could be overwritten since the "top level" AccountTypeOrder end up getting copied to all children.
+
+                    switch (ParentAccountRow.AccountType)
+                    {
+                        case "Income":
+                        case "Asset":
+                            ParentRow["AccountTypeOrder"] = 1;
+                            break;
+                        case "Expense":
+                        case "Liability":
+                            ParentRow["AccountTypeOrder"] = 2;
+                            break;
+                        case "Equity":
+                            ParentRow["AccountTypeOrder"] = 3;
+                            break;
+                    }
+
                     ParentRow["AccountIsSummary"] = true;
                     filteredResults.Rows.Add(ParentRow);
 
-                    Decimal Sign = (ParentRow["AccountType"].ToString() == NewDataRow["AccountType"].ToString()) ? 1 : -1;
+                    Decimal Sign = (Convert.ToBoolean(ParentRow["DebitCredit"]) == Convert.ToBoolean(NewDataRow["DebitCredit"])) ? 1 : -1;
 
                     if (ByPeriod)
                     {
@@ -546,16 +560,40 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         ParentRow["ActualLastYear"] = Sign * Convert.ToDecimal(ParentRow["ActualLastYear"]);
 //                      ParentRow["ActualLastYearComplete"] = Sign * Convert.ToDecimal(ParentRow["ActualLastYearComplete"]);
                     }
+
+                    //
+                    // Now ensure that my newly-created parent also creates her own parent:
+
+                    Int32 AccountLevel = AddTotalsToParentAccountRow( // Update my parent first
+                        filteredResults,
+                        HierarchyTbl,
+                        LedgerNumber,
+                        CostCentreCode,
+                        ParentAccountCode,
+                        NewDataRow,
+                        SortAccountFirst,
+                        ByPeriod,
+                        out MyParentAccountPath,
+                        out MyParentAccountTypeOrder,
+                        ReadTrans);
+
+                    //
+                    // I need to find the "Report Order" for the parent row:
+
+                    Idx = HierarchyTbl.DefaultView.Find(ParentAccountCode);
+                    // If Idx < 0 that's pretty serious. The next line will raise an exception.
+                    HDRow = (AAccountHierarchyDetailRow)HierarchyTbl.DefaultView[Idx].Row;
+                    
+                    ParentRow["AccountPath"] = MyParentAccountPath + HDRow.ReportOrder + "-" + ParentAccountCode + "~";
+                    ParentRow["AccountLevel"] = AccountLevel;
                 }
-                else
+                else  // Parent row exists already
                 {
                     ParentRow = filteredResults.DefaultView[Idx].Row;
                     //
                     // I need to add or subtract these values depending on the account type I'm summarizing into.
                     //
-                    // This applies when "Income" summarizes into "Expense" or vice versa, but when "equity" summarizes into "liability"?
-                    //
-                    Decimal Sign = (ParentRow["AccountType"].ToString() == NewDataRow["AccountType"].ToString()) ? 1 : -1;
+                    Decimal Sign = (Convert.ToBoolean(ParentRow["DebitCredit"]) == Convert.ToBoolean(NewDataRow["DebitCredit"])) ? 1 : -1;
 
                     if (ByPeriod)
                     {
@@ -568,7 +606,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         ParentRow["ActualLastYear"] = Convert.ToDecimal(ParentRow["ActualLastYear"]) +
                                                       (Sign * Convert.ToDecimal(NewDataRow["ActualLastYear"]));
 
-                        //                  ParentRow["ActualLastYearComplete"] = Convert.ToDecimal(ParentRow["ActualLastYearComplete"]) + (Sign * Convert.ToDecimal(NewDataRow["ActualLastYearComplete"]));
+//                      ParentRow["ActualLastYearComplete"] = Convert.ToDecimal(ParentRow["ActualLastYearComplete"]) + (Sign * Convert.ToDecimal(NewDataRow["ActualLastYearComplete"]));
+
                         //
                         // The Balance Sheet row doesn't have budgets, but the Income Expense does:
                         if (ParentRow.Table.Columns.Contains("Budget"))
@@ -581,8 +620,33 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                                            (Sign * Convert.ToDecimal(NewDataRow["WholeYearBudget"]));
                         }
                     }
+                    //
+                    // Now ensure that my parent also updates her own parent:
+
+                    Int32 AccountLevel = AddTotalsToParentAccountRow( // Update my parent first
+                        filteredResults,
+                        HierarchyTbl,
+                        LedgerNumber,
+                        CostCentreCode,
+                        ParentAccountCode,
+                        NewDataRow,
+                        SortAccountFirst,
+                        ByPeriod,
+                        out MyParentAccountPath,
+                        out MyParentAccountTypeOrder,
+                        ReadTrans);
                 }
 
+                //
+                // I'm going to adopt my parent's sort order so that I'm listed under my parent, even if I'm a different account type.
+                // BUT NOT if my parent is the root of the whole Hierarchy.
+                if (Convert.ToInt32(ParentRow["AccountLevel"]) > 1)
+                {
+                    ParentRow["AccountTypeOrder"] = MyParentAccountTypeOrder;
+                    NewDataRow["AccountTypeOrder"] = MyParentAccountTypeOrder;
+                }
+
+                ParentAccountTypeOrder = Convert.ToInt32(ParentRow["AccountTypeOrder"]);
                 ParentAccountPath = ParentRow["AccountPath"].ToString();
                 return 1 + Convert.ToInt32(ParentRow["AccountLevel"]);
             }
@@ -606,10 +670,15 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Int32 AccountingYear = AParameters["param_year_i"].ToInt32();
             Int32 ReportPeriodEnd = AParameters["param_end_period_i"].ToInt32();
             String HierarchyName = AParameters["param_account_hierarchy_c"].ToString();
+            String RootCostCentre = AParameters["param_cost_centre_code"].ToString();
 
             //
             // Read different DB fields according to currency setting
-            String ActualFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_actual_intl_n" : "a_actual_base_n";
+            Boolean International = AParameters["param_currency"].ToString().StartsWith("Int");
+            String ActualFieldName = International ? "a_actual_intl_n" : "a_actual_base_n";
+            String StartBalanceFieldName = International ? "a_start_balance_intl_n" : "a_start_balance_base_n";
+
+            String PlAccountCode = "PL"; // I could get this from the Ledger record, but in fact it's never set there!
 
             TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
@@ -621,40 +690,40 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                            " glm.a_year_i AS Year," +
                            " glmp.a_period_number_i AS Period," +
                            " a_account.a_account_type_c AS AccountType," +
+                           " 0 AS AccountTypeOrder," +
+//                         " CASE a_account.a_account_type_c WHEN 'Asset' THEN 1 WHEN 'Liability' THEN 2 WHEN 'Equity' THEN 3 END AS AccountTypeOrder," +
+                           " a_account.a_debit_credit_indicator_l AS DebitCredit," +
                            " glm.a_account_code_c AS AccountCode," +
+                           " glm.a_cost_centre_code_c AS CostCentreCode," +
                            " false AS AccountIsSummary," +
                            " 'Path' AS AccountPath," +
                            " a_account.a_account_code_short_desc_c AS AccountName," +
-                           " glm.a_start_balance_base_n AS YearStart," +
-                           " 0.1 AS Actual," +
-                           " glmp." + ActualFieldName + " AS ActualYTD," +
-                           " 0.1 AS ActualLastYear" +
+                           " glm." + StartBalanceFieldName + " AS YearStart," +
+                           " 0.0 AS ActualYTD," +
+                           " glmp." + ActualFieldName + " AS Actual," +
+                           " 0.0 AS ActualLastYear" +
 
                            " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
                            " WHERE glm.a_ledger_number_i=" + LedgerNumber +
-                           " AND glm.a_year_i>=" + (AccountingYear - 1) +
-                           " AND glm.a_year_i<=" + AccountingYear +
+                           " AND glm.a_cost_centre_code_c = '" + RootCostCentre + "' " +
+                           " AND glm.a_year_i IN (" + (AccountingYear - 1) + ", " + AccountingYear + ")" +
                            " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
-                           " AND glmp.a_period_number_i<=" + ReportPeriodEnd +
+                           " AND glmp.a_period_number_i=" + ReportPeriodEnd +
                            " AND a_account.a_account_code_c = glm.a_account_code_c" +
-                           " AND a_account.a_account_type_c IN ('Asset','Liability','Equity')" +
+                           " AND (a_account.a_account_type_c IN ('Asset','Liability','Equity') OR a_account.a_account_code_c = '" + PlAccountCode + "')" +
                            " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
-                           " AND a_account.a_posting_status_l = true" +
+                           " AND (a_account.a_posting_status_l = true OR a_account.a_account_code_c = '" + PlAccountCode + "')" +
                            " ORDER BY glm.a_account_code_c"
             ;
             DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(Query, "BalanceSheet", ReadTrans);
 
-            //
-            // The table includes YTD balances, but I need the balance for the specified period.
-
             DataView OldPeriod = new DataView(resultTable);
             DataView ThisMonth = new DataView(resultTable);
 
-            ThisMonth.RowFilter = "Period=" + ReportPeriodEnd;
+            ThisMonth.RowFilter = String.Format("Year={0}", AccountingYear);
 
             //
-            // Some of these rows are from a year ago. I've updated their "Actual" values;
-            // now I'll copy those into the current period "LastYear" fields.
+            // Some of these rows are from a year ago. I'll copy those into the current period "LastYear" fields.
             foreach (DataRowView rv in ThisMonth)
             {
                 DataRow Row = rv.Row;
@@ -669,11 +738,18 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     DataRow LastYearRow = OldPeriod[0].Row;
                     Row["ActualLastYear"] = Convert.ToDecimal(LastYearRow["Actual"]);
                 }
+
+                if (Row["AccountCode"].ToString() == PlAccountCode)     // Tweak the PL account and pretend it's an Equity.
+                {                                                       // (It was probably previously an income account.)
+                    Row["AccountType"] = "Equity";
+                    Row["AccountTypeOrder"] = 3;
+                }
             }
 
             //
-            // So now I don't have to look at last year's rows or last month's rows:
-            ThisMonth.RowFilter = "Year=" + AccountingYear + " AND Period=" + ReportPeriodEnd;  // Only current period
+            // So now I don't have to look at last year's rows:
+//          ThisMonth.RowFilter = String.Format("Year={0} AND (Actual <> 0 OR ActualLastYear <> 0)", AccountingYear);
+
             DataTable FilteredResults = ThisMonth.ToTable("BalanceSheet");
 
             //
@@ -689,6 +765,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             {
                 DataRow Row = FilteredResults.Rows[Idx];
                 String ParentAccountPath;
+                Int32 ParentAccountTypeOrder;
                 Int32 AccountLevel = AddTotalsToParentAccountRow(
                     FilteredResults,
                     HierarchyTbl,
@@ -699,9 +776,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     false,
                     false,
                     out ParentAccountPath,
+                    out ParentAccountTypeOrder,
                     ReadTrans);
                 Row["AccountLevel"] = AccountLevel;
-                Row["AccountPath"] = ParentAccountPath + "/" + Row["AccountCode"];
+                Row["AccountPath"] = ParentAccountPath + Row["AccountCode"];
             }
 
             //
@@ -709,13 +787,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             Int32 DetailLevel = AParameters["param_nesting_depth"].ToInt32();
             String DepthFilter = " AND AccountLevel<=" + DetailLevel.ToString();
-            FilteredResults.DefaultView.Sort = "AccountType, AccountPath ASC";
+            FilteredResults.DefaultView.Sort = "AccountTypeOrder, AccountPath";
 
-            FilteredResults.DefaultView.RowFilter = "Year=" + AccountingYear + " AND Period=" + ReportPeriodEnd + // Only current period
-                                                    " AND (Actual <> 0 OR ActualYTD <> 0 )" + // Only non-zero rows
-                                                    DepthFilter;                                                 // Nothing too detailed
+            FilteredResults.DefaultView.RowFilter = "(Actual <> 0 OR ActualLastYear <> 0 )" + // Only non-zero rows
+                                                    DepthFilter;    // Nothing too detailed
 
-            FilteredResults = FilteredResults.DefaultView.ToTable("IncomeExpense");
+            FilteredResults = FilteredResults.DefaultView.ToTable("BalanceSheet");
 
             //
             // Finally, to make the hierarchical report possible,
@@ -991,6 +1068,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             //
             // Read different DB fields according to currency setting
             String ActualFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_actual_intl_n" : "a_actual_base_n";
+            String StartBalanceFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_start_balance_intl_n" : "a_start_balance_base_n";
             String BudgetFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_budget_intl_n" : "a_budget_base_n";
             Boolean CostCentreBreakdown = AParameters["param_cost_centre_breakdown"].ToBool();
             Boolean WholeYearPeriodsBreakdown = AParameters["param_period_breakdown"].ToBool();
@@ -1064,10 +1142,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                            " glm.a_cost_centre_code_c AS CostCentreCode," +
                            " a_cost_centre.a_cost_centre_name_c AS CostCentreName," +
                            " a_account.a_account_type_c AS AccountType," +
+                           " CASE a_account.a_account_type_c WHEN 'Income' THEN 1 WHEN 'Expense' THEN 2 END AS AccountTypeOrder," +
+                           " a_account.a_debit_credit_indicator_l AS DebitCredit," +
                            " glm.a_account_code_c AS AccountCode," +
                            " 'Path' AS AccountPath," +
                            " a_account.a_account_code_short_desc_c AS AccountName," +
-                           " glm.a_start_balance_base_n AS YearStart," +
+                           " glm." + StartBalanceFieldName + " AS YearStart," +
                            " 0.0 AS Actual," +
                            " glmp." + ActualFieldName + " AS ActualYTD," +
                            " 0.0 AS ActualLastYear," +
@@ -1221,6 +1301,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 String CostCentreParam = (CostCentreBreakdown) ? "" : Row["CostCentreCode"].ToString();
                 String ParentAccountPath;
+                Int32 ParentAccountTypeOrder;
+
                 Int32 AccountLevel = AddTotalsToParentAccountRow(
                     FilteredResults,
                     HierarchyTbl,
@@ -1231,9 +1313,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     CostCentreBreakdown,
                     WholeYearPeriodsBreakdown,
                     out ParentAccountPath,
+                    out ParentAccountTypeOrder,
                     ReadTrans);
                 Row["AccountLevel"] = AccountLevel;
-                Row["AccountPath"] = ParentAccountPath + "/" + Row["AccountCode"];
+                Row["AccountPath"] = ParentAccountPath + "~" + Row["AccountCode"];
             }
 
             //
@@ -1251,7 +1334,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 // At this point I need to add together any transactions in more detailed levels, summarising them by Cost Centre,
                 // and listing them under the account to which they relate:
                 DataView SummaryView = new DataView(FilteredResults);
-                SummaryView.Sort = "AccountType DESC, AccountPath ASC, CostCentreCode";
+                SummaryView.Sort = "AccountTypeOrder, AccountPath ASC, CostCentreCode";
                 SummaryView.RowFilter = "Breakdown=true";
 
                 DataRow AccumulatingRow = FilteredResults.NewRow();  // This temporary row is not part of the result set - it's just a line of temporary vars.
@@ -1268,11 +1351,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     AccumulateTotalsPerCostCentre(DetailRow, AccumulatingRow);
                 }
 
-                FilteredResults.DefaultView.Sort = "AccountType DESC, AccountPath ASC, Breakdown, CostCentreCode";
+                FilteredResults.DefaultView.Sort = "AccountTypeOrder, AccountPath ASC, Breakdown, CostCentreCode";
             }
             else
             {
-                FilteredResults.DefaultView.Sort = "CostCentreCode, AccountType DESC, AccountPath ASC";
+                FilteredResults.DefaultView.Sort = "CostCentreCode, AccountTypeOrder, AccountPath ASC";
             }
 
             if (WholeYearPeriodsBreakdown)
@@ -1296,7 +1379,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 // I need to summarise them into new "per period" rows (with 12 "Actual" fields), and throw the original rows away.
                 FilteredResults.DefaultView.RowFilter = "AccountIsSummary=false";
                 DataView SummaryView = new DataView(FilteredResults);
-                SummaryView.Sort = "CostCentreCode, AccountType DESC, AccountPath ASC";
+                SummaryView.Sort = "CostCentreCode, AccountTypeOrder, AccountPath ASC";
                 SummaryView.RowFilter = "Breakdown=true";
 
                 foreach (DataRowView rv in FilteredResults.DefaultView)

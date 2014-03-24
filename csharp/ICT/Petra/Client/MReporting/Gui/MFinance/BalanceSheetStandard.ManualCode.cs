@@ -57,6 +57,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
         }
 
+        private void RunOnceOnActivationManual()
+        {
+            if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+            {
+                this.tabReportSettings.Controls.Remove(tpgAdditionalSettings); // These tabs represent settings that are not supported
+                this.tabReportSettings.Controls.Remove(tpgColumnSettings);     // in the FastReports based solution.
+            }
+        }
+
         //
         // This will be called if the Fast Reports Wrapper loaded OK.
         // Returns True if the data apparently loaded OK and the report should be printed.
@@ -74,7 +83,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
             }
 
-            Int32 ParamNestingDepth = 99;
+            Int32 ParamNestingDepth = 3;
             String DepthOption = paramsDictionary["param_depth"].ToString();
 
             if (DepthOption == "summary")
@@ -82,19 +91,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ParamNestingDepth = 1;
             }
 
-            if (DepthOption == "standard")
-            {
-                ParamNestingDepth = 3;
-            }
-
             paramsDictionary.Add("param_nesting_depth", new TVariant(ParamNestingDepth));
+            String RootCostCentre = "[" + FLedgerNumber + "]";
+            paramsDictionary.Add("param_cost_centre_code", new TVariant(RootCostCentre));
 
             //
             // The table contains extra rows for "headers" and "footers", facilitating the hierarchical printout.
             // It does not contain any variance (this year / last year) figures - these are calculated in the report.
 
             DataTable ReportTable = TRemote.MFinance.Reporting.WebConnectors.BalanceSheetTable(paramsDictionary);
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "IncomeExpense");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "BalanceSheet");
 
             //
             // I need to get the name of the current ledger..
