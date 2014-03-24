@@ -208,6 +208,29 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
             }
 
+            // Motivation Detail must not be null
+            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnMotivationDetailCodeId];
+            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                if (ARow.IsMotivationDetailCodeNull() || (ARow.MotivationDetailCode == String.Empty))
+                {
+                    VerificationResult = TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.MotivationDetailCode,
+                        "Motivation Detail code " + ValidationContext,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition/removal to/from TVerificationResultCollection
+                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                    {
+                        VerifResultCollAddedCount++;
+                    }
+                }
+            }
+
             // Detail comments type 1 must not be null if associated comment is not null
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnCommentOneTypeId];
             ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",

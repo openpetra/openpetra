@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -148,6 +148,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddControlGenerator(new TCmbVersatileGenerator());
                 AddControlGenerator(new PrintPreviewGenerator());
                 AddControlGenerator(new PrintPreviewWithToolbarGenerator());
+                AddControlGenerator(new BrowserGenerator());
                 AddControlGenerator(new RadioGroupComplexGenerator());
                 AddControlGenerator(new RadioGroupSimpleGenerator());
                 AddControlGenerator(new RadioGroupNoBorderGenerator());

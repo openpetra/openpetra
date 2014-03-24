@@ -129,8 +129,8 @@ RootNode:
         txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient, OnChange=RecipientKeyChanged}
         cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
-        cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=FilterMotivationDetail}
-        cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, OnChange=MotivationDetailChanged}
+        cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=MotivationGroupChanged}
+        cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, NullValueAllowed=false, OnChange=MotivationDetailChanged, Validation=true}
         txtDetailMotivationDetailDescription: {Label=Empty, ReadOnly=true, Visible=false}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
         txtField: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true}

@@ -226,6 +226,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     "Amount of " + ValidationContext,
                     AContext, ValidationColumn, AControl);
 
+                if (VerificationResult != null) 
+                {
+                    VerificationResult.SuppressValidationToolTip = true;                    
+                }
+                
                 // Handle addition/removal to/from TVerificationResultCollection
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
                 {
