@@ -1512,6 +1512,18 @@ namespace {#NAMESPACE}
                 }
             }
         }
+{#IFDEF FILTERANDFIND}
+        else if (FFailedValidation_CtrlChangeEventArgsInfo != null)
+        {
+            // The validation is all ok...  But we do have an outstanding filter update that we did not show due to previous invalid data
+            //  So we can call that now and update the display.
+            FucoFilterAndFind_ArgumentCtrlValueChanged(FFailedValidation_CtrlChangeEventArgsInfo.Sender,
+                (TUcoFilterAndFind.TContextEventExtControlValueArgs)FFailedValidation_CtrlChangeEventArgsInfo.EventArgs);
+            
+            // Reset our cached change event
+            FFailedValidation_CtrlChangeEventArgsInfo = null;
+        }
+{#ENDIF FILTERANDFIND}    
     }
 {#IFDEF MASTERTABLE}
     private void ValidateData({#MASTERTABLE}Row ARow)
