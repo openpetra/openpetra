@@ -217,6 +217,15 @@ namespace {#NAMESPACE}
 
 #region Filter and Find
     {#FILTERANDFINDMETHODS}
+
+    // Dummy method that prevents build message of 'declared but never used'
+    private void ControlValidatedHandler(object sender, EventArgs e)
+    {
+        if (FFailedValidation_CtrlChangeEventArgsInfo != null)
+        {
+            FFailedValidation_CtrlChangeEventArgsInfo = null;
+        }
+    }
 #endregion
 {#ENDIF FILTERANDFIND}    
 {#IFDEF ACTIONENABLING}

@@ -107,7 +107,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 int totalTableRecords = grdInvoices.TotalRecords;
                 int totalGridRecords = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
-                bool hasFilter = FFilterPanelControls.BaseFilter.Length > 0;
 
                 RecordCount = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).Count;
                 lblRecordCounter.Text = String.Format(
