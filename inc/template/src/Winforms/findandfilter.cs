@@ -357,14 +357,10 @@ void FucoFilterAndFind_ArgumentCtrlValueChanged(object sender, TUcoFilterAndFind
     //  1. the panel is being shown and one or other has no ApplyNow button
     //  2. a control has been changed on a panel with no ApplyNow button
     bool DynamicStandardFilterPanel = (((FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.None) ||
-        (FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.ExtraFilterOnly)) &&
-        ((FucoFilterAndFind.ShowFilterIsAlwaysOnLabel == TUcoFilterAndFind.FilterContext.None) ||
-        (FucoFilterAndFind.ShowFilterIsAlwaysOnLabel == TUcoFilterAndFind.FilterContext.ExtraFilterOnly)));
+        (FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.ExtraFilterOnly)));
 
     bool DynamicExtraFilterPanel = FucoFilterAndFind.IsExtraFilterShown && (((FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.None) ||
-        (FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.StandardFilterOnly)) &&
-        ((FucoFilterAndFind.ShowFilterIsAlwaysOnLabel == TUcoFilterAndFind.FilterContext.None) ||
-        (FucoFilterAndFind.ShowFilterIsAlwaysOnLabel == TUcoFilterAndFind.FilterContext.StandardFilterOnly)));
+        (FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.StandardFilterOnly)));
 
     if ((sender is TUcoFilterAndFind) && (pnlFilterAndFind.Width > 0))
     {
@@ -428,7 +424,10 @@ void ApplyFilter()
             FFilterAndFindParameters.ShowFilterIsAlwaysOnLabelContext);
         {#APPLYFILTERMANUAL}
 
-        ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView.RowFilter = FCurrentActiveFilter;
+        if (grdDetails.DataSource != null)        
+        {
+            ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView.RowFilter = FCurrentActiveFilter;
+        }
     }
     catch (Exception)
     {
@@ -453,8 +452,11 @@ public void MniFilterFind_Click(object sender, EventArgs e)
 
     if (((ToolStripMenuItem)sender).Name == "mniEditFind")
     {
-        FucoFilterAndFind.DisplayFindTab();
-        FFindPanelControls.FFindPanels[0].PanelControl.Focus();
+        if (FucoFilterAndFind.IsFindTabShown)
+        {
+            FucoFilterAndFind.DisplayFindTab();
+            FFindPanelControls.FFindPanels[0].PanelControl.Focus();
+        }
     }
     else
     {
