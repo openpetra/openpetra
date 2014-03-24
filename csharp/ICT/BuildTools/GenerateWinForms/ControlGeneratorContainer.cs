@@ -1218,13 +1218,24 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     foreach (XmlNode dynamicControl in dynamicControlsNode)
                     {
                         string dynamicControlName = dynamicControl.Attributes["name"].Value;
+                        
+                        // The control name may include an instance - remember this and work out the control name without the instance
+                        string dynamicControlNameWithInstance = dynamicControlName;
+
+                        if (dynamicControlNameWithInstance.Contains("-"))
+                        {
+                            dynamicControlName = dynamicControlName.Substring(0, dynamicControlName.LastIndexOf('-'));
+                        }
+
                         // find the node for this name
-                        XmlNode dynamicControlNode = TXMLParser.GetChild(panelNode, dynamicControlName);
+                        XmlNode dynamicControlNode = TXMLParser.GetChild(panelNode, dynamicControlNameWithInstance);
 
                         if (dynamicControlNode == null)
                         {
-                            throw new Exception("Could not find an definition for " + dynamicControlName);
+                            throw new Exception("Could not find an definition for " + dynamicControlNameWithInstance);
                         }
+
+                        string simpleControlType = String.Empty;
 
                         if (dynamicControlName.StartsWith("rgr"))
                         {
@@ -1239,17 +1250,27 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         else if (dynamicControlName.StartsWith("txt"))
                         {
                             // Create a dynamic TextBox
-                            throw new NotImplementedException("No code written yet to create a dynamic text box");
+                            simpleControlType = "TextBox";
+                        }
+                        else if (dynamicControlName.StartsWith("dtp"))
+                        {
+                            // Create a dynamic TtxtPetraDate
+                            simpleControlType = "TtxtPetraDate";
                         }
                         else if (dynamicControlName.StartsWith("chk"))
                         {
                             // Create a dynamic CheckBox
-                            throw new NotImplementedException("No code written yet to create a dynamic check box");
+                            simpleControlType = "CheckBox";
                         }
                         else
                         {
                             throw new NotImplementedException(
                                 "No code written yet to create a dynamic instance of this control: " + dynamicControlName);
+                        }
+
+                        if (simpleControlType != String.Empty)
+                        {
+                            CreateDynamicFilterFindSimpleControl(writer, dynamicControlName, dynamicControlNameWithInstance, simpleControlType, APanelType, APanelSubType, ATargetCodelet);
                         }
                     }
 
@@ -1483,6 +1504,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         {
                             eventName = "CheckedChanged";
                         }
+                        else if (AControlName.StartsWith("chk"))
+                        {
+                            eventName = "CheckStateChanged";
+                        }
                     }
 
                     AddFilterFindEvent(writer, AControlType, APanelType, AControlName, eventName, att.Value);
@@ -1689,6 +1714,41 @@ namespace Ict.Tools.CodeGeneration.Winforms
         }
 
         /// <summary>
+        /// Create a completely dynamic checkBox control that has no direct relationship to the database
+        /// </summary>
+        private void CreateDynamicFilterFindSimpleControl(TFormWriter writer,
+            string AControlName,
+            string AControlNameWithInstance,
+            string AControlType,
+            string APanelType,
+            string APanelSubType,
+            string ATargetCodelet)
+        {
+            string lblName = "lbl" + AControlName.Substring(3);
+            XmlNode dateboxCtrlNode = (XmlNode)FCodeStorage.FXmlNodes[AControlNameWithInstance];
+            XmlAttributeCollection controlAttributes = dateboxCtrlNode.Attributes;
+
+            CreateCloneableControl(writer, lblName, "Label", StringHelper.ReverseUpperCamelCase(AControlName.Substring(3)), ATargetCodelet);
+            CreateCloneableControl(writer, AControlName, AControlType, null, ATargetCodelet);
+
+            bool bHasClearButton;
+            AddFilterFindPanel(writer,
+                AControlType,
+                APanelType,
+                APanelSubType,
+                AControlNameWithInstance,
+                lblName,
+                true,
+                null,
+                null,
+                controlAttributes,
+                ATargetCodelet,
+                out bHasClearButton);
+
+            WriteAdditionalProperties(writer, AControlType, APanelType, AControlNameWithInstance, bHasClearButton, controlAttributes);
+        }
+
+        /// <summary>
         /// Create a completely dynamic comboBox control that has no direct relationship to the database
         /// </summary>
         private void CreateDynamicFilterFindComboBox(TFormWriter writer,
@@ -1703,7 +1763,25 @@ namespace Ict.Tools.CodeGeneration.Winforms
             XmlAttributeCollection controlAttributes = comboCtrlNode.Attributes;
 
             CreateCloneableControl(writer, lblName, "Label", StringHelper.ReverseUpperCamelCase(ctrlName.Substring(3)), ATargetCodelet);
-            CreateCloneableControl(writer, ctrlName, "TCmbAutoComplete", null, ATargetCodelet);
+
+            if (!listCloneableControlNames.Contains(ctrlName))
+            {
+                CreateCloneableControl(writer, ctrlName, "TCmbAutoComplete", null, ATargetCodelet);
+
+                XmlNode optionalValuesNode = TXMLParser.GetChild(ADynamicControlNode, "OptionalValues");
+
+                if ((optionalValuesNode != null) && (optionalValuesNode.ChildNodes.Count > 0))
+                {
+                    string specifiedValues = String.Format("{0}.Items.AddRange( new object[] {{ ", ctrlName);
+                    foreach (XmlNode optionalValueNode in optionalValuesNode)
+                    {
+                        string optionalValueName = optionalValueNode.Attributes["name"].Value;
+                        specifiedValues += String.Format("\"{0}\", ", optionalValueName);
+                    }
+                    specifiedValues = specifiedValues.Substring(0, specifiedValues.Length - 2) + " } );" + Environment.NewLine + Environment.NewLine;
+                    writer.FTemplate.AddToCodelet(ATargetCodelet, specifiedValues);
+                }
+            }
 
             bool bHasClearButton;
             AddFilterFindPanel(writer,
