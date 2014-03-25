@@ -49,17 +49,15 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             if (File.Exists(TemplateBackupFilename))
             {
                 String Query = File.ReadAllText(TemplateBackupFilename);
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-                DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
-                DBAccess.GDBAccessObj.CommitTransaction();
+                DBAccess.GDBAccessObj.ExecuteScalar(Query, IsolationLevel.Serializable); // This objects if there's no return value, so a useless SELECT was added to the end of the SQL.
             }
         }
 
         private static String escape(Object AField)
         {
             String Txt = AField.ToString();
-            Txt = Txt.Replace("\"", "\\\"");
-            Txt = Txt.Replace("'", "\\'");
+//          Txt = Txt.Replace("\"", "\\\"");
+            Txt = Txt.Replace("'", "''");
             return Txt;
         }
 
@@ -84,7 +82,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 {
                     DataRow Row = resultTable.Rows[Idx];
                     FinalQuery += ("INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_xml_text_c)\r\nVALUES("
-                        + Idx + ",'"
+                        + Convert.ToInt32(Row["s_template_id_i"]) + ",'"
                         + escape(Row["s_report_type_c"]) + "','"
                         + escape(Row["s_report_variant_c"]) + "','"
                         + escape(Row["s_author_c"]) + "',"
@@ -92,6 +90,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                         + Row["s_readonly_l"] + ",\r\n'"
                         + escape(Row["s_xml_text_c"]) + "');\r\n");
                 }
+                FinalQuery += "\r\nSELECT TRUE;";
                 File.WriteAllText(TemplateBackupFilename, FinalQuery);
             }
         }

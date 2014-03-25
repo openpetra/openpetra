@@ -174,12 +174,10 @@ namespace Ict.Common.DB
         public String FormatQueryRDBMSSpecific(String ASqlQuery)
         {
             string ReturnValue = ASqlQuery;
+            ReturnValue = Regex.Replace(ReturnValue, "PUB_|PUB\\.", "public.", RegexOptions.IgnoreCase);
 
-            ReturnValue = ReturnValue.Replace("PUB_", "public.");
-            ReturnValue = ReturnValue.Replace("PUB.", "public.");
-            ReturnValue = ReturnValue.Replace("pub_", "public.");
-            ReturnValue = ReturnValue.Replace("pub.", "public.");
-            ReturnValue = ReturnValue.Replace("\"", "'");
+//          ReturnValue = ReturnValue.Replace("\"", "'");   // I guess this was intended to ensure that single quotes are used for literals,
+                                                            //  but it also changes quotes within strings!  (Tim Ingham, March 2014)
 
             // INSERT INTO table () VALUES
             ReturnValue = ReturnValue.Replace("() VALUES", " VALUES");

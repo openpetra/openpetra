@@ -768,7 +768,7 @@ namespace Ict.Common.DB
                 }
 
                 // if this is a call to Stored Procedure: set command type accordingly
-                if (ACommandText.ToUpper().StartsWith("CALL"))
+                if (ACommandText.StartsWith("CALL", true, null))
                 {
                     ObjReturn.CommandType = CommandType.StoredProcedure;
                 }
