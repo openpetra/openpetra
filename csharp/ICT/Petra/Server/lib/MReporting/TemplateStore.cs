@@ -28,6 +28,8 @@ using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Petra.Server.App.Core.Security;
+using System.IO;
+using Ict.Common;
 
 namespace Ict.Petra.Server.MReporting.WebConnectors
 {
@@ -36,6 +38,63 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
     /// </summary>
     public class TReportTemplateWebConnector
     {
+        /// <summary>
+        /// For Development only, all templates marked "read only" are also kept in a disc file.
+        /// This means that Bazaar does the internal update management for us.
+        /// </summary>
+        private static void LoadTemplatesFromBackupFile()
+        {
+            String TemplateBackupFilename = TAppSettingsManager.GetValue("Reporting.PathStandardReports") + "/SystemTemplates.sql";
+
+            if (File.Exists(TemplateBackupFilename))
+            {
+                String Query = File.ReadAllText(TemplateBackupFilename);
+                TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+                DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
+                DBAccess.GDBAccessObj.CommitTransaction();
+            }
+        }
+
+        private static String escape(Object AField)
+        {
+            String Txt = AField.ToString();
+            Txt = Txt.Replace("\"", "\\\"");
+            Txt = Txt.Replace("'", "\\'");
+            return Txt;
+        }
+
+        /// <summary>
+        /// For Development only, all templates marked "read only" are also kept in a disc file.
+        /// This means that Bazaar does the internal update management for us.
+        /// </summary>
+        private static void SaveTemplatesToBackupFile()
+        {
+            String TemplateBackupFilename = TAppSettingsManager.GetValue("Reporting.PathStandardReports") + "/SystemTemplates.sql";
+
+            if (File.Exists(TemplateBackupFilename))
+            {
+                String Query = "SELECT * FROM s_report_template WHERE s_readonly_l=TRUE;";
+
+                TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+                DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(Query, "Templates", ReadTrans);
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                String FinalQuery = "DELETE FROM s_report_template WHERE s_readonly_l=TRUE;\r\n";
+                for (Int32 Idx = 0; Idx < resultTable.Rows.Count; Idx++)
+                {
+                    DataRow Row = resultTable.Rows[Idx];
+                    FinalQuery += ("INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_xml_text_c)\r\nVALUES("
+                        + Idx + ",'"
+                        + escape(Row["s_report_type_c"]) + "','"
+                        + escape(Row["s_report_variant_c"]) + "','"
+                        + escape(Row["s_author_c"]) + "',"
+                        + Row["s_default_l"] + ","
+                        + Row["s_readonly_l"] + ",\r\n'"
+                        + escape(Row["s_xml_text_c"]) + "');\r\n");
+                }
+                File.WriteAllText(TemplateBackupFilename, FinalQuery);
+            }
+        }
 
         /// <summary>
         /// Get a list of templates for this Report Type.
@@ -54,6 +113,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         [RequireModulePermission("none")]
         public static SReportTemplateTable GetTemplateVariants(String AReportType, String AAuthor, Boolean ADefaultOnly = false)
         {
+            LoadTemplatesFromBackupFile();
             SReportTemplateTable Tbl = new SReportTemplateTable();
             SReportTemplateRow TemplateRow = Tbl.NewRowTyped(false);
             TemplateRow.ReportType = AReportType;
@@ -88,6 +148,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
             SReportTemplateAccess.SubmitChanges(editedTemplates, Transaction);
             DBAccess.GDBAccessObj.CommitTransaction();
+            SaveTemplatesToBackupFile();
             return editedTemplates;
         }
     }
