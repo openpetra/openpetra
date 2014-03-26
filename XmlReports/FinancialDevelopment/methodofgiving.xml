@@ -49,7 +49,7 @@
 					FROM PUB_a_gift_batch as batch
 					WHERE batch.a_gl_effective_date_d BETWEEN {#param_start_date#} AND {#param_end_date#}
 					AND batch.a_ledger_number_i = {{param_ledger_number_i}}
-					AND batch.a_batch_status_c = "Posted"
+					AND batch.a_batch_status_c = 'Posted'
 					ORDER BY batch.a_currency_code_c
 					</value></queryDetail>
 				</query>
@@ -71,7 +71,7 @@
 					WHERE batch.a_ledger_number_i = {{param_ledger_number_i}}
 						AND batch.a_gl_effective_date_d BETWEEN {#param_start_date#} AND {#param_end_date#}
 						AND batch.a_currency_code_c = {line_a_currency_code_c}
-						AND batch.a_batch_status_c = "Posted"
+						AND batch.a_batch_status_c = 'Posted'
 						AND gift.a_ledger_number_i = batch.a_ledger_number_i
 						AND gift.a_batch_number_i = batch.a_batch_number_i
 						AND detail.a_ledger_number_i = gift.a_ledger_number_i

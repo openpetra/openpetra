@@ -51,7 +51,7 @@
 					FROM
 						PUB_p_partner_type
 					WHERE
-						PUB_p_partner_type.p_partner_key_n = PartnerKey
+						PUB_p_partner_type.p_partner_key_n = {{PartnerKey}}
 				</value>
 			</queryDetail>
 		</query>
@@ -66,7 +66,7 @@
 					FROM
 						PUB_a_gift
 					WHERE
-						PUB_a_gift.p_donor_key_n = PartnerKey
+						PUB_a_gift.p_donor_key_n = {{PartnerKey}}
 				</value>
 			</queryDetail>
 		</query>

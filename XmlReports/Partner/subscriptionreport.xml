@@ -131,8 +131,8 @@
 					PUB_p_partner_location AS PartnerLocation,
 					PUB_p_location AS Location,
 					PUB_p_partner
-			WHERE  PUB_p_partner.p_partner_key_n = {PartnerKey}
-					AND PartnerLocation.p_partner_key_n ={PartnerKey}
+			WHERE  PUB_p_partner.p_partner_key_n = {{PartnerKey}}
+					AND PartnerLocation.p_partner_key_n ={{PartnerKey}}
 					AND PartnerLocation.p_location_key_i=Location.p_location_key_i
 		</value>
 	</queryDetail>
@@ -175,11 +175,11 @@
 				FROM
 					PUB_a_gift_detail, PUB_p_partner, PUB_a_gift_batch, PUB_a_motivation_detail, PUB_a_motivation_group
 				WHERE
-						PUB_a_gift_detail.a_ledger_number_i  = {a_ledger_number_i}
-					AND PUB_a_gift_detail.a_gift_transaction_number_i = {a_gift_transaction_number_i}
-					AND PUB_a_gift_detail.a_batch_number_i = {a_batch_number_i}
-					AND PUB_a_gift_batch.a_batch_number_i = {a_batch_number_i}
-					AND PUB_a_gift_batch.a_ledger_number_i = {a_ledger_number_i}
+						PUB_a_gift_detail.a_ledger_number_i  = {{a_ledger_number_i}}
+					AND PUB_a_gift_detail.a_gift_transaction_number_i = {{a_gift_transaction_number_i}}
+					AND PUB_a_gift_detail.a_batch_number_i = {{a_batch_number_i}}
+					AND PUB_a_gift_batch.a_batch_number_i = {{a_batch_number_i}}
+					AND PUB_a_gift_batch.a_ledger_number_i = {{a_ledger_number_i}}
 					AND PUB_p_partner.p_partner_key_n = PUB_a_gift_detail.p_recipient_key_n
 					
 					AND PUB_a_motivation_detail.a_motivation_group_code_c = PUB_a_gift_detail.a_motivation_group_code_c
@@ -198,9 +198,9 @@
 				FROM
 					PUB_a_gift_detail
 				WHERE
-						PUB_a_gift_detail.a_ledger_number_i  = {a_ledger_number_i}
-					AND PUB_a_gift_detail.a_gift_transaction_number_i = {a_gift_transaction_number_i}
-					AND PUB_a_gift_detail.a_batch_number_i = {a_batch_number_i}
+						PUB_a_gift_detail.a_ledger_number_i  = {{a_ledger_number_i}}
+					AND PUB_a_gift_detail.a_gift_transaction_number_i = {{a_gift_transaction_number_i}}
+					AND PUB_a_gift_detail.a_batch_number_i = {{a_batch_number_i}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -229,7 +229,7 @@
 				FROM
 					PUB_p_partner
 				WHERE
-					PUB_p_partner.p_partner_key_n = {a_recipient_ledger_number_n}
+					PUB_p_partner.p_partner_key_n = {{a_recipient_ledger_number_n}}
 			</value></queryDetail>
 		</query>
 	</calculation>

@@ -84,7 +84,7 @@
 				FROM
 					PUB_p_church
 				WHERE
-					PUB_p_church.p_partner_key_n = {PartnerKey}
+					PUB_p_church.p_partner_key_n = {{PartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -100,7 +100,7 @@
 				FROM
 					PUB_p_family
 				WHERE
-					PUB_p_family.p_partner_key_n = {PartnerKey}
+					PUB_p_family.p_partner_key_n = {{PartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -115,7 +115,7 @@
 				FROM
 					PUB_p_organisation
 				WHERE
-					PUB_p_organisation.p_partner_key_n = {PartnerKey}
+					PUB_p_organisation.p_partner_key_n = {{PartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -138,7 +138,7 @@
 				FROM
 					PUB_p_person
 				WHERE
-					PUB_p_person.p_partner_key_n = {PartnerKey}
+					PUB_p_person.p_partner_key_n = {{PartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -158,7 +158,7 @@
 				FROM
 					PUB_p_unit
 				WHERE
-					PUB_p_unit.p_partner_key_n = {PartnerKey}
+					PUB_p_unit.p_partner_key_n = {{PartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -171,7 +171,7 @@
 				FROM
 					PUB_p_subscription
 				WHERE
-					PUB_p_subscription.p_partner_key_n = {PartnerKey}
+					PUB_p_subscription.p_partner_key_n = {{PartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -196,7 +196,7 @@
 				FROM
 					PUB_p_subscription
 				WHERE
-					PUB_p_subscription.p_partner_key_n = {PartnerKey}
+					PUB_p_subscription.p_partner_key_n = {{PartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -209,7 +209,7 @@
 				FROM
 					PUB_p_partner_relationship
 				WHERE
-					PUB_p_partner_relationship.p_partner_key_n = {PartnerKey}
+					PUB_p_partner_relationship.p_partner_key_n = {{PartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -224,7 +224,7 @@
 				FROM
 					PUB_p_partner_relationship, PUB_p_relation, PUB_p_partner
 				WHERE
-					PUB_p_partner_relationship.p_partner_key_n = {PartnerKey}
+					PUB_p_partner_relationship.p_partner_key_n = {{PartnerKey}}
 					AND PUB_p_relation.p_relation_name_c = PUB_p_partner_relationship.p_relation_name_c
 					AND PUB_p_partner.p_partner_key_n = PUB_p_partner_relationship.p_relation_key_n
 			</value></queryDetail>
@@ -239,7 +239,7 @@
 				FROM
 					PUB_p_partner_location
 				WHERE
-					PUB_p_partner_location.p_partner_key_n = {PartnerKey}
+					PUB_p_partner_location.p_partner_key_n = {{PartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -270,7 +270,7 @@
 				FROM
 					PUB_p_partner_location, PUB_p_location, PUB_p_country
 				WHERE
-					PUB_p_partner_location.p_partner_key_n = {PartnerKey}
+					PUB_p_partner_location.p_partner_key_n = {{PartnerKey}}
 					AND PUB_p_location.p_location_key_i = PUB_p_partner_location.p_location_key_i
 					AND PUB_p_country.p_country_code_c = PUB_p_location.p_country_code_c
 			</value></queryDetail>
@@ -285,7 +285,7 @@
 				FROM
 					PUB_p_partner_banking_details
 				WHERE
-					PUB_p_partner_banking_details.p_partner_key_n = {PartnerKey}
+					PUB_p_partner_banking_details.p_partner_key_n = {{PartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -302,7 +302,7 @@
 				FROM
 					PUB_p_partner
 				WHERE
-					PUB_p_partner.p_partner_key_n = {PartnerKey}
+					PUB_p_partner.p_partner_key_n = {{PartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -321,7 +321,7 @@
 				FROM
 					PUB_p_banking_details, PUB_p_bank, PUB_p_partner_banking_details
 				WHERE
-					PUB_p_partner_banking_details.p_partner_key_n = {PartnerKey}
+					PUB_p_partner_banking_details.p_partner_key_n = {{PartnerKey}}
 					AND PUB_p_banking_details.p_banking_details_key_i = PUB_p_partner_banking_details.p_banking_details_key_i
 					AND PUB_p_banking_details.p_banking_type_i != '1' <!-- do not show credit cards -->
 					AND PUB_p_bank.p_partner_key_n = PUB_p_banking_details.p_bank_key_n
@@ -337,7 +337,7 @@
 				FROM
 					PUB_p_partner_interest
 				WHERE
-					PUB_p_partner_interest.p_partner_key_n = {PartnerKey}
+					PUB_p_partner_interest.p_partner_key_n = {{PartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -355,7 +355,7 @@
 				FROM
 					PUB_p_interest, PUB_p_partner_interest
 				WHERE
-					PUB_p_partner_interest.p_partner_key_n = {PartnerKey}
+					PUB_p_partner_interest.p_partner_key_n = {{PartnerKey}}
 					AND PUB_p_interest.p_interest_c = PUB_p_partner_interest.p_interest_c
 			</value></queryDetail>
 		</query>
@@ -369,7 +369,7 @@
 				FROM
 					PUB_p_partner_contact
 				WHERE
-					PUB_p_partner_contact.p_partner_key_n = {PartnerKey}
+					PUB_p_partner_contact.p_partner_key_n = {{PartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -385,7 +385,7 @@
 				FROM
 					PUB_p_partner_contact
 				WHERE
-					PUB_p_partner_contact.p_partner_key_n = {PartnerKey}
+					PUB_p_partner_contact.p_partner_key_n = {{PartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -398,7 +398,7 @@
 				FROM
 					PUB_p_partner_reminder
 				WHERE
-					PUB_p_partner_reminder.p_partner_key_n = {PartnerKey}
+					PUB_p_partner_reminder.p_partner_key_n = {{PartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -422,7 +422,7 @@
 				FROM
 					PUB_p_partner_reminder
 				WHERE
-					PUB_p_partner_reminder.p_partner_key_n = {PartnerKey}
+					PUB_p_partner_reminder.p_partner_key_n = {{PartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>

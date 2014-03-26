@@ -129,9 +129,9 @@
                     AND trans.a_cost_centre_code_c = {line_a_cost_centre_code_c}
                     AND trans.a_transaction_date_d BETWEEN {#param_start_date#} AND {#param_end_date#}
                     AND trans.a_transaction_status_l = 1
-                    AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE "Year end re-allocation%")
+                    AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE 'Year end re-allocation%')
                     AND NOT (trans.a_system_generated_l = 1 AND 
-                            (trans.a_narrative_c LIKE "Gifts received - Gift Batch%" OR trans.a_narrative_c LIKE "GB - Gift Batch%"))
+                            (trans.a_narrative_c LIKE 'Gifts received - Gift Batch%' OR trans.a_narrative_c LIKE 'GB - Gift Batch%'))
                     ORDER BY 1, 2, 3, 4
                     </value>
                   </queryDetail>

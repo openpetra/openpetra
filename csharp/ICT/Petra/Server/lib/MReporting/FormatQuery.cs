@@ -271,7 +271,7 @@ namespace Ict.Petra.Server.MReporting
 
             if (withQuotes)
             {
-                ReturnValue = ReplaceVariablesPattern(ReturnValue, "{", "}", "\"", "\"", new TConvertProc(Id));
+                ReturnValue = ReplaceVariablesPattern(ReturnValue, "{", "}", "'", "'", new TConvertProc(Id));
             }
             else
             {

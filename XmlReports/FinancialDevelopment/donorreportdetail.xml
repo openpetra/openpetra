@@ -152,7 +152,7 @@
 							AND LedgerPartner.p_partner_key_n = PUB_a_gift_detail.a_recipient_ledger_number_n
 							AND PUB_a_motivation_detail.a_motivation_group_code_c = PUB_a_gift_detail.a_motivation_group_code_c
 							AND PUB_a_motivation_detail.a_motivation_detail_code_c = PUB_a_gift_detail.a_motivation_detail_code_c
-							AND PUB_a_gift.p_donor_key_n = {DonorKey}
+							AND PUB_a_gift.p_donor_key_n = {{DonorKey}}
 							AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
 							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
 							AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
@@ -161,7 +161,7 @@
 							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
 							AND PUB_a_gift_detail.a_ledger_number_i =  {{param_ledger_number_i}}
 							AND PUB_a_gift.a_ledger_number_i =  {{param_ledger_number_i}}
-							AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+							AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
 						</value>
 					</queryDetail>
 				</query>

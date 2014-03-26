@@ -142,7 +142,7 @@
                     WHERE glm.a_ledger_number_i = cc.a_ledger_number_i 
                         AND glm.a_cost_centre_code_c = cc.a_cost_centre_code_c
                         AND glm.a_ledger_number_i = {{param_ledger_number_i}}
-                        AND (cc.a_cost_centre_to_report_to_c = "ILT" OR cc.a_cost_centre_code_c = "{{param_ledger_number_i}}00S")
+                        AND (cc.a_cost_centre_to_report_to_c = "ILT" OR cc.a_cost_centre_code_c = '{{param_ledger_number_i}}00S')
                         ORDER BY 1
                     </value>
                     </queryDetail>

@@ -87,7 +87,7 @@
              PUB_a_ledger
             WHERE
               PUB_a_general_ledger_master.a_ledger_number_i = {{param_ledger_number_i}}
-             AND PUB_a_general_ledger_master.a_account_code_c &lt;= "4000"
+             AND PUB_a_general_ledger_master.a_account_code_c &lt;= '4000'
              AND PUB_a_general_ledger_master.a_year_i = PUB_a_ledger.a_current_financial_year_i
              AND PUB_a_ledger.a_ledger_number_i = {{param_ledger_number_i}}
 
@@ -97,7 +97,7 @@
 
              AND PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_general_ledger_master.a_cost_centre_code_c
              AND PUB_a_cost_centre.a_posting_cost_centre_flag_l = true
-             AND PUB_a_cost_centre.a_cost_centre_type_c &lt;&gt; "Foreign"
+             AND PUB_a_cost_centre.a_cost_centre_type_c &lt;&gt; 'Foreign'
              AND PUB_a_cost_centre.a_ledger_number_i = {{param_ledger_number_i}}
 
              ORDER BY PUB_a_cost_centre.a_cost_centre_code_c
@@ -132,7 +132,7 @@
               PUB_p_partner
             WHERE
               PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
-             AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+             AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
              AND PUB_a_gift_batch.a_gl_effective_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
 
              AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
@@ -189,9 +189,9 @@
               AND PUB_a_transaction.a_transaction_status_l = true
               AND (PUB_a_transaction.a_system_generated_l = false
                OR ( PUB_a_transaction.a_system_generated_l = true
-                AND NOT (PUB_a_transaction.a_narrative_c LIKE "Gifts received - Gift Batch%"
-                  OR PUB_a_transaction.a_narrative_c LIKE "GB - Gift Batch%"
-                  OR PUB_a_transaction.a_narrative_c LIKE "Year end re-allocation%" ) ) )
+                AND NOT (PUB_a_transaction.a_narrative_c LIKE 'Gifts received - Gift Batch%'
+                  OR PUB_a_transaction.a_narrative_c LIKE 'GB - Gift Batch%'
+                  OR PUB_a_transaction.a_narrative_c LIKE 'Year end re-allocation%' ) ) )
               AND PUB_a_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
              GROUP BY 
               PUB_a_transaction.a_narrative_c,
@@ -215,7 +215,7 @@
                 PUB_a_transaction.a_account_code_c = {AccountCode}
                AND PUB_a_transaction.a_ledger_number_i ={{param_ledger_number_i}}
                AND PUB_a_transaction.a_transaction_status_l = true
-               AND PUB_a_transaction.a_narrative_c NOT LIKE "Year end re-allocation%"
+               AND PUB_a_transaction.a_narrative_c NOT LIKE 'Year end re-allocation%'
                AND PUB_a_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
             </value>
           </queryDetail>
@@ -234,7 +234,7 @@
                AND PUB_a_transaction.a_cost_centre_code_c = {CostCentreCode}
                AND PUB_a_transaction.a_ledger_number_i ={{param_ledger_number_i}}
                AND PUB_a_transaction.a_transaction_status_l = true
-               AND PUB_a_transaction.a_narrative_c NOT LIKE "Year end re-allocation%"
+               AND PUB_a_transaction.a_narrative_c NOT LIKE 'Year end re-allocation%'
                AND PUB_a_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
             </value>
           </queryDetail>

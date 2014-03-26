@@ -192,7 +192,7 @@
                             AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n
                             AND NOT PUB_pm_general_application.pm_gen_app_delete_flag_l = 1
                             
-                            AND (   PUB_pm_short_term_application.pm_registration_office_n = {RegisteringOffice}
+                            AND (   PUB_pm_short_term_application.pm_registration_office_n = {{RegisteringOffice}}
                                     OR  PUB_pm_short_term_application.pm_registration_office_n IS NULL
                             )
                             

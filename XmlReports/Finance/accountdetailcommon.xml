@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE reports SYSTEM "reports.dtd">
+<!DOCTYPE reports SYSTEM "..\reports.dtd">
 <reports>
   <report id="Account Detail Common">
     <description>
@@ -288,11 +288,11 @@
           <queryDetail>
             <value>
             AND trans.a_transaction_date_d BETWEEN {#param_start_date#} AND {#param_end_date#}
-            AND ((not {param_reference_start} = &quot;&quot; AND NOT {param_reference_end} = &quot;&quot; AND
+            AND ((not {param_reference_start} = '' AND NOT {param_reference_end} = '' AND
               trans.a_reference_c BETWEEN {param_reference_start} AND {param_reference_end})
-              OR ({param_reference_start} = &quot;&quot; OR {param_reference_end} = &quot;&quot;))
+              OR ({param_reference_start} = '' OR {param_reference_end} = ''))
             AND trans.a_transaction_status_l = 1
-            AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE "Year end re-allocation%")
+            AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE 'Year end re-allocation%')
           </value>
           </queryDetail>
         </template>
@@ -350,11 +350,11 @@
           <queryDetail>
             <value>
             AND trans.a_transaction_date_d BETWEEN {#param_start_date#} AND {#param_end_date#}            
-            AND ((not {param_analysis_type_start} = &quot;&quot; AND NOT {param_analysis_type_end} = &quot;&quot; AND
+            AND ((not {param_analysis_type_start} = '' AND NOT {param_analysis_type_end} = '' AND
               attr.a_analysis_attribute_value_c BETWEEN {param_analysis_type_end} AND {param_analysis_type_end})
-              OR ({param_analysis_type_start} = &quot;&quot; OR {param_analysis_type_end} = &quot;&quot;))
+              OR ({param_analysis_type_start} = '' OR {param_analysis_type_end} = ''))
             AND trans.a_transaction_status_l = 1
-            AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE "Year end re-allocation%")
+            AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE 'Year end re-allocation%')
           </value>
           </queryDetail>
         </template>
@@ -397,7 +397,7 @@
             AND trans.a_cost_centre_code_c = {line_a_cost_centre_code_c}
             AND trans.a_transaction_date_d BETWEEN {#param_start_date#} AND {#param_end_date#}
             AND trans.a_transaction_status_l = 1
-            AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE "Year end re-allocation%")
+            AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE 'Year end re-allocation%')
             </value>
           </queryDetail>
         </template>
@@ -461,7 +461,7 @@
             <value>
             AND trans.a_transaction_date_d BETWEEN {#param_start_date#} AND {#param_end_date#}
             AND trans.a_transaction_status_l = 1
-            AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE "Year end re-allocation%")
+            AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE 'Year end re-allocation%')
           </value>
           </queryDetail>
         </template>
@@ -529,7 +529,7 @@
             <value>
             AND trans.a_transaction_date_d BETWEEN {#param_start_date#} AND {#param_end_date#}
             AND trans.a_transaction_status_l = 1
-            AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE "Year end re-allocation%")
+            AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE 'Year end re-allocation%')
           </value>
           </queryDetail>
         </template>

@@ -58,12 +58,12 @@
             WHERE
                 PUB_a_cost_centre.a_cost_centre_code_c = PUB_a_transaction.a_cost_centre_code_c
               AND PUB_a_transaction.a_ledger_number_i = {{param_ledger_number_i}}
-              AND PUB_a_transaction.a_cost_centre_code_c = "{{param_ledger_number_i}}00"
+              AND PUB_a_transaction.a_cost_centre_code_c = '{{param_ledger_number_i}}00'
               AND PUB_a_cost_centre.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
               AND PUB_a_transaction.a_transaction_status_l = true
               AND NOT (PUB_a_transaction.a_system_generated_l  = true
-                AND PUB_a_transaction.a_narrative_c LIKE "Year end re-allocation%")
+                AND PUB_a_transaction.a_narrative_c LIKE 'Year end re-allocation%')
               AND PUB_a_transaction.a_account_code_c &gt;= {param_account_from}
               AND PUB_a_transaction.a_account_code_c &lt;= {param_account_to}
             ORDER BY
@@ -85,7 +85,7 @@
               PUB_a_cost_centre
             WHERE
               PUB_a_cost_centre.a_ledger_number_i = {{param_ledger_number_i}}
-              AND PUB_a_cost_centre.a_cost_centre_code_c =  "{{param_ledger_number_i}}00"
+              AND PUB_a_cost_centre.a_cost_centre_code_c =  '{{param_ledger_number_i}}00'
             </value>
           </queryDetail>
         </query>
@@ -128,7 +128,7 @@
               AND PUB_a_transaction.a_transaction_date_d BETWEEN {#param_from_date#} AND {#param_to_date#}
               AND PUB_a_transaction.a_transaction_status_l = true
               AND NOT (PUB_a_transaction.a_system_generated_l  = true
-              AND PUB_a_transaction.a_narrative_c LIKE "Year end re-allocation%")
+              AND PUB_a_transaction.a_narrative_c LIKE 'Year end re-allocation%')
             ORDER BY
               1
             </value>
