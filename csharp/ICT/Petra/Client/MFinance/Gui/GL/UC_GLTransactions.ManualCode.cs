@@ -93,6 +93,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             bool IsNewBatch = false;
             FLoadCompleted = false;
             FBatchRow = GetBatchRow();
+            FJournalRow = GetJournalRow();
             FIsUnposted = (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED);
 
             if (FLedgerNumber == -1)
@@ -105,8 +106,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 && (FTransactionCurrency == AForeignCurrencyName) && (FBatchStatus == ABatchStatus) && (FJournalStatus == AJournalStatus)
                 && (FMainDS.ATransaction.DefaultView.Count > 0))
             {
-                FJournalRow = GetJournalRow();
-
                 //Same as previously selected
                 if (FIsUnposted && (GetSelectedRowIndex() > 0))
                 {
@@ -139,6 +138,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FPreviouslySelectedDetailRow = null;
                 grdDetails.SuspendLayout();
+
+                //Empty grids before filling them
                 grdDetails.DataSource = null;
                 grdAnalAttributes.DataSource = null;
 
@@ -157,8 +158,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 // Now we set the full filter
                 ApplyFilter();
-
-                FJournalRow = GetJournalRow();
 
                 if (grdAnalAttributes.Columns.Count == 1)
                 {
@@ -215,29 +214,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return IsNewBatch;
         }
 
-        /// <summary>
-        /// Unload the currently loaded transactions
-        /// </summary>
-        public void UnloadTransactions()
-        {
-            if (FMainDS.ATransaction.DefaultView.Count > 0)
-            {
-                FPreviouslySelectedDetailRow = null;
-                FMainDS.ATransAnalAttrib.Clear();
-                FMainDS.ATransaction.Clear();
-                ClearControls();
-            }
-        }
-
         private void InitialiseControls()
         {
             cmbDetailKeyMinistryKey.ComboBoxWidth = txtDetailNarrative.Width;
-        }
-
-        private void ClearTransactionDefaultView()
-        {
-            FMainDS.ATransaction.DefaultView.RowFilter = String.Empty;
-            FFilterPanelControls.SetBaseFilter(String.Empty, true);
         }
 
         private void SetTransactionDefaultView(bool AAscendingOrder = true)
@@ -262,17 +241,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void ClearTransAnalAttributeDefaultView()
-        {
-            FMainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Empty;
-        }
-
         private void SetTransAnalAttributeDefaultView(Int32 ATransactionNumber = 0, String AAnalysisCodeFilterValues = "")
         {
             if (FBatchNumber != -1)
             {
-                ClearTransAnalAttributeDefaultView();
-
                 if (ATransactionNumber > 0)
                 {
                     if (FActiveOnly && (AAnalysisCodeFilterValues.Length > 0))
@@ -335,17 +307,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ABatchNumber"></param>
         /// <param name="AJournalNumber"></param>
         /// <returns></returns>
-        public Int32 ActiveTransactionNumber(Int32 ALedgerNumber, Int32 ABatchNumber, ref Int32 AJournalNumber)
+        public void CurrentActiveTransactionKeyFields(Int32 ALedgerNumber,
+            ref Int32 ABatchNumber,
+            ref Int32 AJournalNumber,
+            ref Int32 ATransactionNumber)
         {
-            Int32 activeTrans = 0;
-
             if (FPreviouslySelectedDetailRow != null)
             {
-                activeTrans = FPreviouslySelectedDetailRow.TransactionNumber;
+                ABatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
                 AJournalNumber = FPreviouslySelectedDetailRow.JournalNumber;
+                ATransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
             }
-
-            return activeTrans;
         }
 
         private ABatchRow GetBatchRow()
@@ -551,8 +523,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            grdAnalAttributes.DataSource = null;
-
             SetTransAnalAttributeDefaultView(FTransactionNumber);
 
             grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ATransAnalAttrib.DefaultView);
@@ -586,8 +556,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPSAttributesRow = GetSelectedAttributeRow();
 
             string currentAnalTypeCode = FPSAttributesRow.AnalysisTypeCode;
-
-            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = string.Empty;
 
             if (FIsUnposted)
             {
@@ -908,7 +876,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private bool AnalysisCodeIsActive(String AAnalysisCode = "")
         {
             bool retVal = true;
-
             string accountCode = string.Empty;
 
             accountCode = cmbDetailAccountCode.GetSelectedString();
@@ -918,10 +885,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return retVal;
             }
 
-            string originalRowFilter = FCacheDS.AAnalysisAttribute.DefaultView.RowFilter;
-            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = string.Empty;
+            DataView dv = new DataView(FCacheDS.AAnalysisAttribute);
 
-            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
+            dv.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
                 AAnalysisAttributeTable.GetLedgerNumberDBName(),
                 FLedgerNumber,
                 AAnalysisAttributeTable.GetAccountCodeDBName(),
@@ -930,9 +896,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 AAnalysisCode,
                 AAnalysisAttributeTable.GetActiveDBName());
 
-            retVal = (FCacheDS.AAnalysisAttribute.DefaultView.Count > 0);
-
-            FCacheDS.AAnalysisAttribute.DefaultView.RowFilter = originalRowFilter;
+            retVal = (dv.Count > 0);
 
             return retVal;
         }
@@ -946,23 +910,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return retVal;
             }
 
-            string originalRowFilter = FCacheDS.AFreeformAnalysis.DefaultView.RowFilter;
-            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = string.Empty;
+            DataView dv = new DataView(FCacheDS.AFreeformAnalysis);
 
-            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
+            dv.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
                 AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
                 AAnalysisCode,
                 AFreeformAnalysisTable.GetAnalysisValueDBName(),
                 AAnalysisAttributeValue,
                 AFreeformAnalysisTable.GetActiveDBName());
 
-            retVal = (FCacheDS.AFreeformAnalysis.DefaultView.Count > 0);
+            retVal = (dv.Count > 0);
 
             //Make sure the grid combobox has right font else it will adopt strikeout
             // for all items in the list.
             FAnalAttribTypeVal.Control.Font = new Font(FontFamily.GenericSansSerif, 8);
-
-            FCacheDS.AFreeformAnalysis.DefaultView.RowFilter = originalRowFilter;
 
             return retVal;
         }
@@ -1128,12 +1089,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 try
                 {
-                    //Load all journals for current Batch
                     //Unbind any transactions currently being editied in the Transaction Tab
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
                     //Delete transactions
                     SetTransAnalAttributeDefaultView();
+                    SetTransactionDefaultView();
 
                     for (int i = FMainDS.ATransAnalAttrib.DefaultView.Count - 1; i >= 0; i--)
                     {
@@ -1425,7 +1386,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FBatchNumber,
                 ATransactionTable.GetJournalNumberDBName(),
                 FJournalNumber);
-            string sort = String.Format("{0} {1}", ATransactionTable.GetTransactionNumberDBName(), "DESC");
+            string sort = ATransactionTable.GetTransactionNumberDBName() + " DESC";
             DataView dv = new DataView(FMainDS.ATransaction, rowFilter, sort, DataViewRowState.CurrentRows);
 
             if (dv.Count > 0)
@@ -1577,8 +1538,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ATransAnalAttribRow attrRowCurrent = (ATransAnalAttribRow)rv.Row;
                 attrRowCurrent.Delete();
             }
-
-            FMainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Empty;
 
             foreach (String analysisTypeCode in RequiredAnalattrCodes)
             {

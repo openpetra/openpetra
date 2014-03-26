@@ -108,13 +108,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FPreviouslySelectedDetailRow = null;
 
-                if (batchChanged || ledgerChanged)
-                {
-                    //Clear all previous data.
-                    FMainDS.ATransAnalAttrib.Clear();
-                    FMainDS.ATransaction.Clear();
-                    FMainDS.AJournal.Clear();
-                }
+                //if (batchChanged || ledgerChanged)
+                //{
+                //    //Clear all previous data.
+                //    FMainDS.ATransAnalAttrib.Clear();
+                //    FMainDS.ATransaction.Clear();
+                //    FMainDS.AJournal.Clear();
+                //}
 
                 // This sets the base rowFilter and sort and calls manual code
                 ShowData();
@@ -160,16 +160,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// Return the active journal number
         /// </summary>
         /// <returns></returns>
-        public Int32 ActiveJournalNumber(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public void CurrentActiveJournalKeyFields(Int32 ALedgerNumber, ref Int32 ABatchNumber, ref Int32 AJournalNumber)
         {
-            Int32 activeJournal = 0;
-
-            if ((FPreviouslySelectedDetailRow != null) && (FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber))
+            if (FPreviouslySelectedDetailRow != null)
             {
-                activeJournal = FPreviouslySelectedDetailRow.JournalNumber;
+                ABatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+                AJournalNumber = FPreviouslySelectedDetailRow.JournalNumber;
             }
-
-            return activeJournal;
         }
 
         /// <summary>
@@ -362,14 +359,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         public void CancelRow(System.Object sender, EventArgs e)
         {
-            if (FPreviouslySelectedDetailRow == null)
+            if ((FPreviouslySelectedDetailRow == null) || !((TFrmGLBatch)ParentForm).SaveChanges())
             {
                 return;
             }
 
+            int CurrentJournalNumber = FPreviouslySelectedDetailRow.JournalNumber;
+
             if ((MessageBox.Show(String.Format(Catalog.GetString(
                              "You have chosen to cancel this journal ({0}).\n\nDo you really want to cancel it?"),
-                         FPreviouslySelectedDetailRow.JournalNumber),
+                         CurrentJournalNumber),
                      Catalog.GetString("Confirm Cancel"),
                      MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes))
             {
@@ -378,23 +377,40 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     //clear any transactions currently being editied in the Transaction Tab
                     ((TFrmGLBatch)ParentForm).GetTransactionsControl().ClearCurrentSelection();
 
-                    //Clear transactions etc for current Journal
-                    FMainDS.ATransAnalAttrib.Clear();
-                    FMainDS.ATransaction.Clear();
+                    ////Clear transactions etc for current Journal
+                    //FMainDS.ATransAnalAttrib.Clear();
+                    //FMainDS.ATransaction.Clear();
 
-                    //Load tables afresh
+                    //Load any new data
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber, FBatchNumber,
-                            FPreviouslySelectedDetailRow.JournalNumber));
+                            CurrentJournalNumber));
 
-                    //Delete transactions
-                    for (int i = FMainDS.ATransAnalAttrib.Count - 1; i >= 0; i--)
+                    DataView dvAA = new DataView(FMainDS.ATransAnalAttrib);
+
+                    dvAA.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                        ATransAnalAttribTable.GetBatchNumberDBName(),
+                        FBatchNumber,
+                        ATransAnalAttribTable.GetJournalNumberDBName(),
+                        CurrentJournalNumber);
+
+                    //Delete Analysis Attribs
+                    foreach (DataRowView dvr in dvAA)
                     {
-                        FMainDS.ATransAnalAttrib[i].Delete();
+                        dvr.Delete();
                     }
 
-                    for (int i = FMainDS.ATransaction.Count - 1; i >= 0; i--)
+                    DataView dvTr = new DataView(FMainDS.ATransaction);
+
+                    dvTr.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                        ATransactionTable.GetBatchNumberDBName(),
+                        FBatchNumber,
+                        ATransactionTable.GetJournalNumberDBName(),
+                        CurrentJournalNumber);
+
+                    //Delete Transactions
+                    foreach (DataRowView dvr in dvTr)
                     {
-                        FMainDS.ATransaction[i].Delete();
+                        dvr.Delete();
                     }
 
                     FPreviouslySelectedDetailRow.BeginEdit();

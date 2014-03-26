@@ -199,9 +199,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
             VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
                 ARow.RecipientKey, new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT }, true,
                 "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()), ValidationContext, ValidationColumn, null);
-            //VerificationResult = TNumericalChecks.IsValidPartnerKey(FLastDonor,
-            //    "Donor of " + ValidationContext,
-            //    this, ValidationColumn, null);
 
             if (VerificationResult != null)
             {
@@ -359,9 +356,6 @@ namespace Ict.Petra.Shared.MFinance.Validation
             VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
                 ARow.DonorKey, new TPartnerClass[] { }, true,
                 "Donor of " + THelper.NiceValueDescription(ValidationContext.ToString()), ValidationContext, ValidationColumn, null);
-            //VerificationResult = TNumericalChecks.IsValidPartnerKey(FLastDonor,
-            //    "Donor of " + ValidationContext,
-            //    this, ValidationColumn, null);
 
             if (VerificationResult != null)
             {

@@ -2050,6 +2050,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             bool reverseWholeBatch = (AFunctionName == "Reverse Gift Batch");
 
+            if (!((TFrmGiftBatch)ParentForm).SaveChanges())
+            {
+                return;
+            }
+
             AGiftBatchRow giftBatch = ((TFrmGiftBatch)ParentForm).GetBatchControl().GetSelectedDetailRow();
 
             if (giftBatch == null)
