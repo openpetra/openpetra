@@ -306,6 +306,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AJournalNumber"></param>
+        /// <param name="ATransactionNumber"></param>
         /// <returns></returns>
         public void CurrentActiveTransactionKeyFields(Int32 ALedgerNumber,
             ref Int32 ABatchNumber,

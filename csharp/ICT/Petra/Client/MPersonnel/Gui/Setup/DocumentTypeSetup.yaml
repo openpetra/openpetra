@@ -39,7 +39,7 @@ RootNode:
             CustomColumns:
                 DetailCode: {Label=Document Code}
                 DetailDocCategory: {Label=Document Category}
-                DetailUnassignableFlag: {Label=Unassignable}
+                DetailUnassignableFlag: {Label=Unassignable, Type=Boolean}
                 DetailUnassignableDate: {Label=Unassignable Date, Type=DateTime}
             SortOrder: DetailDocCode ASC
             ActionFocusRow: FocusedRowChanged

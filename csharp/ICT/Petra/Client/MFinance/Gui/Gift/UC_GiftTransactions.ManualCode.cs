@@ -1839,6 +1839,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void UpdateControlsProtection(AGiftDetailRow ARow, AGiftRow AGift = null)
         {
             bool firstIsEnabled = (ARow != null) && (ARow.DetailNumber == 1) && !ViewMode;
+            bool pnlDetailsEnabledState = false;
 
             dtpDateEntered.Enabled = firstIsEnabled;
             txtDetailDonorKey.Enabled = firstIsEnabled;
@@ -1856,7 +1857,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (ARow == null)
             {
                 PnlDetailsProtected = (ViewMode
-                                       || !FBatchUnposted);
+                                       || !FBatchUnposted
+                                       );
             }
             else
             {
@@ -1866,9 +1868,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                        );    // taken from old petra
             }
 
-            pnlDetails.Enabled = !(PnlDetailsProtected);
+            pnlDetailsEnabledState = (!PnlDetailsProtected && grdDetails.Rows.Count > 1);
+            pnlDetails.Enabled = pnlDetailsEnabledState;
 
-            btnDelete.Enabled = ((grdDetails.Rows.Count > 1) && !PnlDetailsProtected);
+            btnDelete.Enabled = pnlDetailsEnabledState;
             btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
             btnNewDetail.Enabled = !PnlDetailsProtected;
             btnNewGift.Enabled = !PnlDetailsProtected;
