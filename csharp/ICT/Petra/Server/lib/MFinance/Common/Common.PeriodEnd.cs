@@ -597,16 +597,40 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     generalLedgerMasterRowFrom =
                         (AGeneralLedgerMasterRow)PostingFromDS.AGeneralLedgerMaster[i];
-                    ++intEntryCount;
+                    generalLedgerMasterRowTo = null;
+
+                    for (int j = 0; j < PostingToDS.AGeneralLedgerMaster.Rows.Count; ++j)
+                    {
+                        generalLedgerMasterRowTo =
+                            (AGeneralLedgerMasterRow)PostingToDS.AGeneralLedgerMaster[j];
+
+                        if ((generalLedgerMasterRowFrom.AccountCode == generalLedgerMasterRowTo.AccountCode)
+                            && (generalLedgerMasterRowFrom.CostCentreCode == generalLedgerMasterRowTo.CostCentreCode))
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            generalLedgerMasterRowTo = null;
+                        }
+                    }
+
+                    if (generalLedgerMasterRowTo == null)
+                    {
+                        if (!FInfoMode)
+                        {
+                            generalLedgerMasterRowTo =
+                                (AGeneralLedgerMasterRow)PostingToDS.AGeneralLedgerMaster.NewRowTyped(true);
+                            generalLedgerMasterRowTo.GlmSequence = TempGLMSequence;
+                            TempGLMSequence--;
+                            PostingToDS.AGeneralLedgerMaster.Rows.Add(generalLedgerMasterRowTo);
+                        }
+
+                        ++intEntryCount;
+                    }
 
                     if (!FInfoMode)
                     {
-                        generalLedgerMasterRowTo =
-                            PostingToDS.AGeneralLedgerMaster.NewRowTyped(true);
-                        generalLedgerMasterRowTo.GlmSequence = TempGLMSequence;
-                        TempGLMSequence--;
-                        PostingToDS.AGeneralLedgerMaster.Rows.Add(generalLedgerMasterRowTo);
-
                         generalLedgerMasterRowTo.LedgerNumber = generalLedgerMasterRowFrom.LedgerNumber;
                         generalLedgerMasterRowTo.Year = intNextYear;
                         generalLedgerMasterRowTo.AccountCode = generalLedgerMasterRowFrom.AccountCode;
@@ -637,6 +661,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (DoExecuteableCode)
             {
+                PostingToDS.ThrowAwayAfterSubmitChanges = true;
                 GLPostingTDSAccess.SubmitChanges(PostingToDS);
             }
         }
