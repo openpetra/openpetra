@@ -61,7 +61,7 @@ namespace Ict.Common.Verification
         private static readonly string StrStringMustNotBeEmpty = Catalog.GetString("A value must be entered for {0}.");
 
         private static readonly string StrStringTooLong = Catalog.GetString(
-            "The value you entered for {0} is too long - it's maximum length is {1} characters, but you entered {2} characters.");
+            "The value you entered for {0} is too long - its maximum length is {1} characters, but you entered {2} characters.");
 
         private static readonly string StrStringInvalidValue = Catalog.GetString(
             "The value you entered for {0} is currently inactive.");
