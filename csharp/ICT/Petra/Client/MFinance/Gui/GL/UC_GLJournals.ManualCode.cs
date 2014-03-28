@@ -108,13 +108,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FPreviouslySelectedDetailRow = null;
 
-                //if (batchChanged || ledgerChanged)
-                //{
-                //    //Clear all previous data.
-                //    FMainDS.ATransAnalAttrib.Clear();
-                //    FMainDS.ATransaction.Clear();
-                //    FMainDS.AJournal.Clear();
-                //}
+                if (ledgerChanged)
+                {
+                    //Clear all previous data.
+                    FMainDS.ATransAnalAttrib.Clear();
+                    FMainDS.ATransaction.Clear();
+                    FMainDS.AJournal.Clear();
+                }
 
                 // This sets the base rowFilter and sort and calls manual code
                 ShowData();
@@ -133,13 +133,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ApplyFilter();
             }
 
+            //This will also call UpdateChangeableStatus
             SelectRowInGrid((batchChanged || ledgerChanged) ? 1 : FPrevRowChangedRow);
 
             UpdateRecordNumberDisplay();
             SetRecordNumberDisplayProperties();
-
-            txtDetailExchangeRateToBase.Enabled = false;
-            txtBatchNumber.Text = FBatchNumber.ToString();
         }
 
         /// <summary>
@@ -199,8 +197,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FPreviouslySelectedDetailRow.JournalDebitTotal -
                     FPreviouslySelectedDetailRow.JournalCreditTotal;
             }
-
-            UpdateChangeableStatus();
         }
 
         /// <summary>
@@ -230,34 +226,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowDetailsManual(AJournalRow ARow)
         {
-            grdDetails.TabStop = (ARow != null);
+            bool RowIsNull = (ARow == null);
 
-            if (ARow == null)
+            grdDetails.TabStop = (!RowIsNull);
+
+            if (RowIsNull)
             {
                 btnAdd.Focus();
             }
 
-            if ((ARow == null) || (ARow.JournalStatus == MFinanceConstants.BATCH_CANCELLED))
+            if (RowIsNull || (ARow.JournalStatus == MFinanceConstants.BATCH_CANCELLED))
             {
                 ((TFrmGLBatch)ParentForm).DisableTransactions();
             }
             else
             {
                 ((TFrmGLBatch)ParentForm).EnableTransactions();
-
-                btnGetSetExchangeRate.Enabled = (ARow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
-
-                //Can't cancel an already cancelled row
-                btnCancel.Enabled = (ARow.JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
-                ((TFrmGLBatch)ParentForm).EnableTransactions();
-
-                if (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
-                {
-                    FPetraUtilsObject.DisableSaveButton();
-                }
-
-                UpdateChangeableStatus();
             }
+
+            UpdateChangeableStatus();
         }
 
         private ABatchRow GetBatchRow()
@@ -348,8 +335,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             this.btnCancel.Enabled = changeable && journalUpdatable;
             this.btnAdd.Enabled = changeable;
+            this.btnGetSetExchangeRate.Enabled = changeable && journalUpdatable
+                                                 && (FPreviouslySelectedDetailRow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
             pnlDetails.Enabled = changeable && journalUpdatable;
             pnlDetailsProtected = !changeable;
+
+            if (!changeable)
+            {
+                FPetraUtilsObject.DisableSaveButton();
+            }
         }
 
         /// <summary>
@@ -460,6 +454,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             Catalog.GetString("Please try and save the cancellation immediately."),
                             Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
+
+                    UpdateChangeableStatus();
+                    grdDetails.Focus();
                 }
                 catch (Exception ex)
                 {
