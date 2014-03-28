@@ -108,13 +108,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FPreviouslySelectedDetailRow = null;
 
-                //if (batchChanged || ledgerChanged)
-                //{
-                //    //Clear all previous data.
-                //    FMainDS.ATransAnalAttrib.Clear();
-                //    FMainDS.ATransaction.Clear();
-                //    FMainDS.AJournal.Clear();
-                //}
+                if (ledgerChanged)
+                {
+                    //Clear all previous data.
+                    FMainDS.ATransAnalAttrib.Clear();
+                    FMainDS.ATransaction.Clear();
+                    FMainDS.AJournal.Clear();
+                }
 
                 // This sets the base rowFilter and sort and calls manual code
                 ShowData();
@@ -133,13 +133,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ApplyFilter();
             }
 
+            //This will also call UpdateChangeableStatus
             SelectRowInGrid((batchChanged || ledgerChanged) ? 1 : FPrevRowChangedRow);
 
             UpdateRecordNumberDisplay();
             SetRecordNumberDisplayProperties();
-
-            txtDetailExchangeRateToBase.Enabled = false;
-            txtBatchNumber.Text = FBatchNumber.ToString();
         }
 
         /// <summary>
@@ -199,8 +197,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FPreviouslySelectedDetailRow.JournalDebitTotal -
                     FPreviouslySelectedDetailRow.JournalCreditTotal;
             }
-
-            UpdateChangeableStatus();
         }
 
         /// <summary>
@@ -339,11 +335,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             this.btnCancel.Enabled = changeable && journalUpdatable;
             this.btnAdd.Enabled = changeable;
-            this.btnGetSetExchangeRate.Enabled = changeable && journalUpdatable && (FPreviouslySelectedDetailRow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
+            this.btnGetSetExchangeRate.Enabled = changeable && journalUpdatable
+                                                 && (FPreviouslySelectedDetailRow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
             pnlDetails.Enabled = changeable && journalUpdatable;
             FPnlDetailsProtected = !changeable;
 
-            if (!(changeable && journalUpdatable))
+            if (!changeable)
             {
                 FPetraUtilsObject.DisableSaveButton();
             }
@@ -459,6 +456,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     UpdateChangeableStatus();
+                    grdDetails.Focus();
                 }
                 catch (Exception ex)
                 {

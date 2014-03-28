@@ -1139,10 +1139,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
 
-                if (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
-                {
-                    FPetraUtilsObject.DisableSaveButton();
-                }
+                //Now that saving is allowed across Batch changing, we cannot disable the change button
+                //  if a change has been made to an unposted batch
+                //if (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                //{
+                //    FPetraUtilsObject.DisableSaveButton();
+                //}
             }
 
             if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
