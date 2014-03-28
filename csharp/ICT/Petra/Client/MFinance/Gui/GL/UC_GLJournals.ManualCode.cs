@@ -338,7 +338,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.btnGetSetExchangeRate.Enabled = changeable && journalUpdatable
                                                  && (FPreviouslySelectedDetailRow.TransactionCurrency != FMainDS.ALedger[0].BaseCurrency);
             pnlDetails.Enabled = changeable && journalUpdatable;
-            FPnlDetailsProtected = !changeable;
+            pnlDetailsProtected = !changeable;
 
             if (!changeable)
             {

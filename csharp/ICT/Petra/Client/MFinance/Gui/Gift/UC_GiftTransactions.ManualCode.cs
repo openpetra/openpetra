@@ -750,12 +750,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            TRemote.MFinance.Gift.WebConnectors.UpdateCostCentreCodeForRecipients(ref FMainDS,
-                out FailedUpdates,
-                FPreviouslySelectedDetailRow.GiftTransactionNumber,
-                FPreviouslySelectedDetailRow.DetailNumber);
+            //TODO: Need to fix these two calls
+            //TRemote.MFinance.Gift.WebConnectors.UpdateCostCentreCodeForRecipients(ref FMainDS,
+            //    out FailedUpdates,
+            //    FPreviouslySelectedDetailRow.GiftTransactionNumber,
+            //    FPreviouslySelectedDetailRow.DetailNumber);
 
-            ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
+            //((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
 
             //FindCostCentreCodeForRecipient(FPreviouslySelectedDetailRow, true);
 
@@ -1513,6 +1514,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     txtDetailRecipientKey.Focus();
                 }
+
+                //Set the default motivation Group. This needs to happen after focus has returned
+                //  to the pnlDetails to ensure FInEditMode is correct.
+                cmbDetailMotivationGroupCode.SelectedIndex = 0;
             }
         }
 
