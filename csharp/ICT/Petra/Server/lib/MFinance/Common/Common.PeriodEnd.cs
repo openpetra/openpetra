@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -488,8 +488,6 @@ namespace Ict.Petra.Server.MFinance.Common
     {
         GLPostingTDS PostingFromDS = null;
         GLPostingTDS PostingToDS = null;
-        AGeneralLedgerMasterRow generalLedgerMasterRowFrom = null;
-        AGeneralLedgerMasterRow generalLedgerMasterRowTo = null;
 
         int intThisYear;
         int intNextYear;
@@ -507,8 +505,28 @@ namespace Ict.Petra.Server.MFinance.Common
             intThisYear = AYear;
             intNextYear = intThisYear + 1;
             intLedgerNumber = ALedgerNumber;
-            PostingFromDS = LoadTable(ALedgerNumber, AYear);
-            PostingToDS = LoadTable(ALedgerNumber, ++AYear);
+
+            bool NewTransaction;
+            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                PostingFromDS = LoadTable(ALedgerNumber, AYear, transaction);
+                PostingToDS = LoadTable(ALedgerNumber, ++AYear, transaction);
+                ALedgerAccess.LoadByPrimaryKey(PostingFromDS, ALedgerNumber, transaction);
+
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+            }
+            catch (Exception)
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                throw;
+            }
         }
 
         /// <summary>
@@ -533,7 +551,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
         }
 
-        private GLPostingTDS LoadTable(int ALedgerNumber, int AYear)
+        private GLPostingTDS LoadTable(int ALedgerNumber, int AYear, TDBTransaction ATransaction)
         {
             OdbcParameter[] ParametersArray;
             ParametersArray = new OdbcParameter[2];
@@ -548,28 +566,10 @@ namespace Ict.Petra.Server.MFinance.Common
 
             GLPostingTDS PostingDS = new GLPostingTDS();
 
-            bool NewTransaction;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            DBAccess.GDBAccessObj.Select(PostingDS,
+                strSQL, AGeneralLedgerMasterTable.GetTableName(), ATransaction, ParametersArray);
 
-            try
-            {
-                DBAccess.GDBAccessObj.Select(PostingDS,
-                    strSQL, AGeneralLedgerMasterTable.GetTableName(), transaction, ParametersArray);
-
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
-
-                return PostingDS;
-            }
-            catch (Exception)
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                throw;
-            }
+            return PostingDS;
         }
 
         /// <summary>
@@ -577,7 +577,11 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         public override void RunEndOfPeriodOperation()
         {
+            AGeneralLedgerMasterRow generalLedgerMasterRowFrom = null;
+            AGeneralLedgerMasterRow generalLedgerMasterRowTo = null;
+            AGeneralLedgerMasterPeriodRow glmPeriodRow = null;
             Int32 TempGLMSequence = -1;
+            ALedgerRow Ledger = PostingFromDS.ALedger[0];
 
             intEntryCount = 0;
 
@@ -632,12 +636,32 @@ namespace Ict.Petra.Server.MFinance.Common
                         generalLedgerMasterRowTo.AccountCode = generalLedgerMasterRowFrom.AccountCode;
                         generalLedgerMasterRowTo.CostCentreCode = generalLedgerMasterRowFrom.CostCentreCode;
                         generalLedgerMasterRowTo.YtdActualBase = generalLedgerMasterRowFrom.YtdActualBase;
+
+                        if (!generalLedgerMasterRowFrom.IsYtdActualForeignNull())
+                        {
+                            generalLedgerMasterRowTo.YtdActualForeign = generalLedgerMasterRowFrom.YtdActualForeign;
+                        }
+
+                        for (int PeriodCount = 1; PeriodCount < Ledger.NumberOfAccountingPeriods + Ledger.NumberFwdPostingPeriods + 1; PeriodCount++)
+                        {
+                            glmPeriodRow = PostingToDS.AGeneralLedgerMasterPeriod.NewRowTyped(true);
+                            glmPeriodRow.GlmSequence = generalLedgerMasterRowTo.GlmSequence;
+                            glmPeriodRow.PeriodNumber = PeriodCount;
+                            PostingToDS.AGeneralLedgerMasterPeriod.Rows.Add(glmPeriodRow);
+                            glmPeriodRow.ActualBase = generalLedgerMasterRowTo.YtdActualBase;
+
+                            if (!generalLedgerMasterRowFrom.IsYtdActualForeignNull())
+                            {
+                                glmPeriodRow.ActualForeign = generalLedgerMasterRowTo.YtdActualForeign;
+                            }
+                        }
                     }
                 }
             }
 
             if (DoExecuteableCode)
             {
+                PostingToDS.ThrowAwayAfterSubmitChanges = true;
                 GLPostingTDSAccess.SubmitChanges(PostingToDS);
             }
         }

@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -62,6 +62,17 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             LoadAll();
             SetToRow(ASequence, APeriod);
+        }
+
+        /// <summary>
+        /// check if a row exists at all. accessing ActualBase would return an exception
+        /// </summary>
+        public bool RowExists
+        {
+            get
+            {
+                return aGLMpRow != null;
+            }
         }
 
         private void LoadAll()
