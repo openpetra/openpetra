@@ -45,7 +45,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private ALedgerInitFlagRow FRequireApprovalDataRow = null;
 
         /// <summary>
-        /// Returns true if approval is required before posting 
+        /// Returns true if approval is required before posting
         /// </summary>
         public Boolean RequireApprovalBeforePosting
         {
@@ -94,7 +94,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         // If something changes and ShowData moves to generated code, this will become ShowDataManual
         private void ShowData(ALedgerRow ARow)
         {
-            if (FMainDS != null && FMainDS.ALedgerInitFlag != null)
+            if ((FMainDS != null) && (FMainDS.ALedgerInitFlag != null))
             {
                 FRequireApprovalDataRow = (ALedgerInitFlagRow)FMainDS.ALedgerInitFlag.Rows.Find(new object[] { FLedgerNumber, "AP_APPROVE_BLOCK" });
                 chkRequireApproval.Checked = (FRequireApprovalDataRow != null);

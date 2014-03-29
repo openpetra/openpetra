@@ -149,6 +149,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // In these steps we 'force' the data to be within specified limits.  Then we are free to set the max/min of the spin buttons.
             int currentPeriodMax = 13;
             int currentPeriodMin = 1;
+
             nudCurrentPeriod.Value = Math.Max(Math.Min(ARow.CurrentPeriod, currentPeriodMax), currentPeriodMin);
             nudCurrentPeriod.Minimum = currentPeriodMin;
             nudCurrentPeriod.Maximum = currentPeriodMax;
@@ -160,7 +161,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             nudNumberOfAccountingPeriods.Maximum = accountingPeriodsMax;
 
             int fwdPostingPeriodsMax = 8;
-            nudNumberFwdPostingPeriods.Value =  Math.Max(Math.Min(ARow.NumberFwdPostingPeriods, fwdPostingPeriodsMax), 0);
+            nudNumberFwdPostingPeriods.Value = Math.Max(Math.Min(ARow.NumberFwdPostingPeriods, fwdPostingPeriodsMax), 0);
             nudNumberFwdPostingPeriods.Maximum = fwdPostingPeriodsMax;
 
             int actualsDataRetentionMin = 1;

@@ -84,7 +84,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             this.Resize += new EventHandler(TFrmAPSupplierTransactions_Resize);
 
-            FPetraUtilsObject.SetStatusBarText(grdDetails, Catalog.GetString("Use the navigation keys to select a transaction.  Double-click to view the details"));
+            FPetraUtilsObject.SetStatusBarText(grdDetails,
+                Catalog.GetString("Use the navigation keys to select a transaction.  Double-click to view the details"));
             FPetraUtilsObject.SetStatusBarText(btnAddTaggedToPayment, Catalog.GetString("Click to pay the tagged items"));
             FPetraUtilsObject.SetStatusBarText(btnApproveTagged, Catalog.GetString("Click to approve the tagged items"));
             FPetraUtilsObject.SetStatusBarText(btnPostTagged, Catalog.GetString("Click to post the tagged items"));

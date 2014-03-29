@@ -185,10 +185,12 @@ namespace Ict.Petra.Client.MCommon
         public static readonly string StrFinanceViewCalendarTitle = Catalog.GetString("View Calendar");
 
         /// <summary>todoComment</summary>
-        public static readonly string StrFinanceSaveBeforeEditCalendar = Catalog.GetString("Please save modified data on this screen before editing the calendar.");
+        public static readonly string StrFinanceSaveBeforeEditCalendar = Catalog.GetString(
+            "Please save modified data on this screen before editing the calendar.");
 
         /// <summary>todoComment</summary>
-        public static readonly string StrFinanceSaveByUsingApply = Catalog.GetString("You can save the modified data at any time by clicking the 'Apply' button.");
+        public static readonly string StrFinanceSaveByUsingApply = Catalog.GetString(
+            "You can save the modified data at any time by clicking the 'Apply' button.");
 
 
         #endregion

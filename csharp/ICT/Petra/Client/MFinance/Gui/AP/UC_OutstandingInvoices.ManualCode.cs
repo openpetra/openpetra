@@ -72,7 +72,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             if (ARowNumber >= grdInvoices.Rows.Count)
             {
-                ARowNumber = grdInvoices.Rows.Count-1;
+                ARowNumber = grdInvoices.Rows.Count - 1;
             }
 
             if ((ARowNumber < 1) && (grdInvoices.Rows.Count > 1))

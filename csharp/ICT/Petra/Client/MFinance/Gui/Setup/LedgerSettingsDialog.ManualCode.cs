@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             set
             {
-                if (value == "General" || value == "AP")
+                if ((value == "General") || (value == "AP"))
                 {
                     FInitialTab = value;
                 }
@@ -95,7 +95,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// Gets True/False depending on whether a currency change is allowed 
+        /// Gets True/False depending on whether a currency change is allowed
         /// </summary>
         public Boolean CurrencyChangeAllowed
         {
@@ -106,7 +106,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// Gets True/False depending on whether a calendar change is allowed 
+        /// Gets True/False depending on whether a calendar change is allowed
         /// </summary>
         public Boolean CalendarChangeAllowed
         {
@@ -128,7 +128,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// Gets True/False depending on whether AP Requires Approval Before Posting 
+        /// Gets True/False depending on whether AP Requires Approval Before Posting
         /// </summary>
         public Boolean APRequiresApprovalBeforePosting
         {
@@ -146,7 +146,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
-                
+
                 // Load all the data for this ledger's settings
                 FMainDS.Clear();
                 FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadLedgerSettings(FLedgerNumber, out FCalendarStartDate,
@@ -292,7 +292,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FCalendarStartDate,
                 ref ASubmitChanges);
             TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber);
-            
+
             return res;
         }
 

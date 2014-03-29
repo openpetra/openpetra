@@ -1200,7 +1200,9 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                                 while ((NewNumberPeriods + NewNumberFwdPostingPeriods) < NumberOfExistingPeriods)
                                 {
-                                    AGeneralLedgerMasterPeriodAccess.DeleteByPrimaryKey(GLMPeriodRow.GlmSequence, NumberOfExistingPeriods, Transaction);
+                                    AGeneralLedgerMasterPeriodAccess.DeleteByPrimaryKey(GLMPeriodRow.GlmSequence,
+                                        NumberOfExistingPeriods,
+                                        Transaction);
 
                                     NumberOfExistingPeriods--;
                                 }
