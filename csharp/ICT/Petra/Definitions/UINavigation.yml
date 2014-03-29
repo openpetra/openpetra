@@ -219,6 +219,7 @@ OpenPetra:
                     AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain}
                         Suppliers: {Description: Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain, InitialTab=Suppliers}
                         OutstandingInvoices: {Description: Manage payments, ActionOpenScreen=TFrmAPMain, InitialTab=Invoices}
+                        Settings: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup, Description="Maintain Accounts Payable Settings", ActionOpenScreen=TFrmLedgerSettingsDialog, InitialTab=AP}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         DetailReport: {ActionOpenScreen=TFrmAP_AccountDetailReport}
                         AgedSupplierList: {ActionOpenScreen=TFrmAP_AgedSupplierList}
@@ -238,7 +239,7 @@ OpenPetra:
                 #Reports:
                 Setup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup, DontShowNestedTasksAsLinks=true}
                     GeneralLedgerSetup:
-                        LedgerSettings: {Description="Maintain General Ledger Settings", ActionOpenScreen=TFrmGLSettings}
+                        LedgerSettings: {Description="Maintain General Ledger Settings", ActionOpenScreen=TFrmLedgerSettingsDialog}
                         ManageAccounts: {Description:Maintain Accounts and modify their hierarchy, ActionOpenScreen=TFrmGLAccountHierarchy}
                         ManageCostCentres: {Description:Maintain Cost Centres and modify their hierarchy, ActionOpenScreen=TFrmGLCostCentreHierarchy}
                         LinkCostCentresToPartners: {Description:Link or unlink Partners and Cost Centres, ActionOpenScreen=TFrmLinkPartnerCostCentreDialog}
@@ -253,6 +254,8 @@ OpenPetra:
                         #DeleteAccount:
                         #RenameAccount:
                         #ImportChartOfAccounts:
+                    AccountsPayableSetup:
+                        APSettings: {Description="Maintain Accounts Payable Settings", ActionOpenScreen=TFrmLedgerSettingsDialog, InitialTab=AP}
                     #CostCentres:
                         #AddCostCentre:
                         #EditCostCentre:
