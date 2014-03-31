@@ -121,12 +121,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                 return true;
             }
 
-            if (StringHelper.IsSame(f, "GetDriverStatus"))
-            {
-                value = new TVariant(GetDriverStatus(ops[1].ToInt64()));
-                return true;
-            }
-
             if (StringHelper.IsSame(f, "GetChurch"))
             {
                 value = new TVariant(GetChurch(ops[1].ToInt64()));
@@ -830,32 +824,6 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
 
             return Ict.Petra.Shared.MPersonnel.Calculations.DeterminePersonsNationalities(
                 @CommonCacheable.GetCacheableTable, PassportDetailsDT);
-        }
-
-        private String GetDriverStatus(Int64 APartnerKey)
-        {
-            String DriverStatus = "";
-            PmPersonalDataTable PersonalDataTable;
-            PtDriverStatusTable DriverStatusTable;
-
-            PersonalDataTable = PmPersonalDataAccess.LoadByPrimaryKey(APartnerKey, situation.GetDatabaseConnection().Transaction);
-
-            if (PersonalDataTable.Rows.Count > 0)
-            {
-                if (!((PmPersonalDataRow)PersonalDataTable.Rows[0]).IsDriverStatusNull())
-                {
-                    String DriverStatusCode = ((PmPersonalDataRow)PersonalDataTable.Rows[0]).DriverStatus;
-
-                    DriverStatusTable = PtDriverStatusAccess.LoadByPrimaryKey(DriverStatusCode, situation.GetDatabaseConnection().Transaction);
-
-                    if (DriverStatusTable.Rows.Count > 0)
-                    {
-                        DriverStatus = ((PtDriverStatusRow)DriverStatusTable.Rows[0]).Description;
-                    }
-                }
-            }
-
-            return DriverStatus;
         }
 
         /// <summary>

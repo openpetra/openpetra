@@ -4987,8 +4987,6 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual(AToPartnerKey, DataLabelValuePartnerRow.PartnerKey, "merge PM data");
             Assert.AreEqual(175, PersonalDataRow.HeightCm, "merge PM data");
             Assert.AreEqual(95, PersonalDataRow.WeightKg, "merge PM data");
-            Assert.IsTrue(PersonalDataRow.InternalDriverLicense, "merge PM data");
-            Assert.IsTrue(PersonalDataRow.GenDriverLicense, "merge PM data");
 
             // Checking the MergeTable
             Assert.IsNotNull(MergeTable.Rows[0], "merge PM data");

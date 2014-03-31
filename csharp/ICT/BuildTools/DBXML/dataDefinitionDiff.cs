@@ -135,7 +135,6 @@ namespace Ict.Tools.DBXML
                     NewFieldNames.Add(new TRenamedField("pm_short_term_application", "pm_st_target_pref_c", "pm_st_activity_pref_c"));
                     NewFieldNames.Add(new TRenamedField("pm_past_experience", "pm_other_mission_org_c", "pm_other_organisation_c"));
                     NewFieldNames.Add(new TRenamedField("pm_past_experience", "pm_prev_om_work_l", "pm_prev_work_here_l"));
-                    NewFieldNames.Add(new TRenamedField("pm_personal_data", "pm_om_driver_license_l", "pm_internal_driver_license_l"));
                     NewFieldNames.Add(new TRenamedField("pm_staff_data", "pm_target_field_n", "pm_receiving_field_n"));
                     NewFieldNames.Add(new TRenamedField("pm_staff_data", "pm_target_field_office_n", "pm_receiving_field_office_n"));
                     NewFieldNames.Add(new TRenamedField("pm_commitment_status", "pm_caleb_access_l", "pm_intranet_access_l"));

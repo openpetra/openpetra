@@ -2054,10 +2054,20 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void MaintainWorkerField(System.Object sender, System.EventArgs e)
         {
-            TFrmPersonnelStaffData staffDataForm = new TFrmPersonnelStaffData(FPetraUtilsObject.GetForm());
+            if (FPartnerClass == TPartnerClass.FAMILY.ToString())
+            {
+                TFrmFieldOfService FieldOfServiceForm = new TFrmFieldOfService(FPetraUtilsObject.GetForm(), FPartnerKey);
 
-            staffDataForm.PartnerKey = FPartnerKey;
-            staffDataForm.Show();
+                FieldOfServiceForm.Show();
+            }
+            else if (FPartnerClass == TPartnerClass.PERSON.ToString())
+            {
+                // open the field of service screen for the person's family
+                TFrmFieldOfService FieldOfServiceForm = new TFrmFieldOfService(
+                    FPetraUtilsObject.GetForm(), ((PPersonRow)FMainDS.PPerson.Rows[0]).FamilyKey);
+
+                FieldOfServiceForm.Show();
+            }
         }
 
         private void MaintainIndividualData(System.Object sender, System.EventArgs e)

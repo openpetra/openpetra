@@ -257,6 +257,22 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// access to the TUC_PartnerFindCriteria class instance
+        /// </summary>
+        public TUC_PartnerFindCriteria PartnerFindCriteria
+        {
+            get
+            {
+                return ucoPartnerFindCriteria;
+            }
+
+            set
+            {
+                ucoPartnerFindCriteria = value;
+            }
+        }
+
+        /// <summary>
         /// constructor
         /// </summary>
         public TUC_PartnerFind_ByPartnerDetails()
@@ -720,10 +736,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (ClickedMenuItemName == "mniMaintainWorkerField")
             {
-                TFrmPersonnelStaffData staffDataForm = new TFrmPersonnelStaffData(FPetraUtilsObject.GetForm());
+                //TFrmFieldOfService FieldOfServiceForm = new TFrmFieldOfService(FPetraUtilsObject.GetForm(), PartnerKey);
+                //FieldOfServiceForm.Show();
 
-                staffDataForm.PartnerKey = FLogic.PartnerKey;
-                staffDataForm.Show();
+                if (FLogic.DetermineCurrentPartnerClass() == TPartnerClass.FAMILY.ToString())
+                {
+                    TFrmFieldOfService FieldOfServiceForm = new TFrmFieldOfService(FPetraUtilsObject.GetForm(), PartnerKey);
+
+                    FieldOfServiceForm.Show();
+                }
+                else if (FLogic.DetermineCurrentPartnerClass() == TPartnerClass.PERSON.ToString())
+                {
+                    // open the field of service screen for the person's family
+                    TFrmFieldOfService FieldOfServiceForm = new TFrmFieldOfService(
+                        FPetraUtilsObject.GetForm(), Convert.ToInt64(FLogic.CurrentDataRow[PPersonTable.GetFamilyKeyDBName()]));
+
+                    FieldOfServiceForm.Show();
+                }
             }
             else if (ClickedMenuItemName == "mniMaintainPersonnelData")
             {
@@ -1222,12 +1251,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // Register Event Handler for the OnCriteriaContentChanged event
             ucoPartnerFindCriteria.OnCriteriaContentChanged += new EventHandler(this.UcoPartnerFindCriteria_CriteriaContentChanged);
-
-            if (FBankDetailsTab)
-            {
-                // populate comboboxes (from database)
-                ucoPartnerFindCriteria.PopulateBankComboBoxes();
-            }
         }
 
         /// <summary>

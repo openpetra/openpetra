@@ -32,6 +32,8 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MFinance.AP.Data.Access;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
@@ -184,6 +186,10 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                 else if (ATablename == PMailingTable.GetTableDBName())
                 {
                     tempTable = PMailingAccess.LoadAll(ReadTransaction);
+                }
+                else if (ATablename == PPartnerFieldOfServiceTable.GetTableDBName())
+                {
+                    tempTable = PPartnerFieldOfServiceAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
                 }
                 else if (ATablename == PmDocumentTypeTable.GetTableDBName())
                 {
@@ -361,6 +367,10 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                     else if (ATablename == PMailingTable.GetTableDBName())
                     {
                         PMailingAccess.SubmitChanges((PMailingTable)ASubmitTable, SubmitChangesTransaction);
+                    }
+                    else if (ATablename == PPartnerFieldOfServiceTable.GetTableDBName())
+                    {
+                        PPartnerFieldOfServiceAccess.SubmitChanges((PPartnerFieldOfServiceTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == PmDocumentTypeTable.GetTableDBName())
                     {

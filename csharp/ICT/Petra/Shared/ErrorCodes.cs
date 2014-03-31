@@ -394,5 +394,21 @@ namespace Ict.Petra.Shared
         public const String ERR_APPLICATION_DUPLICATE_EVENT = "PES.00001V";
 
         #endregion
+
+        #region SysMan Module-specific error codes
+
+        /// <summary>Password missing.</summary>
+        [ErrCodeAttribute("Missing password.",
+             ErrorMessageText = "You must create a new password for user {0}.",
+             ErrorMessageTitle = "Missing password")]
+        public const String ERR_MISSING_PASSWORD = "SYS.00001V";
+
+        /// <summary>Password missing.</summary>
+        [ErrCodeAttribute("Invalid password.",
+             ErrorMessageText = "Your password must have at least {0} characters, and must contain at least one digit and one letter.",
+             ErrorMessageTitle = "Invalid password")]
+        public const String ERR_INVALID_PASSWORD = "SYS.00002V";
+
+        #endregion
     }
 }

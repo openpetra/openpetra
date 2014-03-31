@@ -1303,11 +1303,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         ToRow.EthnicOrigin = FromRow.EthnicOrigin;
                     }
 
-                    if (ToRow.DriverStatus == "")
-                    {
-                        ToRow.DriverStatus = FromRow.DriverStatus;
-                    }
-
                     if (ToRow.LifeQuestion1 == "")
                     {
                         ToRow.LifeQuestion1 = FromRow.LifeQuestion1;
@@ -1346,26 +1341,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     if (ToRow.LifeAnswer4 == "")
                     {
                         ToRow.LifeAnswer4 = FromRow.LifeAnswer4;
-                    }
-
-                    if (ToRow.DrivingLicenseNumber == "")
-                    {
-                        ToRow.DrivingLicenseNumber = FromRow.DrivingLicenseNumber;
-                    }
-
-                    if (ToRow.InternalDriverLicense == false)
-                    {
-                        ToRow.InternalDriverLicense = FromRow.InternalDriverLicense;
-                    }
-
-                    if (ToRow.GenDriverLicense == false)
-                    {
-                        ToRow.GenDriverLicense = FromRow.GenDriverLicense;
-                    }
-
-                    if (ToRow.DriverStatus == "")
-                    {
-                        ToRow.DriverStatus = FromRow.DriverStatus;
                     }
 
                     if ((ToRow.LanguageCode == "") || (ToRow.LanguageCode == "99"))

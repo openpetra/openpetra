@@ -1043,14 +1043,13 @@ namespace Ict.Petra.Shared.MPartner.Validation
             if (((ARow.BankAccountNumber == null) || (ARow.BankAccountNumber == ""))
                 && ((ARow.Iban == null) || (ARow.Iban == "")))
             {
-                AVerificationResultCollection.Add(
-                    new TScreenVerificationResult(
-                        new TVerificationResult(
-                            AContext,
-                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKINGDETAILS_MISSING_ACCOUNTNUMBERORIBAN)),
-                        ((PartnerEditTDSPBankingDetailsTable)ARow.Table).ColumnBankAccountNumber,
-                        ValidationControlsData.ValidationControl
-                        ));
+                VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
+                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_BANKINGDETAILS_MISSING_ACCOUNTNUMBERORIBAN)),
+                    ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Handle addition to/removal from TVerificationResultCollection
+                AVerificationResultCollection.Auto_Add_Or_AddOrRemove(
+                    AContext, VerificationResult, ARow.Table.Columns[PartnerEditTDSPBankingDetailsTable.ColumnBankAccountNumberId]);
             }
 
             // validate the account number (if validation exists for bank's country)
@@ -1228,6 +1227,47 @@ namespace Ict.Petra.Shared.MPartner.Validation
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Validates the Field Of Service data of a Partner.
+        /// </summary>
+        /// <param name="AContext">Context that describes where the data validation failed.</param>
+        /// <param name="ARow">The <see cref="DataRow" /> which holds the the data against which the validation is run.</param>
+        /// <param name="AVerificationResultCollection">Will be filled with any <see cref="TVerificationResult" /> items if
+        /// data validation errors occur.</param>
+        /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
+        /// display data that is about to be validated.</param>
+        /// <returns>void</returns>
+        public static void ValidateFieldOfServiceManual(object AContext, PPartnerFieldOfServiceRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        {
+            DataColumn ValidationColumn;
+            TValidationControlsData ValidationControlsData;
+            TVerificationResult VerificationResult;
+
+            // Don't validate deleted DataRows
+            if (ARow.RowState == DataRowState.Deleted)
+            {
+                return;
+            }
+
+            // 'Field Key' must be a Partner of Class 'UNIT' and must not be 0
+            ValidationColumn = ARow.Table.Columns[PPartnerFieldOfServiceTable.ColumnFieldKeyId];
+
+            if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+            {
+                VerificationResult = IsValidUNITPartner(
+                    ARow.FieldKey, false, THelper.NiceValueDescription(
+                        ValidationControlsData.ValidationControlLabel) + " must be set correctly.",
+                    AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
+                // AVerificationResultCollection.AddOrRemove wouldn't remove a previous validation result with a different
+                // ResultText!
+                AVerificationResultCollection.Remove(ValidationColumn);
+                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
             }
         }
     }

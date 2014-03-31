@@ -1281,6 +1281,219 @@ namespace Ict.Tools.DataDumpPetra2
                 }
             }
 
+            // One record which we need to make sure is in this table
+            if (ATableName == "pm_document_category")
+            {
+                // load the file pm_document_category.d.gz
+                TTable Table = TDumpProgressToPostgresql.GetStoreOld().GetTable("pm_document_category");
+
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pm_document_category.d.gz",
+                    Table.grpTableField.Count);
+
+                StringCollection ColumnNames = GetColumnNames(Table);
+
+                // check if record already exists. If it does then return.
+                while (true)
+                {
+                    string[] Row = Parser.ReadNextRow();
+
+                    if (Row == null)
+                    {
+                        break;
+                    }
+                    else if (GetValue(ColumnNames, Row, "pm_code_c") == "GENERAL")
+                    {
+                        return RowCounter;
+                    }
+                }
+
+                SetValue(AColumnNames, ref ANewRow, "pm_code_c", "GENERAL");
+                SetValue(AColumnNames, ref ANewRow, "pm_description_c", "General Documents");
+                SetValue(AColumnNames, ref ANewRow, "pm_extendable_l", "0");
+                SetValue(AColumnNames, ref ANewRow, "pm_unassignable_flag_l", "0");
+                SetValue(AColumnNames, ref ANewRow, "pm_unassignable_date_d", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "pm_deletable_flag_l", "0");
+                SetValue(AColumnNames, ref ANewRow, "s_date_created_d", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
+
+                AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                AWriterTest.WriteLine("\\.");
+                AWriterTest.WriteLine("ROLLBACK;");
+                RowCounter++;
+            }
+
+            // One record which we need to make sure is in this table
+            if (ATableName == "pm_document_type")
+            {
+                // load the file pm_document_type.d.gz
+                TTable Table = TDumpProgressToPostgresql.GetStoreOld().GetTable("pm_document_type");
+
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pm_document_type.d.gz",
+                    Table.grpTableField.Count);
+
+                StringCollection ColumnNames = GetColumnNames(Table);
+
+                // check if record already exists. If it does then return.
+                while (true)
+                {
+                    string[] Row = Parser.ReadNextRow();
+
+                    if (Row == null)
+                    {
+                        break;
+                    }
+                    else if (GetValue(ColumnNames, Row, "pm_doc_code_c") == "DRIVINGLICENCE")
+                    {
+                        return RowCounter;
+                    }
+                }
+
+                SetValue(AColumnNames, ref ANewRow, "pm_doc_code_c", "DRIVINGLICENCE");
+                SetValue(AColumnNames, ref ANewRow, "pm_doc_category_c", "GENERAL");
+                SetValue(AColumnNames, ref ANewRow, "pm_description_c", "Driving Licence");
+                SetValue(AColumnNames, ref ANewRow, "pm_unassignable_flag_l", "0");
+                SetValue(AColumnNames, ref ANewRow, "pm_unassignable_date_d", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "pm_deletable_flag_l", "0");
+                SetValue(AColumnNames, ref ANewRow, "s_date_created_d", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
+                SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
+
+                AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                AWriterTest.WriteLine("\\.");
+                AWriterTest.WriteLine("ROLLBACK;");
+                RowCounter++;
+            }
+
+            // add new documents for driving licences recorded in pm_personal_data
+            if (ATableName == "pm_document")
+            {
+                // find the site key
+                string SiteKey = "0";
+
+                TTable SystemParameterTable = TDumpProgressToPostgresql.GetStoreOld().GetTable("s_system_parameter");
+
+                TParseProgressCSV SystemParameterParser = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "s_system_parameter.d.gz",
+                    SystemParameterTable.grpTableField.Count);
+
+                StringCollection SystemParameterColumnNames = GetColumnNames(SystemParameterTable);
+
+                while (true)
+                {
+                    string[] SystemParameterRow = SystemParameterParser.ReadNextRow();
+
+                    if (SystemParameterRow == null)
+                    {
+                        break;
+                    }
+
+                    SiteKey = GetValue(SystemParameterColumnNames, SystemParameterRow, "s_site_key_n");
+
+                    if (SiteKey != "0")
+                    {
+                        break;
+                    }
+                }
+
+                // load the file pm_personal_data.d.gz
+                TTable Table = TDumpProgressToPostgresql.GetStoreOld().GetTable("pm_personal_data");
+
+                TParseProgressCSV Parser = new TParseProgressCSV(
+                    TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pm_personal_data.d.gz",
+                    Table.grpTableField.Count);
+
+                StringCollection ColumnNames = GetColumnNames(Table);
+
+                // move sequence on by 1
+                TSequenceWriter.GetNextSequenceValue("seq_document");
+
+                while (true)
+                {
+                    string[] Row = Parser.ReadNextRow();
+
+                    if (Row == null)
+                    {
+                        break;
+                    }
+
+                    if (GetValue(ColumnNames, Row, "pm_gen_driver_license_l") == "yes")
+                    {
+                        // create comment from old data
+                        string Comment = "";
+                        string DriverStatus = GetValue(ColumnNames, Row, "pm_driver_status_c");
+
+                        if (GetValue(ColumnNames, Row, "pm_om_driver_license_l") == "yes")
+                        {
+                            Comment = Catalog.GetString("Approved to drive for us.") + " ";
+                        }
+
+                        if (!string.IsNullOrEmpty(DriverStatus))
+                        {
+                            // load the file pt_driver_status.d.gz
+                            TTable DriverStatusTable = TDumpProgressToPostgresql.GetStoreOld().GetTable("pt_driver_status");
+
+                            TParseProgressCSV DriverStatusParser = new TParseProgressCSV(
+                                TAppSettingsManager.GetValue("fulldumpPath", "fulldump") + Path.DirectorySeparatorChar + "pt_driver_status.d.gz",
+                                DriverStatusTable.grpTableField.Count);
+
+                            StringCollection DriverStatusColumnNames = GetColumnNames(DriverStatusTable);
+
+                            while (true)
+                            {
+                                string[] DriverStatusRow = DriverStatusParser.ReadNextRow();
+
+                                if (DriverStatusRow == null)
+                                {
+                                    break;
+                                }
+
+                                if (DriverStatusRow[0] == DriverStatus)
+                                {
+                                    Comment += Catalog.GetString("Driver status") + ": " + DriverStatusRow[1];
+                                    break;
+                                }
+                            }
+                        }
+
+                        SetValue(AColumnNames, ref ANewRow, "p_site_key_n", SiteKey);
+                        SetValue(AColumnNames, ref ANewRow, "pm_document_key_n", TSequenceWriter.GetNextSequenceValue("seq_document").ToString());
+                        SetValue(AColumnNames, ref ANewRow, "p_partner_key_n", GetValue(ColumnNames, Row, "p_partner_key_n"));
+                        SetValue(AColumnNames, ref ANewRow, "pm_doc_code_c", "DRIVINGLICENCE");
+                        SetValue(AColumnNames, ref ANewRow, "pm_document_id_c", GetValue(ColumnNames, Row, "pm_driving_license_number_c"));
+                        SetValue(AColumnNames, ref ANewRow, "pm_place_of_issue_c", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "pm_date_of_issue_d", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "pm_date_of_start_d", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "pm_date_of_expiration_d", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "pm_doc_comment_c", Comment);
+                        SetValue(AColumnNames, ref ANewRow, "pm_assoc_doc_id_c", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "pm_contact_partner_key_n", "0");
+                        SetValue(AColumnNames, ref ANewRow, "s_date_created_d", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "s_created_by_c", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "s_date_modified_d", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "s_modified_by_c", "\\N");
+                        SetValue(AColumnNames, ref ANewRow, "s_modification_id_t", "\\N");
+
+                        AWriter.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("BEGIN; " + "COPY " + ATableName + " FROM stdin;");
+                        AWriterTest.WriteLine(StringHelper.StrMerge(ANewRow, '\t').Replace("\\\\N", "\\N").ToString());
+                        AWriterTest.WriteLine("\\.");
+                        AWriterTest.WriteLine("ROLLBACK;");
+                        RowCounter++;
+                    }
+                }
+            }
+
             return RowCounter;
         }
     }

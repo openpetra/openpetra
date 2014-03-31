@@ -1,0 +1,55 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraEditForm.yaml
+    FormTitle: Field of Service
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    DetailTable: PPartnerFieldOfService
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
+    FormType: edit
+    Template: windowMaintainTable
+    WindowWidth: 550
+    WindowHeight: 500
+    Actions:
+        actNew: {Label=&New, ActionClick=NewRow}
+        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
+    Controls:
+        pnlContent:
+            Controls: [pnlInfo, pnlGrid, pnlDetails]
+            Dock: Fill
+        pnlInfo:
+            Dock: Top
+            Controls: [txtPartnerKey, txtName] 
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlButtons, grdDetails]
+        pnlButtons:
+            Dock: Bottom
+            Controls: [btnNew, btnDelete]
+            ControlsOrientation: horizontal
+        grdDetails:
+            Dock: Fill
+            #Columns: [DetailDateEffective, DetailDateExpires, DetailFieldKey]
+            ActionFocusRow: FocusedRowChanged
+            #CustomColumns:
+            #    DetailFieldKey: {Label=Field Key, Type=PartnerKey}
+        pnlDetails:
+            Dock: Bottom
+            Controls:
+                Row0: [txtDetailFieldKey]
+                Row1: [dtpDetailDateEffective]
+                Row2: [dtpDetailDateExpires]
+                Row6: [txtDetailComment]
+
+        btnNew:
+            Action: actNew
+            Width: 80
+        btnDelete:
+            Action: actDelete
+            Width: 80
+  
+        txtPartnerKey: {Label=Partner Key, ReadOnly=true, BorderStyle=None }
+        txtName: {Label=Name, ReadOnly=true, BorderStyle=None, Stretch=horizontally}
+        txtDetailFieldKey: {Label=Field Key, Type=PartnerKey, PartnerClass=UNIT, Validation=true, OnLeave=UpdateFieldName}
+        txtDetailComment: {Label=Comments, Multiline=true, ScrollBars=Vertical, Height=80, Width=360}
+        dtpDetailDateEffective: {Label=&Date Effective From, Validation=true}
+        dtpDetailDateExpires: {Label=Date &Expires, Validation=Pair(dtpDetailDateEffective), OnLeave=DateExpiresEntered}
+
