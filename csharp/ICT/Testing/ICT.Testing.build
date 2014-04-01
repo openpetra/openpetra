@@ -4,6 +4,8 @@
 <include buildfile="../../../inc/nant/OpenPetra.csharp.xml"/> 
 
 <target name="test-client">
+    <echo message="Target test-client started at: ${datetime::now()}" /> 
+    
     <!-- stop old server that might still be running from earlier (failed) builds -->
     <nant inheritall="false" target="stopPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
     <nant inheritall="false" target="startPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
@@ -17,13 +19,21 @@
         <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GLForm.dll" />
 -->
     <nant inheritall="false" target="stopPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>    
+    
+    <echo message="Target test-client finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="test-tools">
+    <echo message="Target test-tools started at: ${datetime::now()}" /> 
+    
     <!-- NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.CodeGeneration.dll" -->
+    
+    <echo message="Target test-tools finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="test-server">
+    <echo message="Target test-server started at: ${datetime::now()}" /> 
+    
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerEdit.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Budget.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Gift.dll" />
@@ -38,9 +48,13 @@
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.Reporting.dll" />
     
     <!-- <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Gift.dll" /> -->
+    
+    <echo message="Target test-server finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="test-common">
+    <echo message="Target test-common started at: ${datetime::now()}" /> 
+    
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.IO.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.DB.dll" />
@@ -58,24 +72,40 @@
             </assemblies>
         </test>
     </nunit2>
+    
+    <echo message="Target test-common finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="test-without-display">
+    <echo message="Target test-without-display started at: ${datetime::now()}" /> 
+    
     <call target="test-common"/>
     <call target="test-tools"/>
     <call target="test-server"/>
+    
+    <echo message="Target test-without-display finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="test-all">
+    <echo message="Target test-all started at: ${datetime::now()}" /> 
+    
     <call target="test-without-display"/>
     <call target="test-client"/>
+    
+    <echo message="Target test-all finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="test-main-navigation-screens-core">
+    <echo message="Target test-main-navigation-screens-core started at: ${datetime::now()}" /> 
+    
 	<NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MainNavigationScreens.dll" />
+    
+    <echo message="Target test-main-navigation-screens-core finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="test-main-navigation-screens">
+    <echo message="Target test-main-navigation-screens started at: ${datetime::now()}" /> 
+    
     <!-- stop old server that might still be running from earlier (failed) builds -->
     <nant inheritall="false" target="stopPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
     <nant inheritall="false" target="startPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
@@ -83,6 +113,8 @@
     <call target="test-main-navigation-screens-core" />
     
     <nant inheritall="false" target="stopPetraServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>    
+    
+    <echo message="Target test-main-navigation-screens finished at: ${datetime::now()}" /> 
 </target>
 
 </project>
