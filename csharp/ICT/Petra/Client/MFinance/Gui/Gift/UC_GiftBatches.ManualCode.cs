@@ -873,7 +873,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowTransactionTab(Object sender, EventArgs e)
         {
-            if (grdDetails.Rows.Count > 1)
+            if ((grdDetails.Rows.Count > 1) && ValidateAllData(false, true))
             {
                 ((TFrmGiftBatch)ParentForm).SelectTab(TFrmGiftBatch.eGiftTabs.Transactions);
             }
@@ -1057,14 +1057,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             AGiftBatchRow GiftBatchRow = AGiftTDS.AGiftBatch[0];
 
-            AGiftTDS.AGift.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
+            DataView GiftView = new DataView(AGiftTDS.AGift);
+
+            //AGiftTDS.AGift.DefaultView.RowFilter
+            GiftView.RowFilter = String.Format("{0}={1} and {2}={3}",
                 AGiftTable.GetLedgerNumberDBName(), GiftBatchRow.LedgerNumber,
                 AGiftTable.GetBatchNumberDBName(), GiftBatchRow.BatchNumber);
             String ReceiptedDonorsList = "";
             List <Int32>ReceiptedGiftTransactions = new List <Int32>();
             SortedList <Int64, AGiftTable>GiftsPerDonor = new SortedList <Int64, AGiftTable>();
 
-            foreach (DataRowView rv in AGiftTDS.AGift.DefaultView)
+            foreach (DataRowView rv in GiftView)
             {
                 AGiftRow GiftRow = (AGiftRow)rv.Row;
                 bool ReceiptEachGift;
@@ -1165,25 +1168,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            Boolean batchIsEmpty = true;
+            int currentBatchNo = FPreviouslySelectedDetailRow.BatchNumber;
+
             this.Cursor = Cursors.WaitCursor;
 
-            //RadioButton rbtAll = (RadioButton)FFilterPanelControls.FindControlByName("rbtAll");
-            int currentBatchNo = FPreviouslySelectedDetailRow.BatchNumber; //0;
-
-            //if (rbtAll.Checked)
-            //{
-            //    currentBatchNo = FPreviouslySelectedDetailRow.BatchNumber;
-            //}
-
-            Boolean batchIsEmpty = true;
-            ((TFrmGiftBatch)ParentForm).LoadTransactions(FPreviouslySelectedDetailRow.LedgerNumber,
+            ((TFrmGiftBatch)ParentForm).LoadTransactions(FLedgerNumber,
                 currentBatchNo,
                 FPreviouslySelectedDetailRow.BatchStatus);
 
             if (FMainDS.AGift != null)
             {
-                FMainDS.AGift.DefaultView.RowFilter = "a_batch_number_i = " + currentBatchNo;
-                batchIsEmpty = (FMainDS.AGift.DefaultView.Count == 0);
+                for (int i = 0; i < FMainDS.AGift.Count; i++)
+                {
+                    AGiftRow giftRow = (AGiftRow)FMainDS.AGift[i];
+
+                    TLogging.Log("Row:" + giftRow.GiftTransactionNumber.ToString() + " " + giftRow.ItemArray.ToString());
+                }
+
+                DataView giftView = new DataView(FMainDS.AGift);
+                giftView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                    AGiftTable.GetLedgerNumberDBName(),
+                    FLedgerNumber,
+                    AGiftTable.GetBatchNumberDBName(),
+                    currentBatchNo);
+                batchIsEmpty = (giftView.Count == 0);
             }
 
             if (batchIsEmpty)  // there are no gifts in this batch!

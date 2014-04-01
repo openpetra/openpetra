@@ -393,6 +393,14 @@ namespace Ict.Petra.Shared
              ErrorMessageTitle = "Duplicate application for event")]
         public const String ERR_APPLICATION_DUPLICATE_EVENT = "PES.00001V";
 
+        /// <summary>Passport Name must contain an opening and a closing parenthesis.</summary>
+        [ErrCodeAttribute("Passport Name must contain an opening and a closing parenthesis.",
+             ErrorMessageText = "The Family Name/Last Name of the Passport Name must be enclosed\r\n" +
+                                "in parenthesis ['(' and ')'] but one or both parenthesis are missing!\r\n" +
+                                "  Correct Example: Joseph (Meyer)",
+             ErrorMessageTitle = "Invalid Passport Name")]
+        public const String ERR_INDIV_DATA_PASSPORT_NAME_MISSING_PARAS = "PES.00002V";
+
         #endregion
 
         #region SysMan Module-specific error codes

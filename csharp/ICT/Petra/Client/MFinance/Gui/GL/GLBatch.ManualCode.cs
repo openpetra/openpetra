@@ -149,14 +149,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Unload transactions from the form
-        /// </summary>
-        public void UnloadTransactions()
-        {
-            this.ucoTransactions.UnloadTransactions();
-        }
-
-        /// <summary>
         /// disable the transactions tab if we have no active journal
         /// </summary>
         public void DisableTransactions()
@@ -305,7 +297,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (!ValidateAllData(true, true))
+            if (!ValidateAllData(false, true))
             {
                 e.Cancel = true;
 

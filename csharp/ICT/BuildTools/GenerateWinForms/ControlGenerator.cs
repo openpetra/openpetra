@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -533,6 +533,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <summary>constructor</summary>
         public PrintPreviewGenerator()
             : base("ppv", "Ict.Petra.Client.CommonControls.TUC_PrintPreviewControl")
+        {
+            FGenerateLabel = false;
+        }
+    }
+
+    /// <summary>
+    /// generator for a browser control (used for email preview at the moment)
+    /// </summary>
+    public class BrowserGenerator : TControlGenerator
+    {
+        /// <summary>constructor</summary>
+        public BrowserGenerator()
+            : base("brw", typeof(WebBrowser))
         {
             FGenerateLabel = false;
         }

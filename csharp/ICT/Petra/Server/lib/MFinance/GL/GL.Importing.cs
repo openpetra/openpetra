@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -344,6 +344,15 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewTransaction.Narrative = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("narrative"),
                                 ATransactionTable.GetNarrativeLength());
 
+                            if ((NewTransaction.Narrative == null)
+                                || (NewTransaction.Narrative == ""))
+                            {
+                                // raise error if empty narrative is imported
+                                FImportMessage = Catalog.GetString("The transaction narrative must not be empty");
+
+                                throw new EOPAppException();
+                            }
+
                             NewTransaction.Reference = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("reference"),
                                 ATransactionTable.GetReferenceLength());
 
@@ -436,31 +445,23 @@ namespace Ict.Petra.Server.MFinance.GL
                                 }
                             }
 
-                            if (!TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
-                            {
-                                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                                    Catalog.GetString("Batch has critical errors"),
-                                    0);
-
-                                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-
-                                return false;
-                            }
-
                             // update the totals of the last batch that has just been imported
                             GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch);
 
-                            FImportMessage = Catalog.GetString("Saving the transaction:");
+                            if (TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
+                            {
+                                FImportMessage = Catalog.GetString("Saving the transaction:");
 
-                            // TODO If this is a fund transfer to a foreign cost centre, check whether there are Key Ministries available for it.
-                            ATransactionAccess.SubmitChanges(MainDS.ATransaction, Transaction);
+                                // TODO If this is a fund transfer to a foreign cost centre, check whether there are Key Ministries available for it.
+                                ATransactionAccess.SubmitChanges(MainDS.ATransaction, Transaction);
 
-                            MainDS.ATransaction.AcceptChanges();
-                            FImportMessage = Catalog.GetString("Saving the attributes:");
+                                MainDS.ATransaction.AcceptChanges();
+                                FImportMessage = Catalog.GetString("Saving the attributes:");
 
-                            ATransAnalAttribAccess.SubmitChanges(MainDS.ATransAnalAttrib, Transaction);
+                                ATransAnalAttribAccess.SubmitChanges(MainDS.ATransAnalAttrib, Transaction);
 
-                            MainDS.ATransAnalAttrib.AcceptChanges();
+                                MainDS.ATransAnalAttrib.AcceptChanges();
+                            }
 
                             // Update progress tracker every 40 records
                             if (++ProgressTrackerCounter % 40 == 0)
@@ -478,6 +479,17 @@ namespace Ict.Petra.Server.MFinance.GL
                             throw new EOPAppException("Unsuported row type '" + RowType + "'!");
                         }
                     }
+                }
+
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(AMessages))
+                {
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Batch has critical errors"),
+                        0);
+
+                    TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
+                    return false;
                 }
 
                 FImportMessage = Catalog.GetString("Saving counter fields:");
@@ -552,6 +564,8 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
                 else
                 {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+
                     if (AMessages == null)
                     {
                         AMessages = new TVerificationResultCollection();

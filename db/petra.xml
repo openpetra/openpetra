@@ -15143,9 +15143,6 @@
     <primarykey name="pm_year_program_application_pk"
                 descr=""
                 thisFields="p_partner_key_n, pm_application_key_i, pm_registration_office_n"/>
-    <uniquekey name="pm_year_program_application_nk"
-               descr=""
-               thisFields="p_partner_key_n, pm_yp_app_date_d, pm_yp_basic_app_type_c"/>
     <foreignkey name="pm_year_program_application_fk1"
                 descr=""
                 thisFields="p_partner_key_n, pm_application_key_i, pm_registration_office_n"
