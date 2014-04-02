@@ -225,6 +225,9 @@ namespace Ict.Petra.Client.CommonForms
             }
 
             // Are we saving/restoring the window position?  This option is stored in User Defaults.
+            // IT CAN'T BE DONE HERE BECAUSE THERE'S NO USER YET, AND THEREFORE NO USER DEFAULTS!
+
+            /*
             if (TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, true))
             {
                 // (Note: Nant tests do not have a caller so we need to allow for this possibility)
@@ -235,6 +238,7 @@ namespace Ict.Petra.Client.CommonForms
                     RestoreAdditionalWindowPositionProperties();
                 }
             }
+             */
         }
 
         /// <summary>

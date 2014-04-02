@@ -53,10 +53,13 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             }
         }
 
+        //
+        // This "Escape string for SQL" method is written only for Postgres,
+        // Since that's what we're using in development, and the backup-to-file
+        // function is only for development:
         private static String escape(Object AField)
         {
             String Txt = AField.ToString();
-//          Txt = Txt.Replace("\"", "\\\"");
             Txt = Txt.Replace("'", "''");
             return Txt;
         }

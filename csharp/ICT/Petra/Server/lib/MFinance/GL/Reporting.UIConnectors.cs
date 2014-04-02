@@ -41,6 +41,8 @@ using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 using System.Collections;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MCommon;
+using Ict.Petra.Server.MReporting.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 {
@@ -49,6 +51,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
     ///</summary>
     public class TFinanceReportingWebConnector
     {
+        static Boolean FCancelOperation = false;
+
         /// <summary>
         /// get the details of the given ledger
         /// </summary>
@@ -428,6 +432,25 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             return Results;
         }
 
+        /// <summary>
+        /// Calling this *may* cause the DataTable generation to terminate a bit earlier.
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static void CancelFunction()
+        {
+            TLogging.Log(Catalog.GetString("Operation Cancelled"), TLoggingType.ToStatusBar);
+            FCancelOperation = true;
+        }
+
+        /// <summary>
+        /// for displaying the progress
+        /// </summary>
+        /// <returns>void</returns>
+        private static void WriteToStatusBar(String s)
+        {
+            TReportingWebConnector.ServerStatus = s;
+        }
+
         //
         // Find the level of nesting for this account, using recursive call
         // The nesting level affects indentation in the printed report.
@@ -660,6 +683,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static DataTable BalanceSheetTable(Dictionary <String, TVariant>AParameters)
         {
+            FCancelOperation = false; // The user can stop operation..
+            TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusBar));
+            DataTable FilteredResults = null;
+
+
             /* Required columns:
              * Actual
              * ActualLastYear
@@ -682,160 +710,199 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
-            String Query = "SELECT DISTINCT" +
-                           " 1 AS AccountLevel," +
-                           " false AS HasChildren," +
-                           " false AS ParentFooter," +
-                           " glm.a_glm_sequence_i AS Seq," +
-                           " glm.a_year_i AS Year," +
-                           " glmp.a_period_number_i AS Period," +
-                           " a_account.a_account_type_c AS AccountType," +
-                           " 0 AS AccountTypeOrder," +
-//                         " CASE a_account.a_account_type_c WHEN 'Asset' THEN 1 WHEN 'Liability' THEN 2 WHEN 'Equity' THEN 3 END AS AccountTypeOrder," +
-                           " a_account.a_debit_credit_indicator_l AS DebitCredit," +
-                           " glm.a_account_code_c AS AccountCode," +
-                           " glm.a_cost_centre_code_c AS CostCentreCode," +
-                           " false AS AccountIsSummary," +
-                           " 'Path' AS AccountPath," +
-                           " a_account.a_account_code_short_desc_c AS AccountName," +
-                           " glm." + StartBalanceFieldName + " AS YearStart," +
-                           " 0.0 AS ActualYTD," +
-                           " glmp." + ActualFieldName + " AS Actual," +
-                           " 0.0 AS ActualLastYear" +
-
-                           " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
-                           " WHERE glm.a_ledger_number_i=" + LedgerNumber +
-                           " AND glm.a_cost_centre_code_c = '" + RootCostCentre + "' " +
-                           " AND glm.a_year_i IN (" + (AccountingYear - 1) + ", " + AccountingYear + ")" +
-                           " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
-                           " AND glmp.a_period_number_i=" + ReportPeriodEnd +
-                           " AND a_account.a_account_code_c = glm.a_account_code_c" +
-                           " AND (a_account.a_account_type_c IN ('Asset','Liability','Equity') OR a_account.a_account_code_c = '" + PlAccountCode + "')" +
-                           " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
-                           " AND (a_account.a_posting_status_l = true OR a_account.a_account_code_c = '" + PlAccountCode + "')" +
-                           " ORDER BY glm.a_account_code_c"
-            ;
-            DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(Query, "BalanceSheet", ReadTrans);
-
-            DataView OldPeriod = new DataView(resultTable);
-            DataView ThisMonth = new DataView(resultTable);
-
-            ThisMonth.RowFilter = String.Format("Year={0}", AccountingYear);
-
-            //
-            // Some of these rows are from a year ago. I'll copy those into the current period "LastYear" fields.
-            foreach (DataRowView rv in ThisMonth)
+            try
             {
-                DataRow Row = rv.Row;
-                OldPeriod.RowFilter = String.Format("Year={0} AND Period={1} AND AccountCode='{2}'",
-                    AccountingYear - 1,
-                    ReportPeriodEnd,
-                    Row["AccountCode"].ToString()
-                    );
+                String Query = "SELECT DISTINCT" +
+                               " 1 AS AccountLevel," +
+                               " false AS HasChildren," +
+                               " false AS ParentFooter," +
+                               " glm.a_glm_sequence_i AS Seq," +
+                               " glm.a_year_i AS Year," +
+                               " glmp.a_period_number_i AS Period," +
+                               " a_account.a_account_type_c AS AccountType," +
+                               " 0 AS AccountTypeOrder," +
+                    //                         " CASE a_account.a_account_type_c WHEN 'Asset' THEN 1 WHEN 'Liability' THEN 2 WHEN 'Equity' THEN 3 END AS AccountTypeOrder," +
+                               " a_account.a_debit_credit_indicator_l AS DebitCredit," +
+                               " glm.a_account_code_c AS AccountCode," +
+                               " glm.a_cost_centre_code_c AS CostCentreCode," +
+                               " false AS AccountIsSummary," +
+                               " 'Path' AS AccountPath," +
+                               " a_account.a_account_code_short_desc_c AS AccountName," +
+                               " glm." + StartBalanceFieldName + " AS YearStart," +
+                               " 0.0 AS ActualYTD," +
+                               " glmp." + ActualFieldName + " AS Actual," +
+                               " 0.0 AS ActualLastYear" +
 
-                if (OldPeriod.Count > 0)
+                               " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +
+                               " WHERE glm.a_ledger_number_i=" + LedgerNumber +
+                               " AND glm.a_cost_centre_code_c = '" + RootCostCentre + "' " +
+                               " AND glm.a_year_i IN (" + (AccountingYear - 1) + ", " + AccountingYear + ")" +
+                               " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
+                               " AND glmp.a_period_number_i=" + ReportPeriodEnd +
+                               " AND a_account.a_account_code_c = glm.a_account_code_c" +
+                               " AND (a_account.a_account_type_c IN ('Asset','Liability','Equity') OR a_account.a_account_code_c = '" + PlAccountCode + "')" +
+                               " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
+                               " AND (a_account.a_posting_status_l = true OR a_account.a_account_code_c = '" + PlAccountCode + "')" +
+                               " ORDER BY glm.a_account_code_c"
+                ;
+
+                TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
+                DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(Query, "BalanceSheet", ReadTrans);
+                if (FCancelOperation)
                 {
-                    DataRow LastYearRow = OldPeriod[0].Row;
-                    Row["ActualLastYear"] = Convert.ToDecimal(LastYearRow["Actual"]);
+                    return FilteredResults;
                 }
 
-                if (Row["AccountCode"].ToString() == PlAccountCode)     // Tweak the PL account and pretend it's an Equity.
-                {                                                       // (It was probably previously an income account.)
-                    Row["AccountType"] = "Equity";
-                    Row["AccountTypeOrder"] = 3;
-                }
-            }
 
-            //
-            // So now I don't have to look at last year's rows:
-//          ThisMonth.RowFilter = String.Format("Year={0} AND (Actual <> 0 OR ActualLastYear <> 0)", AccountingYear);
+                DataView OldPeriod = new DataView(resultTable);
+                DataView ThisMonth = new DataView(resultTable);
 
-            DataTable FilteredResults = ThisMonth.ToTable("BalanceSheet");
+                ThisMonth.RowFilter = String.Format("Year={0}", AccountingYear);
 
-            //
-            // I only have "posting accounts" - I need to add the summary accounts.
-            AAccountHierarchyDetailTable HierarchyTbl = AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(LedgerNumber, HierarchyName, ReadTrans);
+                //
+                // Some of these rows are from a year ago. I'll copy those into the current period "LastYear" fields.
 
-            HierarchyTbl.DefaultView.Sort = "a_reporting_account_code_c";  // These two sort orders
-            FilteredResults.DefaultView.Sort = "AccountCode";              // Are required by AddTotalsToParentAccountRow, below.
-
-            Int32 PostingAccountRecords = FilteredResults.Rows.Count;
-
-            for (Int32 Idx = 0; Idx < PostingAccountRecords; Idx++)
-            {
-                DataRow Row = FilteredResults.Rows[Idx];
-                String ParentAccountPath;
-                Int32 ParentAccountTypeOrder;
-                Int32 AccountLevel = AddTotalsToParentAccountRow(
-                    FilteredResults,
-                    HierarchyTbl,
-                    LedgerNumber,
-                    "", // No Cost Centres on Balance Sheet
-                    Row["AccountCode"].ToString(),
-                    Row,
-                    false,
-                    false,
-                    out ParentAccountPath,
-                    out ParentAccountTypeOrder,
-                    ReadTrans);
-                Row["AccountLevel"] = AccountLevel;
-                Row["AccountPath"] = ParentAccountPath + Row["AccountCode"];
-            }
-
-            //
-            // Now if I re-order the result by AccountPath, hide all the old data and empty rows, and rows that are too detailed, it should be what I need!
-
-            Int32 DetailLevel = AParameters["param_nesting_depth"].ToInt32();
-            String DepthFilter = " AND AccountLevel<=" + DetailLevel.ToString();
-            FilteredResults.DefaultView.Sort = "AccountTypeOrder, AccountPath";
-
-            FilteredResults.DefaultView.RowFilter = "(Actual <> 0 OR ActualLastYear <> 0 )" + // Only non-zero rows
-                                                    DepthFilter;    // Nothing too detailed
-
-            FilteredResults = FilteredResults.DefaultView.ToTable("BalanceSheet");
-
-            //
-            // Finally, to make the hierarchical report possible,
-            // I want to include a note to show whether a row has child rows,
-            // and if it does, I'll copy this row to a new row, below the children, marking the new row as "footer".
-            for (Int32 RowIdx = 0; RowIdx < FilteredResults.Rows.Count - 1; RowIdx++)
-            {
-                Int32 ParentAccountLevel = Convert.ToInt32(FilteredResults.Rows[RowIdx]["AccountLevel"]);
-                Boolean HasChildren = (Convert.ToInt32(FilteredResults.Rows[RowIdx + 1]["AccountLevel"]) > ParentAccountLevel);
-                FilteredResults.Rows[RowIdx]["HasChildren"] = HasChildren;
-
-                if (HasChildren)
+                TLogging.Log(Catalog.GetString("Get last year data.."), TLoggingType.ToStatusBar);
+                foreach (DataRowView rv in ThisMonth)
                 {
-                    Int32 NextSiblingPos = -1;
+                    DataRow Row = rv.Row;
+                    OldPeriod.RowFilter = String.Format("Year={0} AND Period={1} AND AccountCode='{2}'",
+                        AccountingYear - 1,
+                        ReportPeriodEnd,
+                        Row["AccountCode"].ToString()
+                        );
 
-                    for (Int32 ChildIdx = RowIdx + 2; ChildIdx < FilteredResults.Rows.Count; ChildIdx++)
+                    if (OldPeriod.Count > 0)
                     {
-                        if (Convert.ToInt32(FilteredResults.Rows[ChildIdx]["AccountLevel"]) <= ParentAccountLevel)  // This row is not a child of mine
-                        {                                                                                           // so I insert my footer before here.
-                            NextSiblingPos = ChildIdx;
-                            break;
+                        DataRow LastYearRow = OldPeriod[0].Row;
+                        Row["ActualLastYear"] = Convert.ToDecimal(LastYearRow["Actual"]);
+                    }
+
+                    if (Row["AccountCode"].ToString() == PlAccountCode)     // Tweak the PL account and pretend it's an Equity.
+                    {                                                       // (It was probably previously an income account.)
+                        Row["AccountType"] = "Equity";
+                        Row["AccountTypeOrder"] = 3;
+                    }
+
+                    if (FCancelOperation)
+                    {
+                        return FilteredResults;
+                    }
+
+                }
+
+                //
+                // So now I don't have to look at last year's rows:
+                FilteredResults = ThisMonth.ToTable("BalanceSheet");
+
+                //
+                // I only have "posting accounts" - I need to add the summary accounts.
+                AAccountHierarchyDetailTable HierarchyTbl = AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(LedgerNumber, HierarchyName, ReadTrans);
+
+                HierarchyTbl.DefaultView.Sort = "a_reporting_account_code_c";  // These two sort orders
+                FilteredResults.DefaultView.Sort = "AccountCode";              // Are required by AddTotalsToParentAccountRow, below.
+
+                Int32 PostingAccountRecords = FilteredResults.Rows.Count;
+
+                TLogging.Log(Catalog.GetString("Summarise to parent accounts.."), TLoggingType.ToStatusBar);
+                for (Int32 Idx = 0; Idx < PostingAccountRecords; Idx++)
+                {
+                    DataRow Row = FilteredResults.Rows[Idx];
+                    String ParentAccountPath;
+                    Int32 ParentAccountTypeOrder;
+                    Int32 AccountLevel = AddTotalsToParentAccountRow(
+                        FilteredResults,
+                        HierarchyTbl,
+                        LedgerNumber,
+                        "", // No Cost Centres on Balance Sheet
+                        Row["AccountCode"].ToString(),
+                        Row,
+                        false,
+                        false,
+                        out ParentAccountPath,
+                        out ParentAccountTypeOrder,
+                        ReadTrans);
+                    Row["AccountLevel"] = AccountLevel;
+                    Row["AccountPath"] = ParentAccountPath + Row["AccountCode"];
+
+                    if (FCancelOperation)
+                    {
+                        return FilteredResults;
+                    }
+
+                }
+
+                //
+                // Now if I re-order the result by AccountPath, hide all the old data and empty rows, and rows that are too detailed, it should be what I need!
+
+                Int32 DetailLevel = AParameters["param_nesting_depth"].ToInt32();
+                String DepthFilter = " AND AccountLevel<=" + DetailLevel.ToString();
+                FilteredResults.DefaultView.Sort = "AccountTypeOrder, AccountPath";
+
+                FilteredResults.DefaultView.RowFilter = "(Actual <> 0 OR ActualLastYear <> 0 )" + // Only non-zero rows
+                                                        DepthFilter;    // Nothing too detailed
+
+                FilteredResults = FilteredResults.DefaultView.ToTable("BalanceSheet");
+
+                //
+                // Finally, to make the hierarchical report possible,
+                // I want to include a note to show whether a row has child rows,
+                // and if it does, I'll copy this row to a new row, below the children, marking the new row as "footer".
+                TLogging.Log(Catalog.GetString("Format data for reporting.."), TLoggingType.ToStatusBar);
+                for (Int32 RowIdx = 0; RowIdx < FilteredResults.Rows.Count - 1; RowIdx++)
+                {
+                    Int32 ParentAccountLevel = Convert.ToInt32(FilteredResults.Rows[RowIdx]["AccountLevel"]);
+                    Boolean HasChildren = (Convert.ToInt32(FilteredResults.Rows[RowIdx + 1]["AccountLevel"]) > ParentAccountLevel);
+                    FilteredResults.Rows[RowIdx]["HasChildren"] = HasChildren;
+
+                    if (HasChildren)
+                    {
+                        Int32 NextSiblingPos = -1;
+
+                        for (Int32 ChildIdx = RowIdx + 2; ChildIdx < FilteredResults.Rows.Count; ChildIdx++)
+                        {
+                            if (Convert.ToInt32(FilteredResults.Rows[ChildIdx]["AccountLevel"]) <= ParentAccountLevel)  // This row is not a child of mine
+                            {                                                                                           // so I insert my footer before here.
+                                NextSiblingPos = ChildIdx;
+                                break;
+                            }
+                        }
+
+                        DataRow FooterRow = FilteredResults.NewRow();
+                        DataUtilities.CopyAllColumnValues(FilteredResults.Rows[RowIdx], FooterRow);
+                        FooterRow["ParentFooter"] = true;
+                        FooterRow["HasChildren"] = false;
+
+                        if (NextSiblingPos > 0)
+                        {
+                            FilteredResults.Rows.InsertAt(FooterRow, NextSiblingPos);
+                        }
+                        else
+                        {
+                            FilteredResults.Rows.Add(FooterRow);
                         }
                     }
 
-                    DataRow FooterRow = FilteredResults.NewRow();
-                    DataUtilities.CopyAllColumnValues(FilteredResults.Rows[RowIdx], FooterRow);
-                    FooterRow["ParentFooter"] = true;
-                    FooterRow["HasChildren"] = false;
+                    if (FCancelOperation)
+                    {
+                        return FilteredResults;
+                    }
 
-                    if (NextSiblingPos > 0)
-                    {
-                        FilteredResults.Rows.InsertAt(FooterRow, NextSiblingPos);
-                    }
-                    else
-                    {
-                        FilteredResults.Rows.Add(FooterRow);
-                    }
-                }
+                } // for
+            }  // try
+                 
+                // I'm not doing any catching - if there's a problem, it will be reported to the client.
+
+            finally  // Whatever happens, I need to do this:
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
             }
-
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            TLogging.Log("", TLoggingType.ToStatusBar);
             return FilteredResults;
         } // Balance Sheet Table
+
+
+
 
         /// <summary>
         /// For "Cost Centre Breakdown", I need to add records summarising the transactions for Summary Accounts by Cost Centre.
@@ -1058,6 +1125,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
              *  Remove all records that are not a summary or a breakdown
              */
 
+            TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusBar));
+
             Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             Int32 AccountingYear = AParameters["param_year_i"].ToInt32();
             Int32 ReportPeriodStart = AParameters["param_start_period_i"].ToInt32();
@@ -1179,6 +1248,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 Query += " ORDER BY glm.a_cost_centre_code_c, glm.a_account_code_c";
             }
 
+            TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
             DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(Query, "IncomeExpense", ReadTrans);
             DataTable FilteredResults;
 
@@ -1190,6 +1260,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             {
                 //
                 // The table includes YTD balances, but I need the balance for the specified period.
+                TLogging.Log(Catalog.GetString("Calculate period transactions.."), TLoggingType.ToStatusBar);
 
                 DataView OldPeriod = new DataView(resultTable);
                 DataView ThisMonth = new DataView(resultTable);
@@ -1226,6 +1297,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 //
                 // Some of these rows are from a year ago. I've updated their "Actual" values;
                 // now I'll copy those into the current period "LastYear" fields.
+                TLogging.Log(Catalog.GetString("Get Last year actuals.."), TLoggingType.ToStatusBar);
+
                 foreach (DataRowView rv in ThisMonth)
                 {
                     DataRow Row = rv.Row;
@@ -1251,6 +1324,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 //
                 // I need to add in the "whole year budget" field:
+                TLogging.Log(Catalog.GetString("Get Budgets.."), TLoggingType.ToStatusBar);
+
                 foreach (DataRow Row in FilteredResults.Rows)
                 {
                     Query = "SELECT SUM(" + BudgetFieldName + ") AS WholeYearBudget FROM a_general_ledger_master_period WHERE a_glm_sequence_i=" +
@@ -1266,6 +1341,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             //
             // I only have "posting accounts" - I need to add the summary accounts.
+            TLogging.Log(Catalog.GetString("Summarise to parent accounts.."), TLoggingType.ToStatusBar);
             AAccountHierarchyDetailTable HierarchyTbl = AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(LedgerNumber, HierarchyName, ReadTrans);
 
             HierarchyTbl.DefaultView.Sort = "a_reporting_account_code_c";       // These two sort orders
@@ -1327,6 +1403,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             if (CostCentreBreakdown)
             {
+                TLogging.Log(Catalog.GetString("Get Cost Centre Breakdown.."), TLoggingType.ToStatusBar);
                 // I'm creating additional "breakdown" records for the per-CostCentre breakdown, and potentially removing
                 // some records that were summed into those "breakdown" records.
                 FilteredResults.DefaultView.Sort = "AccountType DESC, AccountPath ASC, CostCentreCode";
@@ -1374,6 +1451,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             if (WholeYearPeriodsBreakdown)
             {
+                TLogging.Log(Catalog.GetString("Get whole year breakdown.."), TLoggingType.ToStatusBar);
                 //
                 // If there are any unsummarised rows left after applying the Depth Filter,
                 // I need to summarise them into new "per period" rows (with 12 "Actual" fields), and throw the original rows away.
@@ -1399,6 +1477,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // Finally, to make the hierarchical report possible,
             // I want to include a note to show whether a row has child rows,
             // and if it does, I'll copy this row to a new row, below the children, marking the new row as "footer".
+            TLogging.Log(Catalog.GetString("Format data for reporting.."), TLoggingType.ToStatusBar);
             for (Int32 RowIdx = 0; RowIdx < FilteredResults.Rows.Count - 1; RowIdx++)
             {
                 Int32 ParentAccountLevel = Convert.ToInt32(FilteredResults.Rows[RowIdx]["AccountLevel"]);
@@ -1456,6 +1535,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             }
 
             DBAccess.GDBAccessObj.RollbackTransaction();
+            TLogging.Log("", TLoggingType.ToStatusBar);
             return FilteredResults;
         } // IncomeExpenseTable
 
@@ -1469,6 +1549,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             try
             {
+                TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusBar));
                 Boolean PersonalHosa = (AParameters["param_filter_cost_centres"].ToString() == "PersonalCostcentres");
                 Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
                 String CostCentreCodes = AParameters["param_cost_centre_codes"].ToString();
@@ -1558,6 +1639,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                          "ORDER BY Partner.p_partner_short_name_c ASC";
 
                 TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTransaction);
+                TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
                 DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(Query, "Gifts", Transaction);
 
                 resultTable.Columns.Add("GiftIntlAmount", typeof(Decimal));
@@ -1576,6 +1658,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     r["Reference"] = StringHelper.PartnerKeyToStr(Convert.ToInt64(r["RecipientKey"]));
                 }
 
+                TLogging.Log("", TLoggingType.ToStatusBar);
                 return resultTable;
             }   // try
             catch (Exception e)

@@ -8,7 +8,7 @@ SELECT a_gift.a_date_entered_d AS DateEntered,
         a_cost_centre.a_cost_centre_name_c AS CostCentreDesc
 FROM a_gift_batch, a_gift, a_gift_detail, a_motivation_detail, a_account, a_cost_centre
 WHERE a_gift_batch.a_ledger_number_i = ?
-   AND a_gift_batch.a_batch_status_c = "Posted"
+   AND a_gift_batch.a_batch_status_c = 'Posted'
    AND a_gift.a_ledger_number_i = a_gift_batch.a_ledger_number_i
    AND a_gift.a_batch_number_i = a_gift_batch.a_batch_number_i
    AND a_gift_detail.a_ledger_number_i = a_gift_batch.a_ledger_number_i

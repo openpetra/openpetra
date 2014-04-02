@@ -45,6 +45,7 @@ using Ict.Common;
 using Ict.Petra.Client.CommonForms;
 using Ict.Common.Controls;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -85,6 +86,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         private TDelegateGenerateReportOverride FDelegateGenerateReportOverride;
         private TDelegateGenerateReportOverride FDelegateViewReportOverride;
+        private TDelegateGenerateReportOverride FDelegateCancelReportOverride;
         private TDelegateManageSettingsOverride FDelegateManageSettingsOverride;
 
         /// <summary>number of columns that can be sorted</summary>
@@ -177,6 +179,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             FDelegateLoadSettingsFinished = null;
             FDelegateGenerateReportOverride = null;
             FDelegateViewReportOverride = null;
+            FDelegateCancelReportOverride = null;
             FDelegateManageSettingsOverride = null;
             FFormReportUi = (Form)ATheForm;
         }
@@ -223,6 +226,19 @@ namespace Ict.Petra.Client.MReporting.Gui
             set
             {
                 FDelegateGenerateReportOverride = value;
+            }
+        }
+
+        /// <summary>
+        /// If an alternative reporting engine is being used,
+        /// this delegate should also be set so that the Cancel button can work.
+        /// </summary>
+        /// 
+        public TDelegateGenerateReportOverride DelegateCancelReportOverride
+        {
+            set
+            {
+                FDelegateCancelReportOverride = value;
             }
         }
 
@@ -512,6 +528,43 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
+        //
+        // Started in a new thread, this repeatedly asks the server for text to put on the statusbar.
+        //
+        private void UpdateStatusBarThread()
+        {
+            String OldLoggingText = "";
+            while (true)
+            {
+                String ProgressInformation = TRemote.MReporting.WebConnectors.GetServerStatus();
+                if (ProgressInformation != OldLoggingText)
+                {
+                    TLogging.Log(ProgressInformation, TLoggingType.ToStatusBar);
+                    OldLoggingText = ProgressInformation;
+                }
+
+                Thread.Sleep(500);
+            }
+        }
+
+        private void ThreadFunctionViaDelegate(Object Delgt)
+        {
+            if (FDelegateCancelReportOverride != null)
+            {
+                MakeCancelButtonAvailable();
+            }
+
+            Thread StatusThread = new Thread(UpdateStatusBarThread);
+            StatusThread.Start();
+
+            //
+            // Here's the actual call that causes the report to happen:
+            ((TDelegateGenerateReportOverride)Delgt)(FCalculator);
+
+            StatusThread.Abort();
+            UpdateParentFormEndOfReport();
+        }
+
         /// <summary>
         /// Show The template for the report
         /// </summary>
@@ -527,7 +580,23 @@ namespace Ict.Petra.Client.MReporting.Gui
                     return;
                 }
 
-                FDelegateViewReportOverride(FCalculator);
+
+                if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
+                {
+                    TLogging.SetStatusBarProcedure(WriteToStatusBar);
+                    FWinForm.Cursor = Cursors.WaitCursor;
+                    FormCursor = FWinForm.Cursor;
+                    ((IFrmReporting)FTheForm).EnableBusy(true);
+                    FGenerateReportThread = new Thread(ThreadFunctionViaDelegate);
+                    FGenerateReportThread.SetApartmentState(ApartmentState.STA);
+                    FGenerateReportThread.Start(FDelegateViewReportOverride);
+                }
+
+/*
+                FWinForm.Cursor = Cursors.Default;
+                FormCursor = FWinForm.Cursor;
+                ((IFrmReporting)FTheForm).EnableBusy(false);
+ */
             }
         }
 
@@ -557,26 +626,16 @@ namespace Ict.Petra.Client.MReporting.Gui
             if ((FGenerateReportThread != null) && FGenerateReportThread.IsAlive)
             {
                 // Cancel the report
-                FCalculator.CancelReportCalculation();
+                if (FDelegateCancelReportOverride != null)
+                {
+                    FDelegateCancelReportOverride(FCalculator);
+                }
+                else
+                {
+                    FCalculator.CancelReportCalculation();
+                }
                 return;
             }
-
-#if TODO
-            // has anything changed in the currently selected column?
-            if (ColumnChanged(FSelectedColumn))
-            {
-                MessageBox.Show(
-                    "Report cannot be generated." + Environment.NewLine + "Please first apply the changes to the current column, " +
-                    Environment.NewLine +
-                    "or cancel the changes.",
-                    "Column changed");
-                return;
-            }
-            else
-            {
-                SelectColumn(-1);
-            }
-#endif
 
             // read the settings and parameters from the controls
             if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate))
@@ -590,15 +649,18 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             this.FWinForm.Cursor = Cursors.WaitCursor;
-            MakeCancelButtonAvailable();
-            TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
+            FormCursor = FWinForm.Cursor;
+            TLogging.SetStatusBarProcedure(WriteToStatusBar);
 
             if (FDelegateGenerateReportOverride != null)
             {
-                FDelegateGenerateReportOverride(FCalculator);
+                FGenerateReportThread = new Thread(ThreadFunctionViaDelegate);
+                FGenerateReportThread.SetApartmentState(ApartmentState.STA);
+                FGenerateReportThread.Start(FDelegateGenerateReportOverride);
             }
             else
             {
+                MakeCancelButtonAvailable();
                 if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
                 {
                     ((IFrmReporting) FTheForm).EnableBusy(true);
@@ -658,6 +720,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             this.FWinForm.Cursor = Cursors.WaitCursor;
+            FormCursor = FWinForm.Cursor;
             TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
 
             if ((FGenerateExtractThread == null) || (!FGenerateExtractThread.IsAlive))
@@ -681,26 +744,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             WrapMenuItem.Checked = !WrapMenuItem.Checked;
 
             FWrapColumn = WrapMenuItem.Checked;
-        }
-
-        /// <summary>
-        /// Reads path of default browser from registry - apparently no-one is calling this!
-        /// </summary>
-        /// <returns>void</returns>
-        public static string GetDefaultBrowserPath()
-        {
-            const String key = "htmlfile\\shell\\open\\command";
-            RegistryKey regKey;
-            string s;
-            string delim;
-
-            regKey = Registry.ClassesRoot.OpenSubKey(key, false);
-
-            // get default browser path
-            // see http:www.novell.com/coolsolutions/tip/11537.html; it seems FireFox does not change that registry setting
-            s = regKey.GetValue(null, null).ToString();
-            delim = "\"";
-            return s.Split(delim.ToCharArray())[1];
         }
 
         /// <summary>
@@ -793,7 +836,6 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         /// <summary>
         /// Called at the end of GenerateReport
-        /// (This was previously "protected", so that might give me some problem...)
         /// </summary>
         /// <param name="Calculator"></param>
         /// <param name="ACallerForm"></param>
@@ -826,7 +868,6 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         /// <summary>
         /// Called after the calculation of the report has been finished.
-        /// Converted to static so that it can be called from the static GenerateReport
         /// </summary>
         /// <param name="Calculator"></param>
         /// <param name="ACallerForm"></param>
@@ -846,7 +887,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// allow to store and load settings
+        /// Allow to store and load settings
         /// </summary>
         /// <param name="AEnabled">True if the store and load settings are to be enabled.</param>
         public void EnableSettings(bool AEnabled)
@@ -863,7 +904,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 //            tbrMain.Items["tbbSaveSettingsAs"].Visible = AEnabled;
 
             nmuFile.DropDownItems["mniMaintainTemplates"].Visible = !AEnabled;
-            //            tbrMain.Items["tbbMaintainTemplates"].Visible = !AEnabled;
+//            tbrMain.Items["tbbMaintainTemplates"].Visible = !AEnabled;
 
 /*
  // Method previously looked like this when it was in each and every report:
@@ -907,7 +948,6 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
         /// <summary>
         /// This procedure loads the available saved settings into the Load menu
-        ///
         /// </summary>
         protected void UpdateLoadingMenu(StringCollection ARecentlyUsedSettings)
         {
@@ -991,7 +1031,6 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>
         /// This procedure loads the parameters of the default settings;
         /// at the moment this is implemented to use the last used settings
-        ///
         /// </summary>
         public void LoadDefaultSettings()
         {
