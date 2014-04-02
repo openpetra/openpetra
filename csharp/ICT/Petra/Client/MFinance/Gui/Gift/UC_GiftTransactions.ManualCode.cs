@@ -2258,8 +2258,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Int32 ledgerNumber;
             Int32 batchNumber;
 
-            if ((((TFrmGiftBatch)ParentForm).GetBatchControl().GetCurrentBatchRow() == null) || (FLedgerNumber == -1)
-                || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED) || (txtDetailGiftTransactionAmount.NumberValueDecimal == null))
+            if ((((TFrmGiftBatch)ParentForm).GetBatchControl().GetCurrentBatchRow() == null)
+                || (FLedgerNumber == -1)
+                || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                || (txtDetailGiftTransactionAmount.NumberValueDecimal == null))
             {
                 return;
             }
