@@ -1594,7 +1594,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 newRow.MethodOfGivingCode = CurrentGiftRow.MethodOfGivingCode;
                 newRow.DonorKey = CurrentGiftRow.DonorKey;
 
-                if (ACompletelyNewGift && !IsEmptyGrid && (FPreviouslySelectedDetailRow != null))
+                if (!ACompletelyNewGift && (FPreviouslySelectedDetailRow != null))
                 {
                     newRow.DonorName = FPreviouslySelectedDetailRow.DonorName;
                 }
