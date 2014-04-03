@@ -505,7 +505,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 return;
             }
-            else if (!TRemote.MFinance.Setup.WebConnectors.HasAccountSetupAnalysisAttributes(FLedgerNumber, cmbDetailAccountCode.GetSelectedString()))
+            else if (!TRemote.MFinance.Setup.WebConnectors.AccountHasAnalysisAttributes(FLedgerNumber, cmbDetailAccountCode.GetSelectedString(), FActiveOnly))
             {
                 if (grdAnalAttributes.Enabled)
                 {
@@ -533,6 +533,84 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 grdAnalAttributes.SelectRowWithoutFocus(1);
                 FPSAttributesRow = GetSelectedAttributeRow();
             }
+        }
+
+        private bool CheckIfAccountAnalysisAttributeCountIsCorrect()
+        {
+            bool RetVal = true;
+
+            if (!FIsUnposted || FPreviouslySelectedDetailRow == null || FMainDS.ATransAnalAttrib.DefaultView.Count == 0)
+            {
+                return RetVal;
+            }
+
+            int TransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
+            string AccountCode = FPreviouslySelectedDetailRow.AccountCode;
+            int NumberOfAttributes;
+
+            DataView analAttrib = new DataView(FMainDS.ATransAnalAttrib);
+
+            analAttrib.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}={7}",
+                            ATransAnalAttribTable.GetBatchNumberDBName(),
+                            FBatchNumber,
+                            ATransAnalAttribTable.GetJournalNumberDBName(),
+                            FJournalNumber,
+                            ATransAnalAttribTable.GetTransactionNumberDBName(),
+                            TransactionNumber,
+                            ATransAnalAttribTable.GetAccountCodeDBName(),
+                            AccountCode);
+
+            RetVal = (TRemote.MFinance.Setup.WebConnectors.AccountHasAnalysisAttributes(FLedgerNumber, AccountCode, FActiveOnly, out NumberOfAttributes) && analAttrib.Count == NumberOfAttributes);
+
+            return RetVal;
+        }
+
+        private bool CheckIfAccountAnalysisAttributesValuesAreCorrect()
+        {
+            bool RetVal = true;
+
+            if (!FIsUnposted || FPreviouslySelectedDetailRow == null || FMainDS.ATransAnalAttrib.DefaultView.Count == 0)
+            {
+                return RetVal;
+            }
+
+            int TransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
+            string AccountCode = FPreviouslySelectedDetailRow.AccountCode;
+
+            StringCollection RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
+                AccountCode, FActiveOnly);
+
+            string AnalysisCodeFilterValues = ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'");
+
+            DataView analAttrib = new DataView(FMainDS.ATransAnalAttrib);
+
+            analAttrib.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6} IN ({7})",
+                            ATransAnalAttribTable.GetBatchNumberDBName(),
+                            FBatchNumber,
+                            ATransAnalAttribTable.GetJournalNumberDBName(),
+                            FJournalNumber,
+                            ATransAnalAttribTable.GetTransactionNumberDBName(),
+                            TransactionNumber,
+                            ATransAnalAttribTable.GetAnalysisTypeCodeDBName(),
+                            AnalysisCodeFilterValues);
+
+            foreach (DataRowView drv in analAttrib)
+	        {
+		        ATransAnalAttribRow rw = (ATransAnalAttribRow)drv.Row;
+
+                string analysisCode = rw.AnalysisTypeCode;
+
+                if (TRemote.MFinance.Setup.WebConnectors.AccountAnalysisAttributeRequiresValues(FLedgerNumber, analysisCode, FActiveOnly))
+                {
+                    if (rw.IsAnalysisAttributeValueNull() || rw.AnalysisAttributeValue == string.Empty)
+                    {
+                        RetVal = false;
+                        break;
+                    }
+                }
+	        }
+
+            return RetVal;
         }
 
         private ATransAnalAttribRow GetSelectedAttributeRow()
@@ -1088,6 +1166,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
             {
+                //Backup the Dataset for reversion purposes
+                GLBatchTDS FTempDS = (GLBatchTDS)FMainDS.Copy();
+                
                 try
                 {
                     //Unbind any transactions currently being editied in the Transaction Tab
@@ -1133,7 +1214,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
-                    FMainDS.RejectChanges();
+                    FMainDS = (GLBatchTDS)FTempDS.Copy();
                 }
 
                 //If some row(s) still exist after deletion
@@ -1505,14 +1586,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            StringCollection RequiredAnalattrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
+            StringCollection RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
                 currentAccountCode, FActiveOnly);
             Int32 currentTransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
 
-            SetTransAnalAttributeDefaultView(currentTransactionNumber, ConvertStringCollectionToCSV(RequiredAnalattrCodes, "'"));
+            SetTransAnalAttributeDefaultView(currentTransactionNumber, ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'"));
 
             // If the AnalysisType list I'm currently using is the same as the list of required types, I can keep it (with any existing values).
-            Boolean existingListIsOk = (RequiredAnalattrCodes.Count == FMainDS.ATransAnalAttrib.DefaultView.Count);
+            Boolean existingListIsOk = (RequiredAnalAttrCodes.Count == FMainDS.ATransAnalAttrib.DefaultView.Count);
 
             if (existingListIsOk)
             {
@@ -1520,7 +1601,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     ATransAnalAttribRow row = (ATransAnalAttribRow)rv.Row;
 
-                    if (!RequiredAnalattrCodes.Contains(row.AnalysisTypeCode))
+                    if (!RequiredAnalAttrCodes.Contains(row.AnalysisTypeCode))
                     {
                         existingListIsOk = false;
                         break;
@@ -1540,7 +1621,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 attrRowCurrent.Delete();
             }
 
-            foreach (String analysisTypeCode in RequiredAnalattrCodes)
+            foreach (String analysisTypeCode in RequiredAnalAttrCodes)
             {
                 ATransAnalAttribRow newRow = FMainDS.ATransAnalAttrib.NewRowTyped(true);
                 newRow.LedgerNumber = FLedgerNumber;
@@ -1566,8 +1647,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Control controlToPass = null;
 
             //Local validation
-            if (((txtDebitAmount.NumberValueDecimal.Value == 0)
-                 && (txtCreditAmount.NumberValueDecimal.Value == 0)) || (txtDebitAmount.NumberValueDecimal.Value < 0))
+            if (((txtDebitAmount.NumberValueDecimal.Value == 0) && (txtCreditAmount.NumberValueDecimal.Value == 0))
+                || (txtDebitAmount.NumberValueDecimal.Value < 0))
             {
                 controlToPass = txtDebitAmount;
             }

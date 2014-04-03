@@ -334,6 +334,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             return MainDS;
         }
 
+
+
         /// <summary>
         /// loads a list of recurring journals for the given ledger and recurring batch
         /// </summary>

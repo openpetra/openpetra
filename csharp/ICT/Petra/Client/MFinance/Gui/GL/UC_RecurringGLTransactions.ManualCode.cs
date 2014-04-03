@@ -475,7 +475,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 return;
             }
-            else if (!TRemote.MFinance.Setup.WebConnectors.HasAccountSetupAnalysisAttributes(FLedgerNumber, cmbDetailAccountCode.GetSelectedString()))
+            else if (!TRemote.MFinance.Setup.WebConnectors.AccountHasAnalysisAttributes(FLedgerNumber, cmbDetailAccountCode.GetSelectedString(), FActiveOnly))
             {
                 if (grdAnalAttributes.Enabled)
                 {

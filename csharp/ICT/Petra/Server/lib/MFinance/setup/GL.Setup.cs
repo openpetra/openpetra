@@ -3035,16 +3035,113 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// Check if this account code for Ledger ALedgerNumber requires one or more analysis attributes
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static bool HasAccountSetupAnalysisAttributes(Int32 ALedgerNumber, String AAccountCode)
+        public static bool AccountHasAnalysisAttributes(Int32 ALedgerNumber, String AAccountCode, bool AActiveOnly, out Int32 ANumberOfAttributes)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            bool HasAccountAnalysisAttributes = false;
 
-            HasAccountAnalysisAttributes = (AAnalysisAttributeAccess.CountViaAAccount(ALedgerNumber, AAccountCode, Transaction) > 0);
+            ANumberOfAttributes = 0;
+            bool AccountAnalysisAttributeExists = false;
 
-            DBAccess.GDBAccessObj.RollbackTransaction();
+            try
+            {
+                AAnalysisAttributeTable AATable = new AAnalysisAttributeTable();
+                AAnalysisAttributeRow TemplateAARow = AATable.NewRowTyped(false);
+                TemplateAARow.LedgerNumber = ALedgerNumber;
+                TemplateAARow.AccountCode = AAccountCode;
+                if (AActiveOnly)
+                {
+                    TemplateAARow.Active = AActiveOnly;
+                }
 
-            return HasAccountAnalysisAttributes;
+                AAnalysisAttributeTable AnalysisAttributeTable = AAnalysisAttributeAccess.LoadUsingTemplate(TemplateAARow, Transaction);
+
+                ANumberOfAttributes = AnalysisAttributeTable.Count;
+
+                AccountAnalysisAttributeExists = (ANumberOfAttributes > 0);
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log("Unexpected error in AccountHasAnalysisAttributes: " + ex.Message);
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return AccountAnalysisAttributeExists;
+        }
+
+        /// <summary>
+        /// Check if this account code for Ledger ALedgerNumber requires one or more analysis attributes
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool AccountHasAnalysisAttributes(Int32 ALedgerNumber, String AAccountCode, bool AActiveOnly)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            bool AccountAnalysisAttributeExists = false;
+
+            try
+            {
+                AAnalysisAttributeTable AATable = new AAnalysisAttributeTable();
+                AAnalysisAttributeRow TemplateAARow = AATable.NewRowTyped(false);
+                TemplateAARow.LedgerNumber = ALedgerNumber;
+                TemplateAARow.AccountCode = AAccountCode;
+                if (AActiveOnly)
+                {
+                    TemplateAARow.Active = AActiveOnly;
+                }
+
+                AAnalysisAttributeTable AnalysisAttributeTable = AAnalysisAttributeAccess.LoadUsingTemplate(TemplateAARow, Transaction);
+
+                AccountAnalysisAttributeExists = (AnalysisAttributeTable.Count > 0);
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log("Unexpected error in AccountHasAnalysisAttributes: " + ex.Message);
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return AccountAnalysisAttributeExists;
+        }
+
+        /// <summary>
+        /// Check if this account type code for Ledger ALedgerNumber requires one or more analysis attribute values
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool AccountAnalysisAttributeRequiresValues(Int32 ALedgerNumber, string AAnalysisTypeCode, bool AActiveOnly)
+        {
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+            bool AccountAnalysisAttributeValueRequired = false;
+
+            try
+            {
+                AFreeformAnalysisTable FFATable = new AFreeformAnalysisTable();
+                AFreeformAnalysisRow TemplateFFARow = FFATable.NewRowTyped(false);
+                TemplateFFARow.LedgerNumber = ALedgerNumber;
+                TemplateFFARow.AnalysisTypeCode = AAnalysisTypeCode;
+                if (AActiveOnly)
+                {
+                    TemplateFFARow.Active = AActiveOnly;
+                }
+
+                AFreeformAnalysisTable FreeformAnalysisTable = AFreeformAnalysisAccess.LoadUsingTemplate(TemplateFFARow, Transaction);
+
+                AccountAnalysisAttributeValueRequired = (FreeformAnalysisTable.Count > 0);
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log("Unexpected error in AccountAnalysisAttributeRequiresValues: " + ex.Message);
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+
+            return AccountAnalysisAttributeValueRequired;
         }
 
         //
