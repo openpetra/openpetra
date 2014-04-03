@@ -262,6 +262,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ALedgerNumber, ABatchNumber));
 
+                UpdateAllRecipientDescriptions();
+
                 ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors();
             }
 
@@ -283,6 +285,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return true;
         }
 
+        private void UpdateAllRecipientDescriptions()
+        {
+            DataView giftDetailView = new DataView(FMainDS.AGiftDetail);
+
+            giftDetailView.RowFilter = String.Format("{0}={1}",
+                AGiftDetailTable.GetBatchNumberDBName(),
+                FBatchNumber);
+
+            foreach (DataRowView rv in giftDetailView)
+            {
+                GiftBatchTDSAGiftDetailRow row = (GiftBatchTDSAGiftDetailRow)rv.Row;
+
+                if (row.RecipientKey == 0)
+                {
+                    row.RecipientDescription = row.MotivationDetailCode;
+                }
+            }
+        }
+        
         private void UpdateCostCentreCodeForAllRecipients()
         {
             string FailedUpdates = string.Empty;
@@ -434,6 +455,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (APartnerKey == 0)
                 {
+                    UpdateRecipientKeyText(APartnerKey);
                     RetrieveMotivationDetailCostCentreCode();
                 }
                 else
@@ -445,6 +467,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FinRecipientKeyChanging = false;
                 FPetraUtilsObject.SuppressChangeDetection = false;
+            }
+        }
+
+        private void UpdateRecipientKeyText(Int64 APartnerKey)
+        {
+            if (APartnerKey == 0)
+            {
+                if (FPreviouslySelectedDetailRow != null)   
+                {
+                    FPreviouslySelectedDetailRow.RecipientDescription = cmbDetailMotivationDetailCode.GetSelectedString();
+                }
             }
         }
 
@@ -913,6 +946,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (PartnerKey == 0)
             {
                 RetrieveMotivationDetailCostCentreCode();
+                UpdateRecipientKeyText(0);
             }
             else
             {
@@ -1640,6 +1674,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Set the default motivation Group. This needs to happen after focus has returned
                 //  to the pnlDetails to ensure FInEditMode is correct.
                 cmbDetailMotivationGroupCode.SelectedIndex = 0;
+                UpdateRecipientKeyText(0);
             }
         }
 
@@ -1748,10 +1783,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (ARow.IsRecipientKeyNull())
             {
                 txtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
+                UpdateRecipientKeyText(0);
             }
             else
             {
                 txtDetailRecipientKey.Text = String.Format("{0:0000000000}", ARow.RecipientKey);
+                UpdateRecipientKeyText(ARow.RecipientKey);
             }
 
             if (ARow.IsRecipientFieldNull())
@@ -1977,13 +2014,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ARow.AccountCode = txtDetailAccountCode.Text;
             }
 
-            if (txtDetailRecipientKey.LabelText.Length == 0)
+            if (ARow.IsRecipientKeyNull())
             {
                 ARow.SetRecipientDescriptionNull();
             }
             else
             {
-                ARow.RecipientDescription = txtDetailRecipientKey.LabelText;
+                UpdateRecipientKeyText(ARow.RecipientKey);
             }
 
             if (txtField.Text.Length == 0)
