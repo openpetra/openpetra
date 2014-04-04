@@ -495,8 +495,8 @@ namespace Ict.Petra.Server.MFinance.Common
                                 {
                                     AVerifications.Add(new TVerificationResult(
                                             String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                                            String.Format(Catalog.GetString("Missing values at journal #{0} transaction #{1}  and TypeCode {2}"),
-                                                trans.JournalNumber, trans.TransactionNumber, attributeRow.AnalysisTypeCode),
+                                            String.Format(Catalog.GetString("Analysis Type {0} is missing values in journal #{1}, transaction #{2}"),
+                                                attributeRow.AnalysisTypeCode, trans.JournalNumber, trans.TransactionNumber),
                                             TResultSeverity.Resv_Critical));
                                 }
                                 else

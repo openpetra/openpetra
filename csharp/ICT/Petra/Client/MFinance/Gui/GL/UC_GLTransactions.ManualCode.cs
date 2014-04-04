@@ -1685,7 +1685,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnAccountCodeId];
                 ValidationContext = String.Format(" - Account Code {0} in Transaction {1} is missing Analysis Attributes.{2}{2}" +
-                    "CLICK THE DOWN ARROW ON THE ACCOUNT CODE COMBOBOX TO OPEN THE LIST AND RESELECT ACCOUNT CODE {0}.",
+                    "CLICK THE DOWN ARROW NEXT TO THE ACCOUNT CODE BOX TO OPEN THE LIST AND THEN RESELECT ACCOUNT CODE {0}.",
                     ARow.AccountCode,
                     ARow.TransactionNumber,
                     Environment.NewLine);

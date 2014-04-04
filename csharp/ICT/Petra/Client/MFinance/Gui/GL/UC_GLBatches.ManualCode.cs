@@ -978,55 +978,59 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
+            Cursor.Current = Cursors.WaitCursor;
+
             List <TVariant>Result = TRemote.MFinance.GL.WebConnectors.TestPostGLBatch(FLedgerNumber, FSelectedBatchNumber, out Verifications);
 
-            if ((Verifications != null) && (Verifications.Count > 0))
+            try
             {
-                string ErrorMessages = string.Empty;
-
-                foreach (TVerificationResult verif in Verifications)
+                if ((Verifications != null) && (Verifications.Count > 0))
                 {
-                    ErrorMessages += "[" + verif.ResultContext + "] " +
-                                     verif.ResultTextCaption + ": " +
-                                     verif.ResultText + Environment.NewLine;
+                    string ErrorMessages = string.Empty;
+
+                    foreach (TVerificationResult verif in Verifications)
+                    {
+                        ErrorMessages += "[" + verif.ResultContext + "] " +
+                                         verif.ResultTextCaption + ": " +
+                                         verif.ResultText + Environment.NewLine;
+                    }
+
+                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
                 }
-
-                System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-            else if (Result.Count < 25)
-            {
-                string message = string.Empty;
-
-                foreach (TVariant value in Result)
+                else if (Result.Count < 25)
                 {
-                    ArrayList compValues = value.ToComposite();
+                    string message = string.Empty;
 
-                    message +=
-                        string.Format(
-                            Catalog.GetString("{1}/{0} ({3}/{2}) is: {4} and would be: {5}"),
-                            ((TVariant)compValues[0]).ToString(),
-                            ((TVariant)compValues[2]).ToString(),
-                            ((TVariant)compValues[1]).ToString(),
-                            ((TVariant)compValues[3]).ToString(),
-                            StringHelper.FormatCurrency((TVariant)compValues[4], "currency"),
-                            StringHelper.FormatCurrency((TVariant)compValues[5], "currency")) +
-                        Environment.NewLine;
+                    foreach (TVariant value in Result)
+                    {
+                        ArrayList compValues = value.ToComposite();
+
+                        message +=
+                            string.Format(
+                                Catalog.GetString("{1}/{0} ({3}/{2}) is: {4} and would be: {5}"),
+                                ((TVariant)compValues[0]).ToString(),
+                                ((TVariant)compValues[2]).ToString(),
+                                ((TVariant)compValues[1]).ToString(),
+                                ((TVariant)compValues[3]).ToString(),
+                                StringHelper.FormatCurrency((TVariant)compValues[4], "currency"),
+                                StringHelper.FormatCurrency((TVariant)compValues[5], "currency")) +
+                            Environment.NewLine;
+                    }
+
+                    MessageBox.Show(message, Catalog.GetString("Result of Test Posting"));
                 }
-
-                MessageBox.Show(message, Catalog.GetString("Result of Test Posting"));
-            }
-            else
-            {
-                // store to CSV file
-                string message = string.Empty;
-
-                foreach (TVariant value in Result)
+                else
                 {
-                    ArrayList compValues = value.ToComposite();
+                    // store to CSV file
+                    string message = string.Empty;
 
-                    string[] columns = new string[] {
+                    foreach (TVariant value in Result)
+                    {
+                        ArrayList compValues = value.ToComposite();
+
+                        string[] columns = new string[] {
                         ((TVariant)compValues[0]).ToString(),
                         ((TVariant)compValues[1]).ToString(),
                         ((TVariant)compValues[2]).ToString(),
@@ -1035,20 +1039,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         StringHelper.FormatCurrency((TVariant)compValues[5], "CurrencyCSV")
                     };
 
-                    message += StringHelper.StrMerge(columns,
-                        Thread.CurrentThread.CurrentCulture.TextInfo.ListSeparator[0]) +
-                               Environment.NewLine;
+                        message += StringHelper.StrMerge(columns,
+                            Thread.CurrentThread.CurrentCulture.TextInfo.ListSeparator[0]) +
+                                   Environment.NewLine;
+                    }
+
+                    string CSVFilePath = TClientSettings.PathLog + Path.DirectorySeparatorChar + "Batch" + FSelectedBatchNumber.ToString() +
+                                         "_TestPosting.csv";
+                    StreamWriter sw = new StreamWriter(CSVFilePath, false, System.Text.Encoding.UTF8);
+                    sw.Write(message);
+                    sw.Close();
+
+                    MessageBox.Show(
+                        String.Format(Catalog.GetString("Please see file {0} for the result of the test posting"), CSVFilePath),
+                        Catalog.GetString("Result of Test Posting"));
                 }
-
-                string CSVFilePath = TClientSettings.PathLog + Path.DirectorySeparatorChar + "Batch" + FSelectedBatchNumber.ToString() +
-                                     "_TestPosting.csv";
-                StreamWriter sw = new StreamWriter(CSVFilePath, false, System.Text.Encoding.UTF8);
-                sw.Write(message);
-                sw.Close();
-
-                MessageBox.Show(
-                    String.Format(Catalog.GetString("Please see file {0} for the result of the test posting"), CSVFilePath),
-                    Catalog.GetString("Result of Test Posting"));
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
             }
         }
 
