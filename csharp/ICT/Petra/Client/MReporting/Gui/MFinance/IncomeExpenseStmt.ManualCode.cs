@@ -82,7 +82,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if (DepthOption == "summary")
             {
-                ParamNestingDepth = 1;
+                ParamNestingDepth = 2;
             }
 
             if (DepthOption == "standard")
