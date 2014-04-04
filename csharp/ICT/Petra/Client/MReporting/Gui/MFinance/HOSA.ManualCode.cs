@@ -215,8 +215,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
             }
 
-            DataTable Gifts = TRemote.MFinance.Reporting.WebConnectors.HosaGiftsTable(paramsDictionary);
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(Gifts, "Gifts");
+            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("HOSA", paramsDictionary);
+            if (ReportTable == null)
+            {
+                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "Gifts");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.AAccount, "a_account");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ACostCentre, "a_costCentre");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ATransaction, "a_transaction");
@@ -226,7 +231,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
 
-            Boolean HasData = (ReportDs.ATransaction.Rows.Count > 0) || (Gifts.Rows.Count > 0);
+            Boolean HasData = (ReportDs.ATransaction.Rows.Count > 0) || (ReportTable.Rows.Count > 0);
 
             if (!HasData)
             {

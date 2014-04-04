@@ -57,20 +57,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
         }
 
-        //
-        // Called on Cancel button:
-        private void CancelReportGeneration(TRptCalculator ACalc)
-        {
-            TRemote.MFinance.Reporting.WebConnectors.CancelFunction();
-        }
-
         private void RunOnceOnActivationManual()
         {
             if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
             {
                 this.tabReportSettings.Controls.Remove(tpgAdditionalSettings); // These tabs represent settings that are not supported
                 this.tabReportSettings.Controls.Remove(tpgColumnSettings);     // in the FastReports based solution.
-                FPetraUtilsObject.DelegateCancelReportOverride = CancelReportGeneration;
             }
         }
 
@@ -106,7 +98,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // The table contains extra rows for "headers" and "footers", facilitating the hierarchical printout.
 
-            DataTable ReportTable = TRemote.MFinance.Reporting.WebConnectors.BalanceSheetTable(paramsDictionary);
+            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("BalanceSheet", paramsDictionary);
             if (ReportTable == null)
             {
                 FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");

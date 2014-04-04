@@ -1537,6 +1537,16 @@ namespace Ict.Common.DB
                 try
                 {
                     FTransaction.Rollback();
+                    FTransaction.Dispose();
+
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                    {
+                        TLogging.Log(msg);
+                    }
+
+                    FLastDBAction = DateTime.Now;
+
+                    FTransaction = null;
                 }
                 catch (Exception Exc)
                 {
@@ -1547,20 +1557,9 @@ namespace Ict.Common.DB
                     // MSDN says: "Try/Catch exception handling should always be used when rolling back a
                     // transaction. A Rollback generates an InvalidOperationException if the connection is
                     // terminated or if the transaction has already been rolled back on the server."
-                    TLogging.Log("An Exception occured while an attempt to roll back a DB Transaction was made: " + Exc.ToString());
+                    TLogging.Log("Exception while attempting Transaction rollback: " + Exc.ToString());
                 }
-
-                FTransaction.Dispose();
-
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
-                {
-                    TLogging.Log(msg);
-                }
-
-                FLastDBAction = DateTime.Now;
             }
-
-            FTransaction = null;
         }
 
         /// <summary>

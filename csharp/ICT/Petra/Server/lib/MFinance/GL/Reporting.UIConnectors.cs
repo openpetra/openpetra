@@ -42,7 +42,6 @@ using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 using System.Collections;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MCommon;
-using Ict.Petra.Server.MReporting.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 {
@@ -51,7 +50,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
     ///</summary>
     public class TFinanceReportingWebConnector
     {
-        static Boolean FCancelOperation = false;
 
         /// <summary>
         /// get the details of the given ledger
@@ -432,25 +430,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             return Results;
         }
 
-        /// <summary>
-        /// Calling this *may* cause the DataTable generation to terminate a bit earlier.
-        /// </summary>
-        [RequireModulePermission("FINANCE-1")]
-        public static void CancelFunction()
-        {
-            TLogging.Log(Catalog.GetString("Operation Cancelled"), TLoggingType.ToStatusBar);
-            FCancelOperation = true;
-        }
-
-        /// <summary>
-        /// for displaying the progress
-        /// </summary>
-        /// <returns>void</returns>
-        private static void WriteToStatusBar(String s)
-        {
-            TReportingWebConnector.ServerStatus = s;
-        }
-
         //
         // Find the level of nesting for this account, using recursive call
         // The nesting level affects indentation in the printed report.
@@ -676,15 +655,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         }
 
         /// <summary>
-        /// Returns a DataSet to the client for use in client-side reporting
+        /// Returns a DataTable for use in client-side reporting
         /// This version begins with GLM and GLMP tables, but calculates amounts for the summary accounts,
         /// so it does not rely on the summarisation in GLMP.
         /// </summary>
-        [RequireModulePermission("FINANCE-1")]
-        public static DataTable BalanceSheetTable(Dictionary <String, TVariant>AParameters)
+        [NoRemoting]
+        public static DataTable BalanceSheetTable(Dictionary<String, TVariant> AParameters)
         {
-            FCancelOperation = false; // The user can stop operation..
-            TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusBar));
             DataTable FilteredResults = null;
 
 
@@ -748,10 +725,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
                 DataTable resultTable = DBAccess.GDBAccessObj.SelectDT(Query, "BalanceSheet", ReadTrans);
-                if (FCancelOperation)
-                {
-                    return FilteredResults;
-                }
 
 
                 DataView OldPeriod = new DataView(resultTable);
@@ -783,12 +756,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         Row["AccountType"] = "Equity";
                         Row["AccountTypeOrder"] = 3;
                     }
-
-                    if (FCancelOperation)
-                    {
-                        return FilteredResults;
-                    }
-
                 }
 
                 //
@@ -824,11 +791,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         ReadTrans);
                     Row["AccountLevel"] = AccountLevel;
                     Row["AccountPath"] = ParentAccountPath + Row["AccountCode"];
-
-                    if (FCancelOperation)
-                    {
-                        return FilteredResults;
-                    }
 
                 }
 
@@ -881,11 +843,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         {
                             FilteredResults.Rows.Add(FooterRow);
                         }
-                    }
-
-                    if (FCancelOperation)
-                    {
-                        return FilteredResults;
                     }
 
                 } // for
@@ -1075,7 +1032,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// This version begins with GLM and GLMP tables, but calculates amounts for the summary accounts,
         /// so it does not rely on the summarisation in GLMP.
         /// </summary>
-        [RequireModulePermission("FINANCE-1")]
+        [NoRemoting]
         public static DataTable IncomeExpenseTable(Dictionary <String, TVariant>AParameters)
         {
             /* Required columns:
@@ -1124,8 +1081,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
              *  For each remaining posting account, create a "breakdown" record with 12 fields for the summation
              *  Remove all records that are not a summary or a breakdown
              */
-
-            TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusBar));
 
             Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             Int32 AccountingYear = AParameters["param_year_i"].ToInt32();
@@ -1542,14 +1497,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// <summary>
         /// Returns a DataSet to the client for use in client-side reporting
         /// </summary>
-        [RequireModulePermission("FINANCE-1")]
+        [NoRemoting]
         public static DataTable HosaGiftsTable(Dictionary <String, TVariant>AParameters)
         {
             Boolean NewTransaction = false;
 
             try
             {
-                TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusBar));
                 Boolean PersonalHosa = (AParameters["param_filter_cost_centres"].ToString() == "PersonalCostcentres");
                 Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
                 String CostCentreCodes = AParameters["param_cost_centre_codes"].ToString();

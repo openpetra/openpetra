@@ -123,6 +123,8 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 FPetraUtilsObject.DelegateGenerateReportOverride = GenerateReport;
                 FPetraUtilsObject.DelegateViewReportOverride = DesignReport;
+                FPetraUtilsObject.DelegateCancelReportOverride = CancelReportGeneration;
+
                 FPetraUtilsObject.EnableSettings(false);
                 LoadedOK = true;
             }
@@ -130,6 +132,13 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 TLogging.Log("FastReports Wrapper Not loaded: " + e.Message);
             }
+        }
+
+        //
+        // Called on Cancel button:
+        private void CancelReportGeneration(TRptCalculator ACalc)
+        {
+            TRemote.MReporting.WebConnectors.CancelDataTableGeneration();
         }
 
         /// <summary>

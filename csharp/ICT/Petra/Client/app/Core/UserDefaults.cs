@@ -138,6 +138,7 @@ namespace Ict.Petra.Client.App.Core
 
         private static SUserDefaultsTable UUserDefaultsDataTable;
         private static DataView UUserDefaults;
+        private static Boolean FIsInitialised = false;
 
         /// <summary>
         /// todoComment
@@ -354,6 +355,15 @@ namespace Ict.Petra.Client.App.Core
                 out UUserDefaultsDataTable);
             UUserDefaults = new DataView(UUserDefaultsDataTable);
             UUserDefaults.Sort = SUserDefaultsTable.GetDefaultCodeDBName();
+            FIsInitialised = true;
+        }
+
+        public static Boolean IsInitialised
+        {
+            get
+            {
+                return FIsInitialised;
+            }
         }
 
         /// <summary>

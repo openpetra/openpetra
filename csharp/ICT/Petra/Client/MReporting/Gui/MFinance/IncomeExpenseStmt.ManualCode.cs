@@ -97,7 +97,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             // The table contains Actual and Budget figures, both this period and YTD, also last year and budget last year.
             // It does not contain any variance (actual / budget) figures - these are calculated in the report.
 
-            DataTable ReportTable = TRemote.MFinance.Reporting.WebConnectors.IncomeExpenseTable(paramsDictionary);
+            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("IncomeExpense", paramsDictionary);
+            if (ReportTable == null)
+            {
+                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "IncomeExpense");
 
             //

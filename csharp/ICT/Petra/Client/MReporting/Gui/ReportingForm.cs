@@ -591,12 +591,6 @@ namespace Ict.Petra.Client.MReporting.Gui
                     FGenerateReportThread.SetApartmentState(ApartmentState.STA);
                     FGenerateReportThread.Start(FDelegateViewReportOverride);
                 }
-
-/*
-                FWinForm.Cursor = Cursors.Default;
-                FormCursor = FWinForm.Cursor;
-                ((IFrmReporting)FTheForm).EnableBusy(false);
- */
             }
         }
 
@@ -654,6 +648,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if (FDelegateGenerateReportOverride != null)
             {
+                ((IFrmReporting)FTheForm).EnableBusy(true);
                 FGenerateReportThread = new Thread(ThreadFunctionViaDelegate);
                 FGenerateReportThread.SetApartmentState(ApartmentState.STA);
                 FGenerateReportThread.Start(FDelegateGenerateReportOverride);

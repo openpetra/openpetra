@@ -608,12 +608,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             TLogging.Log("Importing GL batch: " + ex.ToString());
 
-            if (TLogging.DebugLevel > 0)
-            {
-                return ex.ToString();
-            }
-
-            return String.Empty;
+            return ex.Message;
         }
 
         private String ImportString(String message, Int32 AmaximumLength = -1)
