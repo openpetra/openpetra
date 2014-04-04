@@ -116,17 +116,17 @@ RootNode:
                 Row6: [txtDetailGiftCommentOne, cmbDetailCommentOneType]
                 Row7: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
                 Row8: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
-                Row9: [txtKeyMinistry, txtDetailMotivationDetailDescription]
+                Row9: [txtRecipientKeyMinistry, txtDetailMotivationDetailDescription]
                 #Row10: [txtDetailMotivationDetailCode]
         #txtDonorName: {ReadOnly=true, PartnerShortNameLookup=AGiftDetail.DonorKey}
         dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Tooltip=This date is used for receipt printing, Unbound=true, Validation=true}
         txtGiftTotal: {Label=Total,Format=Currency, ReadOnly=true, Unbound=true}
-        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor, OnChange=DonorKeyChanged}
+        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor, OnChange=DonorKeyChanged, Validation=true}
         txtDetailReference: {Label=Reference, Width=170}
         cmbDetailReceiptLetterCode:
             Label: Letter Code
             OptionalValues: [NO*RECET]
-        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient, OnChange=RecipientKeyChanged}
+        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient, OnChange=RecipientKeyChanged, Validation=true}
         cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
         cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=MotivationGroupChanged}
@@ -137,7 +137,7 @@ RootNode:
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
         cmbMinistry: {Label=Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged, Tooltip=Select a key ministry}
-        txtKeyMinistry: {Label=Key Ministry, Unbound=true}
+        txtRecipientKeyMinistry: {Label=Key Ministry, Unbound=true}
         txtDetailGiftTransactionAmount: {Label=Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?, Tooltip=Check this box if the gift is to remain confidential}
         chkDetailTaxDeductible: {Label=Tax deductible?}

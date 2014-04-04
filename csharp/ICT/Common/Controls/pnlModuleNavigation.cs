@@ -403,21 +403,26 @@ namespace Ict.Common.Controls
             {
                 if (!FSuppressLedgerChangedEvent)
                 {
-                    OnLedgerChanged(Convert.ToInt32(ATaskListNode.Attributes["LedgerNumber"].Value), ATaskListNode.Attributes["LedgerName"].Value);
-
-                    if ((AOtherData != null)
-                        && (FSubSystemLinkStatus != null)
-                        && (AOtherData.GetType() == typeof(TPnlCollapsible)))
+                    int NewLedger = Convert.ToInt32(ATaskListNode.Attributes["LedgerNumber"].Value);
+                    
+                    if (FCurrentLedger != NewLedger) 
                     {
-                        FSubSystemLinkStatus(FCurrentLedger, (TPnlCollapsible)AOtherData);
-                    }
-
-                    // If ledger has been changed then possibly the functional menu item (panel above ledger panel) may be disabled.
-                    // Therefore reselect first active menu item to make sure that menu is initialized properly.
-                    if (FCollapsibleNavigation.CollapsiblePanelHosterInstance.GetTaskListInstance(0) != null)
-                    {
-                        FCollapsibleNavigation.CollapsiblePanelHosterInstance.GetTaskListInstance(0).SelectFirstTaskItem();
-                    }
+                        OnLedgerChanged(NewLedger, ATaskListNode.Attributes["LedgerName"].Value);
+    
+                        if ((AOtherData != null)
+                            && (FSubSystemLinkStatus != null)
+                            && (AOtherData.GetType() == typeof(TPnlCollapsible)))
+                        {
+                            FSubSystemLinkStatus(FCurrentLedger, (TPnlCollapsible)AOtherData);
+                        }
+    
+                        // If ledger has been changed then possibly the functional menu item (panel above ledger panel) may be disabled.
+                        // Therefore reselect first active menu item to make sure that menu is initialized properly.
+                        if (FCollapsibleNavigation.CollapsiblePanelHosterInstance.GetTaskListInstance(0) != null)
+                        {
+                            FCollapsibleNavigation.CollapsiblePanelHosterInstance.GetTaskListInstance(0).SelectFirstTaskItem();
+                        }
+                    }                    
                 }
             }
 

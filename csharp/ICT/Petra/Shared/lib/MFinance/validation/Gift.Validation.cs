@@ -31,6 +31,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MPartner.Validation;
 
 namespace Ict.Petra.Shared.MFinance.Validation
 {
@@ -188,6 +189,23 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
+            // Check if valid donor
+            ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnRecipientKeyId];
+            ValidationContext = String.Format("Batch no. {0}, gift no. {1}, detail no. {2}",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber,
+                ARow.DetailNumber);
+
+            VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
+                ARow.RecipientKey, new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT }, true,
+                "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()), ValidationContext, ValidationColumn, null);
+
+            if (VerificationResult != null)
+            {
+                AVerificationResultCollection.Remove(ValidationColumn);
+                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
+            }
+
             // 'Gift amount must be non-zero
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnGiftTransactionAmountId];
             ValidationContext = String.Format("Batch Number {0} (transaction:{1} detail:{2})",
@@ -327,6 +345,22 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (ARow.RowState == DataRowState.Deleted)
             {
                 return true;
+            }
+
+            // Check if valid donor
+            ValidationColumn = ARow.Table.Columns[AGiftTable.ColumnDonorKeyId];
+            ValidationContext = String.Format("Batch no. {0}, gift no. {1}",
+                ARow.BatchNumber,
+                ARow.GiftTransactionNumber);
+
+            VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
+                ARow.DonorKey, new TPartnerClass[] { }, true,
+                "Donor of " + THelper.NiceValueDescription(ValidationContext.ToString()), ValidationContext, ValidationColumn, null);
+
+            if (VerificationResult != null)
+            {
+                AVerificationResultCollection.Remove(ValidationColumn);
+                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult);
             }
 
             // 'Entered From Date' must be valid

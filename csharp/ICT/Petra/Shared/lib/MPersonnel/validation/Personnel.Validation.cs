@@ -332,19 +332,19 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                if ((!ARow.FullPassportName.Contains("(")) 
+                if ((!ARow.FullPassportName.Contains("("))
                     || (!ARow.FullPassportName.Contains(")")))
                 {
                     VerificationResult = new TScreenVerificationResult(new TVerificationResult(AContext,
                             ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INDIV_DATA_PASSPORT_NAME_MISSING_PARAS,
                                 new string[] { ValidationControlsData.ValidationControlLabel, ARow.FullPassportName })),
                         ValidationColumn, ValidationControlsData.ValidationControl);
-                    
+
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
                 }
             }
-            
+
             // 'Expiry Date' must be later than 'Issue Date'
             ValidationColumn = ARow.Table.Columns[PmPassportDetailsTable.ColumnDateOfExpirationId];
 

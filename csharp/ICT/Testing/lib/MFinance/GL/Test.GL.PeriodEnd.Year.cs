@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2014 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -199,6 +199,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             CheckGLMEntry(intLedgerNumber, intYear, strAccountGift,
                 0, 0, 0, 0, 0, 0);
 
+            // also check the glm period records
+            CheckGLMPeriodEntry(intLedgerNumber, intYear, 1, strAccountBank,
+                -50, 50, 100);
+            CheckGLMPeriodEntry(intLedgerNumber, intYear, 1, strAccountExpense,
+                0, 0, 0);
+            CheckGLMPeriodEntry(intLedgerNumber, intYear, 1, strAccountGift,
+                0, 0, 0);
+
             // 8200 is the account that the expenses and income from last year is moved to
             TGlmInfo glmInfo = new TGlmInfo(intLedgerNumber, intYear, "8200");
             glmInfo.Reset();
@@ -338,6 +346,67 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 {
                     Assert.AreEqual(cc3Base, glmInfo.YtdActualBase);
                     Assert.AreEqual(cc3Closing, glmInfo.ClosingPeriodActualBase);
+                    blnFnd3 = true;
+                }
+
+                if (((ACostCentreRow)costcentres.Rows.Find(new object[] { ALedgerNumber, glmInfo.CostCentreCode })).PostingCostCentreFlag)
+                {
+                    ++intCnt;
+                }
+            }
+
+            Assert.AreEqual(3, intCnt, "3 posting cost centres ...");
+            Assert.IsTrue(blnFnd1);
+            Assert.IsTrue(blnFnd2);
+            Assert.IsTrue(blnFnd3);
+        }
+
+        void CheckGLMPeriodEntry(int ALedgerNumber, int AYear, int APeriodNr, string AAccount,
+            decimal cc1Base,
+            decimal cc2Base,
+            decimal cc3Base)
+        {
+            TGlmInfo glmInfo = new TGlmInfo(ALedgerNumber, AYear, AAccount);
+
+            glmInfo.Reset();
+            int intCnt = 0;
+            bool blnFnd1 = false;
+            bool blnFnd2 = false;
+            bool blnFnd3 = false;
+
+            TCacheable cache = new Ict.Petra.Server.MFinance.Cacheable.TCacheable();
+            Type dummy;
+            ACostCentreTable costcentres = (ACostCentreTable)cache.GetCacheableTable(TCacheableFinanceTablesEnum.CostCentreList,
+                string.Empty,
+                false,
+                ALedgerNumber,
+                out dummy);
+
+            while (glmInfo.MoveNext())
+            {
+                TLogging.Log("glmInfo.CostCentreCode: " + glmInfo.CostCentreCode);
+
+                TGlmpInfo glmpInfo = new TGlmpInfo(glmInfo.GlmSequence, APeriodNr);
+
+                Assert.AreEqual(true,
+                    glmpInfo.RowExists,
+                    "we cannot find a glm period record for " + glmInfo.AccountCode + " / " + glmInfo.CostCentreCode);
+
+                if (glmInfo.CostCentreCode.Equals("4301"))
+                {
+                    Assert.AreEqual(cc1Base, glmpInfo.ActualBase);
+                    blnFnd1 = true;
+                }
+
+                if (glmInfo.CostCentreCode.Equals("4302"))
+                {
+                    Assert.AreEqual(cc2Base, glmpInfo.ActualBase);
+                    blnFnd2 = true;
+                }
+
+                if (glmInfo.CostCentreCode.Equals("4303"))
+                {
+                    Assert.AreEqual(cc3Base, glmpInfo.ActualBase);
                     blnFnd3 = true;
                 }
 

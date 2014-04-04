@@ -65,6 +65,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private bool FSuppressRefreshFilter = false;
         private bool FSuppressRefreshPeriods = false;
+        private DateTime FCurrentEffectiveDate;
 
         /// <summary>
         /// load the batches into the grid
@@ -297,6 +298,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //dtpDetailDateEffective.AllowVerification = !FPetraUtilsObject.DetailProtectedMode;
 
             FSelectedBatchNumber = ARow.BatchNumber;
+            FCurrentEffectiveDate = ARow.DateEffective;
 
             UpdateBatchPeriod(null, null);
 
@@ -426,61 +428,81 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void UpdateJournalTransEffectiveDate(bool ASetJournalDateOnly)
         {
             DateTime batchEffectiveDate = dtpDetailDateEffective.Date.Value;
+
+            Int32 activeBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
             Int32 activeJournalNumber = 0;
+            Int32 activeJournalBatchNumber = 0;
             Int32 activeTransNumber = 0;
             Int32 activeTransJournalNumber = 0;
+            Int32 activeTransBatchNumber = 0;
 
-            bool activeJournalUpdated = false;
-            bool activeTransUpdated = false;
+            //Read the current journal and transaction being edited in their tabs
+            // It may not be for the current batch
+            ((TFrmGLBatch) this.ParentForm).GetJournalsControl().CurrentActiveJournalKeyFields(FLedgerNumber,
+                ref activeJournalBatchNumber,
+                ref activeJournalNumber);
+            ((TFrmGLBatch) this.ParentForm).GetTransactionsControl().CurrentActiveTransactionKeyFields(FLedgerNumber,
+                ref activeTransBatchNumber,
+                ref activeTransJournalNumber,
+                ref activeTransNumber);
 
-            //Current Batch number
-            Int32 batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+            //if (ASetJournalDateOnly && activeBatchNumber == activeJournalBatchNumber && activeJournalNumber > 0)
+            //{
+            //    if (((TFrmGLBatch)this.ParentForm).GetJournalsControl().GetSelectedDetailRow().DateEffective)
+            //    {
+
+            //    }
+            //}
 
             LoadJournalsForCurrentBatch();
 
-            activeJournalNumber = ((TFrmGLBatch) this.ParentForm).GetJournalsControl().ActiveJournalNumber(FLedgerNumber, batchNumber);
-            activeTransNumber = ((TFrmGLBatch) this.ParentForm).GetTransactionsControl().ActiveTransactionNumber(FLedgerNumber,
-                batchNumber,
-                ref activeTransJournalNumber);
+            DataView viewAllJournalsInBatch = new DataView(FMainDS.AJournal);
 
-            foreach (DataRowView v in FMainDS.AJournal.DefaultView)
+            viewAllJournalsInBatch.RowFilter = String.Format("{0}={1}",
+                activeBatchNumber,
+                AJournalTable.GetBatchNumberDBName());
+
+            foreach (DataRowView v in viewAllJournalsInBatch)
             {
                 AJournalRow r = (AJournalRow)v.Row;
 
                 if (ASetJournalDateOnly)
                 {
-                    if ((activeJournalNumber > 0) && !activeJournalUpdated && (r.JournalNumber == activeJournalNumber))
+                    //Check if currently being edited on Journal tab
+                    if ((activeJournalNumber > 0) && (activeBatchNumber == activeJournalBatchNumber) && (r.JournalNumber == activeJournalNumber))
                     {
                         ((TFrmGLBatch) this.ParentForm).GetJournalsControl().UpdateEffectiveDateForCurrentRow(batchEffectiveDate);
-                        activeJournalUpdated = true;
                     }
 
                     r.BeginEdit();
                     r.DateEffective = batchEffectiveDate;
                     r.EndEdit();
                 }
-                else
+                else  //For transactions only
                 {
-                    FMainDS.ATransaction.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
+                    //View all transactions in current batch and journal
+                    DataView viewAllTransactionsInBatchJournal = new DataView(FMainDS.ATransaction);
+
+                    viewAllTransactionsInBatchJournal.RowFilter = String.Format("{0}={1} and {2}={3}",
                         ATransactionTable.GetBatchNumberDBName(),
-                        batchNumber,
+                        activeBatchNumber,
                         ATransactionTable.GetJournalNumberDBName(),
                         r.JournalNumber);
 
-                    if (FMainDS.ATransaction.DefaultView.Count == 0)
+                    if (viewAllTransactionsInBatchJournal.Count == 0)
                     {
-                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber, batchNumber, r.JournalNumber));
+                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber, activeBatchNumber,
+                                r.JournalNumber));
                     }
 
-                    foreach (DataRowView w in FMainDS.ATransaction.DefaultView)
+                    foreach (DataRowView w in viewAllTransactionsInBatchJournal)
                     {
                         ATransactionRow t = (ATransactionRow)w.Row;
 
-                        if ((activeTransNumber > 0) && !activeTransUpdated && (r.JournalNumber == activeTransJournalNumber)
+                        if ((activeTransNumber > 0) && (activeBatchNumber == activeTransBatchNumber) && (r.JournalNumber == activeTransJournalNumber)
                             && (t.TransactionNumber == activeTransNumber))
                         {
                             ((TFrmGLBatch) this.ParentForm).GetTransactionsControl().UpdateEffectiveDateForCurrentRow(batchEffectiveDate);
-                            activeTransUpdated = true;
                         }
 
                         t.BeginEdit();
@@ -495,7 +517,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private bool GetAccountingYearPeriodByDate(Int32 ALedgerNumber, DateTime ADate, out Int32 AYear, out Int32 APeriod)
         {
-            return TRemote.MFinance.GL.WebConnectors.GetAccountingYearPeriodByDate(ALedgerNumber, ADate, out AYear, out APeriod);
+            bool RetVal;
+
+            RetVal = TRemote.MFinance.GL.WebConnectors.GetAccountingYearPeriodByDate(ALedgerNumber, ADate, out AYear, out APeriod);
+
+            TLogging.Log("GetAccountingYearPeriodByDate(): " + RetVal.ToString());
+            TLogging.Log("                               : " + ADate.ToShortDateString());
+            TLogging.Log("                               : " + AYear.ToString());
+            TLogging.Log("                               : " + APeriod.ToString());
+
+            return RetVal;
         }
 
         private void UpdateBatchPeriod(object sender, EventArgs e)
@@ -514,13 +545,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (DateTime.TryParse(aDate, out dateValue))
                 {
-                    if (FPreviouslySelectedDetailRow.DateEffective != dateValue)
+                    //GetDetailsFromControls will do this automatically if the user tabs
+                    //  passed the last control, but not if they clik on another control
+                    if (FCurrentEffectiveDate != dateValue)
                     {
+                        FCurrentEffectiveDate = dateValue;
                         FPreviouslySelectedDetailRow.DateEffective = dateValue;
-                        //Update the Transaction effective dates
                         UpdateJournalTransEffectiveDate(true);
                     }
 
+                    //Check if new date is in a different Batch period to the current one
                     if (GetAccountingYearPeriodByDate(FLedgerNumber, dateValue, out yearNumber, out periodNumber))
                     {
                         if (periodNumber != FPreviouslySelectedDetailRow.BatchPeriod)
@@ -558,7 +592,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void CancelRow(System.Object sender, EventArgs e)
         {
-            if (FPreviouslySelectedDetailRow == null)
+            if ((FPreviouslySelectedDetailRow == null) || !((TFrmGLBatch)ParentForm).SaveChanges())
             {
                 return;
             }
@@ -1105,10 +1139,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 batchNumber = FPreviouslySelectedDetailRow.BatchNumber;
 
-                if (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
-                {
-                    FPetraUtilsObject.DisableSaveButton();
-                }
+                //Now that saving is allowed across Batch changing, we cannot disable the change button
+                //  if a change has been made to an unposted batch
+                //if (FPreviouslySelectedDetailRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                //{
+                //    FPetraUtilsObject.DisableSaveButton();
+                //}
             }
 
             if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
