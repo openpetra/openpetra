@@ -3035,25 +3035,34 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// Check if this account code for Ledger ALedgerNumber requires one or more analysis attributes
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static bool AccountHasAnalysisAttributes(Int32 ALedgerNumber, String AAccountCode, bool AActiveOnly, out Int32 ANumberOfAttributes)
+        public static bool AccountHasAnalysisAttributes(Int32 ALedgerNumber,
+            String AAccountCode,
+            out Int32 ANumberOfAttributes,
+            bool AActiveOnly = false)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
             ANumberOfAttributes = 0;
+
+            AAnalysisAttributeTable AnalysisAttributeTable = null;
             bool AccountAnalysisAttributeExists = false;
 
             try
             {
-                AAnalysisAttributeTable AATable = new AAnalysisAttributeTable();
-                AAnalysisAttributeRow TemplateAARow = AATable.NewRowTyped(false);
-                TemplateAARow.LedgerNumber = ALedgerNumber;
-                TemplateAARow.AccountCode = AAccountCode;
-                if (AActiveOnly)
+                if (!AActiveOnly)
                 {
-                    TemplateAARow.Active = AActiveOnly;
+                    AnalysisAttributeTable = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AAccountCode, Transaction);
                 }
+                else
+                {
+                    AAnalysisAttributeTable AATable = new AAnalysisAttributeTable();
+                    AAnalysisAttributeRow TemplateAARow = AATable.NewRowTyped(false);
+                    TemplateAARow.LedgerNumber = ALedgerNumber;
+                    TemplateAARow.AccountCode = AAccountCode;
+                    TemplateAARow.Active = true;
 
-                AAnalysisAttributeTable AnalysisAttributeTable = AAnalysisAttributeAccess.LoadUsingTemplate(TemplateAARow, Transaction);
+                    AnalysisAttributeTable = AAnalysisAttributeAccess.LoadUsingTemplate(TemplateAARow, Transaction);
+                }
 
                 ANumberOfAttributes = AnalysisAttributeTable.Count;
 
@@ -3075,24 +3084,29 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// Check if this account code for Ledger ALedgerNumber requires one or more analysis attributes
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static bool AccountHasAnalysisAttributes(Int32 ALedgerNumber, String AAccountCode, bool AActiveOnly)
+        public static bool AccountHasAnalysisAttributes(Int32 ALedgerNumber, String AAccountCode, bool AActiveOnly = false)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
 
+            AAnalysisAttributeTable AnalysisAttributeTable = null;
             bool AccountAnalysisAttributeExists = false;
 
             try
             {
-                AAnalysisAttributeTable AATable = new AAnalysisAttributeTable();
-                AAnalysisAttributeRow TemplateAARow = AATable.NewRowTyped(false);
-                TemplateAARow.LedgerNumber = ALedgerNumber;
-                TemplateAARow.AccountCode = AAccountCode;
-                if (AActiveOnly)
+                if (!AActiveOnly)
                 {
-                    TemplateAARow.Active = AActiveOnly;
+                    AnalysisAttributeTable = AAnalysisAttributeAccess.LoadViaAAccount(ALedgerNumber, AAccountCode, Transaction);
                 }
+                else
+                {
+                    AAnalysisAttributeTable AATable = new AAnalysisAttributeTable();
+                    AAnalysisAttributeRow TemplateAARow = AATable.NewRowTyped(false);
+                    TemplateAARow.LedgerNumber = ALedgerNumber;
+                    TemplateAARow.AccountCode = AAccountCode;
+                    TemplateAARow.Active = true;
 
-                AAnalysisAttributeTable AnalysisAttributeTable = AAnalysisAttributeAccess.LoadUsingTemplate(TemplateAARow, Transaction);
+                    AnalysisAttributeTable = AAnalysisAttributeAccess.LoadUsingTemplate(TemplateAARow, Transaction);
+                }
 
                 AccountAnalysisAttributeExists = (AnalysisAttributeTable.Count > 0);
             }
@@ -3123,6 +3137,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 AFreeformAnalysisRow TemplateFFARow = FFATable.NewRowTyped(false);
                 TemplateFFARow.LedgerNumber = ALedgerNumber;
                 TemplateFFARow.AnalysisTypeCode = AAnalysisTypeCode;
+
                 if (AActiveOnly)
                 {
                     TemplateFFARow.Active = AActiveOnly;
@@ -3146,7 +3161,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
         //
         //    Rename Account: to rename an AccountCode or a CostCentreCode, we need to update lots of values all over the database:
-
         private static void UpdateAccountField(String ATblName,
             String AFldName,
             String AOldName,

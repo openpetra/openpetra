@@ -187,7 +187,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     //Load all analysis attribute values
                     if (FCacheDS == null)
                     {
-                        FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber);
+                        FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber, FActiveOnly);
                     }
 
                     SetupExtraGridFunctionality();
@@ -475,7 +475,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 return;
             }
-            else if (!TRemote.MFinance.Setup.WebConnectors.AccountHasAnalysisAttributes(FLedgerNumber, cmbDetailAccountCode.GetSelectedString(), FActiveOnly))
+            else if (!TRemote.MFinance.Setup.WebConnectors.AccountHasAnalysisAttributes(FLedgerNumber, cmbDetailAccountCode.GetSelectedString(),
+                         FActiveOnly))
             {
                 if (grdAnalAttributes.Enabled)
                 {

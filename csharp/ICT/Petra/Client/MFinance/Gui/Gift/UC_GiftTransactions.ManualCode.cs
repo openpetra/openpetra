@@ -303,7 +303,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
             }
         }
-        
+
         private void UpdateCostCentreCodeForAllRecipients()
         {
             string FailedUpdates = string.Empty;
@@ -474,7 +474,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (APartnerKey == 0)
             {
-                if (FPreviouslySelectedDetailRow != null)   
+                if (FPreviouslySelectedDetailRow != null)
                 {
                     FPreviouslySelectedDetailRow.RecipientDescription = cmbDetailMotivationDetailCode.GetSelectedString();
                 }
