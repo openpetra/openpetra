@@ -131,9 +131,8 @@ namespace Ict.Petra.Server.MFinance.GL
 
                         if (RowType == "B")
                         {
-                            if (NewBatch != null)
+                            if (NewBatch != null)   // update the totals of the batch that has just been imported
                             {
-                                // update the totals of the batch that has just been imported
                                 GLRoutines.UpdateTotalsOfBatch(ref MainDS, NewBatch);
                             }
 
@@ -147,11 +146,11 @@ namespace Ict.Petra.Server.MFinance.GL
 
                             NewBatch.BatchDescription = ImportString(Catalog.GetString("batch description"), ABatchTable.GetBatchDescriptionLength());
 
-                            if ((NewBatch.BatchDescription == null)
+                            if ((NewBatch.BatchDescription == null)   // raise error if empty batch description is imported
                                 || (NewBatch.BatchDescription == ""))
                             {
-                                // raise error if empty batch description is imported
-                                FImportMessage = Catalog.GetString("The batch description must not be empty");
+                                FImportMessage = String.Format(Catalog.GetString("At line number {0}, the batch description must not be empty"),
+                                    RowNumber);
 
                                 throw new EOPAppException();
                             }
@@ -174,8 +173,9 @@ namespace Ict.Petra.Server.MFinance.GL
                             }
                             else
                             {
-                                FImportMessage = Catalog.GetString("The effective date of the imported batch is not in an open period:") + " " +
-                                                 StringHelper.DateToLocalizedString(NewBatch.DateEffective);
+                                FImportMessage = String.Format(Catalog.GetString("At line number {0}, the effective date [{1}] of the imported batch is not in an open period."),
+                                    RowNumber,
+                                    StringHelper.DateToLocalizedString(NewBatch.DateEffective));
 
                                 throw new EOPAppException();
                             }
@@ -190,7 +190,8 @@ namespace Ict.Petra.Server.MFinance.GL
                         {
                             if (NewBatch == null)
                             {
-                                FImportMessage = Catalog.GetString("Expected a Batch line, but found a Journal");
+                                FImportMessage = String.Format(Catalog.GetString("At line number {0}, expected a Batch line, but found a Journal"),
+                                    RowNumber);
 
                                 throw new EOPAppException();
                             }
@@ -219,11 +220,11 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewJournal.JournalDescription = ImportString(Catalog.GetString("journal") + " - " + Catalog.GetString(
                                     "description"), AJournalTable.GetJournalDescriptionLength());
 
-                            if ((NewJournal.JournalDescription == null)
+                            if ((NewJournal.JournalDescription == null)   // raise error if empty journal description is imported
                                 || (NewJournal.JournalDescription == ""))
                             {
-                                // raise error if empty journal description is imported
-                                FImportMessage = Catalog.GetString("The journal description must not be empty");
+                                FImportMessage = String.Format(Catalog.GetString("At line number {0}, Journal description must not be empty"),
+                                    RowNumber);
 
                                 throw new EOPAppException();
                             }
@@ -244,7 +245,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((NewJournal.TransactionCurrency == LedgerTable[0].BaseCurrency)
                                 && (NewJournal.ExchangeRateToBase != 1.0m))
                             {
-                                FImportMessage = Catalog.GetString("Journal in base currency must have exchange rate 1.0");
+                                FImportMessage = String.Format(Catalog.GetString("At line number {0}, Journal in base currency must have exchange rate 1.0"),
+                                    RowNumber);
 
                                 throw new EOPAppException();
                             }
@@ -262,8 +264,10 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((journalYear != BatchYearNr) || (journalPeriod != BatchPeriodNumber))
                             {
                                 FImportMessage = String.Format(
-                                    Catalog.GetString("The journal effective date {0} is not in the same period as the batch date {1}."),
-                                    journalDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString());
+                                    Catalog.GetString("At line number {0}, the journal effective date {1} is not in the same period as the batch date {2}."),
+                                    RowNumber,
+                                    journalDate.ToShortDateString(),
+                                    NewBatch.DateEffective.ToShortDateString());
 
                                 throw new EOPAppException();
                             }
@@ -278,7 +282,8 @@ namespace Ict.Petra.Server.MFinance.GL
                         {
                             if (NewJournal == null)
                             {
-                                FImportMessage = Catalog.GetString("Expected a Journal or Batch line, but found a Transaction");
+                                FImportMessage = String.Format(Catalog.GetString("At line number {0}, expected a Journal or Batch line, but found a Transaction"),
+                                        RowNumber);
                                 throw new Exception();
                             }
 
@@ -344,11 +349,11 @@ namespace Ict.Petra.Server.MFinance.GL
                             NewTransaction.Narrative = ImportString(Catalog.GetString("transaction") + " - " + Catalog.GetString("narrative"),
                                 ATransactionTable.GetNarrativeLength());
 
-                            if ((NewTransaction.Narrative == null)
+                            if ((NewTransaction.Narrative == null)    // raise error if empty narrative is imported
                                 || (NewTransaction.Narrative == ""))
                             {
-                                // raise error if empty narrative is imported
-                                FImportMessage = Catalog.GetString("The transaction narrative must not be empty");
+                                FImportMessage = String.Format(Catalog.GetString("At line number {0}, the transaction narrative must not be empty."),
+                                    RowNumber);
 
                                 throw new EOPAppException();
                             }
@@ -369,8 +374,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((TransactionYear != BatchYearNr) || (TransactionPeriod != BatchPeriodNumber))
                             {
                                 FImportMessage = String.Format(
-                                    Catalog.GetString("The Transaction date {0} is not in the same period as the batch date {1}."),
-                                    TransactionDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString());
+                                    Catalog.GetString("At line number {0}, the Transaction date {1} is not in the same period as the batch date {2}."),
+                                    RowNumber, TransactionDate.ToShortDateString(), NewBatch.DateEffective.ToShortDateString());
 
                                 throw new EOPAppException();
                             }
@@ -384,21 +389,24 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((DebitAmount == 0) && (CreditAmount == 0))
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        Catalog.GetString("Either the debit amount or the credit amount must be greater than 0."),
+                                        String.Format(Catalog.GetString("At line number {0}, either the debit amount or the credit amount must be greater than 0."),
+                                            RowNumber),
                                         TResultSeverity.Resv_Critical));
                             }
 
                             if ((DebitAmount < 0) || (CreditAmount < 0))
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        Catalog.GetString("Negative amount specified - debits and credits must be positive."),
+                                        String.Format(Catalog.GetString("At line number {0}, negative amount specified - debits and credits must be positive."),
+                                            RowNumber),
                                         TResultSeverity.Resv_Critical));
                             }
 
                             if ((DebitAmount != 0) && (CreditAmount != 0))
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        Catalog.GetString("Transactions cannot have values for both debit and credit amounts."),
+                                        String.Format(Catalog.GetString("At line number {0}, Transactions cannot have values for both debit and credit amounts."),
+                                            RowNumber),
                                         TResultSeverity.Resv_Critical));
                             }
 
@@ -420,7 +428,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 String type = ImportString(Catalog.GetString("Transaction") + " - " + Catalog.GetString("Analysis Type") + "#" + i);
                                 String val = ImportString(Catalog.GetString("Transaction") + " - " + Catalog.GetString("Analysis Value") + "#" + i);
 
-                                //these data is only be imported if all corresponding values are there
+                                //the analysis data is only imported if all corresponding values are there:
                                 if ((type != null) && (type.Length > 0) && (val != null) && (val.Length > 0))
                                 {
                                     DataRow atrow = SetupDS.AAnalysisType.Rows.Find(new Object[] { type });
@@ -476,7 +484,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         }
                         else
                         {
-                            throw new EOPAppException("Unsuported row type '" + RowType + "'!");
+                            throw new EOPAppException("Unsuported row type '" + RowType + "' at Row " + RowNumber);
                         }
                     }
                 }

@@ -358,6 +358,7 @@ namespace Ict.Petra.Client.App.Core
             FIsInitialised = true;
         }
 
+        /// <summary>False if there's no user yet</summary>
         public static Boolean IsInitialised
         {
             get
