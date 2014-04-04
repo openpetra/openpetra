@@ -1031,13 +1031,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ArrayList compValues = value.ToComposite();
 
                         string[] columns = new string[] {
-                        ((TVariant)compValues[0]).ToString(),
-                        ((TVariant)compValues[1]).ToString(),
-                        ((TVariant)compValues[2]).ToString(),
-                        ((TVariant)compValues[3]).ToString(),
-                        StringHelper.FormatCurrency((TVariant)compValues[4], "CurrencyCSV"),
-                        StringHelper.FormatCurrency((TVariant)compValues[5], "CurrencyCSV")
-                    };
+                            ((TVariant)compValues[0]).ToString(),
+                            ((TVariant)compValues[1]).ToString(),
+                            ((TVariant)compValues[2]).ToString(),
+                            ((TVariant)compValues[3]).ToString(),
+                            StringHelper.FormatCurrency((TVariant)compValues[4], "CurrencyCSV"),
+                            StringHelper.FormatCurrency((TVariant)compValues[5], "CurrencyCSV")
+                        };
 
                         message += StringHelper.StrMerge(columns,
                             Thread.CurrentThread.CurrentCulture.TextInfo.ListSeparator[0]) +
