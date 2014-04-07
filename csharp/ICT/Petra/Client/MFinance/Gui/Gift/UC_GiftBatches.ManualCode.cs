@@ -1376,8 +1376,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             String ACurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
 
             txtDetailHashTotal.CurrencyCode = ACurrencyCode;
-            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
-            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false);
 
             if (!FPetraUtilsObject.SuppressChangeDetection && (FPreviouslySelectedDetailRow != null)
                 && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
@@ -1390,6 +1388,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FPreviouslySelectedDetailRow.GlEffectiveDate);
 
                 RefreshCurrencyAndExchangeRate(true);
+
+                ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
+                ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false);
             }
         }
 

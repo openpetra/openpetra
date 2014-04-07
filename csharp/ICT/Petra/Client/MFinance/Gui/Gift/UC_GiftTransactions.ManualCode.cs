@@ -2292,72 +2292,62 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void UpdateBaseAmount(bool AUpdateCurrentRowOnly)
         {
-            Int32 ledgerNumber;
-            Int32 batchNumber;
+            Int32 LedgerNumber;
+            Int32 CurrentBatchNumber;
 
-            if ((((TFrmGiftBatch)ParentForm).GetBatchControl().GetCurrentBatchRow() == null)
+            if (!((TFrmGiftBatch)this.ParentForm).GetBatchControl().FBatchLoaded
+                || (GetBatchRow() == null)
                 || (FLedgerNumber == -1)
                 || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                || (GetBatchRow().ExchangeRateToBase == FExchangeRateToBase)
                 || (txtDetailGiftTransactionAmount.NumberValueDecimal == null))
-            {
-                return;
-            }
-
-            if (AUpdateCurrentRowOnly)
-            {
-                //This code runs when the gift amount is updated
-                if (FExchangeRateToBase != GetBatchRow().ExchangeRateToBase)
-                {
-                    FExchangeRateToBase = GetBatchRow().ExchangeRateToBase;
-                }
-
-                FPreviouslySelectedDetailRow.GiftAmount = (decimal)txtDetailGiftTransactionAmount.NumberValueDecimal * FExchangeRateToBase;
-
-                return;
-            }
-
-            if (!((TFrmGiftBatch) this.ParentForm).GetBatchControl().FBatchLoaded)
             {
                 return;
             }
 
             FBatchRow = GetBatchRow();
 
-            if (FBatchRow == null)
-            {
-                FBatchRow = ((TFrmGiftBatch) this.ParentForm).GetBatchControl().GetSelectedDetailRow();
-            }
+            FExchangeRateToBase = FBatchRow.ExchangeRateToBase;
 
-            if (FExchangeRateToBase != FBatchRow.ExchangeRateToBase)
+            if (AUpdateCurrentRowOnly && FPreviouslySelectedDetailRow != null)
             {
-                FExchangeRateToBase = FBatchRow.ExchangeRateToBase;
+                FPreviouslySelectedDetailRow.GiftAmount = (decimal)txtDetailGiftTransactionAmount.NumberValueDecimal * FExchangeRateToBase;
+                FPreviouslySelectedDetailRow.GiftAmountIntl = (decimal)txtDetailGiftTransactionAmount.NumberValueDecimal;
             }
             else
             {
-                return;
-            }
+                LedgerNumber = FBatchRow.LedgerNumber;
+                CurrentBatchNumber = FBatchRow.BatchNumber;
 
-            ledgerNumber = FBatchRow.LedgerNumber;
-            batchNumber = FBatchRow.BatchNumber;
+                DataView detailView = new DataView(FMainDS.AGift);
 
-            if (FMainDS.AGift.Rows.Count == 0)
-            {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
-                ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
-            }
-            else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
-            {
-                //Rows already active in transaction tab. Need to set current row ac code below will not update selected row
-                if (FPreviouslySelectedDetailRow != null)
+                detailView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                                                        AGiftTable.GetLedgerNumberDBName(),
+                                                        LedgerNumber,
+                                                        AGiftTable.GetBatchNumberDBName(),
+                                                        CurrentBatchNumber);
+
+                if (detailView.Count == 0)
                 {
-                    FPreviouslySelectedDetailRow.GiftAmount = FPreviouslySelectedDetailRow.GiftTransactionAmount * FExchangeRateToBase;
+                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(LedgerNumber, CurrentBatchNumber));
+                    ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
                 }
-            }
+                else if ((FLedgerNumber == LedgerNumber) && (FBatchNumber == CurrentBatchNumber))
+                {
+                    //Rows already active in transaction tab. Need to set current row as code further below will not update selected row
+                    if (FPreviouslySelectedDetailRow != null)
+                    {
+                        FPreviouslySelectedDetailRow.GiftAmount = FPreviouslySelectedDetailRow.GiftTransactionAmount * FExchangeRateToBase;
+                        FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftTransactionAmount;
+                    }
+                }
 
-            //Update all transactions
-            foreach (AGiftDetailRow gdr in FMainDS.AGiftDetail.Rows)
-            {
-                gdr.GiftAmount = gdr.GiftTransactionAmount * FExchangeRateToBase;
+                //Update all transactions
+                foreach (AGiftDetailRow gdr in FMainDS.AGiftDetail.Rows)
+                {
+                    gdr.GiftAmount = gdr.GiftTransactionAmount * FExchangeRateToBase;
+                    gdr.GiftAmountIntl = gdr.GiftTransactionAmount;
+                }
             }
         }
 
