@@ -698,8 +698,6 @@ namespace Ict.Petra.Server.MCommon
             }
         }
 
-        #region TPagedDataSet.TAsyncFindParameters
-
         /**
          * Nested Class for passing in of parameters.
          *
@@ -771,9 +769,8 @@ namespace Ict.Petra.Server.MCommon
                 FParametersGivenSeparately = false;
             }
         }
-        #endregion
-        #endregion
     }
+    #endregion
 
     #region TAsynchronousExecutionProgress
 
@@ -1184,6 +1181,64 @@ namespace Ict.Petra.Server.MCommon
             return outcome;
         }
 
-        #endregion
+    }
+    #endregion
+
+    /// <summary>Reporting Query with Cancel Option</summary>
+    public class TReportingDbAdapter
+    {
+        private Boolean FReportingQueryCancelFlag = false;
+        private DbDataAdapter FDataAdapter;
+
+        /// <summary>
+        /// Setting this flag cancels any reporting query that's running right now, 
+        /// and eefectively short-circuits any subsequent queries, until the flag is cleared.
+        /// </summary>
+        public Boolean Cancelled
+        {
+            get
+            {
+                return FReportingQueryCancelFlag;
+            }
+            set
+            {
+                FReportingQueryCancelFlag = value;
+                if (FReportingQueryCancelFlag)
+                {
+                    try
+                    {
+                        FDataAdapter.SelectCommand.Cancel();
+                    }
+                    catch (Exception ex)
+                    {
+                        TLogging.Log("Exception occured in ReportingQueryCancel: " + ex.Message);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Run this Database query.
+        /// if FReportingQueryCancelFlag is set, this returns immediately with an empty table.
+        /// The query can be cancelled WHILE IT IS RUNNING. In this case the returned table may be partially filled.
+        /// </summary>
+        /// <returns>DataTable. May be empty (with no fields even defined) if cancel happens or has happened.</returns>
+        public DataTable RunQuery(String Query, String TableName, TDBTransaction Trans)
+        {
+            DataTable resultTable = new DataTable(TableName);
+            if (!FReportingQueryCancelFlag)
+            {
+                try
+                {
+                    FDataAdapter = DBAccess.GDBAccessObj.SelectDA(Query, Trans, null);
+                    FDataAdapter.Fill(resultTable);
+                }
+                catch (Exception ex)
+                {
+                    TLogging.Log("ReportingQueryWithCancelOption: Query Raised exception:" + ex.Message);
+                }
+            }
+            return resultTable;
+        }
     }
 }

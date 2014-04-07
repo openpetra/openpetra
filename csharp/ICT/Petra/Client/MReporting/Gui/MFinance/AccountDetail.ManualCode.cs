@@ -205,7 +205,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     "/" + OrderBy);
             }
 
-            GLReportingTDS ReportDs = TRemote.MFinance.Reporting.WebConnectors.GetReportingDataSet(Csv);
+            GLReportingTDS ReportDs = TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv);
 
             //
             // If I'm reporting period,
@@ -249,7 +249,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     " AND a_batch_number_i <= " +
                     LastBatch);
                 Csv = StringHelper.AddCSV(Csv, "AAnalysisType/*/a_analysis_type/1=1");
-                ReportDs.Merge(TRemote.MFinance.Reporting.WebConnectors.GetReportingDataSet(Csv));
+                ReportDs.Merge(TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv));
             }
 
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ATransAnalAttrib, "a_trans_anal_attrib");

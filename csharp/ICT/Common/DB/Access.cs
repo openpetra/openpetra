@@ -39,6 +39,7 @@ using Ict.Common.Exceptions;
 using Ict.Common.DB.DBCaching;
 using Ict.Common.DB.Exceptions;
 using Ict.Common.IO;
+using Npgsql;
 
 namespace Ict.Common.DB
 {
@@ -2526,6 +2527,12 @@ namespace Ict.Common.DB
         {
             string ErrorMessage = "";
             string FormattedSqlStatement = "";
+
+            if ((AException.GetType() == typeof(NpgsqlException)) && (((NpgsqlException)AException).Code == "25P02"))
+            {
+                TLogging.Log("Npgsq Exception raised: The transaction was cancelled by user command.");
+                return;
+            }
 
             if (ASqlStatement != String.Empty)
             {

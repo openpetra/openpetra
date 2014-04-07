@@ -203,7 +203,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 +
                 "/" + OrderBy);
 
-            GLReportingTDS ReportDs = TRemote.MFinance.Reporting.WebConnectors.GetReportingDataSet(Csv);
+            GLReportingTDS ReportDs = TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv);
             ArrayList reportParam = ACalc.GetParameters().Elems;
             Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
 

@@ -22,12 +22,15 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using Ict.Petra.Server.App.Core.Security;
+using System.Threading;
 using System.Data;
 using System.Collections.Generic;
 using Ict.Common;
-using System.Threading;
+using Ict.Petra.Server.MCommon;
+using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Reporting.WebConnectors;
+using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Common.DB;
 
 namespace Ict.Petra.Server.MReporting.WebConnectors
 {
@@ -38,12 +41,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
     {
         /// <summary>Set this in a server utility to set the status</summary>
         public static String ServerStatus ="";
-        private static Thread FWorkerThread;
-        private enum TWorkerStatusEnum {none,running,finished,aborted};
-        private static TWorkerStatusEnum FWorkerStatus = TWorkerStatusEnum.none;
-        private static DataTable FResultSet = null;
-        private static String FReportType;
-        private static Dictionary<String, TVariant> FParameters;
+        private static TReportingDbAdapter FDbAdapter = null;
 
         /// <summary>Call this from the client to display the status:</summary>
         /// <returns></returns>
@@ -65,42 +63,21 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         }
 
 
-        /// <summary>Forget the thread that's getting a Dataset for me.</summary>
+        /// <summary>Cancel the operation that's getting a Dataset for me.</summary>
         [RequireModulePermission("none")]
         public static void CancelDataTableGeneration()
         {
-            FWorkerStatus = TWorkerStatusEnum.aborted;
-            FWorkerThread = null;
+            if (FDbAdapter != null)
+            {
+                FDbAdapter.Cancelled = true;
+            }
         }
 
-        private static void GetDatatableThread ()
+        /// <summary>If the client wants to find out that the operation was cancelled</summary>
+        [RequireModulePermission("none")]
+        public static Boolean DataTableGenerationWasCancelled()
         {
-            FWorkerStatus = TWorkerStatusEnum.running;
-            TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusBar));
-
-            switch (FReportType)
-            {
-                case "BalanceSheet":
-                    FResultSet = TFinanceReportingWebConnector.BalanceSheetTable(FParameters);
-                    break;
-                case "HOSA":
-                    FResultSet = TFinanceReportingWebConnector.HosaGiftsTable(FParameters);
-                    break;
-                case "IncomeExpense":
-                    FResultSet = TFinanceReportingWebConnector.IncomeExpenseTable(FParameters);
-                    break;
-                default:
-                    TLogging.Log("GetDatatableThread unknown ReportType: " + FReportType);
-                    break;
-            }
-
-            //
-            // On finishing, I can only set the status if
-            // this thread is the one the client is wating for:
-            if (FWorkerThread != null && (Thread.CurrentThread.ManagedThreadId == FWorkerThread.ManagedThreadId))
-            {
-                FWorkerStatus = TWorkerStatusEnum.finished;
-            }
+            return (FDbAdapter != null) ? FDbAdapter.Cancelled : false;
         }
 
         /// <summary>Prepare a DataTable for this kind of report, using these parameters.
@@ -110,23 +87,55 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         [RequireModulePermission("none")]
         public static DataTable GetReportDataTable(String AReportType, Dictionary<String, TVariant> AParameters)
         {
-            FReportType = AReportType;
-            FParameters = AParameters;
-
-            FWorkerThread = new Thread(GetDatatableThread);
-            FWorkerThread.IsBackground = true;
-            FWorkerThread.Start();
-
-            //
-            // Now I'm going to sit here and wait to see if the thread finishes,
-            // or it gets aborted by a further request from the client.
-
-            do
+            FDbAdapter = new TReportingDbAdapter();
+            DataTable ResultTbl = null;
+            switch (AReportType)
             {
-                Thread.Sleep(500);
-            } while (FWorkerStatus == TWorkerStatusEnum.running);
-
-            return (FWorkerStatus == TWorkerStatusEnum.finished)? FResultSet : null;
+                case "BalanceSheet":
+                    ResultTbl = TFinanceReportingWebConnector.BalanceSheetTable(AParameters, FDbAdapter);
+                    break;
+                case "HOSA":
+                    ResultTbl = TFinanceReportingWebConnector.HosaGiftsTable(AParameters, FDbAdapter);
+                    break;
+                case "IncomeExpense":
+                    ResultTbl = TFinanceReportingWebConnector.IncomeExpenseTable(AParameters, FDbAdapter);
+                    break;
+                default:
+                    TLogging.Log("GetDatatableThread unknown ReportType: " + AReportType);
+                    break;
+            }
+            return (FDbAdapter.Cancelled) ? null : ResultTbl;
         }
+
+        /// <summary>
+        /// Returns a DataSet to the client for use in client-side reporting
+        /// </summary>
+        [RequireModulePermission("none")]
+        public static GLReportingTDS GetReportingDataSet(String ADataSetFilterCsv)
+        {
+            GLReportingTDS MainDs = new GLReportingTDS();
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+            FDbAdapter = new TReportingDbAdapter();
+
+            while (!FDbAdapter.Cancelled && ADataSetFilterCsv != "")
+            {
+                String Tbl = StringHelper.GetNextCSV(ref ADataSetFilterCsv, ",", "");
+                String[] part = Tbl.Split('/');
+                String OrderBy = "";
+
+                if (part.Length > 4)
+                {
+                    OrderBy = part[4];
+                }
+
+                String Query = "SELECT " + part[1] + " FROM " + part[2] + " WHERE " + part[3] + OrderBy;
+                MainDs.Tables[part[0]].Merge(FDbAdapter.RunQuery(Query, part[0], Transaction));
+            }
+
+            DBAccess.GDBAccessObj.RollbackTransaction();
+            return MainDs;
+        }
+
+
     }
 }
