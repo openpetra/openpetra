@@ -86,7 +86,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Load all analysis attribute values
             if (FCacheDS == null)
             {
-                FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber);
+                FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber, false);
             }
 
             ShowData();

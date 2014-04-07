@@ -404,25 +404,25 @@ namespace Ict.Common.Controls
                 if (!FSuppressLedgerChangedEvent)
                 {
                     int NewLedger = Convert.ToInt32(ATaskListNode.Attributes["LedgerNumber"].Value);
-                    
-                    if (FCurrentLedger != NewLedger) 
+
+                    if (FCurrentLedger != NewLedger)
                     {
                         OnLedgerChanged(NewLedger, ATaskListNode.Attributes["LedgerName"].Value);
-    
+
                         if ((AOtherData != null)
                             && (FSubSystemLinkStatus != null)
                             && (AOtherData.GetType() == typeof(TPnlCollapsible)))
                         {
                             FSubSystemLinkStatus(FCurrentLedger, (TPnlCollapsible)AOtherData);
                         }
-    
+
                         // If ledger has been changed then possibly the functional menu item (panel above ledger panel) may be disabled.
                         // Therefore reselect first active menu item to make sure that menu is initialized properly.
                         if (FCollapsibleNavigation.CollapsiblePanelHosterInstance.GetTaskListInstance(0) != null)
                         {
                             FCollapsibleNavigation.CollapsiblePanelHosterInstance.GetTaskListInstance(0).SelectFirstTaskItem();
                         }
-                    }                    
+                    }
                 }
             }
 
