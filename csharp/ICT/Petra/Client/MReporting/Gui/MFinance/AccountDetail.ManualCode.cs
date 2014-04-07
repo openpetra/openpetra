@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
                 pnlSorting.Padding = new System.Windows.Forms.Padding(8); // This tweak bring controls inline.
                 FPetraUtilsObject.LoadDefaultSettings();
+
                 if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
                 {
                     FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);

@@ -52,7 +52,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
             if ((tableField.strType == "number") && (tableField.iLength == 24))
             {
-                // currency value. This length="24" attribute is not consistently applied - check XML files 
+                // currency value. This length="24" attribute is not consistently applied - check XML files
                 // by un-commenting the Writelns here before assuming that all the field definitions are correct.
 
 //              Console.WriteLine("tableField.iLength == 24 in [" + tableField.strTableName + "]." + tableField.strName);
@@ -95,7 +95,8 @@ namespace Ict.Tools.CodeGeneration.DataStore
                 //
                 // This is new (March 2014) - previously every bad type was given as int.
 
-                throw (new Exception("ERROR: Bad Field Type in [" + tableField.strTableName + "]." + tableField.strName + ": " + tableField.strType + "/" + tableField.strTypeDotNet));
+                throw (new Exception("ERROR: Bad Field Type in [" + tableField.strTableName + "]." + tableField.strName + ": " + tableField.strType +
+                           "/" + tableField.strTypeDotNet));
             }
         }
     }

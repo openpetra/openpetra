@@ -60,6 +60,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         private static String escape(Object AField)
         {
             String Txt = AField.ToString();
+
             Txt = Txt.Replace("'", "''");
             return Txt;
         }
@@ -81,18 +82,23 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 DBAccess.GDBAccessObj.RollbackTransaction();
 
                 String FinalQuery = "DELETE FROM s_report_template WHERE s_readonly_l=TRUE;\r\n";
+
                 for (Int32 Idx = 0; Idx < resultTable.Rows.Count; Idx++)
                 {
                     DataRow Row = resultTable.Rows[Idx];
-                    FinalQuery += ("INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_xml_text_c)\r\nVALUES("
-                        + Convert.ToInt32(Row["s_template_id_i"]) + ",'"
-                        + escape(Row["s_report_type_c"]) + "','"
-                        + escape(Row["s_report_variant_c"]) + "','"
-                        + escape(Row["s_author_c"]) + "',"
-                        + Row["s_default_l"] + ","
-                        + Row["s_readonly_l"] + ",\r\n'"
-                        + escape(Row["s_xml_text_c"]) + "');\r\n");
+                    FinalQuery +=
+                        (
+                            "INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_xml_text_c)\r\nVALUES("
+                            +
+                            Convert.ToInt32(Row["s_template_id_i"]) + ",'" +
+                            escape(Row["s_report_type_c"]) + "','" +
+                            escape(Row["s_report_variant_c"]) + "','" +
+                            escape(Row["s_author_c"]) + "'," +
+                            Row["s_default_l"] + "," +
+                            Row["s_readonly_l"] + ",\r\n'" +
+                            escape(Row["s_xml_text_c"]) + "');\r\n");
                 }
+
                 FinalQuery += "\r\nSELECT TRUE;";
                 File.WriteAllText(TemplateBackupFilename, FinalQuery);
             }
@@ -131,7 +137,8 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             }
 
             Tbl.DefaultView.RowFilter = filter;
-            Tbl.DefaultView.Sort = (ADefaultOnly)? "s_private_default_l DESC, s_default_l DESC" : "s_readonly_l DESC, s_default_l DESC, s_private_default_l DESC";
+            Tbl.DefaultView.Sort =
+                (ADefaultOnly) ? "s_private_default_l DESC, s_default_l DESC" : "s_readonly_l DESC, s_default_l DESC, s_private_default_l DESC";
 
             SReportTemplateTable Ret = new SReportTemplateTable();
             Ret.Merge(Tbl.DefaultView.ToTable());
@@ -140,7 +147,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="editedTemplates"></param>
         /// <returns></returns>
@@ -148,6 +155,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         public static SReportTemplateTable SaveTemplates(SReportTemplateTable editedTemplates)
         {
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
             SReportTemplateAccess.SubmitChanges(editedTemplates, Transaction);
             DBAccess.GDBAccessObj.CommitTransaction();
             SaveTemplatesToBackupFile();

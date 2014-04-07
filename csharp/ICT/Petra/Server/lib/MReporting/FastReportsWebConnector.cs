@@ -40,7 +40,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
     public class TReportingWebConnector
     {
         /// <summary>Set this in a server utility to set the status</summary>
-        public static String ServerStatus ="";
+        public static String ServerStatus = "";
         private static TReportingDbAdapter FDbAdapter = null;
 
         /// <summary>Call this from the client to display the status:</summary>
@@ -51,7 +51,6 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             return ServerStatus;
         }
 
-
         /// <summary>
         /// TLogging StatusBar calls come to here.
         /// They are returned to the client by a thread that calls regularly to GetServerStatus, above.
@@ -61,7 +60,6 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         {
             ServerStatus = s;
         }
-
 
         /// <summary>Cancel the operation that's getting a Dataset for me.</summary>
         [RequireModulePermission("none")]
@@ -85,25 +83,30 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// until the result comes back, or the request is cancelled.
         /// </summary>
         [RequireModulePermission("none")]
-        public static DataTable GetReportDataTable(String AReportType, Dictionary<String, TVariant> AParameters)
+        public static DataTable GetReportDataTable(String AReportType, Dictionary <String, TVariant>AParameters)
         {
             FDbAdapter = new TReportingDbAdapter();
             DataTable ResultTbl = null;
+
             switch (AReportType)
             {
                 case "BalanceSheet":
                     ResultTbl = TFinanceReportingWebConnector.BalanceSheetTable(AParameters, FDbAdapter);
                     break;
+
                 case "HOSA":
                     ResultTbl = TFinanceReportingWebConnector.HosaGiftsTable(AParameters, FDbAdapter);
                     break;
+
                 case "IncomeExpense":
                     ResultTbl = TFinanceReportingWebConnector.IncomeExpenseTable(AParameters, FDbAdapter);
                     break;
+
                 default:
                     TLogging.Log("GetDatatableThread unknown ReportType: " + AReportType);
                     break;
             }
+
             return (FDbAdapter.Cancelled) ? null : ResultTbl;
         }
 
@@ -115,6 +118,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         {
             GLReportingTDS MainDs = new GLReportingTDS();
             TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction();
+
             FDbAdapter = new TReportingDbAdapter();
 
             while (!FDbAdapter.Cancelled && ADataSetFilterCsv != "")
@@ -135,7 +139,5 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             DBAccess.GDBAccessObj.RollbackTransaction();
             return MainDs;
         }
-
-
     }
 }

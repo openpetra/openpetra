@@ -50,6 +50,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
 
                 FPetraUtilsObject.LoadDefaultSettings();
+
                 if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
                 {
                     FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
@@ -99,11 +100,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             // The table contains extra rows for "headers" and "footers", facilitating the hierarchical printout.
 
             DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("BalanceSheet", paramsDictionary);
+
             if (ReportTable == null)
             {
                 FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
                 return false;
             }
+
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "BalanceSheet");
 
             //

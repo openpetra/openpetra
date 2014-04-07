@@ -173,9 +173,11 @@ namespace Ict.Petra.Server.MFinance.GL
                             }
                             else
                             {
-                                FImportMessage = String.Format(Catalog.GetString("At line number {0}, the effective date [{1}] of the imported batch is not in an open period."),
-                                    RowNumber,
-                                    StringHelper.DateToLocalizedString(NewBatch.DateEffective));
+                                FImportMessage =
+                                    String.Format(Catalog.GetString(
+                                            "At line number {0}, the effective date [{1}] of the imported batch is not in an open period."),
+                                        RowNumber,
+                                        StringHelper.DateToLocalizedString(NewBatch.DateEffective));
 
                                 throw new EOPAppException();
                             }
@@ -245,8 +247,9 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((NewJournal.TransactionCurrency == LedgerTable[0].BaseCurrency)
                                 && (NewJournal.ExchangeRateToBase != 1.0m))
                             {
-                                FImportMessage = String.Format(Catalog.GetString("At line number {0}, Journal in base currency must have exchange rate 1.0"),
-                                    RowNumber);
+                                FImportMessage =
+                                    String.Format(Catalog.GetString("At line number {0}, Journal in base currency must have exchange rate 1.0"),
+                                        RowNumber);
 
                                 throw new EOPAppException();
                             }
@@ -264,7 +267,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((journalYear != BatchYearNr) || (journalPeriod != BatchPeriodNumber))
                             {
                                 FImportMessage = String.Format(
-                                    Catalog.GetString("At line number {0}, the journal effective date {1} is not in the same period as the batch date {2}."),
+                                    Catalog.GetString(
+                                        "At line number {0}, the journal effective date {1} is not in the same period as the batch date {2}."),
                                     RowNumber,
                                     journalDate.ToShortDateString(),
                                     NewBatch.DateEffective.ToShortDateString());
@@ -282,7 +286,8 @@ namespace Ict.Petra.Server.MFinance.GL
                         {
                             if (NewJournal == null)
                             {
-                                FImportMessage = String.Format(Catalog.GetString("At line number {0}, expected a Journal or Batch line, but found a Transaction"),
+                                FImportMessage =
+                                    String.Format(Catalog.GetString("At line number {0}, expected a Journal or Batch line, but found a Transaction"),
                                         RowNumber);
                                 throw new Exception();
                             }
@@ -389,7 +394,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((DebitAmount == 0) && (CreditAmount == 0))
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        String.Format(Catalog.GetString("At line number {0}, either the debit amount or the credit amount must be greater than 0."),
+                                        String.Format(Catalog.GetString(
+                                                "At line number {0}, either the debit amount or the credit amount must be greater than 0."),
                                             RowNumber),
                                         TResultSeverity.Resv_Critical));
                             }
@@ -397,7 +403,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((DebitAmount < 0) || (CreditAmount < 0))
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        String.Format(Catalog.GetString("At line number {0}, negative amount specified - debits and credits must be positive."),
+                                        String.Format(Catalog.GetString(
+                                                "At line number {0}, negative amount specified - debits and credits must be positive."),
                                             RowNumber),
                                         TResultSeverity.Resv_Critical));
                             }
@@ -405,7 +412,8 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((DebitAmount != 0) && (CreditAmount != 0))
                             {
                                 AMessages.Add(new TVerificationResult(Catalog.GetString("Importing Transaction"),
-                                        String.Format(Catalog.GetString("At line number {0}, Transactions cannot have values for both debit and credit amounts."),
+                                        String.Format(Catalog.GetString(
+                                                "At line number {0}, Transactions cannot have values for both debit and credit amounts."),
                                             RowNumber),
                                         TResultSeverity.Resv_Critical));
                             }

@@ -35,7 +35,6 @@ namespace Ict.Petra.Client.MReporting.Gui
 {
     public partial class TFrmMaintainTemplates : IFrmPetra
     {
-
         SReportTemplateTable FTemplateTable = null;
         SReportTemplateRow FSelectedRow = null;
         private TFrmPetraReportingUtils FPetraUtilsObject;
@@ -56,12 +55,12 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FTemplateTable.Merge(TRemote.MReporting.WebConnectors.SaveTemplates(FTemplateTable));
                 DataChangedFlag = false;
             }
+
             return true;
         }
 
         private void SetControlsVisible()
         {
-
             btnSelect.Enabled = (FSelectedRow != null);
             btnDuplicate.Enabled = (FSelectedRow != null);
             btnDelete.Enabled = (FSelectedRow != null);
@@ -81,7 +80,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             lblPrivate.Visible = chkPrivate.Visible;
             lblPrivateDefault.Visible = chkPrivateDefault.Visible;
             lblReadonly.Visible = chkReadonly.Visible;
-
         }
 
         private void chkDefaultCheckedChanged(System.Object sender, System.Object e)
@@ -97,6 +95,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                         chkDefault.Checked = false;
                         return;
                     }
+
                     //
                     // If so, then I need to unset the current Default:
                     foreach (SReportTemplateRow Row in FTemplateTable.Rows)
@@ -105,10 +104,10 @@ namespace Ict.Petra.Client.MReporting.Gui
                     }
                 }
                 else // The user wants to unset this but he can't.
-                     // Rather than just disabling the control, I'll allow him to try,
+                {    // Rather than just disabling the control, I'll allow him to try,
                      // and then explain why it doesn't work...
-                {
-                    MessageBox.Show(Catalog.GetString("There must always be a default Template.\r\nDon't de-select this; set another template as default instead."),
+                    MessageBox.Show(Catalog.GetString(
+                            "There must always be a default Template.\r\nDon't de-select this; set another template as default instead."),
                         Catalog.GetString("Default Template"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
                     chkDefault.Checked = true;
                     return;
@@ -173,7 +172,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                 }                                                       // the Try-Catch block is left here in case the previous style comes back!
                 catch (Exception)
                 {
-                    MessageBox.Show(String.Format(Catalog.GetString("Cannot rename template.\r\nAnother template is called {0}."), txtDescription.Text),
+                    MessageBox.Show(String.Format(Catalog.GetString("Cannot rename template.\r\nAnother template is called {0}."),
+                            txtDescription.Text),
                         Catalog.GetString("Rename Template"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
                     chkDefault.Checked = true;
                 }
@@ -189,6 +189,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             FInChangeEvent = true;
             DataRowView[] SelectedRows = grdTemplateList.SelectedDataRowsAsDataRowView;
+
             if (SelectedRows.Length > 0)
             {
                 GetDataFromControls();
@@ -204,6 +205,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 FSelectedRow = null;
             }
+
             SetControlsVisible();
             FInChangeEvent = false;
         }
@@ -250,7 +252,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             return FSelectedRow;
         }
 
-
         private void ExitManualCode()
         {
             SaveChanges();
@@ -260,10 +261,12 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             if (FSelectedRow.Default)
             {
-                MessageBox.Show(Catalog.GetString("There must always be a default Template.\r\nSet another template as the default before deleting this."),
+                MessageBox.Show(Catalog.GetString(
+                        "There must always be a default Template.\r\nSet another template as the default before deleting this."),
                     Catalog.GetString("Default Template"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
                 return;
             }
+
             FSelectedRow.Delete();
             DataChangedFlag = true;
             FSelectedRow = null;
@@ -274,7 +277,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             GetDataFromControls();
             SReportTemplateRow NewRow = FTemplateTable.NewRowTyped();
-            DataUtilities.CopyAllColumnValues(FSelectedRow,NewRow);
+            DataUtilities.CopyAllColumnValues(FSelectedRow, NewRow);
             NewRow.TemplateId = -1;
             NewRow.Author = FCurrentUser;
             NewRow.Default = false;
@@ -291,6 +294,5 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             Close();
         }
-
     }
 }

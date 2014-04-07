@@ -437,8 +437,8 @@ namespace Ict.Petra.Server.MCommon
             try
             {
                 transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum,
-                        out NewTransaction);
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
                 // Fill temporary table with query results (all records)
                 FDataAdapter = null;
                 DBAccess.GDBAccessObj.PrepareNextCommand();
@@ -1180,7 +1180,6 @@ namespace Ict.Petra.Server.MCommon
 
             return outcome;
         }
-
     }
     #endregion
 
@@ -1191,7 +1190,7 @@ namespace Ict.Petra.Server.MCommon
         private DbDataAdapter FDataAdapter;
 
         /// <summary>
-        /// Setting this flag cancels any reporting query that's running right now, 
+        /// Setting this flag cancels any reporting query that's running right now,
         /// and eefectively short-circuits any subsequent queries, until the flag is cleared.
         /// </summary>
         public Boolean Cancelled
@@ -1203,6 +1202,7 @@ namespace Ict.Petra.Server.MCommon
             set
             {
                 FReportingQueryCancelFlag = value;
+
                 if (FReportingQueryCancelFlag)
                 {
                     try
@@ -1226,6 +1226,7 @@ namespace Ict.Petra.Server.MCommon
         public DataTable RunQuery(String Query, String TableName, TDBTransaction Trans)
         {
             DataTable resultTable = new DataTable(TableName);
+
             if (!FReportingQueryCancelFlag)
             {
                 try
@@ -1238,6 +1239,7 @@ namespace Ict.Petra.Server.MCommon
                     TLogging.Log("ReportingQueryWithCancelOption: Query Raised exception:" + ex.Message);
                 }
             }
+
             return resultTable;
         }
     }

@@ -233,7 +233,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// If an alternative reporting engine is being used,
         /// this delegate should also be set so that the Cancel button can work.
         /// </summary>
-        /// 
+        ///
         public TDelegateGenerateReportOverride DelegateCancelReportOverride
         {
             set
@@ -392,9 +392,11 @@ namespace Ict.Petra.Client.MReporting.Gui
             // If the FFastReportsPlugin initialises fully, it changes the available menu options.
 
             FFastReportsPlugin = new FastReportsWrapper(this);
-            if (FFastReportsPlugin.LoadedOK)
 
-            SetAvailableFunctions();
+            if (FFastReportsPlugin.LoadedOK)
+            {
+                SetAvailableFunctions();
+            }
 
             return ReturnValue;
         }
@@ -408,6 +410,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                                        System.IO.Path.DirectorySeparatorChar + this.FSettingsDirectory;
             string UserSettingsDirectory = TClientSettings.ReportingPathReportUserSettings +
                                            System.IO.Path.DirectorySeparatorChar + this.FSettingsDirectory;
+
             this.FStoredSettings = new TStoredSettings(FReportName, SettingsDirectory, UserSettingsDirectory);
             UpdateLoadingMenu(this.FStoredSettings.GetRecentlyUsedSettings());
 
@@ -534,9 +537,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         private void UpdateStatusBarThread()
         {
             String OldLoggingText = "";
+
             while (true)
             {
                 String ProgressInformation = TRemote.MReporting.WebConnectors.GetServerStatus();
+
                 if (ProgressInformation != OldLoggingText)
                 {
                     TLogging.Log(ProgressInformation, TLoggingType.ToStatusBar);
@@ -580,7 +585,6 @@ namespace Ict.Petra.Client.MReporting.Gui
                     return;
                 }
 
-
                 if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
                 {
                     TLogging.SetStatusBarProcedure(WriteToStatusBar);
@@ -595,7 +599,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -628,6 +632,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 {
                     FCalculator.CancelReportCalculation();
                 }
+
                 return;
             }
 
@@ -656,9 +661,10 @@ namespace Ict.Petra.Client.MReporting.Gui
             else
             {
                 MakeCancelButtonAvailable();
+
                 if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
                 {
-                    ((IFrmReporting) FTheForm).EnableBusy(true);
+                    ((IFrmReporting)FTheForm).EnableBusy(true);
                     FGenerateReportThread = new Thread(GenerateReport);
                     FGenerateReportThread.IsBackground = true;
                     FGenerateReportThread.Start();
@@ -720,7 +726,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if ((FGenerateExtractThread == null) || (!FGenerateExtractThread.IsAlive))
             {
-                ((IFrmReporting) FTheForm).EnableBusy(true);
+                ((IFrmReporting)FTheForm).EnableBusy(true);
                 FGenerateExtractThread = new Thread(GenerateExtract);
                 FGenerateExtractThread.IsBackground = true;
                 FGenerateExtractThread.Start();
@@ -795,7 +801,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 FWinForm.Cursor = Cursors.Default;
                 FormCursor = FWinForm.Cursor;
-                ((IFrmReporting) FTheForm).EnableBusy(false);
+                ((IFrmReporting)FTheForm).EnableBusy(false);
             }
         }
 
@@ -902,20 +908,20 @@ namespace Ict.Petra.Client.MReporting.Gui
 //            tbrMain.Items["tbbMaintainTemplates"].Visible = !AEnabled;
 
 /*
- // Method previously looked like this when it was in each and every report:
- // (It was previously not called from anywhere ever, but now I want to use it!)
-
-            foreach (ToolStripItem item in mniLoadSettings.DropDownItems)
-            {
-                item.Enabled = AEnabled;
-            }
-            mniLoadSettings.Enabled = AEnabled;
-            mniSaveSettings.Enabled = AEnabled;
-            mniSaveSettingsAs.Enabled = AEnabled;
-            mniMaintainSettings.Enabled = AEnabled;
-            //tbbLoadSettings.Enabled = AEnabled;
-            tbbSaveSettings.Enabled = AEnabled;
-            tbbSaveSettingsAs.Enabled = AEnabled;
+ * // Method previously looked like this when it was in each and every report:
+ * // (It was previously not called from anywhere ever, but now I want to use it!)
+ *
+ *          foreach (ToolStripItem item in mniLoadSettings.DropDownItems)
+ *          {
+ *              item.Enabled = AEnabled;
+ *          }
+ *          mniLoadSettings.Enabled = AEnabled;
+ *          mniSaveSettings.Enabled = AEnabled;
+ *          mniSaveSettingsAs.Enabled = AEnabled;
+ *          mniMaintainSettings.Enabled = AEnabled;
+ *          //tbbLoadSettings.Enabled = AEnabled;
+ *          tbbSaveSettings.Enabled = AEnabled;
+ *          tbbSaveSettingsAs.Enabled = AEnabled;
  */
         }
 
@@ -930,17 +936,20 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             MenuStrip mnuMain = (MenuStrip)FFormReportUi.Controls["mnuMain"];
             ToolStripMenuItem mniLoadSettings = (ToolStripMenuItem)mnuMain.Items["mniLoadSettings"];
-            if (mniLoadSettings == null || AIndex < 0 || AIndex >= mniLoadSettings.DropDownItems.Count - 2)
+
+            if ((mniLoadSettings == null) || (AIndex < 0) || (AIndex >= mniLoadSettings.DropDownItems.Count - 2))
             {
                 mniItem = null;
                 tbbItem = null;
                 return false;
             }
+
             mniItem = mniLoadSettings.DropDownItems[AIndex + 2];
             // TODO
             tbbItem = null;
             return true;
         }
+
         /// <summary>
         /// This procedure loads the available saved settings into the Load menu
         /// </summary>
@@ -1140,7 +1149,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 try
                 {
                     RecentlyUsedSettings = this.FStoredSettings.SaveSettings(FCurrentSettingsName, FCalculator.GetParameters());
-                // set the title of the window
+                    // set the title of the window
                     SetWindowTitle();
                 }
                 catch (Exception)
@@ -1298,7 +1307,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         public virtual void ReadControls(TReportActionEnum AReportAction)
         {
             InitialiseCalculator(FCalculator, FXMLFiles, FIsolationLevel, FCurrentReport);
-            ((IFrmReporting) FTheForm).ReadControls(FCalculator, AReportAction);
+            ((IFrmReporting)FTheForm).ReadControls(FCalculator, AReportAction);
 
             TParameterList CurrentParameters = FCalculator.GetParameters();
 
@@ -1325,7 +1334,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>void</returns>
         public virtual void SetControls(TParameterList AParameters)
         {
-            ((IFrmReporting) FTheForm).SetControls(AParameters);
+            ((IFrmReporting)FTheForm).SetControls(AParameters);
         }
 
         /// add a verification result

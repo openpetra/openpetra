@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// Use This template for the report
         /// </summary>
         /// <param name="ATemplate"></param>
-        public void SetTemplate (SReportTemplateRow ATemplate)
+        public void SetTemplate(SReportTemplateRow ATemplate)
         {
             FSelectedTemplate = ATemplate;
             FPetraUtilsObject.SetWindowTitle();
@@ -76,10 +76,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             get
             {
-                if (!LoadedOK || FSelectedTemplate==null)
+                if (!LoadedOK || (FSelectedTemplate == null))
                 {
                     return "";
                 }
+
                 return String.Format(" [{0}]", FSelectedTemplate.ReportVariant);
             }
         }
@@ -95,7 +96,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             FDataGetter = DataGetter;
         }
 
-
         /// <summary>
         /// Instance this object and it changes the behaviour to use FastReports if the DLL is installed.
         /// </summary>
@@ -108,18 +108,20 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FDataGetter = null;
                 FPetraUtilsObject = PetraUtilsObject;
                 FastReportsDll = Assembly.LoadFrom("FastReport.DLL"); // If there's no FastReports DLL, this will "fall at the first hurdle"!
-                SReportTemplateTable TemplateTable = TRemote.MReporting.WebConnectors.GetTemplateVariants(FPetraUtilsObject.FReportName, UserInfo.GUserInfo.UserID, true);
+                SReportTemplateTable TemplateTable = TRemote.MReporting.WebConnectors.GetTemplateVariants(FPetraUtilsObject.FReportName,
+                    UserInfo.GUserInfo.UserID,
+                    true);
+
                 if (TemplateTable.Rows.Count == 0)
                 {
                     TLogging.Log("No FastReports template for " + FPetraUtilsObject.FReportName);
                     return;
                 }
 
-
                 FfastReportInstance = FastReportsDll.CreateInstance("FastReport.Report");
                 FFastReportType = FfastReportInstance.GetType();
                 FFastReportType.GetProperty("StoreInResources").SetValue(FfastReportInstance, false, null);
-                SetTemplate (TemplateTable[0]);
+                SetTemplate(TemplateTable[0]);
 
                 FPetraUtilsObject.DelegateGenerateReportOverride = GenerateReport;
                 FPetraUtilsObject.DelegateViewReportOverride = DesignReport;
@@ -169,9 +171,10 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         private void DesignReport(TRptCalculator ACalc)
         {
-            if (FSelectedTemplate != null && FDataGetter != null && FDataGetter(ACalc))
+            if ((FSelectedTemplate != null) && (FDataGetter != null) && FDataGetter(ACalc))
             {
-                FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance, new object[] { FSelectedTemplate.XmlText });
+                FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
+                    new object[] { FSelectedTemplate.XmlText });
 
                 LoadReportParams(ACalc);
                 FFastReportType.GetMethod("Design", new Type[0]).Invoke(FfastReportInstance, null);
@@ -189,7 +192,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 Int32 Page1Pos = XmlString.IndexOf("<ReportPage");
                 Int32 PrevPage1Pos = FSelectedTemplate.XmlText.IndexOf("<ReportPage");
 
-                if (Page1Pos < 1 || PrevPage1Pos < 1)
+                if ((Page1Pos < 1) || (PrevPage1Pos < 1))
                 {
                     TemplateChanged = true;
                 }
@@ -204,23 +207,25 @@ namespace Ict.Petra.Client.MReporting.Gui
                 if (TemplateChanged)
                 {
                     Boolean MakeACopy = false;
+
                     if (FSelectedTemplate.Readonly)
                     {
                         if (MessageBox.Show(
-                            String.Format(Catalog.GetString("{0} cannot be ovewritten.\r\nMake a copy instead?"), FSelectedTemplate.ReportVariant),
-                            Catalog.GetString("Design Template"),
-                            MessageBoxButtons.YesNo) == DialogResult.No)
+                                String.Format(Catalog.GetString("{0} cannot be ovewritten.\r\nMake a copy instead?"), FSelectedTemplate.ReportVariant),
+                                Catalog.GetString("Design Template"),
+                                MessageBoxButtons.YesNo) == DialogResult.No)
                         {
                             return;
                         }
+
                         MakeACopy = true;
                     }
                     else
                     {
                         if (MessageBox.Show(
-                            String.Format(Catalog.GetString("Save changes to {0}?"), FSelectedTemplate.ReportVariant),
-                            Catalog.GetString("Design Template"),
-                            MessageBoxButtons.YesNo) == DialogResult.No)
+                                String.Format(Catalog.GetString("Save changes to {0}?"), FSelectedTemplate.ReportVariant),
+                                Catalog.GetString("Design Template"),
+                                MessageBoxButtons.YesNo) == DialogResult.No)
                         {
                             return;
                         }
@@ -250,17 +255,20 @@ namespace Ict.Petra.Client.MReporting.Gui
                     SetTemplate(Tbl[0]);
                 }
             }
+
             FPetraUtilsObject.UpdateParentFormEndOfReport();
         }
 
         private void GenerateReport(TRptCalculator ACalc)
         {
-            if (FSelectedTemplate != null && FDataGetter != null && FDataGetter(ACalc))
+            if ((FSelectedTemplate != null) && (FDataGetter != null) && FDataGetter(ACalc))
             {
-                FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance, new object[] { FSelectedTemplate.XmlText });
+                FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
+                    new object[] { FSelectedTemplate.XmlText });
                 LoadReportParams(ACalc);
                 FFastReportType.GetMethod("Show", new Type[0]).Invoke(FfastReportInstance, null);
             }
+
             FPetraUtilsObject.UpdateParentFormEndOfReport();
         }
     }

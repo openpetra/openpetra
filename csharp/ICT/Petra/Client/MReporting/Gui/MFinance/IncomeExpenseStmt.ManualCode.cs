@@ -53,6 +53,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
 
                 FPetraUtilsObject.LoadDefaultSettings();
+
                 if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
                 {
                     FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
@@ -98,11 +99,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             // It does not contain any variance (actual / budget) figures - these are calculated in the report.
 
             DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("IncomeExpense", paramsDictionary);
+
             if (ReportTable == null)
             {
                 FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
                 return false;
             }
+
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "IncomeExpense");
 
             //

@@ -51,7 +51,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
     ///</summary>
     public class TFinanceReportingWebConnector
     {
-
         /// <summary>
         /// get the details of the given ledger
         /// </summary>
@@ -452,7 +451,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             String ParentAccountCode = HDRow.AccountCodeToReportTo;
 
             if (((filteredResults.TableName == "IncomeExpense") && (ParentAccountCode == "RET EARN")) // This is a literal AccountCode, which (in a non-OM setting) the user could potentially change.
-               || (ParentAccountCode == LedgerNumber.ToString()))                                     // And actually this is effectively a literal too.
+                || (ParentAccountCode == LedgerNumber.ToString()))                                    // And actually this is effectively a literal too.
             {
                 // The calling Row is a "first level" account with no parent.
                 ParentAccountPath = "";
@@ -486,6 +485,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 }
 
                 DataRow ParentRow;
+
                 if (Idx < 0)                // This Parent Account Code should have a row in the table - if not I need to create one now.
                 {
                     ParentRow = filteredResults.NewRow();
@@ -509,10 +509,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         case "Asset":
                             ParentRow["AccountTypeOrder"] = 1;
                             break;
+
                         case "Expense":
                         case "Liability":
                             ParentRow["AccountTypeOrder"] = 2;
                             break;
+
                         case "Equity":
                             ParentRow["AccountTypeOrder"] = 3;
                             break;
@@ -564,7 +566,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     Idx = HierarchyTbl.DefaultView.Find(ParentAccountCode);
                     // If Idx < 0 that's pretty serious. The next line will raise an exception.
                     HDRow = (AAccountHierarchyDetailRow)HierarchyTbl.DefaultView[Idx].Row;
-                    
+
                     ParentRow["AccountPath"] = MyParentAccountPath + HDRow.ReportOrder + "-" + ParentAccountCode + "~";
                     ParentRow["AccountLevel"] = AccountLevel;
                 }
@@ -601,6 +603,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                                            (Sign * Convert.ToDecimal(NewDataRow["WholeYearBudget"]));
                         }
                     }
+
                     //
                     // Now ensure that my parent also updates her own parent:
 
@@ -639,7 +642,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// so it does not rely on the summarisation in GLMP.
         /// </summary>
         [NoRemoting]
-        public static DataTable BalanceSheetTable(Dictionary<String, TVariant> AParameters, TReportingDbAdapter DbAdapter)
+        public static DataTable BalanceSheetTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
             DataTable FilteredResults = null;
 
@@ -694,7 +697,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
                                " AND glmp.a_period_number_i=" + ReportPeriodEnd +
                                " AND a_account.a_account_code_c = glm.a_account_code_c" +
-                               " AND (a_account.a_account_type_c IN ('Asset','Liability','Equity') OR a_account.a_account_code_c = '" + PlAccountCode + "')" +
+                               " AND (a_account.a_account_type_c IN ('Asset','Liability','Equity') OR a_account.a_account_code_c = '" +
+                               PlAccountCode + "')" +
                                " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
                                " AND (a_account.a_posting_status_l = true OR a_account.a_account_code_c = '" + PlAccountCode + "')" +
                                " ORDER BY glm.a_account_code_c"
@@ -713,6 +717,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 // Some of these rows are from a year ago. I'll copy those into the current period "LastYear" fields.
 
                 TLogging.Log(Catalog.GetString("Get last year data.."), TLoggingType.ToStatusBar);
+
                 foreach (DataRowView rv in ThisMonth)
                 {
                     if (DbAdapter.Cancelled)
@@ -746,7 +751,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 //
                 // I only have "posting accounts" - I need to add the summary accounts.
-                AAccountHierarchyDetailTable HierarchyTbl = AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(LedgerNumber, HierarchyName, ReadTrans);
+                AAccountHierarchyDetailTable HierarchyTbl = AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(LedgerNumber,
+                    HierarchyName,
+                    ReadTrans);
 
                 HierarchyTbl.DefaultView.Sort = "a_reporting_account_code_c";  // These two sort orders
                 FilteredResults.DefaultView.Sort = "AccountCode";              // Are required by AddTotalsToParentAccountRow, below.
@@ -754,6 +761,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 Int32 PostingAccountRecords = FilteredResults.Rows.Count;
 
                 TLogging.Log(Catalog.GetString("Summarise to parent accounts.."), TLoggingType.ToStatusBar);
+
                 for (Int32 Idx = 0; Idx < PostingAccountRecords; Idx++)
                 {
                     if (DbAdapter.Cancelled)
@@ -778,7 +786,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         ReadTrans);
                     Row["AccountLevel"] = AccountLevel;
                     Row["AccountPath"] = ParentAccountPath + Row["AccountCode"];
-
                 }
 
                 //
@@ -798,6 +805,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 // I want to include a note to show whether a row has child rows,
                 // and if it does, I'll copy this row to a new row, below the children, marking the new row as "footer".
                 TLogging.Log(Catalog.GetString("Format data for reporting.."), TLoggingType.ToStatusBar);
+
                 for (Int32 RowIdx = 0; RowIdx < FilteredResults.Rows.Count - 1; RowIdx++)
                 {
                     if (DbAdapter.Cancelled)
@@ -836,14 +844,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             FilteredResults.Rows.Add(FooterRow);
                         }
                     }
-
                 } // for
+
             }  // try
             catch (Exception ex) // if the report was cancelled, DB calls with the same transaction will raise exceptions.
             {
                 TLogging.Log(ex.Message);
             }
-                 
             finally  // Whatever happens, I need to do this:
             {
                 DBAccess.GDBAccessObj.RollbackTransaction();
@@ -851,9 +858,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             TLogging.Log("", TLoggingType.ToStatusBar);
             return FilteredResults;
         } // Balance Sheet Table
-
-
-
 
         /// <summary>
         /// For "Cost Centre Breakdown", I need to add records summarising the transactions for Summary Accounts by Cost Centre.
@@ -1027,7 +1031,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// so it does not rely on the summarisation in GLMP.
         /// </summary>
         [NoRemoting]
-        public static DataTable IncomeExpenseTable(Dictionary<String, TVariant> AParameters, TReportingDbAdapter DbAdapter)
+        public static DataTable IncomeExpenseTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
             /* Required columns:
              *   CostCentreCode
@@ -1086,7 +1090,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             //
             // Read different DB fields according to currency setting
             String ActualFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_actual_intl_n" : "a_actual_base_n";
-            String StartBalanceFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_start_balance_intl_n" : "a_start_balance_base_n";
+            String StartBalanceFieldName =
+                AParameters["param_currency"].ToString().StartsWith("Int") ? "a_start_balance_intl_n" : "a_start_balance_base_n";
             String BudgetFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_budget_intl_n" : "a_budget_base_n";
             Boolean CostCentreBreakdown = AParameters["param_cost_centre_breakdown"].ToBool();
             Boolean WholeYearPeriodsBreakdown = AParameters["param_period_breakdown"].ToBool();
@@ -1298,7 +1303,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             return FilteredResults;
                         }
 
-                        Query = "SELECT SUM(" + BudgetFieldName + ") AS WholeYearBudget FROM a_general_ledger_master_period WHERE a_glm_sequence_i=" +
+                        Query = "SELECT SUM(" + BudgetFieldName +
+                                ") AS WholeYearBudget FROM a_general_ledger_master_period WHERE a_glm_sequence_i=" +
                                 Convert.ToInt32(Row["Seq"]);
                         DataTable YearBudgetTbl = DbAdapter.RunQuery(Query, "YearBudget", ReadTrans);
 
@@ -1312,7 +1318,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 //
                 // I only have "posting accounts" - I need to add the summary accounts.
                 TLogging.Log(Catalog.GetString("Summarise to parent accounts.."), TLoggingType.ToStatusBar);
-                AAccountHierarchyDetailTable HierarchyTbl = AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(LedgerNumber, HierarchyName, ReadTrans);
+                AAccountHierarchyDetailTable HierarchyTbl = AAccountHierarchyDetailAccess.LoadViaAAccountHierarchy(LedgerNumber,
+                    HierarchyName,
+                    ReadTrans);
 
                 HierarchyTbl.DefaultView.Sort = "a_reporting_account_code_c";       // These two sort orders
 
@@ -1463,6 +1471,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 // I want to include a note to show whether a row has child rows,
                 // and if it does, I'll copy this row to a new row, below the children, marking the new row as "footer".
                 TLogging.Log(Catalog.GetString("Format data for reporting.."), TLoggingType.ToStatusBar);
+
                 for (Int32 RowIdx = 0; RowIdx < FilteredResults.Rows.Count - 1; RowIdx++)
                 {
                     if (DbAdapter.Cancelled)
@@ -1539,7 +1548,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Returns a DataSet to the client for use in client-side reporting
         /// </summary>
         [NoRemoting]
-        public static DataTable HosaGiftsTable(Dictionary<String, TVariant> AParameters, TReportingDbAdapter DbAdapter)
+        public static DataTable HosaGiftsTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
             Boolean NewTransaction = false;
 

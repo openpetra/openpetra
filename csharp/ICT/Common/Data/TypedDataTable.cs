@@ -419,8 +419,8 @@ namespace Ict.Common.Data
         {
             TTypedColumnInfo columnInfo = TableInfo[ATableNumber].columns[AColumnNr];
 
-            if (columnInfo.odbctype == OdbcType.VarChar
-               || columnInfo.odbctype == OdbcType.Text)
+            if ((columnInfo.odbctype == OdbcType.VarChar)
+                || (columnInfo.odbctype == OdbcType.Text))
             {
                 return new System.Data.Odbc.OdbcParameter("", columnInfo.odbctype, columnInfo.length);
             }

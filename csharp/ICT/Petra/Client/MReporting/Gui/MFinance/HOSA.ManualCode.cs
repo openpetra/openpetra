@@ -61,6 +61,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 uco_GeneralSettings.CurrencyOptions(new object[] { "Base", "International" });
 
                 FPetraUtilsObject.LoadDefaultSettings();
+
                 if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
                 {
                     FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
@@ -216,11 +217,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("HOSA", paramsDictionary);
+
             if (ReportTable == null)
             {
                 FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
                 return false;
             }
+
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "Gifts");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.AAccount, "a_account");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDs.ACostCentre, "a_costCentre");

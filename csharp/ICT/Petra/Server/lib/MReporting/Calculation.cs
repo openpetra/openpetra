@@ -1230,14 +1230,14 @@ namespace Ict.Petra.Server.MReporting
             }
         }
 
-
-        private String ReplaceQuotesForSql (String strSql, String CalculationId)
+        private String ReplaceQuotesForSql(String strSql, String CalculationId)
         {
             if (strSql.IndexOf("\"") > 0)
             {
                 TLogging.Log("Warning: SQL Contains double quotes for calculation \"" + CalculationId + "\"");
                 strSql = strSql.Replace('"', '\'');
             }
+
             return strSql;
         }
 
@@ -1344,7 +1344,7 @@ namespace Ict.Petra.Server.MReporting
                 }
                 else if (strSql.Length > 0)
                 {
-                    strSql = ReplaceQuotesForSql (strSql, rptCalculation.strId);
+                    strSql = ReplaceQuotesForSql(strSql, rptCalculation.strId);
                     DataTable tab = DatabaseConnection.SelectDT(strSql, "EvaluateCalculation_TempTable", DatabaseConnection.Transaction);
                     string strReturns = rptCalculation.strReturns;
 
