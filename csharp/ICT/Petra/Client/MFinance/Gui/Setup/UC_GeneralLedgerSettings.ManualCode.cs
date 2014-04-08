@@ -95,9 +95,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             // Panels in group boxes add unwanted extra height -> reduce height manually
-
             int DefaultHeight = nudActualsDataRetention.Height;
             int HeightDifference = pnlSuspenseAccounts.Height - DefaultHeight;
+            int BigHeightDifference = pnlFwdPosting.Height - DefaultHeight;         // pnlFwdPosting.Height is more than the others due to the nudBox
 
             // correct heights of controls
             pnlSuspenseAccounts.Height = DefaultHeight;
@@ -108,22 +108,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             grpMiscellaneousFlags.Height -= (int)(3.5 * HeightDifference);
 
             // move controls into the right place after correcting heights
-            chkSuspenseAccountFlag.Location =
-                new System.Drawing.Point(chkSuspenseAccountFlag.Location.X, chkSuspenseAccountFlag.Location.Y - (int)(0.5 * HeightDifference));
-            pnlBudget.Location = new System.Drawing.Point(pnlBudget.Location.X, pnlBudget.Location.Y - (int)(1 * HeightDifference));
-            chkBudgetControlFlag.Location =
-                new System.Drawing.Point(chkBudgetControlFlag.Location.X, chkBudgetControlFlag.Location.Y - (int)(0.5 * HeightDifference));
-            pnlBranchProcess.Location =
-                new System.Drawing.Point(pnlBranchProcess.Location.X, pnlBranchProcess.Location.Y - (int)(2 * HeightDifference));
-            chkBranchProcessing.Location =
-                new System.Drawing.Point(chkBranchProcessing.Location.X, chkBranchProcessing.Location.Y - (int)(0.5 * HeightDifference));
-            pnlFwdPosting.Location = new System.Drawing.Point(pnlFwdPosting.Location.X, pnlFwdPosting.Location.Y - (int)(3 * HeightDifference));
             chkUseDefaultFwdPostingPeriods.Location = new System.Drawing.Point(chkUseDefaultFwdPostingPeriods.Location.X,
                 chkUseDefaultFwdPostingPeriods.Location.Y - (int)(0.5 * HeightDifference));
             lblNumberFwdPostingPeriods.Location = new System.Drawing.Point(lblNumberFwdPostingPeriods.Location.X,
                 lblNumberFwdPostingPeriods.Location.Y - (int)(0.5 * HeightDifference));
             nudNumberFwdPostingPeriods.Location = new System.Drawing.Point(nudNumberFwdPostingPeriods.Location.X,
                 nudNumberFwdPostingPeriods.Location.Y - (int)(0.5 * HeightDifference));
+            
+            pnlSuspenseAccounts.Location = new System.Drawing.Point(pnlSuspenseAccounts.Location.X, pnlSuspenseAccounts.Location.Y - BigHeightDifference);
+            chkSuspenseAccountFlag.Location =
+                new System.Drawing.Point(chkSuspenseAccountFlag.Location.X, chkSuspenseAccountFlag.Location.Y - (int)(0.5 * HeightDifference));
+            
+            pnlBudget.Location = new System.Drawing.Point(pnlBudget.Location.X, pnlBudget.Location.Y - BigHeightDifference - HeightDifference);
+            chkBudgetControlFlag.Location =
+                new System.Drawing.Point(chkBudgetControlFlag.Location.X, chkBudgetControlFlag.Location.Y - (int)(0.5 * HeightDifference));
+            
+            pnlBranchProcess.Location =
+                new System.Drawing.Point(pnlBranchProcess.Location.X, pnlBranchProcess.Location.Y - BigHeightDifference - (int)(2 * HeightDifference));
+            chkBranchProcessing.Location =
+                new System.Drawing.Point(chkBranchProcessing.Location.X, chkBranchProcessing.Location.Y - (int)(0.5 * HeightDifference));
 
             grpDataRetention.Location =
                 new System.Drawing.Point(grpDataRetention.Location.X, grpDataRetention.Location.Y - (int)(3.5 * HeightDifference));

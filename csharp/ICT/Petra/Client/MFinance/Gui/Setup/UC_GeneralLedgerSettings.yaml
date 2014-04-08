@@ -19,16 +19,16 @@ RootNode:
         grpAccountingPeriods: {Label=Accounting Periods, Width=550, Stretch=horizontally}
             Controls: [rgrCalendarModeRadio, nudNumberOfAccountingPeriods, dtpFinancialYearStartDate, nudCurrentPeriod, btnViewCalendar]
         grpMiscellaneousFlags: {Label=Miscellaneous, Width=550, Stretch=horizontally}
-            Controls: [pnlSuspenseAccounts, pnlBudget, pnlBranchProcess, pnlFwdPosting]
+            Controls: [pnlFwdPosting, pnlSuspenseAccounts, pnlBudget, pnlBranchProcess]
         grpDataRetention: {Label=Data Retention, Width=550, Stretch=horizontally}
             Controls: [nudActualsDataRetention, nudGiftDataRetention]
+        pnlFwdPosting:
+            ControlsOrientation: horizontal
+            Controls: [chkUseDefaultFwdPostingPeriods, nudNumberFwdPostingPeriods]
         pnlSuspenseAccounts:
             Controls: [chkSuspenseAccountFlag]
         pnlBudget:
             Controls: [chkBudgetControlFlag]
-        pnlFwdPosting:
-            ControlsOrientation: horizontal
-            Controls: [chkUseDefaultFwdPostingPeriods, nudNumberFwdPostingPeriods]
         pnlBranchProcess:
             Controls: [chkBranchProcessing]
             
