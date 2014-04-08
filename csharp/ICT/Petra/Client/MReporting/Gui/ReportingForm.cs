@@ -87,7 +87,6 @@ namespace Ict.Petra.Client.MReporting.Gui
         private TDelegateGenerateReportOverride FDelegateGenerateReportOverride;
         private TDelegateGenerateReportOverride FDelegateViewReportOverride;
         private TDelegateGenerateReportOverride FDelegateCancelReportOverride;
-        private TDelegateManageSettingsOverride FDelegateManageSettingsOverride;
 
         /// <summary>number of columns that can be sorted</summary>
         public const Int32 NUMBER_SORTBY = 3;
@@ -180,7 +179,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             FDelegateGenerateReportOverride = null;
             FDelegateViewReportOverride = null;
             FDelegateCancelReportOverride = null;
-            FDelegateManageSettingsOverride = null;
             FFormReportUi = (Form)ATheForm;
         }
 
@@ -239,18 +237,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             set
             {
                 FDelegateCancelReportOverride = value;
-            }
-        }
-
-        /// <summary>
-        /// This property allows an alternative template management scheme to be used.
-        /// </summary>
-        /// <description>Seting this prevents the standard call to GenerateReport.</description>
-        public TDelegateManageSettingsOverride DelegateManageSettingsOverride
-        {
-            set
-            {
-                FDelegateManageSettingsOverride = value;
             }
         }
 
