@@ -44,6 +44,8 @@ using Microsoft.Win32;
 using Ict.Common;
 using Ict.Petra.Client.CommonForms;
 using Ict.Common.Controls;
+using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -66,6 +68,12 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// Delegate to replace the reporting engine
         /// </summary>
         public delegate void TDelegateGenerateReportOverride(TRptCalculator ACalc);
+
+        /// <summary>
+        /// Delegate to replace settings management
+        /// </summary>
+        public delegate void TDelegateManageSettingsOverride();
+
         /// <summary>
         /// Reference to the Delegate for call before LoadSettings is starting (for pre processing)
         /// </summary>
@@ -78,6 +86,8 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         private TDelegateGenerateReportOverride FDelegateGenerateReportOverride;
         private TDelegateGenerateReportOverride FDelegateViewReportOverride;
+        private TDelegateGenerateReportOverride FDelegateCancelReportOverride;
+        private TDelegateManageSettingsOverride FDelegateManageSettingsOverride;
 
         /// <summary>number of columns that can be sorted</summary>
         public const Int32 NUMBER_SORTBY = 3;
@@ -143,6 +153,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>the path where the application is started from.</summary>
         public static string FApplicationDirectory;
 
+        private Form FFormReportUi;
+
+        /// <summary>If FastReports is supported in this context, this will initialise; otherwise LoadedOK is false</summary>
+        public FastReportsWrapper FFastReportsPlugin;
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -156,7 +171,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             FCurrentSettingsName = "";
             FSelectedColumn = -1;
-            FAvailableFunctions = null;
+            FAvailableFunctions = new ArrayList();
             FGenerateReportThread = null;
             FGenerateExtractThread = null;
             FDontResizeForm = false;
@@ -164,6 +179,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             FDelegateLoadSettingsFinished = null;
             FDelegateGenerateReportOverride = null;
             FDelegateViewReportOverride = null;
+            FDelegateCancelReportOverride = null;
+            FDelegateManageSettingsOverride = null;
+            FFormReportUi = (Form)ATheForm;
         }
 
         /// set caption of window, used to build window title
@@ -208,6 +226,31 @@ namespace Ict.Petra.Client.MReporting.Gui
             set
             {
                 FDelegateGenerateReportOverride = value;
+            }
+        }
+
+        /// <summary>
+        /// If an alternative reporting engine is being used,
+        /// this delegate should also be set so that the Cancel button can work.
+        /// </summary>
+        ///
+        public TDelegateGenerateReportOverride DelegateCancelReportOverride
+        {
+            set
+            {
+                FDelegateCancelReportOverride = value;
+            }
+        }
+
+        /// <summary>
+        /// This property allows an alternative template management scheme to be used.
+        /// </summary>
+        /// <description>Seting this prevents the standard call to GenerateReport.</description>
+        public TDelegateManageSettingsOverride DelegateManageSettingsOverride
+        {
+            set
+            {
+                FDelegateManageSettingsOverride = value;
             }
         }
 
@@ -341,29 +384,33 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             FWindowCaption = FWinForm.Text;
 
-            InitialiseStoredSettings(FReportName);
+            InitialiseStoredSettings();
 
             FSelectedColumn = -1;
 
-            SetAvailableFunctions();
+            //
+            // If the FFastReportsPlugin initialises fully, it changes the available menu options.
+
+            FFastReportsPlugin = new FastReportsWrapper(this);
+
+            if (FFastReportsPlugin.LoadedOK)
+            {
+                SetAvailableFunctions();
+            }
 
             return ReturnValue;
         }
 
         /// <summary>
         /// initialize stored settings
-        ///
         /// </summary>
-        /// <param name="AReportName"></param>
-        /// <returns>
-        /// </returns>
-        public void InitialiseStoredSettings(String AReportName)
+        private void InitialiseStoredSettings()
         {
-            FReportName = AReportName;
             string SettingsDirectory = TClientSettings.ReportingPathReportSettings +
                                        System.IO.Path.DirectorySeparatorChar + this.FSettingsDirectory;
             string UserSettingsDirectory = TClientSettings.ReportingPathReportUserSettings +
                                            System.IO.Path.DirectorySeparatorChar + this.FSettingsDirectory;
+
             this.FStoredSettings = new TStoredSettings(FReportName, SettingsDirectory, UserSettingsDirectory);
             UpdateLoadingMenu(this.FStoredSettings.GetRecentlyUsedSettings());
 
@@ -484,6 +531,45 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
+        //
+        // Started in a new thread, this repeatedly asks the server for text to put on the statusbar.
+        //
+        private void UpdateStatusBarThread()
+        {
+            String OldLoggingText = "";
+
+            while (true)
+            {
+                String ProgressInformation = TRemote.MReporting.WebConnectors.GetServerStatus();
+
+                if (ProgressInformation != OldLoggingText)
+                {
+                    TLogging.Log(ProgressInformation, TLoggingType.ToStatusBar);
+                    OldLoggingText = ProgressInformation;
+                }
+
+                Thread.Sleep(500);
+            }
+        }
+
+        private void ThreadFunctionViaDelegate(Object Delgt)
+        {
+            if (FDelegateCancelReportOverride != null)
+            {
+                MakeCancelButtonAvailable();
+            }
+
+            Thread StatusThread = new Thread(UpdateStatusBarThread);
+            StatusThread.Start();
+
+            //
+            // Here's the actual call that causes the report to happen:
+            ((TDelegateGenerateReportOverride)Delgt)(FCalculator);
+
+            StatusThread.Abort();
+            UpdateParentFormEndOfReport();
+        }
+
         /// <summary>
         /// Show The template for the report
         /// </summary>
@@ -499,7 +585,31 @@ namespace Ict.Petra.Client.MReporting.Gui
                     return;
                 }
 
-                FDelegateViewReportOverride(FCalculator);
+                if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
+                {
+                    TLogging.SetStatusBarProcedure(WriteToStatusBar);
+                    FWinForm.Cursor = Cursors.WaitCursor;
+                    FormCursor = FWinForm.Cursor;
+                    ((IFrmReporting)FTheForm).EnableBusy(true);
+                    FGenerateReportThread = new Thread(ThreadFunctionViaDelegate);
+                    FGenerateReportThread.SetApartmentState(ApartmentState.STA);
+                    FGenerateReportThread.Start(FDelegateViewReportOverride);
+                }
+            }
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void MI_MaintainTemplates_Click(System.Object sender, System.EventArgs e)
+        {
+            TFrmMaintainTemplates ManageTemplatesDialog = new TFrmMaintainTemplates(FFormReportUi);
+
+            if (ManageTemplatesDialog.SelectTemplate(FReportName) == DialogResult.OK)
+            {
+                FFastReportsPlugin.SetTemplate(ManageTemplatesDialog.GetSelectedTemplate());
             }
         }
 
@@ -514,26 +624,17 @@ namespace Ict.Petra.Client.MReporting.Gui
             if ((FGenerateReportThread != null) && FGenerateReportThread.IsAlive)
             {
                 // Cancel the report
-                FCalculator.CancelReportCalculation();
-                return;
-            }
+                if (FDelegateCancelReportOverride != null)
+                {
+                    FDelegateCancelReportOverride(FCalculator);
+                }
+                else
+                {
+                    FCalculator.CancelReportCalculation();
+                }
 
-#if TODO
-            // has anything changed in the currently selected column?
-            if (ColumnChanged(FSelectedColumn))
-            {
-                MessageBox.Show(
-                    "Report cannot be generated." + Environment.NewLine + "Please first apply the changes to the current column, " +
-                    Environment.NewLine +
-                    "or cancel the changes.",
-                    "Column changed");
                 return;
             }
-            else
-            {
-                SelectColumn(-1);
-            }
-#endif
 
             // read the settings and parameters from the controls
             if (!ReadControlsWithErrorHandling(TReportActionEnum.raGenerate))
@@ -547,18 +648,23 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             this.FWinForm.Cursor = Cursors.WaitCursor;
-            MakeCancelButtonAvailable();
-            TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
+            FormCursor = FWinForm.Cursor;
+            TLogging.SetStatusBarProcedure(WriteToStatusBar);
 
             if (FDelegateGenerateReportOverride != null)
             {
-                FDelegateGenerateReportOverride(FCalculator);
+                ((IFrmReporting)FTheForm).EnableBusy(true);
+                FGenerateReportThread = new Thread(ThreadFunctionViaDelegate);
+                FGenerateReportThread.SetApartmentState(ApartmentState.STA);
+                FGenerateReportThread.Start(FDelegateGenerateReportOverride);
             }
             else
             {
+                MakeCancelButtonAvailable();
+
                 if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
                 {
-                    ((IFrmReporting) this.FTheForm).EnableBusy(true);
+                    ((IFrmReporting)FTheForm).EnableBusy(true);
                     FGenerateReportThread = new Thread(GenerateReport);
                     FGenerateReportThread.IsBackground = true;
                     FGenerateReportThread.Start();
@@ -615,11 +721,12 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             this.FWinForm.Cursor = Cursors.WaitCursor;
+            FormCursor = FWinForm.Cursor;
             TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
 
             if ((FGenerateExtractThread == null) || (!FGenerateExtractThread.IsAlive))
             {
-                ((IFrmReporting) this.FTheForm).EnableBusy(true);
+                ((IFrmReporting)FTheForm).EnableBusy(true);
                 FGenerateExtractThread = new Thread(GenerateExtract);
                 FGenerateExtractThread.IsBackground = true;
                 FGenerateExtractThread.Start();
@@ -638,26 +745,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             WrapMenuItem.Checked = !WrapMenuItem.Checked;
 
             FWrapColumn = WrapMenuItem.Checked;
-        }
-
-        /// <summary>
-        /// Reads path of default browser from registry - apparently no-one is calling this!
-        /// </summary>
-        /// <returns>void</returns>
-        public static string GetDefaultBrowserPath()
-        {
-            const String key = "htmlfile\\shell\\open\\command";
-            RegistryKey regKey;
-            string s;
-            string delim;
-
-            regKey = Registry.ClassesRoot.OpenSubKey(key, false);
-
-            // get default browser path
-            // see http:www.novell.com/coolsolutions/tip/11537.html; it seems FireFox does not change that registry setting
-            s = regKey.GetValue(null, null).ToString();
-            delim = "\"";
-            return s.Split(delim.ToCharArray())[1];
         }
 
         /// <summary>
@@ -714,7 +801,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 FWinForm.Cursor = Cursors.Default;
                 FormCursor = FWinForm.Cursor;
-                ((IFrmReporting) this.FTheForm).EnableBusy(false);
+                ((IFrmReporting)FTheForm).EnableBusy(false);
             }
         }
 
@@ -750,7 +837,6 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         /// <summary>
         /// Called at the end of GenerateReport
-        /// (This was previously "protected", so that might give me some problem...)
         /// </summary>
         /// <param name="Calculator"></param>
         /// <param name="ACallerForm"></param>
@@ -783,7 +869,6 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         /// <summary>
         /// Called after the calculation of the report has been finished.
-        /// Converted to static so that it can be called from the static GenerateReport
         /// </summary>
         /// <param name="Calculator"></param>
         /// <param name="ACallerForm"></param>
@@ -802,11 +887,71 @@ namespace Ict.Petra.Client.MReporting.Gui
             printWindow.ShowDialog();
         }
 
-        #region Manage Settings
+        /// <summary>
+        /// Allow to store and load settings
+        /// </summary>
+        /// <param name="AEnabled">True if the store and load settings are to be enabled.</param>
+        public void EnableSettings(bool AEnabled)
+        {
+            MenuStrip mnuMain = (MenuStrip)FFormReportUi.Controls["mnuMain"];
+            ToolStrip tbrMain = (ToolStrip)FFormReportUi.Controls["tbrMain"];
+            ToolStripMenuItem nmuFile = (ToolStripMenuItem)mnuMain.Items[0];
+
+            nmuFile.DropDownItems["mniLoadSettings"].Visible = AEnabled;
+            nmuFile.DropDownItems["mniSaveSettings"].Visible = AEnabled;
+            nmuFile.DropDownItems["mniSaveSettingsAs"].Visible = AEnabled;
+            nmuFile.DropDownItems["mniMaintainSettings"].Visible = AEnabled;
+//            tbrMain.Items["tbbSaveSettings"].Visible = AEnabled;
+//            tbrMain.Items["tbbSaveSettingsAs"].Visible = AEnabled;
+
+            nmuFile.DropDownItems["mniMaintainTemplates"].Visible = !AEnabled;
+//            tbrMain.Items["tbbMaintainTemplates"].Visible = !AEnabled;
+
+/*
+ * // Method previously looked like this when it was in each and every report:
+ * // (It was previously not called from anywhere ever, but now I want to use it!)
+ *
+ *          foreach (ToolStripItem item in mniLoadSettings.DropDownItems)
+ *          {
+ *              item.Enabled = AEnabled;
+ *          }
+ *          mniLoadSettings.Enabled = AEnabled;
+ *          mniSaveSettings.Enabled = AEnabled;
+ *          mniSaveSettingsAs.Enabled = AEnabled;
+ *          mniMaintainSettings.Enabled = AEnabled;
+ *          //tbbLoadSettings.Enabled = AEnabled;
+ *          tbbSaveSettings.Enabled = AEnabled;
+ *          tbbSaveSettingsAs.Enabled = AEnabled;
+ */
+        }
+
+        /// <summary>
+        /// this is used for writing the captions of the menu items and toolbar buttons for recently used report settings
+        /// </summary>
+        /// <returns>false if an item with that index does not exist</returns>
+        /// <param name="AIndex"></param>
+        /// <param name="mniItem"></param>
+        /// <param name="tbbItem"></param>
+        public bool GetRecentSettingsItems(int AIndex, out ToolStripItem mniItem, out ToolStripItem tbbItem)
+        {
+            MenuStrip mnuMain = (MenuStrip)FFormReportUi.Controls["mnuMain"];
+            ToolStripMenuItem mniLoadSettings = (ToolStripMenuItem)mnuMain.Items["mniLoadSettings"];
+
+            if ((mniLoadSettings == null) || (AIndex < 0) || (AIndex >= mniLoadSettings.DropDownItems.Count - 2))
+            {
+                mniItem = null;
+                tbbItem = null;
+                return false;
+            }
+
+            mniItem = mniLoadSettings.DropDownItems[AIndex + 2];
+            // TODO
+            tbbItem = null;
+            return true;
+        }
 
         /// <summary>
         /// This procedure loads the available saved settings into the Load menu
-        ///
         /// </summary>
         protected void UpdateLoadingMenu(StringCollection ARecentlyUsedSettings)
         {
@@ -814,7 +959,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 ToolStripItem mniItem, tbbItem;
 
-                if (((IFrmReporting)FTheForm).GetRecentSettingsItems(Counter, out mniItem, out tbbItem))
+                if (GetRecentSettingsItems(Counter, out mniItem, out tbbItem))
                 {
                     mniItem.Text = ARecentlyUsedSettings[Counter];
 
@@ -829,7 +974,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 ToolStripItem mniItem, tbbItem;
 
-                if (((IFrmReporting)FTheForm).GetRecentSettingsItems(Counter, out mniItem, out tbbItem))
+                if (GetRecentSettingsItems(Counter, out mniItem, out tbbItem))
                 {
                     mniItem.Visible = false;
 
@@ -846,6 +991,22 @@ namespace Ict.Petra.Client.MReporting.Gui
         private TParameterList FParametersFromFile = new TParameterList();
 
         /// <summary>
+        /// Show the current settings and the loaded template in the title bar
+        /// </summary>
+        public void SetWindowTitle()
+        {
+            // set the title of the window
+            if (FCurrentSettingsName.Length > 0)
+            {
+                FWinForm.Text = FWindowCaption + ": " + FCurrentSettingsName + FFastReportsPlugin.SelectedTemplateName;
+            }
+            else
+            {
+                FWinForm.Text = FWindowCaption;
+            }
+        }
+
+        /// <summary>
         /// This procedure loads the parameters of the given settings
         /// </summary>
         protected void LoadSettings(String ASettingsName)
@@ -860,17 +1021,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             FCurrentSettingsName = ASettingsName;
             StringCollection RecentlyUsedSettings = FStoredSettings.LoadSettings(ref FCurrentSettingsName, ref FParametersFromFile);
-
-            // set the title of the window
-            if (FCurrentSettingsName.Length > 0)
-            {
-                FWinForm.Text = FWindowCaption + ": " + FCurrentSettingsName;
-            }
-            else
-            {
-                FWinForm.Text = FWindowCaption;
-            }
-
+            SetWindowTitle();
             SetControls(FParametersFromFile);
             UpdateLoadingMenu(RecentlyUsedSettings);
 
@@ -884,7 +1035,6 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>
         /// This procedure loads the parameters of the default settings;
         /// at the moment this is implemented to use the last used settings
-        ///
         /// </summary>
         public void LoadDefaultSettings()
         {
@@ -996,16 +1146,15 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 FCurrentSettingsName = SettingsDialog.GetNewName();
 
-                // set the title of the window
-                FWinForm.Text = FWindowCaption + ": " + FCurrentSettingsName;
                 try
                 {
                     RecentlyUsedSettings = this.FStoredSettings.SaveSettings(FCurrentSettingsName, FCalculator.GetParameters());
+                    // set the title of the window
+                    SetWindowTitle();
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("Not a valid name. Please use letters numbers and underscores etc, values not saved");
-                    FWinForm.Text = FWindowCaption + ": Not a valid name, values not saved!";
+                    MessageBox.Show("Not a valid name. Please use letters numbers and underscores etc. Values not saved");
                 }
 
                 if (RecentlyUsedSettings != null)
@@ -1061,8 +1210,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             SettingsDialog.ShowDialog();
             UpdateLoadingMenu(this.FStoredSettings.GetRecentlyUsedSettings());
         }
-
-        #endregion
 
         #region Parameter/Settings Handling
 
@@ -1160,7 +1307,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         public virtual void ReadControls(TReportActionEnum AReportAction)
         {
             InitialiseCalculator(FCalculator, FXMLFiles, FIsolationLevel, FCurrentReport);
-            ((IFrmReporting) this.FTheForm).ReadControls(FCalculator, AReportAction);
+            ((IFrmReporting)FTheForm).ReadControls(FCalculator, AReportAction);
 
             TParameterList CurrentParameters = FCalculator.GetParameters();
 
@@ -1187,9 +1334,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>void</returns>
         public virtual void SetControls(TParameterList AParameters)
         {
-            // TODO
-
-            ((IFrmReporting) this.FTheForm).SetControls(AParameters);
+            ((IFrmReporting)FTheForm).SetControls(AParameters);
         }
 
         /// add a verification result
@@ -1572,12 +1717,6 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         /// <param name="AParameters"></param>
         void SetControls(TParameterList AParameters);
-
-        /// <summary>
-        /// this is used for writing the captions of the menu items and toolbar buttons for recently used report settings
-        /// </summary>
-        /// <returns>false if an item with that index does not exist</returns>
-        bool GetRecentSettingsItems(int AIndex, out ToolStripItem mniItem, out ToolStripItem tbbItem);
 
         /// <summary>
         /// this will Check the menu item "Wrap Column"

@@ -166,15 +166,15 @@
                         to "show only attendees with a group assigned to it -->
                     <queryDetail condition="and(eq({param_rgrGroups}, FellowshipGroups), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt))"><value>
                             AND NOT (( PUB_pm_short_term_application.pm_st_fg_code_c IS NULL)
-                                OR PUB_pm_short_term_application.pm_st_fg_code_c = "")
+                                OR PUB_pm_short_term_application.pm_st_fg_code_c = '')
                     </value></queryDetail>
                     <queryDetail condition="and(eq({param_rgrGroups}, DiscoveryGroups), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt))"><value>
                             AND NOT (( PUB_pc_attendee.pc_discovery_group_c IS NULL)
-                                OR PUB_pc_attendee.pc_discovery_group_c = "")
+                                OR PUB_pc_attendee.pc_discovery_group_c = '')
                     </value></queryDetail>
                     <queryDetail condition="and(eq({param_rgrGroups}, WorkGroups), eq({param_rgrParticipants}, ListOnlyAttendeesWhoseRoleIsAParticipantAndWhoHaveAGroupAssignedToIt))"><value>
                             AND NOT (( PUB_pc_attendee.pc_work_group_c IS NULL)
-                                OR PUB_pc_attendee.pc_work_group_c = "")
+                                OR PUB_pc_attendee.pc_work_group_c = '')
                     </value></queryDetail>
                     
                     <queryDetail condition="not(eq({param_rgrGroups}, AllGroups))"><value>

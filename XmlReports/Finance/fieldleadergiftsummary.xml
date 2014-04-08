@@ -181,7 +181,7 @@
               AND gift.a_date_entered_d BETWEEN #{{Year0}}-01-01# AND #{{Year0}}-12-31#
               AND gift.a_ledger_number_i ={{param_ledger_number_i}}
               AND detail.p_recipient_key_n = {{PartnerKey}}
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
             </value>
@@ -218,7 +218,7 @@
               AND gift.a_date_entered_d BETWEEN #{{Year1}}-01-01# AND #{{Year1}}-12-31#
               AND gift.a_ledger_number_i ={{param_ledger_number_i}}
               AND detail.p_recipient_key_n = {{PartnerKey}}
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
             </value>
@@ -255,7 +255,7 @@
               AND gift.a_date_entered_d BETWEEN #{{Year2}}-01-01# AND #{{Year2}}-12-31#
               AND gift.a_ledger_number_i ={{param_ledger_number_i}}
               AND detail.p_recipient_key_n = {{PartnerKey}}
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
             </value>
@@ -292,7 +292,7 @@
               AND gift.a_date_entered_d BETWEEN #{{Year3}}-01-01# AND #{{Year3}}-12-31#
               AND gift.a_ledger_number_i ={{param_ledger_number_i}}
               AND detail.p_recipient_key_n = {{PartnerKey}}
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
             </value>

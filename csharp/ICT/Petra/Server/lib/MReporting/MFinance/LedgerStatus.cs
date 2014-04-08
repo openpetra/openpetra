@@ -449,9 +449,9 @@ namespace Ict.Petra.Server.MReporting.MFinance
         {
             int ReturnValue = -1;
             String strSql = "SELECT a_glm_sequence_i FROM PUB_a_general_ledger_master WHERE a_ledger_number_i = " +
-                            pv_ledger_number_i + " AND a_cost_centre_code_c = \"" + pv_cost_centre_code_c +
-                            "\" AND a_account_code_c = \"" +
-                            pv_account_code_c + "\" AND a_year_i = " + pv_year_i;
+                            pv_ledger_number_i + " AND a_cost_centre_code_c = '" + pv_cost_centre_code_c +
+                            "' AND a_account_code_c = '" +
+                            pv_account_code_c + "' AND a_year_i = " + pv_year_i;
             DataTable tab = databaseConnection.SelectDT(strSql, "GetGlmSequenceFromDB_TempTable", databaseConnection.Transaction);
 
             if (tab.Rows.Count == 1)

@@ -289,8 +289,8 @@
 						PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c
 					WHERE
 							 PUB_p_partner_contact.p_partner_key_n = {{PartnerKey}}
-						AND PUB_p_partner_contact.p_contact_id_i = {ContactId}
-						AND PUB_p_partner_contact_attribute.p_contact_id_i = {ContactId}
+						AND PUB_p_partner_contact.p_contact_id_i = {{ContactId}}
+						AND PUB_p_partner_contact_attribute.p_contact_id_i = {{ContactId}}
 						AND PUB_p_partner_contact_attribute.p_contact_attribute_code_c = {ContactAttribute}
 						AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = {ContactDetail}
 				</value>

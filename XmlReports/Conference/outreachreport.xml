@@ -171,7 +171,7 @@
                     <queryDetail condition="eq({param_conferenceselection}, one conference)"><value>
                             AND PUB_pc_conference.pc_conference_key_n = {{param_conferencekey}}
                             AND PUB_pc_attendee.pc_conference_key_n = {{param_conferencekey}}
-                            AND PUB_pm_short_term_application.pm_st_confirmed_option_n = {OutreachKey}
+                            AND PUB_pm_short_term_application.pm_st_confirmed_option_n = {{OutreachKey}}
                     </value></queryDetail>
                     
                     <queryDetail condition="eq({param_conferenceselection}, all conferences))"><value>
