@@ -1401,6 +1401,28 @@ namespace {#NAMESPACE}
 #endregion
 {#ENDIF ACTIONENABLING}
 
+#region Keyboard handler
+
+    /// Our main keyboard handler
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+{#IFDEF FILTERANDFIND}
+        {#PROCESSCMDKEYCTRLF}
+        {#PROCESSCMDKEYCTRLR}
+{#ENDIF FILTERANDFIND}
+        {#PROCESSCMDKEY}    
+        {#PROCESSCMDKEYMANUAL}    
+
+        return base.ProcessCmdKey(ref msg, keyData);
+    }
+
+    private void FocusFirstEditableControl()
+    {
+        {#FOCUSFIRSTEDITABLEDETAILSPANELCONTROL}
+    }
+
+#endregion
+
 #region Data Validation Control Handlers
     
     private void ControlValidatedHandler(object sender, EventArgs e)
