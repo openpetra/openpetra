@@ -20505,11 +20505,11 @@
       <indexfield name="p_next_reminder_date_d" order="descending"/>
     </index>
   </table>
-  <table name="p_partner_field_of_service"
-         descr="Tracks the current field of service for the Partner and maintains a history"
+  <table name="p_partner_gift_destination"
+         descr="Tracks the current gift destination for the Partner and maintains a history"
          area="Petra Data"
-         label="Partner Field of Service"
-         dumpname="p_pt_fos"
+         label="Partner Gift Destination"
+         dumpname="p_pt_gd"
          group="partner">
     <tablefield name="p_key_i"
                 type="integer"
@@ -20573,26 +20573,26 @@
                 format="X(200)"
                 label="Comments"
                 help="Enter any additional comments"/>
-    <!-- Constraints on table p_partner_field_of_service -->
-    <primarykey name="p_partner_field_of_service_pk"
+    <!-- Constraints on table p_partner_gift_destination -->
+    <primarykey name="p_partner_gift_destination_pk"
                 descr=""
                 thisFields="p_key_i"/>
-    <foreignkey name="p_partner_field_of_service_fk1"
+    <foreignkey name="p_partner_gift_destination_fk1"
                 descr=""
                 thisFields="p_partner_key_n"
                 otherTable="p_partner"
                 otherFields="p_partner_key_n"/>
-    <foreignkey name="p_partner_field_of_service_fk2"
+    <foreignkey name="p_partner_gift_destination_fk2"
                 descr=""
                 thisFields="p_field_key_n"
                 otherTable="p_unit"
                 otherFields="p_partner_key_n"/>
-    <foreignkey name="p_partner_field_of_service_fk3"
+    <foreignkey name="p_partner_gift_destination_fk3"
                 descr=""
                 thisFields="p_partner_class_c"
                 otherTable="p_partner_classes"
                 otherFields="p_partner_class_c"/>
-    <foreignkey name="p_partner_field_of_service_fk4"
+    <foreignkey name="p_partner_gift_destination_fk4"
                 descr=""
                 thisFields="p_commitment_site_key_n, p_commitment_key_n"
                 otherTable="pm_staff_data"

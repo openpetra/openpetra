@@ -33,7 +33,7 @@
 
     <DataSet name="FieldOfServiceTDS">
         <Table sqltable="p_partner"/>
-        <Table sqltable="p_partner_field_of_service"/>
+        <Table sqltable="p_partner_gift_destination"/>
         <Table sqltable="p_person"/>
         <Table sqltable="p_family"/>
         <Table sqltable="pm_staff_data"/>

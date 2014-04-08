@@ -736,22 +736,19 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (ClickedMenuItemName == "mniMaintainWorkerField")
             {
-                //TFrmFieldOfService FieldOfServiceForm = new TFrmFieldOfService(FPetraUtilsObject.GetForm(), PartnerKey);
-                //FieldOfServiceForm.Show();
-
                 if (FLogic.DetermineCurrentPartnerClass() == TPartnerClass.FAMILY.ToString())
                 {
-                    TFrmFieldOfService FieldOfServiceForm = new TFrmFieldOfService(FPetraUtilsObject.GetForm(), PartnerKey);
+                    TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(FPetraUtilsObject.GetForm(), PartnerKey);
 
-                    FieldOfServiceForm.Show();
+                    GiftDestinationForm.Show();
                 }
                 else if (FLogic.DetermineCurrentPartnerClass() == TPartnerClass.PERSON.ToString())
                 {
-                    // open the field of service screen for the person's family
-                    TFrmFieldOfService FieldOfServiceForm = new TFrmFieldOfService(
+                    // open the Gift Destination screen for the person's family
+                    TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(
                         FPetraUtilsObject.GetForm(), Convert.ToInt64(FLogic.CurrentDataRow[PPersonTable.GetFamilyKeyDBName()]));
 
-                    FieldOfServiceForm.Show();
+                    GiftDestinationForm.Show();
                 }
             }
             else if (ClickedMenuItemName == "mniMaintainPersonnelData")

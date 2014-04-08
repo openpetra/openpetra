@@ -37,6 +37,7 @@
     <Table sqltable="p_foundation_deadline"/>
     <Table sqltable="p_foundation_proposal"/>
     <Table sqltable="p_foundation_proposal_detail"/>
+    <Table sqltable="p_partner_gift_destination"/>
     <Table sqltable="p_partner_interest">
       <Field name="InterestCategory" sqltable="p_interest" sqlfield="p_category_c"/>
     </Table>

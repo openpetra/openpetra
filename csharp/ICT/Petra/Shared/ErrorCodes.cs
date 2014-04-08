@@ -263,6 +263,23 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Partner Key for {0} must be set.")]
         public const String ERR_PARTNERKEY_INVALID_NOTNULL = "PARTN.00019V";
 
+        /// <summary>Expired date must come after date effective from.</summary>
+        [ErrCodeAttribute("Invalid Dates",
+             ErrorMessageText = "The 'Date Effective From' cannot be after the 'Date Expired.'")]
+        public const String ERR_INVALID_DATES = "PARTN.00028V";
+
+        /// <summary>Cannot have more than one active Gift Destination.</summary>
+        [ErrCodeAttribute("More than one open Gift Destination.",
+             ErrorMessageText =
+                 "You can only have one open Gift Destination record (no Expiry Date) per Family. All other records must have a valid Expiry Date.")]
+        public const String ERR_MORETHANONE_OPEN_GIFTDESTINATION = "PARTN.00029V";
+
+        /// <summary>Gift Destination records cannot overlap.</summary>
+        [ErrCodeAttribute("Invalid Dates.",
+             ErrorMessageText =
+                 "The dates overlap for two of more Gift Destination records. Please ensure that no two records are active on the same day.")]
+        public const String ERR_DATES_OVERLAP = "PARTN.00030V";
+
         #region Subscriptions
 
         /// <summary>Subscription Status Mandatory.</summary>
@@ -318,20 +335,6 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "You must include an Account Number and/or IBAN for this bank account")]
         public const String ERR_BANKINGDETAILS_MISSING_ACCOUNTNUMBERORIBAN = "PARTN.000019V";
 
-        #endregion
-
-        /// <summary>Partner Interest: Level needs to be within valid range.</summary>
-        [ErrCodeAttribute("Level must be within valid range.",
-             ErrorMessageText = "Level must be between {0} and {1}.")]
-        public const String ERR_INTEREST_LEVEL_NOT_WITHIN_RANGE = "PARTN.00015V";
-
-        /// <summary>Partner of Partner Class Church: Denomination must be assigned, but no Denominations are set up to choose from.</summary>
-        [ErrCodeAttribute("Denominations must be set up.",
-             ErrorMessageText =
-                 "A Denomination must be assigned, but there are no Denominations set up to choose from. Please set up Denominations and then repeat the process!")
-        ]
-        public const String ERR_NO_DENOMINATIONS_SET_UP = "PARTN.00018V";
-
         /// <summary>IBAN must always have 34 or less characters</summary>
         [ErrCodeAttribute("Invalid IBAN.",
              ErrorMessageText =
@@ -381,6 +384,20 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "The Bank Account Number is not valid.")
         ]
         public const String ERR_ACCOUNTNUMBER_INVALID = "PARTN.00027V";
+
+        #endregion
+
+        /// <summary>Partner Interest: Level needs to be within valid range.</summary>
+        [ErrCodeAttribute("Level must be within valid range.",
+             ErrorMessageText = "Level must be between {0} and {1}.")]
+        public const String ERR_INTEREST_LEVEL_NOT_WITHIN_RANGE = "PARTN.00015V";
+
+        /// <summary>Partner of Partner Class Church: Denomination must be assigned, but no Denominations are set up to choose from.</summary>
+        [ErrCodeAttribute("Denominations must be set up.",
+             ErrorMessageText =
+                 "A Denomination must be assigned, but there are no Denominations set up to choose from. Please set up Denominations and then repeat the process!")
+        ]
+        public const String ERR_NO_DENOMINATIONS_SET_UP = "PARTN.00018V";
 
         #endregion
 

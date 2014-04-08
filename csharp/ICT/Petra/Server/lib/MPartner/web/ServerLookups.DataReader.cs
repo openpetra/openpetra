@@ -572,11 +572,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
-        /// Gets the next available key for PPartnerFieldOfService
+        /// Gets the next available key for PPartnerGiftDestination
         /// </summary>
         /// <returns>The next available key</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static int GetNewKeyForPartnerFieldOfService()
+        public static int GetNewKeyForPartnerGiftDestination()
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
@@ -586,9 +586,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 TEnforceIsolationLevel.eilMinimum, out NewTransaction);
             try
             {
-                PPartnerFieldOfServiceTable Table = PPartnerFieldOfServiceAccess.LoadAll(ReadTransaction);
+                PPartnerGiftDestinationTable Table = PPartnerGiftDestinationAccess.LoadAll(ReadTransaction);
 
-                foreach (PPartnerFieldOfServiceRow Row in Table.Rows)
+                foreach (PPartnerGiftDestinationRow Row in Table.Rows)
                 {
                     if (Row.Key >= ReturnValue)
                     {
@@ -601,7 +601,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 if (NewTransaction)
                 {
                     DBAccess.GDBAccessObj.RollbackTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetNewKeyForPartnerFieldOfService: committed own transaction.");
+                    TLogging.LogAtLevel(7, "TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination: committed own transaction.");
                 }
             }
 

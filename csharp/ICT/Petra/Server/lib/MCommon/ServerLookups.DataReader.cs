@@ -187,9 +187,9 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                 {
                     tempTable = PMailingAccess.LoadAll(ReadTransaction);
                 }
-                else if (ATablename == PPartnerFieldOfServiceTable.GetTableDBName())
+                else if (ATablename == PPartnerGiftDestinationTable.GetTableDBName())
                 {
-                    tempTable = PPartnerFieldOfServiceAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
+                    tempTable = PPartnerGiftDestinationAccess.LoadUsingTemplate(ASearchCriteria, ReadTransaction);
                 }
                 else if (ATablename == PmDocumentTypeTable.GetTableDBName())
                 {
@@ -368,9 +368,9 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                     {
                         PMailingAccess.SubmitChanges((PMailingTable)ASubmitTable, SubmitChangesTransaction);
                     }
-                    else if (ATablename == PPartnerFieldOfServiceTable.GetTableDBName())
+                    else if (ATablename == PPartnerGiftDestinationTable.GetTableDBName())
                     {
-                        PPartnerFieldOfServiceAccess.SubmitChanges((PPartnerFieldOfServiceTable)ASubmitTable, SubmitChangesTransaction);
+                        PPartnerGiftDestinationAccess.SubmitChanges((PPartnerGiftDestinationTable)ASubmitTable, SubmitChangesTransaction);
                     }
                     else if (ATablename == PmDocumentTypeTable.GetTableDBName())
                     {

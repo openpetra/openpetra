@@ -1,8 +1,8 @@
 RootNode:
     BaseYaml: ../../CommonForms/PetraEditForm.yaml
-    FormTitle: Field of Service
+    FormTitle: Gift Destination
     Namespace: Ict.Petra.Client.MPartner.Gui
-    DetailTable: PPartnerFieldOfService
+    DetailTable: PPartnerGiftDestination
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
     FormType: edit
     Template: windowMaintainTable
@@ -10,7 +10,7 @@ RootNode:
     WindowHeight: 500
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
-        actDelete: {Label=&Delete, ActionClick=DeleteRecord}      
+        actDeactivate: {Label=&Deactivate, ActionClick=DeactivateRecord}      
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlGrid, pnlDetails]
@@ -23,14 +23,11 @@ RootNode:
             Controls: [pnlButtons, grdDetails]
         pnlButtons:
             Dock: Bottom
-            Controls: [btnNew, btnDelete]
+            Controls: [btnNew, btnDeactivate]
             ControlsOrientation: horizontal
         grdDetails:
             Dock: Fill
-            #Columns: [DetailDateEffective, DetailDateExpires, DetailFieldKey]
             ActionFocusRow: FocusedRowChanged
-            #CustomColumns:
-            #    DetailFieldKey: {Label=Field Key, Type=PartnerKey}
         pnlDetails:
             Dock: Bottom
             Controls:
@@ -42,14 +39,14 @@ RootNode:
         btnNew:
             Action: actNew
             Width: 80
-        btnDelete:
-            Action: actDelete
+        btnDeactivate:
+            Action: actDeactivate
             Width: 80
   
         txtPartnerKey: {Label=Partner Key, ReadOnly=true, BorderStyle=None }
         txtName: {Label=Name, ReadOnly=true, BorderStyle=None, Stretch=horizontally}
         txtDetailFieldKey: {Label=Field Key, Type=PartnerKey, PartnerClass=UNIT, Validation=true, OnLeave=UpdateFieldName}
-        txtDetailComment: {Label=Comments, Multiline=true, ScrollBars=Vertical, Height=80, Width=360}
+        txtDetailComment: {Label=Comments, Multiline=true, ScrollBars=Vertical, Height=80, Stretch=horizontally}
         dtpDetailDateEffective: {Label=&Date Effective From, Validation=true}
         dtpDetailDateExpires: {Label=Date &Expires, Validation=Pair(dtpDetailDateEffective), OnLeave=DateExpiresEntered}
 

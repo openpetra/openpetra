@@ -42,7 +42,7 @@ using Ict.Petra.Shared.MPartner.Partner.Validation;
 namespace Ict.Petra.Client.MPartner.Gui
 {
     /// <summary>Delegate declaration</summary>
-    public delegate void TDelegateMaintainWorkerField();
+    public delegate void TDelegateMaintainGiftDestination();
 
     /// <summary>
     /// Event Arguments declaration
@@ -69,10 +69,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         private String FPartnerClass;
 
         // <summary>
-        // Delegate for telling the Partner Edit screen that the 'Worker Field...' button has been clicked.
+        // Delegate for telling the Partner Edit screen that the 'Gift Destination' button has been clicked.
         // </summary>
         // <remarks>The Partner Edit screen acts on that Delegate and opens the corresponding screen.</remarks>
-        private TDelegateMaintainWorkerField FDelegateMaintainWorkerField;
+        private TDelegateMaintainGiftDestination FDelegateMaintainGiftDestination;
 
         private bool FIgnorePartnerStatusChange = true;
 
@@ -267,12 +267,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Initialises Delegate Function to handle click on the "Worker Field..." button.
+        /// Initialises Delegate Function to handle click on the "Gift Destination" button.
         /// </summary>
         /// <returns>void</returns>
-        public void InitialiseDelegateMaintainWorkerField(TDelegateMaintainWorkerField ADelegateFunction)
+        public void InitialiseDelegateMaintainGiftDestination(TDelegateMaintainGiftDestination ADelegateFunction)
         {
-            FDelegateMaintainWorkerField = ADelegateFunction;
+            FDelegateMaintainGiftDestination = ADelegateFunction;
         }
 
         /// <summary>
@@ -303,9 +303,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Sets the Text of the Worker Field.
         /// </summary>
         /// <param name="AWorkerField">Worker Field.</param>
-        public void SetWorkerFieldText(String AWorkerField)
+        public void SetGiftDestinationText(String AWorkerField)
         {
-            txtWorkerField.Text = AWorkerField;
+            txtGiftDestination.Text = AWorkerField;
         }
 
         #endregion
@@ -881,15 +881,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #region Actions
 
-        private void MaintainWorkerField(System.Object sender, System.EventArgs e)
+        private void MaintainGiftDestination(System.Object sender, System.EventArgs e)
         {
-            if (this.FDelegateMaintainWorkerField != null)
+            if (this.FDelegateMaintainGiftDestination != null)
             {
-                this.FDelegateMaintainWorkerField();
+                this.FDelegateMaintainGiftDestination();
             }
             else
             {
-                throw new EVerificationMissing("FDelegateMaintainWorkerField");
+                throw new EVerificationMissing("FDelegateMaintainGiftDestination");
             }
         }
 

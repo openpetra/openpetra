@@ -121,7 +121,7 @@ namespace Ict.Petra.Server.MCommon.UIConnectors
                     }
 
                     // Load data for Field Of Service
-                    PPartnerFieldOfServiceAccess.LoadViaPPartner(FMainDS, FPartnerKey, ReadTransaction);
+                    PPartnerGiftDestinationAccess.LoadViaPPartner(FMainDS, FPartnerKey, ReadTransaction);
                 }
                 catch (EPartnerNotExistantException)
                 {

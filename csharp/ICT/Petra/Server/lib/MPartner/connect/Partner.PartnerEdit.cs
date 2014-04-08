@@ -646,6 +646,11 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             TLogging.LogAtLevel(9, "Disabled Constraints in Typed DataSet PartnerEditTDS.");
                             PPersonAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
 
+                            // Gift Destination
+                            PPartnerGiftDestinationAccess.LoadViaPPartner(FPartnerEditScreenDS,
+                            FPartnerEditScreenDS.PPerson[0].FamilyKey,
+                            ReadTransaction);
+
                             if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpFamilyMembers))
                             {
                                 // Load data for Family Members
@@ -662,6 +667,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                         case TPartnerClass.FAMILY:
                             PFamilyAccess.LoadByPrimaryKey(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
+
+                            // Gift Destination
+                            PPartnerGiftDestinationAccess.LoadViaPPartner(FPartnerEditScreenDS, FPartnerKey, ReadTransaction);
 
                             if (((!ADelayedDataLoading)) || (ATabPage == TPartnerEditTabPageEnum.petpFamilyMembers))
                             {
@@ -2974,6 +2982,46 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             // Save the changes
             PPersonAccess.SubmitChanges(FamilyPersonsDT, ASubmitChangesTransaction);
+        }
+
+        /// <summary>
+        /// Get valid current and future Gift Destination records
+        /// </summary>
+        /// <param name="AFamilyKey"></param>
+        /// <returns></returns>
+        public PPartnerGiftDestinationTable GetCurrentAndFutureGiftDestinationData(long AFamilyKey)
+        {
+            TDBTransaction ReadTransaction;
+            Boolean NewTransaction;
+            PPartnerGiftDestinationTable ReturnValue = new PPartnerGiftDestinationTable();
+
+            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                out NewTransaction);
+
+            try
+            {
+                PPartnerGiftDestinationTable GiftDestinationTable = PPartnerGiftDestinationAccess.LoadViaPPartner(AFamilyKey, ReadTransaction);
+
+                // find which records are current or future
+                foreach (PPartnerGiftDestinationRow Row in GiftDestinationTable.Rows)
+                {
+                    if (Row.IsDateExpiresNull() || ((Row.DateExpires >= DateTime.Today) && (Row.DateEffective != Row.DateExpires)))
+                    {
+                        ReturnValue.LoadDataRow(Row.ItemArray, true);
+                    }
+                }
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetGiftDestinationData: committed own transaction.");
+                }
+            }
+
+            return ReturnValue;
         }
 
         #endregion
