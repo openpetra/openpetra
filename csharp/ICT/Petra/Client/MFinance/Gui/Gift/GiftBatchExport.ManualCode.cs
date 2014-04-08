@@ -269,12 +269,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         return;
                     }
 
-                    if ((!dtpDateFrom.ValidDate()) || (!dtpDateTo.ValidDate()))
+                    if ((!dtpDateFrom.ValidDate()) || (!dtpDateTo.ValidDate()))  // If ValidDate fails, it displays a helpful message.
                     {
-                        MessageBox.Show(Catalog.GetString("Date Format invalid"),
-                            Catalog.GetString("Error"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
                         return;
                     }
                 }

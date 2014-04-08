@@ -29,8 +29,8 @@ WHERE
     
     AND pub_p_partner.p_partner_key_n = pub_a_gift.p_donor_key_n
     AND (NOT ? OR pub_p_partner.p_receipt_each_gift_l)
-    AND (NOT ? OR pub_p_partner.p_status_code_c = "ACTIVE")
-    AND (NOT ? OR pub_p_partner.p_partner_class_c LIKE "FAMILY%")
+    AND (NOT ? OR pub_p_partner.p_status_code_c = 'ACTIVE')
+    AND (NOT ? OR pub_p_partner.p_partner_class_c LIKE 'FAMILY%')
     AND (NOT ? OR NOT pub_p_partner.p_no_solicitations_l )
     AND (NOT ? OR pub_p_partner.p_receipt_letter_frequency_c LIKE ?)
 ##address_filter_where_clause##    

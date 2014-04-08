@@ -206,7 +206,7 @@ namespace Tests.MFinance.Server.Gift
         /// This will test the admin fee processer
         /// </summary>
         [Test]
-        public void TestGetRecipientLedgerNumber()
+        public void TestGetRecipientFundNumber()
         {
             Int64 partnerKey = 73000000;
             Int64 RecipientLedgerNumber = 0;
@@ -217,7 +217,7 @@ namespace Tests.MFinance.Server.Gift
 
             try
             {
-                RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientLedgerNumber(partnerKey);
+                RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(partnerKey);
             }
             catch (Exception)
             {

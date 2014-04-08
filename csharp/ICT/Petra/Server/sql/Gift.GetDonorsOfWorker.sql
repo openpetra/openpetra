@@ -9,7 +9,7 @@ WHERE RecipientPartner.p_partner_key_n = ?
 AND PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n
 
 -- only donors of class FAMILY
-AND PUB_p_partner.p_partner_class_c = "FAMILY"
+AND PUB_p_partner.p_partner_class_c = 'FAMILY'
 
 -- we need to get all donations, and select the last donation. they might have donated earlier, and paused their connection with us
 -- AND PUB_a_gift.a_first_time_gift_l = 1

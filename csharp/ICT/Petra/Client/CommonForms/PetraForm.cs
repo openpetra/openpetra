@@ -225,14 +225,17 @@ namespace Ict.Petra.Client.CommonForms
             }
 
             // Are we saving/restoring the window position?  This option is stored in User Defaults.
-            if (TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, true))
+            if (TUserDefaults.IsInitialised)
             {
-                // (Note: Nant tests do not have a caller so we need to allow for this possibility)
-                if ((FWinForm.Name == "TFrmMainWindowNew") || ((FCallerForm != null) && (FCallerForm.Name == "TFrmMainWindowNew")))
+                if (TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, true))
                 {
-                    // Either we are loading the main window or we have been opened by the main window
-                    // Now that the window has been activated we are ok to restore things like splitter distances
-                    RestoreAdditionalWindowPositionProperties();
+                    // (Note: Nant tests do not have a caller so we need to allow for this possibility)
+                    if ((FWinForm.Name == "TFrmMainWindowNew") || ((FCallerForm != null) && (FCallerForm.Name == "TFrmMainWindowNew")))
+                    {
+                        // Either we are loading the main window or we have been opened by the main window
+                        // Now that the window has been activated we are ok to restore things like splitter distances
+                        RestoreAdditionalWindowPositionProperties();
+                    }
                 }
             }
         }
@@ -738,7 +741,10 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="AHelpText"></param>
         public void SetStatusBarText(Control AControl, string AHelpText)
         {
-            FStatusBar.SetHelpText(AControl, AHelpText);
+            if (FStatusBar != null)
+            {
+                FStatusBar.SetHelpText(AControl, AHelpText);
+            }
         }
 
         const Int16 MAX_COMBOBOX_HISTORY = 30;

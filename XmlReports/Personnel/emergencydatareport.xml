@@ -57,7 +57,7 @@
 				FROM
 					PUB_pm_personal_data
 				WHERE
-					PUB_pm_personal_data.p_partner_key_n = {StaffPartnerKey}
+					PUB_pm_personal_data.p_partner_key_n = {{StaffPartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -73,10 +73,10 @@
 				FROM
 					PUB_p_partner_relationship, PUB_p_partner
 				WHERE 
-						PUB_p_partner_relationship.p_relation_key_n = {StaffPartnerKey}
+						PUB_p_partner_relationship.p_relation_key_n = {{StaffPartnerKey}}
 					AND PUB_p_partner_relationship.p_partner_key_n &lt;&gt; 0
-					AND ( PUB_p_partner_relationship.p_relation_name_c = "EMER-1" OR
-						PUB_p_partner_relationship.p_relation_name_c = "EMER-2" )
+					AND ( PUB_p_partner_relationship.p_relation_name_c = 'EMER-1' OR
+						PUB_p_partner_relationship.p_relation_name_c = 'EMER-2' )
 					AND PUB_p_partner.p_partner_key_n = PUB_p_partner_relationship.p_partner_key_n
 			</value></queryDetail>
 		</query>
@@ -97,7 +97,7 @@
 				FROM
 					PUB_pm_personal_data
 				WHERE
-					PUB_pm_personal_data.p_partner_key_n = {StaffPartnerKey}
+					PUB_pm_personal_data.p_partner_key_n = {{StaffPartnerKey}}
 			</value></queryDetail>
 		</query>
 	</calculation>
@@ -114,7 +114,6 @@
 				<value function="assign(AlternateTelephone, not known)" condition="lt(length({AlternateTelephone}), 1)"/>
 				<value function="assign(EmailAddress, not known)" condition="lt({EmailAddress}, 1)"/>
 				<value function="assign(MobileNumber, not known)" condition="lt(length({MobileNumber}), 1)"/>
-				<value function="assign(PartnerAddress,  )"/>
 				<value function="assign(PartnerAddress, concatenateww({PartnerAddress}, {Locality}, 2))"/>
 				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{StreetName}))"/>
 				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{Address3}))"/>
@@ -392,10 +391,10 @@
 			<lowerLevelReport level="Personal Documents Lowest Level1"/>
 			<lowerLevelReport level="Personal Documents Lowest Level2"/>
 			<lowerLevelReport level="Personal Documents Lowest Level3"/>
-			<lowerLevelReport level="Personal Documents Contact Level1" condition="not(eq({pm_contact_partner_key_n}, 0))" calculation="GetContactPartnerName"/>
-			<lowerLevelReport level="Personal Documents Contact Level2" condition="not(eq({pm_contact_partner_key_n}, 0))"/>
-			<lowerLevelReport level="Personal Documents Contact Level3" condition="not(eq({pm_contact_partner_key_n}, 0))"/>
-			<lowerLevelReport level="Personal Documents Contact Level4" condition="not(eq({pm_contact_partner_key_n}, 0))"/>
+			<lowerLevelReport level="Personal Documents Contact Level1" condition="not(isNull({pm_contact_partner_key_n}))" calculation="GetContactPartnerName"/>
+			<lowerLevelReport level="Personal Documents Contact Level2" condition="not(isNull({pm_contact_partner_key_n}))"/>
+			<lowerLevelReport level="Personal Documents Contact Level3" condition="not(isNull({pm_contact_partner_key_n}))"/>
+			<lowerLevelReport level="Personal Documents Contact Level4" condition="not(isNull({pm_contact_partner_key_n}))"/>
 		</detail>
 		<footer space="below"/>
 	</level>
@@ -426,9 +425,9 @@
 	<level name="Personal Documents Lowest Level3" identification="StaffPartnerKey">
 		<detail>
 			<field whichfield="column 0" pos="1cm">
-				<value text="Comment: " condition="gt({pm_doc_comment_c},0)"/>
+				<value text="Comment: " condition="gt(length({pm_doc_comment_c}),0)"/>
 				<value variable="pm_doc_comment_c"/>
-				<value text="    Associated Document ID: " condition="gt({pm_assoc_doc_id_c},0)"/>
+				<value text="    Associated Document ID: " condition="gt(length({pm_assoc_doc_id_c}),0)"/>
 				<value variable="pm_assoc_doc_id_c"/>
 			</field>
 		</detail>
@@ -484,7 +483,7 @@
 	</level>
 	<level name="Driving License lower Level" identification="StaffPartnerKey" condition="HasChildRows">
 		<detail>
-			<lowerLevelReport level="Driving License Lowest Level" condition="gt({pm_driving_license_number_c}, 0)"/>
+			<lowerLevelReport level="Driving License Lowest Level" condition="gt(length({pm_driving_license_number_c}), 0)"/>
 		</detail>
 		<footer/>
 	</level>
@@ -574,11 +573,11 @@
 	</level>
 	<level name="Special Need lower Level" identification="StaffPartnerKey" condition="HasChildRows">
 		<detail>
-			<lowerLevelReport level="Special Need Lowest Level1" condition="gt({pm_medical_comment_c}, 0)"/>
-			<lowerLevelReport level="Special Need Lowest Level2" condition="and(or(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l}), not(and(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l})))"/>
-			<lowerLevelReport level="Special Need Lowest Level2 tow lines 1" condition="and(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l})"/>
-			<lowerLevelReport level="Special Need Lowest Level2 tow lines 2" condition="and(gt({pm_dietary_comment_c}, 0), {pm_vegetarian_flag_l})"/>
-			<lowerLevelReport level="Special Need Lowest Level3"/>
+			<lowerLevelReport level="Special Need Lowest Level1" condition="gt(length({pm_medical_comment_c}), 0)"/>
+			<lowerLevelReport level="Special Need Lowest Level2" condition="and(or(gt(length({pm_dietary_comment_c}), 0), {pm_vegetarian_flag_l}), not(and(gt(length({pm_dietary_comment_c}), 0), {pm_vegetarian_flag_l})))"/>
+			<lowerLevelReport level="Special Need Lowest Level2 tow lines 1" condition="and(gt(length({pm_dietary_comment_c}), 0), {pm_vegetarian_flag_l})"/>
+			<lowerLevelReport level="Special Need Lowest Level2 tow lines 2" condition="and(gt(length({pm_dietary_comment_c}), 0), {pm_vegetarian_flag_l})"/>
+			<lowerLevelReport level="Special Need Lowest Level3" condition="gt(length({pm_other_special_need_c}), 0)"/>
 		</detail>
 		<footer space="below"/>
 	</level>
@@ -609,15 +608,15 @@
 	<level name="Special Need Lowest Level2 tow lines 2" identification="StaffPartnerKey">
 		<detail>
 			<field whichfield="column 0" pos="1cm">
-				<value text="  -                  -   " condition="gt({pm_dietary_comment_c}, 0)"/>
-				<value variable="pm_dietary_comment_c"  condition="gt({pm_dietary_comment_c}, 0)"/>
+				<value text="  -                  -   " condition="gt(length({pm_dietary_comment_c}), 0)"/>
+				<value variable="pm_dietary_comment_c"  condition="gt(length({pm_dietary_comment_c}), 0)"/>
 			</field>
 		</detail>
 	</level>
-	<level name="Special Need Lowest Level3" identification="StaffPartnerKey" condition="gt({pm_other_special_need_c}, 0)">
+	<level name="Special Need Lowest Level3" identification="StaffPartnerKey">
 		<detail>
 			<field whichfield="column 0" pos="1cm">
-				<value text="Other Needs: " condition="gt({pm_other_special_need_c}, 0)"/>
+				<value text="Other Needs: "/>
 				<value variable="pm_other_special_need_c"/>
 			</field>
 		</detail>
@@ -732,9 +731,9 @@
 	</level>
 	<level name="Emergency Contact Lowest Level3" identification="StaffPartnerKey">
 		<detail>
-			<field whichfield="column 0" pos="1cm" >
+			<field whichfield="column 0" pos="1cm">
 				<value text="Address:  "/>
-				<value variable="PartnerAddress"/>
+                <value variable="PartnerAddress"/>
 			</field>
 		</detail>
 	</level>
@@ -780,9 +779,9 @@
 	
 	<level name="Proof Of Life lower Level" identification="StaffPartnerKey" condition="HasChildRows">
 		<detail>
-			<lowerLevelReport level="Proof Of Life Lowest Level1" condition="gt({pm_life_question_1_c}, 0)"/>
-			<lowerLevelReport level="Proof Of Life Lowest Level2" condition="gt({pm_life_question_2_c}, 0)"/>
-			<lowerLevelReport level="Proof Of Life Lowest Level3" condition="gt({pm_life_question_3_c}, 0)"/>
+			<lowerLevelReport level="Proof Of Life Lowest Level1" condition="gt(length({pm_life_question_1_c}), 0)"/>
+			<lowerLevelReport level="Proof Of Life Lowest Level2" condition="gt(length({pm_life_question_2_c}), 0)"/>
+			<lowerLevelReport level="Proof Of Life Lowest Level3" condition="gt(length({pm_life_question_3_c}), 0)"/>
 		</detail>
 	</level>
 	

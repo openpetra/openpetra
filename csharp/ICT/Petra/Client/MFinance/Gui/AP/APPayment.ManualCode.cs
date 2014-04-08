@@ -88,14 +88,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             TFinanceControls.InitialiseAccountList(ref cmbBankAccount, FMainDS.AApDocument[0].LedgerNumber, true, false, true, true, "");
 
-//          grdDetails.AddTextColumn("AP No", FMainDS.AApDocumentPayment.ColumnApNumber, 50);
-            grdDetails.AddTextColumn("Invoice No", FMainDS.AApDocumentPayment.ColumnDocumentCode, 180);
-            grdDetails.AddTextColumn("Type", FMainDS.AApDocumentPayment.ColumnDocType, 80);
-//          grdDetails.AddTextColumn("Discount used", FMainDS.AApDocumentPayment.ColumnUseDiscount, 80);
-            grdDetails.AddCurrencyColumn("Amount", FMainDS.AApDocumentPayment.ColumnAmount);
-//          grdDetails.AddTextColumn("Currency", FMainDS.AApPayment.ColumnCurrencyCode, 50);
-            grdDetails.Columns[2].Width = 120;
-            grdDetails.Columns.StretchToFit();
+//          grdDocuments.AddTextColumn("AP No", FMainDS.AApDocumentPayment.ColumnApNumber, 50);
+            grdDocuments.AddTextColumn("Invoice No", FMainDS.AApDocumentPayment.ColumnDocumentCode, 180);
+            grdDocuments.AddTextColumn("Type", FMainDS.AApDocumentPayment.ColumnDocType, 80);
+//          grdDocuments.AddTextColumn("Discount used", FMainDS.AApDocumentPayment.ColumnUseDiscount, 80);
+            grdDocuments.AddCurrencyColumn("Amount", FMainDS.AApDocumentPayment.ColumnAmount);
+//          grdDocuments.AddTextColumn("Currency", FMainDS.AApPayment.ColumnCurrencyCode, 50);
+            grdDocuments.Columns[2].Width = 120;
+            grdDocuments.Columns.StretchToFit();
 
             grdPayments.AddTextColumn("Supplier", FMainDS.AApPayment.ColumnListLabel);
 
@@ -123,7 +123,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 cmbBankAccount.Enabled = false;
                 cmbPaymentType.Enabled = false;
 
-                grdDetails.Enabled = false;
+                grdDocuments.Enabled = false;
                 grdPayments.Enabled = false;
 
                 tbbMakePayment.Enabled = false;
@@ -329,16 +329,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FMainDS.AApDocumentPayment.DefaultView.RowFilter = AccountsPayableTDSAApDocumentPaymentTable.GetPaymentNumberDBName() +
                                                                    " = " + FSelectedPaymentRow.PaymentNumber.ToString();
 
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AApDocumentPayment.DefaultView);
-                grdDetails.Refresh();
-                grdDetails.Selection.SelectRow(1, true);
+                grdDocuments.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AApDocumentPayment.DefaultView);
+                grdDocuments.Refresh();
+                grdDocuments.Selection.SelectRow(1, true);
                 FocusedRowChangedDetails(null, null);
             }
         }
 
         private void FocusedRowChangedDetails(System.Object sender, SourceGrid.RowEventArgs e)
         {
-            DataRowView[] SelectedGridRow = grdDetails.SelectedDataRowsAsDataRowView;
+            DataRowView[] SelectedGridRow = grdDocuments.SelectedDataRowsAsDataRowView;
 
             if (FSelectedDocumentRow != null)  // unload amount to pay into currently selected record
             {
@@ -348,10 +348,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (SelectedGridRow.Length == 0)
             {
                 FSelectedDocumentRow = null;
+                CalculateTotalPayment();
             }
             else
             {
-                FSelectedDocumentRow = (AccountsPayableTDSAApDocumentPaymentRow)SelectedGridRow[0].Row;
                 FSelectedDocumentRow = (AccountsPayableTDSAApDocumentPaymentRow)SelectedGridRow[0].Row;
                 rbtPayFullOutstandingAmount.Checked = FSelectedDocumentRow.PayFullInvoice;
                 rbtPayPartialAmount.Checked = !rbtPayFullOutstandingAmount.Checked;

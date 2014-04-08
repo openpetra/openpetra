@@ -142,7 +142,7 @@
 					</queryDetail-->
 					<queryDetail condition="eq({param_donor}, One Donor)">
 						<value>
-							AND gift.p_donor_key_n = {param_donorkey}
+							AND gift.p_donor_key_n = {{param_donorkey}}
 						</value>
 					</queryDetail>
 					<!--queryDetail>

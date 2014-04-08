@@ -54,8 +54,8 @@
                 PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
               AND PUB_a_ap_document.a_date_entered_d &lt; {#param_date_selection#}
-              AND PUB_a_ap_document.a_document_status_c &lt;&gt; "CANCELLED"
-              AND PUB_a_ap_document.a_document_status_c &lt;&gt; "PAID"
+              AND PUB_a_ap_document.a_document_status_c &lt;&gt; 'CANCELLED'
+              AND PUB_a_ap_document.a_document_status_c &lt;&gt; 'PAID'
               
               AND PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
             </value>
@@ -89,8 +89,8 @@
                 PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
               AND PUB_a_ap_document.a_date_entered_d &lt; {#param_date_selection#}
-              AND PUB_a_ap_document.a_document_status_c &lt;&gt; "CANCELLED"
-              AND PUB_a_ap_document.a_document_status_c &lt;&gt; "PAID"
+              AND PUB_a_ap_document.a_document_status_c &lt;&gt; 'CANCELLED'
+              AND PUB_a_ap_document.a_document_status_c &lt;&gt; 'PAID'
               AND PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
               AND PUB_a_ap_supplier.a_currency_code_c = {Currency}
             </value>
@@ -132,8 +132,8 @@
                 PUB_a_ap_document.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_ap_document.p_partner_key_n = PUB_a_ap_supplier.p_partner_key_n
               AND PUB_a_ap_document.a_date_entered_d &lt; {#param_date_selection#}
-              AND PUB_a_ap_document.a_document_status_c &lt;&gt; "CANCELLED"
-              AND PUB_a_ap_document.a_document_status_c &lt;&gt; "PAID"
+              AND PUB_a_ap_document.a_document_status_c &lt;&gt; 'CANCELLED'
+              AND PUB_a_ap_document.a_document_status_c &lt;&gt; 'PAID'
               AND PUB_p_partner.p_partner_key_n = PUB_a_ap_document.p_partner_key_n
               AND PUB_p_partner.p_partner_short_name_c = {SupplierName}
               AND PUB_a_ap_document.p_partner_key_n = {{SupplierKey}}

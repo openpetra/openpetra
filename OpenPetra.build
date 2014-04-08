@@ -91,41 +91,67 @@ useful parameters
 </target>
 
 <target name="apiDoc" description="Generates API documentation. nant depend should have been run" >
+  <echo message="Target apiDoc started at: ${datetime::now()}" /> 
+  
   <exec program="${external.doxygen}">
     <arg value="&quot;${external.doxygen.configfile}&quot;" />
   </exec>  
+  
+  <echo message="Target apiDoc finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="errorCodeDoc" description="Generates documentation of the error codes" >
+  <echo message="Target errorCodeDoc started at: ${datetime::now()}" /> 
+  
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('ExecDotNet')}"/> 
   <ExecDotNet program="${dir.bin}/Ict.Tools.GenerateI18N.exe" 
     commandline="&quot;-csharppath:${dir.csharp}&quot; &quot;-templatefilepath:${dir.incdir.template}/doc/errorcodes.html&quot; &quot;-outfilepath:${dir.delivery}/errorcodes.html&quot; -do:errorcodedoc" />
+    
+  <echo message="Target errorCodeDoc finished at: ${datetime::now()}" />     
 </target>
 
 <target name="translation" description="create the dlls with the i18n messages" >
+  <echo message="Target translation started at: ${datetime::now()}" /> 
+  
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 
         buildfile="i18n/i18n.build" />
+        
+  <echo message="Target translation finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="buildTranslationTemplate" description="extracts string in winforms, creates and updates the .po files" >
+  <echo message="Target buildTranslationTemplate started at: ${datetime::now()}" /> 
+  
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="extractMsgs" 
         buildfile="i18n/i18n.build" />
+        
+  <echo message="Target buildTranslationTemplate finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="generateGuidedTranslations" description="simplifies the translation of the .po files" >
+  <echo message="Target generateGuidedTranslations started at: ${datetime::now()}" /> 
+  
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="guidedTrans" 
         buildfile="i18n/i18n.build" />
+        
+  <echo message="Target generateGuidedTranslations finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="createI18NYamlFiles" description="create localised yaml files" >
+  <echo message="Target createI18NYamlFiles started at: ${datetime::now()}" /> 
+  
   <nant inheritall="true" target="createI18NYamlFiles" 
         buildfile="i18n/i18n.build" />
+        
+  <echo message="Target createI18NYamlFiles finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="custclean" description="Cleans the solution and project files">
+  <echo message="Target custclean started at: ${datetime::now()}" /> 
+  
   <foreach item="String" property="devenv-name" delim="," in="${projectfiles.templates-list}" >
     <delete>
       <fileset basedir="${path::combine(dir.projectfiles,devenv-name)}">
@@ -140,9 +166,13 @@ useful parameters
     </fileset>
   </delete>
   <property name="target" value="clean" />
+  
+  <echo message="Target custclean finished at: ${datetime::now()}" /> 
 </target>
 
-<target name="quickClean" description="cleans all generated files and the delivery directory">
+<target name="quickClean" description="cleans all generated files and the delivery directory">    
+  <echo message="Target quickClean started at: ${datetime::now()}" /> 
+  
   <!-- Do not remove dir.delivery, because this would change all UUIDs from the project files -->
   <!-- Do not remove dir.bin, because this fails on Windows Jenkins server for NUnit tests -->
   <delete>
@@ -174,30 +204,48 @@ useful parameters
       <exclude name="**/test*-generated.*cs" />
     </fileset>
   </delete>
+  
+  <echo message="Target quickClean finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="setuptools" description="goes into the directory setup/tools">
+  <echo message="Target setuptools started at: ${datetime::now()}" /> 
+  
   <property name="target" value="indent" overwrite="false" />
   <nant inheritall="false" target="${target}" 
         buildfile="setup/tools/setuptools.build" />
+        
+  <echo message="Target setuptools finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="nanttasks" description="goes into the directory inc/nanttasks">
+  <echo message="Target nanttasks started at: ${datetime::now()}" /> 
+  
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 
         buildfile="inc/nanttasks/nanttasks.build" />
+        
+  <echo message="Target nanttasks finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="csharp" depends="nanttasks" description="goes into the directory csharp">
+  <echo message="Target csharp started at: ${datetime::now()}" /> 
+  
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 
         buildfile="csharp/csharp.build" />
+        
+  <echo message="Target csharp finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="webserver" depends="nanttasks" description="goes into the directory webserver">
+  <echo message="Target webserver started at: ${datetime::now()}" /> 
+  
   <property name="target" value="compile" overwrite="false" />
   <nant inheritall="false" target="${target}" 
         buildfile="webserver/webserver.build" />
+        
+  <echo message="Target webserver finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="internal-subdirs" description="Goes into all necessary subdirectories" 
@@ -207,6 +255,8 @@ useful parameters
         depends="generateProjectFiles"/>
 
 <target name="minimalGenerateSolution" description="compile minimal code for generating source code and the project and solution files">
+    <echo message="Target minimalGenerateSolution started at: ${datetime::now()}" /> 
+    
     <call target="generateTools"/>
     <call target="generateWinforms"/>
     <call target="generateORM"/>
@@ -214,23 +264,35 @@ useful parameters
     <!-- need to call generateNamespaceMap again, even though it was called in generateTools already. but now the winforms and ORM have been generated -->
     <call target="generateNamespaceMap"/>
     <call target="generateProjectFiles"/>
+    
+    <echo message="Target minimalGenerateSolution finished at: ${datetime::now()}" /> 
 </target>
 
 <target name="generateSolution" description="compiles OpenPetra and generates the project and solution files"
         depends="minimalGenerateSolution">
+    <echo message="Target generateSolution started at: ${datetime::now()}" />         
+    
     <call target="quickCompile"/>
+    
+    <echo message="Target generateSolution finished at: ${datetime::now()}" />         
 </target>
 
 <target name="generateNamespaceMap">
+  <echo message="Target generateNamespaceMap started at: ${datetime::now()}" />         
+  
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
   <GenerateNamespaceMap
     CodeRootDir="${dir.csharp}"
     NamespaceMapFilename="${namespaceFile}"
     NamespaceMap3rdParty="${namespaceFile3rdParty}"
     DependencyMapFilename="${projectDependenciesFile}"/>
+    
+  <echo message="Target generateNamespaceMap finished at: ${datetime::now()}" />         
 </target>
 
 <target name="generateTools">
+  <echo message="Target generateTools started at: ${datetime::now()}" />         
+  
   <call target="nanttasks"/>
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
   <GenerateNamespaceMap
@@ -244,11 +306,15 @@ useful parameters
         buildfile="csharp/ThirdParty/ThirdParty.build" />
   <call target="generateProjectFilesInternal"/>
   <call target="quickCompile"/>
+  
+  <echo message="Target generateTools finished at: ${datetime::now()}" />         
 </target>
 
 <target name="generateProjectFiles" depends="nanttasks,generateNamespaceMap,generateProjectFilesInternal"/>
 
 <target name="generateProjectFilesInternal">
+  <echo message="Target generateProjectFilesInternal started at: ${datetime::now()}" />         
+  
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateProjectFiles')}"/>
   <GenerateProjectFiles 
     CodeRootDir="${dir.csharp}"
@@ -262,6 +328,8 @@ useful parameters
     ProjectVersion="${ReleaseID}"
     DebugParameters="PetraClient,-C:${ClientConfigFile},PetraServerConsole,-C:${ServerConfigFile}"
     />
+    
+  <echo message="Target generateProjectFilesInternal finished at: ${datetime::now()}" />         
 </target>
 
 <!-- Include default implementation -->
@@ -277,9 +345,13 @@ useful parameters
 <include buildfile="demodata/demodata.build"/>
 
 <target name="MsBuildTarget">
+    <echo message="Target MsBuildTarget started at: ${datetime::now()}" />         
+    
     <msbuild project="${solution.file}" verbosity="Minimal">
         <property name="Configuration" value="${Configuration}"/>
     </msbuild>
+    
+    <echo message="Target MsBuildTarget finished at: ${datetime::now()}" />         
 </target>
 
 <target name="quickCompile">
@@ -287,6 +359,9 @@ useful parameters
        quickCompile uses the solution and csproj files and msbuild.
        quickCompile is intended as an alternative to compile in SharpDevelop directly.
   -->
+  
+  <echo message="Target quickCompile started at: ${datetime::now()}" />         
+  
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('CompileSolution')}"/>
   <property name="solution" value="OpenPetra" overwrite="false"/>
   <property name="solution.file" value="${path::combine(dir.projectfiles,
@@ -294,6 +369,8 @@ useful parameters
   <property name="solution.file" value="${string::replace(solution.file, 'OpenPetra.OpenPetra.sln', 'OpenPetra.sln')}"/>
 
   <CompileSolution SolutionFile="${solution.file}"/>
+  
+  <echo message="Target quickCompile finished at: ${datetime::now()}" />         
 </target>
 
 <target name="compileProject">
@@ -302,70 +379,129 @@ useful parameters
 </target>
 
 <target name="generateORM" depends="generateORMCachedTables,generateORMData,generateORMAccess,generateORMReferenceCounts">
+  <echo message="Target generateORM started at: ${datetime::now()}" />         
+  
   <echo message="please compile the code after the files have been regenerated"/>
+  
+  <echo message="Target generateORM finished at: ${datetime::now()}" />         
 </target>
 
 <target name="generateORMData">
+  <echo message="Target generateORMData started at: ${datetime::now()}" />         
+  
   <!-- generate the files for Ict.Petra.Shared.lib.data, ie. the tables and datasets -->
   <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Shared/Ict.Petra.Shared.build')}" verbose="${verbose}"/>
+  
+  <echo message="Target generateORMData finished at: ${datetime::now()}" />         
 </target>
 
 <target name="generateORMAccess">
+  <echo message="Target generateORMAccess started at: ${datetime::now()}" />         
+  
   <!-- generate the files for Ict.Petra.Server.lib.data, ie. the access files for reading from and writing to the database -->
   <nant inheritall="false" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Server/Ict.Petra.Server.build')}" verbose="${verbose}"/>
+  
+  <echo message="Target generateORMAccess finished at: ${datetime::now()}" />         
 </target>
 
 <target name="generateWinforms">
+  <echo message="Target generateWinforms started at: ${datetime::now()}" />
+  
   <property name="WithWindowsClient" value="true" overwrite="false"/>
   <property name="WithLinuxClient" value="false" overwrite="false"/>
   <if test="${WithWindowsClient or WithLinuxClient}">
     <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
     <nant inheritall="true" target="custdepend" buildfile="${path::combine(dir.csharp, 'ICT/Petra/PetraClient/PetraClient.build')}" verbose="${verbose}"/>
   </if>
+  
+  <echo message="Target generateWinforms finished at: ${datetime::now()}" />
 </target>
 
 <target name="generateWinform">
+  <echo message="Target generateWinform (outer) started at: ${datetime::now()}" />
+  
   <nant inheritall="true" target="generateWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
+  
+  <echo message="Target generateWinform (outer) finished at: ${datetime::now()}" />
 </target>
 
 <target name="generateWinformNoCompile">
+  <echo message="Target generateWinformNoCompile (outer) started at: ${datetime::now()}" />
+  
   <nant inheritall="true" target="generateWinformNoCompile" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
+  
+  <echo message="Target generateWinformNoCompile (outer) finished at: ${datetime::now()}" />
 </target>
 
 <target name="previewWinform">
+  <echo message="Target previewWinform (outer) started at: ${datetime::now()}" />
+  
   <nant inheritall="true" target="previewWinform" buildfile="${path::combine(dir.csharp, 'ICT/Petra/Client/Ict.Petra.Client.build')}" verbose="${verbose}"/>
+  
+  <echo message="Target previewWinform (outer) finished at: ${datetime::now()}" />
 </target>
 
 <target name="test" depends="initConfigFiles">
+  <echo message="Target test started at: ${datetime::now()}" />
+  
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
   <nant inheritall="false" target="test-all" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
+  
+  <echo message="Target test finished at: ${datetime::now()}" />
 </target>
 
 <target name="test-without-display" depends="initConfigFiles">
+  <echo message="Target test-without-display (outer) started at: ${datetime::now()}" />
+  
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
   <nant inheritall="false" target="test-without-display" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
+  
+  <echo message="Target test-without-display (outer) finished at: ${datetime::now()}" />
+</target>
+
+<target name="test-client" depends="initConfigFiles">
+  <echo message="Target test-client (outer) started at: ${datetime::now()}" />
+  
+  <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
+  <nant inheritall="false" target="test-client" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
+  
+  <echo message="Target test-client (outer) finished at: ${datetime::now()}" />
 </target>
 
 <target name="test-main-navigation-screens-core" depends="initConfigFiles">
+  <echo message="Target test-main-navigation-screens-core (outer) started at: ${datetime::now()}" />
+  
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
   <nant inheritall="false" target="test-main-navigation-screens-core" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
+  
+  <echo message="Target test-main-navigation-screens-core (outer) finished at: ${datetime::now()}" />
 </target>
 
 <target name="test-main-navigation-screens" depends="initConfigFiles">
+  <echo message="Target test-main-navigation-screens (outer) started at: ${datetime::now()}" />
+  
   <loadtasks assembly="${Ict.Tools.NAntTasks.DLL}" unless="${task::exists('GenerateNamespaceMap')}"/>
   <nant inheritall="false" target="test-main-navigation-screens" buildfile="${path::combine(dir.csharp, 'ICT/Testing/ICT.Testing.build')}" verbose="${verbose}"/>
+  
+  <echo message="Target test-main-navigation-screens (outer) finished at: ${datetime::now()}" />
 </target>
 
 <target name="enable-sqlite-config-for-jenkins">
+    <echo message="Target enable-sqlite-config-for-jenkins started at: ${datetime::now()}" />
+  
     <echo file="OpenPetra.build.config">&lt;?xml version="1.0"?>
 &lt;project name="OpenPetra-userconfig">
     &lt;property name="DBMS.Type" value="sqlite"/>
     &lt;property name="DBMS.Password" value=""/>
 &lt;/project>
     </echo>
+    
+    <echo message="Target enable-sqlite-config-for-jenkins finished at: ${datetime::now()}" />
 </target>
 
 <target name="devzip">
+    <echo message="Target devzip started at: ${datetime::now()}" />
+    
     <!-- calling script must get a fresh bzr tree, write OpenPetra.build.config with sqlite -->
 
     <call target="quickClean"/>
@@ -405,6 +541,8 @@ useful parameters
     </zip>
 
     <!-- calling script must upload the zip file to sourceforge -->
+    
+    <echo message="Target devzip finished at: ${datetime::now()}" />
 </target>
 </project>
 
