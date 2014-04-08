@@ -203,6 +203,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             ActionEnabledEvent(null, new ActionEventArgs("actUntagAll", canTag));
 
             grdDetails.Columns[0].Visible = canTag;
+
             if (canTag)
             {
                 grdDetails.ShowCell(new SourceGrid.Position(grdDetails.Selection.ActivePosition.Row, 0), true);
@@ -239,7 +240,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             DateTime dt;
             TtxtPetraDate fromDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpDate-1");
 
-            if (fromDate.Text != String.Empty && DateTime.TryParse(fromDate.Text, out dt))
+            if ((fromDate.Text != String.Empty) && DateTime.TryParse(fromDate.Text, out dt))
             {
                 if (Convert.ToDateTime(ARow["Date"]) < dt.Date)
                 {
@@ -249,7 +250,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             TtxtPetraDate toDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpDate-2");
 
-            if (toDate.Text != String.Empty && DateTime.TryParse(toDate.Text, out dt))
+            if ((toDate.Text != String.Empty) && DateTime.TryParse(toDate.Text, out dt))
             {
                 if (Convert.ToDateTime(ARow["Date"]) > dt.Date)
                 {
@@ -402,7 +403,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             UpdateDisplayedBalance();
             UpdateRecordNumberDisplay();
             RefreshSumTagged(null, null);
-            
+
             ActionEnabledEvent(null, new ActionEventArgs("cndSelectedSupplier", grdResult.TotalPages > 0));
         }
 
@@ -825,11 +826,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 // I can only delete invoices that are not posted already.
                 // This method is only enabled when the grid shows items for Posting
-                List<int> DeleteTheseDocs = new List<int>();
+                List <int>DeleteTheseDocs = new List <int>();
 
                 string status = SelectedGridRow[0]["Status"].ToString();
 
-                if (status == "OPEN" || status == "APPROVED")
+                if ((status == "OPEN") || (status == "APPROVED"))
                 {
                     Int32 DocumentId = Convert.ToInt32(SelectedGridRow[0]["ApDocumentId"]);
                     DeleteTheseDocs.Add(DocumentId);
@@ -957,7 +958,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             string MsgTitle = Catalog.GetString("Document Approval");
 
-            List<Int32> TaggedDocuments = new List<Int32>();
+            List <Int32>TaggedDocuments = new List <Int32>();
             AccountsPayableTDS TempDS = new AccountsPayableTDS();
 
             foreach (DataRowView rv in FPagedDataTable.DefaultView)
@@ -976,14 +977,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 string msg = String.Format(Catalog.GetString(
                         "Are you sure that you want to approve the {0} tagged document(s)?"), TaggedDocuments.Count);
 
-                if (MessageBox.Show(msg, MsgTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.No)
+                if (MessageBox.Show(msg, MsgTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                        MessageBoxDefaultButton.Button2) == DialogResult.No)
                 {
                     return;
                 }
 
                 this.Cursor = Cursors.WaitCursor;
                 TVerificationResultCollection verificationResult;
-                
+
                 if (TRemote.MFinance.AP.WebConnectors.ApproveAPDocuments(FLedgerNumber, TaggedDocuments, out verificationResult))
                 {
                     this.Cursor = Cursors.Default;
@@ -1169,11 +1171,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdDetails.Focus();
                 return true;
             }
+
             if (keyData == Keys.F10)
             {
                 SelectRowInGrid(FPrevRowChangedRow + 1);
                 return true;
             }
+
             if (keyData == (Keys.F10 | Keys.Shift))
             {
                 SelectRowInGrid(FPrevRowChangedRow - 1);

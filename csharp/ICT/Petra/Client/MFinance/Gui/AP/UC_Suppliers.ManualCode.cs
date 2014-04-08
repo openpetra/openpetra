@@ -576,6 +576,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     return false;
                 }
             }
+
             return true;
         }
 
@@ -612,11 +613,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdDetails.Focus();
                 return true;
             }
+
             if (keyData == Keys.F10)
             {
                 SelectRowInGrid(FPrevRowChangedRow + 1);
                 return true;
             }
+
             if (keyData == (Keys.F10 | Keys.Shift))
             {
                 SelectRowInGrid(FPrevRowChangedRow - 1);

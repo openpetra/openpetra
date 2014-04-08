@@ -687,7 +687,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AddToActionEnabledEvent(writer, ActionToPerform, ctrl.controlName);
 
                 // deal with action handler
-                if ((ActionToPerform == "actEditFilter" || ActionToPerform == "actEditFind") && !writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
+                if (((ActionToPerform == "actEditFilter")
+                     || (ActionToPerform == "actEditFind")) && !writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
                 {
                     // Do nothing
                 }
@@ -699,7 +700,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 TActionHandler ActionHandler = writer.CodeStorage.FActionList[ActionToPerform];
                 SetControlActionProperties(writer, ctrl, ActionHandler);
 
-                if (ActionToPerform == "actEditFind" && ctrl.controlName == "mniEditFind" && writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
+                if ((ActionToPerform == "actEditFind") && (ctrl.controlName == "mniEditFind")
+                    && writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
                 {
                     ProcessTemplate snipCtrlF = writer.FTemplate.GetSnippet("PROCESSCMDKEYCTRLF");
                     snipCtrlF.SetCodelet("ACTIONCLICK", ctrl.GetAction().actionClick);
@@ -707,15 +709,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     writer.SetControlProperty("mniEditFind", "ShortcutKeys", "Keys.F | Keys.Control", false);
                 }
 
-                if (ActionToPerform == "actEditFilter" && ctrl.controlName == "mniEditFilter" && writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
+                if ((ActionToPerform == "actEditFilter") && (ctrl.controlName == "mniEditFilter")
+                    && writer.FCodeStorage.FControlList.ContainsKey("pnlFilterAndFind"))
                 {
                     ProcessTemplate snipCtrlR = writer.FTemplate.GetSnippet("PROCESSCMDKEYCTRLR");
                     snipCtrlR.SetCodelet("ACTIONCLICK", ctrl.GetAction().actionClick);
                     writer.FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlR);
                     writer.SetControlProperty("mniEditFilter", "ShortcutKeys", "Keys.R | Keys.Control", false);
                 }
-                
-                if (ActionToPerform == "actSave" && ctrl.controlName == "mniFileSave")
+
+                if ((ActionToPerform == "actSave") && (ctrl.controlName == "mniFileSave"))
                 {
                     ProcessTemplate snipCtrlS = writer.FTemplate.GetSnippet("PROCESSCMDKEYCTRLS");
                     writer.FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlS);

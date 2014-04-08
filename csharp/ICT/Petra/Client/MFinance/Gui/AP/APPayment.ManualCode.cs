@@ -447,6 +447,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             TVerificationResultCollection Verifications;
 
             this.Cursor = Cursors.WaitCursor;
+
             if (!TRemote.MFinance.AP.WebConnectors.PostAPPayments(
                     ref FMainDS,
                     PaymentDate,
@@ -556,6 +557,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // because if it was, perhaps the user doesn't really want to
             // reverse it again?
             this.Cursor = Cursors.WaitCursor;
+
             if (TRemote.MFinance.AP.WebConnectors.WasThisPaymentReversed(ALedgerNumber, APaymentNumber))
             {
                 this.Cursor = Cursors.Default;
@@ -563,6 +565,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     Catalog.GetString("Reverse Payment"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
             this.Cursor = Cursors.Default;
 
             //
@@ -605,6 +608,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             TVerificationResultCollection Verifications;
 
             this.Cursor = Cursors.WaitCursor;
+
             if (TRemote.MFinance.AP.WebConnectors.ReversePayment(ALedgerNumber, APaymentNumber, PostingDate, out Verifications))
             {
                 this.Cursor = Cursors.Default;

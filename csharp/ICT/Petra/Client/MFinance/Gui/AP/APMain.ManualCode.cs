@@ -342,16 +342,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 mniFilterFind_Click(mniEditFind, null);
                 return true;
             }
+
             if (keyData == (Keys.R | Keys.Control))
             {
                 mniFilterFind_Click(mniEditFilter, null);
                 return true;
             }
+
             if (keyData == (Keys.F3))
             {
                 mniFilterFind_Click(mniEditFind, new KeyPressEventArgs('+'));
                 return true;
             }
+
             if (keyData == (Keys.F3 | Keys.Shift))
             {
                 mniFilterFind_Click(mniEditFind, new KeyPressEventArgs('-'));

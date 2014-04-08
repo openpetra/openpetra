@@ -114,15 +114,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 lblNumberFwdPostingPeriods.Location.Y - (int)(0.5 * HeightDifference));
             nudNumberFwdPostingPeriods.Location = new System.Drawing.Point(nudNumberFwdPostingPeriods.Location.X,
                 nudNumberFwdPostingPeriods.Location.Y - (int)(0.5 * HeightDifference));
-            
-            pnlSuspenseAccounts.Location = new System.Drawing.Point(pnlSuspenseAccounts.Location.X, pnlSuspenseAccounts.Location.Y - BigHeightDifference);
+
+            pnlSuspenseAccounts.Location = new System.Drawing.Point(pnlSuspenseAccounts.Location.X,
+                pnlSuspenseAccounts.Location.Y - BigHeightDifference);
             chkSuspenseAccountFlag.Location =
                 new System.Drawing.Point(chkSuspenseAccountFlag.Location.X, chkSuspenseAccountFlag.Location.Y - (int)(0.5 * HeightDifference));
-            
+
             pnlBudget.Location = new System.Drawing.Point(pnlBudget.Location.X, pnlBudget.Location.Y - BigHeightDifference - HeightDifference);
             chkBudgetControlFlag.Location =
                 new System.Drawing.Point(chkBudgetControlFlag.Location.X, chkBudgetControlFlag.Location.Y - (int)(0.5 * HeightDifference));
-            
+
             pnlBranchProcess.Location =
                 new System.Drawing.Point(pnlBranchProcess.Location.X, pnlBranchProcess.Location.Y - BigHeightDifference - (int)(2 * HeightDifference));
             chkBranchProcessing.Location =

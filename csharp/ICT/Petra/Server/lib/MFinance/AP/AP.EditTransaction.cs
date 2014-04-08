@@ -937,7 +937,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="ADeleteTheseDocs"></param>
         /// <param name="AVerificationResult"></param>
         [RequireModulePermission("FINANCE-1")]
-        public static bool ApproveAPDocuments(Int32 ALedgerNumber, List<Int32> AApproveTheseDocs, out TVerificationResultCollection AVerificationResult)
+        public static bool ApproveAPDocuments(Int32 ALedgerNumber,
+            List <Int32>AApproveTheseDocs,
+            out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = new TVerificationResultCollection();
             bool ResultValue = false;
@@ -946,7 +948,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             if (AApproveTheseDocs.Count == 0)
             {
-                AVerificationResult.Add(new TVerificationResult("Approve AP Document", "Nothing to do - the document list is empty", TResultSeverity.Resv_Noncritical));
+                AVerificationResult.Add(new TVerificationResult("Approve AP Document", "Nothing to do - the document list is empty",
+                        TResultSeverity.Resv_Noncritical));
                 return false;
             }
 
@@ -963,7 +966,8 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 }
                 else
                 {
-                    AVerificationResult.Add(new TVerificationResult("Approve AP Document", "Only OPEN documents can be approved", TResultSeverity.Resv_Noncritical));
+                    AVerificationResult.Add(new TVerificationResult("Approve AP Document", "Only OPEN documents can be approved",
+                            TResultSeverity.Resv_Noncritical));
                     return false;
                 }
             }

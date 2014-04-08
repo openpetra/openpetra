@@ -79,6 +79,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             // Get our AP ledger settings and enable/disable the corresponding search option on the filter panel
             TFrmLedgerSettingsDialog settings = new TFrmLedgerSettingsDialog(FMainForm, FMainForm.LedgerNumber);
+
             FRequireApprovalBeforePosting = settings.APRequiresApprovalBeforePosting;
             Control rbtForApproval = FFilterPanelControls.FindControlByName("rbtForApproval");
             rbtForApproval.Enabled = FRequireApprovalBeforePosting;
@@ -749,13 +750,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 string msg = String.Format(Catalog.GetString(
                         "Are you sure that you want to approve the {0} tagged document(s)?"), ApproveTheseDocs.Count);
 
-                if (MessageBox.Show(msg, MsgTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.No)
+                if (MessageBox.Show(msg, MsgTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                        MessageBoxDefaultButton.Button2) == DialogResult.No)
                 {
                     return;
                 }
 
                 this.Cursor = Cursors.WaitCursor;
                 TVerificationResultCollection VerificationResult;
+
                 if (TRemote.MFinance.AP.WebConnectors.ApproveAPDocuments(FMainForm.LedgerNumber, ApproveTheseDocs, out VerificationResult))
                 {
                     this.Cursor = Cursors.Default;
@@ -809,7 +812,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 string msg = String.Format(Catalog.GetString(
                         "Are you sure that you want to delete the {0} tagged document(s)?"), DeleteTheseDocs.Count);
 
-                if (MessageBox.Show(msg, MsgTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.No)
+                if (MessageBox.Show(msg, MsgTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                        MessageBoxDefaultButton.Button2) == DialogResult.No)
                 {
                     return;
                 }
@@ -843,6 +847,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             TempDS.AApDocument.DefaultView.Sort = AApDocumentDetailTable.GetApDocumentIdDBName();
 
             string testString = "|POSTED|PARTPAID|PAID|";
+
             if (FRequireApprovalBeforePosting)
             {
                 testString += "OPEN|";
@@ -872,7 +877,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 string msg = String.Format(Catalog.GetString("Are you sure that you want to post the {0} tagged document(s)?"), PostTheseDocs.Count);
 
-                if (MessageBox.Show(msg, MsgTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.No)
+                if (MessageBox.Show(msg, MsgTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                        MessageBoxDefaultButton.Button2) == DialogResult.No)
                 {
                     return;
                 }
@@ -959,6 +965,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 DateTime PostingDate = dateEffectiveDialog.SelectedDate;
 
                 this.Cursor = Cursors.WaitCursor;
+
                 if (TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
                         FMainForm.LedgerNumber,
                         ReverseTheseDocs,
@@ -1017,6 +1024,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     this.Cursor = Cursors.Default;
                     PaymentScreen.Show();
                 }
+
                 this.Cursor = Cursors.Default;
             }
             else
@@ -1075,6 +1083,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actReverseTagged", canPay));
 
                 grdInvoices.Columns[0].Visible = canTag;
+
                 if (canTag)
                 {
                     grdInvoices.ShowCell(new SourceGrid.Position(grdInvoices.Selection.ActivePosition.Row, 0), true);
@@ -1112,7 +1121,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             DateTime dt;
             TtxtPetraDate fromDueDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpDueDate-1");
 
-            if (fromDueDate.Text != String.Empty && DateTime.TryParse(fromDueDate.Text, out dt))
+            if ((fromDueDate.Text != String.Empty) && DateTime.TryParse(fromDueDate.Text, out dt))
             {
                 if (Convert.ToDateTime(ARow["DateDue"]) < dt.Date)
                 {
@@ -1122,7 +1131,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             TtxtPetraDate toDueDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpDueDate-2");
 
-            if (toDueDate.Text != String.Empty && DateTime.TryParse(toDueDate.Text, out dt))
+            if ((toDueDate.Text != String.Empty) && DateTime.TryParse(toDueDate.Text, out dt))
             {
                 if (Convert.ToDateTime(ARow["DateDue"]) > dt.Date)
                 {
@@ -1132,7 +1141,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             TtxtPetraDate fromIssueDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpIssueDate-1");
 
-            if (fromIssueDate.Text != String.Empty && DateTime.TryParse(fromIssueDate.Text, out dt))
+            if ((fromIssueDate.Text != String.Empty) && DateTime.TryParse(fromIssueDate.Text, out dt))
             {
                 if (Convert.ToDateTime(ARow["DateIssued"]) < dt.Date)
                 {
@@ -1142,14 +1151,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             TtxtPetraDate toIssueDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpIssueDate-2");
 
-            if (toIssueDate.Text != String.Empty && DateTime.TryParse(toIssueDate.Text, out dt))
+            if ((toIssueDate.Text != String.Empty) && DateTime.TryParse(toIssueDate.Text, out dt))
             {
                 if (Convert.ToDateTime(ARow["DateIssued"]) >= dt.Date)
                 {
                     return false;
                 }
             }
-            
+
             return true;
         }
 
@@ -1187,11 +1196,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdDetails.Focus();
                 return true;
             }
+
             if (keyData == Keys.F10)
             {
                 SelectRowInGrid(FPrevRowChangedRow + 1);
                 return true;
             }
+
             if (keyData == (Keys.F10 | Keys.Shift))
             {
                 SelectRowInGrid(FPrevRowChangedRow - 1);

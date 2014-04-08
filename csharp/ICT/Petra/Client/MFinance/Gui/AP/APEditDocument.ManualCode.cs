@@ -888,6 +888,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             DateTime PostingDate = dateEffectiveDialog.SelectedDate;
 
             AOwnerForm.Cursor = Cursors.WaitCursor;
+
             if (TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
                     ALedgerNumber,
                     AApDocumentIds,

@@ -1218,7 +1218,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     foreach (XmlNode dynamicControl in dynamicControlsNode)
                     {
                         string dynamicControlName = dynamicControl.Attributes["name"].Value;
-                        
+
                         // The control name may include an instance - remember this and work out the control name without the instance
                         string dynamicControlNameWithInstance = dynamicControlName;
 
@@ -1270,7 +1270,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                         if (simpleControlType != String.Empty)
                         {
-                            CreateDynamicFilterFindSimpleControl(writer, dynamicControlName, dynamicControlNameWithInstance, simpleControlType, APanelType, APanelSubType, ATargetCodelet);
+                            CreateDynamicFilterFindSimpleControl(writer,
+                                dynamicControlName,
+                                dynamicControlNameWithInstance,
+                                simpleControlType,
+                                APanelType,
+                                APanelSubType,
+                                ATargetCodelet);
                         }
                     }
 
@@ -1773,11 +1779,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 if ((optionalValuesNode != null) && (optionalValuesNode.ChildNodes.Count > 0))
                 {
                     string specifiedValues = String.Format("{0}.Items.AddRange( new object[] {{ ", ctrlName);
+
                     foreach (XmlNode optionalValueNode in optionalValuesNode)
                     {
                         string optionalValueName = optionalValueNode.Attributes["name"].Value;
                         specifiedValues += String.Format("\"{0}\", ", optionalValueName);
                     }
+
                     specifiedValues = specifiedValues.Substring(0, specifiedValues.Length - 2) + " } );" + Environment.NewLine + Environment.NewLine;
                     writer.FTemplate.AddToCodelet(ATargetCodelet, specifiedValues);
                 }
