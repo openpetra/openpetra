@@ -116,9 +116,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             utils.SetStatusBarText(grdSuppliers, Catalog.GetString("Double-click a supplier to see the transaction history"));
             utils.SetStatusBarText(btnCreateCreditNote, Catalog.GetString("Click to create a credit note for the selected supplier"));
             utils.SetStatusBarText(btnCreateInvoice, Catalog.GetString("Click to create an invoice for the selected supplier"));
-            utils.SetStatusBarText(btnEditSupplier, Catalog.GetString("Click to edit the details for the selected supplier"));
+            utils.SetStatusBarText(btnEditDetails, Catalog.GetString("Click to edit the details for the selected supplier"));
             utils.SetStatusBarText(btnNewSupplier, Catalog.GetString("Click to create a new supplier"));
-            utils.SetStatusBarText(btnSupplierTransactions, Catalog.GetString("Click to view the transaction history for the selected supplier"));
+            //utils.SetStatusBarText(btnSupplierTransactions, Catalog.GetString("Click to view the transaction history for the selected supplier"));
             utils.SetStatusBarText(chkToggleFilter, Catalog.GetString("Click to show/hide the Filter/Find panel"));
         }
 
@@ -282,8 +282,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             myDataView.AllowNew = false;
             grdSuppliers.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
-            string initialFilter = String.Empty;
-            ApplyFilterManual(ref initialFilter);
+            SetSupplierFilters(null, null);
+            ApplyFilterManual(ref FCurrentActiveFilter);
 
             if (grdSuppliers.TotalPages > 0)
             {
@@ -469,15 +469,18 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void EditSupplier(object sender, EventArgs e)
+        public void EditDetails(object sender, EventArgs e)
         {
             Int64 PartnerKey = GetCurrentlySelectedSupplier();
 
             if (PartnerKey != -1)
             {
+                this.Cursor = Cursors.WaitCursor;
                 TFrmAPEditSupplier frm = new TFrmAPEditSupplier(FMainForm);
                 frm.LedgerNumber = FMainForm.LedgerNumber;
                 frm.EditSupplier(PartnerKey);
+                this.Cursor = Cursors.Default;
+
                 frm.Show();
             }
         }
@@ -493,9 +496,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (PartnerKey != -1)
             {
+                this.Cursor = Cursors.WaitCursor;
                 TFrmAPEditDocument frm = new TFrmAPEditDocument(FMainForm);
-
                 frm.CreateAApDocument(FMainForm.LedgerNumber, PartnerKey, false);
+                this.Cursor = Cursors.Default;
+
                 frm.Show();
             }
         }
@@ -511,9 +516,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (PartnerKey != -1)
             {
+                this.Cursor = Cursors.WaitCursor;
                 TFrmAPEditDocument frm = new TFrmAPEditDocument(FMainForm);
-
                 frm.CreateAApDocument(FMainForm.LedgerNumber, PartnerKey, true);
+                this.Cursor = Cursors.Default;
+
                 frm.Show();
             }
         }
@@ -526,12 +533,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 bool gotRows = (grdDetails.Rows.Count > 1);
 
-                ActionEnabledEvent(null, new ActionEventArgs("actEditSupplier", gotRows));
+                ActionEnabledEvent(null, new ActionEventArgs("actEditDetails", gotRows));
                 ActionEnabledEvent(null, new ActionEventArgs("actSupplierTransactions", gotRows));
                 ActionEnabledEvent(null, new ActionEventArgs("actCreateInvoice", gotRows));
                 ActionEnabledEvent(null, new ActionEventArgs("actCreateCreditNote", gotRows));
 
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actEditSupplier", gotRows));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actEditDetails", gotRows));
                 FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actSupplierTransactions", gotRows));
                 FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actCreateInvoice", gotRows));
                 FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actCreateCreditNote", gotRows));
@@ -546,6 +553,30 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void FilterToggledManual(bool AFilterIsOff)
         {
             AutoSizeGrid();
+        }
+
+        private bool IsMatchingRowManual(DataRow ARow)
+        {
+            string supplierKey = ((TextBox)FFindPanelControls.FindControlByName("txtSupplierKey")).Text;
+
+            if (supplierKey != String.Empty)
+            {
+                if (!ARow[0].ToString().Contains(supplierKey))
+                {
+                    return false;
+                }
+            }
+
+            string supplierName = ((TextBox)FFindPanelControls.FindControlByName("txtSupplierName")).Text.ToLower();
+
+            if (supplierName != String.Empty)
+            {
+                if (!ARow[1].ToString().ToLower().Contains(supplierName))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         private void AutoSizeGrid()
@@ -572,6 +603,27 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdSuppliers.SuspendLayout();
             grdDetails.AutoSizeCells();
             grdSuppliers.ResumeLayout();
+        }
+
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.F9)
+            {
+                grdDetails.Focus();
+                return true;
+            }
+            if (keyData == Keys.F10)
+            {
+                SelectRowInGrid(FPrevRowChangedRow + 1);
+                return true;
+            }
+            if (keyData == (Keys.F10 | Keys.Shift))
+            {
+                SelectRowInGrid(FPrevRowChangedRow - 1);
+                return true;
+            }
+
+            return false;
         }
     }
 }

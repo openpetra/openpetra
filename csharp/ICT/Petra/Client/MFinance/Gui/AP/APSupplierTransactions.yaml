@@ -6,28 +6,30 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data,Ict.Petra.Shared.MFinance.AP.Validation]
     FormType: browse
     Template: windowFind
-    WindowWidth: 800
+    WindowWidth: 895
     WindowHeight: 700
     Actions:
-        actNewInvoice: {Label=New &Invoice, ShortCut=Ctrl+I, ActionClick=CreateInvoice}        
-        actNewCreditNote:{Label=New &Credit Note, ShortCut=Ctrl+R, ActionClick=CreateCreditNote}
-        actOpenSelected: {Label=&Open Selected, ShortCut=Ctrl+O, ActionClick=OpenSelectedTransaction}
-        actReverseSelected: {Label=Re&verse Selected, ShortCut=F5, ActionClick=ReverseSelected}
-        actApproveTagged: {Label=&Approve Tagged, ShortCut=F6, ActionClick=ApproveTaggedDocuments}
-        actPostTagged: {Label=&Post Tagged, ShortCut=F7, ActionClick=PostTaggedDocuments}
-        actAddTaggedToPayment: {Label=Pay Tagged, ShortCut=F8, ActionClick=AddTaggedToPayment}
+        actNewInvoice: {Label=New &Invoice, ShortCut=Ctrl+I, ActionClick=CreateInvoice, Image=New_Record.ico, Tooltip=Create a new invoice relating to the current supplier}        
+        actNewCreditNote:{Label=New &Credit Note, ShortCut=Ctrl+R, ActionClick=CreateCreditNote, Image=New_Credit.ico, Tooltip=Create a new credit note relating to the current supplier}
+        actOpenSelected: {Label=&Open Selected, ShortCut=Ctrl+O, ActionClick=OpenSelectedTransaction, Image=Edit_Record.ico, Tooltip=View details of the selected transaction}
+        actOpenTagged: {Label=Open Ta&gged, ShortCut=Ctrl+O, ActionClick=OpenTaggedDocuments, Tooltip=View details of all the tagged transactions}
+        actApproveTagged: {Label=&Approve Tagged, ShortCut=F6, ActionClick=ApproveTaggedDocuments, Tooltip=Approve all the tagged invoices}
+        actDeleteSelected: {Label=De&lete Selected, ShortCut=F5, ActionClick=DeleteSelected, Image=Delete_Record.ico, Tooltip=Delete the selected invoice/payment}
+        actReverseSelected: {Label=Re&verse Selected, ShortCut=F5, ActionClick=ReverseSelected, Tooltip=Reverse the selected invoice/payment}
+        actPostTagged: {Label=&Post Tagged, ShortCut=F7, ActionClick=PostTaggedDocuments, Tooltip=Post all the tagged invoices}
+        actAddTaggedToPayment: {Label=Pa&y Tagged, ShortCut=F8, ActionClick=AddTaggedToPayment, Tooltip=Pay or part-pay all the tagged invoices}
         #actTagPayable: {ActionClick=TagAllPayable}
         #actTagPostable: {ActionClick=TagAllPostable}
-        actTagAll: {Label=&Tag All, ActionClick=TagAll}
-        actUntagAll: {Label=&Untag All, ActionClick=UntagAll}
+        actTagAll: {Label=&Tag All, ActionClick=TagAll, Tooltip=Tag all the rows in the grid}
+        actUntagAll: {Label=&Untag All, ActionClick=UntagAll, Tooltip=Untag all the rows in the grid}
         actReloadList: {ActionClick=DoRefreshButton}
         actReprintPaymentReport: {ActionClick=PaymentReport}
-        actEditFind: {ActionClick=MniFilterFind_Click}
-        actEditFilter: {ActionClick=MniFilterFind_Click}
+        actEditFind: {ActionClick=MniFilterFind_Click, Image=Find.ico, Tooltip=Find a record that matches one or more criteria}
+        actEditFilter: {ActionClick=MniFilterFind_Click, Image=FilterActive.ico, Tooltip=Filter the displayed records by one or more criteria}
     Controls:
         pnlContent:
             Dock: Fill
-            Controls: [pnlHeader, pnlGrid, pnlBalances, pnlButtons]
+            Controls: [pnlHeader, pnlGrid, pnlOutstandingTotals, pnlButtons]
         pnlHeader:
             Controls: [pnlCurrentSupplierInfo, pnlHeaderButtons]
             ControlsOrientation: horizontal
@@ -44,15 +46,15 @@ RootNode:
         txtSupplierName: {Label=Supplier, ReadOnly=true, PartnerShortNameLookup=AApSupplier.PartnerKey}
         txtSupplierCurrency: {Label=Currency, ReadOnly=true, DataField=AApSupplier.CurrencyCode}
         pnlButtons:
-            Controls: [btnTagAll, btnUntagAll, btnApproveTagged, btnPostTagged, btnAddTaggedToPayment]
+            Controls: [btnTagAll, btnUntagAll, btnApproveTagged, btnPostTagged, btnAddTaggedToPayment, btnReverseSelected, btnDeleteSelected]
             ControlsOrientation: horizontal
             Dock:Bottom
-        pnlBalances:
-            Controls: [grpBalances]
+        pnlOutstandingTotals:
+            Controls: [grpOutstandingTotals]
             Padding: 5,10,5,5
             Height: 90
             Dock: Bottom
-        grpBalances:
+        grpOutstandingTotals:
             Controls:
                 Row0: [txtSupplierBalance, txtFilteredBalance]
                 Row1: [txtTaggedBalance, txtTaggedCount]
@@ -66,9 +68,11 @@ RootNode:
         btnApproveTagged:
         btnPostTagged:
         btnAddTaggedToPayment:
-        txtSupplierBalance: {ReadOnly=true}
-        txtFilteredBalance: {Label=Displayed Balance, ReadOnly=true}
-        txtTaggedBalance: {Label=Tagged Balance, ReadOnly=true}
+        btnReverseSelected:
+        btnDeleteSelected: {Width=120}
+        txtSupplierBalance: {Label=All outstanding transactions, ReadOnly=true}
+        txtFilteredBalance: {Label=Displayed transactions, ReadOnly=true}
+        txtTaggedBalance: {Label=Tagged transactions, ReadOnly=true}
         txtTaggedCount: {Label=Tagged items, ReadOnly=true, Width=40}
         btnReloadList: {Label=Reload List}
         pnlGrid: 
@@ -86,9 +90,9 @@ RootNode:
                 dtpDate-2: {Comparison=lte, Label=To Date}
             Panels:
                 pnlFilterControls:
-                    Controls: [rgrShowTransactions, rgrHistory, cmbTransactionType, cmbStatus]
-                    rgrShowTransactions: 
-                        #Label: Show Transactions
+                    Controls: [rgrStatus, rgrHistory, cmbTransactionType, cmbStatus]
+                    rgrStatus: 
+                        Label: Status and Tagging
                         ClearButton: false
                         OptionalValues: [=AllStatus, ForApproval, ForPosting, ForPaying]
                     rbtAllStatus: {Text=All, OnChange=StatusFilterChange}
@@ -119,6 +123,7 @@ RootNode:
         grdResult: 
             Dock: Fill
             ActionDoubleClick: actOpenSelected
+            ActionEnterKeyPressed: actOpenSelected
     Menu:
         mniFile:
             mniReloadList:
@@ -135,24 +140,26 @@ RootNode:
               Label:&Find...
               ActionClick:MniFilterFind_Click
         mniAction:
-            Label: &Action
+            Label: Tran&saction
             mniActionNew:
-                Label: &New...
-                mniNewInvoice:
-                mniNewCreditNote:
+                Label: &New
+                mniNewInvoice: {Label=&Invoice...}
+                mniNewCreditNote: {Label=&Credit Note...}
             mniOpenSelected:
-            mniSeparator: {Label=-}
             mniReverseSelected:
+            mniDeleteSelected:
+            mniSeparator: {Label=-}
+            mniOpenTagged:
             mniApproveTagged:
             mniPostTagged:
             mniAddTaggedToPayment:
     Toolbar:
         tbbNewInvoice:
         tbbNewCreditNote:
-        tbbSeparator: {Label=-}
-        tbbOpenSelected:
-        tbbReverseSelected:
-        tbbSeparator: {Label=-}
+        #tbbSeparator: {Label=-}
+        #tbbOpenSelected:
+        #tbbReverseSelected:
+        #tbbSeparator: {Label=-}
         #tbbApproveTagged:
-        tbbPostTagged:
-        tbbAddTaggedToPayment:
+        #tbbPostTagged:
+        #tbbAddTaggedToPayment:

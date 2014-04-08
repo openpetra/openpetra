@@ -16,21 +16,24 @@ RootNode:
             Label: &New Supplier
             ActionClick: NewSupplier
             Tooltip: Create a new supplier
+            Image: NewPartner.ico
             ShortCut: Ctrl+N
-        actEditSupplier:
-            Label: &Edit Supplier
-            ActionClick: EditSupplier
+        actEditDetails:
+            Label: Edit &Details
+            ActionClick: EditDetails
             Tooltip: Change the details and settings of an existing supplier
             ShortCut: Ctrl+E
             Enabled: cndSelectedSupplier
         actCreateInvoice:
             Label: Create &Invoice
             ShortCut: Ctrl+I
+            Image: New_Record.ico
             ActionClick: CreateInvoice
             Enabled: cndSelectedSupplier
         actCreateCreditNote:
-            Label: Create C&redit Note
+            Label: Create &Credit Note
             ShortCut: Ctrl+R
+            Image: New_Credit.ico
             ActionClick: CreateCreditNote
             Enabled: cndSelectedSupplier
     Controls:
@@ -42,7 +45,7 @@ RootNode:
             Controls: [pnlFilterAndFind, grdSuppliers]
             Dock: Fill
         pnlButtons:
-            Controls: [btnNewSupplier, btnEditSupplier, btnSupplierTransactions, btnCreateInvoice, btnCreateCreditNote]
+            Controls: [btnNewSupplier, btnEditDetails, btnCreateInvoice, btnCreateCreditNote]
             ControlsOrientation: horizontal
             Dock:Bottom
         pnlFilterAndFind:
@@ -51,7 +54,7 @@ RootNode:
             InitiallyExpanded: true     
             ShowFilterIsAlwaysOnLabel: FilterContext.StandardFilterOnly
             FilterControls: [pnlFilterControls]
-            #FindControls: [pnlFindControls]
+            FindControls: [pnlFindControls]
             Panels:
                 pnlFilterControls:
                     Controls: [txtSupplierName, rgrShowSuppliers, cmbCurrency]
@@ -64,10 +67,13 @@ RootNode:
                     rbtActiveSuppliers: {OnChange=SetSupplierFilters}
                     rbtInactiveSuppliers: {OnChange=SetSupplierFilters}
                     cmbCurrency: {OnChange=SetSupplierFilters}
-        grdSuppliers: {ActionDoubleClick=actSupplierTransactions}
+                pnlFindControls:
+                    Controls: [txtSupplierKey, txtSupplierName]
+                    txtSupplierKey:
+                    txtSupplierName:
+        grdSuppliers: {ActionDoubleClick=actSupplierTransactions, ActionEnterKeyPressed=actSupplierTransactions}
             Dock: Fill
-        btnNewSupplier:
-        btnEditSupplier:
-        btnSupplierTransactions:
-        btnCreateInvoice:
-        btnCreateCreditNote:
+        btnNewSupplier: {Label=New, Width=70}
+        btnEditDetails:
+        btnCreateInvoice: {Width=120}
+        btnCreateCreditNote: {Width=140}

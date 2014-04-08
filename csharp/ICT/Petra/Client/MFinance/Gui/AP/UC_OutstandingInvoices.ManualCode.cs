@@ -34,8 +34,10 @@ using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Gui.GL;
+using Ict.Petra.Client.MFinance.Gui.Setup;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using System.Threading;
 
@@ -54,6 +56,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private TFrmAPMain FMainForm = null;
 
+        private Boolean FRequireApprovalBeforePosting = false;
+
 
         private void InitializeManualCode()
         {
@@ -63,6 +67,21 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             grdInvoices.MouseClick += new MouseEventHandler(grdResult_Click);
             grdInvoices.DataPageLoaded += new TDataPageLoadedEventHandler(grdInvoices_DataPageLoaded);
+            grdInvoices.Selection.SelectionChanged += new SourceGrid.RangeRegionChangedEventHandler(Selection_SelectionChanged);
+        }
+
+        void Selection_SelectionChanged(object sender, SourceGrid.RangeRegionChangedEventArgs e)
+        {
+            FPrevRowChangedRow = grdInvoices.Selection.ActivePosition.Row;
+        }
+
+        private void RunOnceOnParentActivationManual()
+        {
+            // Get our AP ledger settings and enable/disable the corresponding search option on the filter panel
+            TFrmLedgerSettingsDialog settings = new TFrmLedgerSettingsDialog(FMainForm, FMainForm.LedgerNumber);
+            FRequireApprovalBeforePosting = settings.APRequiresApprovalBeforePosting;
+            Control rbtForApproval = FFilterPanelControls.FindControlByName("rbtForApproval");
+            rbtForApproval.Enabled = FRequireApprovalBeforePosting;
         }
 
         /// ////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,7 +99,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 ARowNumber = 1;
             }
 
-            grdInvoices.SelectRowInGrid(ARowNumber);
+            // Note:  We need to be sure to focus column 1 in this case because sometimes column 0 is not visible!!
+            grdInvoices.Selection.Focus(new SourceGrid.Position(ARowNumber, 1), true);
             FPrevRowChangedRow = ARowNumber;
         }
 
@@ -184,6 +204,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void grdInvoices_DataPageLoaded(object Sender, TDataPageLoadEventArgs e)
         {
+            // This is where we end up after querying the database and loading the first data into the grid
+            // We are back in our main thread here
             this.Cursor = Cursors.Default;
 
             if (e.DataPage == 0)
@@ -256,8 +278,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             myDataView.AllowNew = false;
             grdInvoices.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
-            string initialFilter = String.Empty;
-            ApplyFilterManual(ref initialFilter);
+            SetInvoiceFilters(null, null);
+            ApplyFilterManual(ref FCurrentActiveFilter);
 
             if (grdInvoices.TotalPages > 0)
             {
@@ -394,6 +416,20 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         dtToday.AddDays(30).ToString("d", System.Globalization.CultureInfo.InvariantCulture));
                 }
 
+                RadioButton rbtDueThisQuarter = (RadioButton)FFilterPanelControls.FindControlByName("rbtDueThisQuarter");
+
+                if (rbtDueThisQuarter.Checked)
+                {
+                    if (filter.Length > 0)
+                    {
+                        filter += filterJoint;
+                    }
+
+                    filter += String.Format("(DateDue >= #{0}#) AND (DateDue <= #{0}#)",
+                        dtToday.ToString("d", System.Globalization.CultureInfo.InvariantCulture),
+                        dtToday.AddDays(90).ToString("d", System.Globalization.CultureInfo.InvariantCulture));
+                }
+
                 RadioButton rbtForApproval = (RadioButton)FFilterPanelControls.FindControlByName("rbtForApproval");
 
                 if (rbtForApproval.Checked)
@@ -403,7 +439,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         filter += filterJoint;
                     }
 
-                    filter += ("(DocumentStatus='' OR DocumentStatus='OPEN')");
+                    filter += ("(DocumentStatus='OPEN')");
                 }
 
                 RadioButton rbtForPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtForPosting");
@@ -415,7 +451,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         filter += filterJoint;
                     }
 
-                    filter += ("(DocumentStatus='' OR DocumentStatus='OPEN' OR DocumentStatus='APPROVED')");
+                    if (FRequireApprovalBeforePosting)
+                    {
+                        filter += ("(DocumentStatus='APPROVED')");
+                    }
+                    else
+                    {
+                        filter += ("(DocumentStatus='OPEN' OR DocumentStatus='APPROVED')");
+                    }
                 }
 
                 RadioButton rbtForPaying = (RadioButton)FFilterPanelControls.FindControlByName("rbtForPaying");
@@ -553,8 +596,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <summary>
         /// Open the selected invoice
         /// </summary>
-        public void ShowInvoice(object sender, EventArgs e)
+        public void OpenSelectedInvoice(object sender, EventArgs e)
         {
+            this.Cursor = Cursors.WaitCursor;
+
             Int32 SelectedInvoice = GetCurrentlySelectedDocumentId();
 
             if (SelectedInvoice > 0)
@@ -565,6 +610,34 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     frm.Show();
                 }
+            }
+
+            this.Cursor = Cursors.Default;
+        }
+
+        /// <summary>
+        /// Open the selected invoice
+        /// </summary>
+        public void OpenAllTagged(object sender, EventArgs e)
+        {
+            if (grdInvoices.PagedDataTable.DefaultView.Count > 0)
+            {
+                foreach (DataRowView rv in grdInvoices.PagedDataTable.DefaultView)
+                {
+                    if (rv.Row["Selected"].Equals(true))
+                    {
+                        TFrmAPEditDocument frm = new TFrmAPEditDocument(FMainForm);
+
+                        if (frm.LoadAApDocument(FMainForm.LedgerNumber, (int)rv.Row["ApDocumentId"]))
+                        {
+                            frm.Show();
+                        }
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("There are no tagged invoices to be opened."), Catalog.GetString("Open Documents"));
             }
         }
 
@@ -643,34 +716,64 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
-        /// Open all tagged documents
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void OpenAllTagged(object sender, EventArgs e)
-        {
-            foreach (DataRow Row in grdInvoices.PagedDataTable.Rows)
-            {
-                if (Row["Selected"].Equals(true))
-                {
-                    TFrmAPEditDocument frm = new TFrmAPEditDocument(FMainForm);
-
-                    if (frm.LoadAApDocument(FMainForm.LedgerNumber, (int)Row["ApDocumentId"]))
-                    {
-                        frm.Show();
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Approve all tagged rows
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         public void ApproveAllTagged(object sender, EventArgs e)
         {
-            throw new NotImplementedException("Sorry! Not yet implemented");
+            string MsgTitle = Catalog.GetString("Document Approval");
+
+            // I can only approve invoices that are OPEN.
+            // This method is only enabled when the grid shows items for Approval
+            List <int>ApproveTheseDocs = new List <int>();
+
+            foreach (DataRowView rv in grdInvoices.PagedDataTable.DefaultView)
+            {
+                if (rv.Row["Selected"].Equals(true))
+                {
+                    if (rv.Row["DocumentStatus"].ToString() == "OPEN")
+                    {
+                        ApproveTheseDocs.Add((int)rv.Row["ApDocumentId"]);
+                    }
+                    else
+                    {
+                        MessageBox.Show(Catalog.GetString("Only OPEN documents can be approved."), MsgTitle);
+                        return;
+                    }
+                }
+            }
+
+            if (ApproveTheseDocs.Count > 0)
+            {
+                string msg = String.Format(Catalog.GetString(
+                        "Are you sure that you want to approve the {0} tagged document(s)?"), ApproveTheseDocs.Count);
+
+                if (MessageBox.Show(msg, MsgTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.No)
+                {
+                    return;
+                }
+
+                this.Cursor = Cursors.WaitCursor;
+                TVerificationResultCollection VerificationResult;
+                if (TRemote.MFinance.AP.WebConnectors.ApproveAPDocuments(FMainForm.LedgerNumber, ApproveTheseDocs, out VerificationResult))
+                {
+                    this.Cursor = Cursors.Default;
+                    FMainForm.IsInvoiceDataChanged = true;
+
+                    LoadInvoices();
+                    MessageBox.Show(Catalog.GetString("The tagged documents have been approved successfully!"), MsgTitle);
+                }
+                else
+                {
+                    this.Cursor = Cursors.Default;
+                    MessageBox.Show(VerificationResult.BuildVerificationResultString(), MsgTitle);
+                }
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("There are no tagged invoices to be approved."), MsgTitle);
+            }
         }
 
         /// <summary>
@@ -680,6 +783,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="e"></param>
         public void DeleteAllTagged(object sender, EventArgs e)
         {
+            string MsgTitle = Catalog.GetString("Document Deletion");
+
             // I can only delete invoices that are not posted already.
             // This method is only enabled when the grid shows items for Posting
             List <int>DeleteTheseDocs = new List <int>();
@@ -694,8 +799,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     }
                     else
                     {
-                        MessageBox.Show(Catalog.GetString("Cannot delete posted documents. Please reverse the document first."),
-                            Catalog.GetString("Document Deletion"));
+                        MessageBox.Show(Catalog.GetString("Cannot delete posted documents. Please reverse the document first."), MsgTitle);
                     }
                 }
             }
@@ -705,21 +809,22 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 string msg = String.Format(Catalog.GetString(
                         "Are you sure that you want to delete the {0} tagged document(s)?"), DeleteTheseDocs.Count);
 
-                if (MessageBox.Show(msg, Catalog.GetString("Document Deletion"),
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.No)
+                if (MessageBox.Show(msg, MsgTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.No)
                 {
                     return;
                 }
 
+                this.Cursor = Cursors.WaitCursor;
                 TRemote.MFinance.AP.WebConnectors.DeleteAPDocuments(FMainForm.LedgerNumber, DeleteTheseDocs);
+                this.Cursor = Cursors.Default;
                 FMainForm.IsInvoiceDataChanged = true;
 
                 LoadInvoices();
-                MessageBox.Show(Catalog.GetString("Document(s) deleted successfully!"), Catalog.GetString("Document Deletion"));
+                MessageBox.Show(Catalog.GetString("The tagged documents have been deleted successfully!"), MsgTitle);
             }
             else
             {
-                MessageBox.Show(Catalog.GetString("There we no tagged invoices to be deleted."), Catalog.GetString("Document Deletion"));
+                MessageBox.Show(Catalog.GetString("There are no tagged invoices to be deleted."), MsgTitle);
             }
         }
 
@@ -730,14 +835,22 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="e"></param>
         public void PostAllTagged(object sender, EventArgs e)
         {
+            string MsgTitle = Catalog.GetString("Document Posting");
+
             AccountsPayableTDS TempDS = LoadTaggedDocuments();
 
             List <int>PostTheseDocs = new List <int>();
             TempDS.AApDocument.DefaultView.Sort = AApDocumentDetailTable.GetApDocumentIdDBName();
 
+            string testString = "|POSTED|PARTPAID|PAID|";
+            if (FRequireApprovalBeforePosting)
+            {
+                testString += "OPEN|";
+            }
+
             foreach (DataRowView rv in grdInvoices.PagedDataTable.DefaultView)
             {
-                if ((rv.Row["Selected"].Equals(true) && ("|POSTED|PARTPAID|PAID|".IndexOf(rv.Row["DocumentStatus"].ToString()) < 0)))
+                if ((rv.Row["Selected"].Equals(true) && (testString.IndexOf("|" + rv.Row["DocumentStatus"].ToString()) < 0)))
                 {
                     int DocId = (int)rv.Row["ApDocumentId"];
 
@@ -759,16 +872,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 string msg = String.Format(Catalog.GetString("Are you sure that you want to post the {0} tagged document(s)?"), PostTheseDocs.Count);
 
-                if (MessageBox.Show(msg, Catalog.GetString("Document Posting"),
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.No)
+                if (MessageBox.Show(msg, MsgTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.No)
                 {
                     return;
                 }
 
-                if (TFrmAPEditDocument.PostApDocumentList(TempDS, FMainForm.LedgerNumber, PostTheseDocs))
+                if (TFrmAPEditDocument.PostApDocumentList(TempDS, FMainForm.LedgerNumber, PostTheseDocs, FMainForm))
                 {
                     // TODO: print reports on successfully posted batch
-                    MessageBox.Show(Catalog.GetString("The tagged documents have been posted successfully!"), Catalog.GetString("Document Posting"));
+                    MessageBox.Show(Catalog.GetString("The tagged documents have been posted successfully!"), MsgTitle);
                     FMainForm.IsInvoiceDataChanged = true;
 
                     LoadInvoices();
@@ -778,7 +890,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
             else
             {
-                MessageBox.Show(Catalog.GetString("There we no tagged documents to be posted."), Catalog.GetString("Document Posting"));
+                MessageBox.Show(Catalog.GetString("There are no tagged documents to be posted."), MsgTitle);
             }
         }
 
@@ -789,6 +901,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="e"></param>
         public void ReverseAllTagged(object sender, EventArgs e)
         {
+            string MsgTitle = Catalog.GetString("Document Reversal");
+
             // I can only reverse invoices that are POSTED.
             // This method is only enabled when the grid shows rows for paying
             // This will include rows that are PARTPAID - we need to test for those
@@ -814,15 +928,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 if (ReverseTheseDocs.Count == 0)
                 {
-                    MessageBox.Show(msg, Catalog.GetString("Document Reversal"));
+                    MessageBox.Show(msg, MsgTitle);
                 }
                 else
                 {
                     msg += Environment.NewLine + Environment.NewLine;
                     msg += Catalog.GetString("Do you want to continue and reverse the 'Posted' documents?");
 
-                    if (MessageBox.Show(msg, Catalog.GetString("Document Reversal"), MessageBoxButtons.YesNo,
-                            MessageBoxIcon.Question) == DialogResult.No)
+                    if (MessageBox.Show(msg, MsgTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                     {
                         return;
                     }
@@ -839,13 +952,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 if (dateEffectiveDialog.ShowDialog(FMainForm) != DialogResult.OK)
                 {
-                    MessageBox.Show(Catalog.GetString("Reversal was cancelled."), Catalog.GetString(
-                            "Document Reversal"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(Catalog.GetString("Reversal was cancelled."), MsgTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
                 DateTime PostingDate = dateEffectiveDialog.SelectedDate;
 
+                this.Cursor = Cursors.WaitCursor;
                 if (TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
                         FMainForm.LedgerNumber,
                         ReverseTheseDocs,
@@ -853,8 +966,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         true,
                         out Verifications))
                 {
-                    System.Windows.Forms.MessageBox.Show(Catalog.GetString("Invoice(s) reversed to Approved status."),
-                        Catalog.GetString("Document Reversal"));
+                    this.Cursor = Cursors.Default;
+                    MessageBox.Show(Catalog.GetString("The tagged invoices have been reversed to 'Approved' status."), MsgTitle);
                     FMainForm.IsInvoiceDataChanged = true;
 
                     LoadInvoices();
@@ -862,13 +975,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
                 else
                 {
+                    this.Cursor = Cursors.Default;
                     string ErrorMessages = Verifications.BuildVerificationResultString();
-                    MessageBox.Show(ErrorMessages, Catalog.GetString("Document Reversal"));
+                    MessageBox.Show(ErrorMessages, MsgTitle);
                 }
             }
             else
             {
-                MessageBox.Show(Catalog.GetString("There we no tagged invoices to be reversed."), Catalog.GetString("Document Reversal"));
+                MessageBox.Show(Catalog.GetString("There are no tagged invoices to be reversed."), MsgTitle);
             }
         }
 
@@ -879,6 +993,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="e"></param>
         public void PayAllTagged(object sender, EventArgs e)
         {
+            string MsgTitle = Catalog.GetString("Document Payment");
+
+            this.Cursor = Cursors.WaitCursor;
             AccountsPayableTDS TempDS = LoadTaggedDocuments();
             TFrmAPPayment PaymentScreen = new TFrmAPPayment(FMainForm);
 
@@ -897,12 +1014,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 if (PaymentScreen.AddDocumentsToPayment(TempDS, FMainForm.LedgerNumber, PayTheseDocs))
                 {
+                    this.Cursor = Cursors.Default;
                     PaymentScreen.Show();
                 }
+                this.Cursor = Cursors.Default;
             }
             else
             {
-                MessageBox.Show(Catalog.GetString("There we no tagged documents to be paid."), Catalog.GetString("Document Payment"));
+                this.Cursor = Cursors.Default;
+                MessageBox.Show(Catalog.GetString("There are no tagged documents to be paid."), MsgTitle);
             }
         }
 
@@ -914,11 +1034,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             AccountsPayableTDS LoadDs = new AccountsPayableTDS();
 
-            foreach (DataRow Row in grdInvoices.PagedDataTable.Rows)
+            foreach (DataRowView rv in grdInvoices.PagedDataTable.DefaultView)
             {
-                if (Row["Selected"].Equals(true))
+                if (rv.Row["Selected"].Equals(true))
                 {
-                    LoadDs.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FMainForm.LedgerNumber, (int)Row["ApDocumentId"]));
+                    LoadDs.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FMainForm.LedgerNumber, (int)rv.Row["ApDocumentId"]));
                 }
             }
 
@@ -940,23 +1060,97 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 ActionEnabledEvent(null, new ActionEventArgs("actTagAll", canTag));
                 ActionEnabledEvent(null, new ActionEventArgs("actUntagAll", canTag));
+                ActionEnabledEvent(null, new ActionEventArgs("actOpenSelectedInvoice", gotRows));
                 ActionEnabledEvent(null, new ActionEventArgs("actApproveTagged", canApprove));
                 ActionEnabledEvent(null, new ActionEventArgs("actPostTagged", canPost));
+                ActionEnabledEvent(null, new ActionEventArgs("actDeleteTagged", canPost));
                 ActionEnabledEvent(null, new ActionEventArgs("actPayTagged", canPay));
                 ActionEnabledEvent(null, new ActionEventArgs("actReverseTagged", canPay));
 
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actOpenTagged", gotRows));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actOpenSelected", gotRows));
                 FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actApproveTagged", canApprove));
                 FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actPostTagged", canPost));
                 FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actDeleteTagged", canPost));
                 FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actPayTagged", canPay));
                 FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actReverseTagged", canPay));
+
+                grdInvoices.Columns[0].Visible = canTag;
+                if (canTag)
+                {
+                    grdInvoices.ShowCell(new SourceGrid.Position(grdInvoices.Selection.ActivePosition.Row, 0), true);
+                }
             }
         }
 
         private void FilterToggledManual(bool AFilterIsOff)
         {
             AutoSizeGrid();
+        }
+
+        private bool IsMatchingRowManual(DataRow ARow)
+        {
+            string invoiceNumber = ((TextBox)FFindPanelControls.FindControlByName("txtInvoiceNumber")).Text.ToLower();
+
+            if (invoiceNumber != String.Empty)
+            {
+                if (!ARow["DocumentCode"].ToString().ToLower().Contains(invoiceNumber))
+                {
+                    return false;
+                }
+            }
+
+            string supplierName = ((TextBox)FFindPanelControls.FindControlByName("txtSupplierName")).Text.ToLower();
+
+            if (supplierName != String.Empty)
+            {
+                if (!ARow["PartnerShortName"].ToString().ToLower().Contains(supplierName))
+                {
+                    return false;
+                }
+            }
+
+            DateTime dt;
+            TtxtPetraDate fromDueDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpDueDate-1");
+
+            if (fromDueDate.Text != String.Empty && DateTime.TryParse(fromDueDate.Text, out dt))
+            {
+                if (Convert.ToDateTime(ARow["DateDue"]) < dt.Date)
+                {
+                    return false;
+                }
+            }
+
+            TtxtPetraDate toDueDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpDueDate-2");
+
+            if (toDueDate.Text != String.Empty && DateTime.TryParse(toDueDate.Text, out dt))
+            {
+                if (Convert.ToDateTime(ARow["DateDue"]) > dt.Date)
+                {
+                    return false;
+                }
+            }
+
+            TtxtPetraDate fromIssueDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpIssueDate-1");
+
+            if (fromIssueDate.Text != String.Empty && DateTime.TryParse(fromIssueDate.Text, out dt))
+            {
+                if (Convert.ToDateTime(ARow["DateIssued"]) < dt.Date)
+                {
+                    return false;
+                }
+            }
+
+            TtxtPetraDate toIssueDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpIssueDate-2");
+
+            if (toIssueDate.Text != String.Empty && DateTime.TryParse(toIssueDate.Text, out dt))
+            {
+                if (Convert.ToDateTime(ARow["DateIssued"]) >= dt.Date)
+                {
+                    return false;
+                }
+            }
+            
+            return true;
         }
 
         private void AutoSizeGrid()
@@ -984,6 +1178,27 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdInvoices.SuspendLayout();
             grdDetails.AutoSizeCells();
             grdInvoices.ResumeLayout();
+        }
+
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.F9)
+            {
+                grdDetails.Focus();
+                return true;
+            }
+            if (keyData == Keys.F10)
+            {
+                SelectRowInGrid(FPrevRowChangedRow + 1);
+                return true;
+            }
+            if (keyData == (Keys.F10 | Keys.Shift))
+            {
+                SelectRowInGrid(FPrevRowChangedRow - 1);
+                return true;
+            }
+
+            return false;
         }
     }
 }

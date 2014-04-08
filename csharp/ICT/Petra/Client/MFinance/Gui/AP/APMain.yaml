@@ -5,25 +5,28 @@ RootNode:
     #UtilObjectClass: TFrmPetraEditUtils
     FormType: browse
     Template: windowFind
-    WindowWidth: 800
+    WindowWidth: 900
     WindowHeight: 650
     Events:
         Closed: {class=System.EventHandler, method=Form_Closed}
     Actions:
         cndSelectedSupplier: {InitialValue=false}
-        actEditFilter: {ActionClick=mniFilterFind_Click}
-        actEditFind: {ActionClick=mniFilterFind_Click}
+        actEditFilter: {ActionClick=mniFilterFind_Click, Image=FilterActive.ico, Tooltip=Filter the displayed records by one or more criteria}
+        actEditFind: {ActionClick=mniFilterFind_Click, Image=Find.ico, Tooltip=Find a record that matches one or more criteria}
+        actDefaults: {ActionClick=mniDefaults_Click, Image=Options2.ico, Tooltip=View or modify the default settings for Accounts Payable}
         actShowInvoice:
             ActionClick: ShowInvoice
         actNewSupplier:
             Label: &New Supplier
             ActionClick: NewSupplier
             Tooltip: Create a new supplier
+            Image: NewPartner.ico
             ShortCut: Ctrl+N
         actEditSupplier:
-            Label: &Edit Supplier
-            ActionClick: EditSupplier
+            Label: Edit &Details
+            ActionClick: EditDetails
             Tooltip: Change the details and settings of an existing supplier
+            Image: Edit_Record.ico
             ShortCut: Ctrl+E
             Enabled: cndSelectedSupplier
         actSupplierTransactions:
@@ -35,40 +38,63 @@ RootNode:
         actCreateInvoice:
             Label: Create &Invoice
             ShortCut: Ctrl+I
+            Tooltip: Create a new invoice relating to the selected supplier
+            Image: New_Record.ico
             ActionClick: CreateInvoice
             Enabled: cndSelectedSupplier
         actCreateCreditNote:
-            Label: Create C&redit Note
+            Label: Create &Credit Note
             ShortCut: Ctrl+R
+            Tooltip: Create a new credit note relating to the selected supplier
+            Image: New_Credit.ico
             ActionClick: CreateCreditNote
             Enabled: cndSelectedSupplier
         #actFindInvoice:
         #    Label: &Find Invoice...
         #    ShortCut: Ctrl+F
         actApproveTagged:
+            Label: &Approve Tagged
             Enabled: cndCanApprove
             ActionClick: ApproveAllTagged
+            Tooltip: Approve all the tagged invoices
         actPostTagged:
+            Label: &Post Tagged
             Enabled: cndCanPost
             ActionClick: PostAllTagged
+            Tooltip: Post all the tagged invoices
+        actOpenSelected:
+            Label: &Open Selected
+            Enabled: cndCanOpen
+            Image: Edit_Record.ico
+            ActionClick: OpenSelectedInvoice
+            Tooltip: View the details of the selected invoice or payment
         actOpenTagged:
+            Label: Open Ta&gged
             Enabled: cndCanOpen
             ActionClick: OpenAllTagged
+            Tooltip: View the details of all the tagged invoices or payments
         actPayTagged:
+            Label: Pa&y Tagged
             Enabled: cndCanPay
             ActionClick: PayAllTagged
+            Tooltip: Pay or part-pay all the tagged invoices
         actReverseTagged:
+            Label: Re&verse Tagged
             Enabled: cndCanReverse
             ActionClick: ReverseAllTagged
+            Tooltip: Reverse the tagged invoices that have been posted
         actDeleteTagged:
+            Label: De&lete Tagged
             Enabled: cndCanDelete
+            Image: Delete_Record.ico
             ActionClick: DeleteAllTagged
-        actTagAllPostable:
-            ActionClick: TagAllPostable
-        actTagAllPayable:
-            ActionClick: TagAllPayable
-        actUntagAll:
-            ActionClick: UntagAll
+            Tooltip: Delete the tagged invoices that have been opened or approved
+        #actTagAllPostable:
+        #    ActionClick: TagAllPostable
+        #actTagAllPayable:
+        #    ActionClick: TagAllPayable
+        #actUntagAll:
+        #    ActionClick: UntagAll
         actTabChange:
             ActionClick: TabChange
 
@@ -93,20 +119,20 @@ RootNode:
             Type: Ict.Petra.Client.MFinance.Gui.AP.TUC_OutstandingInvoices
             Dock: Fill
 
-    Toolbar:
-        tbbNewSupplier: {Action=actNewSupplier}
-        tbbEditSupplier: {Action=actEditSupplier}
-        tbbSeparator: {Label=-}
-        tbbTransactions: {Action=actSupplierTransactions}
-        tbbSeparator: {Label=-}
-        tbbCreateInvoice: {Action=actCreateInvoice}
-        tbbCreateCreditNote: {Action=actCreateCreditNote}
-        tbbOpenTagged: {Action=actOpenTagged}
-        tbbApproveTagged: {Action=actApproveTagged}
-        tbbDeleteTagged: {Action=actDeleteTagged}
-        tbbPostTagged: {Action=actPostTagged}
-        tbbReverseTagged: {Action=actReverseTagged}
-        tbbPayTagged: {Action=actPayTagged}
+    #Toolbar:
+    #    tbbNewSupplier: {Action=actNewSupplier}
+    #    tbbEditSupplier: {Action=actEditSupplier}
+    #    tbbSeparator: {Label=-}
+    #    #tbbTransactions: {Action=actSupplierTransactions}
+    #    #tbbSeparator: {Label=-}
+    #    tbbCreateInvoice: {Action=actCreateInvoice}
+    #    tbbCreateCreditNote: {Action=actCreateCreditNote}
+    #    #tbbOpenTagged: {Action=actOpenTagged}
+    #    tbbApproveTagged: {Action=actApproveTagged}
+    #    tbbDeleteTagged: {Action=actDeleteTagged}
+    #    tbbPostTagged: {Action=actPostTagged}
+    #    tbbReverseTagged: {Action=actReverseTagged}
+    #    tbbPayTagged: {Action=actPayTagged}
     Menu:
         mniFile:
             mniReports: {Label=&Reports}
@@ -121,9 +147,10 @@ RootNode:
             Label:&Edit
             mniEditFilter: 
               Label:Filte&r...
-            mniEditFind: 
+            mniEditFind:
               Label:&Find...
         mniSupplier:
+            Label:&Supplier
             mniNewSupplier: {Action=actNewSupplier}
             mniEditSupplier: {Action=actEditSupplier}
             mniSeparator: {Label=-}
@@ -131,6 +158,8 @@ RootNode:
             mniCreateInvoice: {Action=actCreateInvoice}
             mniCreateCreditNote: {Action=actCreateCreditNote}
         mniInvoice:
+            Label:&Invoice
+            mniOpenSelected: {Action=actOpenSelected}
             mniOpenTagged: {Action=actOpenTagged}
             mniApproveTagged: {Action=actApproveTagged}
             mniSeparator: {Label=-}

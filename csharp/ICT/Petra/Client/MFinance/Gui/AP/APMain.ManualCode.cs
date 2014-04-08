@@ -25,6 +25,8 @@
 using System;
 using System.Windows.Forms;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MFinance.Gui.Setup;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -178,6 +180,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
+        /// <summary>
+        /// (Re)loads the outstanding invoices.  Does nothing if the invoice data has not changed.
+        /// </summary>
+        public void LoadOutstandingInvoices()
+        {
+            ucoOutstandingInvoices.LoadInvoices();
+        }
+
         private void InitializeManualCode()
         {
             ucoSuppliers.InitializeGUI(this);
@@ -212,9 +222,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             ucoSuppliers.SupplierTransactions(sender, e);
         }
 
-        private void ShowInvoice(object sender, EventArgs e)
+        private void OpenSelectedInvoice(object sender, EventArgs e)
         {
-            ucoOutstandingInvoices.ShowInvoice(sender, e);
+            ucoOutstandingInvoices.OpenSelectedInvoice(sender, e);
         }
 
         private void NewSupplier(object sender, EventArgs e)
@@ -222,9 +232,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             ucoSuppliers.NewSupplier(sender, e);
         }
 
-        private void EditSupplier(object sender, EventArgs e)
+        private void EditDetails(object sender, EventArgs e)
         {
-            ucoSuppliers.EditSupplier(sender, e);
+            ucoSuppliers.EditDetails(sender, e);
         }
 
         private void CreateInvoice(object sender, EventArgs e)
@@ -242,14 +252,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         //    return ucoOutstandingInvoices.LoadTaggedDocuments();
         //}
 
-        private void DeleteAllTagged(object sender, EventArgs e)
-        {
-            ucoOutstandingInvoices.DeleteAllTagged(sender, e);
-        }
-
         private void OpenAllTagged(object sender, EventArgs e)
         {
             ucoOutstandingInvoices.OpenAllTagged(sender, e);
+        }
+
+        private void DeleteAllTagged(object sender, EventArgs e)
+        {
+            ucoOutstandingInvoices.DeleteAllTagged(sender, e);
         }
 
         private void ApproveAllTagged(object sender, EventArgs e)
@@ -272,6 +282,18 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             ucoOutstandingInvoices.PayAllTagged(sender, e);
         }
 
+        private void mniDefaults_Click(object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.WaitCursor;
+
+            TFrmLedgerSettingsDialog ledgerSettings = new TFrmLedgerSettingsDialog(this);
+            ledgerSettings.LedgerNumber = this.FLedgerNumber;
+            ledgerSettings.InitialTab = "AP";
+            ledgerSettings.Show();
+
+            this.Cursor = Cursors.Default;
+        }
+
         private void TabChange(object sender, EventArgs e)
         {
             this.Cursor = Cursors.WaitCursor;
@@ -282,19 +304,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 mniInvoice.Visible = true;
                 mniSupplier.Visible = false;
 
-                tbbEditSupplier.Visible = false;
-                tbbTransactions.Visible = false;
-                tbbNewSupplier.Visible = false;
-                tbbCreateInvoice.Visible = false;
-                tbbCreateCreditNote.Visible = false;
-                tbbSeparator0.Visible = false;
-                tbbSeparator1.Visible = false;
-                tbbOpenTagged.Visible = true;
-                tbbPostTagged.Visible = true;
-                tbbPayTagged.Visible = true;
-                tbbApproveTagged.Visible = true;
-                tbbReverseTagged.Visible = true;
-
                 ucoOutstandingInvoices.LoadInvoices();
             }
             else
@@ -302,19 +311,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 // Suppliers tab has been selected...
                 mniSupplier.Visible = true;
                 mniInvoice.Visible = false;
-
-                tbbEditSupplier.Visible = true;
-                tbbTransactions.Visible = true;
-                tbbNewSupplier.Visible = true;
-                tbbCreateInvoice.Visible = true;
-                tbbCreateCreditNote.Visible = true;
-                tbbSeparator0.Visible = true;
-                tbbSeparator1.Visible = true;
-                tbbOpenTagged.Visible = false;
-                tbbPostTagged.Visible = false;
-                tbbPayTagged.Visible = false;
-                tbbApproveTagged.Visible = false;
-                tbbReverseTagged.Visible = false;
 
                 ucoSuppliers.LoadSuppliers();
             }
@@ -338,5 +334,82 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FInvoiceFindObject = null;
             }
         }
+
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.F | Keys.Control))
+            {
+                mniFilterFind_Click(mniEditFind, null);
+                return true;
+            }
+            if (keyData == (Keys.R | Keys.Control))
+            {
+                mniFilterFind_Click(mniEditFilter, null);
+                return true;
+            }
+            if (keyData == (Keys.F3))
+            {
+                mniFilterFind_Click(mniEditFind, new KeyPressEventArgs('+'));
+                return true;
+            }
+            if (keyData == (Keys.F3 | Keys.Shift))
+            {
+                mniFilterFind_Click(mniEditFind, new KeyPressEventArgs('-'));
+                return true;
+            }
+
+            return false;
+        }
+
+        #region Forms Messaging Interface Implementation
+
+        /// <summary>
+        /// Will be called by TFormsList to inform any Form that is registered in TFormsList
+        /// about any 'Forms Messages' that are broadcasted.
+        /// </summary>
+        /// <remarks>The Partner Edit 'listens' to such 'Forms Message' broadcasts by
+        /// implementing this virtual Method. This Method will be called each time a
+        /// 'Forms Message' broadcast occurs.
+        /// </remarks>
+        /// <param name="AFormsMessage">An instance of a 'Forms Message'. This can be
+        /// inspected for parameters in the Method Body and the Form can use those to choose
+        /// to react on the Message, or not.</param>
+        /// <returns>Returns True if the Form reacted on the specific Forms Message,
+        /// otherwise false.</returns>
+        public bool ProcessFormsMessage(TFormsMessage AFormsMessage)
+        {
+            bool MessageProcessed = false;
+
+            if ((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcNewPartnerSaved)
+                || (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved)
+                || (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcPartnerDeleted))
+            {
+                // Refreshes the Suppliers list on the Suppliers tab
+                FIsSupplierDataChanged = true;
+
+                if (tabSearchResult.SelectedTab == tpgSuppliers)
+                {
+                    ucoSuppliers.LoadSuppliers();
+                }
+
+                MessageProcessed = true;
+            }
+            else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcAPTransactionChanged)
+            {
+                // Refresh the outstanding invoices
+                FIsInvoiceDataChanged = true;
+
+                if (tabSearchResult.SelectedTab == tpgOutstandingInvoices)
+                {
+                    ucoOutstandingInvoices.LoadInvoices();
+                }
+
+                MessageProcessed = true;
+            }
+
+            return MessageProcessed;
+        }
+
+        #endregion
     }
 }

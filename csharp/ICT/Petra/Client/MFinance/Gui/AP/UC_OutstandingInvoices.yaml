@@ -11,9 +11,9 @@ RootNode:
             ActionClick: TagAll
         actUntagAll:
             ActionClick: UntagAll
-        actOpenTagged:
+        actOpenSelectedInvoice:
             Enabled: cndCanOpen
-            ActionClick: OpenAllTagged
+            ActionClick: OpenSelectedInvoice
         actApproveTagged:
             Enabled: cndCanPost
             ActionClick: ApproveAllTagged
@@ -26,16 +26,20 @@ RootNode:
         actReverseTagged:
             Enabled: cndCanReverse
             ActionClick: ReverseAllTagged
+        actDeleteTagged:
+            Enabled: cndCanPost
+            Image: Delete_Record.ico
+            ActionClick: DeleteAllTagged
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlBalances, pnlButtons]
+            Controls: [pnlGrid, pnlOutstandingTotals, pnlButtons]
             Padding: 0, 2, 0, 0
             Dock: Fill
         pnlGrid:
             Controls: [pnlFilterAndFind, grdInvoices]
             Dock: Fill
         pnlButtons:
-            Controls: [btnTagAll, btnUntagAll, btnApproveTagged, btnPostTagged, btnPayTagged, btnReverseTagged]
+            Controls: [btnTagAll, btnUntagAll, btnApproveTagged, btnPostTagged, btnPayTagged, btnReverseTagged, btnDeleteTagged]
             ControlsOrientation: horizontal
             Dock:Bottom
         btnTagAll: {Label=Tag all}
@@ -50,6 +54,8 @@ RootNode:
             Action: actPayTagged
         btnReverseTagged: {Label=Reverse Tagged}
             Action: actReverseTagged
+        btnDeleteTagged: {Label=Delete Tagged, Width=115}
+            Action: actDeleteTagged
         
         pnlFilterAndFind:
             Dock: Left
@@ -57,21 +63,22 @@ RootNode:
             InitiallyExpanded: true     
             ShowFilterIsAlwaysOnLabel: FilterContext.StandardFilterOnly
             FilterControls: [pnlFilterControls]
-            #FindControls: [pnlFindControls]
+            FindControls: [pnlFindControls]
             Panels:
                 pnlFilterControls:
-                    Controls: [rgrPaymentSchedule, rgrStatus, txtSupplierName]
+                    Controls: [rgrStatus, rgrPaymentSchedule, txtSupplierName]
                     rgrPaymentSchedule: 
                         #Label: Show Invoices
                         ClearButton: false
-                        OptionalValues: [=AllInvoices, Overdue, DueToday, DueThisWeek, DueThisMonth ]
+                        OptionalValues: [=AllInvoices, Overdue, DueToday, DueThisWeek, DueThisMonth, DueThisQuarter]
                     rbtAllInvoices: {Text=All Outstanding, OnChange=SetInvoiceFilters}
                     rbtOverdue: {OnChange=SetInvoiceFilters}
                     rbtDueToday: {OnChange=SetInvoiceFilters}
                     rbtDueThisWeek: {Text=Due Within 7 Days, OnChange=SetInvoiceFilters}
                     rbtDueThisMonth: {Text=Due Within 30 Days, OnChange=SetInvoiceFilters}
+                    rbtDueThisQuarter: {Text=Due Within 90 Days, OnChange=SetInvoiceFilters}
                     rgrStatus: 
-                        #Label: Show Invoices
+                        Label: Status and Tagging
                         ClearButton: false
                         OptionalValues: [=AllStatus, ForApproval, ForPosting, ForPaying ]
                     rbtAllStatus: {Text=All, OnChange=SetInvoiceFilters}
@@ -79,20 +86,28 @@ RootNode:
                     rbtForPosting: {OnChange=SetInvoiceFilters}
                     rbtForPaying: {OnChange=SetInvoiceFilters}
                     txtSupplierName: {OnChange=SetInvoiceFilters}
-        grdInvoices:
+                pnlFindControls:
+                    Controls: [txtInvoiceNumber, txtSupplierName, dtpDueDate-1, dtpDueDate-2, dtpIssueDate-1, dtpIssueDate-2]
+                    txtInvoiceNumber:
+                    txtSupplierName:
+                    dtpDueDate-1: {Label=From Due Date, Comparison=gte}
+                    dtpDueDate-2: {Label=To Due Date, Comparison=lt}
+                    dtpIssueDate-1: {Label=From Issue Date, Comparison=gte}
+                    dtpIssueDate-2: {Label=To Issue Date, Comparison=lt}
+        grdInvoices: {ActionDoubleClick=actOpenSelectedInvoice, ActionEnterKeyPressed=actOpenSelectedInvoice}
             Dock: Fill
-        pnlBalances:
-            Controls: [grpBalances]
+        pnlOutstandingTotals:
+            Controls: [grpOutstandingTotals]
             Padding: 5,10,5,5
             Height: 90
             Dock: Bottom
-        grpBalances:
+        grpOutstandingTotals:
             Controls:
                 Row0: [txtInvoiceBalance, txtFilteredBalance]
                 Row1: [txtTaggedBalance, txtTaggedCount]
             Height: 70
             Dock: Top
-        txtInvoiceBalance: {ReadOnly=true}
-        txtFilteredBalance: {Label=Displayed Balance, ReadOnly=true}
-        txtTaggedBalance: {Label=Tagged Balance, ReadOnly=true}
+        txtInvoiceBalance: {Label=All outstanding invoices, ReadOnly=true}
+        txtFilteredBalance: {Label=Displayed invoices, ReadOnly=true}
+        txtTaggedBalance: {Label=Tagged invoices, ReadOnly=true}
         txtTaggedCount: {Label=Tagged items, ReadOnly=true, Width=40}

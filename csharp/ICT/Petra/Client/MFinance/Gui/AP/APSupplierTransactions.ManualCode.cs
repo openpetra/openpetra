@@ -23,34 +23,55 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Drawing;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
-using System.Resources;
-using System.Collections.Specialized;
-using GNU.Gettext;
 using Ict.Common;
-using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Common.Controls;
-using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.AP.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Gui.GL;
+using Ict.Petra.Client.MFinance.Gui.Setup;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using System.Threading;
-using Ict.Common.Conversion;
-using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Gui.MFinance;
 using Ict.Petra.Client.MFinance.Logic;
 
+//using System;
+//using System.Drawing;
+//using System.Collections;
+//using System.Collections.Generic;
+//using System.ComponentModel;
+//using System.Windows.Forms;
+//using System.Data;
+//using System.Resources;
+//using System.Collections.Specialized;
+//using GNU.Gettext;
+//using Ict.Common;
+//using Ict.Common.Data;
+//using Ict.Common.Verification;
+//using Ict.Common.Controls;
+//using Ict.Petra.Shared;
+//using Ict.Petra.Shared.MFinance.AP.Data;
+//using Ict.Petra.Shared.MPartner.Partner.Data;
+//using Ict.Petra.Client.App.Core;
+//using Ict.Petra.Client.App.Core.RemoteObjects;
+//using Ict.Petra.Client.CommonForms;
+//using Ict.Petra.Client.CommonControls;
+//using Ict.Petra.Client.MCommon;
+//using Ict.Petra.Client.MFinance.Gui.GL;
+//using Ict.Petra.Client.MFinance.Gui.Setup;
+//using Ict.Petra.Shared.Interfaces.MFinance;
+//using System.Threading;
+//using Ict.Common.Conversion;
+//using Ict.Petra.Client.MReporting.Gui;
+//using Ict.Petra.Client.MReporting.Gui.MFinance;
+//using Ict.Petra.Client.MFinance.Logic;
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
     public partial class TFrmAPSupplierTransactions
@@ -61,6 +82,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private IAPUIConnectorsFind FFindObject = null;
         private bool FKeepUpSearchFinishedCheck = false;
         AccountsPayableTDS FMainDS = new AccountsPayableTDS();
+
+        private Boolean FRequireApprovalBeforePosting = false;
 
         /// <summary>DataTable that holds all Pages of data (also empty ones that are not retrieved yet!)</summary>
         private DataTable FPagedDataTable;
@@ -81,6 +104,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             grdResult.MouseClick += new MouseEventHandler(grdResult_Click);
             grdResult.DataPageLoaded += new TDataPageLoadedEventHandler(grdResult_DataPageLoaded);
+            grdResult.Selection.SelectionChanged += new SourceGrid.RangeRegionChangedEventHandler(grdResult_SelectionChanged);
 
             this.Resize += new EventHandler(TFrmAPSupplierTransactions_Resize);
 
@@ -95,9 +119,45 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FPetraUtilsObject.SetStatusBarText(chkToggleFilter, Catalog.GetString("Click to show/hide the Filter/Find panel"));
         }
 
+        private void grdResult_SelectionChanged(object sender, SourceGrid.RangeRegionChangedEventArgs e)
+        {
+            FPrevRowChangedRow = grdResult.Selection.ActivePosition.Row;
+            SetEnabledStates();
+        }
+
+        private void SetEnabledStates()
+        {
+            DataRowView[] SelectedGridRow = grdResult.SelectedDataRowsAsDataRowView;
+
+            if (SelectedGridRow.Length >= 1)
+            {
+                string status = SelectedGridRow[0]["Status"].ToString();
+
+                // Payments can be reversed as can posted invoices
+                ActionEnabledEvent(null, new ActionEventArgs("actReverseSelected", (status == "POSTED") || (status.Length == 0)));
+                ActionEnabledEvent(null, new ActionEventArgs("actDeleteSelected", (status == "OPEN") || (status == "APPROVED")));
+            }
+            else
+            {
+                ActionEnabledEvent(null, new ActionEventArgs("actReverseSelected", false));
+                ActionEnabledEvent(null, new ActionEventArgs("actDeleteSelected", false));
+            }
+        }
+
         private void SelectRowInGrid(int ARowNumber)
         {
-            grdDetails.Selection.SelectRow(ARowNumber, true);
+            if (ARowNumber >= grdDetails.Rows.Count)
+            {
+                ARowNumber = grdDetails.Rows.Count - 1;
+            }
+
+            if ((ARowNumber < 1) && (grdDetails.Rows.Count > 1))
+            {
+                ARowNumber = 1;
+            }
+
+            // Note:  We need to be sure to focus column 1 in this case because sometimes column 0 is not visible!!
+            grdDetails.Selection.Focus(new SourceGrid.Position(ARowNumber, 1), true);
             FPrevRowChangedRow = ARowNumber;
         }
 
@@ -135,11 +195,18 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             bool canTag = canApprove || canPost || canPay;
 
+            ActionEnabledEvent(null, new ActionEventArgs("actOpenTagged", canTag));
             ActionEnabledEvent(null, new ActionEventArgs("actApproveTagged", canApprove));
             ActionEnabledEvent(null, new ActionEventArgs("actPostTagged", canPost));
             ActionEnabledEvent(null, new ActionEventArgs("actAddTaggedToPayment", canPay));
             ActionEnabledEvent(null, new ActionEventArgs("actTagAll", canTag));
             ActionEnabledEvent(null, new ActionEventArgs("actUntagAll", canTag));
+
+            grdDetails.Columns[0].Visible = canTag;
+            if (canTag)
+            {
+                grdDetails.ShowCell(new SourceGrid.Position(grdDetails.Selection.ActivePosition.Row, 0), true);
+            }
         }
 
         private void FilterToggledManual(bool AFilterIsOff)
@@ -169,6 +236,27 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
             }
 
+            DateTime dt;
+            TtxtPetraDate fromDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpDate-1");
+
+            if (fromDate.Text != String.Empty && DateTime.TryParse(fromDate.Text, out dt))
+            {
+                if (Convert.ToDateTime(ARow["Date"]) < dt.Date)
+                {
+                    return false;
+                }
+            }
+
+            TtxtPetraDate toDate = (TtxtPetraDate)FFindPanelControls.FindControlByName("dtpDate-2");
+
+            if (toDate.Text != String.Empty && DateTime.TryParse(toDate.Text, out dt))
+            {
+                if (Convert.ToDateTime(ARow["Date"]) > dt.Date)
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
 
@@ -186,6 +274,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FMainDS = TRemote.MFinance.AP.WebConnectors.LoadAApSupplier(ALedgerNumber, APartnerKey);
 
             FSupplierRow = FMainDS.AApSupplier[0];
+
+            // Get our AP ledger settings and enable/disable the corresponding search option on the filter panel
+            TFrmLedgerSettingsDialog settings = new TFrmLedgerSettingsDialog(this, ALedgerNumber);
+            FRequireApprovalBeforePosting = settings.APRequiresApprovalBeforePosting;
+            Control rbtForApproval = FFilterPanelControls.FindControlByName("rbtForApproval");
+            rbtForApproval.Enabled = FRequireApprovalBeforePosting;
 
             //
             // Transactions older than
@@ -266,6 +360,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // Fetch the first page of data
             try
             {
+                grdResult.MinimumPageSize = 200;
                 FPagedDataTable = grdResult.LoadFirstDataPage(@GetDataPagedResult);
             }
             catch (Exception E)
@@ -280,6 +375,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdResult.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdResult.Visible = true;
             UpdateRowFilter();
+            ApplyFilterManual(ref FCurrentActiveFilter);
 
             if (grdResult.TotalPages > 0)
             {
@@ -289,21 +385,24 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 //              grdResult.BringToFront();
                 //              grdResult.Focus();
 
-                grdResult.LoadAllDataPages();
-
-                AutoSizeGrid();
-                this.Width = this.Width - 1;
-                this.Width = this.Width + 1;
+                if (grdResult.TotalPages > 1)
+                {
+                    grdResult.LoadAllDataPages();
+                }
 
                 // Highlight first Row
-                grdResult.Selection.SelectRow(1, true);
-                FPrevRowChangedRow = 1;
+                SelectRowInGrid(1);
             }
+
+            AutoSizeGrid();
+            this.Width = this.Width - 1;
+            this.Width = this.Width + 1;
 
             UpdateSupplierBalance();
             UpdateDisplayedBalance();
             UpdateRecordNumberDisplay();
             RefreshSumTagged(null, null);
+            
             ActionEnabledEvent(null, new ActionEventArgs("cndSelectedSupplier", grdResult.TotalPages > 0));
         }
 
@@ -367,13 +466,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 //          grdResult.AddTextColumn("Discount", FPagedDataTable.Columns["DiscountMsg"], 150);
             grdResult.AddTextColumn("Status", FPagedDataTable.Columns["Status"], 100);
             grdResult.AddDateColumn("Date", FPagedDataTable.Columns["Date"]);
-
-            // Although "Ordinary" text columns have had a width specified above, this loop overwrites
-            // the widths with values that survive the user pressing the "Reload" button.
-            //for (int i = 0; i < ColumnWidth.Length; i++)
-            //{
-            //    grdResult.Columns[i].Width = ColumnWidth[i];
-            //}
         }
 
         private void UpdateDisplayedBalance()
@@ -453,11 +545,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         public void Reload()
         {
-            //for (int i = 0; i < grdResult.Columns.Count; i++)
-            //{
-            //    ColumnWidth[i] = grdResult.Columns[i].Width;
-            //}
-
             LoadSupplier(FLedgerNumber, FPartnerKey);
         }
 
@@ -534,11 +621,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             String SelectedItem = ((TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbStatus")).Text;
 
-            if (SelectedItem == "OPEN")
-            {
-                FStatusFilter = "(Status='' OR Status='" + SelectedItem + "')";
-            }
-            else if (SelectedItem != String.Empty)
+            if (SelectedItem != String.Empty)
             {
                 FStatusFilter = "(Status='" + SelectedItem + "')";
             }
@@ -547,31 +630,38 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (rbtForApproval.Checked)
             {
-                if (FStatusFilter != "")
+                if (FStatusFilter != String.Empty)
                 {
                     FStatusFilter += filterJoint;
                 }
 
-                FStatusFilter += ("(Status='' OR Status='OPEN')");
+                FStatusFilter += ("(Status='OPEN')");
             }
 
             RadioButton rbtForPosting = (RadioButton)FFilterPanelControls.FindControlByName("rbtForPosting");
 
             if (rbtForPosting.Checked)
             {
-                if (FStatusFilter != "")
+                if (FStatusFilter != String.Empty)
                 {
                     FStatusFilter += filterJoint;
                 }
 
-                FStatusFilter += ("(Status='' OR Status='OPEN' OR Status='APPROVED')");
+                if (FRequireApprovalBeforePosting)
+                {
+                    FStatusFilter += ("(Status='APPROVED')");
+                }
+                else
+                {
+                    FStatusFilter += ("(Status='OPEN' OR Status='APPROVED')");
+                }
             }
 
             RadioButton rbtForPaying = (RadioButton)FFilterPanelControls.FindControlByName("rbtForPaying");
 
             if (rbtForPaying.Checked)
             {
-                if (FStatusFilter != "")
+                if (FStatusFilter != String.Empty)
                 {
                     FStatusFilter += filterJoint;
                 }
@@ -646,76 +736,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             UpdateRowFilter();
         }
 
-        //private void ResetFilter()
-        //{
-        //    if ((FucoFilterAndFind == null) || FucoFilterAndFind.IsCollapsed)
-        //    {
-        //        return;
-        //    }
-
-        //    ((RadioButton)FFilterPanelControls.FindControlByName("rbtAllStatus")).Checked = true;
-        //    ((RadioButton)FFilterPanelControls.FindControlByName("rbtAllHistory")).Checked = true;
-        //    TCmbAutoComplete cmbType = ((TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbTransactionType"));
-        //    TCmbAutoComplete cmbStatus = ((TCmbAutoComplete)FFilterPanelControls.FindControlByName("cmbStatus"));
-
-        //    for (int i = 0; i < 2; i++)
-        //    {
-        //        cmbType.SelectedIndex = -1;
-        //        cmbStatus.SelectedIndex = -1;
-        //    }
-        //}
-
-        //private void TagAllPostable(object sender, EventArgs e)
-        //{
-        //    ResetFilter();
-
-        //    foreach (DataRowView rv in FPagedDataTable.DefaultView)
-        //    {
-        //        DataRow Row = rv.Row;
-
-        //        if ((Row["Currency"].ToString() == txtSupplierCurrency.Text) && (Row["Status"].ToString().Length > 0)
-        //            && ("|POSTED|PARTPAID|PAID|".IndexOf("|" + Row["Status"].ToString()) < 0))
-        //        {
-        //            Row["Tagged"] = true;
-        //        }
-        //    }
-
-        //    RefreshSumTagged(null, null);
-        //}
-
-        //private void TagAll(object sender, EventArgs e)
-        //{
-        //    ResetFilter();
-
-        //    foreach (DataRowView rv in FPagedDataTable.DefaultView)
-        //    {
-        //        DataRow Row = rv.Row;
-
-        //        if ((Row["Currency"].ToString() == txtSupplierCurrency.Text) && (Row["Status"].ToString().Length > 0)
-        //            && ("|POSTED|PARTPAID|".IndexOf("|" + Row["Status"].ToString()) >= 0))
-        //        {
-        //            Row["Tagged"] = true;
-        //        }
-        //    }
-
-        //    RefreshSumTagged(null, null);
-        //}
-
-        //private void UntagAll(object sender, EventArgs e)
-        //{
-        //    ResetFilter();
-
-        //    foreach (DataRowView rv in FPagedDataTable.DefaultView)
-        //    {
-        //        DataRow Row = rv.Row;
-        //        Row["Tagged"] = false;
-        //    }
-
-        //    RefreshSumTagged(null, null);
-        //}
-
         private void TagAll(object sender, EventArgs e)
         {
+            // Untag everything
+            UntagAll(null, null);
+
+            // Now tag all the rows in the current view
             foreach (DataRowView rv in FPagedDataTable.DefaultView)
             {
                 rv.Row["Tagged"] = true;
@@ -726,36 +752,91 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void UntagAll(object sender, EventArgs e)
         {
-            foreach (DataRowView rv in FPagedDataTable.DefaultView)
+            // We do this for all tags in the complete data table
+            foreach (DataRow Row in FPagedDataTable.Rows)
             {
-                rv.Row["Tagged"] = false;
+                Row["Tagged"] = false;
             }
 
             RefreshSumTagged(null, null);
         }
 
+        // Opens an individual document or payment
+        private void OpenADocumentOrPayment(DataRowView ADataRow)
+        {
+            if (ADataRow["Status"].ToString().Length > 0) // invoices have status, and payments don't.
+            {
+                Int32 DocumentId = Convert.ToInt32(ADataRow["ApDocumentId"]);
+                TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
+
+                if (frm.LoadAApDocument(FLedgerNumber, DocumentId))
+                {
+                    frm.Show();
+                }
+            }
+            else
+            {
+                Int32 PaymentNumber = Convert.ToInt32(ADataRow["ApNum"]);
+                TFrmAPPayment frm = new TFrmAPPayment(this);
+                frm.ReloadPayment(FLedgerNumber, PaymentNumber);
+                frm.Show();
+            }
+        }
+
+        // Opens all tagged documents
+        private void OpenTaggedDocuments(System.Object sender, EventArgs args)
+        {
+            if (FPagedDataTable.DefaultView.Count > 0)
+            {
+                this.Cursor = Cursors.WaitCursor;
+
+                foreach (DataRowView rv in FPagedDataTable.DefaultView)
+                {
+                    if (rv.Row["Tagged"].Equals(true))
+                    {
+                        OpenADocumentOrPayment(rv);
+                    }
+                }
+
+                this.Cursor = Cursors.Default;
+            }
+        }
+
+        // Open the highlighted transaction - called by menu or grid click etc
         private void OpenSelectedTransaction(System.Object sender, EventArgs args)
         {
             DataRowView[] SelectedGridRow = grdResult.SelectedDataRowsAsDataRowView;
 
             if (SelectedGridRow.Length >= 1)
             {
-                if (SelectedGridRow[0]["Status"].ToString().Length > 0) // invoices have status, and payments don't.
+                this.Cursor = Cursors.WaitCursor;
+                OpenADocumentOrPayment(SelectedGridRow[0]);
+                this.Cursor = Cursors.Default;
+            }
+        }
+
+        private void DeleteSelected(object sender, EventArgs e)
+        {
+            string MsgTitle = Catalog.GetString("Document Deletion");
+
+            DataRowView[] SelectedGridRow = grdResult.SelectedDataRowsAsDataRowView;
+
+            if (SelectedGridRow.Length >= 1)
+            {
+                // I can only delete invoices that are not posted already.
+                // This method is only enabled when the grid shows items for Posting
+                List<int> DeleteTheseDocs = new List<int>();
+
+                string status = SelectedGridRow[0]["Status"].ToString();
+
+                if (status == "OPEN" || status == "APPROVED")
                 {
                     Int32 DocumentId = Convert.ToInt32(SelectedGridRow[0]["ApDocumentId"]);
-                    TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
+                    DeleteTheseDocs.Add(DocumentId);
 
-                    if (frm.LoadAApDocument(FLedgerNumber, DocumentId))
-                    {
-                        frm.Show();
-                    }
-                }
-                else
-                {
-                    Int32 PaymentNumber = Convert.ToInt32(SelectedGridRow[0]["ApNum"]);
-                    TFrmAPPayment frm = new TFrmAPPayment(this);
-                    frm.ReloadPayment(FLedgerNumber, PaymentNumber);
-                    frm.Show();
+                    this.Cursor = Cursors.WaitCursor;
+                    TRemote.MFinance.AP.WebConnectors.DeleteAPDocuments(FLedgerNumber, DeleteTheseDocs);
+                    this.Cursor = Cursors.Default;
                 }
             }
         }
@@ -840,10 +921,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="e"></param>
         private void CreateInvoice(object sender, EventArgs e)
         {
+            this.Cursor = Cursors.WaitCursor;
+
             TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
 
             frm.CreateAApDocument(FLedgerNumber, FPartnerKey, false);
             frm.Show();
+
+            this.Cursor = Cursors.Default;
         }
 
         /// <summary>
@@ -853,10 +938,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="e"></param>
         private void CreateCreditNote(object sender, EventArgs e)
         {
+            this.Cursor = Cursors.WaitCursor;
+
             TFrmAPEditDocument frm = new TFrmAPEditDocument(this);
 
             frm.CreateAApDocument(FLedgerNumber, FPartnerKey, true);
             frm.Show();
+
+            this.Cursor = Cursors.Default;
         }
 
         /// <summary>
@@ -866,7 +955,50 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         private void ApproveTaggedDocuments(object sender, EventArgs e)
         {
-            throw new NotImplementedException("Sorry! This feature is not yet implemented...");
+            string MsgTitle = Catalog.GetString("Document Approval");
+
+            List<Int32> TaggedDocuments = new List<Int32>();
+            AccountsPayableTDS TempDS = new AccountsPayableTDS();
+
+            foreach (DataRowView rv in FPagedDataTable.DefaultView)
+            {
+                if ((rv.Row["Tagged"].Equals(true)) && (rv.Row["Status"].ToString().Length > 0)   // Invoices have status, Payments don't.
+                    && (rv.Row["Status"].ToString() == "OPEN")
+                    && (rv.Row["Currency"].ToString() == txtSupplierCurrency.Text)
+                    )
+                {
+                    TaggedDocuments.Add((int)rv.Row["ApDocumentId"]);
+                }
+            }
+
+            if (TaggedDocuments.Count > 0)
+            {
+                string msg = String.Format(Catalog.GetString(
+                        "Are you sure that you want to approve the {0} tagged document(s)?"), TaggedDocuments.Count);
+
+                if (MessageBox.Show(msg, MsgTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.No)
+                {
+                    return;
+                }
+
+                this.Cursor = Cursors.WaitCursor;
+                TVerificationResultCollection verificationResult;
+                
+                if (TRemote.MFinance.AP.WebConnectors.ApproveAPDocuments(FLedgerNumber, TaggedDocuments, out verificationResult))
+                {
+                    this.Cursor = Cursors.Default;
+                    MessageBox.Show(Catalog.GetString("The tagged documents have been approved successfully!"), MsgTitle);
+                }
+                else
+                {
+                    this.Cursor = Cursors.Default;
+                    MessageBox.Show(verificationResult.BuildVerificationResultString(), MsgTitle);
+                }
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("There we no tagged documents to be approved."), MsgTitle);
+            }
         }
 
         /// <summary>
@@ -878,14 +1010,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             List <Int32>TaggedDocuments = new List <Int32>();
             AccountsPayableTDS TempDS = new AccountsPayableTDS();
 
-            foreach (DataRow row in FPagedDataTable.Rows)
+            foreach (DataRowView rv in FPagedDataTable.DefaultView)
             {
-                if ((row["Tagged"].Equals(true)) && (row["Status"].ToString().Length > 0)   // Invoices have status, Payments don't.
-                    && ("|POSTED|PARTPAID|PAID".IndexOf("|" + row["Status"].ToString()) < 0)
-                    && (row["Currency"].ToString() == txtSupplierCurrency.Text)
+                if ((rv.Row["Tagged"].Equals(true)) && (rv.Row["Status"].ToString().Length > 0)   // Invoices have status, Payments don't.
+                    && ("|POSTED|PARTPAID|PAID".IndexOf("|" + rv.Row["Status"].ToString()) < 0)
+                    && (rv.Row["Currency"].ToString() == txtSupplierCurrency.Text)
                     )
                 {
-                    Int32 DocumentId = Convert.ToInt32(row["ApDocumentId"]);
+                    Int32 DocumentId = Convert.ToInt32(rv.Row["ApDocumentId"]);
                     TempDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, DocumentId));
 
                     // I've loaded this record in my DS, but I was not given a handle to it, so I need to find it!
@@ -905,7 +1037,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return;
             }
 
-            if (TFrmAPEditDocument.PostApDocumentList(TempDS, FLedgerNumber, TaggedDocuments))
+            if (TFrmAPEditDocument.PostApDocumentList(TempDS, FLedgerNumber, TaggedDocuments, this))
             {
                 // TODO: print reports on successfully posted batch
                 MessageBox.Show(Catalog.GetString("The AP documents have been posted successfully!"));
@@ -922,15 +1054,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             List <Int32>TaggedDocuments = new List <Int32>();
             AccountsPayableTDS TempDS = new AccountsPayableTDS();
 
-            foreach (DataRow row in FPagedDataTable.Rows)
+            foreach (DataRowView rv in FPagedDataTable.DefaultView)
             {
                 if (
-                    (row["Tagged"].Equals(true))
-                    && (row["Currency"].ToString() == txtSupplierCurrency.Text)
-                    && ("|POSTED|PARTPAID|".IndexOf("|" + row["Status"].ToString()) >= 0)
+                    (rv.Row["Tagged"].Equals(true))
+                    && (rv.Row["Currency"].ToString() == txtSupplierCurrency.Text)
+                    && ("|POSTED|PARTPAID|".IndexOf("|" + rv.Row["Status"].ToString()) >= 0)
                     )
                 {
-                    Int32 DocumentId = Convert.ToInt32(row["ApDocumentId"]);
+                    Int32 DocumentId = Convert.ToInt32(rv.Row["ApDocumentId"]);
                     TempDS.Merge(TRemote.MFinance.AP.WebConnectors.LoadAApDocument(FLedgerNumber, DocumentId));
 
                     // I've loaded this record in my DS, but I was not given a handle to it, so I need to find it!
@@ -1019,9 +1151,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             grdDetails.Columns[0].Width = 20;
+            grdDetails.Columns[1].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
             grdDetails.Columns[5].Width = 75;
             grdDetails.Columns[6].Width = 75;
-            //grdDetails.Columns[3].AutoSizeMode = SourceGrid.AutoSizeMode.Default;
 
             grdDetails.AutoStretchColumnsToFitWidth = true;
             grdDetails.Rows.AutoSizeMode = SourceGrid.AutoSizeMode.None;
@@ -1029,5 +1161,63 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdDetails.AutoSizeCells();
             grdResult.ResumeLayout();
         }
+
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.F9)
+            {
+                grdDetails.Focus();
+                return true;
+            }
+            if (keyData == Keys.F10)
+            {
+                SelectRowInGrid(FPrevRowChangedRow + 1);
+                return true;
+            }
+            if (keyData == (Keys.F10 | Keys.Shift))
+            {
+                SelectRowInGrid(FPrevRowChangedRow - 1);
+                return true;
+            }
+
+            return false;
+        }
+
+        #region Forms Messaging Interface Implementation
+
+        /// <summary>
+        /// Will be called by TFormsList to inform any Form that is registered in TFormsList
+        /// about any 'Forms Messages' that are broadcasted.
+        /// </summary>
+        /// <remarks>The Partner Edit 'listens' to such 'Forms Message' broadcasts by
+        /// implementing this virtual Method. This Method will be called each time a
+        /// 'Forms Message' broadcast occurs.
+        /// </remarks>
+        /// <param name="AFormsMessage">An instance of a 'Forms Message'. This can be
+        /// inspected for parameters in the Method Body and the Form can use those to choose
+        /// to react on the Message, or not.</param>
+        /// <returns>Returns True if the Form reacted on the specific Forms Message,
+        /// otherwise false.</returns>
+        public bool ProcessFormsMessage(TFormsMessage AFormsMessage)
+        {
+            bool MessageProcessed = false;
+
+            if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcAPTransactionChanged)
+            {
+                // The message is relevant if the supplier name is empty (=any supplier) or our specific supplier
+                if ((((TFormsMessage.FormsMessageAP)AFormsMessage.MessageObject).SupplierName == this.lblSupplierName.Text)
+                    || (((TFormsMessage.FormsMessageAP)AFormsMessage.MessageObject).SupplierName == String.Empty))
+                {
+                    // Reload the screen data
+                    Reload();
+                }
+
+                MessageProcessed = true;
+            }
+
+            return MessageProcessed;
+        }
+
+        #endregion
     }
 }
