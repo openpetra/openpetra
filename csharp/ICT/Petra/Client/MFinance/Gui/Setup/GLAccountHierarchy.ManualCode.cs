@@ -226,9 +226,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             else // For summary accounts I need to use the ReportOrder, then alphabetic:
             {
                 String ChildDescr = ChildTag.DetailRow.ReportOrder.ToString("000") + Child.Text;
+
                 for (Idx = 0; Idx < Parent.Nodes.Count; Idx++)
                 {
                     AccountNodeDetails SiblingTag = (AccountNodeDetails)Parent.Nodes[Idx].Tag;
+
                     if ((SiblingTag.DetailRow.ReportOrder.ToString("000") + Child.Text).CompareTo(ChildDescr) > 0)
                     {
                         break;
@@ -389,7 +391,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 DataView view = new DataView(FMainDS.AAccountHierarchyDetail);
                 view.Sort = AAccountHierarchyDetailTable.GetReportOrderDBName() + ", " + AAccountHierarchyDetailTable.GetReportingAccountCodeDBName();
-                InsertNodeIntoTreeView(null, 
+                InsertNodeIntoTreeView(null,
                     view,
                     (AAccountHierarchyDetailRow)FMainDS.AAccountHierarchyDetail.DefaultView[0].Row);
             }
@@ -411,7 +413,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 new object[] { FLedgerNumber, ADetailRow.ReportingAccountCode });
 
             TreeNode Child = new TreeNode(NodeLabel(AccountRow));
-
 
 
             AccountNodeDetails NodeTag = new AccountNodeDetails();

@@ -489,7 +489,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             NewNodeDetails.IsNew = false;
             newNode.Tag = NewNodeDetails;
 
-
             if (AParent == null)
             {
                 trvCostCentres.Nodes.Add(newNode);

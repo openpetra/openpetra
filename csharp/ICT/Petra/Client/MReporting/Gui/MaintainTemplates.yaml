@@ -11,7 +11,7 @@ RootNode:
     WindowWidth: 363
     WindowHeight: 410
     Actions:
-        actDelete: {ActionClick=DeleteRecord}
+        actRemove: {ActionClick=DeleteRecord}
         actSelect: {ActionClick=ReturnSelected}
         actCancel: {ActionClick=ReturnCancel}
         actDuplicate: {ActionClick=DuplicateRecord}
@@ -37,7 +37,7 @@ RootNode:
         pnlBtnRow: {AutoButtonMaxWidths=true, ControlsOrientation = horizontal }
             Padding:97,0,0,0
             Width:243
-            Controls: [btnDuplicate, btnDelete, btnSelect]
+            Controls: [btnDuplicate, btnRemove, btnSelect]
         btnDuplicate:
-        btnDelete:
+        btnRemove: {Label=Delete }
         btnSelect:

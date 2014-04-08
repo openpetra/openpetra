@@ -553,6 +553,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             ((TDelegateGenerateReportOverride)Delgt)(FCalculator);
 
             StatusThread.Abort();
+            StatusThread.Join();
             UpdateParentFormEndOfReport();
         }
 
@@ -877,7 +878,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// Allow to store and load settings
         /// </summary>
         /// <param name="AEnabled">True if the store and load settings are to be enabled.</param>
-        public void EnableSettings(bool AEnabled)
+        public void EnableDisableSettings(bool AEnabled)
         {
             MenuStrip mnuMain = (MenuStrip)FFormReportUi.Controls["mnuMain"];
             ToolStrip tbrMain = (ToolStrip)FFormReportUi.Controls["tbrMain"];

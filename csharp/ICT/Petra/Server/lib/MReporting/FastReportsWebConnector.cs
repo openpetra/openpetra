@@ -67,7 +67,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         {
             if (FDbAdapter != null)
             {
-                FDbAdapter.Cancelled = true;
+                FDbAdapter.CancelQuery();
             }
         }
 
@@ -75,7 +75,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         [RequireModulePermission("none")]
         public static Boolean DataTableGenerationWasCancelled()
         {
-            return (FDbAdapter != null) ? FDbAdapter.Cancelled : false;
+            return (FDbAdapter != null) ? FDbAdapter.IsCancelled : false;
         }
 
         /// <summary>Prepare a DataTable for this kind of report, using these parameters.
@@ -107,7 +107,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     break;
             }
 
-            return (FDbAdapter.Cancelled) ? null : ResultTbl;
+            return (FDbAdapter.IsCancelled) ? null : ResultTbl;
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             FDbAdapter = new TReportingDbAdapter();
 
-            while (!FDbAdapter.Cancelled && ADataSetFilterCsv != "")
+            while (!FDbAdapter.IsCancelled && ADataSetFilterCsv != "")
             {
                 String Tbl = StringHelper.GetNextCSV(ref ADataSetFilterCsv, ",", "");
                 String[] part = Tbl.Split('/');

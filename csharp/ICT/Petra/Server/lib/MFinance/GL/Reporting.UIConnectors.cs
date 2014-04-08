@@ -367,7 +367,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             foreach (DataRow row in GlmTbl.Rows)
             {
-                if (DbAdapter.Cancelled)
+                if (DbAdapter.IsCancelled)
                 {
                     return Results;
                 }
@@ -720,7 +720,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 foreach (DataRowView rv in ThisMonth)
                 {
-                    if (DbAdapter.Cancelled)
+                    if (DbAdapter.IsCancelled)
                     {
                         return FilteredResults;
                     }
@@ -764,7 +764,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 for (Int32 Idx = 0; Idx < PostingAccountRecords; Idx++)
                 {
-                    if (DbAdapter.Cancelled)
+                    if (DbAdapter.IsCancelled)
                     {
                         return FilteredResults;
                     }
@@ -808,7 +808,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 for (Int32 RowIdx = 0; RowIdx < FilteredResults.Rows.Count - 1; RowIdx++)
                 {
-                    if (DbAdapter.Cancelled)
+                    if (DbAdapter.IsCancelled)
                     {
                         return FilteredResults;
                     }
@@ -1227,7 +1227,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     {
                         foreach (DataRowView rv in ThisMonth)
                         {
-                            if (DbAdapter.Cancelled)
+                            if (DbAdapter.IsCancelled)
                             {
                                 return FilteredResults;
                             }
@@ -1249,7 +1249,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         // For the first period of the year, I can just subtract the YearStart balance, which I already have just here...
                         foreach (DataRowView rv in ThisMonth)
                         {
-                            if (DbAdapter.Cancelled)
+                            if (DbAdapter.IsCancelled)
                             {
                                 return FilteredResults;
                             }
@@ -1266,7 +1266,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     foreach (DataRowView rv in ThisMonth)
                     {
-                        if (DbAdapter.Cancelled)
+                        if (DbAdapter.IsCancelled)
                         {
                             return FilteredResults;
                         }
@@ -1298,7 +1298,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     foreach (DataRow Row in FilteredResults.Rows)
                     {
-                        if (DbAdapter.Cancelled)
+                        if (DbAdapter.IsCancelled)
                         {
                             return FilteredResults;
                         }
@@ -1339,7 +1339,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 for (Int32 Idx = 0; Idx < PostingAccountRecords; Idx++)
                 {
-                    if (DbAdapter.Cancelled)
+                    if (DbAdapter.IsCancelled)
                     {
                         return FilteredResults;
                     }
@@ -1401,7 +1401,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     for (Int32 RowIdx = 0; RowIdx < FilteredResults.DefaultView.Count - 1; RowIdx++)
                     {
-                        if (DbAdapter.Cancelled)
+                        if (DbAdapter.IsCancelled)
                         {
                             return FilteredResults;
                         }
@@ -1450,7 +1450,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     foreach (DataRowView rv in FilteredResults.DefaultView)
                     {
-                        if (DbAdapter.Cancelled)
+                        if (DbAdapter.IsCancelled)
                         {
                             return FilteredResults;
                         }
@@ -1474,7 +1474,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 for (Int32 RowIdx = 0; RowIdx < FilteredResults.Rows.Count - 1; RowIdx++)
                 {
-                    if (DbAdapter.Cancelled)
+                    if (DbAdapter.IsCancelled)
                     {
                         return FilteredResults;
                     }
@@ -1654,7 +1654,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 foreach (DataRow r in resultTable.Rows)
                 {
-                    if (DbAdapter.Cancelled)
+                    if (DbAdapter.IsCancelled)
                     {
                         return resultTable;
                     }

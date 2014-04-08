@@ -127,7 +127,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 FPetraUtilsObject.DelegateViewReportOverride = DesignReport;
                 FPetraUtilsObject.DelegateCancelReportOverride = CancelReportGeneration;
 
-                FPetraUtilsObject.EnableSettings(false);
+                FPetraUtilsObject.EnableDisableSettings(false);
                 LoadedOK = true;
             }
             catch (Exception e) // If there's no FastReports DLL, this object will do nothing.
