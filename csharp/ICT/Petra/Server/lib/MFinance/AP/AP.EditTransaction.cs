@@ -934,7 +934,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// This is called by a client
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="ADeleteTheseDocs"></param>
+        /// <param name="AApproveTheseDocs"></param>
         /// <param name="AVerificationResult"></param>
         [RequireModulePermission("FINANCE-1")]
         public static bool ApproveAPDocuments(Int32 ALedgerNumber,
