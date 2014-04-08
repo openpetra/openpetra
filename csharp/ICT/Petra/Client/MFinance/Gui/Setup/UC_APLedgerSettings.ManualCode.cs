@@ -40,7 +40,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
     public partial class TUC_APLedgerSettings
     {
-        private TFrmLedgerSettingsDialog FMainForm;
         private Int32 FLedgerNumber;
         private ALedgerInitFlagRow FRequireApprovalDataRow = null;
 
@@ -64,17 +63,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// Sets the local reference to the main form
-        /// </summary>
-        public TFrmLedgerSettingsDialog MainForm
-        {
-            set
-            {
-                FMainForm = value;
-            }
-        }
-
-        /// <summary>
         /// This method is called as soon as the ledger number has been set on the main form, which follows immediately after the constructor.
         /// It is used to initialize the controls on the form, based on the values in FMainDS
         /// </summary>
@@ -82,7 +70,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="ALedgerNumber"></param>
         public void InitializeScreenData(TFrmLedgerSettingsDialog AMainForm, Int32 ALedgerNumber)
         {
-            FMainForm = AMainForm;
             FLedgerNumber = ALedgerNumber;
 
             // Now we can populate the controls with data

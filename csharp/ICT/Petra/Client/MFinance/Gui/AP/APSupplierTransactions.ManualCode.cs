@@ -818,8 +818,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void DeleteSelected(object sender, EventArgs e)
         {
-            string MsgTitle = Catalog.GetString("Document Deletion");
-
             DataRowView[] SelectedGridRow = grdResult.SelectedDataRowsAsDataRowView;
 
             if (SelectedGridRow.Length >= 1)
@@ -959,7 +957,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             string MsgTitle = Catalog.GetString("Document Approval");
 
             List <Int32>TaggedDocuments = new List <Int32>();
-            AccountsPayableTDS TempDS = new AccountsPayableTDS();
 
             foreach (DataRowView rv in FPagedDataTable.DefaultView)
             {
