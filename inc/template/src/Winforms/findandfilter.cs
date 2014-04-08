@@ -368,7 +368,10 @@ void FucoFilterAndFind_FindNextClicked(object sender, TUcoFilterAndFind.TContext
                 if ({#ISMATCHINGROW}(rowView.Row))
                 {
                     SelectRowInGrid(rowNum);
-                    ((Control)sender).Focus();
+                    if (sender != null)
+                    {
+                        ((Control)sender).Focus();
+                    }
                     return;
                 }
             }
@@ -381,7 +384,10 @@ void FucoFilterAndFind_FindNextClicked(object sender, TUcoFilterAndFind.TContext
                 if ({#ISMATCHINGROW}(rowView.Row))
                 {
                     SelectRowInGrid(rowNum);
-                    ((Control)sender).Focus();
+                    if (sender != null)
+                    {
+                        ((Control)sender).Focus();
+                    }
                     return;
                 }
             }
@@ -391,6 +397,12 @@ void FucoFilterAndFind_FindNextClicked(object sender, TUcoFilterAndFind.TContext
 
 void FucoFilterAndFind_ArgumentCtrlValueChanged(object sender, TUcoFilterAndFind.TContextEventExtControlValueArgs e)
 {
+    if (e.Context == TUcoFilterAndFind.EventContext.ecFindPanel)
+    {
+        // No need for any dynamic response on the Find panel
+        return;
+    }
+
     // Something has changed on the filter/find panel
     // If this is the first activation we need to initialise combo boxes because they will now have been populated for the first time
     if ((sender is TUcoFilterAndFind) && !FIsFilterFindInitialised)
@@ -523,6 +535,14 @@ public void MniFilterFind_Click(object sender, EventArgs e)
             {
                 FucoFilterAndFind.DisplayFindTab();
                 FFindPanelControls.FFindPanels[0].PanelControl.Focus();
+
+                if (e is KeyPressEventArgs)
+                {
+                    // Act as if Find button was clicked and use up/down depending on whether F3 or SHIFT+F3
+                    FucoFilterAndFind_FindNextClicked(null,
+                        new TUcoFilterAndFind.TContextEventExtSearchDirectionArgs(
+                            TUcoFilterAndFind.EventContext.ecFindPanel, ((KeyPressEventArgs)e).KeyChar == '-'));
+                }
             }
         }
         else
