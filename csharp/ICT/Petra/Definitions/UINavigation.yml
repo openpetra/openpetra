@@ -219,7 +219,6 @@ OpenPetra:
                     AccountsPayable: {Description: Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain}
                         Suppliers: {Description: Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain, InitialTab=Suppliers}
                         OutstandingInvoices: {Description: Manage payments, ActionOpenScreen=TFrmAPMain, InitialTab=Invoices}
-                        Settings: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup, Description="Maintain Accounts Payable Settings", ActionOpenScreen=TFrmLedgerSettingsDialog, InitialTab=AP}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         DetailReport: {ActionOpenScreen=TFrmAP_AccountDetailReport}
                         AgedSupplierList: {ActionOpenScreen=TFrmAP_AgedSupplierList}
@@ -254,8 +253,6 @@ OpenPetra:
                         #DeleteAccount:
                         #RenameAccount:
                         #ImportChartOfAccounts:
-                    AccountsPayableSetup:
-                        APSettings: {Description="Maintain Accounts Payable Settings", ActionOpenScreen=TFrmLedgerSettingsDialog, InitialTab=AP}
                     #CostCentres:
                         #AddCostCentre:
                         #EditCostCentre:
@@ -272,6 +269,8 @@ OpenPetra:
                         MotivationDetails: {Description: "Maintain Motivation Details towards which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}                        
                         AdminGrantsPayable: {Description=Maintain payable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsPayable}
                         AdminGrantsReceivable: {Description=Maintain receivable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsReceivable}
+                    AccountsPayable:
+                        APSettings: {Description="Maintain Accounts Payable Settings", ActionOpenScreen=TFrmLedgerSettingsDialog, InitialTab=AP}
         CrossLedgerSetup: {Icon=finance_setup.ico, Namespace=Ict.Petra.Client.MFinance.Gui.Setup, Label="Finance Setup", PermissionsRequired="FINANCE-1"}
             General: {SkipThisLevel=true}
                 Ledger: {DontShowNestedTasksAsLinks=true}
