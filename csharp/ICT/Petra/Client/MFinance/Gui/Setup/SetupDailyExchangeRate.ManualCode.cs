@@ -1561,7 +1561,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 tInverseItem item = lstInverses[i];
 
                 // Does the item exist already?
-                dv.RowFilter = String.Format(CultureInfo.InvariantCulture, "{0}='{1}' AND {2}='{3}' AND {4}=#{5}# AND {6}={7} AND {8}={9}",
+                dv.RowFilter = String.Format(CultureInfo.InvariantCulture, "{0}='{1}' AND {2}='{3}' AND {4}=#{5}# AND {6}={7}",
                     ADailyExchangeRateTable.GetFromCurrencyCodeDBName(),
                     item.FromCurrencyCode,
                     ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
@@ -1569,9 +1569,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
                     item.DateEffective.ToString("d", CultureInfo.InvariantCulture),
                     ADailyExchangeRateTable.GetTimeEffectiveFromDBName(),
-                    item.TimeEffective,
-                    ADailyExchangeRateTable.GetRateOfExchangeDBName(),
-                    item.RateOfExchange);
+                    item.TimeEffective);
 
                 if (dv.Count == 0)
                 {
@@ -1593,6 +1591,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
         {
             FIsCurrentRowStateAdded = FPreviouslySelectedDetailRow.RowState == DataRowState.Added;
+            SetEnabledStates();
 
             // Just quit if we didn't save our stuff
             if (!e.Success)
