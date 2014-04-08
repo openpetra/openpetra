@@ -32,6 +32,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance;
@@ -51,9 +52,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <summary>
         /// Special constructor for calling this screen without showing it (in order to access the ledger properties)
         /// </summary>
+        /// <param name="AParentForm">The parent form for this dialog (can be null)</param>
         /// <param name="ALedgerNumber">Ledger number whose settings are required</param>
-        public TFrmLedgerSettingsDialog(Int32 ALedgerNumber)
+        public TFrmLedgerSettingsDialog(Form AParentForm, Int32 ALedgerNumber) : this(AParentForm)
         {
+            // Set the ledger which will load the dataset
             LedgerNumber = ALedgerNumber;
         }
 
@@ -179,7 +182,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             ALedgerRow ledgerRow = (ALedgerRow)FMainDS.ALedger.Rows[0];
-            this.Text = this.Text + String.Format(" - {0} (#{1})", ledgerRow.LedgerName, ledgerRow.LedgerNumber);
+            this.Text = this.Text + String.Format(" - {0}", TFinanceControls.GetLedgerNumberAndName(ledgerRow.LedgerNumber));
 
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
         }
