@@ -1731,7 +1731,13 @@ namespace Ict.Common.Controls
 
             if (ARowNumberInGrid >= this.FixedRows)
             {
-                newPosition = new Position(ARowNumberInGrid, 0);
+                int column = 0;
+                while ((column < this.FixedColumns) && (column < this.Columns.Count - 1) && !this.Columns[column].Visible)
+                {
+                    column++;
+                }
+
+                newPosition = new Position(ARowNumberInGrid, column);
             }
             else
             {
