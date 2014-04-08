@@ -607,7 +607,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     //
                     // Now ensure that my parent also updates her own parent:
 
-                    Int32 AccountLevel = AddTotalsToParentAccountRow( // Update my parent first
+                    AddTotalsToParentAccountRow( // Update my parent first
                         filteredResults,
                         HierarchyTbl,
                         LedgerNumber,
