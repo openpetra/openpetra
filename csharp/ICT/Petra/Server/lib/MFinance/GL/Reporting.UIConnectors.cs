@@ -728,8 +728,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     DataRow Row = rv.Row;
                     Int32 RowIdx = OldPeriod.Find(
-                        new Object [] {
-                        Row["AccountCode"]
+                        new Object[] {
+                            Row["AccountCode"]
                         }
                         );
 
@@ -1228,6 +1228,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     if (ReportPeriodEnd > PeriodMonths)
                     {
                         Int32 PrevPeriod = ReportPeriodEnd - PeriodMonths;
+
                         foreach (DataRowView rv in ThisMonth)
                         {
                             if (DbAdapter.IsCancelled)
@@ -1237,7 +1238,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                             DataRow Row = rv.Row;
                             Int32 RowIdx = OldPeriod.Find(
-                                new Object []{
+                                new Object[] {
                                     Row["Year"],
                                     PrevPeriod,
                                     Row["CostCentreCode"],
@@ -1278,12 +1279,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                         DataRow Row = rv.Row;
                         Int32 RowIdx = OldPeriod.Find(
-                            new Object []{
+                            new Object[] {
                                 AccountingYear - 1,
                                 ReportPeriodEnd,
                                 Row["CostCentreCode"],
                                 Row["AccountCode"]
-                                }
+                            }
                             );
 
                         if (RowIdx >= 0)
