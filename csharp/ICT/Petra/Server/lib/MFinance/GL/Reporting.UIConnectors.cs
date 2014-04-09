@@ -953,7 +953,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         private static void AddToPeriodBreakdownSummary(DataView filteredView, DataRow NewDataRow)
         {
             DataRow SummaryRow;
-            Int32 ViewIdx = filteredView.Find(new object[] { NewDataRow["CostCentreCode"], NewDataRow["AccountType"], NewDataRow["AccountPath"] });
+            Int32 ViewIdx = filteredView.Find(new object[] { NewDataRow["CostCentreCode"], NewDataRow["AccountTypeOrder"], NewDataRow["AccountPath"] });
             String PeriodField = "P" + Convert.ToInt32(NewDataRow["Period"]);
             Decimal Actual = Convert.ToDecimal(NewDataRow["Actual"]);
 
@@ -1443,7 +1443,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     //
                     // If there are any unsummarised rows left after applying the Depth Filter,
                     // I need to summarise them into new "per period" rows (with 12 "Actual" fields), and throw the original rows away.
-                    FilteredResults.DefaultView.RowFilter = "AccountIsSummary=false";
+                    FilteredResults.DefaultView.RowFilter = "AccountIsSummary=false AND Breakdown=false";
                     DataView SummaryView = new DataView(FilteredResults);
                     SummaryView.Sort = "CostCentreCode, AccountTypeOrder, AccountPath ASC";
                     SummaryView.RowFilter = "Breakdown=true";
