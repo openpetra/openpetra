@@ -2290,7 +2290,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// update the transaction base amount calculation from outside
         /// </summary>
-        public void UpdateBaseAmount(bool AUpdateCurrentRowOnly)
+        public void UpdateBaseAmount(bool AUpdateCurrentRowOnly, decimal AInternationalToBaseExchangeRate = 1)
         {
             Int32 LedgerNumber;
             Int32 CurrentBatchNumber;
@@ -2312,13 +2312,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (AUpdateCurrentRowOnly && FPreviouslySelectedDetailRow != null)
             {
                 FPreviouslySelectedDetailRow.GiftAmount = (decimal)txtDetailGiftTransactionAmount.NumberValueDecimal * FExchangeRateToBase;
-                FPreviouslySelectedDetailRow.GiftAmountIntl = (decimal)txtDetailGiftTransactionAmount.NumberValueDecimal;
+                FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftAmount * AInternationalToBaseExchangeRate;
             }
             else
             {
                 LedgerNumber = FBatchRow.LedgerNumber;
                 CurrentBatchNumber = FBatchRow.BatchNumber;
 
+                //Check if this batch is already loaded
                 DataView detailView = new DataView(FMainDS.AGift);
 
                 detailView.RowFilter = String.Format("{0}={1} And {2}={3}",
@@ -2338,7 +2339,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if (FPreviouslySelectedDetailRow != null)
                     {
                         FPreviouslySelectedDetailRow.GiftAmount = FPreviouslySelectedDetailRow.GiftTransactionAmount * FExchangeRateToBase;
-                        FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftTransactionAmount;
+                        FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftAmount * AInternationalToBaseExchangeRate;
                     }
                 }
 

@@ -67,6 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        public decimal FInternationalToBaseExchangeRate;
 
         /// <summary>
         /// use this ledger

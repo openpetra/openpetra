@@ -358,6 +358,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             try
             {
                 DateTime dt = dtpDetailDateEffectiveFrom.Date.Value;
+                DateTime dtFirstOfMonth = new DateTime(dt.Year, dt.Month, 1);
+                //Set to first of month for corporate
+                
+                if (dt != dtFirstOfMonth)
+	            {
+		            dt = dtFirstOfMonth;
+                    dtpDetailDateEffectiveFrom.Date = dt;
+	            }
+
+                dtpDetailDateEffectiveFrom.Date = dt;
 
                 if (dt != FPreviouslySelectedDetailRow.DateEffectiveFrom)
                 {

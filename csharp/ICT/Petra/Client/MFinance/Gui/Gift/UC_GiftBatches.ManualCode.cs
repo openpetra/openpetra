@@ -846,7 +846,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             UpdateChangeableStatus();
 
-            RefreshCurrencyAndExchangeRate();
+            RefreshCurrencyAndExchangeRateControls();
             Boolean ComboSetsOk = cmbDetailBankCostCentre.SetSelectedString(ARow.BankCostCentre, -1);
             ComboSetsOk &= cmbDetailBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
 
@@ -1375,27 +1375,44 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             String ACurrencyCode = cmbDetailCurrencyCode.GetSelectedString();
 
-            txtDetailHashTotal.CurrencyCode = ACurrencyCode;
-
             if (!FPetraUtilsObject.SuppressChangeDetection && (FPreviouslySelectedDetailRow != null)
                 && (GetCurrentBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
                 FPreviouslySelectedDetailRow.CurrencyCode = ACurrencyCode;
 
-                FPreviouslySelectedDetailRow.ExchangeRateToBase = TExchangeRateCache.GetDailyExchangeRate(
-                    FMainDS.ALedger[0].BaseCurrency,
-                    FPreviouslySelectedDetailRow.CurrencyCode,
-                    FPreviouslySelectedDetailRow.GlEffectiveDate);
-
-                RefreshCurrencyAndExchangeRate(true);
-
-                ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
-                ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false);
+                RecalculateTransactionAmounts();
+                RefreshCurrencyAndExchangeRateControls(true);
             }
         }
 
-        private void RefreshCurrencyAndExchangeRate(bool AFromUserAction = false)
+        private void RecalculateTransactionAmounts(decimal ANewExchangeRate = 0)
         {
+            string ACurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
+            DateTime effectiveDate = FPreviouslySelectedDetailRow.GlEffectiveDate;
+            DateTime startOfMonth = new DateTime(effectiveDate.Year, effectiveDate.Month, 1);
+
+            if (ANewExchangeRate == 0)
+            {
+                //Need to get the exchange rate
+                FPreviouslySelectedDetailRow.ExchangeRateToBase = TExchangeRateCache.GetDailyExchangeRate(
+                    FMainDS.ALedger[0].BaseCurrency,
+                    FPreviouslySelectedDetailRow.CurrencyCode,
+                    effectiveDate);
+            }
+                
+            decimal IntlRateToBatchCurrency = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(FMainDS.ALedger[0].BaseCurrency,
+                                                    FMainDS.ALedger[0].IntlCurrency,
+                                                    startOfMonth,
+                                                    effectiveDate);
+
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
+            ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false, IntlRateToBatchCurrency);
+        }
+
+        private void RefreshCurrencyAndExchangeRateControls(bool AFromUserAction = false)
+        {
+            txtDetailHashTotal.CurrencyCode = FPreviouslySelectedDetailRow.CurrencyCode;
+
             txtDetailExchangeRateToBase.NumberValueDecimal = FPreviouslySelectedDetailRow.ExchangeRateToBase;
             txtDetailExchangeRateToBase.BackColor =
                 (FPreviouslySelectedDetailRow.ExchangeRateToBase == DEFAULT_CURRENCY_EXCHANGE) ? Color.LightPink : Color.Empty;
@@ -1431,13 +1448,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FPreviouslySelectedDetailRow.ExchangeRateToBase != selectedExchangeRate)
             {
+                FPreviouslySelectedDetailRow.ExchangeRateToBase = selectedExchangeRate;
+                RecalculateTransactionAmounts(selectedExchangeRate);
+
                 //Enforce save needed condition
                 FPetraUtilsObject.SetChangedFlag();
             }
 
-            FPreviouslySelectedDetailRow.ExchangeRateToBase = selectedExchangeRate;
-
-            RefreshCurrencyAndExchangeRate();
+            RefreshCurrencyAndExchangeRateControls();
         }
 
         private void HashTotalChanged(object sender, EventArgs e)
