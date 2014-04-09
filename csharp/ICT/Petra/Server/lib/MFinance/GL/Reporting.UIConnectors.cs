@@ -710,7 +710,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 DataView OldPeriod = new DataView(resultTable);
                 DataView ThisMonth = new DataView(resultTable);
-
+                OldPeriod.Sort = "AccountCode";
+                OldPeriod.RowFilter = String.Format("Year={0}", AccountingYear - 1);
                 ThisMonth.RowFilter = String.Format("Year={0}", AccountingYear);
 
                 //
@@ -726,15 +727,15 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     }
 
                     DataRow Row = rv.Row;
-                    OldPeriod.RowFilter = String.Format("Year={0} AND Period={1} AND AccountCode='{2}'",
-                        AccountingYear - 1,
-                        ReportPeriodEnd,
-                        Row["AccountCode"].ToString()
+                    Int32 RowIdx = OldPeriod.Find(
+                        new Object [] {
+                        Row["AccountCode"]
+                        }
                         );
 
-                    if (OldPeriod.Count > 0)
+                    if (RowIdx >= 0)
                     {
-                        DataRow LastYearRow = OldPeriod[0].Row;
+                        DataRow LastYearRow = OldPeriod[RowIdx].Row;
                         Row["ActualLastYear"] = Convert.ToDecimal(LastYearRow["Actual"]);
                     }
 
