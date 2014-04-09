@@ -1186,34 +1186,35 @@ namespace Ict.Petra.Server.MCommon
     /// <summary>Reporting Query with Cancel Option</summary>
     public class TReportingDbAdapter
     {
-        private Boolean FReportingQueryCancelFlag = false;
+        private Boolean FCancelFlag = false;
         private DbDataAdapter FDataAdapter;
 
         /// <summary>
-        /// Setting this flag cancels any reporting query that's running right now,
-        /// and eefectively short-circuits any subsequent queries, until the flag is cleared.
+        /// Cancels any reporting query that's running right now,
+        /// and effectively short-circuits any subsequent queries made using this object.
         /// </summary>
-        public Boolean Cancelled
+        public void CancelQuery()
+        {
+            if (!FCancelFlag)
+            {
+                FCancelFlag = true;
+                try
+                {
+                    FDataAdapter.SelectCommand.Cancel();
+                }
+                catch (Exception ex)
+                {
+                    TLogging.Log("Exception occured in ReportingQueryCancel: " + ex.Message);
+                }
+            }
+        }
+
+        /// <summary>Check this before assuming that the query returned a good result!</summary>
+        public Boolean IsCancelled
         {
             get
             {
-                return FReportingQueryCancelFlag;
-            }
-            set
-            {
-                FReportingQueryCancelFlag = value;
-
-                if (FReportingQueryCancelFlag)
-                {
-                    try
-                    {
-                        FDataAdapter.SelectCommand.Cancel();
-                    }
-                    catch (Exception ex)
-                    {
-                        TLogging.Log("Exception occured in ReportingQueryCancel: " + ex.Message);
-                    }
-                }
+                return FCancelFlag;
             }
         }
 
@@ -1227,7 +1228,7 @@ namespace Ict.Petra.Server.MCommon
         {
             DataTable resultTable = new DataTable(TableName);
 
-            if (!FReportingQueryCancelFlag)
+            if (!FCancelFlag)
             {
                 try
                 {
@@ -1237,6 +1238,16 @@ namespace Ict.Petra.Server.MCommon
                 catch (Exception ex)
                 {
                     TLogging.Log("ReportingQueryWithCancelOption: Query Raised exception:" + ex.Message);
+
+                    /*
+                     *     WE MUST 'SWALLOW' ANY EXCEPTION HERE, OTHERWISE THE WHOLE
+                     *     PETRASERVER WILL GO DOWN!!! (THIS BEHAVIOUR IS NEW WITH .NET 2.0.)
+                     *
+                     * --> ANY EXCEPTION THAT WOULD LEAVE THIS METHOD WOULD BE SEEN AS AN   <--
+                     * --> UNHANDLED EXCEPTION IN A THREAD, AND THE .NET/MONO RUNTIME       <--
+                     * --> WOULD BRING DOWN THE WHOLE PETRASERVER PROCESS AS A CONSEQUENCE. <--
+                     *
+                     */
                 }
             }
 

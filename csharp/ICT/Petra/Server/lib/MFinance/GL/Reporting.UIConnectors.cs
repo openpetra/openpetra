@@ -367,7 +367,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             foreach (DataRow row in GlmTbl.Rows)
             {
-                if (DbAdapter.Cancelled)
+                if (DbAdapter.IsCancelled)
                 {
                     return Results;
                 }
@@ -710,7 +710,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 DataView OldPeriod = new DataView(resultTable);
                 DataView ThisMonth = new DataView(resultTable);
-
+                OldPeriod.Sort = "AccountCode";
+                OldPeriod.RowFilter = String.Format("Year={0}", AccountingYear - 1);
                 ThisMonth.RowFilter = String.Format("Year={0}", AccountingYear);
 
                 //
@@ -720,21 +721,21 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 foreach (DataRowView rv in ThisMonth)
                 {
-                    if (DbAdapter.Cancelled)
+                    if (DbAdapter.IsCancelled)
                     {
                         return FilteredResults;
                     }
 
                     DataRow Row = rv.Row;
-                    OldPeriod.RowFilter = String.Format("Year={0} AND Period={1} AND AccountCode='{2}'",
-                        AccountingYear - 1,
-                        ReportPeriodEnd,
-                        Row["AccountCode"].ToString()
+                    Int32 RowIdx = OldPeriod.Find(
+                        new Object[] {
+                            Row["AccountCode"]
+                        }
                         );
 
-                    if (OldPeriod.Count > 0)
+                    if (RowIdx >= 0)
                     {
-                        DataRow LastYearRow = OldPeriod[0].Row;
+                        DataRow LastYearRow = OldPeriod[RowIdx].Row;
                         Row["ActualLastYear"] = Convert.ToDecimal(LastYearRow["Actual"]);
                     }
 
@@ -764,7 +765,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 for (Int32 Idx = 0; Idx < PostingAccountRecords; Idx++)
                 {
-                    if (DbAdapter.Cancelled)
+                    if (DbAdapter.IsCancelled)
                     {
                         return FilteredResults;
                     }
@@ -808,7 +809,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 for (Int32 RowIdx = 0; RowIdx < FilteredResults.Rows.Count - 1; RowIdx++)
                 {
-                    if (DbAdapter.Cancelled)
+                    if (DbAdapter.IsCancelled)
                     {
                         return FilteredResults;
                     }
@@ -953,7 +954,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         private static void AddToPeriodBreakdownSummary(DataView filteredView, DataRow NewDataRow)
         {
             DataRow SummaryRow;
-            Int32 ViewIdx = filteredView.Find(new object[] { NewDataRow["CostCentreCode"], NewDataRow["AccountType"], NewDataRow["AccountPath"] });
+            Int32 ViewIdx = filteredView.Find(new object[] { NewDataRow["CostCentreCode"], NewDataRow["AccountTypeOrder"], NewDataRow["AccountPath"] });
             String PeriodField = "P" + Convert.ToInt32(NewDataRow["Period"]);
             Decimal Actual = Convert.ToDecimal(NewDataRow["Actual"]);
 
@@ -1220,26 +1221,31 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     DataView OldPeriod = new DataView(resultTable);
                     DataView ThisMonth = new DataView(resultTable);
                     ThisMonth.RowFilter = "Period=" + ReportPeriodEnd;
+                    OldPeriod.Sort = "Year,Period,CostCentreCode,AccountCode";
 
                     //
                     // If I have rows for the previous month too, I can subtract the previous month's YTD balance to get my "Actual".
                     if (ReportPeriodEnd > PeriodMonths)
                     {
+                        Int32 PrevPeriod = ReportPeriodEnd - PeriodMonths;
+
                         foreach (DataRowView rv in ThisMonth)
                         {
-                            if (DbAdapter.Cancelled)
+                            if (DbAdapter.IsCancelled)
                             {
                                 return FilteredResults;
                             }
 
                             DataRow Row = rv.Row;
-                            OldPeriod.RowFilter = String.Format("Year={0} AND Period={1} AND CostCentreCode='{2}' AND AccountCode='{3}'",
-                                Convert.ToInt32(Row["Year"]),
-                                ReportPeriodEnd - PeriodMonths,
-                                Row["CostCentreCode"].ToString(),
-                                Row["AccountCode"].ToString()
+                            Int32 RowIdx = OldPeriod.Find(
+                                new Object[] {
+                                    Row["Year"],
+                                    PrevPeriod,
+                                    Row["CostCentreCode"],
+                                    Row["AccountCode"]
+                                }
                                 );
-                            DataRow PreviousPeriodRow = OldPeriod[0].Row;
+                            DataRow PreviousPeriodRow = OldPeriod[RowIdx].Row;
                             Row["Actual"] = Convert.ToDecimal(Row["ActualYTD"]) - Convert.ToDecimal(PreviousPeriodRow["ActualYTD"]);
                         }
                     }
@@ -1249,7 +1255,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         // For the first period of the year, I can just subtract the YearStart balance, which I already have just here...
                         foreach (DataRowView rv in ThisMonth)
                         {
-                            if (DbAdapter.Cancelled)
+                            if (DbAdapter.IsCancelled)
                             {
                                 return FilteredResults;
                             }
@@ -1266,22 +1272,24 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     foreach (DataRowView rv in ThisMonth)
                     {
-                        if (DbAdapter.Cancelled)
+                        if (DbAdapter.IsCancelled)
                         {
                             return FilteredResults;
                         }
 
                         DataRow Row = rv.Row;
-                        OldPeriod.RowFilter = String.Format("Year={0} AND Period={1} AND CostCentreCode='{2}' AND AccountCode='{3}'",
-                            AccountingYear - 1,
-                            ReportPeriodEnd,
-                            Row["CostCentreCode"].ToString(),
-                            Row["AccountCode"].ToString()
+                        Int32 RowIdx = OldPeriod.Find(
+                            new Object[] {
+                                AccountingYear - 1,
+                                ReportPeriodEnd,
+                                Row["CostCentreCode"],
+                                Row["AccountCode"]
+                            }
                             );
 
-                        if (OldPeriod.Count > 0)
+                        if (RowIdx >= 0)
                         {
-                            DataRow LastYearRow = OldPeriod[0].Row;
+                            DataRow LastYearRow = OldPeriod[RowIdx].Row;
                             Row["ActualLastYear"] = Convert.ToDecimal(LastYearRow["Actual"]);
                             Row["BudgetLastYear"] = Convert.ToDecimal(LastYearRow["Budget"]);
                         }
@@ -1298,7 +1306,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     foreach (DataRow Row in FilteredResults.Rows)
                     {
-                        if (DbAdapter.Cancelled)
+                        if (DbAdapter.IsCancelled)
                         {
                             return FilteredResults;
                         }
@@ -1339,7 +1347,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 for (Int32 Idx = 0; Idx < PostingAccountRecords; Idx++)
                 {
-                    if (DbAdapter.Cancelled)
+                    if (DbAdapter.IsCancelled)
                     {
                         return FilteredResults;
                     }
@@ -1401,7 +1409,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     for (Int32 RowIdx = 0; RowIdx < FilteredResults.DefaultView.Count - 1; RowIdx++)
                     {
-                        if (DbAdapter.Cancelled)
+                        if (DbAdapter.IsCancelled)
                         {
                             return FilteredResults;
                         }
@@ -1443,14 +1451,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     //
                     // If there are any unsummarised rows left after applying the Depth Filter,
                     // I need to summarise them into new "per period" rows (with 12 "Actual" fields), and throw the original rows away.
-                    FilteredResults.DefaultView.RowFilter = "AccountIsSummary=false";
+                    FilteredResults.DefaultView.RowFilter = "AccountIsSummary=false AND Breakdown=false";
                     DataView SummaryView = new DataView(FilteredResults);
                     SummaryView.Sort = "CostCentreCode, AccountTypeOrder, AccountPath ASC";
                     SummaryView.RowFilter = "Breakdown=true";
 
                     foreach (DataRowView rv in FilteredResults.DefaultView)
                     {
-                        if (DbAdapter.Cancelled)
+                        if (DbAdapter.IsCancelled)
                         {
                             return FilteredResults;
                         }
@@ -1474,7 +1482,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 for (Int32 RowIdx = 0; RowIdx < FilteredResults.Rows.Count - 1; RowIdx++)
                 {
-                    if (DbAdapter.Cancelled)
+                    if (DbAdapter.IsCancelled)
                     {
                         return FilteredResults;
                     }
@@ -1654,7 +1662,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                 foreach (DataRow r in resultTable.Rows)
                 {
-                    if (DbAdapter.Cancelled)
+                    if (DbAdapter.IsCancelled)
                     {
                         return resultTable;
                     }

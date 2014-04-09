@@ -38,8 +38,8 @@ namespace {#NAMESPACE}
 
       {#ASSIGNFONTATTRIBUTES}
       
-      {#INITMANUALCODE}      
       {#INITUSERCONTROLS}
+      {#INITMANUALCODE}      
     }
 
     private void TFrmPetra_Closed(object sender, EventArgs e)
