@@ -86,6 +86,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         public static DataTable GetReportDataTable(String AReportType, Dictionary <String, TVariant>AParameters)
         {
             FDbAdapter = new TReportingDbAdapter();
+            TLogging.SetStatusBarProcedure(WriteToStatusBar);
             DataTable ResultTbl = null;
 
             switch (AReportType)
