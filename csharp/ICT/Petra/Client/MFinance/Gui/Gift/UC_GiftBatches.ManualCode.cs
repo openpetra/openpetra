@@ -1399,11 +1399,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FPreviouslySelectedDetailRow.CurrencyCode,
                     effectiveDate);
             }
-                
+
             decimal IntlRateToBatchCurrency = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(FMainDS.ALedger[0].BaseCurrency,
-                                                    FMainDS.ALedger[0].IntlCurrency,
-                                                    startOfMonth,
-                                                    effectiveDate);
+                FMainDS.ALedger[0].IntlCurrency,
+                startOfMonth,
+                effectiveDate);
 
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateCurrencySymbols(ACurrencyCode);
             ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateBaseAmount(false, IntlRateToBatchCurrency);

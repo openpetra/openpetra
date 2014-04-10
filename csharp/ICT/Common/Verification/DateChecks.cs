@@ -60,7 +60,8 @@ namespace Ict.Common.Verification
         private static readonly string StrDateMustNotBeEmpty = Catalog.GetString("{0} must not be empty.");
         private static readonly string StrDateMustNotBePastDate = Catalog.GetString("{0} must not be a past date.");
         private static readonly string StrDateMustNotBeFutureDate = Catalog.GetString("{0} must not be a future date.");
-        private static readonly string StrDateMustNotBeLaterThanFirstDayOfMonth = Catalog.GetString("{0} must not be later than the first day of the month.");
+        private static readonly string StrDateMustNotBeLaterThanFirstDayOfMonth = Catalog.GetString(
+            "{0} must not be later than the first day of the month.");
         private static readonly string StrDateCannotBeLater = Catalog.GetString("{0} cannot be later then {1}.");
         private static readonly string StrDateCannotBeLaterOrEqual = Catalog.GetString("{0} cannot be later than or equal to {1}.");
         private static readonly string StrDateCannotBeEarlier = Catalog.GetString("{0} cannot be earlier than {1}.");

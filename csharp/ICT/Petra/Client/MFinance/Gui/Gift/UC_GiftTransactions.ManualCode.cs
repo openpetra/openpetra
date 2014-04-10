@@ -2263,10 +2263,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             DataView giftDataView = new DataView(FMainDS.AGift);
 
             giftDataView.RowFilter = String.Format("{0}={1} And {2}={3}",
-                    AGiftTable.GetLedgerNumberDBName(),
-                    ledgerNumber,
-                    AGiftTable.GetBatchNumberDBName(),
-                    batchNumber);
+                AGiftTable.GetLedgerNumberDBName(),
+                ledgerNumber,
+                AGiftTable.GetBatchNumberDBName(),
+                batchNumber);
 
             if (giftDataView.Count == 0)
             {
@@ -2274,7 +2274,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
             }
-            else if (FPreviouslySelectedDetailRow != null && FBatchNumber == batchNumber)
+            else if ((FPreviouslySelectedDetailRow != null) && (FBatchNumber == batchNumber))
             {
                 //Rows already active in transaction tab. Need to set current row as code below will not update currently selected row
                 FGLEffectivePeriodChanged = true;
@@ -2303,7 +2303,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Int32 LedgerNumber;
             Int32 CurrentBatchNumber;
 
-            if (!((TFrmGiftBatch)this.ParentForm).GetBatchControl().FBatchLoaded
+            if (!((TFrmGiftBatch) this.ParentForm).GetBatchControl().FBatchLoaded
                 || (GetBatchRow() == null)
                 || (FLedgerNumber == -1)
                 || (GetBatchRow().BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
@@ -2317,7 +2317,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             FExchangeRateToBase = FBatchRow.ExchangeRateToBase;
 
-            if (AUpdateCurrentRowOnly && FPreviouslySelectedDetailRow != null)
+            if (AUpdateCurrentRowOnly && (FPreviouslySelectedDetailRow != null))
             {
                 FPreviouslySelectedDetailRow.GiftAmount = (decimal)txtDetailGiftTransactionAmount.NumberValueDecimal * FExchangeRateToBase;
                 FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftAmount * AInternationalToBaseExchangeRate;
@@ -2331,10 +2331,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 DataView detailView = new DataView(FMainDS.AGift);
 
                 detailView.RowFilter = String.Format("{0}={1} And {2}={3}",
-                                                        AGiftTable.GetLedgerNumberDBName(),
-                                                        LedgerNumber,
-                                                        AGiftTable.GetBatchNumberDBName(),
-                                                        CurrentBatchNumber);
+                    AGiftTable.GetLedgerNumberDBName(),
+                    LedgerNumber,
+                    AGiftTable.GetBatchNumberDBName(),
+                    CurrentBatchNumber);
 
                 if (detailView.Count == 0)
                 {
