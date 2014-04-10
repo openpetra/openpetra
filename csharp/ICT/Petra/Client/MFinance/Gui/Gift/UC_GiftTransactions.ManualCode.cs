@@ -201,6 +201,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     if (FGLEffectivePeriodChanged)
                     {
+                        //Just in case for the currently selected row, the date field has not been updated
                         FGLEffectivePeriodChanged = false;
                         GetSelectedDetailRow().DateEntered = FBatchRow.GlEffectiveDate;
                         dtpDateEntered.Date = FBatchRow.GlEffectiveDate;
@@ -2273,7 +2274,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
             }
-            else if (FPreviouslySelectedDetailRow != null && (FLedgerNumber == ledgerNumber || FBatchNumber == batchNumber))
+            else if (FPreviouslySelectedDetailRow != null && FBatchNumber == batchNumber)
             {
                 //Rows already active in transaction tab. Need to set current row as code below will not update currently selected row
                 FGLEffectivePeriodChanged = true;
