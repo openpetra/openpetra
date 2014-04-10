@@ -40,6 +40,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.MFinance.Validation;
@@ -951,6 +952,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
             else
             {
+                // Older databases may have times that require long format...  Otherwise the data gets 'modified' without us realising
+                //  which leads to all sorts of unwanted warnings ...
+                string strLong = new Ict.Common.TypeConverter.TLongTimeConverter().ConvertTo(ARow.TimeEffectiveFrom, typeof(string)).ToString();
+
+                if (!strLong.EndsWith("00"))
+                {
+                    txtDetailTimeEffectiveFrom.Text = strLong;
+                }
+
                 if (ARow.FromCurrencyCode == ARow.ToCurrencyCode)
                 {
                     ARow.RateOfExchange = 1.0m;
@@ -997,15 +1007,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // Both currencies the same
                 txtDetailRateOfExchange.NumberValueDecimal = 1.0m;
                 txtDetailRateOfExchange.Enabled = false;
+                txtDetailTimeEffectiveFrom.Enabled = false;
                 btnInvertExchangeRate.Enabled = false;
+                btnEnableEdit.Enabled = false;
+
                 btnDelete.Enabled = true;
             }
             else
             {
                 // Currencies differ
                 txtDetailRateOfExchange.Enabled = (FIsCurrentRowStateAdded || FCanEditCurrentRow);
+                txtDetailTimeEffectiveFrom.Enabled = (FIsCurrentRowStateAdded || FCanEditCurrentRow);
                 btnInvertExchangeRate.Enabled = (FIsCurrentRowStateAdded || FCanEditCurrentRow);
                 btnDelete.Enabled = (FIsCurrentRowStateAdded || FCanDeleteCurrentRow);
+
+                btnEnableEdit.Enabled = (!FIsCurrentRowStateAdded && !FCanEditCurrentRow);
             }
         }
 
@@ -1142,8 +1158,54 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 TVerificationResultCollection results = FPetraUtilsObject.VerificationResultCollection;
 
-                TImportExchangeRates.ImportCurrencyExRates(FMainDS.ADailyExchangeRate, "Daily", results);
-                FPetraUtilsObject.SetChangedFlag();
+                int nRowsImported = TImportExchangeRates.ImportCurrencyExRates(FMainDS.ADailyExchangeRate, "Daily", results);
+
+                if (results.Count > 0)
+                {
+                    string formatter;
+
+                    if (nRowsImported == 0)
+                    {
+                        formatter = MCommonResourcestrings.StrExchRateImportNoRows;
+                    }
+                    else if (nRowsImported == 1)
+                    {
+                        formatter = MCommonResourcestrings.StrExchRateImportOneRow;
+                    }
+                    else
+                    {
+                        formatter = MCommonResourcestrings.StrExchRateImportMultiRow;
+                    }
+
+                    formatter += "{0}{0}{1}{0}{0}{3}{0}{0}{4}";
+                    MessageBox.Show(String.Format(formatter,
+                            Environment.NewLine,
+                            results[0].ResultText,
+                            nRowsImported,
+                            MCommonResourcestrings.StrExchRateImportTryAgain,
+                            results[0].ResultCode),
+                        MCommonResourcestrings.StrExchRateImportTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    results.Clear();
+                }
+                else if (nRowsImported == 0)
+                {
+                    MessageBox.Show(MCommonResourcestrings.StrExchRateImportNoRows, MCommonResourcestrings.StrExchRateImportTitle);
+                }
+                else if (nRowsImported == 1)
+                {
+                    MessageBox.Show(MCommonResourcestrings.StrExchRateImportOneRowSuccess, MCommonResourcestrings.StrExchRateImportTitle);
+                }
+                else
+                {
+                    MessageBox.Show(String.Format(MCommonResourcestrings.StrExchRateImportMultiRowSuccess,
+                            nRowsImported), MCommonResourcestrings.StrExchRateImportTitle);
+                }
+
+                if (nRowsImported > 0)
+                {
+                    FPetraUtilsObject.SetChangedFlag();
+                }
             }
         }
 
@@ -1499,7 +1561,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 tInverseItem item = lstInverses[i];
 
                 // Does the item exist already?
-                dv.RowFilter = String.Format(CultureInfo.InvariantCulture, "{0}='{1}' AND {2}='{3}' AND {4}=#{5}# AND {6}={7} AND {8}={9}",
+                dv.RowFilter = String.Format(CultureInfo.InvariantCulture, "{0}='{1}' AND {2}='{3}' AND {4}=#{5}# AND {6}={7}",
                     ADailyExchangeRateTable.GetFromCurrencyCodeDBName(),
                     item.FromCurrencyCode,
                     ADailyExchangeRateTable.GetToCurrencyCodeDBName(),
@@ -1507,9 +1569,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     ADailyExchangeRateTable.GetDateEffectiveFromDBName(),
                     item.DateEffective.ToString("d", CultureInfo.InvariantCulture),
                     ADailyExchangeRateTable.GetTimeEffectiveFromDBName(),
-                    item.TimeEffective,
-                    ADailyExchangeRateTable.GetRateOfExchangeDBName(),
-                    item.RateOfExchange);
+                    item.TimeEffective);
 
                 if (dv.Count == 0)
                 {
@@ -1531,6 +1591,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
         {
             FIsCurrentRowStateAdded = FPreviouslySelectedDetailRow.RowState == DataRowState.Added;
+            SetEnabledStates();
 
             // Just quit if we didn't save our stuff
             if (!e.Success)

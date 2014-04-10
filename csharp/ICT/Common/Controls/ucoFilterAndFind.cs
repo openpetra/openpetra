@@ -771,7 +771,10 @@ namespace Ict.Common.Controls
         /// </summary>
         public void DisplayFilterTab()
         {
-            this.FTabFilterAndFind.SelectedIndex = 0;
+            if (FTabFilterAndFind.TabCount > 0)
+            {
+                this.FTabFilterAndFind.SelectedIndex = 0;
+            }
 
             if (IsCollapsed)
             {
@@ -1717,8 +1720,12 @@ namespace Ict.Common.Controls
 
             pnlFilterControls.GradientStartColor = FFilterColour;
             pnlFilterControls.GradientEndColor = FilterGradientEndColor;
-            FPnlFindControls.GradientStartColor = FFindColour;
-            FPnlFindControls.GradientEndColor = FindGradientEndColor;
+
+            if (FPnlFindControls != null)
+            {
+                FPnlFindControls.GradientStartColor = FFindColour;
+                FPnlFindControls.GradientEndColor = FindGradientEndColor;
+            }
         }
 
         private void ProcessArgumentPanel(Panel AArgumentPanel, int AContainerPanelWidth, bool AContainerPanelIsFindPanel)
@@ -1731,6 +1738,7 @@ namespace Ict.Common.Controls
             TextBox ControlAsTextBox;
             ComboBox ControlAsComboBox;
             CheckBox ControlAsCheckBox;
+            GroupBox ControlAsGroupBox;
             Button ClearArgumentCtrlButton;
             int ControlLeftOfButtonMaxWidth;
             int TopAdjustment = 0;
@@ -1786,6 +1794,25 @@ namespace Ict.Common.Controls
                     ControlAsCheckBox.CheckStateChanged += delegate(object sender, EventArgs e) {
                         OnArgumentCtrlValueChanged(sender, e);
                     };
+                }
+
+                ControlAsGroupBox = ArgumentPanelCtrl as GroupBox;
+
+                if (ControlAsGroupBox != null)
+                {
+                    foreach (Control groupBoxCtrl in ControlAsGroupBox.Controls)
+                    {
+                        if (groupBoxCtrl is RadioButton)
+                        {
+                            ((RadioButton)groupBoxCtrl).CheckedChanged += delegate(object sender, EventArgs e)
+                            {
+                                if (((RadioButton)sender).Checked)
+                                {
+                                    OnArgumentCtrlValueChanged(sender, e);
+                                }
+                            };
+                        }
+                    }
                 }
 
                 // Create an 'argument clear Button' if it wasn't requested to not create one
@@ -2396,6 +2423,7 @@ namespace Ict.Common.Controls
             TextBox SenderAsTextBox;
             CheckBox SenderAsCheckBox;
             ComboBox SenderAsComboBox;
+            RadioButton SenderAsRadioButton;
             object Value = null;
 
             System.Type ValueType = null;
@@ -2407,7 +2435,14 @@ namespace Ict.Common.Controls
 
             if (ArgumentCtrlValueChanged != null)
             {
-                ContainingPanel = (ArgumentControl.Parent.Parent) as Panel;
+                if (ArgumentControl is RadioButton)
+                {
+                    ContainingPanel = (ArgumentControl.Parent.Parent.Parent) as Panel;
+                }
+                else
+                {
+                    ContainingPanel = (ArgumentControl.Parent.Parent) as Panel;
+                }
 
                 if (ContainingPanel != null)
                 {
@@ -2458,6 +2493,14 @@ namespace Ict.Common.Controls
                             Value = SenderAsComboBox.SelectedIndex;
                             ValueType = typeof(System.Int32);
                         }
+                    }
+
+                    SenderAsRadioButton = sender as RadioButton;
+
+                    if (SenderAsRadioButton != null)
+                    {
+                        Value = SenderAsRadioButton.Checked;
+                        ValueType = typeof(Boolean);
                     }
 
                     ArgumentCtrlValueChanged(sender, new TContextEventExtControlValueArgs(Context,

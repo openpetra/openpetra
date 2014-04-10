@@ -6,8 +6,9 @@ based on the source code of SourceGrid as of July 16, 2012
 File SourceGrid.dll:
 --------------------
 Built from the downloaded source code of SourceGrid, plus our changes described above. This is used with OpenPetra!
-The latest version is 4.40.5123.25924, dated 10 January 2014, size 536KB - this fixes all bugs and features below
+The latest version is 4.40.5210.20614, dated 07 April 2014, size 536KB - this fixes all bugs and features below
 
+(Version number 4.40.5123.25924, dated 10 January 2014, size 536KB - this fixed all bugs 1 to 8 below)
 (Version number 4.40.5099.15393, dated 17 December 2013, size 536KB - this fixed all bugs 1 to 7 below)
 (Version number 4.40.5081.39414, dated 29 November 2013, size 536KB - this fixed bugs 1 to 6 below
 (Version number 4.40.5049.27439, dated 28 October 2013, size 536KB - this fixed bugs 1 to 5 below
@@ -50,6 +51,8 @@ There was a bug in the key handler which meant that the TAB, ENTER and ESC keys 
 Made a small change to the grid that fixed an issue when we use this event.  Added an 'if' clause to the grid so that it does not sort a column that is being resized.  Without this change we could not double click a header to auto-Resize it without also sorting it!  The grid handled this in a different way but our use of the new event kind of exposed this grid 'bug'.
 
 ==== 8.  (Jan 2014) Change to fix a strange behaviour whereby when you repeatedly maximized and restored the Open Petra screen the resizing response took progressively longer and longer!  The grid code method PerformStretch() was calling the column autosize method un-necessarily (since it had just been called already by the calling method) and this was taking far too long, so it has been commented out.  Also in this check-in I have made a tweak to a previous fix that always interpreted a mouse click as occurring in column 1.  It now only does that when the selection mode is by row.  We occasionally use the grid selection mode of 'by column' and for that we don't want to force the click to always be column 1!!  Finally, I enabled the use of left and right arrows - but only when in 'by column' selection mode.  In fact this is not required by those screens because they always set the active position to -1,-1 whic renders these keys inoperative.  But one day it might be nice to change OP to support them.
+
+==== 9.  (April 2014)  Just another tweak to the code that can 'force' a mouse click to be on the first column.  It is now forced to be the first VISIBLE column - in the traditional sense of visible rather than view-port visible.  The AP screens make use of setting column 0 visible=false when it is desired to hide the check box column.  This had the unfortuantae result of preventing mouse clicks working at all!
 
 All the changes made for this are commented with // AlanP:
 
