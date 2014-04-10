@@ -2259,28 +2259,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             batchNumber = ABatchRow.BatchNumber;
             batchEffectiveDate = ABatchRow.GlEffectiveDate;
 
-            if (FMainDS.AGift.Rows.Count == 0)
+            DataView giftDataView = new DataView(FMainDS.AGift);
+
+            giftDataView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                    AGiftTable.GetLedgerNumberDBName(),
+                    ledgerNumber,
+                    AGiftTable.GetBatchNumberDBName(),
+                    batchNumber);
+
+            if (giftDataView.Count == 0)
             {
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadTransactions(ledgerNumber, batchNumber));
 
                 ((TFrmGiftBatch)ParentForm).ProcessRecipientCostCentreCodeUpdateErrors(false);
             }
-            else if ((FLedgerNumber == ledgerNumber) || (FBatchNumber == batchNumber))
+            else if (FPreviouslySelectedDetailRow != null && (FLedgerNumber == ledgerNumber || FBatchNumber == batchNumber))
             {
+                //Rows already active in transaction tab. Need to set current row as code below will not update currently selected row
                 FGLEffectivePeriodChanged = true;
-                //Rows already active in transaction tab. Need to set current row ac code below will not update selected row
                 GetSelectedDetailRow().DateEntered = batchEffectiveDate;
             }
 
-            //Update all transactions
-            foreach (AGiftRow giftRow in FMainDS.AGift.Rows)
+            //Update all gift rows in this batch
+            foreach (DataRowView dv in giftDataView)
             {
-                if (giftRow.BatchNumber.Equals(batchNumber) && giftRow.LedgerNumber.Equals(ledgerNumber))
-                {
-                    giftRow.DateEntered = batchEffectiveDate;
-                }
+                AGiftRow giftRow = (AGiftRow)dv.Row;
+                giftRow.DateEntered = batchEffectiveDate;
             }
 
+            //If current row exists then refresh details
             if (FGLEffectivePeriodChanged)
             {
                 ShowDetails();
