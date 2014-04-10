@@ -695,8 +695,8 @@ namespace Ict.Petra.Server.MPartner.Common
                 "PUB_" + PPartnerTable.GetTableDBName() + '.' +
                 PPartnerTable.GetPartnerKeyDBName() + ' ' +
                 "WHERE " + PPersonTable.GetFamilyKeyDBName() + " = ? " +
-                "AND " + PPartnerTable.GetStatusCodeDBName() + " <> " + '"' +
-                SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED) + "\" " +                            // Make sure we don't load MERGED Partners (shouldn't have a p_family_key_n, but just in case.)
+                "AND " + PPartnerTable.GetStatusCodeDBName() + " <> '" +
+                SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED) + "' " +    // Make sure we don't load MERGED Partners (shouldn't have a p_family_key_n, but just in case.)
                 "ORDER BY " + PPersonTable.GetFamilyIdDBName() + " ASC",
                 PPersonTable.GetTableName(), AReadTransaction, ParametersArray, 0, 0);
 

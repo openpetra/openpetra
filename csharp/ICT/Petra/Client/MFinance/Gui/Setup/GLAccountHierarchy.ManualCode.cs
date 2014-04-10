@@ -211,12 +211,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void InsertAlphabetically(TreeNode Parent, TreeNode Child)
         {
             int Idx;
+            AccountNodeDetails ChildTag = (AccountNodeDetails)Child.Tag;
 
-            for (Idx = 0; Idx < Parent.Nodes.Count; Idx++)
+            if (ChildTag.AccountRow.PostingStatus)  // Posting accounts are sorted alphabetically:
             {
-                if (Parent.Nodes[Idx].Text.CompareTo(Child.Text) > 0)
+                for (Idx = 0; Idx < Parent.Nodes.Count; Idx++)
                 {
-                    break;
+                    if (Parent.Nodes[Idx].Text.CompareTo(Child.Text) > 0)
+                    {
+                        break;
+                    }
+                }
+            }
+            else // For summary accounts I need to use the ReportOrder, then alphabetic:
+            {
+                String ChildDescr = ChildTag.DetailRow.ReportOrder.ToString("000") + Child.Text;
+
+                for (Idx = 0; Idx < Parent.Nodes.Count; Idx++)
+                {
+                    AccountNodeDetails SiblingTag = (AccountNodeDetails)Parent.Nodes[Idx].Tag;
+
+                    if ((SiblingTag.DetailRow.ReportOrder.ToString("000") + Child.Text).CompareTo(ChildDescr) > 0)
+                    {
+                        break;
+                    }
                 }
             }
 
@@ -287,9 +305,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             try
             {
                 trvAccounts.AllowDrop = true;
-                trvAccounts.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(treeView_ItemDrag);
-                trvAccounts.DragOver += new System.Windows.Forms.DragEventHandler(treeView_DragOver);
-                trvAccounts.DragDrop += new System.Windows.Forms.DragEventHandler(treeView_DragDrop);
+                trvAccounts.ItemDrag += new ItemDragEventHandler(treeView_ItemDrag);
+                trvAccounts.DragOver += new DragEventHandler(treeView_DragOver);
+                trvAccounts.DragDrop += new DragEventHandler(treeView_DragDrop);
             }
             catch (InvalidOperationException)
             {
@@ -371,7 +389,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + FSelectedHierarchy + "' AND " +
                     AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName() + " = '" + accountHierarchy.RootAccountCode + "'";
 
-                InsertNodeIntoTreeView(trvAccounts.Nodes,
+                DataView view = new DataView(FMainDS.AAccountHierarchyDetail);
+                view.Sort = AAccountHierarchyDetailTable.GetReportOrderDBName() + ", " + AAccountHierarchyDetailTable.GetReportingAccountCodeDBName();
+                InsertNodeIntoTreeView(null,
+                    view,
                     (AAccountHierarchyDetailRow)FMainDS.AAccountHierarchyDetail.DefaultView[0].Row);
             }
 
@@ -386,12 +407,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 new System.Windows.Forms.TreeViewCancelEventHandler(this.TreeViewBeforeSelect);
         }
 
-        private void InsertNodeIntoTreeView(TreeNodeCollection AParentNodes, AAccountHierarchyDetailRow ADetailRow)
+        private void InsertNodeIntoTreeView(TreeNode AParent, DataView view, AAccountHierarchyDetailRow ADetailRow)
         {
             AAccountRow AccountRow = (AAccountRow)FMainDS.AAccount.Rows.Find(
                 new object[] { FLedgerNumber, ADetailRow.ReportingAccountCode });
 
-            TreeNode newNode = AParentNodes.Add(NodeLabel(AccountRow));
+            TreeNode Child = new TreeNode(NodeLabel(AccountRow));
+
 
             AccountNodeDetails NodeTag = new AccountNodeDetails();
 
@@ -407,13 +429,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             NodeTag.IsNew = false;
             NodeTag.AccountRow = AccountRow;
             NodeTag.DetailRow = ADetailRow;
-            newNode.Tag = NodeTag;
+            Child.Tag = NodeTag;
 
-            newNode.Name = newNode.Text;
+            Child.Name = Child.Text;
+
+            if (AParent == null)
+            {
+                trvAccounts.Nodes.Add(Child);
+            }
+            else
+            {
+                InsertAlphabetically(AParent, Child);
+            }
 
             // Now add the children of this node:
-            DataView view = new DataView(FMainDS.AAccountHierarchyDetail);
-            view.Sort = AAccountHierarchyDetailTable.GetReportOrderDBName() + ", " + AAccountHierarchyDetailTable.GetReportingAccountCodeDBName();
             view.RowFilter =
                 AAccountHierarchyDetailTable.GetAccountHierarchyCodeDBName() + " = '" + ADetailRow.AccountHierarchyCode + "' AND " +
                 AAccountHierarchyDetailTable.GetAccountCodeToReportToDBName() + " = '" + ADetailRow.ReportingAccountCode + "'";
@@ -426,7 +455,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 foreach (DataRowView rowView in view)
                 {
                     AAccountHierarchyDetailRow accountDetail = (AAccountHierarchyDetailRow)rowView.Row;
-                    InsertNodeIntoTreeView(newNode.Nodes, accountDetail);
+                    InsertNodeIntoTreeView(Child, view, accountDetail);
                 }
             }
         }

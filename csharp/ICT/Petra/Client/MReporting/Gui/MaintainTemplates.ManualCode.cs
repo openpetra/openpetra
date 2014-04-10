@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             btnSelect.Enabled = (FSelectedRow != null);
             btnDuplicate.Enabled = (FSelectedRow != null);
-            btnDelete.Enabled = (FSelectedRow != null);
+            btnRemove.Enabled = (FSelectedRow != null);
 
             if (FSelectedRow == null)
             {
@@ -75,7 +75,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             chkPrivate.Visible = (!chkDefault.Checked && FSelectedRow.Author == FCurrentUser);
             chkPrivateDefault.Visible = chkPrivate.Checked;
             chkReadonly.Visible = (Control.ModifierKeys == Keys.Control);
-            btnDelete.Enabled = !FSelectedRow.Readonly;
+            btnRemove.Enabled = !FSelectedRow.Readonly;
 
             lblPrivate.Visible = chkPrivate.Visible;
             lblPrivateDefault.Visible = chkPrivateDefault.Visible;
