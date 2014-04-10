@@ -15,7 +15,7 @@ WHERE
         pub_pm_staff_data.pm_status_code_c IN (?) -- Commitment Stati
         OR ? AND pub_pm_staff_data.pm_status_code_c IS NULL -- Include people with no commitment set
         ) )
-    AND (? OR pub_p_partner.p_status_code_c = "ACTIVE") -- Active partners only
+    AND (? OR pub_p_partner.p_status_code_c = 'ACTIVE') -- Active partners only
     AND (? OR NOT pub_p_partner.p_no_solicitations_l) -- Respect no solicitations
 ##address_filter_where_clause##    
 ORDER BY pub_p_partner.p_partner_short_name_c

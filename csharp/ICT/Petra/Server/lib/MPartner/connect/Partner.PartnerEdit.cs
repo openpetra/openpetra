@@ -1604,8 +1604,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             "PUB_" + PPartnerTable.GetTableDBName() + '.' +
                             PPartnerTable.GetPartnerKeyDBName() + ' ' +
                             "WHERE " + PPersonTable.GetFamilyKeyDBName() + " = ? " +
-                            "AND " + PPartnerTable.GetStatusCodeDBName() + " <> " + '"' +
-                            SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED) + '"', ReadTransaction,
+                            "AND " + PPartnerTable.GetStatusCodeDBName() + " <> '" +
+                            SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED) + "'", ReadTransaction,
                             ParametersArray));
 
                     // Make sure we don't count MERGED Partners (shouldn't have a p_family_key_n, but just in case.)
@@ -1635,8 +1635,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                         "PUB_" + PPartnerTable.GetTableDBName() + '.' +
                         PPartnerTable.GetPartnerKeyDBName() + ' ' +
                         "WHERE " + PPersonTable.GetFamilyKeyDBName() + " = ? " +
-                        "AND " + PPartnerTable.GetStatusCodeDBName() + " <> " + '"' +
-                        SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED) + '"',    // Make sure we don't load MERGED Partners (shouldn't have a p_family_key_n, but just in case.)
+                        "AND " + PPartnerTable.GetStatusCodeDBName() + " <> '" +
+                        SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscMERGED) + "'",    // Make sure we don't load MERGED Partners (shouldn't have a p_family_key_n, but just in case.)
                         PPersonTable.GetTableName(), ReadTransaction, ParametersArray, 0, 0);
 
                     ACount = FamilyPersonsDT.Rows.Count;

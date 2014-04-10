@@ -10,6 +10,7 @@ RootNode:
         actGenerateExtract: {Label=Generate &Extract, Tooltip=Generate the extract, Image=Go.gif, ActionClick=FPetraUtilsObject.MI_GenerateExtract_Click}
         actSaveSettingsAs: {Label=Save Settings &As..., Image=SaveAs.ico, ActionClick=FPetraUtilsObject.MI_SaveSettingsAs_Click}
         actSaveSettings: {Label=&Save Settings, Image=Save.ico, ActionClick=FPetraUtilsObject.MI_SaveSettings_Click}
+        actMaintainTemplates: {Label=Select &Template, Image=FastReports.png, ActionClick=FPetraUtilsObject.MI_MaintainTemplates_Click}
         actEditTemplate: {Label=&Edit Report Template, Image=FastReports.png, ActionClick=FPetraUtilsObject.MI_ShowTemplate_Click}
         actLoadSettingsDialog: {Label=&Open..., ActionClick=FPetraUtilsObject.MI_LoadSettingsDialog_Click}
         actLoadSettings: {Label=RecentSettings, ActionClick=FPetraUtilsObject.MI_LoadSettings_Click}
@@ -55,6 +56,7 @@ RootNode:
             mniSaveSettings:
             mniSaveSettingsAs:
             mniMaintainSettings:
+            mniMaintainTemplates: {Visible=false }
             mniEditTemplate: {Visible=false }
             mniSeparator: {Label=-}
             mniWrapColumn:
@@ -66,7 +68,6 @@ RootNode:
         tbbGenerateExtract:
         tbbSaveSettings:
         tbbSaveSettingsAs:
+        tbbMaintainTemplates: {Visible=false }
         tbbEditTemplate: {Visible=false }
-# do we show the last few settings?
         tbbLoadSettingsDialog:
-  # todo:  Add contextmenu for the last 5 used items

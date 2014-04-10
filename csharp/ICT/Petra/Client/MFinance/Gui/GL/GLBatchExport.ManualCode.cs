@@ -196,10 +196,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 if ((!dtpDateFrom.ValidDate()) || (!dtpDateTo.ValidDate()))
                 {
-                    MessageBox.Show(Catalog.GetString("Date Format invalid"),
-                        Catalog.GetString("Error"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
                     return;
                 }
             }

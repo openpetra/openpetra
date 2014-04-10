@@ -124,7 +124,7 @@
 					FROM   
 						PUB_p_partner, PUB_p_partner_type, PUB_p_partner_relationship
 					WHERE  
-							PUB_p_partner_relationship.p_partner_key_n = {ChurchPartnerKey}
+							PUB_p_partner_relationship.p_partner_key_n = {{ChurchPartnerKey}}
 						AND 
 							PUB_p_partner.p_partner_key_n = PUB_p_partner_relationship.p_relation_key_n
 						AND PUB_p_partner_relationship.p_relation_name_c = 'SUPPCHURCH'
@@ -180,7 +180,7 @@
 					FROM
 						PUB_p_partner_type
 					WHERE
-							PUB_p_partner_type.p_partner_key_n = {AssociatedPartnerKey}
+							PUB_p_partner_type.p_partner_key_n = {{AssociatedPartnerKey}}
 						AND (
 							PUB_p_partner_type.p_type_code_c LIKE 'OMER%'
 							OR PUB_p_partner_type.p_type_code_c LIKE 'APPLIED%'
@@ -194,25 +194,25 @@
 		<query>
 			<queryDetail condition="eq({PartnerClass}, PERSON)">
 				<value>
-					SELECT DISTINCT
-						PUB.p_partner.p_partner_short_name_c
-					FROM
-						PUB.p_person, PUB.p_partner
-					WHERE
-							PUB.p_person.p_partner_key_n = {AssociatedPartnerKey}
-						AND PUB.p_partner.p_partner_key_n = PUB.p_person.p_field_key_n
-				</value>
+                    SELECT DISTINCT
+                    PUB.p_partner.p_partner_short_name_c
+                    FROM
+                    PUB.p_person, PUB.p_partner
+                    WHERE
+                    PUB.p_person.p_partner_key_n = {{AssociatedPartnerKey}}
+                    AND PUB.p_partner.p_partner_key_n = PUB.p_person.p_field_key_n
+                </value>
 			</queryDetail>
 			<queryDetail condition="not(eq({PartnerClass}, PERSON))">
 				<value>
-					SELECT DISTINCT
-						PUB.p_partner.p_partner_short_name_c
-					FROM
-						PUB.p_family, PUB.p_partner
-					WHERE
-							PUB.p_family.p_partner_key_n = {AssociatedPartnerKey}
-						AND PUB.p_partner.p_partner_key_n = PUB.p_family.p_field_key_n
-				</value>
+                    SELECT DISTINCT
+                    PUB.p_partner.p_partner_short_name_c
+                    FROM
+                    PUB.p_family, PUB.p_partner
+                    WHERE
+                    PUB.p_family.p_partner_key_n = {{AssociatedPartnerKey}}
+                    AND PUB.p_partner.p_partner_key_n = PUB.p_family.p_field_key_n
+                </value>
 			</queryDetail>
 		</query>
 	</calculation>

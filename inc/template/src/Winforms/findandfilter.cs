@@ -8,10 +8,54 @@ ImageList FFilterImages;
 #endregion
 
 {##FILTERANDFINDMETHODS}
+/// <summary>
+/// This class stores the event arguments that applied to an event handler that could not be completed because of invalid data.
+/// When the data becomes valid the event can be 'replayed' using these stored arguments.
+/// </summary>
+private class TEventArgsInfo
+{
+    private object FSender = null;
+    private EventArgs FEventArgs = null;
+
+    /// <summary>
+    /// Constructor that specifies the arguments that cannot be applied because of invalid data
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    public TEventArgsInfo(object sender, EventArgs e)
+    {
+        FSender = sender;
+        FEventArgs = e;
+    }
+
+    /// <summary>
+    /// Gets the sender
+    /// </summary>
+    public object Sender
+    {
+        get
+        {
+            return FSender;
+        }
+    }
+
+    /// <summary>
+    /// Gets the context
+    /// </summary>
+    public EventArgs EventArgs
+    {
+        get
+        {
+            return FEventArgs;
+        }
+    }
+}
+
 private TFilterPanelControls FFilterPanelControls = new TFilterPanelControls();
 private TFindPanelControls FFindPanelControls = new TFindPanelControls();
 private bool FIsFilterFindInitialised = false;
 private bool FClearingDiscretionaryFilters = false;
+private TEventArgsInfo FFailedValidation_CtrlChangeEventArgsInfo = null;
 private string FCurrentActiveFilter = String.Empty;
 private string FPreviousFilterTooltip = String.Format("{0}{1}{2}", CommonFormsResourcestrings.StrFilterIsHidden, Environment.NewLine, CommonFormsResourcestrings.StrFilterClickToTurnOn);
 
@@ -232,8 +276,14 @@ private void ToggleFilterPanel(System.Object sender, EventArgs e)
 {
     ToggleFilter();
         
-    if (!FucoFilterAndFind.IsCollapsed)
+    // If we have errors we need to focus the invalid control
+    if (FPetraUtilsObject.VerificationResultCollection != null && FPetraUtilsObject.VerificationResultCollection.Count > 0)
     {
+        ((TScreenVerificationResult)FPetraUtilsObject.VerificationResultCollection[0]).ResultControl.Focus();
+    }
+    else if (!FucoFilterAndFind.IsCollapsed)
+    {
+        // No errors so we can focus the first filter/find panel
         if (FucoFilterAndFind.IsFindTabActive)
         {
             FFindPanelControls.FFindPanels[0].PanelControl.Focus();
@@ -318,7 +368,10 @@ void FucoFilterAndFind_FindNextClicked(object sender, TUcoFilterAndFind.TContext
                 if ({#ISMATCHINGROW}(rowView.Row))
                 {
                     SelectRowInGrid(rowNum);
-                    ((Control)sender).Focus();
+                    if (sender != null)
+                    {
+                        ((Control)sender).Focus();
+                    }
                     return;
                 }
             }
@@ -331,7 +384,10 @@ void FucoFilterAndFind_FindNextClicked(object sender, TUcoFilterAndFind.TContext
                 if ({#ISMATCHINGROW}(rowView.Row))
                 {
                     SelectRowInGrid(rowNum);
-                    ((Control)sender).Focus();
+                    if (sender != null)
+                    {
+                        ((Control)sender).Focus();
+                    }
                     return;
                 }
             }
@@ -341,6 +397,12 @@ void FucoFilterAndFind_FindNextClicked(object sender, TUcoFilterAndFind.TContext
 
 void FucoFilterAndFind_ArgumentCtrlValueChanged(object sender, TUcoFilterAndFind.TContextEventExtControlValueArgs e)
 {
+    if (e.Context == TUcoFilterAndFind.EventContext.ecFindPanel)
+    {
+        // No need for any dynamic response on the Find panel
+        return;
+    }
+
     // Something has changed on the filter/find panel
     // If this is the first activation we need to initialise combo boxes because they will now have been populated for the first time
     if ((sender is TUcoFilterAndFind) && !FIsFilterFindInitialised)
@@ -352,19 +414,27 @@ void FucoFilterAndFind_ArgumentCtrlValueChanged(object sender, TUcoFilterAndFind
         FIsFilterFindInitialised = true;
     }
 
+    // We need to call ValidateAllData before applying the new filter,
+    //   but not if it was ValidateAllData that is causing the argumentCtrlValue change by clearing the discretionary filters
+    if (!FClearingDiscretionaryFilters)
+    {
+        if (!ValidateAllData(true, true))
+        {
+            // Remember who called us and why, so we can replay the event when the data becomes valid again
+            FFailedValidation_CtrlChangeEventArgsInfo = new TEventArgsInfo(sender, e);
+            return;
+        }
+    }
+
     // Do we need to update the filter?
     // Yes if
     //  1. the panel is being shown and one or other has no ApplyNow button
     //  2. a control has been changed on a panel with no ApplyNow button
     bool DynamicStandardFilterPanel = (((FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.None) ||
-        (FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.ExtraFilterOnly)) &&
-        ((FucoFilterAndFind.ShowFilterIsAlwaysOnLabel == TUcoFilterAndFind.FilterContext.None) ||
-        (FucoFilterAndFind.ShowFilterIsAlwaysOnLabel == TUcoFilterAndFind.FilterContext.ExtraFilterOnly)));
+        (FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.ExtraFilterOnly)));
 
     bool DynamicExtraFilterPanel = FucoFilterAndFind.IsExtraFilterShown && (((FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.None) ||
-        (FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.StandardFilterOnly)) &&
-        ((FucoFilterAndFind.ShowFilterIsAlwaysOnLabel == TUcoFilterAndFind.FilterContext.None) ||
-        (FucoFilterAndFind.ShowFilterIsAlwaysOnLabel == TUcoFilterAndFind.FilterContext.StandardFilterOnly)));
+        (FucoFilterAndFind.ShowApplyFilterButton == TUcoFilterAndFind.FilterContext.StandardFilterOnly)));
 
     if ((sender is TUcoFilterAndFind) && (pnlFilterAndFind.Width > 0))
     {
@@ -405,13 +475,16 @@ void FucoFilterAndFind_ArgumentCtrlValueChanged(object sender, TUcoFilterAndFind
 
 void FucoFilterAndFind_ApplyFilterClicked(object sender, TUcoFilterAndFind.TContextEventExtControlArgs e)
 {
-    ApplyFilter();
-    int newRowAfterFiltering = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow, FPrevRowChangedRow - 1) + 1;
-    SelectRowInGrid(newRowAfterFiltering == 0 ? FPrevRowChangedRow : newRowAfterFiltering);
-
-    if (sender as TUcoFilterAndFind == null)
+    if (ValidateAllData(true, true))
     {
-        ((Control)sender).Focus();
+        ApplyFilter();
+        int newRowAfterFiltering = grdDetails.DataSourceRowToIndex2(FPreviouslySelectedDetailRow, FPrevRowChangedRow - 1) + 1;
+        SelectRowInGrid(newRowAfterFiltering == 0 ? FPrevRowChangedRow : newRowAfterFiltering);
+
+        if (sender as TUcoFilterAndFind == null)
+        {
+            ((Control)sender).Focus();
+        }
     }
 }
 
@@ -428,7 +501,10 @@ void ApplyFilter()
             FFilterAndFindParameters.ShowFilterIsAlwaysOnLabelContext);
         {#APPLYFILTERMANUAL}
 
-        ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView.RowFilter = FCurrentActiveFilter;
+        if (grdDetails.DataSource != null)        
+        {
+            ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView.RowFilter = FCurrentActiveFilter;
+        }
     }
     catch (Exception)
     {
@@ -446,20 +522,34 @@ void ApplyFilter()
 /// If this is part of a user control, it can be called from the parent
 public void MniFilterFind_Click(object sender, EventArgs e)
 {
-    if (FucoFilterAndFind == null)
+    if (ValidateAllData(true, true))
     {
-        ToggleFilter();
-    }
+        if (FucoFilterAndFind == null)
+        {
+            ToggleFilter();
+        }
 
-    if (((ToolStripMenuItem)sender).Name == "mniEditFind")
-    {
-        FucoFilterAndFind.DisplayFindTab();
-        FFindPanelControls.FFindPanels[0].PanelControl.Focus();
-    }
-    else
-    {
-        FucoFilterAndFind.DisplayFilterTab();
-        FFilterPanelControls.FStandardFilterPanels[0].PanelControl.Focus();
+        if (((ToolStripMenuItem)sender).Name == "mniEditFind")
+        {
+            if (FucoFilterAndFind.IsFindTabShown)
+            {
+                FucoFilterAndFind.DisplayFindTab();
+                FFindPanelControls.FFindPanels[0].PanelControl.Focus();
+
+                if (e is KeyPressEventArgs)
+                {
+                    // Act as if Find button was clicked and use up/down depending on whether F3 or SHIFT+F3
+                    FucoFilterAndFind_FindNextClicked(null,
+                        new TUcoFilterAndFind.TContextEventExtSearchDirectionArgs(
+                            TUcoFilterAndFind.EventContext.ecFindPanel, ((KeyPressEventArgs)e).KeyChar == '-'));
+                }
+            }
+        }
+        else
+        {
+            FucoFilterAndFind.DisplayFilterTab();
+            FFilterPanelControls.FStandardFilterPanels[0].PanelControl.Focus();
+        }
     }
 }
 

@@ -34,20 +34,20 @@ namespace FastReport
     
     private void Data_BeforePrint(object sender, EventArgs e)
     {
-      Int32 AccountLevel = ((Int32)Report.GetColumnValue(&quot;IncomeExpense.accountlevel&quot;));
+      Int32 AccountLevel = ((Int32)Report.GetColumnValue(&quot;BalanceSheet.accountlevel&quot;));
       HeaderBand.Visible = false;
       TransactionBand.Visible = false;
       FooterBand.Visible = false;
       FooterLevel1.Visible = false;
 
-      if(((Boolean)Report.GetColumnValue(&quot;IncomeExpense.haschildren&quot;)))
+      if(((Boolean)Report.GetColumnValue(&quot;BalanceSheet.haschildren&quot;)))
       {
         HeaderBand.Visible = (AccountLevel &gt; 0);
         HeaderAccountNameField.Left = Units.Millimeters * (AccountLevel * 4);
       }
       else
       {
-        if(((Boolean)Report.GetColumnValue(&quot;IncomeExpense.parentfooter&quot;)))
+        if(((Boolean)Report.GetColumnValue(&quot;BalanceSheet.parentfooter&quot;)))
         {
           FooterBand.Visible = (AccountLevel &gt; 1);
           FooterLevel1.Visible = (AccountLevel &lt;= 1);
@@ -66,7 +66,7 @@ namespace FastReport
 }
 </ScriptText>
   <Dictionary>
-    <TableDataSource Name="IncomeExpense" ReferenceName="IncomeExpense" DataType="System.Int32" Enabled="true">
+    <TableDataSource Name="BalanceSheet" ReferenceName="BalanceSheet" DataType="System.Int32" Enabled="true">
       <Column Name="seq" DataType="System.Int32"/>
       <Column Name="accountlevel" DataType="System.Int32"/>
       <Column Name="accountpath" DataType="System.String"/>
@@ -131,29 +131,29 @@ namespace FastReport
       <TextObject Name="Text47" Left="463.05" Width="47.25" Height="18.9" Exportable="false" Text="Var.%" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
       <TextObject Name="Text48" Left="699.3" Width="56.7" Height="18.9" Exportable="false" Text="Var.%" HorzAlign="Right" Font="Arial, 10pt, style=Bold, Italic"/>
     </PageHeaderBand>
-    <GroupHeaderBand Name="AccountTypeGroup" Top="94.04" Width="1047.06" KeepChild="true" KeepWithData="true" Condition="[IncomeExpense.accounttype]" SortOrder="None">
-      <DataBand Name="TransactionBand" Top="98.53" Width="1047.06" Height="18.9" BeforePrintEvent="Data_BeforePrint" KeepChild="true" DataSource="IncomeExpense">
-        <TextObject Name="ActualField" Left="274.05" Width="94.5" Height="18.9" Text="[IncomeExpense.actual]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt" Trimming="EllipsisCharacter"/>
-        <TextObject Name="ActualYTDField" Left="510.3" Width="94.5" Height="18.9" Text="[IncomeExpense.actualytd]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt" Trimming="EllipsisCharacter"/>
-        <TextObject Name="VarianceField" Left="463.05" Width="47.25" Height="18.9" Exportable="false" Text="[variance([IncomeExpense.actual],[IncomeExpense.actual])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt"/>
-        <TextObject Name="VarianceYTDField" Left="699.3" Width="56.7" Height="18.9" Exportable="false" Text="[variance([IncomeExpense.actualytd],[IncomeExpense.actualytd])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt"/>
-        <TextObject Name="AccountCodeField" Left="45.36" Width="56.7" Height="18.9" Text="[IncomeExpense.accountcode]" Padding="0, 0, 0, 0" AutoShrink="FontSize" AutoShrinkMinSize="7" WordWrap="false" Font="Arial, 9pt"/>
-        <TextObject Name="AccountNameField" Left="102.06" Width="207.9" Height="18.9" Text="[IncomeExpense.accountname]" Padding="0, 0, 2, 0" Font="Arial, 9pt"/>
+    <GroupHeaderBand Name="AccountTypeGroup" Top="94.04" Width="1047.06" KeepChild="true" KeepWithData="true" Condition="[BalanceSheet.accounttype]" SortOrder="None">
+      <DataBand Name="TransactionBand" Top="98.53" Width="1047.06" Height="18.9" BeforePrintEvent="Data_BeforePrint" KeepChild="true" DataSource="BalanceSheet">
+        <TextObject Name="ActualField" Left="274.05" Width="94.5" Height="18.9" Text="[BalanceSheet.actual]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt" Trimming="EllipsisCharacter"/>
+        <TextObject Name="ActualYTDField" Left="510.3" Width="94.5" Height="18.9" Text="[BalanceSheet.actualytd]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt" Trimming="EllipsisCharacter"/>
+        <TextObject Name="VarianceField" Left="463.05" Width="47.25" Height="18.9" Exportable="false" Text="[variance([BalanceSheet.actual],[BalanceSheet.actual])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt"/>
+        <TextObject Name="VarianceYTDField" Left="699.3" Width="56.7" Height="18.9" Exportable="false" Text="[variance([BalanceSheet.actualytd],[BalanceSheet.actualytd])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt"/>
+        <TextObject Name="AccountCodeField" Left="45.36" Width="56.7" Height="18.9" Text="[BalanceSheet.accountcode]" Padding="0, 0, 0, 0" AutoShrink="FontSize" AutoShrinkMinSize="7" WordWrap="false" Font="Arial, 9pt"/>
+        <TextObject Name="AccountNameField" Left="102.06" Width="207.9" Height="18.9" Text="[BalanceSheet.accountname]" Padding="0, 0, 2, 0" Font="Arial, 9pt"/>
         <ChildBand Name="HeaderBand" Top="121.93" Width="1047.06" Height="18.9" Visible="false">
-          <TextObject Name="HeaderAccountNameField" Left="30.24" Width="217.35" Height="18.9" Text="[IncomeExpense.accountname]:" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
+          <TextObject Name="HeaderAccountNameField" Left="30.24" Width="217.35" Height="18.9" Text="[BalanceSheet.accountname]:" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
           <ChildBand Name="FooterBand" Top="145.32" Width="1047.06" Height="18.9" Visible="false">
-            <TextObject Name="FooterActualField" Left="274.05" Width="94.5" Height="18.9" Text="[IncomeExpense.actual]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray" Trimming="EllipsisCharacter"/>
-            <TextObject Name="FooterActualYTDField" Left="510.3" Width="94.5" Height="18.9" Text="[IncomeExpense.actualytd]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray" Trimming="EllipsisCharacter"/>
-            <TextObject Name="FooterVarianceField" Left="463.05" Width="47.25" Height="18.9" Exportable="false" Text="[variance([IncomeExpense.actual],[IncomeExpense.actual])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray"/>
-            <TextObject Name="FooterVarianceYTDField" Left="699.3" Width="56.7" Height="18.9" Exportable="false" Text="[variance([IncomeExpense.actualytd],[IncomeExpense.actualytd])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray"/>
-            <TextObject Name="FooterAccountNameField" Left="56.7" Width="207.9" Height="18.9" Text="Total [IncomeExpense.accountname]" Padding="0, 0, 2, 0" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray" Trimming="EllipsisCharacter"/>
-            <TextObject Name="FooterAccountCodeField" Width="56.7" Height="18.9" Text="[IncomeExpense.accountcode]" Padding="0, 0, 0, 0" AutoShrink="FontSize" AutoShrinkMinSize="7" WordWrap="false" Font="Arial, 9pt" TextFill.Color="DarkGray"/>
+            <TextObject Name="FooterActualField" Left="274.05" Width="94.5" Height="18.9" Text="[BalanceSheet.actual]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray" Trimming="EllipsisCharacter"/>
+            <TextObject Name="FooterActualYTDField" Left="510.3" Width="94.5" Height="18.9" Text="[BalanceSheet.actualytd]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray" Trimming="EllipsisCharacter"/>
+            <TextObject Name="FooterVarianceField" Left="463.05" Width="47.25" Height="18.9" Exportable="false" Text="[variance([BalanceSheet.actual],[BalanceSheet.actual])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray"/>
+            <TextObject Name="FooterVarianceYTDField" Left="699.3" Width="56.7" Height="18.9" Exportable="false" Text="[variance([BalanceSheet.actualytd],[BalanceSheet.actualytd])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray"/>
+            <TextObject Name="FooterAccountNameField" Left="56.7" Width="207.9" Height="18.9" Text="Total [BalanceSheet.accountname]" Padding="0, 0, 2, 0" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" WordWrap="false" Font="Arial, 9pt, style=Bold" TextFill.Color="DarkGray" Trimming="EllipsisCharacter"/>
+            <TextObject Name="FooterAccountCodeField" Width="56.7" Height="18.9" Text="[BalanceSheet.accountcode]" Padding="0, 0, 0, 0" AutoShrink="FontSize" AutoShrinkMinSize="7" WordWrap="false" Font="Arial, 9pt" TextFill.Color="DarkGray"/>
             <ChildBand Name="FooterLevel1" Top="168.72" Width="1047.06" Height="28.35">
-              <TextObject Name="Level1ActualField" Left="274.05" Width="94.5" Height="18.9" Text="[IncomeExpense.actual]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
-              <TextObject Name="Level1ActualYTDField" Left="510.3" Width="94.5" Height="18.9" Text="[IncomeExpense.actualytd]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
-              <TextObject Name="Level1VarianceField" Left="463.05" Width="47.25" Height="18.9" Exportable="false" Text="[variance([IncomeExpense.actual],[IncomeExpense.actual])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold"/>
-              <TextObject Name="Level1VarianceYTDField" Left="699.3" Width="56.7" Height="18.9" Exportable="false" Text="[variance([IncomeExpense.actualytd],[IncomeExpense.actualytd])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold"/>
-              <TextObject Name="Level1AccountNameField" Width="207.9" Height="18.9" Text="[IncomeExpense.accountname]" Padding="0, 0, 2, 0" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" WordWrap="false" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
+              <TextObject Name="Level1ActualField" Left="274.05" Width="94.5" Height="18.9" Text="[BalanceSheet.actual]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
+              <TextObject Name="Level1ActualYTDField" Left="510.3" Width="94.5" Height="18.9" Text="[BalanceSheet.actualytd]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
+              <TextObject Name="Level1VarianceField" Left="463.05" Width="47.25" Height="18.9" Exportable="false" Text="[variance([BalanceSheet.actual],[BalanceSheet.actual])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold"/>
+              <TextObject Name="Level1VarianceYTDField" Left="699.3" Width="56.7" Height="18.9" Exportable="false" Text="[variance([BalanceSheet.actualytd],[BalanceSheet.actualytd])]" Format="Number" Format.UseLocale="false" Format.DecimalDigits="0" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="1" HorzAlign="Right" WordWrap="false" Font="Arial, 9pt, style=Bold"/>
+              <TextObject Name="Level1AccountNameField" Width="207.9" Height="18.9" Text="[BalanceSheet.accountname]" Padding="0, 0, 2, 0" Format="Number" Format.UseLocale="false" Format.DecimalDigits="2" Format.DecimalSeparator="." Format.GroupSeparator="," Format.NegativePattern="0" WordWrap="false" Font="Arial, 9pt, style=Bold" Trimming="EllipsisCharacter"/>
             </ChildBand>
           </ChildBand>
         </ChildBand>

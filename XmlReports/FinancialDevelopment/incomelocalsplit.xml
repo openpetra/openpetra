@@ -118,7 +118,7 @@
 						     PUB_a_cost_centre AS costcentre,
 						     PUB_a_account AS account
 						WHERE batch.a_ledger_number_i = {{param_ledger_number_i}}
-						AND batch.a_batch_status_c = "Posted"
+						AND batch.a_batch_status_c = 'Posted'
 						AND batch.a_gl_effective_date_d BETWEEN {#param_start_date_ytd#} AND {#param_end_date#}
 						AND detail.a_ledger_number_i = batch.a_ledger_number_i
 						AND detail.a_batch_number_i = batch.a_batch_number_i
@@ -161,7 +161,7 @@
 						     PUB_a_gift_batch as batch, 
 						     PUB_a_cost_centre AS costcentre
 						WHERE batch.a_ledger_number_i = {{param_ledger_number_i}}
-						AND batch.a_batch_status_c = "Posted"
+						AND batch.a_batch_status_c = 'Posted'
 						AND batch.a_gl_effective_date_d BETWEEN {#param_start_date#} AND {#param_end_date#}
 						AND detail.a_ledger_number_i = batch.a_ledger_number_i
 						AND detail.a_batch_number_i = batch.a_batch_number_i

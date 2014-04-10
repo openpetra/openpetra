@@ -431,23 +431,29 @@ namespace Ict.Petra.Server.MCommon
             // create temp table
             FTmpDataTable = new DataTable(FFindParameters.FPagedTable + "_for_paging");
 
-            // Fill temporary table with query results (all records)
-            FDataAdapter = null;
-            DBAccess.GDBAccessObj.PrepareNextCommand();
-            DBAccess.GDBAccessObj.SetTimeoutForNextCommand(60);
+            TDBTransaction transaction;
+            Boolean NewTransaction = false;
 
-            FDataAdapter = (DbDataAdapter)DBAccess.GDBAccessObj.SelectDA(FSelectSQL, null, FFindParameters.FParametersArray);
-
-            if ((FFindParameters.FColumNameMapping != null) && (FDataAdapter != null))
-            {
-                PerformColumnNameMapping();
-            }
-
-            //
-            // Actual DB call for execution of SELECT query
-            //
             try
             {
+                transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+                // Fill temporary table with query results (all records)
+                FDataAdapter = null;
+                DBAccess.GDBAccessObj.PrepareNextCommand();
+                DBAccess.GDBAccessObj.SetTimeoutForNextCommand(60);
+
+                FDataAdapter = (DbDataAdapter)DBAccess.GDBAccessObj.SelectDA(FSelectSQL, transaction, FFindParameters.FParametersArray);
+
+                if ((FFindParameters.FColumNameMapping != null) && (FDataAdapter != null))
+                {
+                    PerformColumnNameMapping();
+                }
+
+                //
+                // Actual DB call for execution of SELECT query
+                //
                 FTotalRecords = FDataAdapter.Fill(FTmpDataTable);
             }
             catch (NpgsqlException Exp)
@@ -473,6 +479,13 @@ namespace Ict.Petra.Server.MCommon
                 FAsyncExecProgress.ProgressState = TAsyncExecProgressState.Aeps_Stopped;
 
                 return;
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
             }
 
             /*
@@ -685,8 +698,6 @@ namespace Ict.Petra.Server.MCommon
             }
         }
 
-        #region TPagedDataSet.TAsyncFindParameters
-
         /**
          * Nested Class for passing in of parameters.
          *
@@ -758,9 +769,8 @@ namespace Ict.Petra.Server.MCommon
                 FParametersGivenSeparately = false;
             }
         }
-        #endregion
-        #endregion
     }
+    #endregion
 
     #region TAsynchronousExecutionProgress
 
@@ -1170,7 +1180,78 @@ namespace Ict.Petra.Server.MCommon
 
             return outcome;
         }
+    }
+    #endregion
 
-        #endregion
+    /// <summary>Reporting Query with Cancel Option</summary>
+    public class TReportingDbAdapter
+    {
+        private Boolean FCancelFlag = false;
+        private DbDataAdapter FDataAdapter;
+
+        /// <summary>
+        /// Cancels any reporting query that's running right now,
+        /// and effectively short-circuits any subsequent queries made using this object.
+        /// </summary>
+        public void CancelQuery()
+        {
+            if (!FCancelFlag)
+            {
+                FCancelFlag = true;
+                try
+                {
+                    FDataAdapter.SelectCommand.Cancel();
+                }
+                catch (Exception ex)
+                {
+                    TLogging.Log("Exception occured in ReportingQueryCancel: " + ex.Message);
+                }
+            }
+        }
+
+        /// <summary>Check this before assuming that the query returned a good result!</summary>
+        public Boolean IsCancelled
+        {
+            get
+            {
+                return FCancelFlag;
+            }
+        }
+
+        /// <summary>
+        /// Run this Database query.
+        /// if FReportingQueryCancelFlag is set, this returns immediately with an empty table.
+        /// The query can be cancelled WHILE IT IS RUNNING. In this case the returned table may be partially filled.
+        /// </summary>
+        /// <returns>DataTable. May be empty (with no fields even defined) if cancel happens or has happened.</returns>
+        public DataTable RunQuery(String Query, String TableName, TDBTransaction Trans)
+        {
+            DataTable resultTable = new DataTable(TableName);
+
+            if (!FCancelFlag)
+            {
+                try
+                {
+                    FDataAdapter = DBAccess.GDBAccessObj.SelectDA(Query, Trans, null);
+                    FDataAdapter.Fill(resultTable);
+                }
+                catch (Exception ex)
+                {
+                    TLogging.Log("ReportingQueryWithCancelOption: Query Raised exception:" + ex.Message);
+
+                    /*
+                     *     WE MUST 'SWALLOW' ANY EXCEPTION HERE, OTHERWISE THE WHOLE
+                     *     PETRASERVER WILL GO DOWN!!! (THIS BEHAVIOUR IS NEW WITH .NET 2.0.)
+                     *
+                     * --> ANY EXCEPTION THAT WOULD LEAVE THIS METHOD WOULD BE SEEN AS AN   <--
+                     * --> UNHANDLED EXCEPTION IN A THREAD, AND THE .NET/MONO RUNTIME       <--
+                     * --> WOULD BRING DOWN THE WHOLE PETRASERVER PROCESS AS A CONSEQUENCE. <--
+                     *
+                     */
+                }
+            }
+
+            return resultTable;
+        }
     }
 }

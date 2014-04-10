@@ -177,6 +177,51 @@ namespace Ict.Petra.Client.MCommon
 
         #endregion
 
+        #region Finance Strings
+        /// <summary>todoComment</summary>
+        public static readonly string StrFinanceEditCalendarTitle = Catalog.GetString("Edit Calendar");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrFinanceViewCalendarTitle = Catalog.GetString("View Calendar");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrFinanceSaveBeforeEditCalendar = Catalog.GetString(
+            "Please save modified data on this screen before editing the calendar.");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrFinanceSaveByUsingApply = Catalog.GetString(
+            "You can save the modified data at any time by clicking the 'Apply' button.");
+
+
+        #endregion
+        #region Exchange rate Import strings
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrExchRateImportTitle = Catalog.GetString("Import Exchange Rates");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrExchRateImportNoRows = Catalog.GetString("No rows were imported.");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrExchRateImportOneRow = Catalog.GetString("1 row was imported.");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrExchRateImportMultiRow = Catalog.GetString(
+            "{2} rows were imported (including inverse rates where required).");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrExchRateImportTryAgain = Catalog.GetString(
+            "You should attempt to fix the problem and try the Import again.  If you re-import the same file you will not get duplicate records of the data already imported.");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrExchRateImportOneRowSuccess = Catalog.GetString("1 row was imported successfully.");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrExchRateImportMultiRowSuccess = Catalog.GetString(
+            "{0} row(s) were imported successfully (including inverse rates where required).");
+
+        #endregion
+
         #region Singular/Plural string pairs (no Catalog.GetString())
 
         /// <summary>todoComment</summary>

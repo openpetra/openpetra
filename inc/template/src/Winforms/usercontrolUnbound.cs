@@ -23,6 +23,10 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+{#IFDEF FILTERANDFIND}
+using Ict.Petra.Client.MCommon;
+using Ict.Petra.Client.CommonControls;
+{#ENDIF FILTERANDFIND}
 {#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
@@ -44,6 +48,9 @@ namespace {#NAMESPACE}
     
     {#DYNAMICTABPAGEUSERCONTROLDECLARATION}
 {#ENDIF TABPAGECTRL}
+{#IFDEF FILTERANDFIND}
+    {#FILTERANDFINDDECLARATIONS}
+{#ENDIF FILTERANDFIND}
    
     /// constructor
     public {#CLASSNAME}() : base()
@@ -152,6 +159,9 @@ namespace {#NAMESPACE}
         FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 {#ENDIF ACTIONENABLING}
         {#INITMANUALCODE}
+{#IFDEF FILTERANDFIND}
+        SetupFilterAndFindControls();
+{#ENDIF FILTERANDFIND}
     }
     
     {#EVENTHANDLERSIMPLEMENTATION}
@@ -162,6 +172,19 @@ namespace {#NAMESPACE}
     public void RunOnceOnActivation()
     {
         {#RUNONCEINTERFACEIMPLEMENTATION}
+    }
+
+    /// auto generated
+    public void RunOnceOnParentActivation()
+    {
+{#IFDEF FILTERANDFIND}
+        if (FFilterAndFindParameters.FindAndFilterInitiallyExpanded)
+        {
+            FFilterPanelControls.InitialiseComboBoxes();
+            FFindPanelControls.InitialiseComboBoxes();
+        }
+{#ENDIF FILTERANDFIND}    
+        {#RUNONCEONPARENTACTIVATIONMANUAL}    
     }
 
     /// <summary>
@@ -190,6 +213,21 @@ namespace {#NAMESPACE}
         return (TFrmPetraUtils)FPetraUtilsObject;
     }
 #endregion
+{#IFDEF FILTERANDFIND}
+
+#region Filter and Find
+    {#FILTERANDFINDMETHODS}
+
+    // Dummy method that prevents build message of 'declared but never used'
+    private void ControlValidatedHandler(object sender, EventArgs e)
+    {
+        if (FFailedValidation_CtrlChangeEventArgsInfo != null)
+        {
+            FFailedValidation_CtrlChangeEventArgsInfo = null;
+        }
+    }
+#endregion
+{#ENDIF FILTERANDFIND}    
 {#IFDEF ACTIONENABLING}
 
 #region Action Handling
@@ -208,10 +246,29 @@ namespace {#NAMESPACE}
 {#IFDEF TABPAGECTRL}
     {#DYNAMICTABPAGEBASICS}
 {#ENDIF TABPAGECTRL}
+
+#region Keyboard handler
+
+    /// Our main keyboard handler
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+{#IFDEF FILTERANDFIND}
+        {#PROCESSCMDKEYCTRLF}
+        {#PROCESSCMDKEYCTRLR}
+{#ENDIF FILTERANDFIND}
+        {#PROCESSCMDKEY}    
+        {#PROCESSCMDKEYMANUAL}    
+
+        return base.ProcessCmdKey(ref msg, keyData);
+    }
+
+#endregion
+
   }
 }
 
 {#INCLUDE copyvalues.cs}
+{#INCLUDE findandfilter.cs}
 
 {#INCLUDE dynamictabpage_basics.cs}
 {#INCLUDE dynamictabpage_usercontrol_selectionchanged.cs}

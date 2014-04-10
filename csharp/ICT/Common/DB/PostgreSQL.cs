@@ -175,11 +175,10 @@ namespace Ict.Common.DB
         {
             string ReturnValue = ASqlQuery;
 
-            ReturnValue = ReturnValue.Replace("PUB_", "public.");
-            ReturnValue = ReturnValue.Replace("PUB.", "public.");
-            ReturnValue = ReturnValue.Replace("pub_", "public.");
-            ReturnValue = ReturnValue.Replace("pub.", "public.");
-            ReturnValue = ReturnValue.Replace("\"", "'");
+            ReturnValue = Regex.Replace(ReturnValue, "PUB_|PUB\\.", "public.", RegexOptions.IgnoreCase);
+
+//          ReturnValue = ReturnValue.Replace("\"", "'");   // I guess this was intended to ensure that single quotes are used for literals,
+            //  but it also changes quotes within strings!  (Tim Ingham, March 2014)
 
             // INSERT INTO table () VALUES
             ReturnValue = ReturnValue.Replace("() VALUES", " VALUES");
@@ -323,6 +322,13 @@ namespace Ict.Common.DB
                             ReturnValue[Counter] = new NpgsqlParameter(
                             ParamName,
                             NpgsqlDbType.Bigint);
+
+                            break;
+
+                        case OdbcType.Text:
+                            ReturnValue[Counter] = new NpgsqlParameter(
+                            ParamName,
+                            NpgsqlDbType.Text);
 
                             break;
 

@@ -97,7 +97,7 @@
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
 							AND gift.a_date_entered_d BETWEEN {#param_start_date#} AND {#param_end_date#}
 							AND batch.a_ledger_number_i = {{param_ledger_number_i}}
-							AND batch.a_batch_status_c = "Posted"
+							AND batch.a_batch_status_c = 'Posted'
 							AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n 
 							GROUP BY gift.p_donor_key_n, PUB_p_partner.p_partner_short_name_c, PUB_p_partner.p_partner_class_c
 						</value>

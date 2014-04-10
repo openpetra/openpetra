@@ -65,7 +65,7 @@
                         PUB_p_unit.p_partner_key_n AS UnitRootKey,
                         PUB_p_unit.p_unit_name_c AS UnitName
                     FROM PUB_p_unit
-                    WHERE PUB_p_unit.u_unit_type_code_c = &quot;R&quot;
+                    WHERE PUB_p_unit.u_unit_type_code_c = 'R'
                     
 </value>
         </queryDetail>
@@ -240,7 +240,7 @@
             
             
                             detail.a_recipient_ledger_number_n = 0
-                            AND costcentre.a_cost_centre_type_c = &apos;Local&apos;
+                            AND costcentre.a_cost_centre_type_c = 'Local'
                             
           </value>
         </queryDetail>

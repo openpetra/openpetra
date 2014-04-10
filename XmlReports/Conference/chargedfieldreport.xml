@@ -191,24 +191,24 @@
                             AND PUB_pm_general_application.pm_registration_office_n = PUB_pm_short_term_application.pm_registration_office_n
                             AND NOT PUB_pm_general_application.pm_gen_app_delete_flag_l = 1
                             
-                            AND (   PUB_pm_short_term_application.pm_st_field_charged_n = {ChargedOffice}
+                            AND (   PUB_pm_short_term_application.pm_st_field_charged_n = {{ChargedOffice}}
                                     OR  (PUB_pm_short_term_application.pm_st_field_charged_n IS NULL
                     </value></queryDetail>
                     <queryDetail condition="eq({param_cmbChargedFields}, leave data as it is)"><value>
                     <!-- nothing to do -->
                     </value></queryDetail>
                     <queryDetail condition="eq({param_cmbChargedFields}, charge Sending Field)"><value>
-                                    AND PUB_pc_attendee.pc_home_office_key_n = {ChargedOffice}
+                                    AND PUB_pc_attendee.pc_home_office_key_n = {{ChargedOffice}}
                     </value></queryDetail>
                     <queryDetail condition="eq({param_cmbChargedFields}, charge Receiving Field)"><value>
                                     AND (   
-                                            ( PUB_p_person.p_field_key_n = {ReceivingField})
+                                            ( PUB_p_person.p_field_key_n = {{ReceivingField}})
                                             OR ( PUB_p_person.p_field_key_n = 0
-                                                AND PUB_p_family.p_field_key_n = {ReceivingField})
+                                                AND PUB_p_family.p_field_key_n = {{ReceivingField}})
                                         )
                     </value></queryDetail>
                     <queryDetail condition="eq({param_cmbChargedFields}, charge Registering Field)"><value>
-                                    AND PUB_pm_short_term_application.pm_registration_office_n = {ChargedOffice}
+                                    AND PUB_pm_short_term_application.pm_registration_office_n = {{ChargedOffice}}
                     </value></queryDetail>
                     <queryDetail><value>
                                     )

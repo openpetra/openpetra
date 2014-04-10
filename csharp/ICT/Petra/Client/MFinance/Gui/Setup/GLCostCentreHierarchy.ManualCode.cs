@@ -154,8 +154,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             txtDetailCostCentreCode.Leave += new EventHandler(UpdateOnControlChanged);
             txtDetailCostCentreName.Leave += new EventHandler(UpdateOnControlChanged);
-            chkDetailCostCentreActiveFlag.CheckedChanged += new System.EventHandler(UpdateOnControlChanged);
-            cmbDetailCostCentreType.SelectedIndexChanged += new System.EventHandler(UpdateOnControlChanged);
+            chkDetailCostCentreActiveFlag.CheckedChanged += new EventHandler(UpdateOnControlChanged);
+            cmbDetailCostCentreType.SelectedIndexChanged += new EventHandler(UpdateOnControlChanged);
             FPetraUtilsObject.ControlChanged += new TValueChangedHandler(FPetraUtilsObject_ControlChanged);
             FIAmUpdating = false;
             FnameForNewCostCentre = Catalog.GetString("NEWCOSTCENTRE");
@@ -168,9 +168,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             try
             {
                 trvCostCentres.AllowDrop = true;
-                trvCostCentres.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(treeView_ItemDrag);
-                trvCostCentres.DragOver += new System.Windows.Forms.DragEventHandler(treeView_DragOver);
-                trvCostCentres.DragDrop += new System.Windows.Forms.DragEventHandler(treeView_DragDrop);
+                trvCostCentres.ItemDrag += new ItemDragEventHandler(treeView_ItemDrag);
+                trvCostCentres.DragOver += new DragEventHandler(treeView_DragOver);
+                trvCostCentres.DragDrop += new DragEventHandler(treeView_DragDrop);
             }
             catch (InvalidOperationException)
             {
@@ -408,7 +408,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FMainDS.ACostCentre.DefaultView.RowFilter =
                 ACostCentreTable.GetCostCentreToReportToDBName() + " IS NULL";
 
-            InsertNodeIntoTreeView(trvCostCentres.Nodes,
+            DataView view = new DataView(FMainDS.ACostCentre);
+            view.Sort = ACostCentreTable.GetCostCentreCodeDBName();
+
+            InsertNodeIntoTreeView(null,
+                view,
                 (ACostCentreRow)FMainDS.ACostCentre.DefaultView[0].Row);
 
             FMainDS.ACostCentre.DefaultView.RowFilter = "";
@@ -475,9 +479,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             return NodeLabel(ADetailRow.CostCentreCode, ADetailRow.CostCentreName);
         }
 
-        private void InsertNodeIntoTreeView(TreeNodeCollection AParentNodes, ACostCentreRow ADetailRow)
+        private void InsertNodeIntoTreeView(TreeNode AParent, DataView view, ACostCentreRow ADetailRow)
         {
-            TreeNode newNode = AParentNodes.Add(NodeLabel(ADetailRow));
+            TreeNode newNode = new TreeNode(NodeLabel(ADetailRow));
 
             newNode.Name = NodeLabel(ADetailRow);
             CostCentreNodeDetails NewNodeDetails = new CostCentreNodeDetails();
@@ -485,14 +489,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             NewNodeDetails.IsNew = false;
             newNode.Tag = NewNodeDetails;
 
-            DataView view = new DataView(FMainDS.ACostCentre);
-            view.Sort = ACostCentreTable.GetCostCentreCodeDBName();
+            if (AParent == null)
+            {
+                trvCostCentres.Nodes.Add(newNode);
+            }
+            else
+            {
+                InsertAlphabetically(AParent, newNode);
+            }
+
             view.RowFilter =
                 ACostCentreTable.GetCostCentreToReportToDBName() + " = '" + ADetailRow.CostCentreCode + "'";
 
             foreach (DataRowView rowView in view)
             {
-                InsertNodeIntoTreeView(newNode.Nodes, (ACostCentreRow)rowView.Row);
+                InsertNodeIntoTreeView(newNode, view, (ACostCentreRow)rowView.Row);
             }
         }
 

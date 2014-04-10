@@ -53,8 +53,8 @@
             <CustomField name="ChurchPhone" type="string" comment="Phone of *this* supporting church of the PERSON"/>
             <CustomField name="ChurchPastor" type="string" comment="Pastor of *this* supporting church of the PERSON"/>
             <CustomField name="ChurchPastorsPhone" type="string" comment="Phone of *this* pastor of *this* supporting church of the PERSON"/>
-            <CustomField name="NumberOfShownSupportingChurchPastors" type="int" comment="Number of pastors at *this* supporting church of the PERSON"/>
-            <CustomField name="NumberOfShownSupportingChurches" type="int" comment="Number of supporting churches of the PERSON"/>
+            <CustomField name="NumberOfShownSupportingChurchPastors" type="Int32" comment="Number of pastors at *this* supporting church of the PERSON"/>
+            <CustomField name="NumberOfShownSupportingChurches" type="Int32" comment="Number of supporting churches of the PERSON"/>
             
             <PrimaryKey thisFields="PartnerKey"/>           
         </CustomTable>

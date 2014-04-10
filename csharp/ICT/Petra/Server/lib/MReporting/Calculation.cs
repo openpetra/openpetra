@@ -941,9 +941,9 @@ namespace Ict.Petra.Server.MReporting
                                     //if (new TVariant(value).TypeVariant == eVariantTypes.eString)
                                     if (!ValueIsNumber || ValueIsText)
                                     {
-                                        ReturnValue.Add(new TVariant(StringHelper.GetNextCSV(ref listText).Trim() + " = \""));
+                                        ReturnValue.Add(new TVariant(StringHelper.GetNextCSV(ref listText).Trim() + " = '"));
                                         ReturnValue.Add(new TVariant(value));
-                                        ReturnValue.Add(new TVariant("\" "));
+                                        ReturnValue.Add(new TVariant("' "));
                                     }
                                     else
                                     {
@@ -964,9 +964,9 @@ namespace Ict.Petra.Server.MReporting
                                 if ((ValueIsText || (new TVariant(value).TypeVariant == eVariantTypes.eString))
                                     && !ValueIsNumber)
                                 {
-                                    ReturnValue.Add(new TVariant(' ' + rptValue.strText + " = \""));
+                                    ReturnValue.Add(new TVariant(' ' + rptValue.strText + " = '"));
                                     ReturnValue.Add(new TVariant(value));
-                                    ReturnValue.Add(new TVariant("\" "));
+                                    ReturnValue.Add(new TVariant("' "));
                                 }
                                 else
                                 {
@@ -1098,7 +1098,7 @@ namespace Ict.Petra.Server.MReporting
                 }
 
                 ReturnValue = ReturnValue.Replace("{{" + name + "}}", value.ToString());
-                ReturnValue = ReturnValue.Replace("{" + name + "}", "\"" + value.ToString() + "\"");
+                ReturnValue = ReturnValue.Replace("{" + name + "}", "'" + value.ToString() + "'");
             }
 
             return ReturnValue;
@@ -1230,6 +1230,17 @@ namespace Ict.Petra.Server.MReporting
             }
         }
 
+        private String ReplaceQuotesForSql(String strSql, String CalculationId)
+        {
+            if (strSql.IndexOf("\"") > 0)
+            {
+                TLogging.Log("Warning: SQL Contains double quotes for calculation \"" + CalculationId + "\"");
+                strSql = strSql.Replace('"', '\'');
+            }
+
+            return strSql;
+        }
+
         /// <summary>
         /// execute sql query, or do any other calculation to get the result
         /// </summary>
@@ -1333,6 +1344,7 @@ namespace Ict.Petra.Server.MReporting
                 }
                 else if (strSql.Length > 0)
                 {
+                    strSql = ReplaceQuotesForSql(strSql, rptCalculation.strId);
                     DataTable tab = DatabaseConnection.SelectDT(strSql, "EvaluateCalculation_TempTable", DatabaseConnection.Transaction);
                     string strReturns = rptCalculation.strReturns;
 
@@ -1408,7 +1420,9 @@ namespace Ict.Petra.Server.MReporting
                 }
             }
 
-            tab = DatabaseConnection.SelectDT(ReturnValue.ToString(), "EvaluateHelperCalculation", DatabaseConnection.Transaction);
+            String strSql = ReturnValue.ToString();
+            strSql = ReplaceQuotesForSql(strSql, rptCalculation.strId);
+            tab = DatabaseConnection.SelectDT(strSql, "EvaluateHelperCalculation", DatabaseConnection.Transaction);
 
             if ((tab == null) || (tab.Rows.Count == 0))
             {
