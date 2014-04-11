@@ -30,6 +30,7 @@ using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.GL;
@@ -82,10 +83,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             if (e.Success)
             {
-                if (FPetraUtilsObject.GetCallerForm().GetType() == typeof(TFrmAPSupplierTransactions))
-                {
-                    ((TFrmAPSupplierTransactions)FPetraUtilsObject.GetCallerForm()).Reload();
-                }
+                TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcAPTransactionChanged);
+                broadcastMessage.SetMessageDataAPTransaction(txtSupplierName.Text);
+                TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
             }
         }
 
@@ -123,6 +123,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdAnalAttributes.Columns[0].Width = 90; // for some reason, doing this too early doesn't work.
             grdAnalAttributes.Columns[1].Width = 120;
 
+            mniEdit.DropDownItems.Remove(mniEditSeparator);
             mniEdit.DropDownItems.Remove(mniEditFilter); // These items are provided by windowEditWebConnectorMasterDetail
             mniEdit.DropDownItems.Remove(mniEditFind);   // but are not needed in this application.
         }
@@ -869,7 +870,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// This static function is called from several places
         /// /// </summary>
         /// <returns>true if everything went OK</returns>
-        public static bool PostApDocumentList(AccountsPayableTDS Atds, int ALedgerNumber, List <int>AApDocumentIds)
+        public static bool PostApDocumentList(AccountsPayableTDS Atds, int ALedgerNumber, List <int>AApDocumentIds, Form AOwnerForm)
         {
             TVerificationResultCollection Verifications;
 
@@ -887,6 +888,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             DateTime PostingDate = dateEffectiveDialog.SelectedDate;
 
+            AOwnerForm.Cursor = Cursors.WaitCursor;
+
             if (TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
                     ALedgerNumber,
                     AApDocumentIds,
@@ -894,10 +897,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     false,
                     out Verifications))
             {
+                AOwnerForm.Cursor = Cursors.Default;
                 return true;
             }
             else
             {
+                AOwnerForm.Cursor = Cursors.Default;
                 string ErrorMessages = String.Empty;
 
                 foreach (TVerificationResult verif in Verifications)
@@ -939,7 +944,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             TaggedDocuments.Add(FMainDS.AApDocument[0].ApDocumentId);
 
-            if (PostApDocumentList(FMainDS, FMainDS.AApDocument[0].LedgerNumber, TaggedDocuments))
+            if (PostApDocumentList(FMainDS, FMainDS.AApDocument[0].LedgerNumber, TaggedDocuments, this))
             {
                 // TODO: print reports on successfully posted batch
                 MessageBox.Show(Catalog.GetString("The AP document has been posted successfully!"));
@@ -953,12 +958,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 //
                 // Also refresh the opener?
-                Form Opener = FPetraUtilsObject.GetCallerForm();
-
-                if (Opener.GetType() == typeof(TFrmAPSupplierTransactions))
-                {
-                    ((TFrmAPSupplierTransactions)Opener).Reload();
-                }
+                TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcAPTransactionChanged);
+                broadcastMessage.SetMessageDataAPTransaction(lblSupplierName.Text);
+                TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
             }
         }
 

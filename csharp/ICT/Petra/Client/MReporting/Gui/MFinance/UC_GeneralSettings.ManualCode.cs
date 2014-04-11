@@ -77,13 +77,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             txtLedger.Text = TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
-            TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbPeriodYear, FLedgerNumber);
+            TFinanceControls.InitialiseAvailableEndOfYearsList(ref cmbPeriodYear, FLedgerNumber);
             cmbPeriodYear.SelectedIndex = 0;
 
-            TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbQuarterYear, FLedgerNumber);
+            TFinanceControls.InitialiseAvailableEndOfYearsList(ref cmbQuarterYear, FLedgerNumber);
             cmbQuarterYear.SelectedIndex = 0;
 
-            TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbBreakdownYear, FLedgerNumber);
+            TFinanceControls.InitialiseAvailableEndOfYearsList(ref cmbBreakdownYear, FLedgerNumber);
             cmbBreakdownYear.SelectedIndex = 0;
 
             TFinanceControls.InitialiseAccountHierarchyList(ref cmbAccountHierarchy, FLedgerNumber);
@@ -164,6 +164,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 Year = cmbPeriodYear.GetSelectedInt32();
                 ACalculator.AddParameter("param_real_year", cmbPeriodYear.GetSelectedString(1));
+                ACalculator.AddParameter("param_real_year_ending", cmbPeriodYear.GetSelectedString(2));
 
                 int StartPeriod = (Int32)StringHelper.TryStrToInt(txtStartPeriod.Text, 1);
                 int EndPeriod = (Int32)StringHelper.TryStrToInt(txtEndPeriod.Text, 1);
