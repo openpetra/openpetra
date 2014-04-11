@@ -1114,7 +1114,8 @@ namespace Ict.Petra.Client.CommonControls
         /// it might be better to do this in other functions, see also Client/lib/MFinance/gui/FinanceComboboxes.cs
         private void AppearanceSetup(TListTableEnum AListTable)
         {
-            this.ComboBoxWidth = 0;
+            this.ComboBoxWidth = 0;     // This line ensures that setting ComboBoxWidth in YAML is useless, 
+            // but even without this line here the YAML setting will get overruled by AppearanceSetup(Int32[] AColumnWidth, Int32 AMaxDropDownItems).
             this.ColumnWidthCol1 = 100;
             this.ColumnWidthCol2 = 0;
             this.ColumnWidthCol3 = 0;
