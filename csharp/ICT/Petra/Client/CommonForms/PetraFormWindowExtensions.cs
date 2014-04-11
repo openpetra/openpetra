@@ -96,12 +96,12 @@ namespace Ict.Petra.Client.CommonForms
         public void TForm_Closing()
         {
             // Deal with the window positions which are stored on the local file system
-            string commonSettingsPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+            string localAppDataPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 CommonFormsResourcestrings.StrFolderOrganisationName,
                 System.Diagnostics.FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName);
             string settingsFileName = String.Format(CommonFormsResourcestrings.StrScreenPositionsFileName, UserInfo.GUserInfo.UserID);
-            string settingsPath = Path.Combine(commonSettingsPath, settingsFileName);
+            string settingsPath = Path.Combine(localAppDataPath, settingsFileName);
 
             if (TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, true))
             {
@@ -115,9 +115,9 @@ namespace Ict.Petra.Client.CommonForms
                     // Now save all the properties for all windows we know about
                     try
                     {
-                        if (!Directory.Exists(commonSettingsPath))
+                        if (!Directory.Exists(localAppDataPath))
                         {
-                            Directory.CreateDirectory(commonSettingsPath);
+                            Directory.CreateDirectory(localAppDataPath);
                         }
 
                         using (StreamWriter sw = new StreamWriter(settingsPath))
@@ -210,12 +210,12 @@ namespace Ict.Petra.Client.CommonForms
         {
             FWindowPositions.Clear();
 
-            string commonSettingsPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+            string localAppDataPath = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 CommonFormsResourcestrings.StrFolderOrganisationName,
                 System.Diagnostics.FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductName);
             string settingsFileName = String.Format(CommonFormsResourcestrings.StrScreenPositionsFileName, UserInfo.GUserInfo.UserID);
-            string settingsPath = Path.Combine(commonSettingsPath, settingsFileName);
+            string settingsPath = Path.Combine(localAppDataPath, settingsFileName);
 
             try
             {

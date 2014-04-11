@@ -11,6 +11,16 @@ RootNode:
             #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.S]
             Tooltip: Saves changed data
             Image: Save.ico
+        actEditFilter: 
+            Label:Filte&r...
+            ActionClick:MniFilterFind_Click
+            Tooltip: Filter the displayed records by one or more criteria
+            Image: FilterActive.ico
+        actEditFind: 
+            Label:&Find...
+            ActionClick:MniFilterFind_Click
+            Tooltip: Find a record that matches one or more criteria
+            Image: Find.ico
     Menu:
         mniFile:
            mniFileSave: {Action=actSave}
@@ -32,12 +42,7 @@ RootNode:
 #             ActionClick:MniEdit_Click
               #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.Z]
             mniSeparator: {Label=-}
-            mniEditFilter: 
-              Label:Filte&r...
-              ActionClick:MniFilterFind_Click
-            mniEditFind: 
-              Label:&Find...
-              ActionClick:MniFilterFind_Click
-              #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.F]
+            mniEditFilter: {Action=actEditFilter}
+            mniEditFind: {Action=actEditFind}
     Toolbar:
         tbbSave: {Action=actSave, Order=AlwaysFirst}

@@ -55,7 +55,9 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="AExchangeRateDT">The corporate or daily exchange rate table</param>
         /// <param name="AImportMode">Determines whether corporate or daily exchange rates specified - either 'Daily' or 'Corporate'</param>
         /// <param name="AResultCollection">A validation collection to which errors will be added</param>
-        public static void ImportCurrencyExRates(TTypedDataTable AExchangeRateDT, string AImportMode, TVerificationResultCollection AResultCollection)
+        /// <returns>The number of rows that were actually imported.  Rows that duplicate existing rows do not count.
+        /// This is usually because this is an attempt to import again after a failed previous attempt.</returns>
+        public static int ImportCurrencyExRates(TTypedDataTable AExchangeRateDT, string AImportMode, TVerificationResultCollection AResultCollection)
         {
             OpenFileDialog DialogBox = new OpenFileDialog();
 
@@ -76,7 +78,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                         Catalog.GetString("Import Exchange Rates"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Stop);
-                    return;
+                    return 0;
                 }
 
                 DlgSeparator.DateFormat = dateFormatString;
@@ -90,7 +92,7 @@ namespace Ict.Petra.Client.MFinance.Logic
 
                 if (DlgSeparator.ShowDialog() == DialogResult.OK)
                 {
-                    ImportCurrencyExRatesFromCSV(AExchangeRateDT,
+                    return ImportCurrencyExRatesFromCSV(AExchangeRateDT,
                         DialogBox.FileName,
                         DlgSeparator.SelectedSeparator,
                         DlgSeparator.NumberFormat,
@@ -99,6 +101,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                         AResultCollection);
                 }
             }
+
+            return 0;
         }
 
         /// <summary>
@@ -110,14 +114,16 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ACSVSeparator">The separator that the file uses</param>
         /// <param name="AImportMode">Determines whether corporate or daily exchange rates specified - either 'Daily' or 'Corporate'</param>
         /// <param name="AResultCollection">A validation collection to which errors will be added</param>
-        public static void ImportCurrencyExRates(TTypedDataTable AExchangeRateDT,
+        /// <returns>The number of rows that were actually imported.  Rows that duplicate existing rows do not count.
+        /// This is usually because this is an attempt to import again after a failed previous attempt.</returns>
+        public static int ImportCurrencyExRates(TTypedDataTable AExchangeRateDT,
             string AImportFileName,
             string ACSVSeparator,
             string AImportMode,
             TVerificationResultCollection AResultCollection)
         {
             // Test import always uses standard file with US formats
-            ImportCurrencyExRatesFromCSV(AExchangeRateDT,
+            return ImportCurrencyExRatesFromCSV(AExchangeRateDT,
                 AImportFileName,
                 ACSVSeparator,
                 TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN,
@@ -137,7 +143,9 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ADateFormat"></param>
         /// <param name="AImportMode">Daily or Corporate</param>
         /// <param name="AResultCollection">A validation collection to which errors will be added</param>
-        private static void ImportCurrencyExRatesFromCSV(TTypedDataTable AExchangeRDT,
+        /// <returns>The number of rows that were actually imported.  Rows that duplicate existing rows do not count.
+        /// This is usually because this is an attempt to import again after a failed previous attempt.</returns>
+        private static int ImportCurrencyExRatesFromCSV(TTypedDataTable AExchangeRDT,
             string ADataFilename,
             string ACSVSeparator,
             string ANumberFormat,
@@ -145,15 +153,6 @@ namespace Ict.Petra.Client.MFinance.Logic
             string AImportMode,
             TVerificationResultCollection AResultCollection)
         {
-            bool IsShortFileFormat;
-            int x, y;
-
-            // To store the From and To currencies
-            // Use an array to store these to make for easy
-            //   inverting of the two currencies when calculating
-            //   the inverse value.
-            string[] Currencies = new string[2];
-
             if ((AImportMode != "Corporate") && (AImportMode != "Daily"))
             {
                 throw new ArgumentException("Invalid value '" + AImportMode + "' for mode argument: Valid values are Corporate and Daily");
@@ -167,7 +166,17 @@ namespace Ict.Petra.Client.MFinance.Logic
                 throw new ArgumentException("Invalid type of exchangeRateDT argument for mode: 'Daily'. Needs to be: ADailyExchangeRateTable");
             }
 
+            bool IsShortFileFormat;
+            int x, y;
+
+            // To store the From and To currencies
+            // Use an array to store these to make for easy
+            //   inverting of the two currencies when calculating
+            //   the inverse value.
+            string[] Currencies = new string[2];
+
             Type DataTableType;
+            int RowsImported = 0;
 
             ACurrencyTable allCurrencies = new ACurrencyTable();
             DataTable CacheDT = TDataCache.GetCacheableDataTableFromCache("CurrencyCodeList", String.Empty, null, out DataTableType);
@@ -256,7 +265,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                             CommonErrorCodes.ERR_INFORMATIONMISSING,
                             TResultSeverity.Resv_Critical);
                         AResultCollection.Add(result);
-                        return;
+                        return RowsImported;
                     }
                     else if (!IsShortFileFormat && (NumCols < 4))
                     {
@@ -273,7 +282,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                             CommonErrorCodes.ERR_INFORMATIONMISSING,
                             TResultSeverity.Resv_Critical);
                         AResultCollection.Add(result);
-                        return;
+                        return RowsImported;
                     }
 
                     if (!IsShortFileFormat)
@@ -295,7 +304,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                             CommonErrorCodes.ERR_INCONGRUOUSSTRINGS,
                             TResultSeverity.Resv_Critical);
                         AResultCollection.Add(result);
-                        return;
+                        return RowsImported;
                     }
 
                     // Date parsing as in Petra 2.x instead of using XML date format!!!
@@ -312,7 +321,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                             CommonErrorCodes.ERR_INVALIDDATE,
                             TResultSeverity.Resv_Critical);
                         AResultCollection.Add(result);
-                        return;
+                        return RowsImported;
                     }
 
                     decimal ExchangeRate = 0.0m;
@@ -334,7 +343,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                             CommonErrorCodes.ERR_INVALIDNUMBER,
                             TResultSeverity.Resv_Critical);
                         AResultCollection.Add(result);
-                        return;
+                        return RowsImported;
                     }
 
                     int TimeEffective = 7200;
@@ -373,7 +382,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                                     CommonErrorCodes.ERR_INVALIDINTEGERTIME,
                                     TResultSeverity.Resv_Critical);
                                 AResultCollection.Add(result);
-                                return;
+                                return RowsImported;
                             }
                         }
                     }
@@ -399,6 +408,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                                 ExchangeRow.ToCurrencyCode = Currencies[y];
                                 ExchangeRow.DateEffectiveFrom = DateEffective;
                                 ExchangeRateDT.Rows.Add(ExchangeRow);
+                                RowsImported++;
                             }
 
                             if (i == 0)
@@ -433,6 +443,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                                 ExchangeRow.DateEffectiveFrom = DateEffective;
                                 ExchangeRow.TimeEffectiveFrom = TimeEffective;
                                 ExchangeRateDT.Rows.Add(ExchangeRow);
+                                RowsImported++;
                             }
 
                             if (i == 0)
@@ -448,6 +459,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 }
 
                 DataFile.Close();
+
+                return RowsImported;
             }
         }
     }

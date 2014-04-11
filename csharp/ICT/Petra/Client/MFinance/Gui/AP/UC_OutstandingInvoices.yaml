@@ -1,0 +1,113 @@
+RootNode:
+    BaseClass: System.Windows.Forms.UserControl
+    #UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MFinance.Gui.AP   
+    #UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    #DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    FormType: edit
+    Template: usercontrolUnbound
+    Actions:
+        actTagAll:
+            ActionClick: TagAll
+        actUntagAll:
+            ActionClick: UntagAll
+        actOpenSelectedInvoice:
+            Enabled: cndCanOpen
+            ActionClick: OpenSelectedInvoice
+        actApproveTagged:
+            Enabled: cndCanPost
+            ActionClick: ApproveAllTagged
+        actPostTagged:
+            Enabled: cndCanPost
+            ActionClick: PostAllTagged
+        actPayTagged:
+            Enabled: cndCanPay
+            ActionClick: PayAllTagged
+        actReverseTagged:
+            Enabled: cndCanReverse
+            ActionClick: ReverseAllTagged
+        actDeleteTagged:
+            Enabled: cndCanPost
+            Image: Delete_Record.ico
+            ActionClick: DeleteAllTagged
+    Controls:
+        pnlContent:
+            Controls: [pnlGrid, pnlOutstandingTotals, pnlButtons]
+            Padding: 0, 2, 0, 0
+            Dock: Fill
+        pnlGrid:
+            Controls: [pnlFilterAndFind, grdInvoices]
+            Dock: Fill
+        pnlButtons:
+            Controls: [btnTagAll, btnUntagAll, btnApproveTagged, btnPostTagged, btnPayTagged, btnReverseTagged, btnDeleteTagged]
+            ControlsOrientation: horizontal
+            Dock:Bottom
+        btnTagAll: {Label=Tag all}
+            Action: actTagAll
+        btnUntagAll: {Label=&Untag all}
+            Action: actUntagAll
+        btnApproveTagged: {Label=Appro&ve Tagged}
+            Action: actApproveTagged
+        btnPostTagged: {Label=Post Tagged}
+            Action: actPostTagged
+        btnPayTagged: {Label=Pay Tagged}
+            Action: actPayTagged
+        btnReverseTagged: {Label=Reverse Tagged}
+            Action: actReverseTagged
+        btnDeleteTagged: {Label=Delete Tagged, Width=115}
+            Action: actDeleteTagged
+        
+        pnlFilterAndFind:
+            Dock: Left
+            ExpandedWidth: 190
+            InitiallyExpanded: true     
+            ShowFilterIsAlwaysOnLabel: FilterContext.StandardFilterOnly
+            FilterControls: [pnlFilterControls]
+            FindControls: [pnlFindControls]
+            Panels:
+                pnlFilterControls:
+                    Controls: [rgrStatus, rgrPaymentSchedule, txtSupplierName]
+                    rgrPaymentSchedule: 
+                        #Label: Show Invoices
+                        ClearButton: false
+                        OptionalValues: [=AllInvoices, Overdue, DueToday, DueThisWeek, DueThisMonth, DueThisQuarter]
+                    rbtAllInvoices: {Text=All Outstanding, OnChange=SetInvoiceFilters}
+                    rbtOverdue: {OnChange=SetInvoiceFilters}
+                    rbtDueToday: {OnChange=SetInvoiceFilters}
+                    rbtDueThisWeek: {Text=Due Within 7 Days, OnChange=SetInvoiceFilters}
+                    rbtDueThisMonth: {Text=Due Within 30 Days, OnChange=SetInvoiceFilters}
+                    rbtDueThisQuarter: {Text=Due Within 90 Days, OnChange=SetInvoiceFilters}
+                    rgrStatus: 
+                        Label: Status and Tagging
+                        ClearButton: false
+                        OptionalValues: [=AllStatus, ForApproval, ForPosting, ForPaying ]
+                    rbtAllStatus: {Text=All, OnChange=SetInvoiceFilters}
+                    rbtForApproval: {OnChange=SetInvoiceFilters}
+                    rbtForPosting: {OnChange=SetInvoiceFilters}
+                    rbtForPaying: {OnChange=SetInvoiceFilters}
+                    txtSupplierName: {OnChange=SetInvoiceFilters}
+                pnlFindControls:
+                    Controls: [txtInvoiceNumber, txtSupplierName, dtpDueDate-1, dtpDueDate-2, dtpIssueDate-1, dtpIssueDate-2]
+                    txtInvoiceNumber:
+                    txtSupplierName:
+                    dtpDueDate-1: {Label=From Due Date, Comparison=gte}
+                    dtpDueDate-2: {Label=To Due Date, Comparison=lt}
+                    dtpIssueDate-1: {Label=From Issue Date, Comparison=gte}
+                    dtpIssueDate-2: {Label=To Issue Date, Comparison=lt}
+        grdInvoices: {ActionDoubleClick=actOpenSelectedInvoice, ActionEnterKeyPressed=actOpenSelectedInvoice}
+            Dock: Fill
+        pnlOutstandingTotals:
+            Controls: [grpOutstandingTotals]
+            Padding: 5,10,5,5
+            Height: 90
+            Dock: Bottom
+        grpOutstandingTotals:
+            Controls:
+                Row0: [txtInvoiceBalance, txtFilteredBalance]
+                Row1: [txtTaggedBalance, txtTaggedCount]
+            Height: 70
+            Dock: Top
+        txtInvoiceBalance: {Label=All outstanding invoices, ReadOnly=true}
+        txtFilteredBalance: {Label=Displayed invoices, ReadOnly=true}
+        txtTaggedBalance: {Label=Tagged invoices, ReadOnly=true}
+        txtTaggedCount: {Label=Tagged items, ReadOnly=true, Width=40}
