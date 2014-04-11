@@ -136,6 +136,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             FPSAttributesRow = GetSelectedAttributeRow();
+            if (FPSAttributesRow == null)
+            {
+                return;
+            }
 
             FMainDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}' AND {2}=true",
                 AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
