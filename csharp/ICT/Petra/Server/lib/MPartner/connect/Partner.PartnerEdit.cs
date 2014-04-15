@@ -59,6 +59,7 @@ using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
 using Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors;
 using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 {
@@ -316,6 +317,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <param name="ATabPage">Tab Page the Client wants to display initially.
         /// </param>
         /// <returns>void</returns>
+        [RequireModulePermission("CONFERENCE")]
         public PartnerEditTDS GetData(Boolean ADelayedDataLoading, TPartnerEditTabPageEnum ATabPage)
         {
             LoadData(ADelayedDataLoading, ATabPage);
