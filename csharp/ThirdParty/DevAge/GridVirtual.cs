@@ -1276,6 +1276,14 @@ namespace SourceGrid
 			if ( (SpecialKeys & GridSpecialKeys.Enter) == GridSpecialKeys.Enter)
 				enableEnter = true;
 
+            // AlanP: March 2014 - Work out which is the first column that is displayed after any fixed columns
+            // We use firstActiveColumn in multiple places below
+            int firstActiveColumn = this.FixedColumns;
+            while ((firstActiveColumn < this.Columns.Count - 1) && !((ColumnInfoCollection)this.Columns)[firstActiveColumn].Visible)
+            {
+                firstActiveColumn++;
+            }
+
 			#region Processing keys
             // AlanP: Nov 2013. Made some changes to the behaviours of ENTER and Esc so we move to the next editable cell
             //   Also there was a bug in the code that checked if a cell IsEditing
@@ -1296,7 +1304,7 @@ namespace SourceGrid
                             ICellVirtual nextContextCell = (new CellContext(this, Selection.ActivePosition)).Cell;
                             bFound = (nextContextCell != null && nextContextCell.Editor != null && nextContextCell.Editor.EditableMode != EditableMode.None);
                         }
-                        while (Selection.ActivePosition.Column != 0 && !bFound);
+                        while (Selection.ActivePosition.Column != firstActiveColumn && !bFound);
 
                         e.Handled = true;
                     }
@@ -1308,7 +1316,7 @@ namespace SourceGrid
 			{
                 // This is the main special key for dealing with edit-in-place in OpenPetra
                 bool isLastColumn = (Selection.ActivePosition.Column == this.Columns.Count - 1);
-                bool isFirstColumn = (Selection.ActivePosition.Column == this.FixedColumns);
+                bool isFirstColumn = (Selection.ActivePosition.Column == firstActiveColumn);
 
 				CellContext focusCellContext = new CellContext(this, Selection.ActivePosition);
                 //if (focusCellContext.Cell != null && focusCellContext.IsEditing())
@@ -1334,7 +1342,7 @@ namespace SourceGrid
                             ICellVirtual nextContextCell = (new CellContext(this, Selection.ActivePosition)).Cell;
                             bFound = (nextContextCell != null && nextContextCell.Editor != null && nextContextCell.Editor.EditableMode != EditableMode.None);
                         }
-                        while (Selection.ActivePosition.Column != 0 && !bFound);
+                        while (Selection.ActivePosition.Column != firstActiveColumn && !bFound);
 
                         e.Handled = bFound;
                     }
@@ -1367,7 +1375,7 @@ namespace SourceGrid
                             ICellVirtual nextContextCell = (new CellContext(this, Selection.ActivePosition)).Cell;
                             bFound = (nextContextCell != null && nextContextCell.Editor != null && nextContextCell.Editor.EditableMode != EditableMode.None);
                         }
-                        while (Selection.ActivePosition.Column != 0 && !bFound);
+                        while (Selection.ActivePosition.Column != firstActiveColumn && !bFound);
                     }
 
                     e.Handled = true;
@@ -1392,9 +1400,9 @@ namespace SourceGrid
 				}
 
                 // Be sure to go back to column 0 in the current row
-                if (Selection.ActivePosition.Column != 0)
+                if (Selection.ActivePosition.Column != firstActiveColumn)
                 {
-                    this.Selection.Focus(new Position(Selection.ActivePosition.Row, 0), true);
+                    this.Selection.Focus(new Position(Selection.ActivePosition.Row, firstActiveColumn), true);
                 }
 
                 return;
@@ -1424,7 +1432,8 @@ namespace SourceGrid
 			}
             else if (e.KeyCode == Keys.Right && enableArrows && SelectionMode == GridSelectionMode.Column)
             {
-                // AlanP: Jan 2014 support left and right when in column selection mode only
+                // AlanP: Jan 2014 support left and right when in column selection mode only 
+                //  (actually our column mode screens cannot take advantage of this feature because the ActivePosition has intentionally been set to -1,-1)
                 Selection.MoveActiveCell(0, 1, resetSelection);
                 e.Handled = true;
             }
@@ -1806,7 +1815,14 @@ namespace SourceGrid
                         if (this.SelectionMode == GridSelectionMode.Row)
                         {
                             // always imagine that the click was on the first column
-                            position = new Position(position.Row, this.FixedColumns);
+                            // AlanP: March 2014 - the column is now the first VISIBLE column (in the normal sense, not visible in the display window)
+                            //    AP screens may or may not display a checkbox column in column 0
+                            int column = this.FixedColumns;
+                            while (column < this.Columns.Count - 1 && !((ColumnInfoCollection)this.Columns)[column].Visible)
+                            {
+                                column++;
+                            }
+                            position = new Position(position.Row, column);
                         }
                     }
 

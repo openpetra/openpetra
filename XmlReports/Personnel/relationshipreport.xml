@@ -99,7 +99,7 @@
 			
 			<queryDetail condition="eq({param_chkActivePartners}, true)">
 				<value>
-					AND  Rel2.p_status_code_c = "ACTIVE" 
+					AND  Rel2.p_status_code_c = 'ACTIVE' 
 				</value>
 			</queryDetail>
 			
@@ -175,7 +175,7 @@
 			</queryDetail>
 			<queryDetail condition="eq({param_chkActivePartners}, true)">
 				<value>
-					AND  Rel1.p_status_code_c = "ACTIVE" 
+					AND  Rel1.p_status_code_c = 'ACTIVE' 
 				</value>
 			</queryDetail>
 			<queryDetail condition="eq({param_chkExcludeNoSolicitations}, true)">
@@ -216,7 +216,7 @@
 						PUB_p_church,
 						PUB_p_partner
 					WHERE
-							PUB_p_church.p_partner_key_n = {Rel1PartnerKey}
+							PUB_p_church.p_partner_key_n = {{Rel1PartnerKey}}
 						AND PUB_p_partner.p_partner_key_n = PUB_p_church.p_contact_partner_key_n
 				</value>
 			</queryDetail>
@@ -235,7 +235,7 @@
 						PUB_p_church,
 						PUB_p_partner
 					WHERE
-							PUB_p_church.p_partner_key_n = {Rel2PartnerKey}
+							PUB_p_church.p_partner_key_n = {{Rel2PartnerKey}}
 						AND PUB_p_partner.p_partner_key_n = PUB_p_church.p_contact_partner_key_n
 				</value>
 			</queryDetail>
@@ -253,7 +253,7 @@
 					FROM
 						PUB_p_family
 					WHERE
-						PUB_p_family.p_partner_key_n = {Rel1PartnerKey}
+						PUB_p_family.p_partner_key_n = {{Rel1PartnerKey}}
 				</value>
 			</queryDetail>
 		</query>
@@ -270,7 +270,7 @@
 					FROM
 						PUB_p_family
 					WHERE
-						PUB_p_family.p_partner_key_n = {Rel2PartnerKey}
+						PUB_p_family.p_partner_key_n = {{Rel2PartnerKey}}
 				</value>
 			</queryDetail>
 		</query>
@@ -289,7 +289,7 @@
 					FROM
 						PUB_p_person
 					WHERE
-						PUB_p_person.p_partner_key_n = {Rel1PartnerKey}
+						PUB_p_person.p_partner_key_n = {{Rel1PartnerKey}}
 				</value>
 			</queryDetail>
 		</query>
@@ -308,7 +308,7 @@
 					FROM
 						PUB_p_person
 					WHERE
-						PUB_p_person.p_partner_key_n = {Rel2PartnerKey}
+						PUB_p_person.p_partner_key_n = {{Rel2PartnerKey}}
 				</value>
 			</queryDetail>
 		</query>
@@ -326,7 +326,7 @@
 						PUB_p_organisation,
 						PUB_p_partner
 					WHERE
-							PUB_p_organisation.p_partner_key_n = {Rel1PartnerKey}
+							PUB_p_organisation.p_partner_key_n = {{Rel1PartnerKey}}
 						AND PUB_p_partner.p_partner_key_n = PUB_p_organisation.p_contact_partner_key_n
 				</value>
 			</queryDetail>
@@ -345,7 +345,7 @@
 						PUB_p_organisation,
 						PUB_p_partner
 					WHERE
-							PUB_p_organisation.p_partner_key_n = {Rel2PartnerKey}
+							PUB_p_organisation.p_partner_key_n = {{Rel2PartnerKey}}
 						AND PUB_p_partner.p_partner_key_n = PUB_p_organisation.p_contact_partner_key_n
 				</value>
 			</queryDetail>
@@ -361,7 +361,7 @@
 					FROM
 						PUB_p_unit
 					WHERE
-						PUB_p_unit.p_partner_key_n = {Rel1PartnerKey}
+						PUB_p_unit.p_partner_key_n = {{Rel1PartnerKey}}
 				</value>
 			</queryDetail>
 		</query>
@@ -376,7 +376,7 @@
 					FROM
 						PUB_p_unit
 					WHERE
-						PUB_p_unit.p_partner_key_n = {Rel2PartnerKey}
+						PUB_p_unit.p_partner_key_n = {{Rel2PartnerKey}}
 				</value>
 			</queryDetail>
 		</query>

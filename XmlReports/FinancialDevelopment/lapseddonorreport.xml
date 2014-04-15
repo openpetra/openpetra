@@ -117,7 +117,7 @@
 					</queryDetail>
 					<queryDetail condition="not(eq({param_recipientkey}, 0))">
 						<value>
-							AND detail.p_recipient_key_n = {param_recipientkey}
+							AND detail.p_recipient_key_n = {{param_recipientkey}}
 						</value>
 					</queryDetail>
 					<queryDetail condition="not(eq({param_motivation_group}, %))">
@@ -130,17 +130,17 @@
 							AND detail.a_motivation_detail_code_c LIKE {param_motivation_detail}
 						</value>
 					</queryDetail>
-					<!-- We search for the absolut gift amount -->
+					<!-- We search for the absolute gift amount -->
 					<queryDetail condition="eq({param_currency}, Base)">
 						<value>
-							AND (detail.a_gift_amount_n &gt;= {param_minimum_amount}
-								OR detail.a_gift_amount_n &lt;= {param_minimum_amount})
+							AND (detail.a_gift_amount_n &gt;= {{param_minimum_amount}}
+								OR detail.a_gift_amount_n &lt;= {{param_minimum_amount}})
 						 </value>
 					</queryDetail>
 					<queryDetail condition="eq({param_currency}, International)">
 						<value>
-							AND (detail.a_gift_amount_intl_n &gt;= {param_minimum_amount}
-								OR detail.a_gift_amount_intl_n &lt;= {param_minimum_amount})
+							AND (detail.a_gift_amount_intl_n &gt;= {{param_minimum_amount}}
+								OR detail.a_gift_amount_intl_n &lt;= {{param_minimum_amount}})
 						 </value>
 					</queryDetail>
 					<queryDetail condition="eq({param_sort_by}, Donor_Key)">

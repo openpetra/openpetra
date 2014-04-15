@@ -180,7 +180,7 @@ namespace Tests.MFinance.Server.Gift
         {
             Int64 partnerKey = CreateNewPartnerKey();
 
-            long RecipLedgerNumber = TGiftTransactionWebConnector.GetRecipientLedgerNumber(partnerKey);
+            long RecipLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(partnerKey);
 
             Assert.IsTrue((RecipLedgerNumber != 0), String.Format("PartnerKey {0} has a recipient ledger number of 0!", partnerKey));
         }
@@ -194,7 +194,7 @@ namespace Tests.MFinance.Server.Gift
             Int64 partnerKey = CreateNewPartnerKeyWithUnit();
             Int64 ledgerPartnerKey = GetLedgerPartnerKey(43);
 
-            long RecipLedgerNumber = TGiftTransactionWebConnector.GetRecipientLedgerNumber(partnerKey);
+            long RecipLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(partnerKey);
 
             Assert.AreEqual(RecipLedgerNumber, ledgerPartnerKey,
                 String.Format("Expected RecipientLedgerNumber ({0}) to equal Ledger PartnerKey ({1})", RecipLedgerNumber, ledgerPartnerKey));
@@ -206,13 +206,13 @@ namespace Tests.MFinance.Server.Gift
         ///
         /// </summary>
         //[Test] - TODO - reinstate once worker field is sorted
-        private void Test_ZValidLedgerNumberExistsForRecipient()
+        private void Test_ZCheckCostCentreLinkForRecipient()
         {
             bool Success = false;
             string CostCentreCode = string.Empty;
             Int64 partnerKey = CreateNewPartnerKeyWithUnit();
 
-            Success = TGiftTransactionWebConnector.ValidLedgerNumberExistsForRecipient(43, partnerKey, out CostCentreCode);
+            Success = TGiftTransactionWebConnector.CheckCostCentreLinkForRecipient(43, partnerKey, out CostCentreCode);
 
             Assert.IsTrue(Success,
                 String.Format("Invalid Ledger number exists for PartnerKey ({0}), returning Cost Centre {1}", partnerKey, CostCentreCode));

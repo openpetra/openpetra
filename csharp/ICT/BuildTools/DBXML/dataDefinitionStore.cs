@@ -1145,6 +1145,10 @@ namespace Ict.Tools.DBXML
             {
                 return "String";
             }
+            else if (strType.ToLower() == "text")
+            {
+                return "String";
+            }
             else if (strType.ToLower() == "bit")
             {
                 return "Boolean";

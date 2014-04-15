@@ -1481,6 +1481,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             out TLocationPK ALocationPK,
             Form AParentForm)
         {
+            AParentForm.Cursor = Cursors.WaitCursor;
+
             TPartnerFindScreen PartnerFindForm;
             DialogResult dlgResult;
 
@@ -1491,6 +1493,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             PartnerFindForm = new TPartnerFindScreen(AParentForm);
             PartnerFindForm.SetParameters(ARestrictToPartnerClasses, false);
+
+            AParentForm.Cursor = Cursors.Default;
 
             dlgResult = PartnerFindForm.ShowDialog();
 
@@ -1528,6 +1532,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             out int ABankingDetailsKey,
             Form AParentForm)
         {
+            AParentForm.Cursor = Cursors.WaitCursor;
+
             TPartnerFindScreen PartnerFindForm;
             DialogResult dlgResult;
 
@@ -1538,6 +1544,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             PartnerFindForm = new TPartnerFindScreen(AParentForm);
             PartnerFindForm.SetParameters(ARestrictToPartnerClasses, true);
+
+            AParentForm.Cursor = Cursors.Default;
 
             dlgResult = PartnerFindForm.ShowDialog();
 

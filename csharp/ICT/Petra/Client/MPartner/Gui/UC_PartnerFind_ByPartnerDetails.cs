@@ -329,6 +329,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Called when the main screen is activated
+        /// </summary>
+        public void RunOnceOnParentActivation()
+        {
+            // Doesn't do anything, but needs to be present as the Template requires this Method to be present...
+        }
+
+        /// <summary>
         /// this provides general functionality for edit screens
         /// </summary>
         public TFrmPetraUtils PetraUtilsObject

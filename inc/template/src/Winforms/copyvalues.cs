@@ -125,3 +125,91 @@ if (SelectedGridRow.Length >= 1)
 }
 
 return null;
+
+{##PROCESSCMDKEYCTRLF}
+if (keyData == (Keys.F | Keys.Control))
+{
+    {#ACTIONCLICK}(mniEditFind, null);
+    return true;
+}
+if (keyData == Keys.F3)
+{
+    {#ACTIONCLICK}(mniEditFind, new KeyPressEventArgs('+'));
+    return true;
+}
+if (keyData == (Keys.F3 | Keys.Shift))
+{
+    {#ACTIONCLICK}(mniEditFind, new KeyPressEventArgs('-'));
+    return true;
+}
+
+{##PROCESSCMDKEYCTRLR}
+if (keyData == (Keys.R | Keys.Control))
+{
+    {#ACTIONCLICK}(mniEditFilter, null);
+    return true;
+}
+
+{##PROCESSCMDKEYCTRLS}
+if (keyData == (Keys.S | Keys.Control))
+{
+    if (mniFileSave.Enabled)
+    {
+        FileSave(null, null);
+    }
+    return true;
+}
+
+
+{##PROCESSCMDKEYMANUAL}
+if (ProcessCmdKeyManual(ref msg, keyData))
+{
+    return true;
+}
+
+{##PROCESSCMDKEYF9}
+if (keyData == Keys.F9)
+{
+    grdDetails.Focus();
+    return true;
+}
+
+{##PROCESSCMDKEYF10}
+if (keyData == Keys.F10)
+{
+    SelectRowInGrid(GetSelectedRowIndex() + 1);
+    FocusFirstEditableControl();
+    return true;
+}
+if (keyData == (Keys.F10 | Keys.Shift))
+{
+    SelectRowInGrid(GetSelectedRowIndex() - 1);
+    FocusFirstEditableControl();
+    return true;
+}
+
+{##FOCUSFIRSTDETAILSPANELCONTROL}
+// Build up a list of controls on this panel that is sorted in true nested tab order
+SortedList<string, Control> controlsSortedByTabOrder = new SortedList<string, Control>();
+GetSortedControlList(ref controlsSortedByTabOrder, pnlDetails, String.Empty);
+
+int index;
+for (index = 0; index < controlsSortedByTabOrder.Count; index++)
+{
+    if (controlsSortedByTabOrder.Values[index] as TextBox != null)
+    {
+        if (!((TextBox)controlsSortedByTabOrder.Values[index]).ReadOnly)
+        {
+            break;
+        }
+    }
+    else if (controlsSortedByTabOrder.Values[index].Enabled)
+    {
+        break;
+    }
+}
+    
+if (index < controlsSortedByTabOrder.Count)
+{
+    controlsSortedByTabOrder.Values[index].Focus();
+}

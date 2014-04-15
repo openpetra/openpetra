@@ -930,6 +930,71 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         }
 
         /// <summary>
+        /// Approve documents that have an OPEN status
+        /// This is called by a client
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AApproveTheseDocs"></param>
+        /// <param name="AVerificationResult"></param>
+        [RequireModulePermission("FINANCE-1")]
+        public static bool ApproveAPDocuments(Int32 ALedgerNumber,
+            List <Int32>AApproveTheseDocs,
+            out TVerificationResultCollection AVerificationResult)
+        {
+            AVerificationResult = new TVerificationResultCollection();
+            bool ResultValue = false;
+
+            AccountsPayableTDS TempDS = new AccountsPayableTDS();
+
+            if (AApproveTheseDocs.Count == 0)
+            {
+                AVerificationResult.Add(new TVerificationResult("Approve AP Document", "Nothing to do - the document list is empty",
+                        TResultSeverity.Resv_Noncritical));
+                return false;
+            }
+
+            foreach (Int32 ApDocumentId in AApproveTheseDocs)
+            {
+                TempDS.Merge(LoadAApDocument(ALedgerNumber, ApDocumentId)); // This gives me documents, details, and potentially ap_anal_attrib records.
+            }
+
+            foreach (AApDocumentRow ApDocumentRow in TempDS.AApDocument.Rows)
+            {
+                if (ApDocumentRow.DocumentStatus == MFinanceConstants.AP_DOCUMENT_OPEN)
+                {
+                    ApDocumentRow.DocumentStatus = MFinanceConstants.AP_DOCUMENT_APPROVED;
+                }
+                else
+                {
+                    AVerificationResult.Add(new TVerificationResult("Approve AP Document", "Only OPEN documents can be approved",
+                            TResultSeverity.Resv_Noncritical));
+                    return false;
+                }
+            }
+
+            TDBTransaction SubmitChangesTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
+
+            try
+            {
+                AApDocumentAccess.SubmitChanges(TempDS.AApDocument, SubmitChangesTransaction);
+                DBAccess.GDBAccessObj.CommitTransaction();
+                ResultValue = true;
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("An Exception occured during the approval of AP Documents:" + Environment.NewLine + Exc.ToString());
+
+                DBAccess.GDBAccessObj.RollbackTransaction();
+
+                AVerificationResult.Add(new TVerificationResult("Approve AP Documents", Exc.Message, TResultSeverity.Resv_Critical));
+
+                throw;
+            }
+
+            return ResultValue;
+        }
+
+        /// <summary>
         /// Documents can only be deleted if they're not posted yet.
         /// </summary>
         /// <param name="ALedgerNumber"></param>

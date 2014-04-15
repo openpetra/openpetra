@@ -110,7 +110,7 @@
               
               AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
               AND PUB_a_gift_detail.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
               
               AND PUB_a_gift_detail.p_recipient_key_n = PUB_p_partner.p_partner_key_n
@@ -174,7 +174,7 @@
               AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
               
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
               
               AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
@@ -221,7 +221,7 @@
               AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
               
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
               
               AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
@@ -232,7 +232,7 @@
               AND PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n
               AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
               
-              AND PUB_p_partner.p_partner_class_c = "CHURCH"
+              AND PUB_p_partner.p_partner_class_c = 'CHURCH'
             </value>
           </queryDetail>
         </query>
@@ -264,7 +264,7 @@
               AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
               
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
               
               AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
@@ -275,8 +275,8 @@
               AND PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n
               AND PUB_a_gift.a_date_entered_d BETWEEN {#param_from_date#} AND {#param_to_date#}
               
-              AND ( PUB_p_partner.p_partner_class_c = "FAMILY"
-                OR PUB_p_partner.p_partner_class_c = "PERSON" )
+              AND ( PUB_p_partner.p_partner_class_c = 'FAMILY'
+                OR PUB_p_partner.p_partner_class_c = 'PERSON' )
             </value>
           </queryDetail>
         </query>
@@ -309,7 +309,7 @@
               AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
               
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
               
               AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
@@ -348,7 +348,7 @@
               AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
               
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
               
               AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
@@ -389,7 +389,7 @@
               AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
               
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
               
               AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
@@ -431,7 +431,7 @@
               AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
               
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
               
               AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
@@ -472,7 +472,7 @@
               AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
               
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
               
               AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
@@ -513,7 +513,7 @@
               AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
               
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
               
               AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
@@ -554,7 +554,7 @@
               AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
               
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
               
               AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
@@ -595,7 +595,7 @@
               AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
               
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
               
               AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
@@ -636,7 +636,7 @@
               AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
               
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
               
               AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
@@ -677,7 +677,7 @@
               AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
               
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
               
               AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
@@ -718,7 +718,7 @@
               AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
               
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
               
               AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
@@ -759,7 +759,7 @@
               AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
               
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
               
               AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
@@ -800,7 +800,7 @@
               AND PUB_a_gift_detail.a_ledger_number_i = {{param_ledger_number_i}}
               AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
               
-              AND PUB_a_gift_batch.a_batch_status_c = "Posted"
+              AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
               AND PUB_a_gift_batch.a_batch_number_i = PUB_a_gift.a_batch_number_i
               
               AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i

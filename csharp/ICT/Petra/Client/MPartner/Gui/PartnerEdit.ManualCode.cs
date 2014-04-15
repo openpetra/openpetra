@@ -1842,7 +1842,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Determine whether Partner is of PartnerClass ORGANISATION and whether it is a Foundation
             DetermineOrganisationIsFoundation();
 
-
+            ArrangeMenuItemsAndToolBarButtons();
+            
             // Setup Modulerelated Toggle Buttons in ToolBar
             SetupAvailableModuleDataItems(true, TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgNone);
 
@@ -2965,6 +2966,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private void ArrangeMenuItemsAndToolBarButtons()
+        {
+            // Because of YAML inheritance there is one separator bar too many displayed: hide it for that reason
+            mniSeparator0.Visible = false;
+        }
+        
         /// <summary>
         /// Sets Module-related Toggle Buttons in ToolBar up
         /// </summary>

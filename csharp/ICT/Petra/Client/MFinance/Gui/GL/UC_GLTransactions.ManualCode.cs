@@ -188,7 +188,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     //Load all analysis attribute values
                     if (FCacheDS == null)
                     {
-                        FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber);
+                        FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber, FActiveOnly);
                     }
 
                     SetupExtraGridFunctionality();
@@ -501,16 +501,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FMainDS.ATransAnalAttrib.DefaultView.RowFilter = "1=2";
             FPSAttributesRow = null;
 
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                return;
-            }
-            else if (!TRemote.MFinance.Setup.WebConnectors.HasAccountSetupAnalysisAttributes(FLedgerNumber, cmbDetailAccountCode.GetSelectedString()))
+            if ((FPreviouslySelectedDetailRow == null)
+                || !pnlTransAnalysisAttributes.Enabled
+                || !TRemote.MFinance.Setup.WebConnectors.AccountHasAnalysisAttributes(FLedgerNumber, cmbDetailAccountCode.GetSelectedString(),
+                    FActiveOnly))
             {
                 if (grdAnalAttributes.Enabled)
                 {
                     grdAnalAttributes.Enabled = false;
-                    lblAnalAttributes.Enabled = false;
+                    //lblAnalAttributes.Enabled = false;
                 }
 
                 return;
@@ -520,7 +519,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (!grdAnalAttributes.Enabled)
                 {
                     grdAnalAttributes.Enabled = true;
-                    lblAnalAttributes.Enabled = true;
+                    //lblAnalAttributes.Enabled = true;
                 }
             }
 
@@ -533,6 +532,91 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 grdAnalAttributes.SelectRowWithoutFocus(1);
                 FPSAttributesRow = GetSelectedAttributeRow();
             }
+        }
+
+        private bool AccountAnalysisAttributeCountIsCorrect()
+        {
+            bool RetVal = true;
+
+            if (!FIsUnposted || (FPreviouslySelectedDetailRow == null))
+            {
+                return RetVal;
+            }
+
+            int TransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
+            string AccountCode = FPreviouslySelectedDetailRow.AccountCode;
+            int NumberOfAttributes = 0;
+
+            TRemote.MFinance.Setup.WebConnectors.AccountHasAnalysisAttributes(FLedgerNumber, AccountCode, out NumberOfAttributes, FActiveOnly);
+
+            if (NumberOfAttributes == 0)
+            {
+                return RetVal;
+            }
+
+            DataView analAttrib = new DataView(FMainDS.ATransAnalAttrib);
+
+            analAttrib.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6}={7}",
+                ATransAnalAttribTable.GetBatchNumberDBName(),
+                FBatchNumber,
+                ATransAnalAttribTable.GetJournalNumberDBName(),
+                FJournalNumber,
+                ATransAnalAttribTable.GetTransactionNumberDBName(),
+                TransactionNumber,
+                ATransAnalAttribTable.GetAccountCodeDBName(),
+                AccountCode);
+
+            RetVal = (analAttrib.Count == NumberOfAttributes);
+
+            return RetVal;
+        }
+
+        private bool AccountAnalysisAttributesValuesExist()
+        {
+            bool RetVal = true;
+
+            if (!FIsUnposted || (FPreviouslySelectedDetailRow == null) || (FMainDS.ATransAnalAttrib.DefaultView.Count == 0))
+            {
+                return RetVal;
+            }
+
+            int TransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
+            string AccountCode = FPreviouslySelectedDetailRow.AccountCode;
+
+            StringCollection RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
+                AccountCode, FActiveOnly);
+
+            string AnalysisCodeFilterValues = ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'");
+
+            DataView analAttrib = new DataView(FMainDS.ATransAnalAttrib);
+
+            analAttrib.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5} AND {6} IN ({7})",
+                ATransAnalAttribTable.GetBatchNumberDBName(),
+                FBatchNumber,
+                ATransAnalAttribTable.GetJournalNumberDBName(),
+                FJournalNumber,
+                ATransAnalAttribTable.GetTransactionNumberDBName(),
+                TransactionNumber,
+                ATransAnalAttribTable.GetAnalysisTypeCodeDBName(),
+                AnalysisCodeFilterValues);
+
+            foreach (DataRowView drv in analAttrib)
+            {
+                ATransAnalAttribRow rw = (ATransAnalAttribRow)drv.Row;
+
+                string analysisCode = rw.AnalysisTypeCode;
+
+                if (TRemote.MFinance.Setup.WebConnectors.AccountAnalysisAttributeRequiresValues(FLedgerNumber, analysisCode, FActiveOnly))
+                {
+                    if (rw.IsAnalysisAttributeValueNull() || (rw.AnalysisAttributeValue == string.Empty))
+                    {
+                        RetVal = false;
+                        break;
+                    }
+                }
+            }
+
+            return RetVal;
         }
 
         private ATransAnalAttribRow GetSelectedAttributeRow()
@@ -1058,19 +1142,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void UpdateChangeableStatus()
         {
-            Boolean changeable = !FPetraUtilsObject.DetailProtectedMode
-                                 && (GetBatchRow() != null)
-                                 && (FIsUnposted)
-                                 && (FJournalRow.JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
-            Boolean canDeleteAll = (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
+            bool changeable = !FPetraUtilsObject.DetailProtectedMode
+                              && (GetBatchRow() != null)
+                              && (FIsUnposted)
+                              && (FJournalRow.JournalStatus == MFinanceConstants.BATCH_UNPOSTED);
+            bool canDeleteAll = (FFilterPanelControls.BaseFilter == FCurrentActiveFilter);
+            bool rowsInGrid = (grdDetails.Rows.Count > 1);
 
             // pnlDetailsProtected must be changed first: when the enabled property of the control is changed, the focus changes, which triggers validation
             pnlDetailsProtected = !changeable;
-            pnlDetails.Enabled = (changeable && grdDetails.Rows.Count > 1);
-            btnDelete.Enabled = (changeable && grdDetails.Rows.Count > 1);
-            btnDeleteAll.Enabled = (changeable && canDeleteAll && grdDetails.Rows.Count > 1);
+            pnlDetails.Enabled = (changeable && rowsInGrid);
+            btnDelete.Enabled = (changeable && rowsInGrid);
+            btnDeleteAll.Enabled = (changeable && canDeleteAll && rowsInGrid);
             pnlTransAnalysisAttributes.Enabled = changeable;
-            lblAnalAttributes.Enabled = (changeable && grdDetails.Rows.Count > 1);
+            //lblAnalAttributes.Enabled = (changeable && rowsInGrid);
             btnNew.Enabled = changeable;
         }
 
@@ -1088,6 +1173,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes))
             {
+                //Backup the Dataset for reversion purposes
+                GLBatchTDS FTempDS = (GLBatchTDS)FMainDS.Copy();
+
                 try
                 {
                     //Unbind any transactions currently being editied in the Transaction Tab
@@ -1133,7 +1221,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
-                    FMainDS.RejectChanges();
+                    FMainDS = (GLBatchTDS)FTempDS.Copy();
                 }
 
                 //If some row(s) still exist after deletion
@@ -1505,14 +1593,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            StringCollection RequiredAnalattrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
+            StringCollection RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
                 currentAccountCode, FActiveOnly);
             Int32 currentTransactionNumber = FPreviouslySelectedDetailRow.TransactionNumber;
 
-            SetTransAnalAttributeDefaultView(currentTransactionNumber, ConvertStringCollectionToCSV(RequiredAnalattrCodes, "'"));
+            SetTransAnalAttributeDefaultView(currentTransactionNumber, ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'"));
 
             // If the AnalysisType list I'm currently using is the same as the list of required types, I can keep it (with any existing values).
-            Boolean existingListIsOk = (RequiredAnalattrCodes.Count == FMainDS.ATransAnalAttrib.DefaultView.Count);
+            bool existingListIsOk = (RequiredAnalAttrCodes.Count == FMainDS.ATransAnalAttrib.DefaultView.Count);
 
             if (existingListIsOk)
             {
@@ -1520,7 +1608,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     ATransAnalAttribRow row = (ATransAnalAttribRow)rv.Row;
 
-                    if (!RequiredAnalattrCodes.Contains(row.AnalysisTypeCode))
+                    if (!RequiredAnalAttrCodes.Contains(row.AnalysisTypeCode))
                     {
                         existingListIsOk = false;
                         break;
@@ -1540,7 +1628,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 attrRowCurrent.Delete();
             }
 
-            foreach (String analysisTypeCode in RequiredAnalattrCodes)
+            foreach (String analysisTypeCode in RequiredAnalAttrCodes)
             {
                 ATransAnalAttribRow newRow = FMainDS.ATransAnalAttrib.NewRowTyped(true);
                 newRow.LedgerNumber = FLedgerNumber;
@@ -1566,8 +1654,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             Control controlToPass = null;
 
             //Local validation
-            if (((txtDebitAmount.NumberValueDecimal.Value == 0)
-                 && (txtCreditAmount.NumberValueDecimal.Value == 0)) || (txtDebitAmount.NumberValueDecimal.Value < 0))
+            if (((txtDebitAmount.NumberValueDecimal.Value == 0) && (txtCreditAmount.NumberValueDecimal.Value == 0))
+                || (txtDebitAmount.NumberValueDecimal.Value < 0))
             {
                 controlToPass = txtDebitAmount;
             }
@@ -1588,6 +1676,48 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             TSharedFinanceValidation_GL.ValidateGLDetailManual(this, FBatchRow, ARow, controlToPass, ref VerificationResultCollection,
                 FValidationControlsDict);
+
+            if (!AccountAnalysisAttributeCountIsCorrect())
+            {
+                DataColumn ValidationColumn;
+                TVerificationResult VerificationResult = null;
+                object ValidationContext;
+
+                ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnAccountCodeId];
+                ValidationContext = String.Format(" - Account Code {0} in Transaction {1} is missing Analysis Attributes.{2}{2}" +
+                    "CLICK THE DOWN ARROW NEXT TO THE ACCOUNT CODE BOX TO OPEN THE LIST AND THEN RESELECT ACCOUNT CODE {0}.",
+                    ARow.AccountCode,
+                    ARow.TransactionNumber,
+                    Environment.NewLine);
+
+                // This code is only running because of failure, so cause an error to occur.
+                VerificationResult = TStringChecks.StringMustNotBeEmpty("",
+                    ValidationContext.ToString(),
+                    this, ValidationColumn, null);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
+            }
+
+            if (!AccountAnalysisAttributesValuesExist())
+            {
+                DataColumn ValidationColumn;
+                TVerificationResult VerificationResult = null;
+                object ValidationContext;
+
+                ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnAccountCodeId];
+                ValidationContext = String.Format(" - Account Code {0} in Transaction {1} is missing Analysis Attribute values.",
+                    ARow.AccountCode,
+                    ARow.TransactionNumber);
+
+                // This code is only running because of failure, so cause an error to occur.
+                VerificationResult = TStringChecks.StringMustNotBeEmpty("",
+                    ValidationContext.ToString(),
+                    this, ValidationColumn, null);
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
+            }
         }
 
         /// <summary>

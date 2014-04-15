@@ -39,6 +39,7 @@ using Ict.Common.Exceptions;
 using Ict.Common.DB.DBCaching;
 using Ict.Common.DB.Exceptions;
 using Ict.Common.IO;
+using Npgsql;
 
 namespace Ict.Common.DB
 {
@@ -768,7 +769,7 @@ namespace Ict.Common.DB
                 }
 
                 // if this is a call to Stored Procedure: set command type accordingly
-                if (ACommandText.ToUpper().StartsWith("CALL"))
+                if (ACommandText.StartsWith("CALL", true, null))
                 {
                     ObjReturn.CommandType = CommandType.StoredProcedure;
                 }
@@ -1537,6 +1538,16 @@ namespace Ict.Common.DB
                 try
                 {
                     FTransaction.Rollback();
+                    FTransaction.Dispose();
+
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                    {
+                        TLogging.Log(msg);
+                    }
+
+                    FLastDBAction = DateTime.Now;
+
+                    FTransaction = null;
                 }
                 catch (Exception Exc)
                 {
@@ -1547,20 +1558,9 @@ namespace Ict.Common.DB
                     // MSDN says: "Try/Catch exception handling should always be used when rolling back a
                     // transaction. A Rollback generates an InvalidOperationException if the connection is
                     // terminated or if the transaction has already been rolled back on the server."
-                    TLogging.Log("An Exception occured while an attempt to roll back a DB Transaction was made: " + Exc.ToString());
+                    TLogging.Log("Exception while attempting Transaction rollback: " + Exc.ToString());
                 }
-
-                FTransaction.Dispose();
-
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
-                {
-                    TLogging.Log(msg);
-                }
-
-                FLastDBAction = DateTime.Now;
             }
-
-            FTransaction = null;
         }
 
         /// <summary>
@@ -2527,6 +2527,12 @@ namespace Ict.Common.DB
         {
             string ErrorMessage = "";
             string FormattedSqlStatement = "";
+
+            if ((AException.GetType() == typeof(NpgsqlException)) && (((NpgsqlException)AException).Code == "25P02"))
+            {
+                TLogging.Log("Npgsq Exception raised: The transaction was cancelled by user command.");
+                return;
+            }
 
             if (ASqlStatement != String.Empty)
             {

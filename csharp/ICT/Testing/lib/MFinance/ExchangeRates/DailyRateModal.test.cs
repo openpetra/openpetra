@@ -1181,7 +1181,9 @@ namespace Tests.MFinance.Client.ExchangeRates
                 dtpDateEffective.Date = new DateTime(2000, 10, 9);
                 txtRateOfExchange.NumberValueDecimal = 0.5225m;
 
+                Assert.IsFalse(btnEnableEdit.Enabled, "The enable edit button should be disabled while a new row is being edited.");
                 tbbSaveTester.Click();
+                Assert.IsTrue(btnEnableEdit.Enabled, "The enable edit button should be enabled when the row has been saved.");
 
                 btnEnableEditTester.Click();
                 Assert.IsTrue(lblEditDelete.Visible);

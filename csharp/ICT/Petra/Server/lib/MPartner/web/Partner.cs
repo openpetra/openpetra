@@ -331,7 +331,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 Count = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
                         "SELECT COUNT(*) FROM PUB_" + PSubscriptionTable.GetTableDBName() +
                         " WHERE " + PSubscriptionTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
-                        " AND " + PSubscriptionTable.GetSubscriptionStatusDBName() + " NOT IN (\"CANCELLED\",\"EXPIRED\")",
+                        " AND " + PSubscriptionTable.GetSubscriptionStatusDBName() + " NOT IN ('CANCELLED','EXPIRED')",
                         Transaction));
                 ADisplayMessage += String.Format(Catalog.GetString("{0} active Subscriptions"), Count.ToString()) + Linebreak;
 
@@ -904,7 +904,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             if (Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(
                         "SELECT COUNT(*) FROM PUB_" + PUnitTable.GetTableDBName() +
                         " WHERE " + PUnitTable.GetPartnerKeyDBName() + " = " + APartnerKey.ToString() +
-                        " AND " + PUnitTable.GetUnitTypeCodeDBName() + " = \"KEY-MIN\"",
+                        " AND " + PUnitTable.GetUnitTypeCodeDBName() + " = 'KEY-MIN'",
                         ATransaction)) > 0)
             {
                 ADisplayMessage = Catalog.GetString("Unable to delete a Key Ministry.");

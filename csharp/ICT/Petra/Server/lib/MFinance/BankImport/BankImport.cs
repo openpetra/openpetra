@@ -664,7 +664,7 @@ namespace Ict.Petra.Server.MFinance.ImportExport.WebConnectors
                             // try to retrieve the current costcentre for this recipient
                             if (detail.RecipientKey != 0)
                             {
-                                detail.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientLedgerNumber(detail.RecipientKey);
+                                detail.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(detail.RecipientKey);
 
                                 detail.CostCentreCode = TGiftTransactionWebConnector.IdentifyPartnerCostCentre(detail.LedgerNumber,
                                     detail.RecipientLedgerNumber);

@@ -298,7 +298,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                                 giftDetail.RecipientKey = Convert.ToInt64(KeyMinistries.Rows[recipientID].ItemArray[0]);
 
                                 giftDetail.RecipientLedgerNumber = Convert.ToInt64(KeyMinistries.Rows[recipientID].ItemArray[1]);
-                                // TTransactionWebConnector.GetRecipientLedgerNumber(giftDetail.RecipientKey);
+                                // TTransactionWebConnector.GetRecipientFundNumber(giftDetail.RecipientKey);
                                 giftDetail.CostCentreCode = KeyMinistries.Rows[recipientID].ItemArray[2].ToString();
                                 // TTransactionWebConnector.IdentifyPartnerCostCentre(FLedgerNumber, giftDetail.RecipientLedgerNumber);
                             }

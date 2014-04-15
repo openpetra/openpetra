@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE reports SYSTEM "reports.dtd">
+<!DOCTYPE reports SYSTEM "..\reports.dtd">
 <reports>
 	<report id="Balance Sheet">
 		<description>
 			This is the balance sheet. It shows the year-to-date data for given costcentres.
 			The selected accounting hierarchy is used, starting with the "BAL SHT" account.
 			The available columns are: Actual End of Previous Year, Actual Previous Year, Actual Selected Year.
-			There are 2 levels of detail, standard and summary.			
+			There are 2 levels of detail, standard and summary.
 			There is also a "costcentre breakdown" option which shows the data of each account broken down by cost centres.
-			For "costcentre breakdown", the ledger must have the "branch processing" parameter activated.			
+			For "costcentre breakdown", the ledger must have the "branch processing" parameter activated.
 
 			requires common.xml and finance.xml
 		</description>
@@ -78,7 +78,7 @@
 											  sub({{param_year_i}}, 1),
 											  true,
 											  {param_currency})"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 
@@ -96,7 +96,7 @@
                                               {{param_year_i}},
                                               true,
                                               {param_currency})"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 
@@ -111,10 +111,11 @@
                                               {{param_end_period_i}},
                                               {{param_year_i}},
                                               {param_currency})"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 		</calculations>
+
 		<levels>
 		<level name="main">
 			<detail>
@@ -199,7 +200,7 @@
 						<parameter name="param_ledger_number_i"/>
 						<parameter name="param_parentaccountcode" value = "BAL SHT"/>
 				</lowerLevelReport>
-			</detail>			
+			</detail>
 			<footer>
 				<field whichfield="left 0" pos="0cm" width="5 cm">
 					<value text="TOTAL ASSETS - LIABILITIES"/></field>
@@ -235,8 +236,8 @@
 							</parameter>
 						</lowerLevelReport>
 					</case>
-				</switch>	
-			</detail>			
+				</switch>
+			</detail>
 			<footer>
 				<switch>
 					<case condition="eq({param_cost_centre_breakdown}, false)">
@@ -276,7 +277,7 @@
 						</lowerLevelReport>
 					</case>
 				</switch>
-			</detail>			
+			</detail>
 			<footer>
 				<switch>
 					<case condition="eq({param_cost_centre_breakdown}, true)">
@@ -318,7 +319,7 @@
 						<field calculation="GetGLMSequences" whichfield="columns"/>
 					</default>
 				</switch>
-			</detail>			
+			</detail>
 			<footer>
 			    <switch>
 				<case condition="eq({param_cost_centre_summary}, true)">

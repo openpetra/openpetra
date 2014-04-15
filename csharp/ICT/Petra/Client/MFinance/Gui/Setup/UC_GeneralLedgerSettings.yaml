@@ -1,33 +1,34 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Ledger Settings
-    Namespace: Ict.Petra.Client.MFinance.Gui.Setup
+    BaseClass: System.Windows.Forms.UserControl
+    UtilObjectClass: TFrmPetraEditUtils
+    Namespace: Ict.Petra.Client.MFinance.Gui.Setup   
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.GL.Data, Ict.Petra.Shared.MFinance.Account.Validation]
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLSetupTDS
     MasterTable: ALedger
     FormType: edit
-    Template: windowEdit
-    WindowWidth: 700
-    WindowHeight: 600
+    Template: usercontrol
+    WindowWidth: 565
+    WindowHeight: 565
+    Actions:
     Controls:
         pnlContent:
             Dock: Fill
             Controls: [grpCurrencies, grpAccountingPeriods, grpMiscellaneousFlags, grpDataRetention]
-        grpCurrencies: {Label=Currencies, Stretch=horizontally}
+        grpCurrencies: {Label=Currencies, Width=550, Stretch=horizontally}
             Controls: [cmbBaseCurrency, cmbIntlCurrency]
-        grpAccountingPeriods: {Label=Accounting Periods, Stretch=horizontally}
+        grpAccountingPeriods: {Label=Accounting Periods, Width=550, Stretch=horizontally}
             Controls: [rgrCalendarModeRadio, nudNumberOfAccountingPeriods, dtpFinancialYearStartDate, nudCurrentPeriod, btnViewCalendar]
-        grpMiscellaneousFlags: {Label=Miscellaneous, Stretch=horizontally}
-            Controls: [pnlSuspenseAccounts, pnlBudget, pnlFwdPosting, pnlBranchProcess]
-        grpDataRetention: {Label=Data Retention, Stretch=horizontally}
+        grpMiscellaneousFlags: {Label=Miscellaneous, Width=550, Stretch=horizontally}
+            Controls: [pnlFwdPosting, pnlSuspenseAccounts, pnlBudget, pnlBranchProcess]
+        grpDataRetention: {Label=Data Retention, Width=550, Stretch=horizontally}
             Controls: [nudActualsDataRetention, nudGiftDataRetention]
+        pnlFwdPosting:
+            ControlsOrientation: horizontal
+            Controls: [chkUseDefaultFwdPostingPeriods, nudNumberFwdPostingPeriods]
         pnlSuspenseAccounts:
             Controls: [chkSuspenseAccountFlag]
         pnlBudget:
             Controls: [chkBudgetControlFlag]
-        pnlFwdPosting:
-            ControlsOrientation: horizontal
-            Controls: [chkUseDefaultFwdPostingPeriods, nudNumberFwdPostingPeriods]
         pnlBranchProcess:
             Controls: [chkBranchProcessing]
             
@@ -47,15 +48,15 @@ RootNode:
         
         cmbBaseCurrency: {List=CurrencyCodeList}
         cmbIntlCurrency: {List=CurrencyCodeList}
-        nudNumberOfAccountingPeriods: {Label=Number of Periods, Validation=true}
-        nudCurrentPeriod: {Label=Current Period, Validation=true}
+        nudNumberOfAccountingPeriods: {Label=Number of Periods, Width=60, Validation=true}
+        nudCurrentPeriod: {Label=Current Period, Width=60, Validation=true}
         btnViewCalendar: {Label=View Calendar, ActionClick=OnBtnCalendar}
         dtpFinancialYearStartDate: {Label=First Day of the Financial Year, Align=bottom}
-        chkSuspenseAccountFlag: {Label=Allow use of suspense accounts?, CheckBoxAttachedLabel=right, Validation=true}
+        chkSuspenseAccountFlag: {Label=Allow use of suspense accounts, CheckBoxAttachedLabel=right, Validation=true}
         chkBudgetControlFlag: {Label=Budget control, CheckBoxAttachedLabel=right}
         chkUseDefaultFwdPostingPeriods: {Label=Use default forward posting periods, CheckBoxAttachedLabel=right, OnChange=UseDefaultFwdPostingPeriodsChanged}
-        nudNumberFwdPostingPeriods: {Label=Forward Posting Periods, Validation=true}
+        nudNumberFwdPostingPeriods: {Label=Forward Posting Periods, Width=60, Validation=true}
         chkBranchProcessing: {Label=Branch processing, CheckBoxAttachedLabel=right}
-        nudActualsDataRetention: {Label=Actuals Data Retention Period}
+        nudActualsDataRetention: {Label=Actuals Data Retention Period, Width=60}
         #nudBudgetDataRetention: {Label=Budget Data Retention Period}
-        nudGiftDataRetention: {Label=Gift Data Retention Period}
+        nudGiftDataRetention: {Label=Gift Data Retention Period, Width=60}

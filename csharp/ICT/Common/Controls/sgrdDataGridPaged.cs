@@ -96,6 +96,9 @@ namespace Ict.Common.Controls
         /// <summary>Size of the Pages that are to be returned</summary>
         private Int16 FPageSize;
 
+        /// <summary>Minimum size of the Pages that are to be returned. Can be used to transfer larger chunks than the physical grid size</summary>
+        private Int16 FMinimumPageSize = 1;
+
         /// <summary>Number of records resulting from the query</summary>
         private Int32 FTotalRecords;
 
@@ -119,6 +122,27 @@ namespace Ict.Common.Controls
 
         /// <summary>Keeps track of whether the OnIdle Handler is already hooked up</summary>
         private bool FIdleSet = false;
+
+        /// <summary>
+        /// Gets/sets the minimum number of rows that constitute one page.  Can be used to get larger chunks of data in one go.
+        /// </summary>
+        public Int16 MinimumPageSize
+        {
+            set
+            {
+                FMinimumPageSize = value;
+
+                if (FMinimumPageSize < DEFAULT_PAGESIZE_IF_GRID_TOO_SMALL)
+                {
+                    FMinimumPageSize = DEFAULT_PAGESIZE_IF_GRID_TOO_SMALL;
+                }
+            }
+
+            get
+            {
+                return FMinimumPageSize;
+            }
+        }
 
         /// <summary>Number of rows that would fit into the Grid at its current horizontal size.</summary>
         public Int32 PageSize
@@ -454,6 +478,11 @@ namespace Ict.Common.Controls
                 this.OnDataPageLoading(CustomEventArgs);
 
                 // Fetch the first page of data
+                if (FPageSize < FMinimumPageSize)
+                {
+                    FPageSize = FMinimumPageSize;
+                }
+
                 FPagedDataTable = FGetDataPagedResult(0, FPageSize, out FTotalRecords, out FTotalPages);
                 ReturnValue = FPagedDataTable;
                 DataTransferDone(AAddEmptyRows);

@@ -65,6 +65,19 @@ namespace Ict.Petra.Client.CommonForms
     }
 
     /// <summary>
+    /// Interface for a 'data-only Class' that holds AP Data (such as
+    /// <see cref="TFormsMessage.FormsMessageAP"></see>).
+    /// </summary>
+    public interface IFormsMessageAPInterface : IFormsMessageClassInterface
+    {
+        /// <summary>Supplier name of the supplier in the 'Forms Message'.  May be empty string if the message relates to more than one supplier.</summary>
+        String SupplierName
+        {
+            get;
+        }
+    }
+
+    /// <summary>
     /// Interface for a 'data-only Class' that holds Partner Data (such as
     /// <see cref="TFormsMessage.FormsMessagePartner"></see>).
     /// </summary>
@@ -118,7 +131,10 @@ namespace Ict.Petra.Client.CommonForms
         mcFamilyMembersChanged,
 
         /// <summary>Gift Destination records have been edited, added or deleted.</summary>
-        mcGiftDestinationChanged
+        mcGiftDestinationChanged,
+
+        /// <summary>An AP transaction has been saved.</summary>
+        mcAPTransactionChanged
     }
 
     /// <summary>
@@ -240,6 +256,57 @@ namespace Ict.Petra.Client.CommonForms
                     throw new ApplicationException(
                     "Method 'SetMessageDataPartner' must not be called for MessageClass '" +
                     Enum.GetName(typeof(TFormsMessageClassEnum), FMessageClass) + "'");
+            }
+        }
+
+        /// <summary>
+        /// Allows setting of AP Transaction Data for 'Form Messages' of MessageClass
+        /// <see cref="TFormsMessageClassEnum.mcAPTransactionChanged"></see>,
+        /// </summary>
+        /// <param name="ASupplierName">Supplier name for the transaction in the 'Forms Message'.  Use empty string if the message does not relate to a specific supplier.</param>
+        public void SetMessageDataAPTransaction(String ASupplierName)
+        {
+            switch (FMessageClass)
+            {
+                case TFormsMessageClassEnum.mcAPTransactionChanged:
+
+                    FMessageObject = new FormsMessageAP(ASupplierName);
+                    break;
+
+                default:
+                    throw new ApplicationException(
+                    "Method 'SetMessageDataAPTransaction' must not be called for MessageClass '" +
+                    Enum.GetName(typeof(TFormsMessageClassEnum), FMessageClass) + "'");
+            }
+        }
+
+        /// <summary>
+        /// A 'data-only' class for Partner Data for 'Form Messages' of MessageClass
+        /// <see cref="TFormsMessageClassEnum.mcNewPartnerSaved"></see>,
+        /// <see cref="TFormsMessageClassEnum.mcExistingPartnerSaved"></see> and
+        /// <see cref="TFormsMessageClassEnum.mcFamilyMembersChanged"></see>.
+        /// </summary>
+        public class FormsMessageAP : IFormsMessageAPInterface
+        {
+            String FSupplierName;
+
+            /// <summary>
+            /// Constructor that initializes internal fields which can be
+            /// read out by using the Properties of this Class.
+            /// </summary>
+            /// <param name="ASupplierName">Supplier name of the Partner in the 'Forms Message'.  Use an empty string if there is no specific supplier to report.</param>
+            public FormsMessageAP(String ASupplierName)
+            {
+                FSupplierName = ASupplierName;
+            }
+
+            /// <summary>Supplier name of the supplier in the 'Forms Message'.  May be empty string if the message relates to more than one supplier.</summary>
+            public String SupplierName
+            {
+                get
+                {
+                    return FSupplierName;
+                }
             }
         }
 

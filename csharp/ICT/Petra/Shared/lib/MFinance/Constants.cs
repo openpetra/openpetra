@@ -57,6 +57,9 @@ namespace Ict.Petra.Shared.MFinance
         /// <summary>gift type</summary>
         public const string GIFT_TYPE_OTHER = "Other";
 
+        /// <summary>motivation group for gift</summary>
+        public const string MOTIVATION_GROUP_GIFT = "GIFT";
+
         /// <summary>GL Batch</summary>
         public const String BATCH_UNPOSTED = "Unposted";
 

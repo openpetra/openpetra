@@ -176,6 +176,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
             foreach (TTableField col in currentTable.grpTableField)
             {
+                col.strTableName = currentTable.strName;
                 ProcessTemplate tempTemplate = null;
                 string columnOverwrite = "";
                 bool writeColumnProperties = true;
