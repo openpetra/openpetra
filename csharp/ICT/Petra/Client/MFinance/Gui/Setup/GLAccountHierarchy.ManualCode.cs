@@ -94,6 +94,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             public AAccountHierarchyDetailRow DetailRow;
         };
 
+        public void ClearStatus()
+        {
+            FStatus = "";
+            txtStatus.Text = FStatus;
+            txtStatus.Refresh();
+        }
+
+        public void ShowStatus(String NewStr)
+        {
+            FStatus = FStatus + "\r\n" + NewStr;
+            txtStatus.Text = FStatus;
+            txtStatus.Refresh();
+        }
+
         //
         // Drag and drop methods
         // (Mostly copied from Microsoft example code) :
@@ -277,9 +291,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 NewNode.Expand();
                 ANewParent.Expand();
                 ANewParent.BackColor = Color.White;
-                FStatus += String.Format(Catalog.GetString("{0} was moved from {1} to {2}.\r\n"),
-                    AChild.Text, PrevParent, ANewParent.Text);
-                txtStatus.Text = FStatus;
+                ShowStatus (String.Format(Catalog.GetString("{0} was moved from {1} to {2}."),
+                    AChild.Text, PrevParent, ANewParent.Text));
 
                 //Remove Original Node
                 AChild.Remove();
@@ -362,6 +375,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 FLedgerNumber = value;
                 ucoAccountAnalysisAttributes.LedgerNumber = FLedgerNumber;
+                ucoAccountAnalysisAttributes.ShowStatus = ShowStatus;
                 FMainDS.Clear();
                 FMainDS.Merge(TRemote.MFinance.Setup.WebConnectors.LoadAccountHierarchies(FLedgerNumber));
                 PopulateTreeView();
@@ -1044,8 +1058,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                         FRecentlyUpdatedDetailAccountCode = INTERNAL_UNASSIGNED_DETAIL_ACCOUNT_CODE;
 
-                        FStatus += Catalog.GetString("Account Code change REJECTED!") + Environment.NewLine;
-                        txtStatus.Text = FStatus;
+                        ShowStatus (Catalog.GetString("Account Code change REJECTED!"));
 
                         MessageBox.Show(String.Format(
                                 Catalog.GetString(
@@ -1076,10 +1089,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         }
                         else
                         {
-                            FStatus += Catalog.GetString("Updating Account Code change - please wait.\r\n");
-
-                            txtStatus.Text = FStatus;
-                            txtStatus.Refresh();
+                            ShowStatus(Catalog.GetString("Updating Account Code change - please wait."));
                             TVerificationResultCollection VerificationResults;
 
                             // If this code was previously in the DB, I need to assume that there may be transactions posted to it.
@@ -1100,14 +1110,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 FPetraUtilsObject.SuppressChangeDetection = true;
                                 PopulateTreeView();
                                 ShowDetailsManual(null);
-                                FStatus = "";
-                                txtStatus.Text = FStatus;
+                                ClearStatus();
                                 FIAmUpdating = false;
                                 FPetraUtilsObject.SuppressChangeDetection = false;
                                 SelectNodeByName(FRecentlyUpdatedDetailAccountCode);
 
-                                FStatus += String.Format(Catalog.GetString("Account Code changed to '{0}'."), strNewDetailAccountCode) + "\r\n";
-                                txtStatus.Text = FStatus;
+                                ShowStatus(String.Format(Catalog.GetString("Account Code changed to '{0}'."), strNewDetailAccountCode));
                             }
                             else
                             {

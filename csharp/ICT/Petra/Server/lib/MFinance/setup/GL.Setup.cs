@@ -1517,32 +1517,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         #endregion Data Validation
 
         /// <summary>
-        /// Find out whether I can detach this Analysis Type Code from this account
-        /// If it's been used in any transactions, I'm stuck with it.
-        /// Cascading checks AApAnalAttrib, ARecurringTransAnalAttrib and ATransAnalAttrib.
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AAccountCode"></param>
-        /// <param name="AAnalysisTypeCode"></param>
-        /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static Boolean CanDetachAnalysisType(Int32 ALedgerNumber, String AAccountCode, String AAnalysisTypeCode)
-        {
-            List <TRowReferenceInfo>References;
-
-            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            Int32 RefCount = AAnalysisAttributeCascading.CountByPrimaryKey(ALedgerNumber,
-                AAnalysisTypeCode,
-                AAccountCode,
-                0,
-                Transaction,
-                true,
-                out References);
-            DBAccess.GDBAccessObj.RollbackTransaction();
-            return RefCount == 0;
-        }
-
-        /// <summary>
         /// helper function for ExportAccountHierarchy
         /// </summary>
         private static void InsertNodeIntoXmlDocument(GLSetupTDS AMainDS,
@@ -3000,7 +2974,71 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// Check if a value in  AFREEFORMANALSYSIS cand be deleted (count the references in ATRansANALATTRIB)
+        /// Check if a AnalysisAttribute Row can be removed from an Account (not if it's in use!)
+        /// </summary>
+        [RequireModulePermission("FINANCE-1")]
+        public static Boolean CanDetachTypeCodeFromAccount (Int32 ALedgerNumber, String AAccountCode, String ATypeCode, out String Message)
+        {
+            TDBTransaction ReadTrans = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            try
+            {
+                {
+                    AApAnalAttribTable tbl = new AApAnalAttribTable();
+                    AApAnalAttribRow Template = tbl.NewRowTyped(false);
+                    Template.LedgerNumber = ALedgerNumber;
+                    Template.AccountCode = AAccountCode;
+                    Template.AnalysisTypeCode = ATypeCode;
+                    tbl = AApAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
+                    if (tbl.Rows.Count > 0)
+                    {
+                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode)
+                        + String.Format(Catalog.GetString("Analysis Type is used in AP documents ({0} entries)."), tbl.Rows.Count);
+                        return false;
+                    }
+                }
+
+                {
+                    ATransAnalAttribTable tbl = new ATransAnalAttribTable();
+                    ATransAnalAttribRow Template = tbl.NewRowTyped(false);
+                    Template.LedgerNumber = ALedgerNumber;
+                    Template.AccountCode = AAccountCode;
+                    Template.AnalysisTypeCode = ATypeCode;
+                    tbl = ATransAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
+                    if (tbl.Rows.Count > 0)
+                    {
+                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode)
+                        + String.Format(Catalog.GetString("Analysis Type is used in Transactions ({0} entries)."), tbl.Rows.Count);
+                        return false;
+                    }
+                }
+                {
+                    ARecurringTransAnalAttribTable tbl = new ARecurringTransAnalAttribTable();
+                    ARecurringTransAnalAttribRow Template = tbl.NewRowTyped(false);
+                    Template.LedgerNumber = ALedgerNumber;
+                    Template.AccountCode = AAccountCode;
+                    Template.AnalysisTypeCode = ATypeCode;
+                    tbl = ARecurringTransAnalAttribAccess.LoadUsingTemplate(Template, ReadTrans);
+                    if (tbl.Rows.Count > 0)
+                    {
+                        Message = String.Format(Catalog.GetString("Cannot remove {0} from {1}: "), ATypeCode, AAccountCode)
+                        + String.Format(Catalog.GetString("Analysis Type is used in recurring Transactions ({0} entries)."), tbl.Rows.Count);
+                        return false;
+                    }
+                }
+                
+            }
+
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+            }
+            Message = "";
+            return true;
+        }
+
+        /// <summary>
+        /// Check if a value in  AFREEFORMANALSYSIS can be deleted (count the references in ATRansANALATTRIB)
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static int CheckDeleteAFreeformAnalysis(Int32 ALedgerNumber, String ATypeCode, String AAnalysisValue)
