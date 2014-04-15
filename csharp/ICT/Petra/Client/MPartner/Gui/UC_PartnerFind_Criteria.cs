@@ -347,6 +347,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             TmpString = TmpString.Replace("WORKER-FAM", "FAMILY");
             FDefaultPartnerClass = TmpString;
+   
+            if (ARestrictedPartnerClasses.Length > 1 && FPartnerClassDataTable.Select("PartnerClass = '*'").Length == 0)
+            {
+                PartnerClassDataRow = FPartnerClassDataTable.NewRow();
+                PartnerClassDataRow["PartnerClass"] = "*";
+                FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
+            }
 
             foreach (String eachPart in ARestrictedPartnerClasses)
             {

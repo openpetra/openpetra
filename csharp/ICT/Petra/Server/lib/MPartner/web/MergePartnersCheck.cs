@@ -604,5 +604,119 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             return ReturnTable;
         }
+
+        /// <summary>
+        /// Finds if an active Gift Destination exists and checkes if it can be merged
+        /// </summary>
+        /// <param name="AFromPartnerKey">Partner being merged from</param>
+        /// <param name="AToPartnerKey">Partner being merged to</param>
+        /// <param name="APartnerClass">Partner class of both partners</param>
+        /// <param name="AFromGiftDestinationNeedsEnded">True if active 'From' Gift Destination needs it's expiry date modified in order to merge</param>
+        /// <param name="AToGiftDestinationNeedsEnded">True if active 'To' Gift Destination needs it's expiry date modified in order to merge</param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool ActiveGiftDestination(long AFromPartnerKey,
+                                                    long AToPartnerKey,
+                                                    TPartnerClass APartnerClass,
+                                                    out bool AFromGiftDestinationNeedsEnded,
+                                                    out bool AToGiftDestinationNeedsEnded)
+        {
+            AFromGiftDestinationNeedsEnded = false;
+            AToGiftDestinationNeedsEnded = false;
+            PPartnerGiftDestinationRow FromGiftDestinationRowNeedsEnded = null;
+            PPartnerGiftDestinationRow ToGiftDestinationRowNeedsEnded = null;
+            PPartnerGiftDestinationRow ActiveRow = null;
+            TDBTransaction Transaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
+
+            try
+            {
+                // if partners are Person's then find their family keys
+                if (APartnerClass == TPartnerClass.PERSON)
+                {
+                    AFromPartnerKey = ((PPersonRow) PPersonAccess.LoadByPrimaryKey(AFromPartnerKey, Transaction).Rows[0]).FamilyKey;
+                    AToPartnerKey = ((PPersonRow) PPersonAccess.LoadByPrimaryKey(AToPartnerKey, Transaction).Rows[0]).FamilyKey;
+                }
+                
+                // check for an active gift destination for the 'From' partner
+                PPartnerGiftDestinationTable GiftDestinations = PPartnerGiftDestinationAccess.LoadViaPPartner(AFromPartnerKey, Transaction);
+                ActiveRow = GetActiveGiftDestination(GiftDestinations);
+                
+                // return if no active record has been found
+                if (ActiveRow == null)
+                {
+                    return false;
+                }
+                
+                // check for clash with the 'To' partner
+                PPartnerGiftDestinationTable ToGiftDestinations = PPartnerGiftDestinationAccess.LoadViaPPartner(AToPartnerKey, Transaction);
+                CheckGiftDestinationClashes(ToGiftDestinations, ActiveRow, out FromGiftDestinationRowNeedsEnded, out ToGiftDestinationRowNeedsEnded);
+                
+                if (FromGiftDestinationRowNeedsEnded != null) AFromGiftDestinationNeedsEnded = true;
+                if (ToGiftDestinationRowNeedsEnded != null) AToGiftDestinationNeedsEnded = true;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+            }
+            finally
+            {
+                DBAccess.GDBAccessObj.RollbackTransaction();
+                TLogging.LogAtLevel(7, "TMergePartnersWebConnector.GetPartnerBankingDetails: rollback own transaction.");
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Finds the active Gift Destination (if it exists)
+        /// </summary>
+        /// <param name="APartnersGiftDestinations">Table containing the Gift Destinations for one Family Partner</param>
+        /// <returns>Returns the active Gift Destination or null if none exist</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static PPartnerGiftDestinationRow GetActiveGiftDestination(PPartnerGiftDestinationTable APartnersGiftDestinations)
+        {  
+            foreach (PPartnerGiftDestinationRow Row in APartnersGiftDestinations.Rows)
+            {
+                if (Row.DateEffective <= DateTime.Today && (Row.IsDateExpiresNull() || Row.DateExpires >= DateTime.Today)
+                    && Row.DateEffective != Row.DateExpires)
+                {
+                    return Row;
+                }
+            }
+            
+            return null;
+        }
+
+        /// <summary>
+        /// Checkes for clashes when moving an active Gift Destination to a new Family
+        /// </summary>
+        /// <param name="AToPartnersGiftDestinations">New Family's Gift Destination</param>
+        /// <param name="AFromActiveRow">Active Gift Destination to be moved</param>
+        /// <param name="AFromGiftDestinationNeedsEnded">Returns record with an effective date that the Active Row needs to be expired before</param>
+        /// <param name="AToGiftDestinationNeedsEnded">Returns record that needs expired before the Active Row is effective</param>
+        [RequireModulePermission("PTNRUSER")]
+        public static void CheckGiftDestinationClashes(PPartnerGiftDestinationTable AToPartnersGiftDestinations,
+                                                       PPartnerGiftDestinationRow AFromActiveRow,
+                                                       out PPartnerGiftDestinationRow AFromGiftDestinationNeedsEnded,
+                                                       out PPartnerGiftDestinationRow AToGiftDestinationNeedsEnded)
+        {
+            AFromGiftDestinationNeedsEnded = null;
+            AToGiftDestinationNeedsEnded = null;
+            
+            foreach (PPartnerGiftDestinationRow Row in AToPartnersGiftDestinations.Rows)
+            {
+                if (Row.DateEffective != Row.DateExpires
+                    && Row.DateEffective >= AFromActiveRow.DateEffective && Row.DateEffective > DateTime.Today
+                    && (AFromActiveRow.IsDateExpiresNull() || Row.DateEffective <= AFromActiveRow.DateExpires))
+                {
+                    AFromGiftDestinationNeedsEnded = Row;
+                }
+                else if (Row.DateEffective != Row.DateExpires && 
+                    Row.DateEffective < AFromActiveRow.DateEffective && (Row.IsDateExpiresNull() || Row.DateExpires >= AFromActiveRow.DateEffective))
+                {
+                    AToGiftDestinationNeedsEnded = Row;
+                }
+            }
+        }
     }
 }

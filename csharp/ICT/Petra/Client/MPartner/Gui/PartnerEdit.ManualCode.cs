@@ -2475,7 +2475,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             throw new NotImplementedException();
         }
 
-        private bool UserHasPersonnelAccess()
+        private static bool UserHasPersonnelAccess()
         {
             return UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_PERSONNEL);
         }

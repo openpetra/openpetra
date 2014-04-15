@@ -211,12 +211,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 if (ADataType == "ADDRESS")
                 {
-                    TFrmMergePartnersDialog.FLocationKeys = SelectDialog.GetSelectedLocationKeys();
-                    TFrmMergePartnersDialog.FSiteKeys = SelectDialog.GetSelectedSiteKeys();
+                    TFrmMergePartnersDialog.LocationKeys = SelectDialog.GetSelectedLocationKeys();
+                    TFrmMergePartnersDialog.SiteKeys = SelectDialog.GetSelectedSiteKeys();
                 }
                 else if (ADataType == "BANKACCOUNT")
                 {
-                    TFrmMergePartnersDialog.FMainBankingDetailsKey = SelectDialog.GetSelectedBankAccount();
+                    TFrmMergePartnersDialog.MainBankingDetailsKey = SelectDialog.GetSelectedBankAccount();
                 }
 
                 return true;
