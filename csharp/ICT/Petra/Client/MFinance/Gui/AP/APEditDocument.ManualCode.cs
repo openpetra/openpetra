@@ -105,24 +105,24 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             txtDetailAmount.TextChanged += new EventHandler(UpdateDetailBaseAmount);
             txtExchangeRateToBase.TextChanged += new EventHandler(UpdateDetailBaseAmount);
 
+/*
+ * All this moved out to ShowAnalysisAttributesForAccount, because doing it here is too late:
             if (grdAnalAttributes.Columns.Count < 2)
             {
                 grdAnalAttributes.SpecialKeys = GridSpecialKeys.Default | GridSpecialKeys.Tab;
 
                 FAnalAttribTypeVal = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
                 FAnalAttribTypeVal.EnableEdit = true;
+                FAnalAttribTypeVal.Control.DropDownStyle = ComboBoxStyle.DropDownList;
                 FAnalAttribTypeVal.EditableMode = EditableMode.Focus;
                 FAnalAttribTypeVal.Control.SelectedValueChanged += new EventHandler(AnalysisAttributeValueChanged);
                 grdAnalAttributes.AddTextColumn("Value",
-                    FMainDS.AApAnalAttrib.Columns[AApAnalAttribTable.GetAnalysisAttributeValueDBName()], 120,
+                    FMainDS.AApAnalAttrib.Columns[AApAnalAttribTable.GetAnalysisAttributeValueDBName()], 100,
                     FAnalAttribTypeVal);
 
                 grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
             }
-
-            grdAnalAttributes.Columns[0].Width = 90; // for some reason, doing this too early doesn't work.
-            grdAnalAttributes.Columns[1].Width = 120;
-
+*/
             mniEdit.DropDownItems.Remove(mniEditSeparator);
             mniEdit.DropDownItems.Remove(mniEditFilter); // These items are provided by windowEditWebConnectorMasterDetail
             mniEdit.DropDownItems.Remove(mniEditFind);   // but are not needed in this application.
@@ -600,6 +600,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdAnalAttributes.SpecialKeys = GridSpecialKeys.Default | GridSpecialKeys.Tab;
 
                 FAnalAttribTypeVal = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
+                FAnalAttribTypeVal.Control.DropDownStyle = ComboBoxStyle.DropDownList;
                 FAnalAttribTypeVal.EnableEdit = true;
                 FAnalAttribTypeVal.EditableMode = EditableMode.Focus;
                 FAnalAttribTypeVal.Control.SelectedValueChanged += new EventHandler(AnalysisAttributeValueChanged);
@@ -610,7 +611,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
             }
 
-            grdAnalAttributes.Columns[0].Width = 90; // for some reason, doing this earlier doesn't work.
+            grdAnalAttributes.Columns[0].Width = 90; // for some unknown reason, this doesn't work.
             grdAnalAttributes.Columns[1].Width = 120;
 
             AccountsPayableTDSAApDocumentDetailRow DetailRow = GetSelectedDetailRow();

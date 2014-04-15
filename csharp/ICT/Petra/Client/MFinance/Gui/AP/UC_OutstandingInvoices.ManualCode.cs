@@ -47,6 +47,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     public partial class TUC_OutstandingInvoices
     {
         private bool FKeepUpSearchFinishedCheck = false;
+        private bool FApprovalSetupFlag = false;
 
         /// <summary>DataTable that holds all Pages of data (also empty ones that are not retrieved yet!)</summary>
         private DataTable FInvoiceTable;
@@ -212,6 +213,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (e.DataPage == 0)
             {
                 FMainForm.IsInvoiceDataChanged = false;
+            }
+
+            if (!FApprovalSetupFlag)
+            {
+                // Get our AP ledger settings and enable/disable the corresponding search option on the filter panel
+                TFrmLedgerSettingsDialog settings = new TFrmLedgerSettingsDialog(FMainForm, FMainForm.LedgerNumber);
+
+                FRequireApprovalBeforePosting = settings.APRequiresApprovalBeforePosting;
+                Control rbtForApproval = FFilterPanelControls.FindControlByName("rbtForApproval");
+                rbtForApproval.Enabled = FRequireApprovalBeforePosting;
+                FApprovalSetupFlag = true;
             }
         }
 
