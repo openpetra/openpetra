@@ -94,6 +94,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             public AAccountHierarchyDetailRow DetailRow;
         };
 
+        /// <summary>Clear the Status Box</summary>
         public void ClearStatus()
         {
             FStatus = "";
@@ -101,6 +102,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             txtStatus.Refresh();
         }
 
+        /// <summary>Add this in the Status Box</summary>
+        /// <param name="NewStr"></param>
         public void ShowStatus(String NewStr)
         {
             FStatus = FStatus + "\r\n" + NewStr;

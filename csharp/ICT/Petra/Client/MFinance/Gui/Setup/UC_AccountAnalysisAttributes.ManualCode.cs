@@ -41,8 +41,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         DataView FAnalysisTypesForCombo;
         Boolean FIamUpdating = false;
 
+        /// <summary>Add this in the Status Box</summary>
         public delegate void UpdateParentStatus (String Message);
 
+        /// <summary>Add this in the Status Box</summary>
         public UpdateParentStatus ShowStatus = null;
 
         /// <summary>
@@ -71,6 +73,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                         Row.Delete();
                     }
                 }
+            }
+            if ((FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RowState == DataRowState.Detached))
+            {
+                FPreviouslySelectedDetailRow = null;
             }
         }
 
@@ -169,8 +175,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 cmbDetailAnalTypeCode.Text = ARow.AnalysisTypeCode;
                 String ServerMessage;
                 Boolean CanBeChanged =TRemote.MFinance.Setup.WebConnectors.CanDetachTypeCodeFromAccount(ARow.LedgerNumber, ARow.AccountCode, ARow.AnalysisTypeCode, out ServerMessage);
-                cmbDetailAnalTypeCode.Enabled = CanBeChanged;
-                btnDelete.Enabled = CanBeChanged;
+                pnlDetails.Enabled = CanBeChanged;
                 if (!CanBeChanged)
                 {
                     if (ShowStatus != null)
@@ -234,7 +239,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             bool ADeletionPerformed,
             string ACompletionMessage)
         {
-            btnDelete.Enabled = (grdDetails.Rows.Count > 1);
         }
 
         private void OnDetailAnalysisTypeCodeChange(System.Object sender, EventArgs e)
@@ -242,6 +246,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (!FIamUpdating && (FPreviouslySelectedDetailRow != null) && (FPreviouslySelectedDetailRow.RowState != DataRowState.Deleted))
             {
                 FPreviouslySelectedDetailRow.AnalysisTypeCode = cmbDetailAnalTypeCode.Text;
+
+                //
+                // The change may have altered the ordering of the list, 
+                // so now I need to re-select the item, wherever it's gone!
+                Int32 RowIdx = FMainDS.AAnalysisAttribute.DefaultView.Find(cmbDetailAnalTypeCode.Text);
+                SelectByIndex(RowIdx + 1);
             }
         }
 
@@ -265,6 +275,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void SelectByIndex(int rowIndex)
         {
+            grdDetails.Selection.ResetSelection(true);
             if (rowIndex >= grdDetails.Rows.Count)
             {
                 rowIndex = grdDetails.Rows.Count - 1;
