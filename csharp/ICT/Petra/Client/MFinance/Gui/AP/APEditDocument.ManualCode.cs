@@ -50,7 +50,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     {
         Int32 FDocumentLedgerNumber;
         ALedgerRow FLedgerRow = null;
-        SourceGrid.Cells.Editors.ComboBox FAnalAttribTypeVal;
+        SourceGrid.Cells.Editors.ComboBox cmbAnalAttribValues;
         AApAnalAttribRow FPSAttributesRow;
 
         /// <summary>
@@ -135,11 +135,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return;
             }
 
-            FPSAttributesRow = GetSelectedAttributeRow();
-            if (FPSAttributesRow == null)
+
+            if (GetSelectedAttributeRow() == null || FPSAttributesRow == GetSelectedAttributeRow())
             {
                 return;
             }
+            FPSAttributesRow = GetSelectedAttributeRow();
 
             FMainDS.AFreeformAnalysis.DefaultView.RowFilter = String.Format("{0}='{1}' AND {2}=true",
                 AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
@@ -147,7 +148,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 AFreeformAnalysisTable.GetActiveDBName());
 
             //Refresh the combo values
-            string[] analTypeValues = new string[FMainDS.AFreeformAnalysis.DefaultView.Count];
+            int analTypeCodeValuesCount = FMainDS.AFreeformAnalysis.DefaultView.Count;
+
+            if (analTypeCodeValuesCount == 0)
+            {
+                MessageBox.Show(Catalog.GetString("No attribute values are defined!"), FPSAttributesRow.AnalysisTypeCode, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            string[] analTypeValues = new string[analTypeCodeValuesCount];
 
             FMainDS.AFreeformAnalysis.DefaultView.Sort = AFreeformAnalysisTable.GetAnalysisValueDBName();
             int counter = 0;
@@ -158,8 +166,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 analTypeValues[counter++] = faRow.AnalysisValue;
             }
 
-            FAnalAttribTypeVal.StandardValuesExclusive = true;
-            FAnalAttribTypeVal.StandardValues = analTypeValues;
+            cmbAnalAttribValues.StandardValuesExclusive = true;
+            cmbAnalAttribValues.StandardValues = analTypeValues;
         }
 
         void AnalysisAttributeValueChanged(object sender, EventArgs e)
@@ -599,14 +607,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 grdAnalAttributes.SpecialKeys = GridSpecialKeys.Default | GridSpecialKeys.Tab;
 
-                FAnalAttribTypeVal = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
-                FAnalAttribTypeVal.Control.DropDownStyle = ComboBoxStyle.DropDownList;
-                FAnalAttribTypeVal.EnableEdit = true;
-                FAnalAttribTypeVal.EditableMode = EditableMode.Focus;
-                FAnalAttribTypeVal.Control.SelectedValueChanged += new EventHandler(AnalysisAttributeValueChanged);
+                cmbAnalAttribValues = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
+                cmbAnalAttribValues.Control.DropDownStyle = ComboBoxStyle.DropDownList;
+                cmbAnalAttribValues.EnableEdit = true;
+                cmbAnalAttribValues.EditableMode = EditableMode.Focus;
+                cmbAnalAttribValues.Control.SelectedValueChanged += new EventHandler(AnalysisAttributeValueChanged);
                 grdAnalAttributes.AddTextColumn("Value",
                     FMainDS.AApAnalAttrib.Columns[AApAnalAttribTable.GetAnalysisAttributeValueDBName()], 120,
-                    FAnalAttribTypeVal);
+                    cmbAnalAttribValues);
 
                 grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
             }
