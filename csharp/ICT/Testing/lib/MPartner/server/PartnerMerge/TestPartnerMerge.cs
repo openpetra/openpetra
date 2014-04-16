@@ -4499,7 +4499,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             Assert.AreEqual("MERGED", FromPartnerRow.StatusCode, "merge gift info");
             Assert.AreEqual("ACTIVE", ToPartnerRow.StatusCode, "merge gift info");
             Assert.AreEqual(AToPartnerKey, GiftRow.DonorKey, "merge gift info");
-            Assert.AreEqual(AToPartnerKey, GiftDetailRow.RecipientKey, "merge gift info");
+            Assert.AreEqual(0, GiftDetailRow.RecipientKey, "merge gift info");
             Assert.AreEqual(AToPartnerKey, GiftDetailRow.RecipientLedgerNumber, "merge gift info");
 
             // Checking the MergeTable

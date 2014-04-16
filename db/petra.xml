@@ -17617,7 +17617,7 @@
                 format="9999999999"
                 label="Receiving Field"
                 columnlabel="Field Office"
-                help="The person&apos;s is serving for that field."
+                help="The person is serving for that field."
                 notnull="yes"/>
     <tablefield name="pm_receiving_field_office_n"
                 type="number"

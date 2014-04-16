@@ -817,6 +817,11 @@ namespace Ict.Tools.DataDumpPetra2
                 RowCounter = TFinanceBudgetUpgrader.FixABudgetPeriod(AColumnNames, ref ANewRow, AWriter, AWriterTest);
             }
 
+            if (ATableName == "p_partner_gift_destination")
+            {
+                RowCounter = TPartnerGiftDestination.PopulatePPartnerGiftDestination(AColumnNames, ref ANewRow, AWriter, AWriterTest);
+            }
+
             if (ATableName == "s_system_defaults")
             {
                 // load the file a_system_parameter.d.gz so that we can access s_system_parameter, s_site_key_n

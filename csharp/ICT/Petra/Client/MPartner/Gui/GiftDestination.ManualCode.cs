@@ -24,6 +24,7 @@
 using System;
 using System.IO;
 using System.Data;
+using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Drawing.Printing;
@@ -123,6 +124,30 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
 
             grdDetails.Columns.AutoSize(false);
+            
+            //Prepare grid to highlight inactive Gift Destinations
+            SourceGrid.Cells.Views.Cell strikeoutCell = new SourceGrid.Cells.Views.Cell();
+            strikeoutCell.Font = new System.Drawing.Font(grdDetails.Font, FontStyle.Strikeout);
+
+            // Create a condition, apply the view when true, and assign a delegate to handle it
+            SourceGrid.Conditions.ConditionView condition = new SourceGrid.Conditions.ConditionView(strikeoutCell);
+            condition.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
+            {
+                DataRowView row = (DataRowView)itemRow;
+                
+                if (row[PPartnerGiftDestinationTable.ColumnDateEffectiveId].ToString() == row[PPartnerGiftDestinationTable.ColumnDateExpiresId].ToString())
+                {
+                    return true;
+                }
+                
+                return false;
+            };
+            
+            // add condtion to grid columns
+            grdDetails.Columns[0].Conditions.Add(condition);
+            grdDetails.Columns[1].Conditions.Add(condition);
+            grdDetails.Columns[2].Conditions.Add(condition);
+            grdDetails.Columns[3].Conditions.Add(condition);
         }
 
         private void NewRow(Object Sender, EventArgs e)

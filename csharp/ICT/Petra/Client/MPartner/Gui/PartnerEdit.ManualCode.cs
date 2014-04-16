@@ -2727,21 +2727,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                         {
                             ucoUpperPart.SetGiftDestinationText(MPartnerConstants.PARTNERTYPE_EX_WORKER);
                         }
-                        else if (HasCurrentCommitment && (FieldName != ""))
+                        else if (HasCurrentCommitment && FieldName != "")
                         {
                             ucoUpperPart.SetGiftDestinationText(FieldName);
                         }
-                        else if (HasCurrentCommitment)
+                        else if (HasCurrentCommitment && FieldKey > 0)
                         {
-                            if (FieldKey > 0)
-                            {
-                                ucoUpperPart.SetGiftDestinationText(StringHelper.FormatStrToPartnerKeyString(FieldKey.ToString()));
-                            }
+                            ucoUpperPart.SetGiftDestinationText(StringHelper.FormatStrToPartnerKeyString(FieldKey.ToString()));
                         }
                         else
                         {
                             ucoUpperPart.SetGiftDestinationText(Catalog.GetString("Not set"));
                         }
+                    }
+                    else
+                    {
+                        ucoUpperPart.SetGiftDestinationText(Catalog.GetString("Not set"));
                     }
                 }
                 catch (EPartnerNotExistantException)

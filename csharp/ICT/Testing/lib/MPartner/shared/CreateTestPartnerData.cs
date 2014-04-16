@@ -351,7 +351,7 @@ namespace Tests.MPartner.shared.CreateTestPartnerData
             GiftDetail.DetailNumber = 1;
             GiftDetail.MotivationGroupCode = "GIFT";
             GiftDetail.MotivationDetailCode = "SUPPORT";
-            GiftDetail.RecipientKey = APartnerKey;
+            GiftDetail.RecipientKey = 0;
             GiftDetail.RecipientLedgerNumber = APartnerKey;
             AGiftDS.AGiftDetail.Rows.Add(GiftDetail);
 
