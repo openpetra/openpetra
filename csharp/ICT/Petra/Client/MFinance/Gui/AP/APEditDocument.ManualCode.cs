@@ -668,6 +668,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             FMainDS.AApAnalAttrib.DefaultView.RowFilter = AccountCodeRowFilter;
+            FMainDS.AApAnalAttrib.DefaultView.Sort = AApAnalAttribTable.GetAnalysisTypeCodeDBName();
 
             grdAnalAttributes.DataSource = null;
             grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.AApAnalAttrib.DefaultView);
@@ -676,7 +677,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (grdAnalAttributes.Rows.Count > 2)
             {
                 grdAnalAttributes.SelectRowWithoutFocus(1);
-                FPSAttributesRow = GetSelectedAttributeRow();
+                AnalysisAttributesGrid_RowSelected(null, null);
             }
         }
 

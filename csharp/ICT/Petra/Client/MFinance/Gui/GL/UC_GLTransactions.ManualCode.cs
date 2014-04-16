@@ -530,7 +530,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (grdAnalAttributes.Rows.Count > 1)
             {
                 grdAnalAttributes.SelectRowWithoutFocus(1);
-                FPSAttributesRow = GetSelectedAttributeRow();
+                AnalysisAttributesGrid_RowSelected(null, null);
             }
         }
 
@@ -683,10 +683,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Refresh the combo values
             cmbAnalAttribValues.StandardValuesExclusive = true;
             cmbAnalAttribValues.StandardValues = analTypeValues;
-
+/*
             Console.WriteLine("RowSelected: ActivePos is {0}:{1}",
                 grdAnalAttributes.Selection.ActivePosition.Row,
                 grdAnalAttributes.Selection.ActivePosition.Column);
+ */
         }
 
         private void AnalysisAttributeValueChanged(System.Object sender, EventArgs e)

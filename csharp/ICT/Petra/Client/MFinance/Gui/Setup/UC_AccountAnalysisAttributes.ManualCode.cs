@@ -130,6 +130,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FLedgerNumber,
                     AAnalysisAttributeTable.GetAccountCodeDBName(),
                     FAccountCode);
+                FMainDS.AAnalysisAttribute.DefaultView.Sort = AAnalysisAttributeTable.GetAnalysisTypeCodeDBName();
 
                 pnlDetails.Enabled = false;
                 btnDelete.Enabled = (grdDetails.Rows.Count > 1);
@@ -167,13 +168,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 LoadCmbAnalType(ARow.AnalysisTypeCode);
                 cmbDetailAnalTypeCode.Text = ARow.AnalysisTypeCode;
                 String ServerMessage;
-                if (TRemote.MFinance.Setup.WebConnectors.CanDetachTypeCodeFromAccount(ARow.LedgerNumber, ARow.AccountCode, ARow.AnalysisTypeCode, out ServerMessage))
+                Boolean CanBeChanged =TRemote.MFinance.Setup.WebConnectors.CanDetachTypeCodeFromAccount(ARow.LedgerNumber, ARow.AccountCode, ARow.AnalysisTypeCode, out ServerMessage);
+                cmbDetailAnalTypeCode.Enabled = CanBeChanged;
+                btnDelete.Enabled = CanBeChanged;
+                if (!CanBeChanged)
                 {
-                    cmbDetailAnalTypeCode.Enabled = true;
-                }
-                else
-                {
-                    cmbDetailAnalTypeCode.Enabled = false;
                     if (ShowStatus != null)
                     {
                         ShowStatus(ServerMessage);
