@@ -30,7 +30,7 @@ RootNode:
         actFileExportPartner: {Label=E&xport Partner, ActionClick=FileExportPartner, Image: ExportPetra.ico}
         
         actMaintainAddresses: {Label=&Addresses, ActionClick=MaintainAddresses, Image: Address.ico}
-        actMaintainPartnerDetails: {Label=Partner &Details, ActionClick=MaintainPartnerDetails, Image: Details.ico}
+        actMaintainPartnerDetails: {Label=&Partner Details, ActionClick=MaintainPartnerDetails, Image: Details.ico}
         actMaintainFoundationDetails: {Label=Foundation Details, ActionClick=MaintainFoundationDetails, Image: Foundations.ico}
         actMaintainSubscriptions: {Label=&Subscriptions, ActionClick=MaintainSubscriptions, Image: Subscriptions.ico}
         actMaintainSpecialTypes: {Label=Special &Types, ActionClick=MaintainSpecialTypes, Image: Types.ico}
@@ -41,8 +41,8 @@ RootNode:
         actMaintainReminders: {Label=&Reminders, ActionClick=MaintainReminders, Image: Reminders.ico}
         actMaintainNotes: {Label=&Notes, ActionClick=MaintainNotes, Image: Notes.ico}
         actMaintainLocalPartnerData: {Label=&Local Partner Data, ActionClick=MaintainLocalPartnerData, Image: OfficeSpecific.ico}
-        actMaintainWorkerField: {Label=&Worker Field, ActionClick=MaintainWorkerField, Image: OMField.ico}
-        actMaintainPersonnelData: {Label=&Personnel/Individual Data, ActionClick=MaintainIndividualData, Image: personel_small.ico}
+        actMaintainGiftDestination: {Label=Gift &Destination, ActionClick=MaintainGiftDestination, Image: OMField.ico}
+        actMaintainPersonnelData: {Label=P&ersonnel/Individual Data, ActionClick=MaintainIndividualData, Image: personel_small.ico}
         actMaintainDonorHistory: {Label=Donor &History, ActionClick=MaintainDonorHistory}
         actMaintainRecipientHistory: {Label=Recipient Histor&y, ActionClick=MaintainRecipientHistory}
         actMaintainFinanceReports: {Label=Finance Report&s, ActionClick=MaintainFinanceReports}
@@ -112,7 +112,7 @@ RootNode:
             mniMaintainReminders:
             mniMaintainNotes:
             mniMaintainLocalPartnerData:
-            mniMaintainWorkerField:
+            mniMaintainGiftDestination:
             mniSeparator:
             mniMaintainPersonnelData:
             mniSeparator:

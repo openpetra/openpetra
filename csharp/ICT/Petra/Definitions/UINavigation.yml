@@ -340,7 +340,6 @@ OpenPetra:
                     General:
                         DocumentTypeCategory: {Label=Document Type Categories, Description=Maintain Document Type Categories, ActionOpenScreen=TFrmDocumentTypeCategorySetup}
                         DocumentType: {Label=Document Types, Description=Maintain Document Types, ActionOpenScreen=TFrmDocumentTypeSetup}
-                        DriverStatus: {Label=Driver Status, Description=Maintain Driver Status, ActionOpenScreen=TFrmDriverStatusSetup}
                         JobAssignmentType: {Label=Job Assignment Types, Description=Maintain Job Assignment Types, ActionOpenScreen=TFrmJobAssignmentTypeSetup}
                         LanguageLevel: {Label=Language Levels, Description=Maintain Language Levels, ActionOpenScreen=TFrmLanguageLevelSetup}
                         LeadershipRating: {Label=Leadership Ratings, Description=Maintain Leadership Ratings, ActionOpenScreen=TFrmLeadershipRatingSetup}

@@ -113,6 +113,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.txtPassword.TabIndex = 5;
             this.txtPassword.WordWrap = false;
             this.txtPassword.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtPasswordKeyPress);
+            this.txtPassword.Enter += new EventHandler(TxtPasswordOnEntering);
             //
             // btnLogin
             //

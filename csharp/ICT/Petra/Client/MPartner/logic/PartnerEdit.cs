@@ -24,6 +24,7 @@
 using System;
 
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MPartner.Logic
 {
